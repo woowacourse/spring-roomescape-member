@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.InvalidDateException;
-import roomescape.exception.InvalidNameException;
-import roomescape.exception.InvalidTimeException;
+import roomescape.exception.*;
 
 import java.util.NoSuchElementException;
 
@@ -48,5 +45,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElement() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String> handleAuthorization(AuthorizationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 }
