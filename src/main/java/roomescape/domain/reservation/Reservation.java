@@ -2,6 +2,7 @@ package roomescape.domain.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -10,17 +11,28 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final LocalDateTime createdAt;
 
-    public Reservation(Long id, PlayerName name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, PlayerName name, LocalDate date, ReservationTime time, Theme theme,
+                       LocalDateTime createdAt) {
+        validateCreatedAtAfterReserveTime(date, time.getStartAt(), createdAt);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.createdAt = createdAt;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new PlayerName(name), date, time, theme);
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
+        this(null, new PlayerName(name), date, time, theme, createdAt);
+    }
+
+    private void validateCreatedAtAfterReserveTime(LocalDate date, LocalTime startAt, LocalDateTime createdAt) {
+        LocalDateTime reservedDateTime = LocalDateTime.of(date, startAt);
+        if (reservedDateTime.isBefore(createdAt)) {
+            throw new IllegalArgumentException("현재 시간보다 과거로 예약할 수 없습니다.");
+        }
     }
 
     public boolean isBefore(LocalDateTime dateTime) {
@@ -48,8 +60,12 @@ public class Reservation {
         return theme;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public Reservation withId(long id) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, name, date, time, theme, createdAt);
     }
 
     @Override

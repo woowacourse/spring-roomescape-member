@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,8 @@ import roomescape.infrastructure.reservation.JdbcThemeRepository;
 @JdbcTest
 @Import(value = {JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
 class JdbcReservationRepositoryTest {
+    private static final LocalDateTime BASE_TIME = LocalDateTime.of(2000, 1, 1, 12, 0);
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -70,7 +73,8 @@ class JdbcReservationRepositoryTest {
                 "test",
                 LocalDate.of(2024, 12, 25),
                 reservationTime,
-                theme
+                theme,
+                BASE_TIME
         );
         Reservation reservationWithId = jdbcReservationRepository.create(reservationWithoutId);
         int totalRowCount = getTotalRowCount();
@@ -109,12 +113,12 @@ class JdbcReservationRepositoryTest {
     }
 
     private Reservation createReservation() {
+        String sql = "insert into reservation (id, name, date, time_id, theme_id, created_at) values (?, ?, ?, ?, ?, ?)";
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("theme1", "desc", "url"));
         LocalDate date = LocalDate.of(2024, 12, 25);
-        jdbcTemplate.update("insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)",
-                1L, "test", date, reservationTime.getId(), theme.getId());
-        return new Reservation(1L, new PlayerName("test"), date, reservationTime, theme);
+        jdbcTemplate.update(sql, 1L, "test", date, reservationTime.getId(), theme.getId(), BASE_TIME);
+        return new Reservation(1L, new PlayerName("test"), date, reservationTime, theme, BASE_TIME);
     }
 
     private int getTotalRowCount() {

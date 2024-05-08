@@ -5,5 +5,5 @@ insert into theme (id, name, description, thumbnail)
 values (1, '테마1', '테마1 설명',
         'https://upload.wikimedia.org/wikipedia/en/thumb/3/3b/SpongeBob_SquarePants_character.svg/440px-SpongeBob_SquarePants_character.svg.png');
 
-insert into reservation (id, name, date, time_id, theme_id)
-values (1, '아루', '2300-12-24', 1, 1);
+insert into reservation (id, name, date, time_id, theme_id, created_at)
+values (1, '아루', '2025-12-24', 1, 1, '2024-12-24T12:00:00');

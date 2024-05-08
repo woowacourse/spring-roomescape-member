@@ -17,8 +17,9 @@ import roomescape.infrastructure.reservation.rowmapper.ReservationRowMapper;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
     private static final String FIND_ALL_SQL = """
-            select r.id as reservation_id, r.name as reservation_name, date, time_id, start_at,
-            theme_id, t.name as theme_name, description, thumbnail from reservation as r
+            select r.id as reservation_id, r.name as reservation_name, date, time_id, start_at, created_at, theme_id,
+            t.name as theme_name, description, thumbnail
+            from reservation as r
             left join reservation_time as rt on time_id = rt.id
             left join theme as t on theme_id = t.id
             """;
@@ -30,7 +31,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingColumns("name", "date", "time_id", "theme_id")
+                .usingColumns("name", "date", "time_id", "theme_id", "created_at")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -59,6 +60,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
+                .addValue("created_at", reservation.getCreatedAt())
                 .addValue("time_id", time.getId())
                 .addValue("theme_id", theme.getId());
         long id = jdbcInsert.executeAndReturnKey(parameters).longValue();

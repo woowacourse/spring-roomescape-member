@@ -36,13 +36,10 @@ public class ReservationService {
     public ReservationResponse create(ReservationRequest request) {
         Theme theme = themeRepository.getById(request.themeId());
         ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
+        Reservation reservation = request.toReservation(reservationTime, theme, LocalDateTime.now(clock));
 
-        if (reservationRepository.existsBy(request.date(), request.timeId(), request.themeId())) {
+        if (reservationRepository.existsBy(reservation.getDate(), reservationTime.getId(), theme.getId())) {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
-        }
-        Reservation reservation = request.toReservation(reservationTime, theme);
-        if (reservation.isBefore(LocalDateTime.now(clock))) {
-            throw new IllegalArgumentException("현재 시간보다 과거로 예약할 수 없습니다.");
         }
         return ReservationResponse.from(reservationRepository.create(reservation));
     }

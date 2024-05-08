@@ -3,6 +3,7 @@ package roomescape.application.reservation.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
@@ -17,7 +18,7 @@ public record ReservationRequest(
         @NotNull(message = "테마 ID를 입력해주세요.")
         Long themeId) {
 
-    public Reservation toReservation(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(name, date, reservationTime, theme);
+    public Reservation toReservation(ReservationTime reservationTime, Theme theme, LocalDateTime createdAt) {
+        return new Reservation(name, date, reservationTime, theme, createdAt);
     }
 }

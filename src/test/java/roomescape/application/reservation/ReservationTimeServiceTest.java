@@ -3,7 +3,9 @@ package roomescape.application.reservation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,6 +36,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private Clock clock;
 
     @DisplayName("예약 시간을 생성한다.")
     @Test
@@ -79,7 +84,7 @@ class ReservationTimeServiceTest {
         long timeId = time.getId();
         Theme theme = themeRepository.create(new Theme("테마1", "테마1 설명", "url"));
         reservationRepository.create(new Reservation(
-                "오리", LocalDate.parse("2024-01-01"), time, theme
+                "오리", LocalDate.parse("2024-01-01"), time, theme, LocalDateTime.now(clock)
         ));
         assertThatCode(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(IllegalArgumentException.class)

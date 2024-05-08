@@ -20,7 +20,8 @@ public class ReservationRowMapper {
                 new PlayerName(name),
                 LocalDate.parse(date),
                 ReservationTimeRowMapper.mapRow(rs),
-                ThemeRowMapper.mapRow(rs)
+                ThemeRowMapper.mapRow(rs),
+                rs.getTimestamp("created_at").toLocalDateTime()
         );
     }
 
@@ -33,7 +34,8 @@ public class ReservationRowMapper {
                 new PlayerName(name),
                 LocalDate.parse(date),
                 ReservationTimeRowMapper.joinedMapRow(rs),
-                ThemeRowMapper.joinedMapRow(rs)
+                ThemeRowMapper.joinedMapRow(rs),
+                rs.getTimestamp("created_at").toLocalDateTime()
         );
     }
 }
