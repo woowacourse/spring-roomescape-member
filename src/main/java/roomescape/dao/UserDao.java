@@ -14,7 +14,11 @@ public class UserDao {
     private final List<User> users;
 
     public UserDao() {
-        this.users = new ArrayList<>();
+        this.users = new ArrayList<>(){
+            {
+                add(new User("name", "email@email.com", "password"));
+            }
+        };
     }
 
     public User insert(String name, String email, String password) {
