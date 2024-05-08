@@ -25,4 +25,13 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
+
+    public String decode(String token) {
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .get("email")
+                .toString();
+    }
 }

@@ -49,5 +49,5 @@
 ## 사용자
 - [x] 사용자는 `name`, `email`, `password`를 갖는다.
 - [x] 사용자는 `email`과 `password`로 로그인을 한다.
-- [ ] `login/check`를 통해 사용자의 인증 정보를 조회할 수 있다.
+- [x] `login/check`를 통해 사용자의 인증 정보를 조회할 수 있다.
 
