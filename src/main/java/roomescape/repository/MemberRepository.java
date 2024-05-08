@@ -1,10 +1,13 @@
 package roomescape.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
@@ -12,10 +15,12 @@ import roomescape.domain.Role;
 
 @Repository
 public class MemberRepository {
+    private final MemberRowMapper rowMapper;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     public MemberRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.rowMapper = new MemberRowMapper();
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("user_table")
@@ -50,8 +55,7 @@ public class MemberRepository {
                     ELSE FALSE
                 END
                 """;
-        boolean b = Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email, password));
-        return b;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email, password));
     }
 
     public Member findByEmail(String email) {
@@ -63,13 +67,7 @@ public class MemberRepository {
                 WHERE
                     email = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Member(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("password"),
-                Role.valueOf(rs.getString("role"))
-        ), email);
+        return jdbcTemplate.queryForObject(sql, rowMapper, email);
     }
 
     public Optional<Member> findById(Long memberId) {
@@ -81,24 +79,23 @@ public class MemberRepository {
                 WHERE
                     id = ?
                 """;
-        Member member = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Member(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("password"),
-                Role.valueOf(rs.getString("role"))
-        ), memberId);
+        Member member = jdbcTemplate.queryForObject(sql, rowMapper, memberId);
         return Optional.ofNullable(member);
     }
 
     public List<Member> findAll() {
         String sql = "SELECT * FROM user_table";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Member(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("password"),
-                Role.valueOf(rs.getString("role"))
-        ));
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    private static class MemberRowMapper implements RowMapper<Member> {
+        public Member mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new Member(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    Role.valueOf(rs.getString("role")));
+        }
     }
 }
