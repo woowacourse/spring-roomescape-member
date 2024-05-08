@@ -327,3 +327,17 @@ id : long
 - [x] 인증 정보 조회
   - 사용자의 정보를 조회하는 API 구현
   - Cookie를 이용하여 로그인 사용자의 정보를 확인
+
+## 5단계 요구사항
+
+- [ ] 로그인 리팩터링
+  - Cookie에 담긴 인증 정보를 이용하여 멤버 객체를 만드는 로직을 분리
+  - HandlerMethodArgumentResolver을 활용
+- [ ] 사용자 예약 생성 기능 변경
+  - 사용자가 예약 생성 시 로그인한 사용자 정보를 활용하도록 리팩터링
+  - reservation.html, user-reservation.js 파일의 TODO 주석을 참고
+- [ ] 예약 생성 기능 변경 - 관리자
+  - 관리자가 예약 생성 시 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
+  - admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라 js 파일을 변경
+    - AS-IS: /js/reservation-new.js
+    - TO-BE: /js/reservation-with-member.js
