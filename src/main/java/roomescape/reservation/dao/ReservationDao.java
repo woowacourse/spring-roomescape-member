@@ -13,21 +13,37 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 @Repository
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> rowMapper;
 
-    public ReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final RowMapper<Reservation> rowMapper) {
+    public ReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION")
                 .usingGeneratedKeyColumns("id");
-        this.rowMapper = rowMapper;
     }
+
+    private RowMapper<Reservation> rowMapper = ((resultSet, rowNum) -> new Reservation(
+            resultSet.getLong("reservation_id"),
+            resultSet.getString("reservation_name"),
+            resultSet.getString("date"),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getString("time_value")
+            ),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            )
+    ));
 
     public List<Reservation> findAll() {
         final String sql = """ 
