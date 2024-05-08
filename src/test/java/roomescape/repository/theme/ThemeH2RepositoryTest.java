@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.ValidationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -52,7 +52,7 @@ class ThemeH2RepositoryTest {
     @DisplayName("참조되어 있는 테마를 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedTime() {
         assertThatThrownBy(() -> themeH2Repository.delete(THEME_1.getId()))
-                .isInstanceOf(ClientException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test

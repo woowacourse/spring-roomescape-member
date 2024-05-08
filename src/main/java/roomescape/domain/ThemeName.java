@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.MissingRequiredFieldException;
 
 public record ThemeName(String name) {
 
@@ -11,7 +11,7 @@ public record ThemeName(String name) {
 
     private void validate(String name) {
         if (name == null || name.isBlank() || name.isEmpty()) {
-            throw new ClientException("이름은 필수 값입니다.");
+            throw new MissingRequiredFieldException("테마 이름은 필수 값입니다.");
         }
     }
 

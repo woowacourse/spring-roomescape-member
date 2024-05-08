@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.ValidationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -33,7 +33,7 @@ class ReservationTimeServiceTest {
     void saveDuplicatedGetTime() {
         assertThatThrownBy(
                 () -> reservationTimeService.addTime(new ReservationTimeAddRequest(RESERVATION_TIME_1.getStartAt()))
-        ).isInstanceOf(ClientException.class);
+        ).isInstanceOf(ValidationException.class);
     }
 
     @Test

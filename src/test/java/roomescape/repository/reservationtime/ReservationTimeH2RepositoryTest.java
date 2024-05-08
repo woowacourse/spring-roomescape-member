@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.ValidationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -51,7 +51,7 @@ class ReservationTimeH2RepositoryTest {
     @DisplayName("참조되어 있는 시간을 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedGetTime() {
         assertThatThrownBy(() -> reservationTimeH2Repository.delete(RESERVATION_TIME_1.getId()))
-                .isInstanceOf(ClientException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test

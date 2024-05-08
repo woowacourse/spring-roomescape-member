@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.ValidationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -36,7 +36,7 @@ class ThemeServiceTest {
                 THEME_1.getThumbnail()
         );
         assertThatThrownBy(() -> themeService.addTheme(themeAddRequest))
-                .isInstanceOf(ClientException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test

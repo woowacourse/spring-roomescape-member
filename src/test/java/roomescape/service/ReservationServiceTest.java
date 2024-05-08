@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.ValidationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -39,7 +39,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(ClientException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test
@@ -53,7 +53,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(ClientException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test
@@ -82,7 +82,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(ClientException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test

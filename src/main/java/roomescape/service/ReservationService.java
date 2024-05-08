@@ -8,7 +8,8 @@ import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.DuplicationException;
+import roomescape.exceptions.ValidationException;
 import roomescape.repository.reservation.ReservationRepository;
 
 @Service
@@ -46,13 +47,13 @@ public class ReservationService {
 
     private void validateIsBeforeNow(Reservation reservation) {
         if (reservation.isBeforeNow()) {
-            throw new ClientException("과거 시간은 예약할 수 없습니다.");
+            throw new ValidationException("과거 시간은 예약할 수 없습니다.");
         }
     }
 
     private void validateIsDuplicated(Reservation reservation) {
         if (reservationRepository.isAlreadyBooked(reservation)) {
-            throw new ClientException("이미 예약이 존재합니다.");
+            throw new DuplicationException("이미 예약이 존재합니다.");
         }
     }
 

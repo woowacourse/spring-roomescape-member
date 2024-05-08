@@ -6,14 +6,14 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.ValidationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ClientException.class)
+    @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleClientException(ClientException e) {
+    public String handleValidationException(ValidationException e) {
         return e.getMessage();
     }
 

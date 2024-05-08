@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.NotDeleteableException;
 
 @Repository
 public class ReservationTimeH2Repository implements ReservationTimeRepository {
@@ -53,7 +53,7 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
         try {
             jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new ClientException("참조되고 있는 시간을 삭제할 수 없습니다. id = " + id);
+            throw new NotDeleteableException("예약이 존재하는 시간은 삭제할 수 없습니다. id = " + id);
         }
     }
 

@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.NotDeleteableException;
 
 @Repository
 public class ThemeH2Repository implements ThemeRepository {
@@ -53,7 +53,7 @@ public class ThemeH2Repository implements ThemeRepository {
         try {
             jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new ClientException("참조되고 있는 테마를 삭제할 수 없습니다. id = " + id);
+            throw new NotDeleteableException("예약이 존재하는 테마는 삭제할 수 없습니다. id = " + id);
         }
     }
 

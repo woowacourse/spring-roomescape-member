@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.MissingRequiredFieldException;
 
 public class ReservationTime {
 
@@ -24,7 +24,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new ClientException("시작 시간은 필수 값입니다.");
+            throw new MissingRequiredFieldException("시작 시간은 필수 값입니다.");
         }
     }
 

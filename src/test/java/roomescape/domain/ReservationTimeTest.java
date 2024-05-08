@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.ValidationException;
 
 class ReservationTimeTest {
 
@@ -36,6 +36,6 @@ class ReservationTimeTest {
         LocalTime startAt = null;
 
         assertThatThrownBy(() -> new ReservationTime(1L, startAt))
-                .isInstanceOf(ClientException.class);
+                .isInstanceOf(ValidationException.class);
     }
 }

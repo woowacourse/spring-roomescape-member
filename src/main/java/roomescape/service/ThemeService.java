@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.exceptions.ClientException;
+import roomescape.exceptions.DuplicationException;
+import roomescape.exceptions.NotFoundException;
 import roomescape.repository.theme.ThemeRepository;
 
 @Service
@@ -24,7 +25,7 @@ public class ThemeService {
             Theme theme = themeRepository.save(themeAddRequest.toTheme());
             return new ThemeResponse(theme);
         } catch (DuplicateKeyException e) {
-            throw new ClientException("이미 존재하는 테마 이름입니다.");
+            throw new DuplicationException("이미 존재하는 테마 이름입니다.");
         }
     }
 
@@ -52,7 +53,7 @@ public class ThemeService {
 
     private Theme getValidTheme(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new ClientException("존재하지 않는 테마 id입니다. theme_id = " + id));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 id입니다. theme_id = " + id));
     }
 
     public void deleteTheme(Long id) {
