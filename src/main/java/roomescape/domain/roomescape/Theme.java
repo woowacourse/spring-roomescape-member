@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.roomescape;
 
 public class Theme {
     private final Long id;

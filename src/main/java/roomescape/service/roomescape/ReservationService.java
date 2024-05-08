@@ -1,19 +1,19 @@
-package roomescape.service;
+package roomescape.service.roomescape;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.roomescape.Reservation;
+import roomescape.domain.roomescape.ReservationTime;
+import roomescape.domain.roomescape.Theme;
 import roomescape.dto.request.ReservationSaveRequest;
 import roomescape.dto.response.ReservationDeleteResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
-import roomescape.repository.ThemeDao;
+import roomescape.repository.roomescape.ReservationDao;
+import roomescape.repository.roomescape.ReservationTimeDao;
+import roomescape.repository.roomescape.ThemeDao;
 
 @Service
 public class ReservationService {

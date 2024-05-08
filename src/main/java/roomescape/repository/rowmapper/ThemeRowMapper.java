@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
+import roomescape.domain.roomescape.Theme;
+import roomescape.domain.roomescape.ThemeName;
 
 @Component
 public class ThemeRowMapper implements RowMapper<Theme> {

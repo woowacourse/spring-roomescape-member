@@ -1,9 +1,9 @@
 package roomescape.dto.request;
 
 import java.time.LocalDate;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.roomescape.Reservation;
+import roomescape.domain.roomescape.ReservationTime;
+import roomescape.domain.roomescape.Theme;
 
 public record ReservationSaveRequest(
         String name,

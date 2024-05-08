@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.user;
 
 public class UserName {
     private static final int MAX_NAME_LENGTH = 10;

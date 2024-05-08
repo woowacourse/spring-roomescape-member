@@ -1,7 +1,7 @@
 package roomescape.dto.request;
 
 import java.time.LocalTime;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.roomescape.ReservationTime;
 
 public record ReservationTimeSaveRequest(
         LocalTime startAt

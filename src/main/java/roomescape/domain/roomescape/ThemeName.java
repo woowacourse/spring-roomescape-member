@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.roomescape;
 
 public class ThemeName {
     private static final int MAX_THEME_NAME_LENGTH = 30;

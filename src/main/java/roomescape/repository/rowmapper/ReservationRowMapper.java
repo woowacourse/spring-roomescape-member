@@ -1,18 +1,19 @@
 package roomescape.repository.rowmapper;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
-import roomescape.domain.Reservation;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+import roomescape.domain.roomescape.Reservation;
+
 @Component
 public class ReservationRowMapper implements RowMapper<Reservation> {
 
     private final ReservationTimeRowMapper reservationTimeRowMapper;
     private final ThemeRowMapper themeRowMapper;
 
-    public ReservationRowMapper(final ReservationTimeRowMapper reservationTimeRowMapper, final ThemeRowMapper themeRowMapper) {
+    public ReservationRowMapper(final ReservationTimeRowMapper reservationTimeRowMapper,
+                                final ThemeRowMapper themeRowMapper) {
         this.reservationTimeRowMapper = reservationTimeRowMapper;
         this.themeRowMapper = themeRowMapper;
     }

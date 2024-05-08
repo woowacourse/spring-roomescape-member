@@ -1,11 +1,11 @@
 package roomescape.repository.rowmapper;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
-import roomescape.domain.ReservationTime;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+import roomescape.domain.roomescape.ReservationTime;
+
 @Component
 public class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
     @Override

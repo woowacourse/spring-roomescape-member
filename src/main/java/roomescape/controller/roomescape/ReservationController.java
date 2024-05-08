@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.roomescape;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import roomescape.dto.request.ReservationSaveRequest;
 import roomescape.dto.response.ReservationDeleteResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.roomescape.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")

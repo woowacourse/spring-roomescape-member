@@ -1,6 +1,6 @@
 package roomescape.dto.request;
 
-import roomescape.domain.Theme;
+import roomescape.domain.roomescape.Theme;
 
 public record ThemeSaveRequest(
         String name,

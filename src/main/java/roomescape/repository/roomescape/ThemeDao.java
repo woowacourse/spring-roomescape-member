@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.roomescape;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
+import roomescape.domain.roomescape.Theme;
 
 @Repository
 public class ThemeDao {
