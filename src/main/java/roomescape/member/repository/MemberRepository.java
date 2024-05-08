@@ -46,12 +46,17 @@ public class MemberRepository {
         }
     }
 
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "select id, name, email, password from member where email = ? and password = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, createMemberRowMapper(), email, password));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public boolean existNameOrEmail(Member member) {
-        String sql = """
-                select exists (select 1
-                from member 
-                where name = ? or email = ?)
-                """;
+        String sql = " select exists (select 1 from member where name = ? or email = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, member.getName(), member.getEmail());
     }
