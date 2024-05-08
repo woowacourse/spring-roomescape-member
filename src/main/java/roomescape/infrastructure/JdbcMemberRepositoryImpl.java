@@ -51,6 +51,17 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
         }
     }
 
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        String sql = "SELECT * FROM member WHERE email = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getMemberRowMapper(), email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+
     private RowMapper<Member> getMemberRowMapper() {
         return (rs, rowNum) -> new Member(
             rs.getLong("id"),
