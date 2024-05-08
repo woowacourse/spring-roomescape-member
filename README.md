@@ -10,6 +10,7 @@
 | GET    | `/admin/reservation`                        | 예약 관리 페이지 요청          | `templates/admin/reservation-new.html` | `@Controller`     |
 | GET    | `/admin/time`                               | 예약 시간 관리 페이지 요청       | `templates/admin/time.html`            | `@Controller`     |
 | GET    | `/admin/theme`                              | 테마 관리 페이지 요청          | `templates/admin/theme.html`           | `@Controller`     |
+| GET    | `/login`                                    | 로그인 페이지 요청            | `templates/login.html`                 | `@Controller`     |
 | GET    | `/reservations`                             | 예약 정보 조회              |                                        | `@RestController` |
 | GET    | `/reservations/themes/{themeId}/times?date` | 특정 날짜의 특정 테마 예약 정보 조회 |                                        | `@RestController` |
 | POST   | `/reservations`                             | 예약 추가                 |                                        | `@RestController` |
