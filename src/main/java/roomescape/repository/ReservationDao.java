@@ -55,9 +55,9 @@ public class ReservationDao {
                     FROM reservation AS r
                     INNER JOIN reservation_time AS time ON r.time_id = time.id
                     INNER JOIN theme ON r.theme_id = theme.id
-                    WHERE id = ?
+                    WHERE r.id = ?
                     """;
-            return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper));
+            return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
         } catch (final EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
