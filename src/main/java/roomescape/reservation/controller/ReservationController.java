@@ -25,7 +25,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService, ReservationTimeService reservationTimeService, ThemeService themeService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
