@@ -37,3 +37,8 @@ VALUES ('폰드', '2024-04-28', 1, 5),
        ('위브', '2024-05-04', 2, 2),
        ('아톰', '2024-05-04', 3, 3),
        ('이상', '2024-05-04', 1, 1);
+
+DELETE
+FROM member;
+INSERT INTO member (email, password, name)
+VALUES ('qwer@naver.com', '1234', '어드민');

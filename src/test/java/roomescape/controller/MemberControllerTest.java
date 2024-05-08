@@ -11,16 +11,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.MemberRequest;
 import roomescape.dto.response.MemberResponse;
 
 class MemberControllerTest extends BaseControllerTest {
-
-    @Autowired
-    private MemberRepository memberRepository;
 
     @TestFactory
     @DisplayName("사용자를 생성, 조회, 삭제한다.")
@@ -56,7 +51,7 @@ class MemberControllerTest extends BaseControllerTest {
     }
 
     private void addMember() {
-        MemberRequest request = new MemberRequest("사용자", "email@email.com", "password");
+        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -70,12 +65,12 @@ class MemberControllerTest extends BaseControllerTest {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             softly.assertThat(response.header("Location")).isEqualTo("/members/1");
-            softly.assertThat(reservationMemberResponse).isEqualTo(new MemberResponse(1L, "사용자", "email@email.com"));
+            softly.assertThat(reservationMemberResponse).isEqualTo(new MemberResponse(1L, "email@email.com", "사용자"));
         });
     }
 
     private void addMemberFailWhenDuplicatedEmail() {
-        MemberRequest request = new MemberRequest("사용자", "email@email.com", "password");
+        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -103,7 +98,7 @@ class MemberControllerTest extends BaseControllerTest {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             softly.assertThat(reservationMemberResponses).hasSize(1);
             softly.assertThat(reservationMemberResponses)
-                    .containsExactly(new MemberResponse(1L, "사용자", "email@email.com"));
+                    .containsExactly(new MemberResponse(1L, "email@email.com", "사용자"));
         });
     }
 

@@ -18,11 +18,11 @@ public class JdbcMemberRepository implements MemberRepository {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Member> rowMapper = (rs, rowNum) -> {
         Long id = rs.getLong("id");
-        String name = rs.getString("name");
         String email = rs.getString("email");
         String password = rs.getString("password");
+        String name = rs.getString("name");
 
-        return new Member(id, name, email, password);
+        return new Member(id, email, password, name);
     };
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
@@ -54,13 +54,13 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Member save(Member member) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword());
+                .addValue("password", member.getPassword())
+                .addValue("name", member.getName());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getEmail(), member.getPassword(), member.getName());
     }
 
     @Override
@@ -82,5 +82,17 @@ public class JdbcMemberRepository implements MemberRepository {
         String sql = "SELECT EXISTS(SELECT 1 FROM member WHERE email = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, email, password);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

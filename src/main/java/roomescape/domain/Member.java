@@ -5,32 +5,32 @@ import java.util.Objects;
 public class Member {
 
     private final Long id;
-    private final String name;
     private final String email;
     private final String password;
+    private final String name;
 
-    public Member(String name, String email, String password) {
-        this(null, name, email, password);
+    public Member(String email, String password, String name) {
+        this(null, email, password, name);
     }
 
-    public Member(Long id, String name, String email, String password) {
-        validate(name, email, password);
+    public Member(Long id, String email, String password, String name) {
+        validate(email, password, name);
 
         this.id = id;
-        this.name = name;
         this.email = email;
         this.password = password;
+        this.name = name;
     }
 
-    private void validate(String name, String email, String password) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("name은 필수 값입니다.");
-        }
+    private void validate(String email, String password, String name) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("email는 필수 값입니다.");
         }
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("password은 필수 값입니다.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("name은 필수 값입니다.");
         }
     }
 
@@ -55,15 +55,15 @@ public class Member {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public String getName() {
+        return name;
     }
 }

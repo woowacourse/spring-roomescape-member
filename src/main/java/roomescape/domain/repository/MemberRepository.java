@@ -23,4 +23,6 @@ public interface MemberRepository {
     boolean existsById(Long id);
 
     boolean existsByEmail(String email);
+
+    Optional<Member> findByEmailAndPassword(String email, String password);
 }
