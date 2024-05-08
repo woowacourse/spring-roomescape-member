@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   updateUIBasedOnLogin();
 });
 
+
 document.getElementById('logout-btn').addEventListener('click', function (event) {
   event.preventDefault();
   fetch('/logout', {
@@ -9,7 +10,7 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
     credentials: 'include' // 쿠키를 포함시키기 위해 필요
   })
       .then(response => {
-        if(response.ok) {
+        if (response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
           window.location.reload();
         } else {
@@ -22,7 +23,9 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       });
 });
 
-document.getElementById('register-btn').addEventListener('click', register);
+const registerBtn = document.getElementById('register-btn');
+if (registerBtn !== null) registerBtn.addEventListener('click', register);
+
 
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
@@ -54,7 +57,6 @@ document.getElementById("navbarDropdown").addEventListener('click', function (e)
   dropdownMenu.classList.toggle('show'); // Bootstrap 4에서는 data-toggle 사용, Bootstrap 5에서는 JS로 처리
 });
 
-
 function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -76,7 +78,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (response.status !== 200) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
