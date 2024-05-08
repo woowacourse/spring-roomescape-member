@@ -90,11 +90,11 @@ class AuthControllerTest extends ControllerTest {
     @DisplayName("유효하지 않은 토큰으로 인증 정보 GET 요청 시 상태코드 401을 반환한다.")
     void checkAuthInformationWithInvalidToken() throws Exception {
         // given
-        Cookie cookie = new Cookie("token", "invalid token");
+        Cookie cookie = new Cookie("token", "invalid-token");
 
         BDDMockito.willThrow(new IllegalTokenException(TEST_ERROR_MESSAGE))
                 .given(jwtTokenProvider)
-                .getPayload(any());
+                .validateToken(any());
 
         // when
         mockMvc.perform(get("/login/check")

@@ -32,6 +32,7 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<AuthInformationResponse> checkAuthInformation(@CookieValue String token) {
+        jwtTokenProvider.validateToken(token);
         String email = jwtTokenProvider.getPayload(token);
         Member member = memberService.findByEmail(email);
         return ResponseEntity.ok(new AuthInformationResponse(member.getName()));

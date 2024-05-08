@@ -102,4 +102,10 @@ abstract class ApiAcceptanceTest {
         softAssertionsProvider.assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+
+    protected void checkHttpStatusUnauthorized(
+            StandardSoftAssertionsProvider softAssertionsProvider, ExtractableResponse<Response> response) {
+        softAssertionsProvider.assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
 }
