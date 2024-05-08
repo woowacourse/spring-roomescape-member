@@ -26,7 +26,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         logger.trace("request = {}", request.getRequestURI());
 
-
         String token = authorizationExtractor.extract(request);
         LoginMember member = authService.findMemberByToken(token);
         if (Role.ADMIN != member.role()) {
