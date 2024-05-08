@@ -13,15 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exceptions.ClientException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Sql("/initial_test_data.sql")
+@Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
 class ThemeServiceTest {
 
     @Autowired
