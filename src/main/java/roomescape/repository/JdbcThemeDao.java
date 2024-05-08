@@ -20,7 +20,7 @@ public class JdbcThemeDao implements ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
 
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),

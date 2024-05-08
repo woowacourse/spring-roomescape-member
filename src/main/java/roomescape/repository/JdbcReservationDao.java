@@ -23,7 +23,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     private final SimpleJdbcInsert insertActor;
 
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
                     resultSet.getString("name"),
@@ -40,7 +40,7 @@ public class JdbcReservationDao implements ReservationDao {
                     )
             );
 
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("time_id"),
                     resultSet.getTime("start_at").toLocalTime()

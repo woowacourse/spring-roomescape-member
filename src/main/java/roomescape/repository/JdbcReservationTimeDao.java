@@ -22,7 +22,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final SimpleJdbcInsert insertActor;
 
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
                     resultSet.getTime("start_at").toLocalTime()
