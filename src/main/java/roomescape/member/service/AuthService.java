@@ -1,8 +1,7 @@
 package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.dto.TokenRequest;
-import roomescape.member.dto.TokenResponse;
+import roomescape.member.dto.MemberRequest;
 import roomescape.member.infrastructure.JwtTokenProvider;
 
 @Service
@@ -13,8 +12,7 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public TokenResponse createToken(TokenRequest tokenRequest) {
-        String accessToken = jwtTokenProvider.createToken(tokenRequest.email());
-        return new TokenResponse(accessToken);
+    public String createToken(MemberRequest memberRequest) {
+        return jwtTokenProvider.createToken(memberRequest.email());
     }
 }
