@@ -54,13 +54,15 @@ class ThemeControllerTest {
                 "테마1", "설명1", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마2", "설명2", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-05-01", 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-04-30", 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-04-30", 1, 1);
-
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
+                "브라운", -1, 1, 2);
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
+                "브라운", -2, 1, 2);
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
+                "브라운", -2, 1, 1);
         List<ThemeResponse> expected = List.of(
                 new ThemeResponse(2L, "테마2", "설명2", "https://image.jpg"),
                 new ThemeResponse(1L, "테마1", "설명1", "https://image.jpg")
