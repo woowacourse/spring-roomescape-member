@@ -4,14 +4,11 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.auth.dto.TokenRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,20 +20,11 @@ class AdminReservationControllerTest {
     @LocalServerPort
     int port;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private AdminReservationController reservationController;
-
-    @BeforeEach
-    void init() {
-        RestAssured.port = port;
-    }
-
     @DisplayName("예약 내역을 필터링하여 조회한다.")
     @Test
     void findReservationByFilter() {
+        RestAssured.port = port;
+
         String adminToken = RestAssured
                 .given().log().all()
                 .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))

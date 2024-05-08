@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.RestAssured;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -28,14 +27,11 @@ class LoginControllerTest {
     @LocalServerPort
     int port;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
-
     @DisplayName("토큰으로 로그인 인증한다.")
     @TestFactory
     Stream<DynamicTest> dynamicTestsFromCollection() {
+        RestAssured.port = port;
+
         return Stream.of(
                 dynamicTest("이메일, 패스워드로 로그인한다.", () -> {
                     accessToken = RestAssured
