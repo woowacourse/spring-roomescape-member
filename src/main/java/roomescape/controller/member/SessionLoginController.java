@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.member;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.member.dto.MemberLoginRequest;
+import roomescape.controller.member.dto.MemberResponse;
 import roomescape.service.MemberService;
 import roomescape.service.TokenResponse;
 
 @RestController
 @RequestMapping("/login")
-public class SessionLoginController {
+public class SessionLoginController { //TODO 이름 괜춘?
 
     //TODO 로그인 상태에서 /login 하면 redirect
     private final MemberService memberService;

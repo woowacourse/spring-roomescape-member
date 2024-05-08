@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.controller.MemberNotFoundException;
+import roomescape.service.exception.MemberNotFoundException;
 import roomescape.domain.Member;
 
 import javax.sql.DataSource;
