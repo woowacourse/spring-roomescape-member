@@ -11,15 +11,18 @@ import roomescape.domain.Email;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.TokenRequest;
 import roomescape.service.AuthService;
+import roomescape.service.MemberService;
 
 @Controller
 @RequestMapping("/login")
 public class LoginPageController {
 
     private final AuthService authService;
+    private final MemberService memberService;
 
-    public LoginPageController(AuthService authService) {
+    public LoginPageController(AuthService authService, MemberService memberService) {
         this.authService = authService;
+        this.memberService = memberService;
     }
 
     @GetMapping
@@ -29,8 +32,12 @@ public class LoginPageController {
 
     @PostMapping
     public void login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        TokenRequest tokenRequest = new TokenRequest(new Email(loginRequest.email()));
-        Cookie cookie = new Cookie("token", authService.createToken(tokenRequest).token());
-        response.addCookie(cookie);
+        boolean validated = memberService.validateMember(loginRequest);
+        if (validated) {
+            TokenRequest tokenRequest = new TokenRequest(new Email(loginRequest.email()));
+            Cookie cookie = new Cookie("token", authService.createToken(tokenRequest).token());
+            response.addCookie(cookie);
+        }
+        // TODO 로그인 안되었을 때
     }
 }
