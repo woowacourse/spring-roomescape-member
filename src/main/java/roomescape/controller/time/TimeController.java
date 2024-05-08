@@ -39,7 +39,7 @@ public class TimeController {
     @PostMapping
     public ResponseEntity<TimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
         final TimeResponse time = timeService.addTime(timeRequest);
-        final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+        final URI uri = UriComponentsBuilder.fromPath("/times/{id}")
                 .buildAndExpand(time.id())
                 .toUri();
 
