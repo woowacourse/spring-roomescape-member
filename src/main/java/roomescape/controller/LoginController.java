@@ -63,6 +63,18 @@ public class LoginController {
         return ResponseEntity.ok().body(memberResponse);
     }
 
+    /*
+    뭔가를 리셋해야할 것 같은데
+    그게 토큰이겠지? 또는 쿠키?
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logoutPage(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
+
     private String extractTokenFromCookie(final Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {

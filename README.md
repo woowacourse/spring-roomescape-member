@@ -89,8 +89,8 @@ Content-Type: application/json
 - [x] 사용자 도메인을 추가합니다.
 - [x] 로그인 기능을 구현하세요.
 - [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현하세요.
-- [ ] 로그인 기능 구현 완료 후 클라이언트 코드에 있는 로그인 관련 로직을 활성화해야 합니다. 
-  - [ ] TODO: [4단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정하세요.
+- [x] 로그인 기능 구현 완료 후 클라이언트 코드에 있는 로그인 관련 로직을 활성화해야 합니다. 
+  - [x] TODO: [4단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정하세요.
 
 ### 사용자
 - [x] 사용자는 아래의 정보를 가집니다.
@@ -110,11 +110,11 @@ Content-Type: application/json
 - [x] 인증 정보 조회(GET /login/check)하는 API를 만드세요.
   - [x] Cookie에서 토큰 정보를 추출하여
   - [x] 멤버를 찾아 멤버 정보를 응답합니다.
-- [ ] 로그인 기능과 인증 정보 조회 기능이 정상적으로 구현되면 로그인 후 우측 상단의 Login 버튼이 사용자 이름으로 변합니다.
-- [ ] 로그아웃 시 다시 Login 버튼이 노출됩니다.
+- [x] 로그인 기능과 인증 정보 조회 기능이 정상적으로 구현되면 로그인 후 우측 상단의 Login 버튼이 사용자 이름으로 변합니다.
+  - [x] 로그아웃 시 다시 Login 버튼이 노출됩니다.
 
 ### 인증 정보 조회
--[ ] 상단바 우측 로그인 상태를 표현해주기 위해 사용자의 정보를 조회하는 API를 구현하세요.
+-[x] 상단바 우측 로그인 상태를 표현해주기 위해 사용자의 정보를 조회하는 API를 구현하세요.
 -[x] Cookie를 이용하여 로그인 사용자의 정보를 확인하세요.
 
 
@@ -130,3 +130,4 @@ Content-Type: application/json
 - [ ] data.sql
 - [ ] class IllegalReservationException extends IllegalArgumentException { // TODO: IllegalArgumentException가 최선일까?
 - [ ] findIds sql문 in으로 수정
+- [ ] flatpkr url로 수정
