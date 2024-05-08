@@ -2,16 +2,20 @@ package roomescape.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.fixture.MemberFixture.getMemberChoco;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.auth.controller.dto.LoginRequest;
-import roomescape.auth.controller.dto.MemberResponse;
+import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.controller.dto.TokenResponse;
 import roomescape.auth.service.jwt.FakeTokenProvider;
+import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberSignUp;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.dao.FakeMemberDao;
 
@@ -33,8 +37,10 @@ class AuthServiceTest {
     @Test
     void createToken() {
         //given
-        Member member = memberRepository.save(getMemberChoco());
-        LoginRequest loginRequest = new LoginRequest("1234", member.getEmail());
+        String password = "1234";
+        Member member = memberRepository.save(
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password));
+        LoginRequest loginRequest = new LoginRequest(password, member.getEmail());
 
         //when
         TokenResponse token = authService.createToken(loginRequest);
@@ -48,7 +54,9 @@ class AuthServiceTest {
     @Test
     void fetchByToken() {
         //given
-        Member member = memberRepository.save(getMemberChoco());
+        String password = "1234";
+        Member member = memberRepository.save(
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password));
         String accessToken = tokenProvider.createAccessToken(member.getEmail());
 
         //when
@@ -67,5 +75,25 @@ class AuthServiceTest {
         //when & then
         assertThatThrownBy(() -> authService.fetchByToken(invalidToken))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("사용자 회원가입에 성공한다.")
+    @Test
+    void signUp() {
+        //given
+        String password = "1234";
+        SignUpRequest signUpRequest =
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), password);
+
+        //when
+        authService.signUp(signUpRequest);
+
+        //then
+        Optional<Member> memberOptional = memberRepository.findBy(getMemberChoco().getEmail());
+
+        assertAll(
+                () -> assertThat(memberOptional).isNotNull(),
+                () -> assertThat(memberOptional.get().getName()).isEqualTo(getMemberChoco().getName())
+        );
     }
 }

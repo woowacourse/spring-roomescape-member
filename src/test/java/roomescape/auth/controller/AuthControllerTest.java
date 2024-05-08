@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import roomescape.auth.controller.dto.MemberResponse;
+import roomescape.member.controller.dto.MemberResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.util.ControllerTest;
 

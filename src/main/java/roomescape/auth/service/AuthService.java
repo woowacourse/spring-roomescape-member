@@ -2,9 +2,11 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.controller.dto.LoginRequest;
-import roomescape.auth.controller.dto.MemberResponse;
+import roomescape.member.controller.dto.MemberResponse;
+import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.controller.dto.TokenResponse;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberSignUp;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Service
@@ -30,10 +32,14 @@ public class AuthService {
 
     public MemberResponse fetchByToken(String token) {
         if (!tokenProvider.validateToken(token)) {
-            throw new IllegalStateException("유효하지 않은 토큰입니다.");
+            throw new IllegalStateException();
         }
         Member member = memberRepository.findBy(tokenProvider.getPayload(token))
                 .orElseThrow();
-        return new MemberResponse(member.getName());
+        return MemberResponse.from(member);
+    }
+
+    public void signUp(SignUpRequest signUpRequest) {
+        memberRepository.save(new MemberSignUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password()));
     }
 }

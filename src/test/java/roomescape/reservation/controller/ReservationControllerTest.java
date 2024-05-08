@@ -1,5 +1,7 @@
 package roomescape.reservation.controller;
 
+import static roomescape.fixture.MemberFixture.getMemberChoco;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
@@ -10,7 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.reservation.controller.dto.MemberReservationRequest;
+import roomescape.auth.controller.dto.SignUpRequest;
+import roomescape.auth.service.TokenProvider;
+import roomescape.member.service.MemberService;
+import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
@@ -32,20 +37,30 @@ class ReservationControllerTest extends ControllerTest {
     @Autowired
     ThemeService themeService;
 
+    @Autowired
+    MemberService memberService;
+
+    @Autowired
+    TokenProvider tokenProvider;
+
     @DisplayName("사용자 예약 생성 시 201을 반환한다.")
     @Test
     void create() {
         //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2099-08-05");
         reservation.put("timeId", reservationTimeResponse.id());
         reservation.put("themeId", themeResponse.id());
 
         //when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -57,20 +72,24 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
 
+        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
         ReservationResponse reservationResponse = reservationService.createMemberReservation(
-                new MemberReservationRequest(
-                        "choco",
+                getMemberChoco(),
+                new ReservationRequest(
                         LocalDate.now().toString(),
                         reservationTimeResponse.id(),
-                        themeResponse.id()
-                )
+                        themeResponse.id())
         );
 
         //when &then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/" + reservationResponse.id())
                 .then().log().all()
                 .statusCode(204);
@@ -92,9 +111,13 @@ class ReservationControllerTest extends ControllerTest {
     void reservationNotFound() {
         //given
         long invalidId = reservationService.findMemberReservations().size() + 10;
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
 
         //when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/" + invalidId)
                 .then().log().all()
                 .statusCode(400);
@@ -105,40 +128,21 @@ class ReservationControllerTest extends ControllerTest {
     @ValueSource(strings = {"", "20-12-31", "2020-1-30", "2020-11-0", "-1"})
     void createBadRequest(String date) {
         //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
 
+        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", date);
         reservation.put("timeId", reservationTimeResponse.id());
         reservation.put("themeId", themeResponse.id());
 
         //when & then
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @DisplayName("예약 생성 시, 빈 이름에 대해 400을 반환한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "           "})
-    void createNameBadRequest(String name) {
-        //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
-        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", "2100-12-01");
-        reservation.put("timeId", reservationTimeResponse.id());
-        reservation.put("themeId", themeResponse.id());
-
-        //when & then
-        RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -150,17 +154,21 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void createReservationAfterNow() {
         //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
 
+        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "choco");
         reservation.put("date", LocalDate.now().minusDays(2).toString());
         reservation.put("timeId", reservationTimeResponse.id());
         reservation.put("themeId", themeResponse.id());
 
         //when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")

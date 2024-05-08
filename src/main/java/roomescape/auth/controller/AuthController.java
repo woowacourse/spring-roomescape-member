@@ -3,13 +3,15 @@ package roomescape.auth.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.auth.controller.dto.LoginRequest;
-import roomescape.auth.controller.dto.MemberResponse;
+import roomescape.member.controller.dto.MemberResponse;
+import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.service.AuthService;
 
 @Controller
@@ -65,5 +67,16 @@ public class AuthController {
         Cookie cookie = new Cookie(SESSION_KEY, null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
+    }
+
+    @GetMapping("/signup")
+    public String getSignUpPage() {
+        return "signup";
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
+        authService.signUp(signUpRequest);
+        return ResponseEntity.created(URI.create("/login")).build();
     }
 }

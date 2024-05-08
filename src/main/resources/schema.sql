@@ -1,11 +1,11 @@
-CREATE TABLE reservation_time
+CREATE TABLE IF NOT EXISTS reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
     start_at TIME   NOT NULL,
     PRIMARY KEY (id)
 );
 
-CREATE TABLE theme
+CREATE TABLE IF NOT EXISTS theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation
+CREATE TABLE IF NOT EXISTS reservation
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
     date     DATE   NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id) -- 외래키 추가
 );
 
-CREATE TABLE member
+CREATE TABLE IF NOT EXISTS member
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE member
     PRIMARY KEY (id)
 );
 
-CREATE TABLE member_reservation
+CREATE TABLE IF NOT EXISTS member_reservation
 (
 
     id             BIGINT NOT NULL AUTO_INCREMENT,

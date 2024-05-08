@@ -23,6 +23,10 @@ function render(data) {
   data.forEach(item => {
     const row = tableBody.insertRow();
 
+    /*
+    TODO: [2단계] 관리자 기능 - 예약 목록 조회 API 호출 후 렌더링
+          response 명세에 맞춰 값 설정
+    */
     row.insertCell(0).textContent = item.id;            // 예약 id
     row.insertCell(1).textContent = item.name;          // 예약자명
     row.insertCell(2).textContent = item.theme.name;    // 테마명
@@ -169,8 +173,15 @@ function requestCreate(reservation) {
 
   return fetch(RESERVATION_API_ENDPOINT, requestOptions)
       .then(response => {
-        if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+        if (response.status !== 201) {
+          return response.json().then(errorResponse => {
+            throw new Error(JSON.stringify(errorResponse));
+          })
+        }
+        return response.json();
+      })
+      .catch(error => {
+        alert(error.message);
       });
 }
 

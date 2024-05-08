@@ -1,21 +1,32 @@
 package roomescape.member.dao;
 
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberSignUp;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Repository
 public class MemberDao implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
+    private final RowMapper<Member> rowMapper = (ResultSet resultSet, int rowNum) -> {
+        return new Member(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("email")
+        );
+    };
 
     private final ResultSetExtractor<Optional<Member>> optionalResultSetExtractor = (ResultSet resultSet) -> {
         if (resultSet.next()) {
@@ -38,18 +49,32 @@ public class MemberDao implements MemberRepository {
     }
 
     @Override
-    public Member save(Member member) {
+    public Member save(MemberSignUp memberSignUp) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", member.getName());
+                .addValue("name", memberSignUp.name())
+                .addValue("email", memberSignUp.email())
+                .addValue("password", memberSignUp.password());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Member(id, memberSignUp.name(), memberSignUp.email());
+    }
 
-        return new Member(id, member.getName());
+
+    @Override
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT id, name, email FROM member WHERE id = ?;";
+        return jdbcTemplate.query(sql, optionalResultSetExtractor, id);
     }
 
     @Override
     public Optional<Member> findBy(String email) {
         String sql = "SELECT id, name, email FROM member WHERE email = ?;";
         return jdbcTemplate.query(sql, optionalResultSetExtractor, email);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email FROM member;";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override

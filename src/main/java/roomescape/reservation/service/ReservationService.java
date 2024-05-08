@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.admin.dto.ReservationRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.MemberReservationRequest;
+import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -37,11 +37,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse createMemberReservation(MemberReservationRequest memberReservationRequest) {
-        ReservationTime reservationTime = findAndValidateReservationTime(memberReservationRequest.timeId());
-        Theme theme = findAndValidateTheme(memberReservationRequest.themeId());
+    public ReservationResponse createMemberReservation(Member member, ReservationRequest reservationRequest) {
+        ReservationTime reservationTime = findAndValidateReservationTime(reservationRequest.timeId());
+        Theme theme = findAndValidateTheme(reservationRequest.themeId());
 
-        LocalDate date = LocalDate.parse(memberReservationRequest.date());
+        LocalDate date = LocalDate.parse(reservationRequest.date());
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. 다른 예약 시간을 선택해주세요.");
         }
@@ -50,24 +50,25 @@ public class ReservationService {
             throw new IllegalArgumentException("예약이 다른 사람과 중복되었습니다. 다른 예약 시간을 선택해주세요.");
         }
 
-        Member member = memberRepository.save(new Member(memberReservationRequest.name()));
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
         long memberReservationId = reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
 
         return ReservationResponse.from(memberReservationId, reservation, member);
     }
 
-    public long create(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = findAndValidateReservationTime(reservationRequest.timeId());
-        Theme theme = findAndValidateTheme(reservationRequest.themeId());
+    public long create(MemberReservationRequest memberReservationRequest) {
+        ReservationTime reservationTime = findAndValidateReservationTime(memberReservationRequest.timeId());
+        Theme theme = findAndValidateTheme(memberReservationRequest.themeId());
 
-        LocalDate date = LocalDate.parse(reservationRequest.date());
+        LocalDate date = LocalDate.parse(memberReservationRequest.date());
 
         if (reservationRepository.existsBy(date, reservationTime.getId(), theme.getId())) {
             throw new IllegalArgumentException("예약이 중복되었습니다. 다른 예약 시간을 선택해주세요.");
         }
 
+        Member member = memberRepository.findById(memberReservationRequest.memberId()).orElseThrow();
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
+        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
         return reservation.getId();
     }
 

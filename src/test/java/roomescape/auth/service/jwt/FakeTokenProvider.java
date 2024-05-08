@@ -1,6 +1,6 @@
 package roomescape.auth.service.jwt;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -19,7 +19,7 @@ public class FakeTokenProvider implements TokenProvider {
     private String createRandomString() {
         byte[] array = new byte[7];
         new Random().nextBytes(array);
-        return new String(array, Charset.forName("UTF-8"));
+        return new String(array, StandardCharsets.UTF_8);
     }
 
     @Override

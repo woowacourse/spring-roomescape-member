@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.admin.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.MemberReservationRequest;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.ReservationTimeService;
 
@@ -50,8 +50,8 @@ public class AdminController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<Long> create(@RequestBody @Valid ReservationRequest reservationRequest) {
-        long id = reservationService.create(reservationRequest);
+    public ResponseEntity<Long> create(@RequestBody @Valid MemberReservationRequest memberReservationRequest) {
+        long id = reservationService.create(memberReservationRequest);
         return ResponseEntity.created(URI.create("/admin/reservations/" + id)).body(id);
     }
 
