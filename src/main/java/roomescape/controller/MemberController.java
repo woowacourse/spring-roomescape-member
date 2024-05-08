@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UserController {
+public class MemberController { // TODO: 네이밍 애매함
 
     @GetMapping("/reservation")
     public String reservationPage() {

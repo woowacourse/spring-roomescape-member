@@ -100,8 +100,8 @@ Content-Type: application/json
 - [ ] email을 로그인의 id로, password를 비밀번호로 사용합니다.
 
 ### 로그인
-- [ ] GET /login 요청 시 로그인 폼이 있는 페이지를 응답합니다.
-- [ ] templates/login.html 파일을 이용하세요.
+- [x] GET /login 요청 시 로그인 폼이 있는 페이지를 응답합니다.
+  - templates/login.html 파일을 이용하세요.
 - [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하세요.
 - [ ] 응답 Cookie에 "token"값으로 토큰이 포함되도록 하세요.
 
