@@ -8,3 +8,9 @@ spring:
   h2:
     console:
       enabled: true
+
+custom:
+  security:
+    password-encode:
+      iteration-count: 65536
+      key-length: 256

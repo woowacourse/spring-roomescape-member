@@ -4,3 +4,9 @@ spring:
 
   datasource:
     url: jdbc:h2:mem:test
+
+custom:
+  security:
+    password-encode:
+      iteration-count: 65536
+      key-length: 256
