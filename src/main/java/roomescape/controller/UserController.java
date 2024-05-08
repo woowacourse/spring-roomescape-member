@@ -6,13 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class UserController {
 
+    @GetMapping
+    public String getAdminPageByRedirect() {
+        return "index";
+    }
+
     @GetMapping("/reservation")
     public String getReservationPage() {
         return "/reservation";
     }
 
-    @GetMapping
-    public String getAdminPageByRedirect() {
-        return "index";
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "/login";
     }
 }
