@@ -111,9 +111,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateAndTimeId(LocalDate date, Long id) {
-        String sql = basicSelectQuery + "WHERE r.date = ? AND t.id = ?";
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, id);
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = basicSelectQuery + "WHERE r.date = ? AND t.id = ? AND th.id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);
 
         return !reservations.isEmpty();
     }
