@@ -24,6 +24,10 @@ public class Member {
         return name;
     }
 
+    public String getNameValue() {
+        return name.name();
+    }
+
     public String getEmail() {
         return email;
     }

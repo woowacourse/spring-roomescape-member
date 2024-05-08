@@ -1,11 +1,13 @@
 package roomescape.service;
 
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.persistence.MemberRepository;
 import roomescape.service.request.MemberLoginRequest;
+import roomescape.service.response.MemberResponse;
+import roomescape.service.response.Token;
 import roomescape.utils.JwtTokenProvider;
+import roomescape.web.exception.AuthenticationException;
 
 @Service
 public class MemberService {
@@ -24,6 +26,13 @@ public class MemberService {
         return new Token(jwtTokenProvider.createToken(findMember));
     }
 
-        return jwtTokenProvider.createToken(findMember);
+    public MemberResponse getMemberInfo(String token) {
+        String tokenSubject = jwtTokenProvider.getTokenSubject(token);
+        Long id = Long.parseLong(tokenSubject);
+
+        Member findMember = memberRepository.findById(id)
+                .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
+
+        return new MemberResponse(findMember.getNameValue());
     }
 }

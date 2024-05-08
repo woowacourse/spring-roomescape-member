@@ -33,4 +33,13 @@ public class MemberRepository {
             return Optional.empty();
         }
     }
+
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
