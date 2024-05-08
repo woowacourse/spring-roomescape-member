@@ -8,14 +8,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.theme.Theme;
 import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -102,7 +103,7 @@ class H2ReservationRepositoryTest {
         // when
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         long themeId = savedTheme.getId();
-        var reservations = reservationRepository.findByDateAndThemeId(tomorrow, themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(tomorrow, themeId);
 
         // then
         assertThat(reservations)
