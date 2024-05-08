@@ -8,25 +8,25 @@ public class MemberEmail {
 
     private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
         Pattern.compile("^[A-z0-9]+@[A-z0-9.-]+\\.[A-z]{2,6}$");
-    private final String email;
+    private final String value;
 
-    public MemberEmail(String email) {
-        validate(email);
-        this.email = email;
+    public MemberEmail(String value) {
+        validate(value);
+        this.value = value;
     }
 
-    private void validate(String email) {
-        if (StringUtils.isBlank(email) || !VALID_EMAIL_ADDRESS_REGEX.matcher(email).matches()) {
+    private void validate(String value) {
+        if (StringUtils.isBlank(value) || !VALID_EMAIL_ADDRESS_REGEX.matcher(value).matches()) {
             throw new IllegalArgumentException("이메일 형식이 아닙니다.");
         }
     }
 
-    public String getEmail() {
-        return email;
+    public String getValue() {
+        return value;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -34,11 +34,11 @@ public class MemberEmail {
             return false;
         }
         MemberEmail memberEmail = (MemberEmail) o;
-        return Objects.equals(email, memberEmail.email);
+        return Objects.equals(value, memberEmail.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(value);
     }
 }

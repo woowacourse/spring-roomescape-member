@@ -5,25 +5,25 @@ import java.util.Objects;
 
 public class MemberPassword {
 
-    private final String password;
+    private final String value;
 
-    public MemberPassword(String password) {
-        validate(password);
-        this.password = password;
+    public MemberPassword(String value) {
+        validate(value);
+        this.value = value;
     }
 
-    private void validate(final String password) {
-        if (StringUtils.isBlank(password)) {
+    private void validate(String value) {
+        if (StringUtils.isBlank(value)) {
             throw new IllegalArgumentException("비밀번호는 필수입니다.");
         }
     }
 
-    public String getPassword() {
-        return password;
+    public String getValue() {
+        return value;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -31,11 +31,11 @@ public class MemberPassword {
             return false;
         }
         MemberPassword that = (MemberPassword) o;
-        return Objects.equals(password, that.password);
+        return Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(password);
+        return Objects.hash(value);
     }
 }
