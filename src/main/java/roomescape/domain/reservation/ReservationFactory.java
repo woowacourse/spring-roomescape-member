@@ -12,7 +12,7 @@ public class ReservationFactory {
 
         if (reservation.isBeforeNow()) {
             throw new IllegalArgumentException(String.format("이미 지난 시간입니다. 입력한 예약 시간: %s %s",
-                    reservation.getDate(), reservation.getTime()));
+                    reservation.getDate().getStartAt(), reservation.getTime().getStartAt()));
         }
 
         return reservation;

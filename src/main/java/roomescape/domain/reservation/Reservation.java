@@ -10,15 +10,15 @@ import java.util.Objects;
 public class Reservation {
     private final Long id;
     private final Name name;
-    private final LocalDate date;
+    private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new Name(name), date, time, theme);
+        this(null, new Name(name), new ReservationDate(date), time, theme);
     }
 
-    public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
         this.id = id;
         this.name = name;
@@ -27,7 +27,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private void validate(Name name, LocalDate date, ReservationTime time, Theme theme) {
+    private void validate(Name name, ReservationDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
@@ -40,7 +40,7 @@ public class Reservation {
         }
     }
 
-    private void validateDate(LocalDate date) {
+    private void validateDate(ReservationDate date) {
         if (Objects.isNull(date)) {
             throw new InvalidDomainObjectException("date must not be null");
         }
@@ -74,7 +74,7 @@ public class Reservation {
         return name;
     }
 
-    public LocalDate getDate() {
+    public ReservationDate getDate() {
         return date;
     }
 
@@ -87,11 +87,11 @@ public class Reservation {
     }
 
     public LocalDateTime getDateTime() {
-        return LocalDateTime.of(this.date, this.time.getStartAt());
+        return LocalDateTime.of(this.date.getStartAt(), this.time.getStartAt());
     }
 
     public boolean isBeforeNow() {
-        LocalDateTime reservationDataTime = LocalDateTime.of(date, time.getStartAt());
+        LocalDateTime reservationDataTime = LocalDateTime.of(date.getStartAt(), time.getStartAt());
         LocalDateTime currentDateTime = LocalDateTime.now();
         return reservationDataTime.isBefore(currentDateTime);
     }

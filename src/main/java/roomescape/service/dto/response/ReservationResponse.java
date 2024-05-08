@@ -18,7 +18,7 @@ public record ReservationResponse(
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName().value(),
-                reservation.getDate(),
+                reservation.getDate().getStartAt(),
                 TimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme()));
     }

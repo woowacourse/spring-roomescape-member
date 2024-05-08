@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
@@ -53,7 +54,7 @@ class H2ReservationRepositoryTest {
         assertAll(
                 () -> assertThat(savedReservation.getId()).isNotNull(),
                 () -> assertThat(savedReservation.getName()).isEqualTo(new Name("피케이")),
-                () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.now().plusDays(1)),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(new ReservationDate(Fixture.tomorrow)),
                 () -> assertThat(savedReservation.getTime()).isEqualTo(savedReservationTime),
                 () -> assertThat(savedReservation.getTheme()).isEqualTo(savedTheme)
         );

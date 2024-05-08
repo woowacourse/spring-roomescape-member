@@ -7,9 +7,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.reservation.ReservationRepository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -36,7 +37,7 @@ public class H2ReservationRepository implements ReservationRepository {
         try {
             long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
                             "name", reservation.getName().value(),
-                            "date", reservation.getDate(),
+                            "date", reservation.getDate().getStartAt(),
                             "time_id", reservation.getTime().getId(),
                             "theme_id", reservation.getTheme().getId()))
                     .longValue();
@@ -101,7 +102,7 @@ public class H2ReservationRepository implements ReservationRepository {
             return new Reservation(
                     rs.getLong("reservation_id"),
                     new Name(rs.getString("name")),
-                    rs.getDate("date").toLocalDate(),
+                    new ReservationDate(rs.getDate("date").toLocalDate()),
                     new ReservationTime(
                             rs.getLong("time_id"),
                             rs.getTime("time_value").toLocalTime()),
