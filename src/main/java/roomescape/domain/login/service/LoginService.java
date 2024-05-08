@@ -22,4 +22,12 @@ public class LoginService {
         }
         return user.get();
     }
+
+    public User findUserByEmailAndPassword(String email, String password) {
+        Optional<User> user = userRepository.findByEmailAndPassword(email, password);
+        if (user.isEmpty()) {
+            throw new ClientIllegalArgumentException("이메일 또는 비밀번호를 잘못 입력했습니다.");
+        }
+        return user.get();
+    }
 }

@@ -49,4 +49,14 @@ public class UserRepositoryImpl implements UserRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<User> findByEmailAndPassword(String email, String password) {
+        String sql = "select * from escape_user where email = ? and password = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

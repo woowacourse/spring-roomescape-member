@@ -30,6 +30,9 @@ public class FakeUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByEmailAndPassword(String email, String password) {
-        return Optional.empty();
+        return users.values()
+                .stream()
+                .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
+                .findFirst();
     }
 }
