@@ -27,7 +27,7 @@ import roomescape.model.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationDaoImplTest {
+class JdbcReservationDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

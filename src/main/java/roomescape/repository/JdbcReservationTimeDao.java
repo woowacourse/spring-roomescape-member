@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
 
 @Repository
-public class ReservationTimeDaoImpl implements ReservationTimeDao {
+public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -28,7 +28,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
                     resultSet.getTime("start_at").toLocalTime()
             );
 
-    public ReservationTimeDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")

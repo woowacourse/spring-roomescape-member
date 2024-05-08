@@ -17,7 +17,7 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
 @Repository
-public class ReservationDaoImpl implements ReservationDao {
+public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -46,7 +46,7 @@ public class ReservationDaoImpl implements ReservationDao {
                     resultSet.getTime("start_at").toLocalTime()
             );
 
-    public ReservationDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")

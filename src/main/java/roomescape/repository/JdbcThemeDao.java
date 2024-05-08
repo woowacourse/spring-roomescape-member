@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
 
 @Repository
-public class ThemeDaoImpl implements ThemeDao {
+public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
@@ -28,7 +28,7 @@ public class ThemeDaoImpl implements ThemeDao {
                     resultSet.getString("thumbnail")
             );
 
-    public ThemeDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
