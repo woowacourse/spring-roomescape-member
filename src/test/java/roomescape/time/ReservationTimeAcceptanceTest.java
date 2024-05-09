@@ -18,6 +18,8 @@ import roomescape.time.dto.ReservationTimeRequestDto;
 @Sql(scripts = {"/schema.sql"})
 public class ReservationTimeAcceptanceTest {
 
+    private final ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("10:00");
+
     @LocalServerPort
     private int port;
 
@@ -28,29 +30,29 @@ public class ReservationTimeAcceptanceTest {
 
     @Test
     void save() {
-        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("10:00");
-
         RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(requestDto)
-                   .when().post("/times")
-                   .then().statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(requestDto)
+                .when().post("/times")
+                .then().statusCode(201);
     }
 
     @Test
     void findAll() {
         save();
+
         RestAssured.given()
-                   .when().get("/times")
-                   .then().statusCode(200)
-                   .body("size()", is(1));
+                .when().get("/times")
+                .then().statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test
     void delete() {
         save();
+
         RestAssured.given()
-                   .when().delete("/times/1")
-                   .then().statusCode(200);
+                .when().delete("/times/1")
+                .then().statusCode(200);
     }
 }

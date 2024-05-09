@@ -29,31 +29,36 @@ public class ThemeAcceptanceTest {
     @Test
     void findAll() {
         RestAssured.given()
-                   .when().get("/themes")
-                   .then().statusCode(200)
-                   .body("size()", is(0));
+                .when().get("/themes")
+                .then().statusCode(200)
+                .body("size()", is(0));
+
         save();
+
         RestAssured.given()
-                   .when().get("/themes")
-                   .then().statusCode(200)
-                   .body("size()", is(1));
+                .when().get("/themes")
+                .then().statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test
     void save() {
-        ThemeRequestDto requestDto = new ThemeRequestDto("정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        ThemeRequestDto requestDto = new ThemeRequestDto("정글 모험", "열대 정글의 심연을 탐험하세요.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
         RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(requestDto)
-                   .when().post("/themes")
-                   .then().statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(requestDto)
+                .when().post("/themes")
+                .then().statusCode(201);
     }
 
     @Test
     void delete() {
         save();
+
         RestAssured.given()
-                   .when().delete("/themes/1")
-                   .then().statusCode(200);
+                .when().delete("/themes/1")
+                .then().statusCode(200);
     }
 }

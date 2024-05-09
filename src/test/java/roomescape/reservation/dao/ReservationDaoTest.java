@@ -37,36 +37,47 @@ class ReservationDaoTest {
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     private final Reservation reservation = new Reservation(1L, "hotea", new ReservationDate(LocalDate.MAX.toString()), reservationTime, theme);
 
-    @Test
     @DisplayName("특정 예약을 생성할 수 있다.")
+    @Test
     void save() {
         reservationTimeDao.save(reservationTime);
         themeDao.save(theme);
+
         assertThat(reservationDao.save(reservation)).isEqualTo(1L);
     }
 
-    @Test
     @DisplayName("예약을 모두 조회할 수 있다.")
+    @Test
     void findAll() {
-        save();
+        reservationTimeDao.save(reservationTime);
+        themeDao.save(theme);
+        reservationDao.save(reservation);
+
         List<Reservation> reservationList = reservationDao.findAll();
+
         assertAll(
                 () -> assertThat(reservationList.get(0)).isEqualTo(reservation),
                 () -> assertThat(reservationList.size()).isEqualTo(1)
         );
     }
 
-    @Test
     @DisplayName("특정 예약을 삭제 할 수 있다.")
+    @Test
     void deleteById() {
-        save();
+        reservationTimeDao.save(reservationTime);
+        themeDao.save(theme);
+        reservationDao.save(reservation);
+
         assertThat(reservationDao.deleteById(1L)).isEqualTo(1);
     }
 
-    @Test
     @DisplayName("특정 날짜, 시간, 테마에 예약이 존재하는지 알 수 있다.")
+    @Test
     void checkExistByReservation() {
-        save();
+        reservationTimeDao.save(reservationTime);
+        themeDao.save(theme);
+        reservationDao.save(reservation);
+
         assertThat(reservationDao.checkExistByReservation(
                 reservation.getReservationDate().getDate(),
                 reservationTime.getId(),
@@ -74,19 +85,25 @@ class ReservationDaoTest {
         ).isTrue();
     }
 
-    @Test
     @DisplayName("특정 테마 예약이 존재하는지 알 수 있다.")
+    @Test
     void checkExistByReservationTheme() {
-        save();
+        reservationTimeDao.save(reservationTime);
+        themeDao.save(theme);
+        reservationDao.save(reservation);
+
         assertThat(reservationDao.checkExistReservationByTheme(
                 theme.getId())
         ).isTrue();
     }
 
-    @Test
     @DisplayName("특정 시간 예약이 존재하는지 알 수 있다.")
+    @Test
     void checkExistByReservationTime() {
-        save();
+        reservationTimeDao.save(reservationTime);
+        themeDao.save(theme);
+        reservationDao.save(reservation);
+
         assertThat(reservationDao.checkExistReservationByTime(
                 reservationTime.getId())
         ).isTrue();

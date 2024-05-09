@@ -31,19 +31,6 @@ public class ReservationAcceptanceTest {
     }
 
     @Test
-    void findAll() {
-        RestAssured.given()
-                .when().get("/reservations")
-                .then().statusCode(200)
-                .body("size()", is(0));
-        save();
-        RestAssured.given()
-                .when().get("/reservations")
-                .then().statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
     void save() {
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto("10:00");
         RestAssured.given()
@@ -74,9 +61,25 @@ public class ReservationAcceptanceTest {
     }
 
     @Test
+    void findAll() {
+        RestAssured.given()
+                .when().get("/reservations")
+                .then().statusCode(200)
+                .body("size()", is(0));
+
+        save();
+
+        RestAssured.given()
+                .when().get("/reservations")
+                .then().statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @Test
     void duplicateSave() {
         save();
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("브라운", LocalDate.MAX.toString(), 1, 1);
+
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(reservationRequestDto)
@@ -87,6 +90,7 @@ public class ReservationAcceptanceTest {
     @Test
     void delete() {
         save();
+
         RestAssured.given()
                 .when().delete("/reservations/1")
                 .then().statusCode(200);
