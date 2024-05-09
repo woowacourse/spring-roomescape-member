@@ -29,7 +29,7 @@ public class AdminReservationController {
         return ResponseEntity.ok(adminReservationService.findAllReservation());
     }
 
-    @PostMapping("/reservations")
+    @PostMapping("/admin/reservations")
     public ResponseEntity<Reservation> addReservation(@RequestBody ReservationAddRequest reservationAddRequest,
                                                       @AuthenticationPrincipal Member member) {
         reservationAddRequest = new ReservationAddRequest(reservationAddRequest.date(), reservationAddRequest.timeId(),

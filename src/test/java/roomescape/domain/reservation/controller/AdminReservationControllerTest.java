@@ -52,9 +52,9 @@ public class AdminReservationControllerTest extends ControllerTest {
                 .body("size()", is(1));
     }
 
-    @DisplayName("예약을 추가를 성공할 시, 201 ok를 응답한다,")
+    @DisplayName("어드민의 예약을 추가를 성공할 시, 201 ok를 응답한다,")
     @Test
-    void should_add_reservation_when_post_request_reservations() {
+    void should_add_reservation_when_post_request_admin_reservations() {
         LoginRequest loginRequest = new LoginRequest(EMAIL, PASSWORD);
         String cookie = RestAssured.given().log().all()
                 .body(loginRequest)
@@ -70,7 +70,7 @@ public class AdminReservationControllerTest extends ControllerTest {
                 .header("Cookie", cookie)
                 .contentType(ContentType.JSON)
                 .body(reservationAddRequest)
-                .when().post("/reservations")
+                .when().post("admin/reservations")
                 .then().log().all()
                 .statusCode(201);
     }
