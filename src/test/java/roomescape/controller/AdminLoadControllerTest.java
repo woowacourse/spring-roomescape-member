@@ -1,4 +1,4 @@
-package roomescape.configurer;
+package roomescape.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserConfigurerTest {
+class AdminLoadControllerTest {
     @LocalServerPort
     private int port;
 
@@ -18,29 +18,38 @@ class UserConfigurerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("인기 테마 페이지를 열 수 있다.")
+    @DisplayName("관리자 페이지를 열 수 있다.")
     @Test
-    void loadPopularThemePage() {
+    void loadAdminPage() {
         RestAssured.given().log().all()
-                .when().get("/")
+                .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @DisplayName("사용자 예약 페이지를 열 수 있다.")
+    @DisplayName("예약 페이지를 열 수 있다.")
     @Test
-    void loadUserReservationPage() {
+    void loadReservationPage() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @DisplayName("사용자 로그인 페이지를 열 수 있다.")
+    @DisplayName("시간 관리 페이지를 열 수 있다.")
     @Test
-    void loadLoginPage() {
+    void loadTimePage() {
         RestAssured.given().log().all()
-                .when().get("/login")
+                .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("테마 관리 페이지를 열 수 있다.")
+    @Test
+    void loadThemePage() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
     }
