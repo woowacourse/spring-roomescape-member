@@ -341,3 +341,11 @@ id : long
   - admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라 js 파일을 변경
     - AS-IS: /js/reservation-new.js
     - TO-BE: /js/reservation-with-member.js
+
+## 6단계 요구사항
+
+- [ ] 접근 권한 제어
+  - Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근 가능
+  - `HandlerInterceptor`를 활용하여 권한이 없는 경우 요청에 대한 거부 응답
+- [ ] 예약 목록 검색
+  - 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색 기능 추가
