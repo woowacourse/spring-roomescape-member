@@ -2,6 +2,7 @@ package roomescape.presentation.reservation;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.reservation.ReservationService;
 import roomescape.application.reservation.dto.request.AdminReservationRequest;
+import roomescape.application.reservation.dto.request.ReservationFilterRequest;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
 import roomescape.auth.LoginMemberId;
@@ -54,5 +56,15 @@ public class ReservationController {
     public ResponseEntity<Void> delete(@PathVariable long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/admin/reservations?memberId={memberId}&themeId={themeId}&startDate={startDate}&endDate={endDate}")
+    public ResponseEntity<List<ReservationResponse>> findByFilter(@PathVariable(required = true) long memberId,
+                                                                  @PathVariable(required = true) long themeId,
+                                                                  @PathVariable(required = true) LocalDate startDate,
+                                                                  @PathVariable(required = true) LocalDate endDate) {
+        ReservationFilterRequest request = new ReservationFilterRequest(memberId, themeId, startDate, endDate);
+        List<ReservationResponse> responses = service.findByFilter(request);
+        return ResponseEntity.ok(responses);
     }
 }

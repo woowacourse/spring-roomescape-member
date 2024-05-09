@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.application.reservation.dto.request.ReservationFilterRequest;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
 import roomescape.domain.member.Member;
@@ -48,6 +49,14 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
         return ReservationResponse.from(reservationRepository.create(reservation));
+    }
+
+    public List<ReservationResponse> findByFilter(ReservationFilterRequest request) {
+        return reservationRepository.findByMemberAndThemeBetweenDates(
+                request.memberId(), request.themeId(), request.startDate(), request.endDate())
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public List<ReservationResponse> findAll() {
