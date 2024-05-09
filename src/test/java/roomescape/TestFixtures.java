@@ -1,3 +1,4 @@
+/*
 package roomescape;
 
 import java.time.LocalTime;
@@ -75,7 +76,8 @@ public class TestFixtures {
             THEME_RESPONSE_1, THEME_RESPONSE_2, THEME_RESPONSE_3, THEME_RESPONSE_11, THEME_RESPONSE_4, THEME_RESPONSE_5,
             THEME_RESPONSE_6, THEME_RESPONSE_7, THEME_RESPONSE_8, THEME_RESPONSE_9
     );
-    /*public static final Reservation RESERVATION_1 = new Reservation(
+    */
+/*public static final Reservation RESERVATION_1 = new Reservation(
             1L, new Name("first"), LocalDate.now().plusDays(5), TIME_1, THEME_1
     );
     public static final Reservation RESERVATION_2 = new Reservation(
@@ -98,11 +100,15 @@ public class TestFixtures {
     );
     public static final Reservation PAST_RESERVATION_3 = new Reservation(
             5L, new Name("fifth"), LocalDate.now().minusDays(6), TIME_3, THEME_2
-    );*/
-    /*public static final ReservationRequest PAST_RESERVATION_REQUEST = new ReservationRequest("past", LocalDate.now().minusYears(1).toString(), 2L, 3L);
+    );*//*
+
+    */
+/*public static final ReservationRequest PAST_RESERVATION_REQUEST = new ReservationRequest("past", LocalDate.now().minusYears(1).toString(), 2L, 3L);
     public static final ReservationRequest RESERVATION_REQUEST_2 = new ReservationRequest("second", LocalDate.now().plusDays(6).toString(), 2L, 2L);
     public static final ReservationRequest RESERVATION_REQUEST_3 = new ReservationRequest("third", LocalDate.now().plusDays(7).toString(), 2L, 3L);
     public static final ReservationResponse RESERVATION_RESPONSE_1 = ReservationResponse.from(RESERVATION_1);
     public static final ReservationResponse RESERVATION_RESPONSE_2 = ReservationResponse.from(RESERVATION_2);
-    public static final ReservationResponse RESERVATION_RESPONSE_3 = ReservationResponse.from(RESERVATION_3);*/
+    public static final ReservationResponse RESERVATION_RESPONSE_3 = ReservationResponse.from(RESERVATION_3);*//*
+
 }
+*/
