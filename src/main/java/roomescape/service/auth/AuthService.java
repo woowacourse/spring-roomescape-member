@@ -1,10 +1,10 @@
 package roomescape.service.auth;
 
 import org.springframework.stereotype.Service;
+import roomescape.controller.dto.request.LoginRequest;
 import roomescape.domain.member.Member;
-import roomescape.dto.request.LoginRequest;
-import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.member.MemberService;
+import roomescape.util.infrastructure.JwtTokenProvider;
 
 @Service
 public class AuthService {

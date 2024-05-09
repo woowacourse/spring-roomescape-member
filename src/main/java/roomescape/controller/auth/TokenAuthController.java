@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.configuration.AuthenticationPrincipal;
+import roomescape.controller.dto.request.LoginRequest;
+import roomescape.controller.dto.response.MemberResponse;
 import roomescape.domain.member.Member;
-import roomescape.dto.request.LoginRequest;
-import roomescape.dto.response.MemberResponse;
 import roomescape.service.auth.AuthService;
+import roomescape.util.configuration.AuthenticationPrincipal;
 
 @RestController
 public class TokenAuthController {

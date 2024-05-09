@@ -1,4 +1,4 @@
-package roomescape.dao.member;
+package roomescape.repository.member;
 
 import java.util.Optional;
 import javax.sql.DataSource;

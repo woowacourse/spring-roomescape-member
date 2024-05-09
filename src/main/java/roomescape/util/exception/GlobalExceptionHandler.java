@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.util.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;

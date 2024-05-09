@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.configuration.AuthenticationPrincipal;
+import roomescape.controller.dto.request.ReservationSaveRequest;
+import roomescape.controller.dto.response.ReservationDeleteResponse;
+import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.controller.dto.response.SelectableTimeResponse;
 import roomescape.domain.member.Member;
-import roomescape.dto.request.ReservationSaveRequest;
-import roomescape.dto.response.ReservationDeleteResponse;
-import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.service.roomescape.ReservationService;
+import roomescape.util.configuration.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/reservations")

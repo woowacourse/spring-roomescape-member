@@ -2,10 +2,10 @@ package roomescape.service.member;
 
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.dao.member.MemberDao;
+import roomescape.controller.dto.request.SignupRequest;
+import roomescape.controller.dto.response.SignupResponse;
 import roomescape.domain.member.Member;
-import roomescape.dto.request.SignupRequest;
-import roomescape.dto.response.SignupResponse;
+import roomescape.repository.member.MemberDao;
 
 @Service
 public class MemberService {

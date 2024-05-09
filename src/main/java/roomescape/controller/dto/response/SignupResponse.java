@@ -1,4 +1,4 @@
-package roomescape.dto.response;
+package roomescape.controller.dto.response;
 
 public record SignupResponse(
         String name,

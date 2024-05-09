@@ -1,4 +1,4 @@
-package roomescape.dto.request;
+package roomescape.controller.dto.request;
 
 import java.time.LocalDate;
 import roomescape.domain.member.MemberName;

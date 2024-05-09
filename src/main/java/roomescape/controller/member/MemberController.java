@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.request.SignupRequest;
-import roomescape.dto.response.SignupResponse;
+import roomescape.controller.dto.request.SignupRequest;
+import roomescape.controller.dto.response.SignupResponse;
 import roomescape.service.member.MemberService;
 
 @RestController
