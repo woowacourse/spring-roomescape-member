@@ -25,6 +25,7 @@
     - 사용자는 이름, 이메일, 비밀번호를 가진다.
     - 이메일과 비밀번호를 이용해 로그인 한다.
 - [x] 로그인된 사용자 정보 조회 기능 추가
+- [ ] 사용자 개념이 적용된 API로 수정
 
 # API 명세
 
@@ -65,15 +66,17 @@
 ### Request
 
 > POST /reservations HTTP/1.1
->
 > content-type: application/json
+> cookie:
+>
+token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+> host: localhost:8080
 
-```JSON
+```json
 {
-  "date": "2023-08-05",
-  "name": "브라운",
-  "timeId": 1,
-  "themeId": 1
+  "date": "2024-03-01",
+  "themeId": 1,
+  "timeId": 1
 }
 ```
 
@@ -83,6 +86,46 @@
 >
 > Content-Type: application/json
 > Location: /reservations/{id}
+
+```JSON
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2023-08-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail": "썸네일"
+  }
+}
+```
+
+## 관리자 예약 추가 API
+
+### Request
+
+> POST /admin/reservations HTTP/1.1
+> content-type: application/json
+> cookie:
+>
+token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+> host: localhost:8080
+
+```json
+{
+  "date": "2024-03-01",
+  "themeId": 1,
+  "timeId": 1,
+  "memberId": 1
+}
+```
+
+### Response
 
 ```JSON
 {
