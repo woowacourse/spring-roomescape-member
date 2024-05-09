@@ -33,11 +33,13 @@ import roomescape.service.JwtGenerator;
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 public class ReservationControllerTest {
 
-    private static final JwtGenerator JWT_GENERATOR = new JwtGenerator();
     private static final LoginMember DEFAULT_LOGIN_MEMBER = new LoginMember(1L, "name", "email@email.com");
+
     @LocalServerPort
     int port;
-    private String token;
+
+    @Autowired
+    private JwtGenerator JWT_GENERATOR;
     @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
@@ -46,6 +48,7 @@ public class ReservationControllerTest {
     private ThemeRepository themeRepository;
     private Theme defaultTheme = new Theme("theme1", "description", "thumbnail");
     private ReservationTime defaultTime = new ReservationTime(LocalTime.of(11, 30));
+    private String token;
 
     @BeforeEach
     void initData() {

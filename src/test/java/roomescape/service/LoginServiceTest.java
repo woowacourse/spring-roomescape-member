@@ -21,7 +21,7 @@ import roomescape.repository.MemberRepository;
 
 class LoginServiceTest {
 
-    private static final JwtGenerator JWT_GENERATOR = new JwtGenerator();
+    private static final JwtGenerator JWT_GENERATOR = new JwtGenerator("secretKey", 360000);
     private MemberRepository memberRepository;
     private LoginService loginService;
 
