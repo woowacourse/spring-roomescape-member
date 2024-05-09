@@ -26,10 +26,10 @@ import roomescape.service.request.MemberReservationRequest;
 @Sql(scripts = "/reset_test_data.sql")
 class ReservationIntegrationTest {
 
-    private String token;
-
     @LocalServerPort
     private int port;
+
+    private String token;
 
     @BeforeEach
     void setUp() {
