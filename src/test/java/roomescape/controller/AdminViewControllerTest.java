@@ -45,4 +45,13 @@ class AdminViewControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("시간 관리 페이지를 요청하면 200 OK를 반환한다.")
+    void timePageTest() {
+        RestAssured.given().log().all()
+                .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
