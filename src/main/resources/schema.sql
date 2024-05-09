@@ -35,3 +35,5 @@ CREATE TABLE reservation
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
+
+CREATE INDEX idx_member_theme_date ON reservation (member_id, theme_id, date);
