@@ -11,6 +11,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.PreviousTimeException;
 import roomescape.service.exception.ReservationDuplicatedException;
+import roomescape.service.exception.ReservationNotFoundException;
 import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.exception.TimeNotFoundException;
 
@@ -92,6 +93,15 @@ public class ReservationService {
     }
 
     public int deleteReservation(final Long id) {
-        return reservationRepository.delete(id);
+        final int deletedCount = reservationRepository.delete(id);
+        validateNotFound(deletedCount);
+
+        return deletedCount;
+    }
+
+    private void validateNotFound(final int deletedCount) {
+        if (deletedCount == 0) {
+            throw new ReservationNotFoundException("존재하지 않는 예약 입니다.");
+        }
     }
 }
