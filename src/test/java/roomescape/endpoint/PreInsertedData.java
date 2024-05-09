@@ -2,12 +2,13 @@ package roomescape.endpoint;
 
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.SiteUser;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class PreInsertedData {
+public class PreInsertedData { // 전부 final 붙이고 상수 네이밍으로 바꿔주기
 
     public static ReservationTime preInsertedReservationTime1 = new ReservationTime(
             1L,
@@ -39,5 +40,12 @@ public class PreInsertedData {
             LocalDate.parse("2024-05-01"),
             preInsertedReservationTime1,
             preInsertedTheme2
+    );
+
+    public static SiteUser preInsertedSiteUser = new SiteUser(
+            1L,
+            "산초",
+            "sancho@sancho.com",
+            "sancho"
     );
 }
