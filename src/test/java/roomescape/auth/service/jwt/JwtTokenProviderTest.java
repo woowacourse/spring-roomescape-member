@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.auth.service.TokenProvider;
 
+@DisplayName("JWT 제공 유틸 테스트")
 @SpringBootTest
 class JwtTokenProviderTest {
 
