@@ -70,7 +70,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
@@ -96,7 +95,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
@@ -113,6 +111,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN member AS m ON r.member_id = m.id
+                WHERE r.id = ?
                 """;
 
         try {
@@ -141,7 +140,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
@@ -158,6 +156,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN member AS m ON r.member_id = m.id
+                WHERE r.date = ? AND th.id = ?
                  """;
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }

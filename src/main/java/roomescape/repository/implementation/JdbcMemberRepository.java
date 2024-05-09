@@ -17,7 +17,7 @@ public class JdbcMemberRepository implements MemberRepository {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password_hash"),
+                    resultSet.getString("password"),
                     Role.valueOf(resultSet.getString("role"))
             );
 
