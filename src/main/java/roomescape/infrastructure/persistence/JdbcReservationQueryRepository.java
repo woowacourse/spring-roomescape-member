@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.persistence;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,8 +11,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.dto.AvailableTimeDto;
-import roomescape.infrastructure.rowmapper.ReservationRowMapper;
-import roomescape.infrastructure.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcReservationQueryRepository implements ReservationQueryRepository {

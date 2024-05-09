@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.persistence;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.infrastructure.rowmapper.ReservationTimeRowMapper;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
