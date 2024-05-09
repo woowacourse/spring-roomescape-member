@@ -1,3 +1,12 @@
+# 요구사항
+
+- [ ] 사용자 도메인 추가.
+- [ ] 로그인 기능 구현.
+  - [ ] GET /login 요청 시 로그인 폼이 있는 페이지를 응답.
+  - [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함.
+  - [ ] 응답 Cookie에 "token"값으로 토큰 포함.
+- [ ] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API 구현.
+
 # 기능 목록
 
 - [X] 기존 API 입력값 검증 기능
@@ -50,4 +59,18 @@ GET http://localhost:8080/available-reservation-times?
 
 ```http request
 GET http://localhost:8080/popular-themes
+```
+
+### 로그인
+
+```http request
+Request
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+"password": "password",
+"email": "admin@email.com"
+}
 ```
