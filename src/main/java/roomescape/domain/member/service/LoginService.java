@@ -27,8 +27,7 @@ public class LoginService {
         return jwtProvider.createAccessToken(id);
     }
 
-    public MemberResponse checkMember(String token) {
-        Long id = jwtProvider.parse(token);
+    public MemberResponse checkMember(Long id) {
         String name = memberDao.findNameById(id)
                 .orElseThrow(() -> new RoomEscapeException("[ERROR] 사용자를 찾을 수 없습니다."));
 

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.domain.member.dto.LoginRequest;
 import roomescape.domain.member.dto.MemberResponse;
 import roomescape.domain.member.service.LoginService;
-import roomescape.global.config.AuthenticationPrincipal;
+import roomescape.global.auth.AuthUser;
 
 @RestController
 @RequestMapping(("/login"))
@@ -34,8 +34,8 @@ public class MemberLoginRestController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> checkLogin(@AuthenticationPrincipal String token) {
-        MemberResponse response = loginService.checkMember(token);
+    public ResponseEntity<MemberResponse> checkLogin(AuthUser authUser) {
+        MemberResponse response = loginService.checkMember(authUser.id());
         return ResponseEntity.ok(response);
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.global.config;
+package roomescape.global.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,23 +8,23 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.member.service.LoginService;
 import roomescape.global.exception.RoomEscapeException;
+import roomescape.global.jwt.JwtProvider;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String TOKEN = "token";
 
-    private final LoginService loginService;
+    private final JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
+        return parameter.getParameterType().equals(AuthUser.class);
     }
 
     @Override
@@ -34,7 +34,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             //todo 응답코드 변경
             throw new RoomEscapeException("[ERROR] 잘못된 요청입니다.");
         }
-        return extractTokenFromCookie(request.getCookies());
+        String token = extractTokenFromCookie(request.getCookies());
+        Long id = jwtProvider.parse(token);
+        return new AuthUser(id);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
