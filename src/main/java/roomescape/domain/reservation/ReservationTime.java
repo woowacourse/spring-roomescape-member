@@ -22,10 +22,6 @@ public class ReservationTime {
     }
 
     private void validate(LocalTime startAt) {
-        validateStartAt(startAt);
-    }
-
-    private void validateStartAt(LocalTime startAt) {
         if (isNull(startAt)) {
             throw new InvalidDomainObjectException("startAt must not be null");
         }

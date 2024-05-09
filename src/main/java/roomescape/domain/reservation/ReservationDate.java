@@ -9,11 +9,16 @@ public class ReservationDate {
     private final LocalDate startDate;
 
     public ReservationDate(LocalDate startDate) {
+        validate(startDate);
+        this.startDate = startDate;
+    }
+
+    private static void validate(LocalDate startDate) {
         if (isNull(startDate)) {
             throw new IllegalArgumentException("start date must not be null");
         }
-        this.startDate = startDate;
     }
+
 
     public LocalDate getStartAt() {
         return startDate;

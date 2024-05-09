@@ -24,5 +24,4 @@ class ReservationTest {
         static final ReservationTime now = new ReservationTime(LocalTime.now());
         static final Theme theme = new Theme("테마", "테마 설명", "https://thumbnail.jpg");
     }
-
 }
