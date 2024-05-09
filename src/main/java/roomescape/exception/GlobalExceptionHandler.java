@@ -29,7 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                HttpStatusCode status, WebRequest request) {
         String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
-        log.error(errorMessage);
+        logErrorMessage(e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(errorMessage));
     }
@@ -39,11 +39,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                HttpStatusCode status, WebRequest request) {
         if (e.getCause() instanceof InvalidFormatException invalidFormatException) {
             String errorMessage = getMismatchedInputExceptionMessage(invalidFormatException);
-            log.error(errorMessage);
+            logErrorMessage(e);
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(errorMessage));
         }
-        log.error(e.getMessage());
+        logErrorMessage(e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getMessage()));
     }
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String errorMessage = getMethodArgumentTypeMismatchExceptionMessage(e);
-        log.error(errorMessage);
+        logErrorMessage(e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(errorMessage));
     }
@@ -73,36 +73,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ViolationException.class)
     public ResponseEntity<ErrorResponse> handleViolationException(ViolationException e) {
-        log.error(e.getMessage());
+        logErrorMessage(e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
-        log.error(e.getMessage());
+        logErrorMessage(e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(NotAuthenticatedException.class)
     public ResponseEntity<ErrorResponse> handleException(NotAuthenticatedException e) {
-        log.error(e.getMessage());
+        logErrorMessage(e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException e) {
-        log.error(e.getMessage());
+        logErrorMessage(e);
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse("DATA ACCESS ERROR"));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.error(e.getMessage());
+        logErrorMessage(e);
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse("SERVER ERROR"));
+    }
+
+    private void logErrorMessage(Exception e) {
+        log.error("[Exception] " + e.getClass() + " [Message] " + e.getMessage());
     }
 }
