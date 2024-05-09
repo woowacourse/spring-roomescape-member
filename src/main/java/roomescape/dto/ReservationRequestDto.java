@@ -2,12 +2,9 @@ package roomescape.dto;
 
 import java.time.LocalDate;
 
-public record ReservationRequestDto(String name, LocalDate date, Long timeId, Long themeId) {
+public record ReservationRequestDto(LocalDate date, Long timeId, Long themeId) {
 
     public ReservationRequestDto {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름을 입력하여야 합니다.");
-        }
         if (date == null) {
             throw new IllegalArgumentException("날짜를 입력하여야 합니다.");
         }

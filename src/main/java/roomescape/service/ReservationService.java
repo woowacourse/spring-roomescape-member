@@ -34,17 +34,17 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation insertReservation(ReservationRequestDto reservationRequestDto) {
+    public Reservation insertReservation(String name, ReservationRequestDto reservationRequestDto) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequestDto.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
         LocalDate date = reservationRequestDto.date();
         validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
         validateDuplicated(date, reservationRequestDto.timeId(), reservationRequestDto.themeId());
         Long id = reservationDao.insert(
-                reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationRequestDto.timeId(), reservationRequestDto.themeId());
+                name, reservationRequestDto.date().toString(), reservationRequestDto.timeId(), reservationRequestDto.themeId());
         ReservationTheme reservationTheme = reservationThemeDao.findById(reservationRequestDto.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        return new Reservation(id, reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationTime, reservationTheme);
+        return new Reservation(id, name, reservationRequestDto.date().toString(), reservationTime, reservationTheme);
     }
 
     private void validatePast(LocalDate localDate, LocalTime localTime) {

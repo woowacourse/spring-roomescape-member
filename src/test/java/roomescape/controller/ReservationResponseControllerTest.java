@@ -1,7 +1,5 @@
 package roomescape.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,8 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dto.LoginRequestDto;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -41,18 +41,25 @@ public class ReservationResponseControllerTest {
 
     @DisplayName("정상적인 예약 추가 요청 시 201으로 응답한다.")
     @Test
-    void insertTest() throws JsonProcessingException {
+    void insertTest() {
         ZoneId kst = ZoneId.of("Asia/Seoul");
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+
         params.put("date", LocalDate.now(kst).plusDays(2).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestJson = objectMapper.writeValueAsString(params);
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequestDto("email@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().statusCode(200)
+                .extract().header("Set-Cookie").split("=")[1];
 
-        RestAssured.given().contentType("application/json").body(requestJson).log().all()
+        RestAssured.given().contentType("application/json").body(params).log().all()
+                .cookie("token", accessToken)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -67,33 +74,26 @@ public class ReservationResponseControllerTest {
                 .statusCode(204);
     }
 
-    @DisplayName("이름이 입력되지 않으면 400으로 응답한다.")
-    @Test
-    void invalidNameTest() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "");
-        params.put("date", "2024-04-30");
-        params.put("timeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
     @DisplayName("날짜가 입력되지 않으면 400으로 응답한다.")
     @Test
     void invalidDateTest() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "test");
         params.put("date", "");
         params.put("timeId", 1);
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequestDto("email@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().statusCode(200)
+                .extract().header("Set-Cookie").split("=")[1];
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", accessToken)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -103,13 +103,22 @@ public class ReservationResponseControllerTest {
     @Test
     void invalidTimeIdTest() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "test");
         params.put("date", "2024-04-30");
         params.put("timeId", "시간 입력");
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequestDto("email@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().statusCode(200)
+                .extract().header("Set-Cookie").split("=")[1];
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", accessToken)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
