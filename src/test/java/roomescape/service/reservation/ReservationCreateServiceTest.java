@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -26,7 +27,8 @@ class ReservationCreateServiceTest {
         reservationCreateService = new ReservationCreateService(
                 new ReservationRepository(jdbcTemplate),
                 new ReservationTimeRepository(jdbcTemplate),
-                new ThemeRepository(jdbcTemplate)
+                new ThemeRepository(jdbcTemplate),
+                new MemberRepository(jdbcTemplate)
         );
     }
 
@@ -37,7 +39,7 @@ class ReservationCreateServiceTest {
                 LocalDate.now().plusDays(1L), 2L, 2L);
         Member member = new Member(1L, "capy", "test@naver.com", "1234");
 
-        assertThatCode(() -> reservationCreateService.createReservation(request, member))
+        assertThatCode(() -> reservationCreateService.createReservationByUser(request, member))
                 .doesNotThrowAnyException();
     }
 
@@ -48,7 +50,7 @@ class ReservationCreateServiceTest {
                 LocalDate.now().plusDays(1L), 1L, 1L);
         Member member = new Member("capy", "abc@gmail.com", "1234");
 
-        assertThatThrownBy(() -> reservationCreateService.createReservation(request, member))
+        assertThatThrownBy(() -> reservationCreateService.createReservationByUser(request, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간에 이미 예약된 테마입니다.");
     }
@@ -60,7 +62,7 @@ class ReservationCreateServiceTest {
                 LocalDate.now().minusDays(1L), 2L, 2L);
         Member member = new Member("capy", "abc@gmail.com", "1234");
 
-        assertThatThrownBy(() -> reservationCreateService.createReservation(request, member))
+        assertThatThrownBy(() -> reservationCreateService.createReservationByUser(request, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }

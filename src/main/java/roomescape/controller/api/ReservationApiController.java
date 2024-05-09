@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthenticatedMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
+import roomescape.service.dto.request.ReservationAdminSaveRequest;
 import roomescape.service.dto.request.ReservationSaveRequest;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.reservation.ReservationCreateService;
@@ -49,10 +50,18 @@ public class ReservationApiController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid ReservationSaveRequest request,
+    public ResponseEntity<ReservationResponse> addReservationByUser(@RequestBody @Valid ReservationSaveRequest request,
                                                               @AuthenticatedMember Member member) {
-        Reservation newReservation = reservationCreateService.createReservation(request, member);
+        Reservation newReservation = reservationCreateService.createReservationByUser(request, member);
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId()))
+                .body(new ReservationResponse(newReservation));
+    }
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> addReservationByAdmin(@RequestBody
+                                                                     @Valid ReservationAdminSaveRequest request) {
+        Reservation newReservation = reservationCreateService.createReservationByAdmin(request);
+        return ResponseEntity.created(URI.create("/admin/reservations/" + newReservation.getId()))
                 .body(new ReservationResponse(newReservation));
     }
 
