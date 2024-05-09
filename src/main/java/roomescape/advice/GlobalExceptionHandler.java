@@ -3,7 +3,7 @@ package roomescape.advice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.dto.ErrorResponse;
+import roomescape.advice.dto.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
