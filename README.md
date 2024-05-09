@@ -75,8 +75,7 @@
 
 - [x] GET /login 요청 시 로그인 폼이 있는 페이지 응답
 - [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
-
-- [ ] 응답 Cookie에 "token"값으로 토큰이 포함
+  - [x] 응답 Cookie에 "token"값으로 토큰이 포함
 
 - [ ] GET /login/check 사용자의 정보를 조회할 수 있다.
 - 
