@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.MemberResponse;
 import roomescape.repository.member.MemberRepository;
 
 import java.util.Optional;
@@ -17,10 +18,20 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public boolean validateMember(LoginRequest loginRequest) {
+    public Optional<MemberResponse> login(LoginRequest loginRequest) {
         Optional<Member> memberOptional = memberRepository.findByEmail(new Email(loginRequest.email()));
-        return memberOptional
-                .map(member -> member.isMatchPassword(loginRequest.password()))
-                .orElse(false);
+        if (memberOptional.isPresent() && memberOptional.get().isMatchPassword(loginRequest.password())) {
+            return Optional.of(new MemberResponse(memberOptional.get()));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<MemberResponse> findMemberByEmail(String email) {
+        Optional<Member> memberOptional = memberRepository.findByEmail(new Email(email));
+        if (memberOptional.isPresent()) {
+            Member findMember = memberOptional.get();
+            return Optional.of(new MemberResponse(findMember));
+        }
+        return Optional.empty();
     }
 }

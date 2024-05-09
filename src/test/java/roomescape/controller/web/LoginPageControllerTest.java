@@ -3,6 +3,7 @@ package roomescape.controller.web;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ class LoginPageControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("로그인 페이지를 응답한다.")
     @Test
+    @DisplayName("로그인 페이지를 응답한다.")
     void loginPageTest() {
         RestAssured.given().log().all()
                 .when().get("/login")
@@ -33,8 +34,8 @@ class LoginPageControllerTest {
                 .statusCode(HttpStatus.OK.value());
     }
 
-    @DisplayName("로그인 요청을 처리한다.")
     @Test
+    @DisplayName("로그인 요청을 처리한다.")
     void loginTest() {
         Member member = new Member(new Name("testA"), new Email("email@email.com"), "password");
 
@@ -53,5 +54,48 @@ class LoginPageControllerTest {
                 .extract().response();
 
         assertThat(response.getCookie("token")).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 유저의 로그인 요청을 처리한다.")
+    void loginFailTest() {
+        Member member = new Member(new Name("testA"), new Email("noExist@email.com"), "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("email", member.getEmail().getEmail());
+        params.put("password", member.getPassword());
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("로그인 조회 요청")
+    void loginCheckTest() {
+        Member member = new Member(new Name("testA"), new Email("email@email.com"), "password");
+
+        memberRepository.save(member);
+        Map<String, String> params = new HashMap<>();
+        params.put("email", member.getEmail().getEmail());
+        params.put("password", member.getPassword());
+
+        Response response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().response();
+
+        String token = response.getCookie("token");
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 }

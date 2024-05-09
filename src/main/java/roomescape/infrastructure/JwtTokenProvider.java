@@ -28,7 +28,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayLoad(String token) {
+    public String getPayload(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

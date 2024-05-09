@@ -2,20 +2,21 @@ package roomescape.controller.web;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.domain.Email;
+import org.springframework.web.bind.annotation.*;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.TokenRequest;
+import roomescape.dto.response.LoginCheckResponse;
+import roomescape.dto.response.MemberResponse;
+import roomescape.dto.response.TokenResponse;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
+import java.util.Optional;
+
 @Controller
-@RequestMapping("/login")
-public class LoginPageController {
+public class LoginPageController { // TODO Page 가 맞을까??
 
     private final AuthService authService;
     private final MemberService memberService;
@@ -25,19 +26,32 @@ public class LoginPageController {
         this.memberService = memberService;
     }
 
-    @GetMapping
+    @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
 
-    @PostMapping
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        boolean validated = memberService.validateMember(loginRequest);
-        if (validated) {
-            TokenRequest tokenRequest = new TokenRequest(new Email(loginRequest.email()));
-            Cookie cookie = new Cookie("token", authService.createToken(tokenRequest).token());
-            response.addCookie(cookie);
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        Optional<MemberResponse> optionalLoginResponse = memberService.login(loginRequest);
+        if (optionalLoginResponse.isEmpty()) {
+            return ResponseEntity.badRequest().build();
         }
-        // TODO 로그인 안되었을 때
+        MemberResponse memberResponse = optionalLoginResponse.get();
+        TokenRequest tokenRequest = new TokenRequest(memberResponse.email(), memberResponse.name());
+        TokenResponse tokenResponse = authService.createToken(tokenRequest);
+        response.addCookie(new Cookie("token", tokenResponse.token()));
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    @ResponseBody
+    public LoginCheckResponse loginCheck(@CookieValue String token) {
+        MemberResponse payload = authService.findPayloadByToken(token);
+        Optional<MemberResponse> optionalMemberResponse = memberService.findMemberByEmail(payload.email());
+        if (optionalMemberResponse.isEmpty()) {
+            return null; // TODO 조회하는 회원이 없는 경우 무엇을 반환하는게 좋을까??
+        }
+        return new LoginCheckResponse(optionalMemberResponse.get().name());
     }
 }

@@ -16,15 +16,4 @@ class MemberTest {
 
         assertThat(member.isMatchPassword(password)).isTrue();
     }
-
-    @Test
-    @DisplayName("id를 조회하면 email value를 가져온다.")
-    void getIdTest() {
-        String email = "admin@email.com";
-
-        Member member = new Member(new Name("userA"), new Email(email), "password");
-
-        assertThat(member.getId()).isEqualTo(email);
-    }
-
 }
