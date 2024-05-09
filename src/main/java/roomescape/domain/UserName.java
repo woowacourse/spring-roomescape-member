@@ -14,7 +14,7 @@ public class UserName {
     private final String userName;
 
     private void validate(String userName) {
-        if (userName.isBlank()) {
+        if (userName == null || userName.isBlank()) {
             throw new InvalidInputException("예약자명이 입력되지 않았습니다. 1글자 이상 20글자 이하로 입력해주세요.");
         }
         if (userName.length() > 20) {

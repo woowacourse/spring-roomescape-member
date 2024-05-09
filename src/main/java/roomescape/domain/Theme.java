@@ -23,13 +23,13 @@ public class Theme {
     }
 
     private void validate(String name, String description, String thumbnail) {
-        if (name.isBlank()) {
+        if (name == null || name.isBlank()) {
             throw new InvalidInputException("테마명이 입력되지 않았습니다.");
         }
-        if (description.isBlank()) {
+        if (description == null || description.isBlank()) {
             throw new InvalidInputException("테마 설명이 입력되지 않았습니다.");
         }
-        if (thumbnail.isBlank()) {
+        if (thumbnail == null || thumbnail.isBlank()) {
             throw new InvalidInputException("테마 이미지가 입력되지 않았습니다.");
         }
     }
