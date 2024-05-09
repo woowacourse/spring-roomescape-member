@@ -1,10 +1,10 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.provider.JwtTokenProvider;
 import roomescape.exception.InvalidPasswordException;
 import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberRequest;
 import roomescape.member.repository.MemberRepository;
 
 @Service
@@ -23,10 +23,10 @@ public class AuthService {
         return memberRepository.read(email);
     }
 
-    public String createToken(TokenRequest tokenRequest) {
-        Member member = memberRepository.read(tokenRequest.email());
+    public String createToken(MemberRequest memberRequest) {
+        Member member = memberRepository.read(memberRequest.email());
 
-        validatePassword(member.getPassword(), tokenRequest.password());
+        validatePassword(member.getPassword(), memberRequest.password());
 
         return jwtTokenProvider.createToken(member.getEmail());
     }
