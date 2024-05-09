@@ -21,6 +21,8 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
     String token = authService.createUser(request);
-    return ResponseEntity.ok().header(SET_COOKIE, "token=" + token).build();
+    return ResponseEntity.ok()
+        .header(SET_COOKIE, "token=" + token)
+        .build();
   }
 }
