@@ -52,12 +52,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findByReservationDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = "SELECT " +
-                "t.id, " +
-                "t.start_at, " +
-                "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
-                "WHERE r.date = ? AND r.theme_id = ?";
+        String sql = """
+                SELECT 
+                    t.id, 
+                    t.start_at,
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
 
         return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
     }

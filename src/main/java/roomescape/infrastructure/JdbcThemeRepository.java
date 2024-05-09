@@ -52,18 +52,21 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findMostReservedThemesWithinDays(int day, int limit) {
-        String sql = "SELECT "
-                + "    th.id AS theme_id, "
-                + "    th.name AS theme_name, "
-                + "    th.description AS theme_description, "
-                + "    th.thumbnail AS theme_thumbnail, "
-                + "    COUNT(r.id) AS total_reservations "
-                + "FROM theme AS th "
-                + "INNER JOIN reservation AS r ON r.theme_id = th.id "
-                + "WHERE r.date > ? "
-                + "GROUP BY th.id "
-                + "ORDER BY total_reservations DESC "
-                + "LIMIT ?";
+        String sql = """
+                SELECT 
+                    th.id AS theme_id, 
+                    th.name AS theme_name, 
+                    th.description AS theme_description, 
+                    th.thumbnail AS theme_thumbnail, 
+                    COUNT(r.id) AS total_reservations 
+                FROM theme AS th 
+                INNER JOIN reservation AS r ON r.theme_id = th.id 
+                WHERE r.date > ? 
+                GROUP BY th.id 
+                ORDER BY total_reservations DESC 
+                LIMIT ?
+                """;
+
         return jdbcTemplate.query(sql, themeRowMapper, LocalDate.now().minusDays(day), limit);
     }
 
