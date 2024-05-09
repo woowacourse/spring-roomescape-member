@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.dto.memberDto.MemberResponse;
+import roomescape.dto.member.MemberResponse;
 import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.MemberRepository;
 
@@ -23,7 +23,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member getMemberById(Long id) {
+    Member getMemberById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new ClientErrorExceptionWithLog(
                         "[ERROR] 존재하지 않는 사용자 입니다.",
@@ -31,7 +31,7 @@ public class MemberService {
                 ));
     }
 
-    public Member getMemberByEmail(String email) {
+    Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ClientErrorExceptionWithLog(
                         "[ERROR] 존재하지 않는 아이디(이메일) 입니다.",

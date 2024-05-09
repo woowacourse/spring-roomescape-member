@@ -1,4 +1,4 @@
-package roomescape.dto.reservationDto;
+package roomescape.dto.reservation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
@@ -6,9 +6,9 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
 import roomescape.domain.member.Member;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.memberDto.MemberResponse;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.member.MemberResponse;
 
 public record ReservationResponse(
         Long id,

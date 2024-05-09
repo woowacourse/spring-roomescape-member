@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.dto.theme;
 
 import java.util.Objects;
 import roomescape.domain.Theme.Theme;

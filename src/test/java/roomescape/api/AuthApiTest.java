@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.LoginCheckResponse;
-import roomescape.dto.LoginRequest;
+import roomescape.dto.login.LoginCheckResponse;
+import roomescape.dto.login.LoginRequest;
 
 @Sql("/member-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
