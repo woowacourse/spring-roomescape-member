@@ -7,7 +7,7 @@ import roomescape.time.dto.ReservationTimeResponseDto;
 
 import java.time.LocalDate;
 
-public record ReservationResponseDto(long id, MemberResponseDto memberResponseDto, LocalDate date,
+public record ReservationResponseDto(long id, MemberResponseDto member, LocalDate date,
                                      ReservationTimeResponseDto time,
                                      ThemeResponseDto theme) {
 
