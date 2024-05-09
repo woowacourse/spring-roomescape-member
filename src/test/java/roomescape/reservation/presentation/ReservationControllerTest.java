@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.auth.LoginMemberArgumentResolver;
 import roomescape.reservation.dto.ReservationAddRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -34,6 +36,9 @@ class ReservationControllerTest {
 
     @MockBean
     private ReservationService reservationService;
+
+    @MockBean
+    private LoginMemberArgumentResolver loginMemberArgumentResolver;
 
     @DisplayName("전체 예약 목록을 읽는 요청을 처리할 수 있다")
     @Test
@@ -55,6 +60,7 @@ class ReservationControllerTest {
         when(reservationService.saveReservation(reservationAddRequest)).thenReturn(mockResponse);
 
         mockMvc.perform(post("/reservations")
+                        .cookie(new MockCookie("token", "mock value"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reservationAddRequest)))
                 .andExpect(status().isCreated())

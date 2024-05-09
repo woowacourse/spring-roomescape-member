@@ -8,13 +8,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.auth.LoginMemberArgumentResolver;
 
 @WebMvcTest(AdminViewController.class)
 class AdminViewControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private LoginMemberArgumentResolver loginMemberArgumentResolver;
 
     @DisplayName("어드민 메인 페이지 요청을 처리할 수 있다")
     @Test
