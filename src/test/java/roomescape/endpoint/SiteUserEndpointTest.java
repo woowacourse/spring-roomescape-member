@@ -13,6 +13,7 @@ import roomescape.dto.LogInRequest;
 import roomescape.dto.ProfileNameResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.endpoint.PreInsertedData.preInsertedSiteUser;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -22,7 +23,9 @@ class SiteUserEndpointTest {
     @DisplayName("로그인")
     @Test
     void login_success() {
-        LogInRequest requestBody = new LogInRequest("sancho@sancho.com", "sancho");
+        String email = preInsertedSiteUser.getEmail();
+        String password = preInsertedSiteUser.getPassword();
+        LogInRequest requestBody = new LogInRequest(email, password);
 
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -38,7 +41,10 @@ class SiteUserEndpointTest {
     @DisplayName("로그인 후 프로필 이름 받아오기")
     @Test
     void loginCheck_success() { //todo: 테스트 최적화 & dinamicTest로 변경하기
-        LogInRequest requestBody = new LogInRequest("sancho@sancho.com", "sancho");
+        String name = preInsertedSiteUser.getName();
+        String email = preInsertedSiteUser.getEmail();
+        String password = preInsertedSiteUser.getPassword();
+        LogInRequest requestBody = new LogInRequest(email, password);
 
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -55,6 +61,6 @@ class SiteUserEndpointTest {
                 .extract().as(ProfileNameResponse.class);
 
         assertThat(token).isNotNull();
-        assertThat(response.name()).isEqualTo("산초");
+        assertThat(response.name()).isEqualTo(name);
     }
 }
