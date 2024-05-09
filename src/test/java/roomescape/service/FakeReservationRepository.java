@@ -1,3 +1,4 @@
+/*
 package roomescape.service;
 
 import java.time.LocalDate;
@@ -54,3 +55,4 @@ public class FakeReservationRepository implements ReservationRepository {
         fakeReservationDB.clear();
     }
 }
+*/

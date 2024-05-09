@@ -1,3 +1,4 @@
 delete from reservation;
 delete from reservation_time;
-delete from theme
+delete from user_table;
+delete from theme;

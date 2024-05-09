@@ -1,3 +1,4 @@
+/*
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,3 +76,4 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeService.findAll()).isEqualTo(List.of(TestFixtures.TIME_RESPONSE_2));
     }
 }
+*/

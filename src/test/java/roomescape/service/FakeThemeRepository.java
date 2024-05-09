@@ -1,3 +1,4 @@
+/*
 package roomescape.service;
 
 import java.util.HashMap;
@@ -39,3 +40,4 @@ public class FakeThemeRepository implements ThemeRepository {
         fakeThemeDB.clear();
     }
 }
+*/

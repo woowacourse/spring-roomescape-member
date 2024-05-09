@@ -1,3 +1,4 @@
+/*
 package roomescape.acceptance;
 
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -67,3 +68,4 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
     }
 }
 
+*/

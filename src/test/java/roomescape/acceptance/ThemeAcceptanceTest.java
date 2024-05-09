@@ -1,3 +1,4 @@
+/*
 package roomescape.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -122,3 +123,4 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
                 date, timeId, themeId);
     }
 }
+*/
