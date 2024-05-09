@@ -9,7 +9,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.member.Member;
 import roomescape.service.auth.AuthService;
 
 @Component
@@ -30,8 +29,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractTokenFromCookies(request.getCookies());
-        Member member = authService.findMemberByToken(token);
-        return new Member(member.getName(), member.getEmail(), member.getPassword());
+        return authService.findMemberByToken(token);
     }
 
     private String extractTokenFromCookies(final Cookie[] cookies) {
