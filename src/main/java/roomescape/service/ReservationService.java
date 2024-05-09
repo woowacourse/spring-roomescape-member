@@ -7,9 +7,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationFactory;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.persistence.ReservationRepository;
-import roomescape.persistence.ReservationTimeRepository;
-import roomescape.persistence.ThemeRepository;
+import roomescape.infrastructure.persistence.ReservationRepository;
+import roomescape.infrastructure.persistence.ReservationTimeRepository;
+import roomescape.infrastructure.persistence.ThemeRepository;
 import roomescape.service.request.ReservationRequest;
 import roomescape.service.response.ReservationResponse;
 

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.ReservationTime;
-import roomescape.persistence.ReservationTimeRepository;
+import roomescape.infrastructure.persistence.ReservationTimeRepository;
 import roomescape.service.request.ReservationRequest;
 import roomescape.support.IntegrationTestSupport;
 

@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
