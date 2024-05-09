@@ -22,6 +22,10 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dao.JdbcReservationDao;
 import roomescape.dao.JdbcReservationTimeDao;
 import roomescape.dao.JdbcThemeDao;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberEmail;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberPassword;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -109,11 +113,12 @@ class ReservationServiceTest {
             Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest givenRequest =
                     ReservationFixtures.createReservationCreateRequest(
-                            givenName, givenDate, reservationTime.getId(), theme.getId()
+                            givenDate, reservationTime.getId(), theme.getId()
                     );
 
             //when
-            ReservationResponse result = reservationService.add(givenRequest, now);
+            Member member = createMemberWithName(givenName);
+            ReservationResponse result = reservationService.add(member, givenRequest, now);
 
             //then
             assertAll(
@@ -131,9 +136,10 @@ class ReservationServiceTest {
             themeDao.create(ThemeFixtures.createDefaultTheme());
             long given = -1L;
             ReservationCreateRequest givenRequest = ReservationFixtures.createReservationCreateRequest(given, 1L);
+            Member member = createMemberWithName("daon");
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(givenRequest, now))
+            assertThatThrownBy(() -> reservationService.add(member, givenRequest, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -145,9 +151,10 @@ class ReservationServiceTest {
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:24"));
             long given = -1L;
             ReservationCreateRequest givenRequest = ReservationFixtures.createReservationCreateRequest(1L, given);
+            Member member = createMemberWithName("daon");
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(givenRequest, now))
+            assertThatThrownBy(() -> reservationService.add(member, givenRequest, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -162,10 +169,11 @@ class ReservationServiceTest {
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest(given, tomorrow.toString(), 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest(tomorrow.toString(), 1L, 1L);
+            Member member = createMemberWithName(given);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
+            assertThatThrownBy(() -> reservationService.add(member, request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -178,10 +186,11 @@ class ReservationServiceTest {
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", given, 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest(given, 1L, 1L);
+            Member member = createMemberWithName("daon");
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
+            assertThatThrownBy(() -> reservationService.add(member, request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -194,10 +203,11 @@ class ReservationServiceTest {
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", given, 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest(given, 1L, 1L);
+            Member member = createMemberWithName("daon");
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
+            assertThatThrownBy(() -> reservationService.add(member, request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -211,10 +221,11 @@ class ReservationServiceTest {
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", pastDay.toString(), 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest(pastDay.toString(), 1L, 1L);
+            Member member = createMemberWithName("daon");
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
+            assertThatThrownBy(() -> reservationService.add(member, request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -229,10 +240,11 @@ class ReservationServiceTest {
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime(pastTime.toString()));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", today.toString(), 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest(today.toString(), 1L, 1L);
+            Member member = createMemberWithName("daon");
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
+            assertThatThrownBy(() -> reservationService.add(member, request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -245,11 +257,12 @@ class ReservationServiceTest {
             LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            Member member = createMemberWithName("daon");
+            reservationService.add(member, request, now);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
+            assertThatThrownBy(() -> reservationService.add(member, request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -266,8 +279,9 @@ class ReservationServiceTest {
             LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            Member member = createMemberWithName("daon");
+            reservationService.add(member, request, now);
             long givenId = 1L;
 
             //when
@@ -287,8 +301,9 @@ class ReservationServiceTest {
             LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            Member member = createMemberWithName("daon");
+            reservationService.add(member, request, now);
             Long givenId = null;
 
             //when //then
@@ -305,13 +320,23 @@ class ReservationServiceTest {
             LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            Member member = createMemberWithName("daon");
+            reservationService.add(member, request, now);
             long givenId = -1L;
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
                     .isInstanceOf(IllegalArgumentException.class);
         }
+    }
+
+    private Member createMemberWithName(String name) {
+        return new Member(
+                1L,
+                new MemberName(name),
+                new MemberEmail("test@test.com"),
+                new MemberPassword("1234")
+        );
     }
 }

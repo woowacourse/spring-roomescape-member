@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -44,10 +45,10 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(ReservationCreateRequest request, LocalDateTime now) {
+    public ReservationResponse add(Member member, ReservationCreateRequest request, LocalDateTime now) {
         ReservationTime reservationTime = findReservationTimeBy(request.getTimeId());
         Theme theme = findThemeBy(request.getThemeId());
-        Reservation reservation = request.toDomain(reservationTime, theme);
+        Reservation reservation = request.toDomain(member, reservationTime, theme);
         reservation.validatePast(reservationTime, now);
         validateDuplicate(reservation);
         return ReservationResponse.from(reservationDao.create(reservation));

@@ -330,10 +330,10 @@ id : long
 
 ## 5단계 요구사항
 
-- [ ] 로그인 리팩터링
+- [x] 로그인 리팩터링
   - Cookie에 담긴 인증 정보를 이용하여 멤버 객체를 만드는 로직을 분리
   - HandlerMethodArgumentResolver을 활용
-- [ ] 사용자 예약 생성 기능 변경
+- [x] 사용자 예약 생성 기능 변경
   - 사용자가 예약 생성 시 로그인한 사용자 정보를 활용하도록 리팩터링
   - reservation.html, user-reservation.js 파일의 TODO 주석을 참고
 - [ ] 예약 생성 기능 변경 - 관리자

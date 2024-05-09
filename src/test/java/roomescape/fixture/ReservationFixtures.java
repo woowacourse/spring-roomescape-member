@@ -24,12 +24,11 @@ public class ReservationFixtures {
         return new Reservation(null, new ReservationName("default"), ReservationDate.from(date), time, theme);
     }
 
-    public static ReservationCreateRequest createReservationCreateRequest(String name, String date, long timeId,
-                                                                          long themeId) {
-        return ReservationCreateRequest.of(name, date, timeId, themeId);
+    public static ReservationCreateRequest createReservationCreateRequest(String date, long timeId, long themeId) {
+        return ReservationCreateRequest.of(date, timeId, themeId);
     }
 
     public static ReservationCreateRequest createReservationCreateRequest(long timeId, long themeId) {
-        return ReservationCreateRequest.of("default", "2024-04-02", timeId, themeId);
+        return ReservationCreateRequest.of("2024-04-02", timeId, themeId);
     }
 }
