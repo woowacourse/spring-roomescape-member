@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -42,7 +43,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest themeRequest) {
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid ThemeRequest themeRequest) {
         ThemeResponse themeResponse = themeService.addTheme(themeRequest);
 
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.id()))

@@ -1,6 +1,7 @@
 package roomescape.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import roomescape.domain.theme.Theme;
 
@@ -14,6 +15,7 @@ public record ThemeRequest(
         String description,
 
         @NotBlank(message = "테마 썸네일을 입력해주세요.")
+        @Pattern(regexp = "^(http|https)://.*", message = "url 형식이 유효하지 않습니다.")
         @Size(min = 1, max = 255, message = "테마 썸네일은 1자 이상 255자 이하로 입력해주세요.")
         String thumbnail
 ) {
