@@ -12,11 +12,11 @@ public class RoomescapeExceptionHandler {
         private static final boolean ERROR_STATUS = false;
         private final String message;
 
-        public ErrorResponse(Exception e) {
+        public ErrorResponse(final Exception e) {
             this.message = e.getMessage();
         }
 
-        public ErrorResponse(String message) {
+        public ErrorResponse(final String message) {
             this.message = message;
         }
 
@@ -38,6 +38,11 @@ public class RoomescapeExceptionHandler {
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleArgumentException(final IllegalArgumentException exception) {
         return ResponseEntity.badRequest()
+                .body(new ErrorResponse(exception));
+    }
+    @ExceptionHandler(value = AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(final AuthorizationException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(exception));
     }
 
