@@ -1,4 +1,4 @@
-package roomescape.web.dto;
+package roomescape.web.api.dto;
 
 import java.util.List;
 

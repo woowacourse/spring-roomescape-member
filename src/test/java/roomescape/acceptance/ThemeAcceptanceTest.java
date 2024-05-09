@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.web.dto.ThemeListResponse;
+import roomescape.web.api.dto.ThemeListResponse;
 
 import java.util.List;
 import java.util.Map;

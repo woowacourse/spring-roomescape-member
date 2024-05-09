@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import roomescape.web.dto.ReservationTimeListResponse;
+import roomescape.web.api.dto.ReservationTimeListResponse;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;

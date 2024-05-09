@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.request.ThemeRequest;
 import roomescape.service.dto.response.ThemeResponse;
-import roomescape.web.dto.ThemeListResponse;
+import roomescape.web.api.dto.ThemeListResponse;
 
 import java.net.URI;
 import java.util.List;
