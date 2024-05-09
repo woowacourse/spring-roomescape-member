@@ -12,9 +12,9 @@ import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.TimeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.response.ReservationTimeInfoResponse;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
-import roomescape.reservation.dto.response.ReservationTimeInfoResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -99,10 +99,10 @@ public class ReservationTimeDaoTest {
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         reservationDao.insert(new Reservation(
-                "브라운", LocalDate.of(2024, 4, 25), reservationTime1, theme
+                LocalDate.of(2024, 4, 25), reservationTime1, theme
         ));
         reservationDao.insert(new Reservation(
-                "브라운", LocalDate.of(2024, 4, 26), reservationTime1, theme
+                LocalDate.of(2024, 4, 26), reservationTime1, theme
         ));
 
         // when

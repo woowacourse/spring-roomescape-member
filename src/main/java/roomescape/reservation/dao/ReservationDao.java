@@ -19,7 +19,6 @@ public class ReservationDao {
 
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation.id"),
-            resultSet.getString("reservation.name"),
             resultSet.getDate("reservation.date").toLocalDate(),
             new ReservationTime(
                     resultSet.getLong("reservation_time.id"),
@@ -55,7 +54,6 @@ public class ReservationDao {
 
     public Reservation insert(final Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
@@ -63,7 +61,6 @@ public class ReservationDao {
 
         return new Reservation(
                 id,
-                reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()

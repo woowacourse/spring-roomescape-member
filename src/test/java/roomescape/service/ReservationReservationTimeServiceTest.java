@@ -7,16 +7,16 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.theme.dao.ThemeDao;
-import roomescape.reservation.dao.TimeDao;
-import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.Theme;
-import roomescape.reservation.dto.request.ReservationTimeRequest;
 import roomescape.global.exception.model.AssociatedDataExistsException;
 import roomescape.global.exception.model.DataDuplicateException;
+import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.dao.TimeDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.request.ReservationTimeRequest;
 import roomescape.reservation.service.ReservationTimeService;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -56,7 +56,7 @@ class ReservationReservationTimeServiceTest {
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when
-        reservationDao.insert(new Reservation("예약", LocalDate.now().plusDays(1L), reservationTime, theme));
+        reservationDao.insert(new Reservation(LocalDate.now().plusDays(1L), reservationTime, theme));
 
         // then
         assertThatThrownBy(() -> reservationTimeService.removeTimeById(reservationTime.getId()))

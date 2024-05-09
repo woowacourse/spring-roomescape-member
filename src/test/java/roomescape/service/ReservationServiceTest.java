@@ -7,15 +7,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.theme.dao.ThemeDao;
-import roomescape.reservation.dao.TimeDao;
-import roomescape.theme.domain.Theme;
-import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.global.exception.model.DataDuplicateException;
 import roomescape.global.exception.model.ValidateException;
+import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.dao.TimeDao;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.service.ReservationService;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,10 +44,10 @@ class ReservationServiceTest {
 
         // when & then
         reservationService.addReservation(
-                new ReservationRequest("예약", LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId()));
+                new ReservationRequest(LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId()));
 
         assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationRequest("예약", LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId())))
+                new ReservationRequest(LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId())))
                 .isInstanceOf(DataDuplicateException.class);
     }
 
@@ -61,7 +61,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationRequest("예약", beforeDate, reservationTime.getId(), theme.getId())))
+                new ReservationRequest(beforeDate, reservationTime.getId(), theme.getId())))
                 .isInstanceOf(ValidateException.class);
     }
 
@@ -75,7 +75,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationRequest("예약", beforeTime.toLocalDate(), reservationTime.getId(), theme.getId())))
+                new ReservationRequest(beforeTime.toLocalDate(), reservationTime.getId(), theme.getId())))
                 .isInstanceOf(ValidateException.class);
     }
 }

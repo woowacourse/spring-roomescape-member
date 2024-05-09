@@ -1,27 +1,24 @@
 package roomescape.reservation.domain;
 
-import io.micrometer.common.util.StringUtils;
-import roomescape.theme.domain.Theme;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.ValidateException;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 
 public class Reservation {
 
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime reservationTime, final Theme theme) {
-        this(null, name, date, reservationTime, theme);
+    public Reservation(final LocalDate date, final ReservationTime reservationTime, final Theme theme) {
+        this(null, date, reservationTime, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime reservationTime, final Theme theme) {
+    public Reservation(final Long id, final LocalDate date, final ReservationTime reservationTime, final Theme theme) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
@@ -30,7 +27,7 @@ public class Reservation {
     }
 
     private void validateBlank() {
-        if (StringUtils.isBlank(name) || date == null || reservationTime == null || theme == null) {
+        if (date == null || reservationTime == null || theme == null) {
             throw new ValidateException(ErrorType.RESERVATION_REQUEST_DATA_BLANK,
                     String.format("예약(Reservation) 생성에 유효하지 않은 값(null OR 공백)이 입력되었습니다. [values: %s]", this));
         }
@@ -38,10 +35,6 @@ public class Reservation {
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -60,7 +53,6 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", date=" + date +
                 ", time=" + reservationTime +
                 ", theme=" + theme +

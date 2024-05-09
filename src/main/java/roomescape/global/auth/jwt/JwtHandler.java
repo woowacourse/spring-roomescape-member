@@ -13,6 +13,7 @@ import roomescape.global.exception.model.UnauthorizedException;
 
 import java.util.Date;
 
+// TODO: Test 작성
 @Component
 public class JwtHandler {
     @Value("${security.jwt.token.secret-key}")

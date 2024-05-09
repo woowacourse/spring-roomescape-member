@@ -41,7 +41,6 @@ public class ReservationDaoTest {
         ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
         reservationDao.insert(new Reservation(
-                "브라운",
                 LocalDate.of(2024, 4, 25),
                 reservationTime,
                 theme
@@ -63,7 +62,6 @@ public class ReservationDaoTest {
 
         // when
         Reservation savedReservation = reservationDao.insert(new Reservation(
-                "브라운",
                 LocalDate.of(2024, 4, 25),
                 reservationTime,
                 theme

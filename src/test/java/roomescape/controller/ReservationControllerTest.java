@@ -12,10 +12,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.theme.dao.ThemeDao;
 import roomescape.reservation.dao.TimeDao;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
@@ -74,9 +74,9 @@ public class ReservationControllerTest {
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when
-        reservationDao.insert(new Reservation("예약자1", LocalDate.now(), reservationTime, theme));
-        reservationDao.insert(new Reservation("예약자2", LocalDate.now().plusDays(1), reservationTime, theme));
-        reservationDao.insert(new Reservation("예약자3", LocalDate.now().plusDays(2), reservationTime, theme));
+        reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme));
+        reservationDao.insert(new Reservation(LocalDate.now().plusDays(1), reservationTime, theme));
+        reservationDao.insert(new Reservation(LocalDate.now().plusDays(2), reservationTime, theme));
 
         // then
         RestAssured.given().log().all()
@@ -94,7 +94,7 @@ public class ReservationControllerTest {
         ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
-        Reservation reservation = reservationDao.insert(new Reservation("예약자1", LocalDate.now(), reservationTime, theme));
+        Reservation reservation = reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme));
 
         // when
         RestAssured.given().log().all()
@@ -117,9 +117,9 @@ public class ReservationControllerTest {
         ReservationTime reservationTime3 = timeDao.insert(new ReservationTime(LocalTime.of(18, 30)));
         Theme theme = themeDao.insert(new Theme("테마명1", "설명", "썸네일URL"));
 
-        reservationDao.insert(new Reservation("예약자1", today.plusDays(1), reservationTime1, theme));
-        reservationDao.insert(new Reservation("예약자1", today.plusDays(1), reservationTime2, theme));
-        reservationDao.insert(new Reservation("예약자1", today.plusDays(1), reservationTime3, theme));
+        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime1, theme));
+        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime2, theme));
+        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime3, theme));
 
         // when & then
         RestAssured.given().log().all()
@@ -146,17 +146,15 @@ public class ReservationControllerTest {
 
     private static Stream<Map<String, String>> requestValidateSource() {
         return Stream.of(
-                Map.of("name", "썬",
-                        "date", LocalDate.now().plusDays(1L).toString(),
+                Map.of("timeId", "1",
                         "themeId", "1"),
-                Map.of("name", " ",
-                        "date", LocalDate.now().plusDays(1L).toString(),
+                Map.of("date", LocalDate.now().plusDays(1L).toString(),
+                        "themeId", "1"),
+                Map.of("date", LocalDate.now().plusDays(1L).toString(),
+                        "timeId", "1"),
+                Map.of("date", LocalDate.now().plusDays(1L).toString(),
                         "timeId", "1",
-                        "themeId", "1"),
-                Map.of("name", "",
-                        "date", LocalDate.now().plusDays(1L).toString(),
-                        "timeId", " ",
-                        "themeId", "1")
+                        "themeId", " ")
         );
     }
 
@@ -164,7 +162,6 @@ public class ReservationControllerTest {
     @DisplayName("예약 생성 시, 정수 요청 데이터에 문자가 입력되어오면 400 에러를 발생한다.")
     void validateRequestDataFormat() {
         Map<String, String> invalidTypeRequestBody = Map.of(
-                "name", "썬",
                 "date", LocalDate.now().plusDays(1L).toString(),
                 "timeId", "1",
                 "themeId", "한글"
