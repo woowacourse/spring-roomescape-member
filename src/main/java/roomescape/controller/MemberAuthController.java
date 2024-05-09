@@ -51,8 +51,8 @@ public class MemberAuthController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/members")
-    public ResponseEntity<MemberWebResponse> save(@Valid @RequestBody MemberSignUpRequest request) {
+    @PostMapping("/signup")
+    public ResponseEntity<MemberWebResponse> signUp(@Valid @RequestBody MemberSignUpRequest request) {
         MemberAppResponse appResponse = memberAuthService.signUp(
             new MemberAppRequest(request.name(), request.email(), request.password()));
 

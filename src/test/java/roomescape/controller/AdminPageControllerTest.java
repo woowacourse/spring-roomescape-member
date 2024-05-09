@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(AdminController.class)
-class AdminControllerTest {
+@WebMvcTest(AdminPageController.class)
+class AdminPageControllerTest {
 
     @Autowired
     private MockMvc mvc;
