@@ -11,15 +11,13 @@ import roomescape.domain.member.Member;
 public record ReservationRequest(
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         Long timeId,
-        Long themeId,
-        Long memberId
+        Long themeId
 ) {
 
     public ReservationRequest {
         Objects.requireNonNull(date);
         Objects.requireNonNull(timeId);
         Objects.requireNonNull(themeId);
-        Objects.requireNonNull(memberId);
     }
 
     public Reservation toEntity(ReservationTime reservationTime, Theme theme, Member member) {
