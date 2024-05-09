@@ -26,7 +26,7 @@ public enum ErrorType {
     MEMBER_RESERVATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 ID에 대응되는 사용자 예약이 없습니다."),
 
     RESERVATION_NOT_DELETED(HttpStatus.BAD_REQUEST, "예약이 존재하여 삭제할 수 없습니다."),
-    NOT_A_RESERVATION_MEMBER(HttpStatus.UNAUTHORIZED, "예약자가 아닙니다."),
+    NOT_A_RESERVATION_MEMBER(HttpStatus.FORBIDDEN, "예약자가 아닙니다."),
 
     UNEXPECTED_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 관리자에게 문의하세요.");
 

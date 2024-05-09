@@ -41,12 +41,12 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> create(@LoginUser Member member,
                                                       @RequestBody @Valid ReservationRequest reservationRequest) {
         ReservationResponse response = reservationService.createMemberReservation(member, reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
+        return ResponseEntity.created(URI.create("/reservations/" + response.memberReservationId())).body(response);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") @Min(1) long reservationMemberId) {
-        reservationService.deleteMemberReservation(reservationMemberId);
+    public ResponseEntity<Void> delete(@LoginUser Member member, @PathVariable("id") @Min(1) long reservationMemberId) {
+        reservationService.deleteMemberReservation(member, reservationMemberId);
         return ResponseEntity.noContent().build();
     }
 

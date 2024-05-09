@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import static roomescape.fixture.MemberFixture.getMemberChoco;
+import static roomescape.fixture.MemberFixture.getMemberClover;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -90,7 +91,7 @@ class ReservationControllerTest extends ControllerTest {
         //when &then
         RestAssured.given().log().all()
                 .cookie("token", token)
-                .when().delete("/reservations/" + reservationResponse.id())
+                .when().delete("/reservations/" + reservationResponse.memberReservationId())
                 .then().log().all()
                 .statusCode(204);
     }
@@ -105,23 +106,6 @@ class ReservationControllerTest extends ControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
-
-//    @DisplayName("존재하지 않은 예약 삭제 시 400를 반환한다.")
-//    @Test
-//    void reservationNotFound() {
-//        //given
-//        long invalidId = reservationService.findMemberReservations().size() + 10;
-//        memberService.create(
-//                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
-//        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
-//
-//        //when & then
-//        RestAssured.given().log().all()
-//                .cookie("token", token)
-//                .when().delete("/reservations/" + invalidId)
-//                .then().log().all()
-//                .statusCode(400);
-//    }
 
     @DisplayName("예약 생성 시, 잘못된 날짜 형식에 대해 400을 반환한다.")
     @ParameterizedTest
@@ -174,5 +158,34 @@ class ReservationControllerTest extends ControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("타인의 예약 삭제 시, 403을 반환한다.")
+    @Test
+    void deleteNotDifferentReservation() {
+        //given
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeRequest("12:00"));
+        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+        memberService.create(
+                new SignUpRequest(getMemberClover().getName(), getMemberClover().getEmail(), "qwer"));
+
+        String token = tokenProvider.createAccessToken(getMemberClover().getEmail());
+        ReservationResponse reservationResponse = reservationService.createMemberReservation(
+                getMemberChoco(),
+                new ReservationRequest(
+                        LocalDate.now().toString(),
+                        reservationTimeResponse.id(),
+                        themeResponse.id())
+        );
+
+        //when &then
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().delete("/reservations/" + reservationResponse.memberReservationId())
+                .then().log().all()
+                .statusCode(403);
     }
 }

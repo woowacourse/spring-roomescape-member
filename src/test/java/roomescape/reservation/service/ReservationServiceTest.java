@@ -119,7 +119,7 @@ class ReservationServiceTest {
         long id = memberReservationRepository.save(member, reservation);
 
         //when
-        reservationService.deleteMemberReservation(id);
+        reservationService.deleteMemberReservation(member, id);
 
         //then
         assertThat(memberReservationRepository.findAll()).hasSize(0);

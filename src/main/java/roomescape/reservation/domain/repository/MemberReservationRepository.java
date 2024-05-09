@@ -2,6 +2,7 @@ package roomescape.reservation.domain.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.MemberReservation;
 import roomescape.reservation.domain.Reservation;
@@ -12,6 +13,8 @@ public interface MemberReservationRepository {
     long save(Member member, Reservation reservation);
 
     List<MemberReservation> findAll();
+
+    Optional<MemberReservation> findById(long id);
 
     void deleteById(long memberReservationId);
 

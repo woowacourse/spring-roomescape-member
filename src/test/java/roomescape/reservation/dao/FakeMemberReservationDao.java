@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.MemberReservation;
@@ -26,6 +27,11 @@ public class FakeMemberReservationDao implements MemberReservationRepository {
     public List<MemberReservation> findAll() {
         return memberReservations.values().stream()
                 .toList();
+    }
+
+    @Override
+    public Optional<MemberReservation> findById(long id) {
+        return Optional.of(memberReservations.get(id));
     }
 
     @Override

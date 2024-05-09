@@ -16,6 +16,7 @@ import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.service.TokenProvider;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.controller.dto.MemberReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
@@ -100,7 +101,8 @@ class AdminControllerTest extends ControllerTest {
                 new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
 
-        long id = reservationService.create(new MemberReservationRequest(
+        ReservationResponse reservationResponse = reservationService.createMemberReservation(
+                new MemberReservationRequest(
                         memberId,
                         LocalDate.now().toString(),
                         reservationTimeResponse.id(),
@@ -110,7 +112,7 @@ class AdminControllerTest extends ControllerTest {
 
         //when &then
         RestAssured.given().log().all()
-                .when().delete("/admin/reservations/" + id)
+                .when().delete("/admin/reservations/" + reservationResponse.memberReservationId())
                 .then().log().all()
                 .statusCode(204);
     }

@@ -11,6 +11,7 @@ import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.MemberReservationRequest;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.domain.MemberReservation;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -63,7 +64,8 @@ public class ReservationService {
         return ReservationResponse.from(memberReservationId, reservation, member);
     }
 
-    public long create(MemberReservationRequest memberReservationRequest) {
+    @Transactional
+    public ReservationResponse createMemberReservation(MemberReservationRequest memberReservationRequest) {
         ReservationTime reservationTime = getReservationTime(memberReservationRequest.timeId());
         Theme theme = getTheme(memberReservationRequest.themeId());
 
@@ -75,11 +77,15 @@ public class ReservationService {
 
         Member member = memberRepository.findById(memberReservationRequest.memberId()).orElseThrow();
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
-        memberReservationRepository.save(member, reservation);
-        return reservation.getId();
+        long memberReservationId = memberReservationRepository.save(member, reservation);
+        return ReservationResponse.from(memberReservationId, reservation, member);
     }
 
-    public void deleteMemberReservation(long memberReservationId) {
+    public void deleteMemberReservation(Member member, long memberReservationId) {
+        MemberReservation memberReservation = getMemberReservation(memberReservationId);
+        if (!memberReservation.isMember(member)) {
+            throw new BusinessException(ErrorType.NOT_A_RESERVATION_MEMBER);
+        }
         memberReservationRepository.deleteById(memberReservationId);
     }
 
@@ -97,5 +103,10 @@ public class ReservationService {
     private Theme getTheme(long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(ErrorType.THEME_NOT_FOUND));
+    }
+
+    private MemberReservation getMemberReservation(long memberReservationId) {
+        return memberReservationRepository.findById(memberReservationId)
+                .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_RESERVATION_NOT_FOUND));
     }
 }
