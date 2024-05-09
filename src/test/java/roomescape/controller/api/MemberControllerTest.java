@@ -6,14 +6,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import roomescape.controller.BaseControllerTest;
+import roomescape.IntegrationTest;
 import roomescape.domain.member.Role;
 import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.MemberResponse;
 
-class MemberControllerTest extends BaseControllerTest {
+class MemberControllerTest extends IntegrationTest {
 
     void signup() {
         SignupRequest request = new SignupRequest("new@gmail.com", "password", "new");

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,7 @@ import roomescape.security.JwtTokenProvider;
         "classpath:truncate.sql",
         "classpath:integration-data.sql"
 })
-public abstract class BaseControllerTest {
+public abstract class IntegrationTest {
 
     protected static final Long ADMIN_ID = 1L;
 

@@ -12,10 +12,10 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
-import roomescape.controller.BaseControllerTest;
+import roomescape.IntegrationTest;
 import roomescape.dto.request.LoginRequest;
 
-class AuthControllerTest extends BaseControllerTest {
+class AuthControllerTest extends IntegrationTest {
 
     private static final String ADMIN_EMAIL = "admin@gmail.com";
     private static final String ADMIN_PASSWORD = "abc123";

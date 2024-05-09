@@ -1,15 +1,13 @@
 package roomescape.controller.api;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.BaseControllerTest;
+import roomescape.IntegrationTest;
 
-class AdminControllerTest extends BaseControllerTest {
+class AdminControllerTest extends IntegrationTest {
 
     @Test
     @DisplayName("어드민이 예약을 추가한다.")
