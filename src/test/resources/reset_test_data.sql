@@ -13,6 +13,11 @@ FROM theme;
 ALTER TABLE theme
     ALTER COLUMN id RESTART;
 
+DELETE
+FROM member;
+ALTER TABLE member
+    ALTER COLUMN id RESTART;
+
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),
        ('11:00'),
@@ -30,3 +35,6 @@ INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('브라운', '2023-05-04', 1, 1),
        ('엘라', '2023-05-04', 2, 1),
        ('릴리', '2023-08-05', 2, 1);
+
+INSERT INTO member (name, email, password)
+VALUES ('어드민', 'admin@test.com', 'password');

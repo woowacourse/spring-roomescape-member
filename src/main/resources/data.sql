@@ -66,3 +66,6 @@ VALUES ('브라운', DATEADD(DAY, -7, current_date), 1, 8),
        ('브라운', DATEADD(DAY, -1, current_date), 1, 3),
        ('엘라', DATEADD(DAY, -1, current_date), 3, 3),
        ('릴리', DATEADD(DAY, -1, current_date), 2, 1);
+
+INSERT INTO member (name, email, password)
+VALUES ('어드민', 'admin@test.com', 'password');

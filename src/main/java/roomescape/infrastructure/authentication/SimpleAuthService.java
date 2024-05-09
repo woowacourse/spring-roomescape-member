@@ -3,29 +3,29 @@ package roomescape.infrastructure.authentication;
 import java.util.Base64;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
-import roomescape.domain.Name;
+import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.service.auth.AuthService;
 import roomescape.service.auth.AuthenticatedProfile;
 import roomescape.service.auth.AuthenticationRequest;
 import roomescape.service.auth.UnauthorizedException;
 
-// TODO: 정리 필요
 @Component
 class SimpleAuthService implements AuthService {
 
-    private final Member admin = new Member(
-            new Name("admin"),
-            "admin@woowacourse.com",
-            "password"
-    );
+    private final MemberRepository memberRepository;
+
+    public SimpleAuthService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     @Override
     public String authenticate(AuthenticationRequest request) {
-        String email = admin.getEmail();
-        String password = admin.getPassword();
-        AuthenticationRequest onlyMemberData = new AuthenticationRequest(email, password);
+        Boolean verified = memberRepository.findByEmail(request.email())
+                .map(Member::getPassword)
+                .map(memberPassword -> memberPassword.equals(request.password()))
+                .orElse(false);
 
-        if (!request.equals(onlyMemberData)) {
+        if (!verified) {
             throw new IllegalArgumentException("올바른 인증 정보를 입력해주세요.");
         }
 
@@ -45,15 +45,11 @@ class SimpleAuthService implements AuthService {
         if (decodedStrings.length < 2) {
             throw new UnauthorizedException();
         }
-        String email = admin.getEmail();
-        String password = admin.getPassword();
-        AuthenticationRequest onlyMemberData = new AuthenticationRequest(email, password);
-        AuthenticationRequest target = new AuthenticationRequest(decodedStrings[0], decodedStrings[1]);
 
-        if (onlyMemberData.equals(target)) {
-            return new AuthenticatedProfile(admin.getName().value());
-        }
+        Member member = memberRepository
+                .findByEmail(decodedStrings[0])
+                .orElseThrow(UnauthorizedException::new);
 
-        throw new UnauthorizedException();
+        return new AuthenticatedProfile(member.getName().value());
     }
 }

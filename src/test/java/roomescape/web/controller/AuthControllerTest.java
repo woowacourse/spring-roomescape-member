@@ -19,7 +19,7 @@ class AuthControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("로그인을 한다.")
     void login() {
-        String email = "admin@woowacourse.com";
+        String email = "admin@test.com";
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
 
@@ -44,7 +44,6 @@ class AuthControllerTest extends IntegrationTestSupport {
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
 
-        // TODO: check status code
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -57,7 +56,7 @@ class AuthControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("로그인 아이디는 이메일 형식이어야 한다.")
     void validateEmailFormat() {
-        String invalidEmailFormat = "admin#woowacourse.com";
+        String invalidEmailFormat = "admin#test.com";
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(invalidEmailFormat, password);
 
@@ -88,7 +87,7 @@ class AuthControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("비밀번호는 필수이다.")
     void validatePassword() {
-        String email = "admin@woowacourse.com";
+        String email = "admin@test.com";
         AuthenticationRequest request = new AuthenticationRequest(email, null);
 
         RestAssured.given().log().all()
@@ -103,7 +102,7 @@ class AuthControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("사용자 정보를 조회한다.")
     void check() {
-        String email = "admin@woowacourse.com";
+        String email = "admin@test.com";
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
 
@@ -119,7 +118,7 @@ class AuthControllerTest extends IntegrationTestSupport {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
-                .body("name", is("admin"));
+                .body("name", is("어드민"));
     }
 
     @Test
