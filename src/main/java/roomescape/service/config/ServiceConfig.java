@@ -9,8 +9,8 @@ import roomescape.domain.ReservationFactory;
 class ServiceConfig {
 
     @Bean
-    public ReservationFactory reservationFactory() {
-        return new ReservationFactory(clock());
+    public ReservationFactory reservationFactory(Clock clock) {
+        return new ReservationFactory(clock);
     }
 
     @Bean

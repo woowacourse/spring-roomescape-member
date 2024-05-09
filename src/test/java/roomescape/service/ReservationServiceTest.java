@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,24 +93,12 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("당일이지만, 이전 시간이면 예약을 생성할 수 없다.")
     void withPreviousTime() {
         ReservationTime previousTime = new ReservationTime(previousTime());
-        ReservationTime Time = reservationTimeRepository.save(previousTime);
-        LocalDate date = LocalDate.now();
-        ReservationRequest request = new ReservationRequest("엘라", date.toString(), Time.getId(), 1L);
+        ReservationTime time = reservationTimeRepository.save(previousTime);
+        LocalDate date = today();
+        ReservationRequest request = new ReservationRequest("엘라", date.toString(), time.getId(), 1L);
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("이미 지나간 시간에 대한 예약을 할 수 없습니다.");
-    }
-
-    private LocalDate nextDate() {
-        return LocalDate.now().plusDays(1);
-    }
-
-    private LocalDate previousDate() {
-        return LocalDate.now().minusDays(1);
-    }
-
-    private LocalTime previousTime() {
-        return LocalTime.now().minusHours(1);
     }
 }

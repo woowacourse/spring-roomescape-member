@@ -33,7 +33,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("예약을 생성한다.")
     void create() {
-        LocalDate date = LocalDate.now().plusDays(1);
+        LocalDate date = nextDate();
         ReservationRequest request = new ReservationRequest("브라운", date.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
@@ -102,7 +102,8 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 시간 ID는 0보다 커야 한다.")
     void nonPositiveTimeId() {
         Long invalidTimeId = 0L;
-        ReservationRequest invalidRequest = new ReservationRequest("name", "2023-12-23", invalidTimeId, 1L);
+        String date = nextDate().toString();
+        ReservationRequest invalidRequest = new ReservationRequest("name", date, invalidTimeId, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -123,7 +124,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 시간 ID에 대한 예약을 할 수 없다.")
     void nonExistTimeId() {
         Long nonExistTimeId = 4L;
-        String date = "2023-12-23";
+        String date = nextDate().toString();
         ReservationRequest invalidRequest = new ReservationRequest("name", date, nonExistTimeId, 1L);
 
         RestAssured.given().log().all()
@@ -151,7 +152,8 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 테마 ID는 0보다 커야 한다.")
     void nonPositiveThemeId() {
         Long invalidThemeId = 0L;
-        ReservationRequest invalidRequest = new ReservationRequest("name", "2023-12-23", 1L, invalidThemeId);
+        String date = nextDate().toString();
+        ReservationRequest invalidRequest = new ReservationRequest("name", date, 1L, invalidThemeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -171,7 +173,8 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 테마 ID에 대한 예약을 할 수 없다.")
     void nonExistThemeId() {
         Long nonExistThemeId = 3L;
-        ReservationRequest invalidRequest = new ReservationRequest("name", "2023-12-23", 1L, nonExistThemeId);
+        String date = nextDate().toString();
+        ReservationRequest invalidRequest = new ReservationRequest("name", date, 1L, nonExistThemeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -185,7 +188,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("중복 예약을 생성할 수 없다.")
     void duplicated() {
-        String date = LocalDate.now().plusDays(1).toString();
+        String date = nextDate().toString();
         ReservationRequest request = new ReservationRequest("브라운", date, 1L, 1L);
 
         RestAssured.given().log().all()
@@ -207,7 +210,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("지나간 시간에 대한 예약을 할 수 없다.")
     void previousDateTime() {
-        String previousDate = LocalDate.now().minusDays(1).toString();
+        String previousDate = previousDate().toString();
         ReservationRequest request = new ReservationRequest("브라운", previousDate, 1L, 1L);
 
         RestAssured.given().log().all()

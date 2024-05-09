@@ -4,16 +4,21 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Clock;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ReservationFactoryTest {
 
-    private final Clock clock = Clock.systemDefaultZone();
+    private static final Clock clock;
 
-    @Test
+    static {
+        Instant instant = Instant.parse("2024-05-01T00:30:00.00Z");
+        clock = Clock.fixed(instant, ZoneId.of("UTC"));
+    }
+
     @DisplayName("생성 테스트")
     void create() {
         assertThatCode(() -> new ReservationFactory(clock))
@@ -25,8 +30,8 @@ class ReservationFactoryTest {
     void reserve() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String name = "아톰";
-        String date = LocalDate.now().plusDays(1).toString();
-        ReservationTime time = new ReservationTime(LocalTime.now());
+        String date = "2024-05-02";
+        ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
         assertThatCode(() -> reservationFactory.create(name, date, time, theme))
@@ -38,8 +43,8 @@ class ReservationFactoryTest {
     void previousDate() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String name = "아톰";
-        String previousDate = "1999-12-23";
-        ReservationTime time = new ReservationTime(LocalTime.now());
+        String previousDate = "2024-04-30";
+        ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
         assertThatThrownBy(() -> reservationFactory.create(name, previousDate, time, theme))
@@ -52,8 +57,8 @@ class ReservationFactoryTest {
     void previousTime() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String name = "아톰";
-        String todayDate = LocalDate.now().toString();
-        ReservationTime previousTime = new ReservationTime(LocalTime.now().minusHours(1));
+        String todayDate = "2024-05-01";
+        ReservationTime previousTime = new ReservationTime(LocalTime.parse("00:29"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
         assertThatThrownBy(() -> reservationFactory.create(name, todayDate, previousTime, theme))
