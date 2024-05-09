@@ -16,7 +16,8 @@ public class MemberRowMapper implements RowMapper<Member> {
                     resultSet.getLong("id"),
                     resultSet.getString("user_name"),
                     resultSet.getString("user_email"),
-                    resultSet.getString("user_password")
+                    resultSet.getString("user_password"),
+                    resultSet.getString("role")
             );
         } catch (SQLException exception) {
             throw new RuntimeException("[ERROR] member 테이블 접근 오류", exception);

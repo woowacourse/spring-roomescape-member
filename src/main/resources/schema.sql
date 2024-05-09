@@ -32,5 +32,6 @@ CREATE TABLE member
     user_name VARCHAR(255) NOT NULL,
     user_email VARCHAR(255) NOT NULL,
     user_password VARCHAR(255) NOT NULL,
+    role ENUM('USER', 'ADMIN') NOT NULL,
     PRIMARY KEY (id)
 )
