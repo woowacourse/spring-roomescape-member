@@ -1,7 +1,5 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.LoginCheckResponse;
+import roomescape.dto.LoginMember;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.TokenDto;
 import roomescape.service.AuthService;
@@ -40,21 +39,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-
-        LoginCheckResponse loginCheckResponse = authService.findUserNameByToken(new TokenDto(token));
-        return ResponseEntity.ok(loginCheckResponse);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
+    public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
+        LoginCheckResponse response = new LoginCheckResponse(loginMember.name());
+        return ResponseEntity.ok(response);
     }
 }
