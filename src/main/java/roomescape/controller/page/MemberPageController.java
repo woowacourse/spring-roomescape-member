@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping
-public class UserPageController {
+public class MemberPageController {
 
     @GetMapping
     public String popularThemePage() {
@@ -23,4 +23,8 @@ public class UserPageController {
         return "login";
     }
 
+    @GetMapping("/signup")
+    public String userSignupPage() {
+        return "signup";
+    }
 }

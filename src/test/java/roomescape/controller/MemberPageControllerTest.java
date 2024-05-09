@@ -44,4 +44,11 @@ class MemberPageControllerTest {
                 .when().get("/login")
                 .then().statusCode(200);
     }
+    @Test
+    @DisplayName("/signup 요청시 회원가입 페이지를 응답한다.")
+    void response_user_signup_page() {
+        RestAssured.given().contentType(ContentType.JSON)
+                .when().get("/signup")
+                .then().statusCode(200);
+    }
 }
