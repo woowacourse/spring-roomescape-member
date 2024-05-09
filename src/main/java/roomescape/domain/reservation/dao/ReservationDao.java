@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.domain.ReservationMember;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservation.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
@@ -21,7 +22,7 @@ public class ReservationDao {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("id"),
-                    resultSet.getString("reservation_name"),
+                    new ReservationMember(resultSet.getLong("member_id"), resultSet.getString("member_name")),
                     resultSet.getObject("date", LocalDate.class),
                     new ReservationTime(resultSet.getLong("time_id"), resultSet.getObject("start_at", LocalTime.class)),
                     new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
@@ -37,9 +38,9 @@ public class ReservationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"});
-            ps.setString(1, reservation.getName());
+            ps.setLong(1, reservation.getMemberId());
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservation.getReservationTimeId());
             ps.setLong(4, reservation.getThemeId());
@@ -53,7 +54,8 @@ public class ReservationDao {
         List<Reservation> reservations = jdbcTemplate.query("""
                 SELECT
                 r.id,
-                r.name as reservation_name,
+                m.id as member_id,
+                m.name as member_name,
                 r.date,
                 t.id as time_id,
                 t.start_at,
@@ -64,6 +66,7 @@ public class ReservationDao {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
                 """, reservationRowMapper);
         return Collections.unmodifiableList(reservations);
     }

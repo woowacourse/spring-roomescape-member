@@ -47,7 +47,7 @@ class TimeRestControllerTest {
     @Test
     void deleteById_existReservation_bad_request() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "테니", "2024-04-30", 1);
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id) VALUES (?, ?, ?)", 1L, "2024-04-30", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

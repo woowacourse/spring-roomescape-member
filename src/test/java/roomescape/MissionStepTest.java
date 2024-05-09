@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.ReservationFixture.TOKEN;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MissionStepTest {
@@ -109,6 +110,7 @@ public class MissionStepTest {
 
         String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -157,7 +159,7 @@ public class MissionStepTest {
     void 오단계() {
         String reservationTimeId = createReservationTime();
         String themeId = createTheme();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2024-08-05", reservationTimeId, themeId);
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1", "2024-08-05", reservationTimeId, themeId);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -176,7 +178,7 @@ public class MissionStepTest {
         String themeId = createTheme();
 
         Map<String, String> params = Map.of(
-                "name", "브라운",
+                "name", "1",
                 "date", "2024-08-05",
                 "timeId", reservationTimeId,
                 "themeId", themeId
@@ -184,6 +186,7 @@ public class MissionStepTest {
 
         String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -236,7 +239,7 @@ public class MissionStepTest {
         String themeId = createTheme();
 
         Map<String, Object> reservation = Map.of(
-                "name", "브라운",
+                "name", "1",
                 "date", "2024-08-05",
                 "timeId", reservationTimeId,
                 "themeId", themeId
@@ -244,6 +247,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", TOKEN)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()

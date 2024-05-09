@@ -30,7 +30,7 @@ public class ReservationRestController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveRequest request,
                                                                  AuthUser authUser) {
-        ReservationResponse response = reservationService.saveReservation(request, authUser.name());
+        ReservationResponse response = reservationService.saveReservation(request, authUser);
 
         URI location = URI.create("/reservations/" + response.id());
         return ResponseEntity.created(location).body(response);

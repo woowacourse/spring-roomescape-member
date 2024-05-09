@@ -35,6 +35,6 @@ public class MemberLoginRestController {
 
     @GetMapping("/check")
     public ResponseEntity<MemberResponse> checkLogin(AuthUser authUser) {
-        return ResponseEntity.ok(new MemberResponse(authUser.name()));
+        return ResponseEntity.ok(new MemberResponse(authUser.id(), authUser.name()));
     }
 }

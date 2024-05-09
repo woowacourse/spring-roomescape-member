@@ -3,7 +3,6 @@ package roomescape.domain.member.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.dao.MemberDao;
 import roomescape.domain.member.dto.LoginRequest;
-import roomescape.domain.member.mapper.MemberMapper;
 import roomescape.global.auth.AuthUser;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.global.jwt.JwtProvider;
@@ -11,7 +10,6 @@ import roomescape.global.jwt.JwtProvider;
 @Service
 public class LoginService {
 
-    private final MemberMapper memberMapper = new MemberMapper();
     private final MemberDao memberDao;
     private final JwtProvider jwtProvider;
 

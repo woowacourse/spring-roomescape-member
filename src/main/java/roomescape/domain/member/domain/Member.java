@@ -27,4 +27,8 @@ public class Member {
             throw new RoomEscapeException(e.getMessage());
         }
     }
+
+    public String getName() {
+        return name;
+    }
 }

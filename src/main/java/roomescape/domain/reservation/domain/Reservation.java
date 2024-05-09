@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.domain;
 
+import roomescape.domain.member.domain.ReservationMember;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.global.exception.RoomEscapeException;
 
@@ -8,23 +9,23 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final ReservationMember member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        checkNull(name, date, time, theme);
+    public Reservation(Long id, ReservationMember member, LocalDate date, ReservationTime time, Theme theme) {
+        checkNull(member, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void checkNull(String name, LocalDate date, ReservationTime time, Theme theme) {
+    private void checkNull(ReservationMember member, LocalDate date, ReservationTime time, Theme theme) {
         try {
-            Objects.requireNonNull(name, "[ERROR] 이름은 null일 수 없습니다.");
+            Objects.requireNonNull(member, "[ERROR] 멤버는 null일 수 없습니다.");
             Objects.requireNonNull(date, "[ERROR] 날짜는 null일 수 없습니다.");
             Objects.requireNonNull(time, "[ERROR] 시간은 null일 수 없습니다.");
             Objects.requireNonNull(theme, "[ERROR] 테마는 null일 수 없습니다.");
@@ -37,8 +38,12 @@ public class Reservation {
         return id;
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public String getName() {
-        return name;
+        return member.getName();
     }
 
     public LocalDate getDate() {

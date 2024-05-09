@@ -2,7 +2,7 @@ package roomescape.dto;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
 import roomescape.domain.reservation.dto.ReservationSaveRequest;
 import roomescape.global.exception.RoomEscapeException;
 
@@ -13,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ReservationSaveRequestTest {
 
     @ParameterizedTest
-    @CsvSource(value = {",2024-05-04", "name,"})
-    public void reservation_NullNameOrDate_ThrownException(String name, LocalDate date) {
+    @NullSource
+    public void reservation_NullDate_ThrownException(LocalDate date) {
         assertThatThrownBy(() -> new ReservationSaveRequest(date, 0L, 0L))
                 .isInstanceOf(RoomEscapeException.class);
     }
