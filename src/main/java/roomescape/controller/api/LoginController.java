@@ -43,7 +43,7 @@ public class LoginController {
 
     private String extractTokenFromRequestCookie(final HttpServletRequest request) {
         for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(TOKEN_FIELD)) {
+            if (TOKEN_FIELD.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
