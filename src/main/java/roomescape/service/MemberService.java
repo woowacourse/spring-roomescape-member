@@ -4,11 +4,15 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.user.Member;
 import roomescape.exception.NotExistEmailException;
+import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
 import roomescape.service.dto.output.MemberCreateOutput;
 import roomescape.service.dto.output.MemberLoginOutput;
+import roomescape.service.dto.output.TokenLoginOutput;
 import roomescape.service.util.TokenProvider;
+
+import static roomescape.exception.ExceptionDomainType.MEMBER;
 
 @Service
 public class MemberService {
@@ -33,4 +37,9 @@ public class MemberService {
         }
         return new MemberLoginOutput(tokenProvider.generateToken(member));
     }
+    public TokenLoginOutput loginToken(final String token){
+        final long id = tokenProvider.decodeToken(token).getId();
+        final Member member = memberDao.findById(id)
+                .orElseThrow(() -> new NotExistException(MEMBER,id));
+        return TokenLoginOutput.toOutput(member);    }
 }
