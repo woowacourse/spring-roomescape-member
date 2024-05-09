@@ -18,9 +18,10 @@ import roomescape.security.JwtTokenProvider;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public abstract class BaseControllerTest {
 
+    protected static final Long ADMIN_ID = 1L;
+
     @LocalServerPort
     private int port;
-
 
     @SpyBean
     protected JwtTokenProvider jwtTokenProvider;

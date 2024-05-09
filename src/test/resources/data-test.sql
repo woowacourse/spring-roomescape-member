@@ -1,5 +1,5 @@
 INSERT INTO member (id, email, password, name, role)
-VALUES (1, 'alstn@gmail.com', '$2a$10$MbGFqyn/u4wfggRK7HAqDeC1y9s1mESgmXV3b7e7GZT5u1JkIT.gm', '어드민',
+VALUES (1, 'admin@gmail.com', '$2a$10$MbGFqyn/u4wfggRK7HAqDeC1y9s1mESgmXV3b7e7GZT5u1JkIT.gm', '어드민',
         'ADMIN'), -- password: abc123
        (2, 'alstn1@gmail.com', '1234', '구름1', 'USER'),
        (3, 'alstn2@gmail.com', '1234', '구름2', 'USER'),
