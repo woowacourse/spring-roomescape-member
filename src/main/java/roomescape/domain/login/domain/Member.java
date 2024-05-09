@@ -1,16 +1,17 @@
 package roomescape.domain.login.domain;
 
 import java.util.Objects;
+import roomescape.domain.reservation.domain.Name;
 
 public class Member {
     private Long id;
-    private final String name;
+    private final Name name;
     private final String email;
     private final String password;
 
     public Member(Long id, String name, String email, String password) {
         this.id = id;
-        this.name = name;
+        this.name = new Name(name);
         this.email = email;
         this.password = password;
     }
@@ -20,7 +21,7 @@ public class Member {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getEmail() {

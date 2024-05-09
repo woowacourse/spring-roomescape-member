@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.domain.login.domain.Member;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservationTime.domain.ReservationTime;
@@ -17,6 +18,7 @@ public class FakeReservationRepository implements ReservationRepository {
     AtomicLong reservationAtomicLong = new AtomicLong(0);
     AtomicLong reservationTimeAtomicLong = new AtomicLong(0);
     AtomicLong themeAtomicLong = new AtomicLong(0);
+    AtomicLong memberAtomicLong = new AtomicLong(0);
 
     public FakeReservationRepository() {
         this.reservations = new HashMap<>();
@@ -46,15 +48,19 @@ public class FakeReservationRepository implements ReservationRepository {
     public Reservation insert(Reservation reservation) {
         Long id = reservationAtomicLong.incrementAndGet();
 
-        ReservationTime reservationTime = new ReservationTime(reservationTimeAtomicLong.incrementAndGet(),
-                reservation.getTime().getStartAt());
+        ReservationTime reservationTime = reservation.getTime();
+        ReservationTime addReservationTime = new ReservationTime(reservationTimeAtomicLong.incrementAndGet(),
+                reservationTime.getStartAt());
 
         Theme theme = reservation.getTheme();
         Theme addTheme = new Theme(themeAtomicLong.incrementAndGet(), theme.getName(), theme.getDescription(),
                 theme.getDescription());
 
-        Reservation addReservation = new Reservation(id, reservation.getName(), reservation.getDate(),
-                reservationTime, addTheme);
+        Member member = reservation.getMember();
+        Member addMember = new Member(memberAtomicLong.incrementAndGet(), member.getName(), member.getEmail(),
+                member.getPassword());
+
+        Reservation addReservation = new Reservation(id, reservation.getDate(), addReservationTime, addTheme, member);
 
         reservations.put(id, addReservation);
         return reservation;

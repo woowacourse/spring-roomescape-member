@@ -1,10 +1,11 @@
 package roomescape.domain.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.fixture.LocalDateFixture.AFTER_THREE_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,11 +22,14 @@ public class AdminReservationControllerTest extends ControllerTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
-        jdbcTemplate.update("insert into theme values(1,'리비', '리비 설명', 'url')");
-        LocalDate reservationDate = LocalDate.now().plusDays(2);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                reservationDate, 1, 1);
+        jdbcTemplate.update("insert into member (name, email, password) values (?,?,?)"
+                , "어드민", "admin@gmail.com", "123456");
+        jdbcTemplate.update("insert into reservation_time (start_at) values(?)"
+                , "10:00");
+        jdbcTemplate.update("insert into theme (name, description, thumbnail )values(?,?,?)"
+                , "테마1", "테마1설명", "url");
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values(?,?,?,?)"
+                , AFTER_TWO_DAYS_DATE, 1, 1, 1);
     }
 
     @AfterEach
@@ -47,32 +51,13 @@ public class AdminReservationControllerTest extends ControllerTest {
     @Test
     void should_add_reservation_when_post_request_reservations() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                LocalDate.now().plusDays(3L),
-                "브라운",
-                1L
-                , 1L);
+                AFTER_THREE_DAYS_DATE, 1L, 1L, 1L);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationAddRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
-    }
-
-    @DisplayName("이름이 null인 예약을 추가할 시, 400 bad request를 응답한다,")
-    @Test
-    void should_response_bad_request_when_post_request_reservations_with_null_name() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                LocalDate.now().plusDays(3L),
-                null,
-                1L
-                , 1L);
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationAddRequest)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
     }
 
     @DisplayName("존재하는 리소스에 대한 삭제 요청시, 204 no content를 응답한다.")

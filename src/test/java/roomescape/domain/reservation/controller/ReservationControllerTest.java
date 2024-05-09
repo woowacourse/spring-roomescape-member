@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 
 import io.restassured.RestAssured;
-import java.time.LocalDate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +19,12 @@ class ReservationControllerTest extends ControllerTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("insert into member (name, email, password) values (?,?,?)"
+                , "어드민", "admin@gmail.com", "123456");
         jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
         jdbcTemplate.update("insert into theme values(1,'리비', '리비 설명', 'url')");
-        LocalDate reservationDate = AFTER_TWO_DAYS_DATE;
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                reservationDate, 1, 1);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values(?,?,?,?)"
+                , AFTER_TWO_DAYS_DATE, 1, 1, 1);
     }
 
     @AfterEach

@@ -7,6 +7,7 @@ import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.BEFORE_ONE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.BEFORE_THREE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.BEFORE_TWO_DAYS_DATE;
+import static roomescape.fixture.MemberFixture.ADMIN_MEMBER;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -31,11 +32,13 @@ class ReservationRepositoryImplTest extends RepositoryTest {
     @BeforeEach
     void setUp() {
         reservationRepository = new ReservationRepositoryImpl(jdbcTemplate);
+        jdbcTemplate.update("insert into member (name, email, password) values (?,?,?)"
+                , "어드민", "admin@gmail.com", "123456");
         jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
         jdbcTemplate.update("insert into theme(name, description, thumbnail) values(?,?,?)", "리비", "머리 쓰는 중",
                 "url");
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                AFTER_TWO_DAYS_DATE, 1L, 1L);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values(?,?,?,?)"
+                , AFTER_TWO_DAYS_DATE, 1, 1, 1);
     }
 
     @AfterEach
@@ -59,7 +62,9 @@ class ReservationRepositoryImplTest extends RepositoryTest {
     void should_findById() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
-        Reservation expectedReservation = new Reservation(1L, "브라운", AFTER_TWO_DAYS_DATE, reservationTime, theme);
+
+        Reservation expectedReservation = new Reservation(1L, AFTER_TWO_DAYS_DATE, reservationTime, theme,
+                ADMIN_MEMBER);
 
         List<Reservation> all = reservationRepository.findAll();
         assertThat(reservationRepository.findById(1L)).isPresent();
@@ -70,7 +75,7 @@ class ReservationRepositoryImplTest extends RepositoryTest {
     void should_insert() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
-        Reservation reservation = new Reservation(null, "도도", AFTER_THREE_DAYS_DATE, reservationTime, theme);
+        Reservation reservation = new Reservation(null, AFTER_THREE_DAYS_DATE, reservationTime, theme, ADMIN_MEMBER);
 
         Reservation savedReservation = reservationRepository.insert(reservation);
 
@@ -105,12 +110,12 @@ class ReservationRepositoryImplTest extends RepositoryTest {
     void should_read_theme_ranking() {
         jdbcTemplate.update("insert into theme(name, description, thumbnail) values(?,?,?)", "테마2", "테마2 설명 쓰는 중",
                 "url");
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                BEFORE_TWO_DAYS_DATE, 1L, 2L);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "도도",
-                BEFORE_THREE_DAYS_DATE, 1L, 2L);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "리비",
-                BEFORE_ONE_DAYS_DATE, 1L, 1L);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values(?,?,?,?)",
+                BEFORE_TWO_DAYS_DATE, 1L, 2L, 1L);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values(?,?,?,?)",
+                BEFORE_THREE_DAYS_DATE, 1L, 2L, 1L);
+        jdbcTemplate.update("insert into reservation (date, time_id, theme_id, member_id) values(?,?,?,?)",
+                BEFORE_ONE_DAYS_DATE, 1L, 1L, 1L);
 
         List<Theme> themeRaking = reservationRepository.findThemeOrderByReservationCount();
 

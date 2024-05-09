@@ -3,6 +3,7 @@ package roomescape.domain.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
+import static roomescape.fixture.MemberFixture.ADMIN_MEMBER;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -36,7 +37,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(null, "테마1", "설명", "썸네일");
         fakeReservationTimeDao.insert(reservationTime);
         fakeReservationRepository.insert(
-                new Reservation(null, "dodo", AFTER_ONE_DAYS_DATE, reservationTime, theme));
+                new Reservation(null, AFTER_ONE_DAYS_DATE, reservationTime, theme, ADMIN_MEMBER));
 
         List<BookableTimeResponse> bookableTimes = reservationService.findBookableTimes(
                 new BookableTimesRequest(AFTER_ONE_DAYS_DATE, 1L));
@@ -52,7 +53,7 @@ class ReservationServiceTest {
         fakeReservationTimeDao.insert(reservationTime);
         fakeReservationTimeDao.insert(new ReservationTime(1L, LocalTime.of(11, 0)));
         fakeReservationRepository.insert(
-                new Reservation(null, "dodo", AFTER_ONE_DAYS_DATE, reservationTime, theme));
+                new Reservation(null, AFTER_ONE_DAYS_DATE, reservationTime, theme, ADMIN_MEMBER));
 
         List<BookableTimeResponse> bookableTimes = reservationService.findBookableTimes(
                 new BookableTimesRequest(AFTER_ONE_DAYS_DATE, 1L));
