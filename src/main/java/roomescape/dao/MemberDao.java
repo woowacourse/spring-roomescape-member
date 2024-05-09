@@ -23,4 +23,13 @@ public class MemberDao {
             return Optional.empty();
         }
     }
+
+    public Optional<String> findNameById(Long id) {
+        String sql = "SELECT name FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
