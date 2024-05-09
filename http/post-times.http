@@ -1,0 +1,23 @@
+###
+POST http://localhost:8080/times
+Content-Type: application/json
+
+{
+  "startAt": "08:00"
+}
+
+###
+POST http://localhost:8080/times
+Content-Type: application/json
+
+{
+  "startAt": "09:10"
+}
+
+###
+POST http://localhost:8080/times
+Content-Type: application/json
+
+{
+  "startAt": "10:20"
+}
