@@ -3,6 +3,7 @@ package roomescape.controller.web;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+// TODO API 클래스 한번 쭉 정리하기
 @Controller
 public class AdminController {
 

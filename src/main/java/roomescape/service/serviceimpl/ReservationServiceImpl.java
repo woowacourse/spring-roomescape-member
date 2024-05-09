@@ -1,13 +1,16 @@
 package roomescape.service.serviceimpl;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
+import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.MemberRequest;
 import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
+import roomescape.repository.MemberDao;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
@@ -23,15 +26,17 @@ class ReservationServiceImpl implements ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
     public ReservationServiceImpl(
             final ReservationDao reservationDao,
             final ReservationTimeDao reservationTimeDao,
-            final ThemeDao themeDao
-    ) {
+            final ThemeDao themeDao,
+            final MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
     @Override
@@ -39,11 +44,22 @@ class ReservationServiceImpl implements ReservationService {
             final UserReservationRequest userReservationRequest,
             final MemberRequest memberRequest) {
         Reservation reservation = userReservationRequest.toEntity(
-                findReservationTimeById(userReservationRequest),
-                findThemeById(userReservationRequest),
+                findReservationTimeById(userReservationRequest.timeId()),
+                findThemeById(userReservationRequest.themeId()),
                 memberRequest.toEntity()
         );
 
+        validateCreatedReservation(reservation);
+        return new ReservationResponse(reservationDao.save(reservation));
+    }
+
+    // TODO 중복코드 줄일 수 있는지 고려해보기
+    @Override
+    public ReservationResponse save(AdminReservationRequest reservationRequest) {
+        ReservationTime reservationTime = findReservationTimeById(reservationRequest.timeId());
+        Theme theme = findThemeById(reservationRequest.themeId());
+        Member member = findMemberById(reservationRequest.memberId());
+        Reservation reservation = reservationRequest.toEntity(reservationTime, theme, member);
         validateCreatedReservation(reservation);
         return new ReservationResponse(reservationDao.save(reservation));
     }
@@ -67,13 +83,19 @@ class ReservationServiceImpl implements ReservationService {
         return SelectableTimeResponse.listOf(reservationTimes, usedTimeId);
     }
 
-    private ReservationTime findReservationTimeById(UserReservationRequest userReservationRequest) {
-        return reservationTimeDao.findById(userReservationRequest.timeId())
+    private Member findMemberById(Long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
+
+    }
+
+    private ReservationTime findReservationTimeById(Long timeId) {
+        return reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 잘못된 예약 가능 시간 번호를 입력하였습니다."));
     }
 
-    private Theme findThemeById(UserReservationRequest userReservationRequest) {
-        return themeDao.findById(userReservationRequest.themeId())
+    private Theme findThemeById(Long themeId) {
+        return themeDao.findById(themeId)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
     }
 
