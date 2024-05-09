@@ -12,7 +12,6 @@ public record ReservationTime(long id, @JsonFormat(pattern = "HH:mm") LocalTime 
     }
     public ReservationTime(@JsonFormat(pattern = "HH:mm") LocalTime startAt) {
         this(UNDEFINED, startAt);
-        validateStartAt(startAt);
     }
 
     public void validateStartAt(LocalTime startAt) {
