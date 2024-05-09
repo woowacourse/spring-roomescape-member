@@ -1,6 +1,7 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.domain.Token;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
@@ -22,7 +23,7 @@ public class AuthService {
     }
 
 
-    public String login(LoginRequest loginRequest) {
+    public Token login(LoginRequest loginRequest) {
         Member findMember = memberRepository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new NoSuchRecordException("이메일: " + loginRequest.email() + " 해당하는 멤버를 찾을 수 없습니다"));
 
@@ -30,7 +31,8 @@ public class AuthService {
             throw new WrongPasswordException("비밀번호가 틀렸습니다");
         }
 
-        return jwtTokenProvider.createToken(findMember);
+        String token = jwtTokenProvider.createToken(findMember);
+        return new Token(token);
     }
 
     public LoginCheckResponse checkLogin(String token) {
