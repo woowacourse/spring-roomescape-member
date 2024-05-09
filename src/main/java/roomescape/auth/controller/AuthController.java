@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.principal.AuthenticatedMemberPrincipal;
+import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.token.AuthenticationToken;
 import roomescape.resolver.Authenticated;
@@ -39,7 +39,7 @@ public class AuthController {
 
     // TODO : 인증 토큰 검증 추가
     @GetMapping("/login/check")
-    public LoginCheckResponse checkLogin(@Authenticated AuthenticatedMemberPrincipal principal) {
-        return new LoginCheckResponse(principal.name());
+    public LoginCheckResponse checkLogin(@Authenticated AuthenticatedMember authenticatedMember) {
+        return new LoginCheckResponse(authenticatedMember.name());
     }
 }
