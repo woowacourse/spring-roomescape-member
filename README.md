@@ -400,7 +400,7 @@ id : 1
     - [x] 테스트 만들기
 
 ## 4단계 요구사항
-- [ ] `GET /login` : 로그인 페이지 응답(templates/login.html)
+- [x] `GET /login` : 로그인 페이지 응답(templates/login.html)
 - [ ] 사용자 도메인 추가
   - name: 사용자 이름
   - email: 이메일

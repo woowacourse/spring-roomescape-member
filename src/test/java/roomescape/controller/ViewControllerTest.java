@@ -24,8 +24,15 @@ class ViewControllerTest {
 
     @Test
     @DisplayName("예약 페이지를 요청하면 200 OK를 응답한다.")
-    void reservationTest() throws Exception {
+    void reservationPageTest() throws Exception {
         mockMvc.perform(get("/reservation"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("로그인 페이지를 요청하면 200 OK를 응답한다.")
+    void loginPageTest() throws Exception {
+        mockMvc.perform(get("/login"))
                 .andExpect(status().isOk());
     }
 }
