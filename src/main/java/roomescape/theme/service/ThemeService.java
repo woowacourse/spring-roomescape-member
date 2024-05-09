@@ -35,9 +35,8 @@ public class ThemeService {
     }
 
     private void validateDuplicated(Theme theme) {
-        boolean isDuplicatedName = themeRepository.findAll().stream()
-                .anyMatch(theme::isDuplicated);
-        if (isDuplicatedName) {
+        boolean isExists = themeRepository.existsByName(theme.getName());
+        if (isExists) {
             throw new BadRequestException("중복된 테마 이름입니다.");
         }
     }

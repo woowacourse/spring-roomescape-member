@@ -9,12 +9,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
+import roomescape.exception.BadRequestException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
-import roomescape.exception.BadRequestException;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.service.ThemeService;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,8 +64,8 @@ class ThemeServiceTest {
     @Test
     void validateDuplicated() {
         // given
-        Mockito.when(themeRepository.findAll())
-                .thenReturn(List.of(themeFixture));
+        Mockito.when(themeRepository.existsByName("공포"))
+                .thenReturn(Boolean.TRUE);
         ThemeCreateRequest request = new ThemeCreateRequest(
                 "공포", "공포스러운 테마", "http://example.org"
         );

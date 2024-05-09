@@ -7,8 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeDao;
-import roomescape.time.repository.ReservationTimeRepository;
 
 import javax.sql.DataSource;
 import java.time.LocalTime;
@@ -78,5 +76,18 @@ class ReservationTimeDaoTest {
 
         // then
         assertThat(actual.isPresent()).isFalse();
+    }
+
+    @DisplayName("예약 시간 DAO는 중복 검증 요청이 들어오면 시작 시간에 맞는 값을 반환한다.")
+    @Test
+    void existsByStartAt() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 00);
+
+        // when
+        Boolean actual = reservationTimeRepository.existsByStartAt(startAt);
+
+        // then
+        assertThat(actual).isTrue();
     }
 }

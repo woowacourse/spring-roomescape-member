@@ -37,10 +37,8 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicated(ReservationTime reservationTime) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        boolean isDuplicated = reservationTimes.stream()
-                .anyMatch(reservationTime::isDuplicated);
-        if (isDuplicated) {
+        Boolean isExists = reservationTimeRepository.existsByStartAt(reservationTime.getStartAt());
+        if (isExists) {
             throw new BadRequestException("중복된 예약 시간입니다.");
         }
     }

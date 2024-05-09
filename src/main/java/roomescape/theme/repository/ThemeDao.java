@@ -61,5 +61,11 @@ public class ThemeDao implements ThemeRepository {
         String sql = "DELETE FROM theme WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public Boolean existsByName(String name) {
+        String sql = "SELECT EXISTS (SELECT id FROM theme WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
 }
 

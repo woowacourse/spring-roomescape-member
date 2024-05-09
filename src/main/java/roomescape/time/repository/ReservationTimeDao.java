@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
 
 import javax.sql.DataSource;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,5 +61,11 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Boolean existsByStartAt(LocalTime time) {
+        String sql = "SELECT EXISTS (SELECT id FROM reservation_time WHERE start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, time);
     }
 }

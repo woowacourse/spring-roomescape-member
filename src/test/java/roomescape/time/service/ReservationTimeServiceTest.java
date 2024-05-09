@@ -14,7 +14,6 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.ReservationTimeCreateRequest;
 import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.service.ReservationTimeService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -65,8 +64,8 @@ class ReservationTimeServiceTest {
     @Test
     void validateIsDuplicated() {
         // given
-        Mockito.when(reservationTimeRepository.findAll())
-                .thenReturn(List.of(reservationTimeFixture));
+        Mockito.when(reservationTimeRepository.existsByStartAt(reservationTimeFixture.getStartAt()))
+                .thenReturn(Boolean.TRUE);
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(reservationTimeFixture.getStartAt());
 
         // when & then

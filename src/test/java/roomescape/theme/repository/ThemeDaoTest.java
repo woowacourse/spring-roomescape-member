@@ -8,8 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.Fixtures;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeDao;
-import roomescape.theme.repository.ThemeRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -64,5 +62,18 @@ class ThemeDaoTest {
 
         // then
         assertThat(actual).isNotPresent();
+    }
+
+    @DisplayName("테마 DAO는 중복 검증 요청이 들어오면 이름에 맞는 값을 반환한다.")
+    @Test
+    void existsByName() {
+        // given
+        String name = "공포";
+
+        // when
+        Boolean actual = themeRepository.existsByName(name);
+
+        // then
+        assertThat(actual).isTrue();
     }
 }
