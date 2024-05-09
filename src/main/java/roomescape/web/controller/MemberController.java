@@ -33,7 +33,8 @@ public class MemberController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> findAuthenticatedMember(@CookieValue(value = "token") String token) {
+    public ResponseEntity<MemberResponse> findAuthenticatedMember(
+            @CookieValue(value = "token", defaultValue = "") String token) {
         MemberResponse response = memberService.findMemberByToken(token);
 
         return ResponseEntity.ok()

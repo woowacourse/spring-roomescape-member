@@ -33,4 +33,7 @@ CREATE TABLE member
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
-)
+);
+
+INSERT INTO member (name, email, password)
+values ('name', 'aa@aa.aa', 'password')
