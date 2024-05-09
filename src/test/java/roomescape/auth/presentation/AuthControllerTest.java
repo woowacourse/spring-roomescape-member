@@ -8,12 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import roomescape.auth.application.AuthService;
 import roomescape.auth.application.JwtTokenProvider;
 import roomescape.auth.dto.request.LoginRequest;
 import roomescape.common.ControllerTest;
 import roomescape.exception.IllegalTokenException;
-import roomescape.exception.MemberNotExistException;
-import roomescape.member.application.MemberService;
+import roomescape.exception.NotAuthenticatedException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,21 +25,20 @@ import static roomescape.TestFixture.*;
 @WebMvcTest(AuthController.class)
 class AuthControllerTest extends ControllerTest {
     @MockBean
-    JwtTokenProvider jwtTokenProvider;
+    private JwtTokenProvider jwtTokenProvider;
 
     @MockBean
-    MemberService memberService;
+    private AuthService authService;
 
     @Test
     @DisplayName("로그인 요청 시 상태코드 200을 반환한다.")
     void login() throws Exception {
         // given
+        String expectedToken = "token";
         LoginRequest request = new LoginRequest(MIA_EMAIL, TEST_PASSWORD);
 
-        BDDMockito.given(memberService.findByEmail(any()))
-                .willReturn(USER_MIA());
-        BDDMockito.given(jwtTokenProvider.createToken(any()))
-                .willReturn("token");
+        BDDMockito.given(authService.createToken(any()))
+                .willReturn(expectedToken);
 
         // when & then
         mockMvc.perform(post("/login")
@@ -47,7 +46,7 @@ class AuthControllerTest extends ControllerTest {
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, "token=token"));
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, "token=" + expectedToken));
     }
 
     @Test
@@ -56,9 +55,9 @@ class AuthControllerTest extends ControllerTest {
         // given
         LoginRequest request = new LoginRequest("not existing email", TEST_PASSWORD);
 
-        BDDMockito.willThrow(new MemberNotExistException(TEST_ERROR_MESSAGE))
-                .given(memberService)
-                .findByEmail(any());
+        BDDMockito.willThrow(new NotAuthenticatedException(TEST_ERROR_MESSAGE))
+                .given(authService)
+                .createToken(any());
 
         // when & then
         mockMvc.perform(post("/login")
@@ -75,7 +74,7 @@ class AuthControllerTest extends ControllerTest {
         // given
         Cookie cookie = new Cookie("token", "token");
 
-        BDDMockito.given(memberService.findByEmail(any()))
+        BDDMockito.given(authService.findMemberByEmail(any()))
                 .willReturn(USER_MIA());
 
         // when & then

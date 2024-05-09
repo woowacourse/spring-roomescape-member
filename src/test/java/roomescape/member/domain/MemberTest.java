@@ -1,11 +1,13 @@
 package roomescape.member.domain;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.ViolationException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.TestFixture.*;
 
@@ -29,5 +31,18 @@ class MemberTest {
         // when & then
         assertThatThrownBy(() -> new Member(MIA_NAME, invalidEmail, TEST_PASSWORD))
                 .isInstanceOf(ViolationException.class);
+    }
+
+    @Test
+    @DisplayName("사용자의 비밀번호를 확인한다.")
+    void hasSamePassword() {
+        // given
+        Member member = new Member(MIA_NAME, MIA_EMAIL, "password");
+
+        // when
+        boolean result = member.hasSamePassword("password");
+
+        // then
+        assertThat(result).isTrue();
     }
 }

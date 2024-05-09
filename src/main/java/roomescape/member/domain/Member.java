@@ -55,6 +55,10 @@ public class Member {
         }
     }
 
+    public boolean hasSamePassword(String password) {
+        return this.password.equals(password);
+    }
+
     public Long getId() {
         return id;
     }

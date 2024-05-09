@@ -13,6 +13,7 @@ import roomescape.exception.ErrorResponse;
 import roomescape.member.domain.Member;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static roomescape.TestFixture.MIA_EMAIL;
 import static roomescape.TestFixture.TEST_PASSWORD;
 
 public class AuthAcceptanceTest extends ApiAcceptanceTest {
@@ -44,6 +45,29 @@ public class AuthAcceptanceTest extends ApiAcceptanceTest {
     void loginNotExistingMember() {
         // given
         LoginRequest request = new LoginRequest("anonymous@google.com", TEST_PASSWORD);
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .then().log().all()
+                .extract();
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+
+        // then
+        assertSoftly(softly -> {
+            checkHttpStatusUnauthorized(softly, response);
+            softly.assertThat(errorResponse.message()).isNotNull();
+        });
+    }
+
+    @Test
+    @DisplayName("[2 - Step4] 틀린 비밀번호로 사용자가 로그인한다.")
+    void loginWithInvalidPassword() {
+        // given
+        createTestMember();
+        LoginRequest request = new LoginRequest(MIA_EMAIL, "invalid-password");
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

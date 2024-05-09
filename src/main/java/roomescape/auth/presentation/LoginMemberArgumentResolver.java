@@ -8,10 +8,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.application.AuthService;
 import roomescape.auth.application.JwtTokenProvider;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.TokenNotExistException;
-import roomescape.member.application.MemberService;
 import roomescape.member.domain.Member;
 
 import java.util.Arrays;
@@ -20,11 +20,11 @@ import java.util.Arrays;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private static final String TOKEN_COOKIE_KEY = "token";
 
-    private final MemberService memberService;
+    private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(AuthService authService, JwtTokenProvider jwtTokenProvider) {
+        this.authService = authService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -40,7 +40,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = extractToken(servletRequest);
         jwtTokenProvider.validateToken(token);
         String email = jwtTokenProvider.getPayload(token);
-        Member member = memberService.findByEmail(email);
+        Member member = authService.findMemberByEmail(email);
         return new LoginMember(member.getId(), member.getEmail(), member.getName(), member.getPassword());
     }
 

@@ -63,7 +63,7 @@ abstract class ApiAcceptanceTest {
                 .when().post("/members/join")
                 .then().extract()
                 .as(MemberResponse.class);
-        return new Member(response.id(), response.name(), response.email(), null);
+        return new Member(response.id(), response.name(), response.email(), request.password());
     }
 
     protected String createTestToken(Member member) {
