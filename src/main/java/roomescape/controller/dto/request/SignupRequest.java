@@ -3,7 +3,6 @@ package roomescape.controller.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberName;
 
 public record SignupRequest(
         @NotNull
@@ -17,6 +16,6 @@ public record SignupRequest(
         String password
 ) {
     public Member toEntity() {
-        return new Member(new MemberName(name), email, password);
+        return Member.of(name, email, password);
     }
 }
