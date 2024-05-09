@@ -15,10 +15,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.dao.JdbcReservationDao;
+import roomescape.dao.JdbcReservationTimeDao;
 import roomescape.dao.JdbcThemeDao;
+import roomescape.dao.MemberDao;
+import roomescape.domain.member.Member;
+import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.fixture.MemberFixtures;
+import roomescape.fixture.ReservationFixtures;
+import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -27,6 +35,12 @@ class ThemeServiceTest {
 
     @Autowired
     private JdbcThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
+    @Autowired
+    private JdbcReservationDao reservationDao;
+    @Autowired
+    private JdbcReservationTimeDao timeDao;
     @Autowired
     private ThemeService themeService;
 
@@ -165,6 +179,21 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.delete(givenId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("테마 삭제시 예약이 존재한다면 예외가 발생한다.")
+    void deleteExistReservation() {
+        //given
+        Member member = memberDao.create(MemberFixtures.createMember("daon"));
+        Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
+        ReservationTime time = timeDao.create(ReservationTimeFixtures.createReservationTime("12:12"));
+        reservationDao.create(ReservationFixtures.createReservation(member, time, theme));
+        Long id = theme.getId();
+
+        //when //then
+        assertThatThrownBy(() -> themeService.delete(id))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
