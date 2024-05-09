@@ -147,6 +147,7 @@ GET /reservations HTTP/1.1
 ```
 
 #### Response
+
 HTTP/1.1 200
 Content-Type: application/json
 
@@ -217,7 +218,6 @@ location: /themes/{id}
 }
 ```
 
-
 ### 테마 조회 API
 
 #### Request
@@ -261,7 +261,7 @@ GET /themes/tops HTTP/1.1
 ```http request
 HTTP/1.1 200
 content-type: application/json
-    
+
 [
     {
         "id": 1,
@@ -290,4 +290,51 @@ DELETE /themes/1 HTTP/1.1
 
 ```http request
 HTTP/1.1 204
+```
+
+### 사용자 로그인 API
+
+#### Request
+
+```http request
+POST /login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "mangchoWithPk@woowa.com",
+    "password": "1234"
+}
+```
+
+#### Response
+
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+### 사용자 로그인 체크 API
+
+#### Request
+
+```http request
+GET /login/check HTTP/1.1
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+```
+
+#### Response
+
+```http request
+HTTP/1.1 200
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+    "name": "어드민"
+}
 ```
