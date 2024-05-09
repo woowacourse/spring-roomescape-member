@@ -36,7 +36,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationSaveRequest request) {
+    public ReservationResponse saveReservation(ReservationSaveRequest request, String name) {
         ReservationTime time = timeDao.findById(request.timeId())
                 .orElseThrow(() -> new RoomEscapeException("[ERROR] 예약 시간을 찾을 수 없습니다"));
 
@@ -50,7 +50,7 @@ public class ReservationService {
         Theme theme = themeDao.findById(request.themeId())
                 .orElseThrow(() -> new RoomEscapeException("[ERROR] 테마를 찾을 수 없습니다"));
 
-        Reservation reservation = reservationMapper.mapToReservation(request, time, theme);
+        Reservation reservation = reservationMapper.mapToReservation(request, name, time, theme);
         Long saveId = reservationDao.save(reservation);
         return reservationMapper.mapToResponse(saveId, reservation);
     }

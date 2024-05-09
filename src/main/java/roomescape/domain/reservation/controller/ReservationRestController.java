@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationSaveRequest;
 import roomescape.domain.reservation.service.ReservationService;
+import roomescape.global.auth.AuthUser;
 
 import java.net.URI;
 import java.util.List;
@@ -27,8 +28,9 @@ public class ReservationRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveRequest request) {
-        ReservationResponse response = reservationService.saveReservation(request);
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveRequest request,
+                                                                 AuthUser authUser) {
+        ReservationResponse response = reservationService.saveReservation(request, authUser.name());
 
         URI location = URI.create("/reservations/" + response.id());
         return ResponseEntity.created(location).body(response);
