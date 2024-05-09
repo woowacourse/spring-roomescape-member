@@ -61,7 +61,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    void saveReservationTest() {
+    void saveUserReservationTest() {
         // given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
