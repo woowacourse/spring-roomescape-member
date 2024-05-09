@@ -9,12 +9,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 @Repository
-public class JdbcUserRepository implements UserRepository {
+public class JdbcMemberRepository implements MemberRepository {
 
-    private static final RowMapper<User> USER_ROW_MAPPER = (rs, rowNum) -> new User(
+    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (rs, rowNum) -> new Member(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
@@ -23,44 +23,44 @@ public class JdbcUserRepository implements UserRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private Optional<User> findById(long id) {
+    private Optional<Member> findById(long id) {
         try {
-            User findUser = jdbcTemplate.queryForObject(
+            Member findMember = jdbcTemplate.queryForObject(
                     "SELECT id, name, email, password FROM MEMBER WHERE id = ?",
-                    USER_ROW_MAPPER,
+                    MEMBER_ROW_MAPPER,
                     id
             );
-            return Optional.of(findUser);
+            return Optional.of(findMember);
         } catch (DataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         try {
-            User findUser = jdbcTemplate.queryForObject(
+            Member findMember = jdbcTemplate.queryForObject(
                     "SELECT id, name, email, password FROM MEMBER WHERE email = ?",
-                    USER_ROW_MAPPER,
+                    MEMBER_ROW_MAPPER,
                     email
             );
-            return Optional.of(findUser);
+            return Optional.of(findMember);
         } catch (DataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public User save(User user) {
+    public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update((con -> {
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO MEMBER (NAME, EMAIL, PASSWORD) VALUES (?,?,?)",
                     new String[]{"id"}
             );
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getEmail());
-            preparedStatement.setString(3, user.getPassword());
+            preparedStatement.setString(1, member.getName());
+            preparedStatement.setString(2, member.getEmail());
+            preparedStatement.setString(3, member.getPassword());
             return preparedStatement;
         }), keyHolder);
 

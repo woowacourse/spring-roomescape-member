@@ -1,11 +1,11 @@
 package roomescape.domain;
 
-public class LoginUser {
+public class LoginMember {
     private final long id;
     private final String name;
     private final String email;
 
-    public LoginUser(long id, String name, String email) {
+    public LoginMember(long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -25,7 +25,7 @@ public class LoginUser {
 
     @Override
     public String toString() {
-        return "LoginUser{" +
+        return "LoginMember{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +

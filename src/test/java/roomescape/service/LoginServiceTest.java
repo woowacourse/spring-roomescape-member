@@ -3,7 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.exception.ExceptionType.NOT_FOUND_USER;
+import static roomescape.exception.ExceptionType.NOT_FOUND_MEMBER;
 import static roomescape.exception.ExceptionType.WRONG_PASSWORD;
 
 import io.jsonwebtoken.Claims;
@@ -12,33 +12,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.LoginUser;
-import roomescape.domain.User;
+import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.exception.RoomescapeException;
-import roomescape.repository.CollectionUserRepository;
-import roomescape.repository.UserRepository;
+import roomescape.repository.CollectionMemberRepository;
+import roomescape.repository.MemberRepository;
 
 class LoginServiceTest {
 
     private static final JwtGenerator JWT_GENERATOR = new JwtGenerator();
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
     private LoginService loginService;
 
     @BeforeEach
     void init() {
-        userRepository = new CollectionUserRepository();
-        loginService = new LoginService(userRepository, JWT_GENERATOR);
+        memberRepository = new CollectionMemberRepository();
+        loginService = new LoginService(memberRepository, JWT_GENERATOR);
     }
 
     @DisplayName("유저 데이터가 존재할 때")
     @Nested
-    class UserExistsTest {
-        private User defaultUser = new User("name", "email@email.com", "password");
+    class MemberExistsTest {
+        private Member defaultUser = new Member("name", "email@email.com", "password");
 
         @BeforeEach
         void addDefaultUser() {
-            defaultUser = userRepository.save(defaultUser);
+            defaultUser = memberRepository.save(defaultUser);
         }
 
         @DisplayName("정상적인 로그인에 대해 토큰을 생성할 수 있다.")
@@ -66,7 +66,7 @@ class LoginServiceTest {
                     defaultUser.getPassword()
             )))
                     .isInstanceOf(RoomescapeException.class)
-                    .hasMessage(NOT_FOUND_USER.getMessage());
+                    .hasMessage(NOT_FOUND_MEMBER.getMessage());
         }
 
         @DisplayName("잘못된 비밀번호로 요청을 하면 예외가 발생한다.")
@@ -91,10 +91,10 @@ class LoginServiceTest {
             ));
 
             //when
-            LoginUser loginUser = loginService.checkLogin(token);
+            LoginMember loginMember = loginService.checkLogin(token);
 
             //then
-            assertThat(loginUser.getName())
+            assertThat(loginMember.getName())
                     .isEqualTo(defaultUser.getName());
         }
     }

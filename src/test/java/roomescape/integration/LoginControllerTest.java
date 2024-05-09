@@ -1,7 +1,7 @@
 package roomescape.integration;
 
 import static org.hamcrest.Matchers.is;
-import static roomescape.exception.ExceptionType.NOT_FOUND_USER;
+import static roomescape.exception.ExceptionType.NOT_FOUND_MEMBER;
 import static roomescape.exception.ExceptionType.WRONG_PASSWORD;
 
 import io.restassured.RestAssured;
@@ -17,19 +17,19 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.User;
-import roomescape.repository.UserRepository;
+import roomescape.domain.Member;
+import roomescape.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class LoginControllerTest {
 
-    private final User defaultUser = new User("name", "email@email.com", "password");
+    private final Member defaultUser = new Member("name", "email@email.com", "password");
     @LocalServerPort
     int port;
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void init() {
@@ -65,7 +65,7 @@ class LoginControllerTest {
                 )).post("/login")
                 .then().log().all()
                 .statusCode(400)
-                .body("message", is(NOT_FOUND_USER.getMessage()));
+                .body("message", is(NOT_FOUND_MEMBER.getMessage()));
     }
 
     @DisplayName("잘못된 비밀번호로 요청을 보내면 예외가 발생한다.")

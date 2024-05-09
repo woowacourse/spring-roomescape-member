@@ -1,47 +1,45 @@
 package roomescape.service;
 
-import static roomescape.exception.ExceptionType.NOT_FOUND_USER;
+import static roomescape.exception.ExceptionType.NOT_FOUND_MEMBER;
 import static roomescape.exception.ExceptionType.WRONG_PASSWORD;
 
 import io.jsonwebtoken.Claims;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.domain.LoginUser;
-import roomescape.domain.User;
+import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.exception.RoomescapeException;
-import roomescape.repository.UserRepository;
+import roomescape.repository.MemberRepository;
 
 @Service
 public class LoginService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final JwtGenerator jwtGenerator;
 
-    public LoginService(UserRepository userRepository, JwtGenerator jwtGenerator) {
-        this.userRepository = userRepository;
+    public LoginService(MemberRepository memberRepository, JwtGenerator jwtGenerator) {
+        this.memberRepository = memberRepository;
         this.jwtGenerator = jwtGenerator;
     }
 
     public String getLoginToken(LoginRequest loginRequest) {
-        Optional<User> byEmail = userRepository.findByEmail(loginRequest.email());
-        User findUser = byEmail
-                .orElseThrow(() -> new RoomescapeException(NOT_FOUND_USER));
-        if (!findUser.getPassword().equals(loginRequest.password())) {
+        Member findMember = memberRepository.findByEmail(loginRequest.email())
+                .orElseThrow(() -> new RoomescapeException(NOT_FOUND_MEMBER));
+        if (!findMember.getPassword().equals(loginRequest.password())) {
             throw new RoomescapeException(WRONG_PASSWORD);
         }
 
         return jwtGenerator.generateWith(Map.of(
-                "id", findUser.getId(),
-                "name", findUser.getName(),
-                "email", findUser.getEmail()
+                "id", findMember.getId(),
+                "name", findMember.getName(),
+                "email", findMember.getEmail()
         ));
     }
 
-    public LoginUser checkLogin(String token) {
+    public LoginMember checkLogin(String token) {
         Claims claims = jwtGenerator.getClaims(token);
-        return new LoginUser(
+        return new LoginMember(
                 claims.get("id", Long.class),
                 claims.get("name", String.class),
                 claims.get("email", String.class)

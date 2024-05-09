@@ -10,7 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Duration;
-import roomescape.domain.LoginUser;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
@@ -49,7 +49,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     rs.getString("description"),
                     rs.getString("thumbnail")
             ),
-            new LoginUser(
+            new LoginMember(
                     rs.getLong("member_id"),
                     rs.getString("member_name"),
                     rs.getString("member_email")
@@ -83,7 +83,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
             preparedStatement.setDate(1, Date.valueOf(reservation.getDate()));
             preparedStatement.setLong(2, reservation.getReservationTime().getId());
             preparedStatement.setLong(3, reservation.getTheme().getId());
-            preparedStatement.setLong(4, reservation.getUser().getId());
+            preparedStatement.setLong(4, reservation.getMember().getId());
             return preparedStatement;
         }, keyHolder);
     }

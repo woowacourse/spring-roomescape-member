@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.LoginUser;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @SpringBootTest
 class JdbcTemplateReservationRepositoryTest {
-    private static final LoginUser DEFAULT_LOGINUSER = new LoginUser(1L, "아서", "Hyunta@wooteco.com");
+    private static final LoginMember DEFAULT_LOGINUSER = new LoginMember(1L, "아서", "Hyunta@wooteco.com");
     private static final ReservationTime DEFAULT_TIME = new ReservationTime(1L, LocalTime.of(11, 56));
     private static final Theme DEFAULT_THEME = new Theme(1L, "이름", "설명", "썸네일");
 

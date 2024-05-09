@@ -1,8 +1,8 @@
 package roomescape;
 
-import roomescape.domain.LoginUser;
+import roomescape.domain.LoginMember;
 
 public class Fixture {
-    public static LoginUser DEFAULT_LOGINUSER = new LoginUser(1L, "name", "email@email.com");
-    public static LoginUser ARTHUR = new LoginUser(1L, "아서", "Hyunta@wooteco.com");
+    public static LoginMember defaultLoginuser = new LoginMember(1L, "name", "email@email.com");
+    public static LoginMember ARTHUR = new LoginMember(1L, "아서", "Hyunta@wooteco.com");
 }

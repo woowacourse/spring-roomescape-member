@@ -11,22 +11,22 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.controller.LoginUserParameter;
+import roomescape.controller.LoginMemberParameter;
 import roomescape.exception.RoomescapeException;
 import roomescape.service.LoginService;
 
 @Component
-public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final LoginService loginService;
 
-    public LoginUserArgumentResolver(LoginService loginService) {
+    public LoginMemberArgumentResolver(LoginService loginService) {
         this.loginService = loginService;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUserParameter.class);
+        return parameter.hasParameterAnnotation(LoginMemberParameter.class);
     }
 
     @Override

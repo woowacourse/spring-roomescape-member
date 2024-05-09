@@ -7,14 +7,14 @@ public record ReservationResponse(long id,
                                   LocalDate date,
                                   ReservationTimeResponse time,
                                   ThemeResponse theme,
-                                  LoginUserResponse user) {
+                                  LoginMemberResponse user) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getReservationTime()),
                 ThemeResponse.from(reservation.getTheme()),
-                LoginUserResponse.from(reservation.getUser())
+                LoginMemberResponse.from(reservation.getMember())
         );
     }
 }

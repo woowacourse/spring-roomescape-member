@@ -19,7 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.LoginUser;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -34,7 +34,7 @@ import roomescape.service.JwtGenerator;
 public class ReservationControllerTest {
 
     private static final JwtGenerator JWT_GENERATOR = new JwtGenerator();
-    private static final LoginUser defaultLoginUser = new LoginUser(1L, "name", "email@email.com");
+    private static final LoginMember DEFAULT_LOGIN_MEMBER = new LoginMember(1L, "name", "email@email.com");
     @LocalServerPort
     int port;
     private String token;
@@ -69,25 +69,26 @@ public class ReservationControllerTest {
         @BeforeEach
         void initData() {
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(5), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().minusDays(5), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(4), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().minusDays(4), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(3), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().minusDays(3), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(2), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().minusDays(2), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(1), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().minusDays(1), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
 
-            reservationRepository.save(new Reservation(LocalDate.now(), defaultTime, defaultTheme, defaultLoginUser));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now(), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme, defaultLoginUser));
+                    new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
 
         }
 

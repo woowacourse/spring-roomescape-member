@@ -1,9 +1,9 @@
 package roomescape.domain;
 
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
+import static roomescape.exception.ExceptionType.EMPTY_MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
-import static roomescape.exception.ExceptionType.EMPTY_USER;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,30 +16,30 @@ public class Reservation implements Comparable<Reservation> {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
-    private final LoginUser user;
+    private final LoginMember member;
 
     public Reservation(long id, Reservation reservationBeforeSave) {
         this(id,
                 reservationBeforeSave.date,
                 reservationBeforeSave.time,
                 reservationBeforeSave.theme,
-                reservationBeforeSave.user);
+                reservationBeforeSave.member);
     }
 
-    public Reservation(LocalDate date, ReservationTime time, Theme theme, LoginUser user) {
-        this(null, date, time, theme, user);
+    public Reservation(LocalDate date, ReservationTime time, Theme theme, LoginMember member) {
+        this(null, date, time, theme, member);
     }
 
-    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, LoginUser user) {
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, LoginMember member) {
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
-        validateUser(user);
+        validateMember(member);
         this.id = id;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.user = user;
+        this.member = member;
     }
 
     private void validateTheme(Theme theme) {
@@ -60,9 +60,9 @@ public class Reservation implements Comparable<Reservation> {
         }
     }
 
-    private void validateUser(LoginUser user) {
-        if (user == null) {
-            throw new RoomescapeException(EMPTY_USER);
+    private void validateMember(LoginMember member) {
+        if (member == null) {
+            throw new RoomescapeException(EMPTY_MEMBER);
         }
     }
 
@@ -110,8 +110,8 @@ public class Reservation implements Comparable<Reservation> {
         return id;
     }
 
-    public LoginUser getUser() {
-        return user;
+    public LoginMember getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -137,7 +137,7 @@ public class Reservation implements Comparable<Reservation> {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (member != null ? member.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
         return result;
@@ -161,9 +161,10 @@ public class Reservation implements Comparable<Reservation> {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + user + '\'' +
                 ", date=" + date +
                 ", time=" + time +
+                ", theme=" + theme +
+                ", member=" + member +
                 '}';
     }
 }

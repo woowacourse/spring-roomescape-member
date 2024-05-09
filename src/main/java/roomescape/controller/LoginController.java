@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.domain.LoginUser;
+import roomescape.domain.LoginMember;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.LoginResponse;
 import roomescape.service.LoginService;
@@ -37,7 +37,7 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> loginCheck(@LoginUserParameter LoginUser loginUser) {
-        return ResponseEntity.ok(new LoginResponse(loginUser.getName()));
+    public ResponseEntity<LoginResponse> loginCheck(@LoginMemberParameter LoginMember loginMember) {
+        return ResponseEntity.ok(new LoginResponse(loginMember.getName()));
     }
 }

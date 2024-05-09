@@ -8,8 +8,8 @@ import static roomescape.exception.ExceptionType.PAST_TIME_RESERVATION;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.LoginUserParameter;
-import roomescape.domain.LoginUser;
+import roomescape.controller.LoginMemberParameter;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
@@ -34,14 +34,16 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse save(@LoginUserParameter LoginUser loginUser,
+    public ReservationResponse save(@LoginMemberParameter LoginMember loginMember,
                                     ReservationRequest reservationRequest) {
 
+        //todo : 사용자 검증 필요
         ReservationTime requestedTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_RESERVATION_TIME));
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
-        Reservation beforeSaveReservation = reservationRequest.toReservation(loginUser, requestedTime, requestedTheme);
+        Reservation beforeSaveReservation = reservationRequest.toReservation(loginMember, requestedTime,
+                requestedTheme);
 
         Reservations reservations = reservationRepository.findAll();
         if (reservations.hasSameReservation(beforeSaveReservation)) {

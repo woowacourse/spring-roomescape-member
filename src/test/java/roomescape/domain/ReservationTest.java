@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
+import static roomescape.exception.ExceptionType.EMPTY_MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
-import static roomescape.exception.ExceptionType.EMPTY_USER;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,20 +28,20 @@ class ReservationTest {
         assertAll(
                 () -> assertThatThrownBy(() -> new Reservation(DEFAULT_DATE, DEFAULT_TIME, DEFAULT_THEME, null))
                         .isInstanceOf(RoomescapeException.class)
-                        .hasMessage(EMPTY_USER.getMessage()),
+                        .hasMessage(EMPTY_MEMBER.getMessage()),
 
                 () -> assertThatThrownBy(
-                        () -> new Reservation(null, DEFAULT_TIME, DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER))
+                        () -> new Reservation(null, DEFAULT_TIME, DEFAULT_THEME, Fixture.defaultLoginuser))
                         .isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_DATE.getMessage()),
 
                 () -> assertThatThrownBy(
-                        () -> new Reservation(DEFAULT_DATE, null, DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER))
+                        () -> new Reservation(DEFAULT_DATE, null, DEFAULT_THEME, Fixture.defaultLoginuser))
                         .isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_TIME.getMessage()),
 
                 () -> assertThatThrownBy(
-                        () -> new Reservation(DEFAULT_DATE, DEFAULT_TIME, null, Fixture.DEFAULT_LOGINUSER))
+                        () -> new Reservation(DEFAULT_DATE, DEFAULT_TIME, null, Fixture.defaultLoginuser))
                         .isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_THEME.getMessage())
         );
@@ -52,9 +52,9 @@ class ReservationTest {
     @DisplayName("날짜를 기준으로 비교를 잘 하는지 확인.")
     void compareTo() {
         Reservation first = new Reservation(1L, LocalDate.of(1999, 12, 1), new ReservationTime(
-                LocalTime.of(16, 30)), DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER);
+                LocalTime.of(16, 30)), DEFAULT_THEME, Fixture.defaultLoginuser);
         Reservation second = new Reservation(2L, LocalDate.of(1998, 1, 8), new ReservationTime(
-                LocalTime.of(16, 30)), DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER);
+                LocalTime.of(16, 30)), DEFAULT_THEME, Fixture.defaultLoginuser);
         int compareTo = first.compareTo(second);
         Assertions.assertThat(compareTo)
                 .isGreaterThan(0);
@@ -68,8 +68,8 @@ class ReservationTest {
         Theme theme = new Theme(1L, "name", "description", "thumbnail");
         ReservationTime time = new ReservationTime(1L, LocalTime.now());
 
-        Reservation savedReservation = new Reservation(1L, date, time, theme, Fixture.DEFAULT_LOGINUSER);
-        Reservation nonSavedReservation = new Reservation(date, time, theme, Fixture.DEFAULT_LOGINUSER);
+        Reservation savedReservation = new Reservation(1L, date, time, theme, Fixture.defaultLoginuser);
+        Reservation nonSavedReservation = new Reservation(date, time, theme, Fixture.defaultLoginuser);
 
         assertThat(savedReservation.isSameReservation(nonSavedReservation))
                 .isTrue();
@@ -94,7 +94,7 @@ class ReservationTest {
                 LocalDate.of(2024, 05, 05),
                 new ReservationTime(LocalTime.of(16, 30)),
                 new Theme("name", "description", "thumbnail"),
-                Fixture.DEFAULT_LOGINUSER
+                Fixture.defaultLoginuser
         );
 
         assertAll(

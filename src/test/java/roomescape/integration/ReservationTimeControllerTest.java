@@ -21,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.LoginUser;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -35,7 +35,7 @@ import roomescape.repository.ThemeRepository;
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 public class ReservationTimeControllerTest {
 
-    private final LoginUser savedUser = new LoginUser(1L, "name", "email@email.com");
+    private final LoginMember savedUser = new LoginMember(1L, "name", "email@email.com");
     @LocalServerPort
     int port;
     @Autowired

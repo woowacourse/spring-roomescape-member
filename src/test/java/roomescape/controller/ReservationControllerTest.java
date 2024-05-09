@@ -9,11 +9,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.LoginUser;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.LoginUserResponse;
+import roomescape.dto.LoginMemberResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
@@ -24,7 +24,7 @@ import roomescape.repository.CollectionThemeRepository;
 import roomescape.service.ReservationService;
 
 class ReservationControllerTest {
-    private static final LoginUser DEFAULT_LOGINUSER = new LoginUser(1L, "아서", "Hyunta@wooteco.com");
+    private static final LoginMember DEFAULT_LOGINUSER = new LoginMember(1L, "아서", "Hyunta@wooteco.com");
     private ReservationTime defaultTime = new ReservationTime(1L, LocalTime.now());
     private Theme defualtTheme = new Theme("name", "description", "thumbnail");
     private CollectionReservationRepository collectionReservationRepository;
@@ -63,7 +63,7 @@ class ReservationControllerTest {
                 date,
                 ReservationTimeResponse.from(defaultTime),
                 ThemeResponse.from(defualtTheme),
-                LoginUserResponse.from(DEFAULT_LOGINUSER)
+                LoginMemberResponse.from(DEFAULT_LOGINUSER)
         );
 
         Assertions.assertThat(saveResponse).isEqualTo(expected);
