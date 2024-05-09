@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.MemberReservationCreateRequest;
@@ -64,7 +65,8 @@ public class ReservationService {
         return saveReservation(reservation, time);
     }
 
-    public ReservationResponse createReservation(MemberReservationCreateRequest request, Member member) {
+    public ReservationResponse createReservation(MemberReservationCreateRequest request, LoginMember loginMember) {
+        Member member = findMemberById(loginMember.id());
         ReservationTime time = findReservationTimeById(request.timeId());
         Theme theme = findThemeById(request.themeId());
 

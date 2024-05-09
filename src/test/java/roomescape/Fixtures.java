@@ -1,5 +1,6 @@
 package roomescape;
 
+import roomescape.auth.dto.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
@@ -29,6 +30,11 @@ public class Fixtures {
             new Member(8L, "클로버8", "test8@gmail.com", "password"),
             new Member(9L, "클로버9", "test9@gmail.com", "password"),
             new Member(10L, "클로버10", "test10@gmail.com", "password")
+    );
+
+    public static final LoginMember loginMemberFixture = new LoginMember(
+            memberFixture.getId(),
+            memberFixture.getEmail()
     );
 
     public static final ReservationTime reservationTimeFixture = new ReservationTime(

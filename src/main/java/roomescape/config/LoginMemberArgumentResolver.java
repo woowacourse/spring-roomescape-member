@@ -7,24 +7,25 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.domain.Member;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.dto.LoginMember;
 import roomescape.exception.UnauthorizedException;
-import roomescape.auth.service.AuthService;
 
 import java.util.Arrays;
+import java.util.Map;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
-        this.authService = authService;
+    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(LoginMember.class);
     }
 
     @Override
@@ -45,6 +46,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 .orElseThrow(() -> new UnauthorizedException("사용자 인증 정보가 없습니다."))
                 .getValue();
 
-        return authService.findMemberByToken(accessToken);
+        Map<String, String> decodedClaims = jwtTokenProvider.decode(accessToken);
+        return LoginMember.from(decodedClaims);
     }
 }

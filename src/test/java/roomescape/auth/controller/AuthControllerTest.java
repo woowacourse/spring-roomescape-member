@@ -57,7 +57,7 @@ class AuthControllerTest {
                 .split(";")[0]
                 .split("token=")[1];
 
-        String actual = jwtTokenProvider.decode(accessToken);
+        String actual = jwtTokenProvider.decode(accessToken, "email");
 
         // then
         assertThat(actual).isEqualTo("test@gmail.com");

@@ -27,7 +27,7 @@ public class AuthService {
     }
 
     public Member findMemberByToken(String accessToken) {
-        String email = jwtTokenProvider.decode(accessToken);
+        String email = jwtTokenProvider.decode(accessToken, "email");
         return findMemberByEmail(email);
     }
 
@@ -47,7 +47,7 @@ public class AuthService {
     }
 
     public LoginCheckResponse checkLogin(String token) {
-        String email = jwtTokenProvider.decode(token);
+        String email = jwtTokenProvider.decode(token, "email");
         Member member = findMemberByEmail(email);
 
         return LoginCheckResponse.from(member);

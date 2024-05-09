@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.dto.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.reservation.dto.MemberReservationCreateRequest;
 import roomescape.reservation.dto.ReservationCreateRequest;
@@ -49,7 +50,7 @@ public class ReservationController {
     @PostMapping(params = {"type=member"})
     public ReservationResponse createReservation(
             @Valid @RequestBody MemberReservationCreateRequest request,
-            Member member
+            LoginMember member
     ) {
         return reservationService.createReservation(request, member);
     }

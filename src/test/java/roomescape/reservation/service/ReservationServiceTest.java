@@ -9,17 +9,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
-import roomescape.member.domain.Member;
+import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.MemberReservationCreateRequest;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.service.ReservationService;
-import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.member.repository.MemberRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -123,13 +122,16 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.themeFixture));
+        Mockito.when(memberRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.memberFixture));
+
         MemberReservationCreateRequest request = new MemberReservationCreateRequest(date, 1L, 1L);
-        Member member = Fixtures.memberFixture;
+        LoginMember loginMember = Fixtures.loginMemberFixture;
         Mockito.when(reservationRepository.save(any()))
                 .thenReturn(Fixtures.reservationFixture);
 
         // when
-        ReservationResponse reservation = reservationService.createReservation(request, member);
+        ReservationResponse reservation = reservationService.createReservation(request, loginMember);
 
         // then
         SoftAssertions softAssertions = new SoftAssertions();
