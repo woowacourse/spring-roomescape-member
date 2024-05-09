@@ -11,7 +11,10 @@
 | GET    |                 | /login                 | 로그인 페이지 접근          | /login.html             |                                                                                                 |
 | GET    |                 | /reservations          | 모든 예약 조회            |                         |                                                                                                 |
 |        | 200 OK          |                        | 모든 예약 조회            |                         | {id, date, member{id, name, email}, time{id, startAt}, theme{id, name, description, thumbnail}} |
-| POST   |                 | /reservations          | 예약 추가               |                         | Header(cookie), date, timeId, themeId                                                           |
+| POST   |                 | /reservations          | 사용자 예약 추가           |                         | Header(cookie), date, timeId, themeId                                                           |
+|        | 201 CREATED     | /reservations/{id}     | 예약 추가 성공            |                         | id, date, member{id, name, email}, time{id, startAt}, theme{id, name, description, thumbnail}   |
+|        | 400 BAD REQUEST |                        | 입력 양식으로 인한 예약 추가 실패 |                         | error message                                                                                   |
+| POST   |                 | /admin/reservations    | 관리자 예약 추가           |                         | date, memberId, timeId, themeId                                                                 |
 |        | 201 CREATED     | /reservations/{id}     | 예약 추가 성공            |                         | id, date, member{id, name, email}, time{id, startAt}, theme{id, name, description, thumbnail}   |
 |        | 400 BAD REQUEST |                        | 입력 양식으로 인한 예약 추가 실패 |                         | error message                                                                                   |
 | DELETE |                 | /reservations/{id}     | 예약 삭제               |                         |                                                                                                 |

@@ -55,7 +55,8 @@ class ReservationControllerTest {
     void createReservation() {
         // given
         String cookie = createMemberAndReturnCookie();
-        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
+                DATE_FIXTURE);
         // then
         RestAssured.given().log().all()
                 .header("cookie", cookie)
@@ -87,7 +88,7 @@ class ReservationControllerTest {
         // given
         String cookie = createMemberAndReturnCookie();
         MemberReservationRequest memberReservationRequest
-                = createReservationRequest(LocalDate.of(2023, 12, 12));
+                = createMemberReservationRequest(LocalDate.of(2023, 12, 12));
         // when & then
         RestAssured.given().log().all()
                 .header("cookie", cookie)
@@ -102,7 +103,8 @@ class ReservationControllerTest {
     void duplicateReservation() {
         // given
         String cookie = createMemberAndReturnCookie();
-        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
+                DATE_FIXTURE);
         RestAssured.given().log().all()
                 .header("cookie", cookie)
                 .contentType(ContentType.JSON)
@@ -135,7 +137,8 @@ class ReservationControllerTest {
     void deleteReservationSuccess() {
         // given
         String cookie = createMemberAndReturnCookie();
-        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
+                DATE_FIXTURE);
         Response reservationResponse = RestAssured.given().log().all()
                 .header("cookie", cookie)
                 .contentType(ContentType.JSON)
@@ -173,7 +176,7 @@ class ReservationControllerTest {
                 .then().log().all().extract().header("Set-Cookie").split(";")[0];
     }
 
-    private MemberReservationRequest createReservationRequest(LocalDate date) {
+    private MemberReservationRequest createMemberReservationRequest(LocalDate date) {
         Long timeId = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id")

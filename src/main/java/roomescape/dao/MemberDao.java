@@ -22,6 +22,10 @@ public class MemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public List<Member> findAll() {
+        return jdbcTemplate.query("select * from member", rowMapper);
+    }
+
     public Member find(Member member) {
         List<Member> members = jdbcTemplate.query(
                 "SELECT * FROM member WHERE email = ? AND password = ?",

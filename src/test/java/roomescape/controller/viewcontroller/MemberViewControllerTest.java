@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.viewcontroller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MemberControllerTest {
+class MemberViewControllerTest {
     @LocalServerPort
     private int port;
 

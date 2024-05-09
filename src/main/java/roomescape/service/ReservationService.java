@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
@@ -13,7 +14,9 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.MemberReservationRequest;
+import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.TargetNotExistException;
@@ -21,12 +24,14 @@ import roomescape.exception.TargetNotExistException;
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
+    private final MemberDao memberDao;
     private final ReservationTimeDao reservationTimeDao;
     private final RoomThemeDao roomThemeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                              RoomThemeDao roomThemeDao) {
+    public ReservationService(ReservationDao reservationDao, MemberDao memberDao,
+                              ReservationTimeDao reservationTimeDao, RoomThemeDao roomThemeDao) {
         this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
         this.reservationTimeDao = reservationTimeDao;
         this.roomThemeDao = roomThemeDao;
     }
@@ -40,17 +45,26 @@ public class ReservationService {
 
     public ReservationResponse save(MemberReservationRequest memberReservationRequest,
                                     Member member) {
-        ReservationTime reservationTime = reservationTimeDao
-                .findById(memberReservationRequest.timeId());
-        validateOutdatedDateTime(memberReservationRequest.date(), reservationTime.getStartAt());
-        RoomTheme roomTheme = roomThemeDao.findById(memberReservationRequest.themeId());
-        validateDuplicatedReservation(
-                memberReservationRequest.date(), reservationTime.getId(), roomTheme.getId());
-
-        Reservation reservation = memberReservationRequest
-                .toReservation(member, reservationTime, roomTheme);
+        Reservation reservation = getValidatedReservation(memberReservationRequest, member);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
+    }
+
+    public ReservationResponse save(AdminReservationRequest adminReservationRequest) {
+        Member member = memberDao.findMemberById(adminReservationRequest.memberId());
+        Reservation reservation = getValidatedReservation(adminReservationRequest, member);
+        Reservation savedReservation = reservationDao.save(reservation);
+        return ReservationResponse.fromReservation(savedReservation);
+    }
+
+    private Reservation getValidatedReservation(ReservationRequest reservationRequest,
+                                                Member member) {
+        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
+        validateOutdatedDateTime(reservationRequest.date(), reservationTime.getStartAt());
+        RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
+        validateDuplicatedReservation(
+                reservationRequest.date(), reservationTime.getId(), roomTheme.getId());
+        return reservationRequest.toReservation(member, reservationTime, roomTheme);
     }
 
     public void deleteById(Long id) {
