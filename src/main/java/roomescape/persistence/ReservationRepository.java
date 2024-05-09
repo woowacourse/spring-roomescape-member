@@ -14,6 +14,7 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
@@ -25,7 +26,8 @@ public class ReservationRepository {
                     new Member(
                             resultSet.getLong("member_id"),
                             new Name(resultSet.getString("member_name")),
-                            resultSet.getString("email")),
+                            resultSet.getString("email"),
+                            Role.valueOf(resultSet.getString("role"))),
                     new ReservationDate(
                             LocalDate.parse(resultSet.getString("date"))),
                     new ReservationTime(
@@ -120,7 +122,8 @@ public class ReservationRepository {
                     th.thumbnail,
                     m.id AS member_id,
                     m.name AS member_name,
-                    m.email
+                    m.email,
+                    m.role
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id
@@ -146,7 +149,8 @@ public class ReservationRepository {
                     th.thumbnail,
                     m.id AS member_id,
                     m.name AS member_name,
-                    m.email
+                    m.email,
+                    m.role
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id

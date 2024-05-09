@@ -10,8 +10,8 @@ public class Member {
     private final String password;
     private final Role role;
 
-    public Member(Long id, Name name, String email) {
-        this(id, name, email, null, Role.USER);
+    public Member(Long id, Name name, String email, Role role) {
+        this(id, name, email, null, role);
     }
 
     public Member(Long id, Name name, String email, String password, Role role) {
@@ -40,6 +40,10 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override

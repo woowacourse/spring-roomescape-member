@@ -74,6 +74,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handle(AuthorizationException exception) {
+        logWarn(exception);
+        return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException exception) {
         logWarn(exception);
         return new ResponseEntity<>(new ErrorResponse("읽을 수 없는 HTTP 메세지입니다."), HttpStatus.BAD_REQUEST);

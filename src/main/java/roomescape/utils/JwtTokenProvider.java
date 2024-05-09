@@ -22,6 +22,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(findMember.getId().toString())
+                .claim("role", findMember.getRole())
                 .setIssuedAt(now)
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -30,5 +31,9 @@ public class JwtTokenProvider {
 
     public String getTokenSubject(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String getTokenRole(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role").toString();
     }
 }
