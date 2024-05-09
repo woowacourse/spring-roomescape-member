@@ -1,5 +1,6 @@
 package roomescape.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,8 +16,7 @@ public class MemberRepository {
             (resultSet, rowNum) -> new Member(
                     resultSet.getLong("id"),
                     new Name(resultSet.getString("name")),
-                    resultSet.getString("email"),
-                    resultSet.getString("password")
+                    resultSet.getString("email")
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,11 +35,16 @@ public class MemberRepository {
     }
 
     public Optional<Member> findById(Long id) {
-        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        String sql = "SELECT id, name, email FROM member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email FROM member";
+        return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 }

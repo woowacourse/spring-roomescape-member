@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.request.MemberLoginRequest;
-import roomescape.service.request.ReservationRequest;
+import roomescape.service.request.MemberReservationRequest;
 
 /*
  * 테스트 데이터베이스 초기 데이터
@@ -56,7 +56,7 @@ class ReservationIntegrationTest {
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         LocalDate reservationDate = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest(reservationDate.toString(), 1L, 1L);
+        MemberReservationRequest request = new MemberReservationRequest(reservationDate.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

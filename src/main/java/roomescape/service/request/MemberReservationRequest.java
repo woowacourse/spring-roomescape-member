@@ -11,7 +11,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.web.exception.DateValid;
 
-public record ReservationRequest(
+public record MemberReservationRequest(
         @NotBlank(message = "예약 날짜는 필수입니다.") @DateValid String date,
         @NotNull @Positive Long timeId,
         @NotNull @Positive Long themeId

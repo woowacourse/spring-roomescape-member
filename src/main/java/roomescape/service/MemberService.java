@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.persistence.MemberRepository;
@@ -40,6 +41,12 @@ public class MemberService {
     public MemberResponse getMemberInfo(LoginMember loginMember) {
         Member findMember = memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
-        return new MemberResponse(findMember.getNameValue());
+        return new MemberResponse(findMember.getId(), findMember.getNameValue());
+    }
+
+    public List<MemberResponse> getAllMembers() {
+        return memberRepository.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }
