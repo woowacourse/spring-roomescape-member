@@ -1,15 +1,16 @@
 drop table if exists reservation;
 drop table if exists reservation_time;
+drop table if exists user_table;
 drop table if exists theme;
 
-create table reservation_time
+CREATE TABLE reservation_time
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
     start_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
-create table theme
+CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
@@ -18,16 +19,27 @@ create table theme
     PRIMARY KEY (id)
 );
 
-create table reservation
+CREATE TABLE user_table
+(
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE reservation
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
     date VARCHAR(255) NOT NULL,
+    member_id BIGINT NOT NULL,
     time_id BIGINT NOT NULL,
     theme_id BIGINT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES user_table (id)
 );
 
 insert into theme (name, description, thumbnail)
@@ -86,19 +98,24 @@ values ('10:00'),
        ('21:00'),
        ('22:00');
 
-insert into reservation (name, date, time_id, theme_id)
-values ('사람1', DATEADD(DAY, -5, CURRENT_DATE), 1, 1),
-       ('사람2', DATEADD(DAY, -5, CURRENT_DATE), 2, 1),
-       ('사람3', DATEADD(DAY, -5, CURRENT_DATE), 3, 1),
-       ('사람4', DATEADD(DAY, -5, CURRENT_DATE), 4, 1),
-       ('사람5', DATEADD(DAY, -5, CURRENT_DATE), 1, 2),
-       ('사람6', DATEADD(DAY, -5, CURRENT_DATE), 2, 2),
-       ('사람7', DATEADD(DAY, -5, CURRENT_DATE), 3, 2),
-       ('사람8', DATEADD(DAY, -5, CURRENT_DATE), 1, 3),
-       ('사람9', DATEADD(DAY, -5, CURRENT_DATE), 2, 3),
-       ('사람14', DATEADD(DAY, -5, CURRENT_DATE), 1, 4),
-       ('사람15', DATEADD(DAY, -5, CURRENT_DATE), 1, 5),
-       ('사람10', DATEADD(DAY, -5, CURRENT_DATE), 1, 6),
-       ('사람11', DATEADD(DAY, -5, CURRENT_DATE), 1, 7),
-       ('사람12', DATEADD(DAY, -5, CURRENT_DATE), 1, 8),
-       ('사람13', DATEADD(DAY, -5, CURRENT_DATE), 1, 9);
+insert into user_table (name, email, password, role)
+values ('admin', 'admin', 'admin', 'ADMIN'),
+       ('name1', 'email1', 'qq1', 'USER'),
+       ('name2', 'email2', 'qq2', 'USER');
+
+insert into reservation (date, member_id, time_id, theme_id)
+values (DATEADD(DAY, -5, CURRENT_DATE), 1, 1, 1),
+       (DATEADD(DAY, -5, CURRENT_DATE), 1, 2, 1),
+       (DATEADD(DAY, -5, CURRENT_DATE), 1, 3, 1),
+       (DATEADD(DAY, -5, CURRENT_DATE), 1, 4, 1),
+       (DATEADD(DAY, -5, CURRENT_DATE), 1, 1, 2),
+       (DATEADD(DAY, -5, CURRENT_DATE), 1, 2, 2),
+       (DATEADD(DAY, -5, CURRENT_DATE), 2, 3, 2),
+       (DATEADD(DAY, -5, CURRENT_DATE), 2, 1, 3),
+       (DATEADD(DAY, -5, CURRENT_DATE), 2, 2, 3),
+       (DATEADD(DAY, -5, CURRENT_DATE), 2, 1, 4),
+       (DATEADD(DAY, -5, CURRENT_DATE), 2, 1, 5),
+       (DATEADD(DAY, -5, CURRENT_DATE), 2, 1, 6),
+       (DATEADD(DAY, -5, CURRENT_DATE), 3, 1, 7),
+       (DATEADD(DAY, -5, CURRENT_DATE), 3, 1, 8),
+       (DATEADD(DAY, -5, CURRENT_DATE), 3, 1, 9);
