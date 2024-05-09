@@ -2,8 +2,6 @@ package roomescape.reservation.dto;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.principal.AuthenticatedMember;
-import roomescape.member.model.MemberRole;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
@@ -25,10 +23,9 @@ class ReservationResponseTest {
         final String clientName = "켈리";
         final LocalDate reservationDate = LocalDate.now().plusDays(1);
         final Reservation reservation = Reservation.of(1L, clientName, reservationDate, reservationTime, theme);
-        final AuthenticatedMember authenticatedMember = new AuthenticatedMember(1L, clientName, "kelly6bf@gmail.com", MemberRole.USER);
 
         // When
-        final ReservationResponse reservationResponse = ReservationResponse.from(reservation, authenticatedMember);
+        final ReservationResponse reservationResponse = ReservationResponse.from(reservation);
 
         // Then
         assertAll(

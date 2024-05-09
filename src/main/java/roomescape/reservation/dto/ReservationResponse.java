@@ -1,6 +1,5 @@
 package roomescape.reservation.dto;
 
-import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.model.Reservation;
 
@@ -13,14 +12,10 @@ public record ReservationResponse(
         ReservationTimeResponse time,
         ThemeResponse theme
 ) {
-    public static ReservationResponse from(final Reservation reservation, final AuthenticatedMember authenticatedMember) {
+    public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                new MemberResponse(
-                        authenticatedMember.id(),
-                        authenticatedMember.name(),
-                        authenticatedMember.email()
-                ),
+                new MemberResponse(reservation.getClientName().value()),
                 reservation.getDate().value(),
                 ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme())
