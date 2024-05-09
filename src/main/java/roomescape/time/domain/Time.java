@@ -2,7 +2,7 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.model.RoomEscapeException;
+import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.time.exception.TimeExceptionCode;
 
 public class Time {

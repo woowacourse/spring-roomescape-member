@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.global.config;
 
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import java.time.format.DateTimeFormatter;

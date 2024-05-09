@@ -3,7 +3,7 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import roomescape.exception.model.RoomEscapeException;
+import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dao.ThemeDao;

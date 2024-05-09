@@ -1,7 +1,7 @@
 package roomescape.name.domain;
 
 import java.util.regex.Pattern;
-import roomescape.exception.model.RoomEscapeException;
+import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.name.exception.NameExceptionCode;
 
 public class Name {
