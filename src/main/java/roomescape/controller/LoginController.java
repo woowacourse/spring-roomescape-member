@@ -14,7 +14,6 @@ import roomescape.dto.LoginResponse;
 import roomescape.service.LoginService;
 
 @Controller
-@RequestMapping("/login")
 public class LoginController {
     private final LoginService loginService;
 
@@ -22,12 +21,12 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @GetMapping
+    @GetMapping("/login")
     public String loginView() {
         return "/login";
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String loginToken = loginService.getLoginToken(loginRequest);
         Cookie cookie = new Cookie("token", loginToken);
@@ -38,7 +37,7 @@ public class LoginController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<LoginResponse> loginCheck(@LoginUserParameter LoginUser loginUser) {
         return ResponseEntity.ok(new LoginResponse(loginUser.getName()));
     }

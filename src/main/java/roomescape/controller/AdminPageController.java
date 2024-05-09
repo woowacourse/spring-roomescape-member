@@ -5,24 +5,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/admin")
 public class AdminPageController {
-    @GetMapping
+    @GetMapping("/admin")
     public String mainPage() {
         return "admin/index";
     }
 
-    @GetMapping("/reservation")
+    @GetMapping("/admin/reservation")
     public String reservationPage() {
         return "admin/reservation-new";
     }
 
-    @GetMapping("/time")
+    @GetMapping("/admin/time")
     public String reservationTimePage() {
         return "admin/time";
     }
 
-    @GetMapping("/theme")
+    @GetMapping("/admin/theme")
     public String themePage() {
         return "admin/theme";
     }

@@ -16,7 +16,6 @@ import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
-@RequestMapping("/themes")
 public class ThemeController {
     private final ThemeService themeService;
 
@@ -24,24 +23,24 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
+    @GetMapping("/themes")
     public List<ThemeResponse> findAll() {
         return themeService.findAll();
     }
 
-    @GetMapping("/ranking")
+    @GetMapping("/themes/ranking")
     public List<ThemeResponse> findAndOrderByPopularity(@RequestParam int count) {
         return themeService.findAndOrderByPopularity(count);
     }
 
-    @PostMapping
+    @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> save(@RequestBody ThemeRequest themeRequest) {
         ThemeResponse savedThemeResponse = themeService.save(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + savedThemeResponse.id()))
                 .body(savedThemeResponse);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
