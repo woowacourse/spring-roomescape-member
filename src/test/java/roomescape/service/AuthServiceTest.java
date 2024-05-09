@@ -2,12 +2,11 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.ADD_MEMBER_SQL;
 import static roomescape.TestFixture.MEMBER_FIXTURE;
+import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
 
 import io.restassured.RestAssured;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
-import roomescape.dto.response.MemberProfileResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthServiceTest {
@@ -30,14 +29,16 @@ class AuthServiceTest {
     private MemberDao memberDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private SimpleJdbcInsert simpleJdbcInsert;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    @AfterEach
-    void tearDown() {
+        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .usingGeneratedKeyColumns("id");
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("DELETE FROM member");
     }
 
@@ -45,7 +46,8 @@ class AuthServiceTest {
     @Test
     void generateCookie() {
         // given
-        jdbcTemplate.update(ADD_MEMBER_SQL);
+        simpleJdbcInsert.withTableName("member")
+                .execute(MEMBER_PARAMETER_SOURCE);
         Member foundMember = memberDao.find(MEMBER_FIXTURE);
         // when
         Cookie cookie = authService.generateCookie(foundMember);
@@ -56,17 +58,18 @@ class AuthServiceTest {
         );
     }
 
-    @DisplayName("쿠키를 이용한 사용자 정보 조회 테스트")
+    @DisplayName("쿠키를 이용한 사용자 id 조회 테스트")
     @Test
-    void findMemberProfileByCookie() {
+    void findMemberIdByCookie() {
         // given
-        jdbcTemplate.update(ADD_MEMBER_SQL);
+        simpleJdbcInsert.withTableName("member")
+                .execute(MEMBER_PARAMETER_SOURCE);
         Member foundMember = memberDao.find(MEMBER_FIXTURE);
         Cookie cookie = authService.generateCookie(foundMember);
         Cookie[] cookies = new Cookie[]{cookie};
         // when
-        MemberProfileResponse memberProfile = authService.findMemberProfile(cookies);
+        Long id = authService.findMemberId(cookies);
         // then
-        assertThat(foundMember.getNameValue()).isEqualTo(memberProfile.name());
+        assertThat(foundMember.getId()).isEqualTo(id);
     }
 }

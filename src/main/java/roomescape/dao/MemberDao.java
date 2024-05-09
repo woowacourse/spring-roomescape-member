@@ -31,4 +31,13 @@ public class MemberDao {
         }
         return members.get(0);
     }
+
+    public Member findMemberById(Long id) {
+        List<Member> members = jdbcTemplate.query(
+                "SELECT * FROM member WHERE id = ?", rowMapper, id);
+        if (members.isEmpty()) {
+            throw new InvalidInputException("해당 계정이 존재하지 않습니다.");
+        }
+        return members.get(0);
+    }
 }

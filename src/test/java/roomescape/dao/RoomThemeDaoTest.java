@@ -3,8 +3,10 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
+import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
+import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -15,9 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.InvalidInputException;
 
@@ -27,27 +30,17 @@ class RoomThemeDaoTest {
     private int port;
 
     @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private ReservationTimeDao reservationTimeDao;
-    @Autowired
     private RoomThemeDao roomThemeDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
-        for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
-        }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
-        }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
-        for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
-        }
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
     }
 
     @DisplayName("저장된 모든 테마를 보여준다.")
@@ -63,24 +56,44 @@ class RoomThemeDaoTest {
     @Test
     void findAllRanking() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        roomThemeDao.save(new RoomTheme("a", "b", "c"));
-        reservationDao.save(new Reservation(
-                new Name("브라운"), LocalDate.now().minusDays(2), reservationTime, roomTheme));
+        Long memberId = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(MEMBER_PARAMETER_SOURCE)
+                .longValue();
+        Long timeId = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
+                .longValue();
+        Long themeId = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
+                .longValue();
+        roomThemeDao.save(new RoomTheme("a", "s", "d"));
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("date", LocalDate.now().minusDays(2))
+                .addValue("memberId", memberId)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+        new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id")
+                .execute(parameterSource);
         // when
         List<RoomTheme> ranking = roomThemeDao.findAllRanking();
         // then
         assertThat(ranking).hasSize(1);
-        assertThat(ranking.get(0).getName()).isEqualTo(roomTheme.getName());
+        assertThat(ranking.get(0).getName()).isEqualTo(
+                ROOM_THEME_PARAMETER_SOURCE.getValue("name"));
     }
 
     @DisplayName("해당 id의 테마를 보여준다.")
     @Test
     void findById() {
         // given
-        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
-        RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         // when
         RoomTheme foundRoomTheme = roomThemeDao.findById(savedRoomTheme.getId());
         // then
@@ -122,8 +135,7 @@ class RoomThemeDaoTest {
     @Test
     void deleteTheme() {
         // given
-        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
-        RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         // when
         roomThemeDao.deleteById(savedRoomTheme.getId());
         // then

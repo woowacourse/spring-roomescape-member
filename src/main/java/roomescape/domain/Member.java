@@ -10,6 +10,10 @@ public class Member {
         this(null, null, email, password);
     }
 
+    public Member(Long id, Name name, String password) {
+        this(id, name, password, null);
+    }
+
     public Member(Long id, Name name, String email, String password) {
         this.id = id;
         this.name = name;
@@ -19,6 +23,10 @@ public class Member {
 
     public Long getId() {
         return id;
+    }
+
+    public Name getName() {
+        return name;
     }
 
     public String getNameValue() {

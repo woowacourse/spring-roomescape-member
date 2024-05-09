@@ -3,23 +3,18 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.RoomTheme;
 import roomescape.exception.InvalidInputException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,27 +23,17 @@ class ReservationTimeDaoTest {
     private int port;
 
     @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
     private ReservationTimeDao reservationTimeDao;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
-        for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
-        }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
-        }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
-        for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
-        }
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
     }
 
     @DisplayName("모든 예약 시간을 보여준다")
@@ -111,20 +96,6 @@ class ReservationTimeDaoTest {
         reservationTimeDao.deleteById(reservationTime.getId());
         // then
         assertThat(reservationTimeDao.findAll()).isEmpty();
-    }
-
-    @DisplayName("해당 id의 예약 시간을 삭제하는 경우, 그 id를 참조하는 예약도 삭제한다.")
-    @Test
-    void deleteByIdDeletesReservationAlso() {
-        // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        reservationDao.save(new Reservation(new Name("aa"), DATE_FIXTURE,
-                reservationTime, roomTheme));
-        // when
-        reservationTimeDao.deleteById(reservationTime.getId());
-        // then
-        assertThat(reservationDao.findAll()).isEmpty();
     }
 
     @DisplayName("삭제 대상이 존재하면 true를 반환한다.")

@@ -9,10 +9,11 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.TargetNotExistException;
@@ -37,14 +38,17 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        validateOutdatedDateTime(reservationRequest.date(), reservationTime.getStartAt());
-        RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
+    public ReservationResponse save(MemberReservationRequest memberReservationRequest,
+                                    Member member) {
+        ReservationTime reservationTime = reservationTimeDao
+                .findById(memberReservationRequest.timeId());
+        validateOutdatedDateTime(memberReservationRequest.date(), reservationTime.getStartAt());
+        RoomTheme roomTheme = roomThemeDao.findById(memberReservationRequest.themeId());
         validateDuplicatedReservation(
-                reservationRequest.date(), reservationTime.getId(), roomTheme.getId());
+                memberReservationRequest.date(), reservationTime.getId(), roomTheme.getId());
 
-        Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
+        Reservation reservation = memberReservationRequest
+                .toReservation(member, reservationTime, roomTheme);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
     }

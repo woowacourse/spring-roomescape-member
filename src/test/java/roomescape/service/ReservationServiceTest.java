@@ -4,26 +4,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.EMAIL_FIXTURE;
+import static roomescape.TestFixture.MEMBER_NAME_FIXTURE;
+import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
+import static roomescape.TestFixture.PASSWORD_FIXTURE;
+import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
+import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
+import static roomescape.TestFixture.THEME_NAME_FIXTURE;
 import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.RoomThemeDao;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.RoomTheme;
-import roomescape.dto.request.ReservationRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.domain.Member;
+import roomescape.domain.Name;
+import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.TargetNotExistException;
@@ -36,27 +38,15 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private ReservationTimeDao reservationTimeDao;
-    @Autowired
-    private RoomThemeDao roomThemeDao;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
-        for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
-        }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
-        }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
-        for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
-        }
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
     }
 
     @DisplayName("모든 예약 검색")
@@ -69,15 +59,17 @@ class ReservationServiceTest {
     @Test
     void save() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(DATE_FIXTURE);
+        Member member = createMember();
+        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
         // when
-        ReservationResponse response = reservationService.save(reservationRequest);
+        ReservationResponse response = reservationService.save(memberReservationRequest, member);
         // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
-                () -> assertThat(response.name()).isEqualTo("aa"),
+                () -> assertThat(response.member().id()).isEqualTo(member.getId()),
                 () -> assertThat(response.date()).isEqualTo(DATE_FIXTURE),
-                () -> assertThat(response.time().startAt()).isEqualTo(TIME_FIXTURE)
+                () -> assertThat(response.time().startAt()).isEqualTo(TIME_FIXTURE),
+                () -> assertThat(response.theme().name()).isEqualTo(THEME_NAME_FIXTURE)
         );
     }
 
@@ -85,9 +77,11 @@ class ReservationServiceTest {
     @Test
     void pastReservationSave() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(LocalDate.of(2000, 11, 9));
+        Member member = createMember();
+        MemberReservationRequest memberReservationRequest = createReservationRequest(
+                LocalDate.of(2000, 11, 9));
         // when & then
-        assertThatThrownBy(() -> reservationService.save(reservationRequest))
+        assertThatThrownBy(() -> reservationService.save(memberReservationRequest, member))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("지난 날짜에는 예약할 수 없습니다.");
     }
@@ -96,10 +90,11 @@ class ReservationServiceTest {
     @Test
     void duplicatedReservationSave() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(DATE_FIXTURE);
-        reservationService.save(reservationRequest);
+        Member member = createMember();
+        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        reservationService.save(memberReservationRequest, member);
         // when & then
-        assertThatThrownBy(() -> reservationService.save(reservationRequest))
+        assertThatThrownBy(() -> reservationService.save(memberReservationRequest, member))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약이 이미 존재합니다.");
     }
@@ -108,8 +103,9 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         // given
-        ReservationRequest request = createReservationRequest(DATE_FIXTURE);
-        ReservationResponse response = reservationService.save(request);
+        Member member = createMember();
+        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        ReservationResponse response = reservationService.save(memberReservationRequest, member);
         // when
         reservationService.deleteById(response.id());
         // then
@@ -124,11 +120,26 @@ class ReservationServiceTest {
                 .hasMessage("삭제할 예약이 존재하지 않습니다.");
     }
 
-    private ReservationRequest createReservationRequest(LocalDate date) {
-        ReservationTime savedReservationTime = reservationTimeDao.save(
-                RESERVATION_TIME_FIXTURE);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        return new ReservationRequest("aa", date,
-                savedReservationTime.getId(), savedRoomTheme.getId());
+    private Member createMember() {
+        Long memberId = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(MEMBER_PARAMETER_SOURCE)
+                .longValue();
+        return new Member(memberId, new Name(MEMBER_NAME_FIXTURE), EMAIL_FIXTURE, PASSWORD_FIXTURE);
+    }
+
+    private MemberReservationRequest createReservationRequest(LocalDate date) {
+        Long timeId = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
+                .longValue();
+        Long themeId = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
+                .longValue();
+        return new MemberReservationRequest(date, timeId, themeId);
     }
 }
