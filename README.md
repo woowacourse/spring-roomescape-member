@@ -43,6 +43,15 @@
 
 - [x] 로그인 기능을 구현한다.
     - [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회한다
+- [x] 로그아웃 기능을 구현한다.
+
+### 5단계 기능 요구사항
+
+- [ ] 예약 생성 기능 변경
+    - [ ] 사용자 예약 생성 기능
+        - [ ] 로그인한 사용자 정보를 활용하여 예약을 생성한다
+    - [ ] 관리자 예약 생성 시
+    -
 
 ---
 
@@ -168,6 +177,41 @@ Transfer-Encoding: chunked
 
 {
 "name": "어드민"
+}
+```
+
+### 예약 생성 - 사용자
+
+request
+
+```json
+POST /reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost: 8080
+
+{
+"date": "2024-03-01",
+"themeId": 1,
+"timeId": 1
+}
+```
+
+### 예약 생성 - 관리자
+
+request
+
+```json
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost: 8080
+
+{
+"date": "2024-03-01",
+"themeId": 1,
+"timeId": 1,
+"memberId": 1
 }
 ```
 
