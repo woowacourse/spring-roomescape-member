@@ -8,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.member.Member;
+import roomescape.dto.request.MemberRequest;
 import roomescape.infrastructure.auth.Token;
 import roomescape.service.serviceimpl.LoginService;
 import roomescape.service.serviceimpl.MemberService;
@@ -42,6 +43,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Token token = cookieManager.getToken(request.getCookies());
         Long memberId = loginService.findMemberIdByToken(token);
-        return memberService.findMemberById(memberId);
+        Member foundMember = memberService.findMemberById(memberId);
+        return new MemberRequest(foundMember);
     }
 }
