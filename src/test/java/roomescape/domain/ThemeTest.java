@@ -30,9 +30,9 @@ class ThemeTest {
     }
 
     @Test
-    @DisplayName("이름이 255자를 넘으면 예외가 발생한다.")
+    @DisplayName("이름이 30자를 넘으면 예외가 발생한다.")
     void validateNameLength() {
-        String name = "a".repeat(256);
+        String name = "a".repeat(31);
 
         assertThatThrownBy(() -> new Theme(name, "description", "thumbnail"))
                 .isInstanceOf(IllegalArgumentException.class)
