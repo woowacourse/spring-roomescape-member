@@ -23,6 +23,7 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
         if (roleRepository.isAdminByMemberId(memberId)) {
             return true;
         }
-        throw new IllegalArgumentException("관리자 권한이 없습니다.");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return false;
     }
 }
