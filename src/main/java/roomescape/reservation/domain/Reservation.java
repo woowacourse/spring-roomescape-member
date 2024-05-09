@@ -10,7 +10,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 public class Reservation {
-    
+
     private static final Pattern ILLEGAL_NAME_REGEX = Pattern.compile(".*[^\\w\\s가-힣].*");
 
     private long id;
@@ -41,6 +41,11 @@ public class Reservation {
         return new Reservation(name, date, timeId, themeId);
     }
 
+    public static Reservation saveReservationOf(String name, LocalDate date, Time time, Theme theme) {
+        validateAtSaveDateAndTime(date, time);
+        return new Reservation(0, name, date, time, theme);
+    }
+
     public long getId() {
         return id;
     }
@@ -57,38 +62,19 @@ public class Reservation {
         return time;
     }
 
-    public long getReservationTimeId() {
-        return time.getId();
-    }
-
     public Theme getTheme() {
         return theme;
-    }
-
-    public long getThemeId() {
-        return theme.getId();
     }
 
     public void setIdOnSave(long id) {
         this.id = id;
     }
 
-    public void setTimeOnSave(Time time) {
-        if (date.equals(LocalDate.now())) {
-            validateTime(time);
-        }
-        this.time = time;
-    }
-
-    public void setThemeOnSave(Theme theme) {
-        this.theme = theme;
-    }
-
     public boolean hasSameId(long id) {
         return this.id == id;
     }
 
-    private void validateTime(Time time) {
+    private static void validateTime(Time time) {
         if (time.getStartAt().isBefore(LocalTime.now())) {
             throw new RoomEscapeException(ReservationExceptionCode.RESERVATION_TIME_IS_PAST_EXCEPTION);
         }
@@ -107,6 +93,14 @@ public class Reservation {
     private static void validateAtSave(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
             throw new RoomEscapeException(ReservationExceptionCode.RESERVATION_DATE_IS_PAST_EXCEPTION);
+        }
+    }
+
+    private static void validateAtSaveDateAndTime(LocalDate date, Time time) {
+        validateAtSave(date);
+
+        if (date.equals(LocalDate.now())) {
+            validateTime(time);
         }
     }
 

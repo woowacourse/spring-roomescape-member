@@ -47,8 +47,8 @@ public class ReservationJdbcDao implements ReservationDao {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("theme_id", reservation.getThemeId());
+                .addValue("time_id", reservation.getReservationTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
 
         long id = jdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
         reservation.setIdOnSave(id);
@@ -58,7 +58,7 @@ public class ReservationJdbcDao implements ReservationDao {
     @Override
     public List<Reservation> findAllReservationOrderByDateAndTimeStartAt() {
         String findAllReservationSql = """
-                SELECT r.id, r.name, r.date, 
+                SELECT r.id, r.name, r.date,
                     t.id AS time_id, t.start_at, 
                     th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
                 FROM reservation r 

@@ -29,13 +29,12 @@ public class ReservationRepository {
     public Reservation save(Reservation reservation) {
         Time time = timeDao.findById(reservation.getReservationTime().getId())
                 .orElseThrow(() -> new RoomEscapeException(TimeExceptionCode.FOUND_TIME_IS_NULL_EXCEPTION));
-        Theme theme = themeDao.findById(reservation.getThemeId())
+        Theme theme = themeDao.findById(reservation.getTheme().getId())
                 .orElseThrow(() -> new RoomEscapeException(ThemeExceptionCode.FOUND_THEME_IS_NULL_EXCEPTION));
 
-        reservation.setTimeOnSave(time);
-        reservation.setThemeOnSave(theme);
-
-        return reservationDao.save(reservation);
+        Reservation saveReservation = Reservation.saveReservationOf(reservation.getName(), reservation.getDate(), time,
+                theme);
+        return reservationDao.save(saveReservation);
     }
 
     public List<Reservation> findAllReservationOrderByDateAndTimeStartAt() {
