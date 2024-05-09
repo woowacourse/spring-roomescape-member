@@ -400,53 +400,54 @@ id : 1
     - [x] 테스트 만들기
 
 ## 4단계 요구사항
+
 - [x] `GET /login` : 로그인 페이지 응답(templates/login.html)
-- [ ] 사용자 도메인 추가
-  - name: 사용자 이름
-  - email: 이메일
-  - password: 비밀번호
-  - email을 로그인의 id로, password를 비밀번호로 사용
-- [ ] `POST /login`
-  - [ ] Request : 로그인 폼에 입력한 email, password 값을 body에 포함
-    ```markdown
-    POST /login HTTP/1.1
-    content-type: application/json
-    host: localhost:8080
-    
-    {
-    "password": "password",
-    "email": "admin@email.com"
-    }
-    ```
-  - [ ] Response : 응답 Cookie에 "token"값으로 토큰이 포함
-    - [ ] email과 password를 이용해서 멤버를 조회
-    - [ ] 조회한 멤버로 토큰 생성
-    - [ ] Cookie를 만들어 응답
-    ```markdown
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    Keep-Alive: timeout=60
-    Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
-    ```
-- [ ] `GET /login/check` : 사용자의 정보를 조회하는 API
-  - [ ] Cookie에서 토큰 정보를 추출
-  - [ ] 멤버를 찾아 멤버 정보를 응답합
-  - [ ] Request
-    ```markdown
-    GET /login/check HTTP/1.1
-    cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
-    host: localhost:8080
-    ```
-  - [ ] Response
-    ```markdown
-    HTTP/1.1 200 OK
-    Connection: keep-alive
-    Content-Type: application/json
-    Date: Sun, 03 Mar 2024 19:16:56 GMT
-    Keep-Alive: timeout=60
-    Transfer-Encoding: chunked
-    
-    {
-    "name": "어드민"
-    }
-    ```
+- [x] `POST /login`
+    - [x] Request : 로그인 폼에 입력한 email, password 값을 body에 포함
+      ```markdown
+      POST /login HTTP/1.1
+      content-type: application/json
+      host: localhost:8080
+      
+      {
+      "password": "password",
+      "email": "admin@email.com"
+      }
+      ```
+    - [x] 사용자 도메인 추가
+        - name: 사용자 이름
+        - email: 이메일
+        - password: 비밀번호
+        - email을 로그인의 id로, password를 비밀번호로 사용
+    - [x] Response : 응답 Cookie에 "token"값으로 토큰이 포함
+        - [x] email과 password를 이용해서 멤버를 조회
+        - [x] 조회한 멤버로 토큰 생성
+        - [x] Cookie를 만들어 응답
+      ```markdown
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+      Keep-Alive: timeout=60
+      Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+      ```
+- [x] `GET /login/check` : 사용자의 정보를 조회하는 API
+    - [x] Cookie에서 토큰 정보를 추출
+    - [x] 멤버를 찾아 멤버 정보를 응답합
+    - [x] Request
+      ```markdown
+      GET /login/check HTTP/1.1
+      cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+      host: localhost:8080
+      ```
+    - [x] Response
+      ```markdown
+      HTTP/1.1 200 OK
+      Connection: keep-alive
+      Content-Type: application/json
+      Date: Sun, 03 Mar 2024 19:16:56 GMT
+      Keep-Alive: timeout=60
+      Transfer-Encoding: chunked
+      
+      {
+      "name": "어드민"
+      }
+      ```
