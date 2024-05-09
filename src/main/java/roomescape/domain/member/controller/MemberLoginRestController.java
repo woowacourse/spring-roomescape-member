@@ -11,13 +11,13 @@ import roomescape.global.config.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping(("/login"))
-public class MemberLoginController {
+public class MemberLoginRestController {
 
     private static final String TOKEN = "token";
 
     private final LoginService loginService;
 
-    public MemberLoginController(LoginService loginService) {
+    public MemberLoginRestController(LoginService loginService) {
         this.loginService = loginService;
     }
 
