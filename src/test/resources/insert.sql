@@ -28,9 +28,12 @@ VALUES ('Theme 1', 'Desc 1', 'thumb 1'),
 INSERT INTO RESERVATION (NAME, DATE, THEME_ID, TIME_ID)
 VALUES ('Res 1', DATEADD(D, -3, CURRENT_DATE), 2, 2),
        ('Res 2', DATEADD(D, -3, CURRENT_DATE), 2, 4),
+
        ('Res 3', DATEADD(D, -3, CURRENT_DATE), 3, 2),
        ('Res 4', DATEADD(D, -2, CURRENT_DATE), 3, 3),
        ('Res 5', DATEADD(D, -2, CURRENT_DATE), 3, 4),
+
        ('Res 6', DATEADD(D, -2, CURRENT_DATE), 5, 3),
        ('Res 7', DATEADD(D, -1, CURRENT_DATE), 5, 4),
+
        ('Res 8', DATEADD(D, 1, CURRENT_DATE), 2, 2);

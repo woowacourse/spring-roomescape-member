@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 @Sql(value = "/insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -65,6 +66,7 @@ class TimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
+                .header("Location", containsString("/times/"))
                 .body("startAt", is(request.startAt()));
     }
 
