@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 
 public class Users {
     private static final Pattern EMAIL_FORMAT = Pattern.compile("^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$");
@@ -28,13 +27,13 @@ public class Users {
 
     private void validateInvalidName(final String name) {
         if (Objects.isNull(name) || name.isEmpty()) {
-            throw new RoomEscapeException(ExceptionMessage.INVALID_USER_NAME);
+            throw new RoomEscapeException("사용자 명이 null 이거나 공백으로 이루어질 수 없습니다.");
         }
     }
 
     private void validateInvalidEmail(final String email) {
         if (!EMAIL_FORMAT.matcher(email).matches()) {
-            throw new RoomEscapeException(ExceptionMessage.INVALID_USER_NAME);
+            throw new RoomEscapeException("이메일이 이메일 형식에 맞게 이루어지지 않았습니다.");
         }
     }
 

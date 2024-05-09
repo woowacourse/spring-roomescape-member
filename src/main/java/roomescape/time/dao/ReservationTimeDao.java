@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
 
@@ -49,7 +48,7 @@ public class ReservationTimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
         } catch (final EmptyResultDataAccessException exception) {
-            throw new RoomEscapeException(ExceptionMessage.NOT_FOUND_TIME);
+            throw new RoomEscapeException("해당 timeId와 일치하는 시간이 존재하지 않습니다.");
         }
     }
 

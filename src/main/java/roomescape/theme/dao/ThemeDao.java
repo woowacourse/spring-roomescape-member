@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -46,7 +45,7 @@ public class ThemeDao {
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (final EmptyResultDataAccessException exception) {
-            throw new RoomEscapeException(ExceptionMessage.NOT_FOUND_THEME);
+            throw new RoomEscapeException("해당 themeId와 일치하는 테마가 존재하지 않습니다.");
         }
     }
 

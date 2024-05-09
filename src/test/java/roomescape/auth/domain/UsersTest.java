@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 
 class UsersTest {
 
@@ -18,7 +17,7 @@ class UsersTest {
     void validateInvalidName(String name) {
         assertThatThrownBy(() -> new Users(1L, name, "email@email.com", "1234"))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage());
+                .hasMessage("사용자 명이 null 이거나 공백으로 이루어질 수 없습니다.");
     }
 
     @DisplayName("이메일 형식에 맞지 않는 경우 예외가 발생한다.")
@@ -26,7 +25,7 @@ class UsersTest {
     void validateInvalidEmail() {
         assertThatThrownBy(() -> new Users(1L, "hotea", "email.com", "1234"))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage());
+                .hasMessage("이메일이 이메일 형식에 맞게 이루어지지 않았습니다.");
     }
 
 }

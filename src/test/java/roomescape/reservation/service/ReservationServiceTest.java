@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dao.ThemeDao;
@@ -50,15 +49,15 @@ class ReservationServiceTest {
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.MAX.toString(), id, id)))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.DUPLICATE_DATE_TIME.getMessage()),
+                        .hasMessage("이미 해당 날짜, 시간에 예약이 존재합니다."),
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.now().minusDays(1).toString(), id, id)))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.PAST_DATE_RESERVATION.getMessage()),
+                        .hasMessage("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다."),
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.now().toString(), id, id)))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.PAST_TIME_RESERVATION.getMessage())
+                        .hasMessage("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.")
         );
     }
 }

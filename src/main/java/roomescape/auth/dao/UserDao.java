@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.auth.domain.Users;
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 
 @Repository
 public class UserDao {
@@ -36,7 +35,7 @@ public class UserDao {
         try {
             return jdbcTemplate.queryForObject(sql, usersRowMapper, email, password);
         } catch (final EmptyResultDataAccessException exception) {
-            throw new RoomEscapeException(ExceptionMessage.INVALID_USER_NAME);
+            throw new RoomEscapeException("예약자명이 null 이거나 공백인 경우 저장을 할 수 없습니다.");
         }
     }
 

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -50,14 +49,14 @@ public class ReservationService {
         final ReservationTime time = reservation.getTime();
         final Theme theme = reservation.getTheme();
         if (date.isBeforeToday()) {
-            throw new RoomEscapeException(ExceptionMessage.PAST_DATE_RESERVATION);
+            throw new RoomEscapeException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
         }
         if (date.isToday() && time.checkPastTime()) {
-            throw new RoomEscapeException(ExceptionMessage.PAST_TIME_RESERVATION);
+            throw new RoomEscapeException("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.");
         }
         boolean isExist = reservationDao.checkExistByReservation(date.getDate(), time.getId(), theme.getId());
         if (isExist) {
-            throw new RoomEscapeException(ExceptionMessage.DUPLICATE_DATE_TIME);
+            throw new RoomEscapeException("이미 해당 날짜, 시간에 예약이 존재합니다.");
         }
     }
 

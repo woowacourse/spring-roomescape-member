@@ -17,16 +17,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = RoomEscapeException.class)
     public ErrorResponse handleRoomEscapeException(final RoomEscapeException ex) {
-        return ErrorResponse.builder(ex, ex.getStatus(), ex.getMessage()).build();
+        return ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build();
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         return ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, Objects.requireNonNull(ex.getBindingResult()
-                                                                                          .getFieldErrors()
-                                                                                          .get(0)
-                                                                                          .getDefaultMessage()))
-                            .build();
+                .getFieldErrors()
+                .get(0)
+                .getDefaultMessage())).build();
     }
 
     @ExceptionHandler(value = ConstraintViolationException.class)
@@ -36,6 +35,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = RuntimeException.class)
     public ErrorResponse handleRuntimeException(RuntimeException ex) {
-        return ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build();
+        return ErrorResponse.builder(ex, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()).build();
     }
 }

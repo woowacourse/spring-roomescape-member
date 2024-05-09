@@ -33,44 +33,44 @@ public class ReservationAcceptanceTest {
     @Test
     void findAll() {
         RestAssured.given()
-                   .when().get("/reservations")
-                   .then().statusCode(200)
-                   .body("size()", is(0));
+                .when().get("/reservations")
+                .then().statusCode(200)
+                .body("size()", is(0));
         save();
         RestAssured.given()
-                   .when().get("/reservations")
-                   .then().statusCode(200)
-                   .body("size()", is(1));
+                .when().get("/reservations")
+                .then().statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test
     void save() {
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto("10:00");
         RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(reservationTimeRequestDto)
-                   .when().post("/times")
-                   .then().statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(reservationTimeRequestDto)
+                .when().post("/times")
+                .then().statusCode(201);
 
         ThemeRequestDto themeRequestDto = new ThemeRequestDto("정글모험", "정글모험 설명", "정글모험 이미지");
         RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(themeRequestDto)
-                   .when().post("/themes")
-                   .then().statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(themeRequestDto)
+                .when().post("/themes")
+                .then().statusCode(201);
 
 
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("hi", LocalDate.MAX.toString(), 1, 1);
         RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(reservationRequestDto)
-                   .when().post("/reservations")
-                   .then().statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(reservationRequestDto)
+                .when().post("/reservations")
+                .then().statusCode(201);
 
         RestAssured.given()
-                   .when().get("/reservations")
-                   .then().statusCode(200)
-                   .body("size()", is(1));
+                .when().get("/reservations")
+                .then().statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test
@@ -78,17 +78,17 @@ public class ReservationAcceptanceTest {
         save();
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("브라운", LocalDate.MAX.toString(), 1, 1);
         RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(reservationRequestDto)
-                   .when().post("/reservations")
-                   .then().statusCode(409);
+                .contentType(ContentType.JSON)
+                .body(reservationRequestDto)
+                .when().post("/reservations")
+                .then().statusCode(400);
     }
 
     @Test
     void delete() {
         save();
         RestAssured.given()
-                   .when().delete("/reservations/1")
-                   .then().statusCode(200);
+                .when().delete("/reservations/1")
+                .then().statusCode(200);
     }
 }
