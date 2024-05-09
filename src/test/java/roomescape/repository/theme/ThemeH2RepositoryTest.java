@@ -13,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
@@ -25,8 +24,6 @@ class ThemeH2RepositoryTest {
 
     @Autowired
     private ThemeH2Repository themeH2Repository;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("Theme를 저장한다.")
@@ -43,9 +40,7 @@ class ThemeH2RepositoryTest {
     void delete() {
         themeH2Repository.delete(NOT_RESERVATION_THEME.getId());
 
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
-
-        assertThat(count).isEqualTo(INITIAL_THEME_COUNT - 1);
+        assertThat(themeH2Repository.findById(NOT_RESERVATION_THEME.getId()).isEmpty()).isTrue();
     }
 
     @Test
