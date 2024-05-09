@@ -1,6 +1,8 @@
 package roomescape.dao;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -47,17 +49,22 @@ public class RoomThemeDao {
         ));
     }
 
-    public RoomTheme findById(Long id) {
+    public Optional<RoomTheme> findById(Long id) {
         if (id == null) {
             throw new BadRequestException("id가 빈값일 수 없습니다.");
         }
-        return jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new RoomTheme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                ), id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
+                    (rs, rowNum) -> new RoomTheme(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("thumbnail")
+                    ), id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public RoomTheme save(RoomTheme roomTheme) {

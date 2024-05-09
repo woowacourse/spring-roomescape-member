@@ -16,7 +16,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
-import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
 @Service
@@ -45,18 +45,24 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        validateOutdatedDateTime(reservationRequest.date(), reservationTime.getStartAt());
+    public ReservationResponse save(ReservationCreateRequest reservationCreateRequest) {
+        ReservationTime reservationTime = reservationTimeDao.findById(reservationCreateRequest.timeId())
+                .orElseThrow(() -> new NotFoundException("예약시간을 찾을 수 없습니다."));
+        validateOutdatedDateTime(
+                reservationCreateRequest.date(),
+                reservationTime.getStartAt());
+        validateDuplicatedDateTime(
+                reservationCreateRequest.date(),
+                reservationCreateRequest.timeId(),
+                reservationCreateRequest.themeId());
 
-        Member member = memberDao.findById(reservationRequest.memberId())
+        Member member = memberDao.findById(reservationCreateRequest.memberId())
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
-        RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
-        Reservation reservation = reservationRequest.toReservation(member, reservationTime, roomTheme);
+        RoomTheme roomTheme = roomThemeDao.findById(reservationCreateRequest.themeId())
+                .orElseThrow(() -> new NotFoundException("테마를 찾을 수 없습니다."));
 
-        validateDuplicatedDateTime(reservation.getDate(), reservationTime.getId(), roomTheme.getId());
-
+        Reservation reservation = reservationCreateRequest.toReservation(member, reservationTime, roomTheme);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.from(savedReservation);
     }

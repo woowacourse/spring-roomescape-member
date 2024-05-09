@@ -7,14 +7,12 @@ import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
 
-import io.restassured.RestAssured;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -22,8 +20,6 @@ import roomescape.domain.RoomTheme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationDaoTest {
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private ReservationDao reservationDao;
@@ -36,7 +32,6 @@ class ReservationDaoTest {
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
         List<Reservation> reservations = reservationDao.findAll();
         for (Reservation reservation : reservations) {
             reservationDao.deleteById(reservation.getId());

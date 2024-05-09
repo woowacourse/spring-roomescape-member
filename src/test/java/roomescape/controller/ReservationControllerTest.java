@@ -28,7 +28,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
-import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.request.ReservationCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
@@ -136,12 +136,11 @@ class ReservationControllerTest {
     @DisplayName("참조키가 존재하지 않음으로 인한 예약 추가 실패 테스트")
     @Test
     void noPrimaryKeyReservation() {
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest(1L, DATE, 1L, 1L))
+                .body(new ReservationCreateRequest(1L, DATE, 1L, 1L))
                 .when().post("/reservations")
-                .then().log().all().assertThat().statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @DisplayName("예약 취소 성공 테스트")

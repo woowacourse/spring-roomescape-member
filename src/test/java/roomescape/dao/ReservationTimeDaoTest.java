@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE;
 import static roomescape.TestFixture.MEMBER_BROWN;
@@ -9,24 +8,20 @@ import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
 import static roomescape.TestFixture.TIME;
 
-import io.restassured.RestAssured;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.NotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeDaoTest {
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private ReservationDao reservationDao;
@@ -39,7 +34,6 @@ class ReservationTimeDaoTest {
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
         List<Reservation> reservations = reservationDao.findAll();
         for (Reservation reservation : reservations) {
             reservationDao.deleteById(reservation.getId());
@@ -77,17 +71,12 @@ class ReservationTimeDaoTest {
     @Test
     void findById() {
         // given & when
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
-        Long id = reservationTime.getId();
+        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        Long id = savedReservationTime.getId();
         // then
-        assertThat(reservationTimeDao.findById(id).getStartAt()).isEqualTo(TIME);
-    }
-
-    @DisplayName("해당 id의 예약 시간이 없는 경우, 예외가 발생한다.")
-    @Test
-    void findByNotExistingId() {
-        assertThatThrownBy(() -> reservationTimeDao.findById(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        ReservationTime reservationTime = reservationTimeDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("예약시간을 찾을 수 없습니다."));
+        assertThat(reservationTime.getStartAt()).isEqualTo(TIME);
     }
 
     @DisplayName("중복된 예약 시간이 존재하는 지 여부를 반환한다.")

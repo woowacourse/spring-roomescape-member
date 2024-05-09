@@ -2,6 +2,8 @@ package roomescape.dao;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -30,15 +32,20 @@ public class ReservationTimeDao {
                 ));
     }
 
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         if (id == null) {
             throw new BadRequestException("id가 빈값일 수 없습니다.");
         }
-        return jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?",
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                ), id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?",
+                    (rs, rowNum) -> new ReservationTime(
+                            rs.getLong("id"),
+                            rs.getTime("start_at").toLocalTime()
+                    ), id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public boolean existByStartAt(LocalTime startAt) {

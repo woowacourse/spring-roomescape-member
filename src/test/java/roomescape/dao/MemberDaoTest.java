@@ -3,28 +3,22 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.MEMBER_BROWN;
 
-import io.restassured.RestAssured;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.domain.Member;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MemberDaoTest {
-
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
         List<Member> members = memberDao.findAll();
         for (Member member : members) {
             memberDao.deleteById(member.getId());
