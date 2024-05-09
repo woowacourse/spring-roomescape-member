@@ -15,8 +15,6 @@ import roomescape.util.CookieUtil;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private static final String TOKEN = "token";
-
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 

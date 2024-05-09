@@ -3,6 +3,7 @@ package roomescape.security;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -17,6 +18,7 @@ import roomescape.util.CookieUtil;
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {

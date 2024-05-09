@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
-
-    private static final String CLAIM_ID = "id";
 
     private final SecretKey secretKey;
     private final long expirationTime;
@@ -29,12 +26,12 @@ public class JwtTokenProvider {
         this.expirationTime = expirationTime;
     }
 
-    public String createToken(String id) {
+    public String createToken(String memberId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .claim(CLAIM_ID, id)
+                .subject(memberId)
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(secretKey, SIG.HS256)
@@ -44,7 +41,7 @@ public class JwtTokenProvider {
     public Long getMemberId(String token) {
         Claims claims = toClaims(token);
 
-        String memberId = claims.get(CLAIM_ID, String.class);
+        String memberId = claims.getSubject();
         return Long.parseLong(memberId);
     }
 
