@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -47,16 +48,22 @@ public class ReservationTimeRepository {
         String sql = "SELECT id, start_at " +
                 "FROM reservation_time " +
                 "WHERE id = ?";
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, id).stream()
-                .findAny();
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
         String sql = "SELECT id, start_at " +
                 "FROM reservation_time " +
                 "WHERE start_at = ?";
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, Time.valueOf(startAt)).stream()
-                .findAny();
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, Time.valueOf(startAt)));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public List<ReservationTime> findAll() {
