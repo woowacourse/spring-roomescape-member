@@ -65,7 +65,6 @@ class ReservationTimeServiceTest {
         LocalDate date = LocalDate.of(2100, 12, 31);
 
         assertThat(reservationTimeService.findReservationTimeAvailability(date, 1L))
-                .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(List.of(
                         new ReservationTimeAvailability(new ReservationTime(1L, LocalTime.of(10, 0)), true),
                         new ReservationTimeAvailability(new ReservationTime(2L, LocalTime.of(11, 0)), false)

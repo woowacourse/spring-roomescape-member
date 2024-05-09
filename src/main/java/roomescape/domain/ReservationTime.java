@@ -21,14 +21,6 @@ public class ReservationTime {
         return this.id.equals(id);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -40,5 +32,13 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalTime getStartAt() {
+        return startAt;
     }
 }

@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.util.Objects;
+
 public class Theme {
 
     private Long id;
@@ -20,6 +22,21 @@ public class Theme {
 
     public boolean isSameTheme(Long id) {
         return this.id.equals(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Theme theme = (Theme) o;
+
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
     public Long getId() {
