@@ -13,10 +13,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import roomescape.application.member.TokenManager;
 import roomescape.application.reservation.ThemeService;
 import roomescape.application.reservation.dto.request.ThemeRequest;
 import roomescape.application.reservation.dto.response.ThemeResponse;
+import roomescape.auth.TokenManager;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(ThemeController.class)

@@ -12,7 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.mock.web.MockHttpServletResponse;
-import roomescape.application.member.TokenManager;
+import roomescape.auth.TokenManager;
 import roomescape.presentation.view.AdminController;
 
 @WebMvcTest(AdminController.class)

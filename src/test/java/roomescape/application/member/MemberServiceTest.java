@@ -11,6 +11,7 @@ import roomescape.application.ServiceTest;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.request.MemberRegisterRequest;
 import roomescape.application.member.dto.response.TokenResponse;
+import roomescape.auth.TokenManager;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 

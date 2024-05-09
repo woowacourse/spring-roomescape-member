@@ -14,9 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import roomescape.application.member.MemberService;
-import roomescape.application.member.TokenManager;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.response.TokenResponse;
+import roomescape.auth.TokenManager;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(AuthController.class)

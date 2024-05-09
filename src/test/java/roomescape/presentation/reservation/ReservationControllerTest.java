@@ -15,8 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import roomescape.application.member.TokenManager;
 import roomescape.application.reservation.ReservationService;
+import roomescape.auth.TokenManager;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(ReservationController.class)

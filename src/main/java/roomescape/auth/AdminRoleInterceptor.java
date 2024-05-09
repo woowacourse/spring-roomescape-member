@@ -1,10 +1,9 @@
-package roomescape.presentation.interceptor;
+package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.application.member.TokenManager;
 import roomescape.domain.role.RoleRepository;
 
 @Component
