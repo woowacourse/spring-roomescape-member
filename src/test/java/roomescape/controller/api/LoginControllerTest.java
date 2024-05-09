@@ -1,5 +1,7 @@
 package roomescape.controller.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
@@ -8,7 +10,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import roomescape.controller.dto.LoginCheckResponse;
 import roomescape.controller.dto.LoginRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -37,5 +42,25 @@ class LoginControllerTest {
             .when().post("/login")
             .then().log().all()
             .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("성공: 토큰을 이용해서 이름을 가져올 수 있다.")
+    @Test
+    void checkLogin() {
+        LoginRequest request = new LoginRequest("a@a.com", "123a!");
+        String token = RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/login")
+            .then().log().all().extract().header(HttpHeaders.SET_COOKIE);
+
+        LoginCheckResponse response = RestAssured.given().log().all()
+            .header(HttpHeaders.COOKIE, token)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/login/check")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value()).extract().as(LoginCheckResponse.class);
+
+        assertThat(response.name()).isEqualTo("트레");
     }
 }

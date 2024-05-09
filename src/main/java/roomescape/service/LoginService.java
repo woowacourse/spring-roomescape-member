@@ -23,4 +23,8 @@ public class LoginService {
 
         return jwtTokenProvider.createToken(member);
     }
+
+    public Long parseMemberId(String token) {
+        return jwtTokenProvider.parseMemberId(token);
+    }
 }

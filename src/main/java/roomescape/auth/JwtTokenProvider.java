@@ -27,5 +27,12 @@ public class JwtTokenProvider {
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .compact();
     }
+
+    public Long parseMemberId(String token) {
+        return Long.valueOf(Jwts.parser()
+            .setSigningKey(secretKey)
+            .parseClaimsJws(token)
+            .getBody().getSubject());
+    }
 }
 
