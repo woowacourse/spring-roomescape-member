@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.theme.dto.ThemeAddRequest;
 import roomescape.domain.theme.repository.ThemeRepository;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 class AdminThemeServiceTest {
 

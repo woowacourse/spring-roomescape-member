@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.login.domain.Member;
 import roomescape.domain.login.repository.MemberRepository;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 class LoginServiceTest {
 

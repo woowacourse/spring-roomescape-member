@@ -6,7 +6,7 @@ import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservationTime.repository.ReservationTimeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;

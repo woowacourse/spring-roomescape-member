@@ -1,7 +1,7 @@
 package roomescape.domain.reservation.domain;
 
 import java.util.Objects;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 public class Name {
 

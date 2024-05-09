@@ -6,7 +6,7 @@ import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 class ReservationDateTest {
 

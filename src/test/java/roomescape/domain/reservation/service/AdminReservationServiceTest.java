@@ -15,7 +15,7 @@ import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.reservationTime.service.FakeReservationTimeRepository;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.theme.service.FakeThemeRepository;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 class AdminReservationServiceTest {
 

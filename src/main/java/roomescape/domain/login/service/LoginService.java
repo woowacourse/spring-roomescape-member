@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.login.domain.Member;
 import roomescape.domain.login.repository.MemberRepository;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 @Service
 public class LoginService {

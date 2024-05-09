@@ -2,7 +2,7 @@ package roomescape.domain.reservationTime.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 public class ReservationTime {
     private final Long id;

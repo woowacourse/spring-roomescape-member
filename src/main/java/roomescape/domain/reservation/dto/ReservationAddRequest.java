@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 public record ReservationAddRequest(LocalDate date, String name, Long timeId, Long themeId) {
 

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.reservationTime.dto.ReservationTimeAddRequest;
-import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 class AdminReservationTimeServiceTest {
 
