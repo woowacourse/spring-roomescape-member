@@ -9,15 +9,24 @@ import roomescape.repository.rowmapper.MemberRowMapper;
 @Repository
 public class JdbcTemplateMemberRepository implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final MemberRowMapper memberRowMapper;
 
-    public JdbcTemplateMemberRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcTemplateMemberRepository(JdbcTemplate jdbcTemplate, MemberRowMapper memberRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.memberRowMapper = memberRowMapper;
     }
 
     @Override
     public Optional<Member> findByEmailAndEncryptedPassword(String email, String encryptedPassword) {
         String query = "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?";
-        return jdbcTemplate.query(query, new MemberRowMapper(), email, encryptedPassword)
+        return jdbcTemplate.query(query, memberRowMapper, email, encryptedPassword)
+                .stream()
+                .findAny();
+    }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        return jdbcTemplate.query("SELECT id, name, email, password FROM member WHERE id = ?", memberRowMapper, id)
                 .stream()
                 .findAny();
     }

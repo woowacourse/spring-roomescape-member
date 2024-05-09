@@ -20,4 +20,14 @@ class TokenServiceTest {
         Assertions.assertThat(token)
                 .isEqualTo(expected);
     }
+
+    @Test
+    @DisplayName("Jwt 토큰을 잘 파싱하는지 확인")
+    void findUserIdFromToken() {
+        TokenService tokenService = new TokenService();
+        long userId = tokenService.findUserIdFromToken(
+                "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NjcxOTY3OTksInVzZXJfaWQiOjF9.JAI7t6t9Ju_KS7cRPvIc841QE7MBSTVLvciRWomE6hw");
+        Assertions.assertThat(userId)
+                .isEqualTo(1);
+    }
 }

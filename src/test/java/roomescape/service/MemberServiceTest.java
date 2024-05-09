@@ -2,25 +2,42 @@ package roomescape.service;
 
 import static roomescape.exception.ExceptionType.LOGIN_FAIL;
 
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Sha256Encryptor;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.UserInfo;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.CollectionMemberRepository;
 import roomescape.repository.MemberRepository;
 
 class MemberServiceTest {
 
+    public static final Sha256Encryptor SHA_256_ENCRYPTOR = new Sha256Encryptor();
+
     @Test
     @DisplayName("잘못된 이메일이나 비밀번호로 로그인 시도할 경우 예외 발생하는지 확인")
     void loginWithInvalidRequest() {
         MemberRepository memberRepository = new CollectionMemberRepository();
-        Sha256Encryptor encryptor = new Sha256Encryptor();
-        MemberService memberService = new MemberService(memberRepository, encryptor);
+        MemberService memberService = new MemberService(memberRepository, SHA_256_ENCRYPTOR);
         Assertions.assertThatThrownBy(() -> memberService.login(new LoginRequest("email@email.com", "123456")))
                 .isInstanceOf(RoomescapeException.class)
                 .hasMessage(LOGIN_FAIL.getMessage());
+    }
+
+    @Test
+    @DisplayName("사용자 아이디로 사용자 정보를 잘 조회하는지 확인")
+    void findByUserId() {
+        String encrypted = SHA_256_ENCRYPTOR.encrypt("1234");
+        Member member = new Member(1L, "a", "email@emai.com", encrypted);
+        MemberRepository memberRepository = new CollectionMemberRepository(List.of(member));
+        MemberService memberService = new MemberService(memberRepository, SHA_256_ENCRYPTOR);
+
+        UserInfo userInfo = memberService.findByUserId(1L);
+        Assertions.assertThat(userInfo)
+                .isEqualTo(new UserInfo("a"));
     }
 }

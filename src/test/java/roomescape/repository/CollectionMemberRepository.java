@@ -23,4 +23,11 @@ public class CollectionMemberRepository implements MemberRepository {
                 .filter(member -> encryptedPassword.equals(member.getEncryptedPassword()))
                 .findAny();
     }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        return members.stream()
+                .filter(member -> member.getId() == id)
+                .findAny();
+    }
 }
