@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Member;
 import roomescape.model.Role;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,6 +25,21 @@ public class MemberRepository {
 
     public MemberRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<Member> findAll() {
+        final String selectQuery = """
+            SELECT
+                id,
+                name,
+                email,
+                password,
+                role
+            FROM member
+        """;
+        return jdbcTemplate.query(selectQuery, ROW_MAPPER)
+                .stream()
+                .toList();
     }
 
     public Optional<Member> findByEmail(final String email) {
