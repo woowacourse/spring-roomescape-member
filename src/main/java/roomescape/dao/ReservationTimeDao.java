@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.time.BookableTimeResponse;
 
 @Repository
 public class ReservationTimeDao {
@@ -63,10 +64,37 @@ public class ReservationTimeDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, time.toString());
     }
 
+    public List<BookableTimeResponse> getAllBookableTime(String date, Long themeId) {
+        String sql = """
+                SELECT 
+                    t.id,
+                    t.start_at,
+                    CASE 
+                        WHEN r.id IS NOT NULL THEN TRUE
+                        ELSE FALSE
+                    END AS booked
+                FROM reservation_time AS t
+                LEFT JOIN reservation AS r
+                    ON t.id = r.time_id
+                    AND r.date = ?
+                    AND r.theme_id = ?
+                """;
+
+        return jdbcTemplate.query(sql, getBookableTimeRowMapper(), date, themeId);
+    }
+
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (resultSet, numRow) -> new ReservationTime(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime()
+        );
+    }
+
+    private RowMapper<BookableTimeResponse> getBookableTimeRowMapper() {
+        return (resultSet, rowNum) -> new BookableTimeResponse(
+                resultSet.getLong("id"),
+                resultSet.getString("start_at"),
+                resultSet.getBoolean("booked")
         );
     }
 }

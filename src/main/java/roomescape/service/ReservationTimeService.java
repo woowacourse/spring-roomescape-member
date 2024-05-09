@@ -54,13 +54,7 @@ public class ReservationTimeService {
         if (!reservationThemeDao.isExist(themeId)) {
             throw new IllegalArgumentException("테마가 존재하지 않아 예약 가능 시간을 조회할 수 없습니다.");
         }
-        return reservationTimeDao.findAll().stream()
-                .map(time -> new BookableTimeResponse(time, isBooked(date, time.getId(), themeId)))
-                .toList();
-    }
-
-    private Boolean isBooked(String date, Long timeId, Long themeId) {
-        return reservationDao.hasSameReservation(date, timeId, themeId);
+        return reservationTimeDao.getAllBookableTime(date, themeId);
     }
 
     public void deleteTime(Long id) {
