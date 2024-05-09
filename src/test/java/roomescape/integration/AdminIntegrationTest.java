@@ -70,7 +70,7 @@ public class AdminIntegrationTest {
                 Integer.class);
         System.out.println(integer);
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("memberId", 1);
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -105,7 +105,7 @@ public class AdminIntegrationTest {
     @DisplayName("관리자 예약 페이지가 DB와 함께 잘 동작한다.")
     void adminReservationPageWorkWithDB() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("memberId", 1);
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
         params.put("themeId", 1);

@@ -3,6 +3,7 @@ package roomescape.service;
 import static roomescape.exception.ExceptionType.INVALID_TOKEN;
 import static roomescape.exception.ExceptionType.LOGIN_FAIL;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.Sha256Encryptor;
@@ -34,6 +35,14 @@ public class MemberService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new RoomescapeException(INVALID_TOKEN));
         String name = member.getName();
-        return new UserInfo(name);
+        long id = member.getId();
+        return new UserInfo(id, name);
+    }
+
+    public List<UserInfo> findAll() {
+        return memberRepository.findAll()
+                .stream()
+                .map(member -> new UserInfo(member.getId(), member.getName()))
+                .toList();
     }
 }

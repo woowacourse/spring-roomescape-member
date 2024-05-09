@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Member;
@@ -29,5 +30,10 @@ public class CollectionMemberRepository implements MemberRepository {
         return members.stream()
                 .filter(member -> member.getId() == id)
                 .findAny();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return Collections.unmodifiableList(members);
     }
 }

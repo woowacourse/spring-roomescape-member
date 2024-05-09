@@ -13,8 +13,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
@@ -95,7 +97,8 @@ class ReservationTimeServiceTest {
         void usedReservationTimeDeleteTest() {
             //given
             reservationRepository.save(new Reservation(
-                    "name",
+                    new Member(1L, "name", "email@email.com",
+                            new Sha256Encryptor().encrypt("1234")),
                     LocalDate.now(),
                     new ReservationTime(1L, SAVED_TIME),
                     new Theme(1L, "name", "description", "http://thumbnail")

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -24,6 +25,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
     private ReservationRepository reservationRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -96,7 +99,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
         theme = themeRepository.save(theme);
         ReservationTime time = new ReservationTime(LocalTime.of(12, 30));
         time = reservationTimeRepository.save(time);
-        reservationRepository.save(new Reservation("name", date, time, theme));
+        Member member = memberRepository.findById(1L).orElseThrow();
+        reservationRepository.save(new Reservation(member, date, time, theme));
 
         List<ReservationTime> response = reservationTimeRepository.findUsedTimeByDateAndTheme(date, theme);
 

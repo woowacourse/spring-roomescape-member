@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
 
 @SpringBootTest
@@ -58,14 +60,16 @@ class JdbcTemplateThemeRepositoryTest {
         ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(3, 30)));
 
         LocalDate date = LocalDate.now().plusDays(1);
-        reservationRepository.save(new Reservation("name", date, reservationTime2, theme2));
-        reservationRepository.save(new Reservation("name", date, reservationTime1, theme2));
-        reservationRepository.save(new Reservation("name", date, reservationTime3, theme2));
+        Sha256Encryptor encryptor = new Sha256Encryptor();
+        Member member = new Member(1L, "name", "email@email.com", encryptor.encrypt("1234"));
+        reservationRepository.save(new Reservation(member, date, reservationTime2, theme2));
+        reservationRepository.save(new Reservation(member, date, reservationTime1, theme2));
+        reservationRepository.save(new Reservation(member, date, reservationTime3, theme2));
 
-        reservationRepository.save(new Reservation("name", date, reservationTime1, theme1));
-        reservationRepository.save(new Reservation("name", date, reservationTime2, theme1));
+        reservationRepository.save(new Reservation(member, date, reservationTime1, theme1));
+        reservationRepository.save(new Reservation(member, date, reservationTime2, theme1));
 
-        reservationRepository.save(new Reservation("name", date, reservationTime1, theme3));
+        reservationRepository.save(new Reservation(member, date, reservationTime1, theme3));
 
         List<Theme> result = themeRepository.findAndOrderByPopularity(date, date.plusDays(1), 10);
         Assertions.assertThat(result)

@@ -14,13 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
+import roomescape.repository.CollectionMemberRepository;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
@@ -82,18 +85,18 @@ class ThemeServiceTest {
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 30)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(2, 30)));
         ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(3, 30)));
+        Member member = new Member(1L, "name", "email@email.com", new Sha256Encryptor().encrypt("1234"));
 
         ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
-                themeRepository);
+                themeRepository, new CollectionMemberRepository(List.of(member)));
+        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime2.getId(), theme2.getId()));
+        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime1.getId(), theme2.getId()));
+        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime3.getId(), theme2.getId()));
 
-        reservationService.save(new ReservationRequest(date, "name", reservationTime2.getId(), theme2.getId()));
-        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme2.getId()));
-        reservationService.save(new ReservationRequest(date, "name", reservationTime3.getId(), theme2.getId()));
+        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime1.getId(), theme1.getId()));
+        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime2.getId(), theme1.getId()));
 
-        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme1.getId()));
-        reservationService.save(new ReservationRequest(date, "name", reservationTime2.getId(), theme1.getId()));
-
-        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme3.getId()));
+        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime1.getId(), theme3.getId()));
     }
 
     @DisplayName("테마, 시간이 하나 존재할 때")
@@ -138,8 +141,9 @@ class ThemeServiceTest {
         @Test
         void removeFailTest() {
             //given
+            Member member = new Member(1L, "name", "email@email.com", new Sha256Encryptor().encrypt("1234"));
             reservationRepository.save(new Reservation(
-                    "name", LocalDate.now().plusDays(1), defaultTime, defaultTheme));
+                    member, LocalDate.now().plusDays(1), defaultTime, defaultTheme));
 
             //when & then
             assertThatThrownBy(() -> themeService.delete(1L))

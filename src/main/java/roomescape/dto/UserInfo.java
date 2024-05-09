@@ -1,4 +1,4 @@
 package roomescape.dto;
 
-public record UserInfo(String name) {
+public record UserInfo(long id, String name) {
 }

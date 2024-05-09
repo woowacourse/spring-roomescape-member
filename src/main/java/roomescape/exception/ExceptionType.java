@@ -26,7 +26,8 @@ public enum ExceptionType {
     ENCRYPT_FAIL(INTERNAL_SERVER_ERROR, "비밀번호 암호화에 실패하였습니다."),
     LOGIN_FAIL(UNAUTHORIZED, "이메일이나 비밀번호가 잘못되었습니다."),
     INVALID_EMAIL_FORMAT(BAD_REQUEST, "잘못된 이메일 포맷입니다."),
-    INVALID_TOKEN(UNAUTHORIZED, "잘못된 토큰입니다. 다시 로그인하세요");
+    INVALID_TOKEN(UNAUTHORIZED, "잘못된 토큰입니다. 다시 로그인하세요"),
+    NOT_FOUND_MEMBER(BAD_REQUEST, "없는 회원입니다.");
 
     private final HttpStatus status;
     private final String message;

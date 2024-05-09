@@ -8,8 +8,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.repository.CollectionReservationRepository;
@@ -46,8 +48,9 @@ class AvailableTimeServiceTest {
         ReservationTime reservationTime4 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
 
         LocalDate selectedDate = LocalDate.of(2024, 1, 1);
-        reservationRepository.save(new Reservation("name", selectedDate, reservationTime1, DEFUALT_THEME));
-        reservationRepository.save(new Reservation("name", selectedDate, reservationTime3, DEFUALT_THEME));
+        Member member = new Member(1L, "name", "email@email.com", new Sha256Encryptor().encrypt("1234"));
+        reservationRepository.save(new Reservation(member, selectedDate, reservationTime1, DEFUALT_THEME));
+        reservationRepository.save(new Reservation(member, selectedDate, reservationTime3, DEFUALT_THEME));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = availableTimeService.findByThemeAndDate(selectedDate,

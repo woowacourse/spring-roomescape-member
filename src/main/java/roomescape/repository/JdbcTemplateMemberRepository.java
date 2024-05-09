@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -29,5 +30,10 @@ public class JdbcTemplateMemberRepository implements MemberRepository {
         return jdbcTemplate.query("SELECT id, name, email, password FROM member WHERE id = ?", memberRowMapper, id)
                 .stream()
                 .findAny();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return jdbcTemplate.query("SELECT id, name, email, password FROM member", memberRowMapper);
     }
 }

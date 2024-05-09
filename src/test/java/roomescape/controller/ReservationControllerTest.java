@@ -9,13 +9,16 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
+import roomescape.repository.CollectionMemberRepository;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
@@ -24,9 +27,10 @@ import roomescape.service.ReservationService;
 class ReservationControllerTest {
     private static final long TIME_ID = 1L;
     private static final LocalTime TIME = LocalTime.now();
+    private static final Member DEFAULT_MEMBER = new Member(1L, "name", "email@email.com",
+            new Sha256Encryptor().encrypt("1234"));
     private ReservationTime defaultTime = new ReservationTime(TIME_ID, TIME);
     private Theme defualtTheme = new Theme("name", "description", "http://thumbnail");
-
     private CollectionReservationRepository collectionReservationRepository;
     private ReservationController reservationController;
 
@@ -35,8 +39,9 @@ class ReservationControllerTest {
         CollectionReservationTimeRepository timeRepository = new CollectionReservationTimeRepository();
         CollectionThemeRepository themeRepository = new CollectionThemeRepository();
         collectionReservationRepository = new CollectionReservationRepository();
+        CollectionMemberRepository collectionMemberRepository = new CollectionMemberRepository(List.of(DEFAULT_MEMBER));
         ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository,
-                themeRepository);
+                themeRepository, collectionMemberRepository);
         reservationController = new ReservationController(reservationService);
 
         defaultTime = timeRepository.save(defaultTime);
@@ -51,13 +56,13 @@ class ReservationControllerTest {
 
         //when
         ReservationResponse saveResponse = reservationController.saveReservation(
-                        new ReservationRequest(date, "폴라", TIME_ID, defualtTheme.getId()))
+                        new ReservationRequest(date, DEFAULT_MEMBER.getId(), TIME_ID, defualtTheme.getId()))
                 .getBody();
 
         long id = Objects.requireNonNull(saveResponse).id();
 
         //then
-        ReservationResponse expected = new ReservationResponse(id, "폴라", date,
+        ReservationResponse expected = new ReservationResponse(id, DEFAULT_MEMBER.getName(), date,
                 new ReservationTimeResponse(TIME_ID, TIME),
                 new ThemeResponse(defualtTheme.getId(), defualtTheme.getName(), defualtTheme.getDescription(),
                         defualtTheme.getThumbnail()));
@@ -80,7 +85,7 @@ class ReservationControllerTest {
     void delete() {
         //given
         Reservation saved = collectionReservationRepository.save(
-                new Reservation("폴라", LocalDate.now(), defaultTime, defualtTheme));
+                new Reservation(DEFAULT_MEMBER, LocalDate.now(), defaultTime, defualtTheme));
 
         //when
         reservationController.delete(saved.getId());

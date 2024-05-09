@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
-import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
 
@@ -13,22 +12,21 @@ import roomescape.exception.RoomescapeException;
 
 public class Reservation implements Comparable<Reservation> {
     private final Long id;
-    private final String name;
+    private final Member reservationMember;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Member reservationMember, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, reservationMember, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public Reservation(Long id, Member reservationMember, LocalDate date, ReservationTime time, Theme theme) {
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
         this.id = id;
-        this.name = name;
+        this.reservationMember = reservationMember;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -52,14 +50,8 @@ public class Reservation implements Comparable<Reservation> {
         }
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new RoomescapeException(EMPTY_NAME);
-        }
-    }
-
     public Reservation(long id, Reservation reservationBeforeSave) {
-        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time,
+        this(id, reservationBeforeSave.reservationMember, reservationBeforeSave.date, reservationBeforeSave.time,
                 reservationBeforeSave.theme);
     }
 
@@ -86,8 +78,12 @@ public class Reservation implements Comparable<Reservation> {
         return id;
     }
 
+    public Member getReservationMember() {
+        return reservationMember;
+    }
+
     public String getName() {
-        return name;
+        return reservationMember.getName();
     }
 
     public LocalDate getDate() {
@@ -104,11 +100,7 @@ public class Reservation implements Comparable<Reservation> {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + (time != null ? time.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
@@ -129,9 +121,10 @@ public class Reservation implements Comparable<Reservation> {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", reservationMember=" + reservationMember +
                 ", date=" + date +
                 ", time=" + time +
+                ", theme=" + theme +
                 '}';
     }
 }

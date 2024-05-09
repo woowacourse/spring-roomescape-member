@@ -38,6 +38,6 @@ class MemberServiceTest {
 
         UserInfo userInfo = memberService.findByUserId(1L);
         Assertions.assertThat(userInfo)
-                .isEqualTo(new UserInfo("a"));
+                .isEqualTo(new UserInfo(1L, "a"));
     }
 }

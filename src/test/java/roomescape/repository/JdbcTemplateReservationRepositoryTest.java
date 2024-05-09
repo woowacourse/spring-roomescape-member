@@ -12,14 +12,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
 
 @SpringBootTest
 class JdbcTemplateReservationRepositoryTest {
     private static final ReservationTime DEFAULT_TIME = new ReservationTime(1L, LocalTime.of(11, 56));
     private static final Theme DEFAULT_THEME = new Theme(1L, "이름", "설명", "http://썸네일");
+    private static final Member DEFAULT_MEMBER = new Member(1L, "name", "email@email.com",
+            new Sha256Encryptor().encrypt("1234"));
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -47,7 +51,7 @@ class JdbcTemplateReservationRepositoryTest {
     void save() {
         var beforeSave = reservationRepository.findAll();
         Reservation saved = reservationRepository.save(
-                new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+                new Reservation(DEFAULT_MEMBER, LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
         var afterSave = reservationRepository.findAll();
 
         Assertions.assertThat(afterSave)
@@ -59,8 +63,8 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 조회하는지 확인한다.")
     void findAll() {
         List<Reservation> beforeSave = reservationRepository.findAll();
-        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
-        reservationRepository.save(new Reservation("test2", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
 
         List<Reservation> afterSave = reservationRepository.findAll();
         Assertions.assertThat(afterSave.size())
@@ -71,7 +75,7 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 지우는지 확인한다.")
     void delete() {
         List<Reservation> beforeSaveAndDelete = reservationRepository.findAll();
-        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
 
         reservationRepository.delete(1L);
 
@@ -86,7 +90,7 @@ class JdbcTemplateReservationRepositoryTest {
     void existsByThemeAndDateAndTime() {
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);
-        reservationRepository.save(new Reservation("name", date1, DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, date1, DEFAULT_TIME, DEFAULT_THEME));
 
         assertAll(
                 () -> Assertions.assertThat(
@@ -102,7 +106,7 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("특정 시간에 예약이 있는지 확인한다.")
     void existsByTime() {
         LocalDate date = LocalDate.now();
-        reservationRepository.save(new Reservation("name", date, DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, date, DEFAULT_TIME, DEFAULT_THEME));
 
         assertAll(
                 () -> Assertions.assertThat(reservationRepository.existsByTime(DEFAULT_TIME))
@@ -117,7 +121,7 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("특정 테마에 예약이 있는지 확인한다.")
     void existsByTheme() {
         LocalDate date = LocalDate.now();
-        reservationRepository.save(new Reservation("name", date, DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, date, DEFAULT_TIME, DEFAULT_THEME));
 
         assertAll(
                 () -> Assertions.assertThat(reservationRepository.existsByTheme(DEFAULT_THEME))

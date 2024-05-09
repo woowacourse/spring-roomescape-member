@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -44,5 +45,10 @@ public class MemberController {
     public ResponseEntity<UserInfo> myInfo(@Auth long userId) {
         UserInfo userInfo = memberService.findByUserId(userId);
         return ResponseEntity.ok(userInfo);
+    }
+
+    @GetMapping("/members")
+    public List<UserInfo> allMembers() {
+        return memberService.findAll();
     }
 }
