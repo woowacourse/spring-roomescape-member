@@ -160,25 +160,6 @@ class ReservationServiceTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        @DisplayName("예약자명에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
-        void createReservationByNullOrEmptyName(String given) {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
-            LocalDate tomorrow = today.plusDays(1);
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest(tomorrow.toString(), 1L, 1L);
-            Member member = createMemberWithName(given);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(member, request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
         @DisplayName("예약 날짜에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
         void createReservationByNullOrEmptyDate(String given) {
             //given

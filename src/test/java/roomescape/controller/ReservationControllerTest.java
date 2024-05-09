@@ -67,7 +67,7 @@ class ReservationControllerTest {
         given(reservationService.findAll()).willReturn(expectedResponses);
 
         //when //then
-        mockMvc.perform(get("/reservations").cookie(new Cookie("token", "1234")))
+        mockMvc.perform(get("/reservations"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
