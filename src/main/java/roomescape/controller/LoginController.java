@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.service.dto.LoginMember;
-import roomescape.controller.login.Login;
+import roomescape.controller.annotation.Login;
 import roomescape.service.dto.MemberResponse;
 import roomescape.controller.dto.TokenRequest;
 import roomescape.service.AuthService;

@@ -1,4 +1,4 @@
-package roomescape.controller.admin;
+package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;

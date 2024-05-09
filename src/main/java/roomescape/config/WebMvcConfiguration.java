@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.service.AuthService;
 import roomescape.controller.infrastructure.AuthorizationExtractor;
 import roomescape.controller.interceptor.CheckAdminInterceptor;
-import roomescape.controller.login.AuthenticationPrincipalArgumentResolver;
+import roomescape.controller.argumentresolver.AuthenticationPrincipalArgumentResolver;
 import roomescape.controller.interceptor.CheckLoginInterceptor;
 
 @Configuration
