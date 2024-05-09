@@ -1,7 +1,6 @@
 package roomescape.service.auth;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.login.MemberNameResponse;
 import roomescape.controller.login.TokenRequest;
 import roomescape.controller.login.TokenResponse;
 import roomescape.domain.Member;
@@ -22,14 +21,12 @@ public class AuthService {
         this.memberRepository = memberRepository;
     }
 
-    public MemberNameResponse findMemberByEmail(final String email) {
-        final Member member = memberRepository.findByEmail(email)
+    public Member findMemberByEmail(final String email) {
+        return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 로그인 정보 입니다."));
-
-        return MemberNameResponse.from(member);
     }
 
-    public MemberNameResponse findMemberByToken(final String token) {
+    public Member findMemberByToken(final String token) {
         String payload = jwtTokenProvider.getPayload(token);
 
         return findMemberByEmail(payload);
