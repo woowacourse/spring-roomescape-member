@@ -5,9 +5,9 @@ import static org.mockito.Mockito.doReturn;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.IntegrationTest;
+import roomescape.controller.BaseControllerTest;
 
-class AdminControllerTest extends IntegrationTest {
+class AdminControllerTest extends BaseControllerTest {
 
     @Test
     @DisplayName("어드민이 예약을 추가한다.")

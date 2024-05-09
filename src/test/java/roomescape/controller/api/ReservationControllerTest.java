@@ -1,8 +1,8 @@
 package roomescape.controller.api;
 
-import roomescape.IntegrationTest;
+import roomescape.controller.BaseControllerTest;
 
-class ReservationControllerTest extends IntegrationTest {
+class ReservationControllerTest extends BaseControllerTest {
 
 //    @Autowired
 //    private ReservationTimeRepository reservationTimeRepository;

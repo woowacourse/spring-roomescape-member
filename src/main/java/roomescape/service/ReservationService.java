@@ -78,7 +78,7 @@ public class ReservationService {
         );
     }
 
-    public ReservationResponse createReservation(
+    private ReservationResponse createReservation(
             LocalDate date,
             Long memberId,
             Long timeId,

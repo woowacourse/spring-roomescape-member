@@ -12,10 +12,10 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
-import roomescape.IntegrationTest;
+import roomescape.controller.BaseControllerTest;
 import roomescape.dto.request.LoginRequest;
 
-class AuthControllerTest extends IntegrationTest {
+class AuthControllerTest extends BaseControllerTest {
 
     private String token;
 

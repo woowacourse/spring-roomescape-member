@@ -9,6 +9,11 @@ spring:
     init:
       data-locations:
 
+logging:
+  level:
+    org.springframework:
+      jdbc: DEBUG
+
 security:
   jwt:
     secret-key: abcdefghijklmnopqrstuvwxyz0123456789

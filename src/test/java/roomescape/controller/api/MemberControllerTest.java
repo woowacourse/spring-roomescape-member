@@ -7,12 +7,12 @@ import io.restassured.response.Response;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.http.HttpStatus;
-import roomescape.IntegrationTest;
+import roomescape.controller.BaseControllerTest;
 import roomescape.domain.member.Role;
 import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.MemberResponse;
 
-class MemberControllerTest extends IntegrationTest {
+class MemberControllerTest extends BaseControllerTest {
 
     void signup() {
         SignupRequest request = new SignupRequest("new@gmail.com", "password", "new");

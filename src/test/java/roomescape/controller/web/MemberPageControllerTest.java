@@ -8,9 +8,9 @@ import io.restassured.response.Response;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
-import roomescape.IntegrationTest;
+import roomescape.controller.BaseControllerTest;
 
-class MemberPageControllerTest extends IntegrationTest {
+class MemberPageControllerTest extends BaseControllerTest {
 
     @ParameterizedTest(name = "{0} 페이지를 조회한다.")
     @ValueSource(strings = {
