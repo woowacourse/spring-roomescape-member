@@ -21,9 +21,14 @@ public class AuthService {
         this.memberRepository = memberRepository;
     }
 
-    public Member findMemberByEmail(String email) {
+    private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 멤버입니다."));
+    }
+
+    public Member findMemberByToken(String accessToken) {
+        String email = jwtTokenProvider.decode(accessToken);
+        return findMemberByEmail(email);
     }
 
     public LoginResponse login(LoginRequest request) {
