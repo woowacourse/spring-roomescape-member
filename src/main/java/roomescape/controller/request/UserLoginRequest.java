@@ -1,4 +1,10 @@
 package roomescape.controller.request;
 
-public record UserLoginRequest(String email, String password) {
+import jakarta.validation.constraints.NotNull;
+
+public record UserLoginRequest(
+        @NotNull
+        String email,
+        @NotNull
+        String password) {
 }

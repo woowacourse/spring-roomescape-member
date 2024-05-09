@@ -3,6 +3,7 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +34,13 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<Void> save(@RequestBody UserSignUpRequest userSignUpRequest) {
+    public ResponseEntity<Void> save(@RequestBody @Valid UserSignUpRequest userSignUpRequest) {
         memberService.save(userSignUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> userLogin(HttpServletResponse response, @RequestBody UserLoginRequest userLoginRequest) {
+    public ResponseEntity<TokenResponse> userLogin(HttpServletResponse response, @RequestBody @Valid UserLoginRequest userLoginRequest) {
         TokenResponse tokenResponse = memberService.createToken(userLoginRequest);
         Cookie cookie = new Cookie("token", tokenResponse.token());
         cookie.setHttpOnly(true);
