@@ -11,10 +11,13 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.AdminReservationResponse;
 import roomescape.dto.response.LoginMember;
 import roomescape.dto.response.ReservationResponse;
 
@@ -25,12 +28,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -54,6 +60,21 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    @Transactional
+    public AdminReservationResponse addReservation(AdminReservationRequest adminReservationRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.getById(adminReservationRequest.timeId());
+        Theme theme = themeRepository.getById(adminReservationRequest.themeId());
+        Member member = memberRepository.getById(adminReservationRequest.memberId());
+        Reservation reservation = adminReservationRequest.toReservation(member, reservationTime, theme);
+
+        validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
+        validateDuplicatedReservation(reservation);
+
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        return AdminReservationResponse.from(savedReservation);
     }
 
     private void validateDateTimeNotPassed(LocalDate date, LocalTime startAt) {
