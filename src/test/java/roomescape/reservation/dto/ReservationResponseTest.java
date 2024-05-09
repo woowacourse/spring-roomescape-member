@@ -2,7 +2,8 @@ package roomescape.reservation.dto;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.dto.ReservationResponse;
+import roomescape.auth.principal.AuthenticatedMember;
+import roomescape.member.model.MemberRole;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
@@ -24,15 +25,16 @@ class ReservationResponseTest {
         final String clientName = "켈리";
         final LocalDate reservationDate = LocalDate.now().plusDays(1);
         final Reservation reservation = Reservation.of(1L, clientName, reservationDate, reservationTime, theme);
+        final AuthenticatedMember authenticatedMember = new AuthenticatedMember(1L, clientName, "kelly6bf@gmail.com", MemberRole.USER);
 
         // When
-        final ReservationResponse reservationResponse = ReservationResponse.from(reservation);
+        final ReservationResponse reservationResponse = ReservationResponse.from(reservation, authenticatedMember);
 
         // Then
         assertAll(
                 () -> assertThat(reservationResponse).isNotNull(),
                 () -> assertThat(reservationResponse.id()).isEqualTo(reservation.getId()),
-                () -> assertThat(reservationResponse.name()).isEqualTo(reservation.getClientName().value()),
+                () -> assertThat(reservationResponse.member().name()).isEqualTo(reservation.getClientName().value()),
                 () -> assertThat(reservationResponse.date()).isEqualTo(reservation.getDate().value()),
                 () -> assertThat(reservationResponse.time().startAt()).isEqualTo(reservation.getTime().getStartAt())
         );

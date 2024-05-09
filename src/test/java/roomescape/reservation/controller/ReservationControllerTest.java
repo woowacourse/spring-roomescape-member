@@ -5,10 +5,14 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.token.TokenProvider;
+import roomescape.member.model.MemberEmail;
+import roomescape.member.model.MemberRole;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.SaveReservationRequest;
 
@@ -24,6 +28,9 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @Sql(value = {"/schema.sql", "/data.sql"}, executionPhase = BEFORE_TEST_METHOD)
 class ReservationControllerTest {
 
+    @Autowired
+    private TokenProvider tokenProvider;
+
     @LocalServerPort
     int randomServerPort;
 
@@ -36,6 +43,7 @@ class ReservationControllerTest {
     @Test
     void getReservationsTest() {
         RestAssured.given().log().all()
+                .cookie("token", createAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -54,6 +62,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createAccessToken())
                 .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -70,6 +79,7 @@ class ReservationControllerTest {
                 .statusCode(204);
 
         final List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", createAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -100,6 +110,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createAccessToken())
                 .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -119,6 +130,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createAccessToken())
                 .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -138,10 +150,18 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createAccessToken())
                 .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("예약자 이름은 1글자 이상 5글자 이하여야 합니다."));
+    }
+
+    private String createAccessToken() {
+        return tokenProvider.createToken(
+                new MemberEmail("user@mail.com"),
+                MemberRole.USER
+        ).getValue();
     }
 }
