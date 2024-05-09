@@ -67,7 +67,7 @@ class ThemeServiceTest {
     @DisplayName("모든 요소를 받아온다.")
     @Test
     void get_all_themes() {
-        themeDao.create(ThemeFixture.getDomain());
+        themeDao.create(ThemeFixture.getDomain("테마 1"));
         themeDao.create(ThemeFixture.getDomain("테마 2"));
 
         final List<ThemeOutput> themeOutputs = themeService.getAllThemes();
@@ -85,7 +85,7 @@ class ThemeServiceTest {
     @DisplayName("특정 테마에 대한 예약이 존재하면 예외를 발생한다.")
     @Test
     void throw_exception_when_delete_id_that_exist_reservation() {
-        final Theme theme = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
         final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
         reservationDao.create(ReservationFixture.getDomain(time, theme));
 
@@ -96,7 +96,7 @@ class ThemeServiceTest {
     @DisplayName("예약이 많은 테마 순으로 조회한다.")
     @Test
     void get_popular_themes() {
-        final Theme theme1 = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme1 = themeDao.create(ThemeFixture.getDomain("테마 1"));
         final Theme theme2 = themeDao.create(ThemeFixture.getDomain("테마 2"));
 
         final ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixture.getDomain());
@@ -114,7 +114,7 @@ class ThemeServiceTest {
     @DisplayName("지정된 개수만큼 인기 테마를 조회한다.")
     @Test
     void get_popular_themes_up_to_limit() {
-        final Theme theme1 = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme1 = themeDao.create(ThemeFixture.getDomain("테마 1"));
         final Theme theme2 = themeDao.create(ThemeFixture.getDomain("테마 2"));
         final Theme theme3 = themeDao.create(ThemeFixture.getDomain("테마 3"));
 

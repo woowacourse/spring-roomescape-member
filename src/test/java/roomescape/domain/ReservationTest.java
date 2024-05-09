@@ -24,7 +24,7 @@ public class ReservationTest {
                         new Name("jerry"),
                         ReservationDate.from("2024-04-03"),
                         ReservationTime.of(null, "10:00"),
-                        ThemeFixture.getDomain()
+                        ThemeFixture.getDomain("테마 1")
                 ))
                 .doesNotThrowAnyException();
     }
@@ -38,16 +38,16 @@ public class ReservationTest {
                         "jerry",
                         "2024-04-03",
                         ReservationTime.of(null, "10:00"),
-                        ThemeFixture.getDomain()))
+                        ThemeFixture.getDomain("테마 1")))
                 .doesNotThrowAnyException();
     }
 
     private static Stream<Arguments> maskingDateAndTime() {
         return Stream.of(
                 Arguments.arguments(Reservation.from(null, "jerry", "2024-04-01", ReservationTime.of(null, "10:00"),
-                        ThemeFixture.getDomain())),
+                        ThemeFixture.getDomain("테마 1"))),
                 Arguments.arguments(Reservation.from(null, "jerry", "2024-04-02", ReservationTime.of(null, "09:59"),
-                        ThemeFixture.getDomain()))
+                        ThemeFixture.getDomain("테마 1")))
         );
     }
 

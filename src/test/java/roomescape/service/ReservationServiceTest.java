@@ -50,7 +50,7 @@ class ReservationServiceTest {
     @Test
     void create_reservation() {
         final long timeId = reservationTimeDao.create(ReservationTimeFixture.getDomain()).getId();
-        final long themeId = themeDao.create(ThemeFixture.getDomain()).getId();
+        final long themeId = themeDao.create(ThemeFixture.getDomain("테마 1")).getId();
 
         final ReservationInput input = ReservationFixture.getInput(timeId, themeId);
         assertThatCode(() -> reservationService.createReservation(input))
@@ -68,7 +68,7 @@ class ReservationServiceTest {
     @Test
     void throw_exception_when_duplicate_reservationTime() {
         final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        final Theme theme = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
         reservationDao.create(ReservationFixture.getDomain(time, theme));
 
         final ReservationInput input = ReservationFixture.getInput(time.getId(), theme.getId());
@@ -80,7 +80,7 @@ class ReservationServiceTest {
     @Test
     void throw_exception_when_create_past_time_reservation() {
         final Long timeId = reservationTimeDao.create(ReservationTimeFixture.getDomain()).getId();
-        final Long themeId = themeDao.create(ThemeFixture.getDomain()).getId();
+        final Long themeId = themeDao.create(ThemeFixture.getDomain("테마 1")).getId();
 
         final ReservationInput input = new ReservationInput("제리", "2024-01-01", timeId, themeId);
         assertThatThrownBy(() -> reservationService.createReservation(input))

@@ -78,7 +78,7 @@ class ReservationTimeServiceTest {
     @Test
     void throw_exception_when_delete_id_that_exist_reservation() {
         final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        final Theme theme = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
         reservationDao.create(ReservationFixture.getDomain(time, theme));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(time.getId()))
@@ -99,7 +99,7 @@ class ReservationTimeServiceTest {
     void get_available_reservationTime() {
         final ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixture.getDomain());
         final ReservationTime time2 = reservationTimeDao.create(ReservationTimeFixture.getDomain("11:00"));
-        final Theme theme = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
         reservationDao.create(ReservationFixture.getDomain(time1, theme));
 
         final List<AvailableReservationTimeOutput> actual =
