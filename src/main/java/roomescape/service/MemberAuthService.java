@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.MemberEmail;
@@ -36,6 +35,10 @@ public class MemberAuthService {
         return new MemberAppResponse(savedMember.getId(), savedMember.getName());
     }
 
+    public String createExpireToken(String token) {
+        return jwtProvider.getExpiredToken(token);
+    }
+
     public String createToken(TokenAppRequest request) {
         if (isExistsMember(request.email(), request.password())) {
             return jwtProvider.createToken(request.email());
@@ -46,13 +49,10 @@ public class MemberAuthService {
 
     public MemberAppResponse findMemberByToken(String token) {
         String payload = jwtProvider.getPayload(token);
-        Optional<Member> savedMember = memberRepository.findByEmail(payload);
 
-        if (savedMember.isPresent()) {
-            Member member = savedMember.get();
-            return new MemberAppResponse(member.getId(), member.getName());
-        }
-        throw new NoSuchElementException("회원 정보를 찾지 못했습니다.");
+        return memberRepository.findByEmail(payload)
+            .map(member -> new MemberAppResponse(member.getId(), member.getName()))
+            .orElseThrow(() -> new NoSuchElementException("회원 정보를 찾지 못했습니다."));
     }
 
     private boolean isExistsMember(String email, String password) {

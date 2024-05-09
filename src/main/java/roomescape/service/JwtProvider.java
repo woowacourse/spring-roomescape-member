@@ -33,13 +33,31 @@ public class JwtProvider {
 
     public String getPayload(String token) {
         if (validateToken(token)) {
-            return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
+            return getClaims(token)
                 .getSubject();
         }
         throw new ExpiredJwtException();
+    }
+
+    public String getExpiredToken(String token) {
+        if (validateToken(token)) {
+            Claims claims = getClaims(token);
+
+            return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(claims.getIssuedAt())
+                .setExpiration(new Date(claims.getIssuedAt().getTime() - validityInMilliseconds))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+        }
+        throw new ExpiredJwtException();
+    }
+
+    private Claims getClaims(final String token) {
+        return Jwts.parser()
+            .setSigningKey(secretKey)
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     private boolean validateToken(String token) {

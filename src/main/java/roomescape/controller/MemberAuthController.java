@@ -48,6 +48,7 @@ public class MemberAuthController {
         String token = extractTokenFromCookie(request.getCookies());
         MemberAppResponse appResponse = memberAuthService.findMemberByToken(token);
         MemberWebResponse response = new MemberWebResponse(appResponse.name());
+        
         return ResponseEntity.ok().body(response);
     }
 
@@ -60,7 +61,19 @@ public class MemberAuthController {
         return ResponseEntity.created(URI.create("/member" + appResponse.id())).body(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        String token = extractTokenFromCookie(request.getCookies());
+        String expiredToken = memberAuthService.createExpireToken(token);
+        Cookie cookie = new Cookie("token", expiredToken);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
+
     private String extractTokenFromCookie(Cookie[] cookies) {
+
         Optional<String> token = Arrays.stream(cookies)
             .filter(cookie -> cookie.getName().equals("token"))
             .map(Cookie::getValue)
