@@ -25,10 +25,10 @@ import roomescape.dao.TimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationCreateRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.TimeResponse;
+import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ThemeResponse;
+import roomescape.dto.response.TimeResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {

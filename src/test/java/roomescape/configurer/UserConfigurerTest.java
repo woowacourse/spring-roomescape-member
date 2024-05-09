@@ -1,4 +1,4 @@
-package roomescape.controller.configurer;
+package roomescape.configurer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

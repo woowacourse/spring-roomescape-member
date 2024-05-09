@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.TimeCreateRequest;
-import roomescape.dto.TimeResponse;
+import roomescape.dto.request.TimeCreateRequest;
+import roomescape.dto.response.AvailableTimeResponse;
+import roomescape.dto.response.TimeResponse;
 
 @Service
 public class TimeService {

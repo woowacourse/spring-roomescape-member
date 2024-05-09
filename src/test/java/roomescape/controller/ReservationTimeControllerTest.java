@@ -16,9 +16,9 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.TimeCreateRequest;
-import roomescape.dto.TimeResponse;
+import roomescape.dto.request.TimeCreateRequest;
+import roomescape.dto.response.AvailableTimeResponse;
+import roomescape.dto.response.TimeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
