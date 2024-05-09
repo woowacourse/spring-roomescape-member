@@ -2,6 +2,7 @@ SET REFERENTIAL_INTEGRITY FALSE;
 TRUNCATE TABLE reservation RESTART IDENTITY;
 TRUNCATE TABLE reservation_time RESTART IDENTITY;
 TRUNCATE TABLE theme RESTART IDENTITY;
+TRUNCATE TABLE member RESTART IDENTITY;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 INSERT INTO reservation_time (start_at)
@@ -17,4 +18,8 @@ VALUES ('polla', '폴라 방탈출', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('폴라', '2024-04-30', 1, 1),
        ('구구', '2025-05-01', 2, 1);
+
+INSERT INTO member (name, email, password)
+VALUES ('어드민', 'polla@gmail.com', 'pollari99');
+
 
