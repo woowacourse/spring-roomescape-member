@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationThemeDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.condition.TimeInsertCondition;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.time.BookableTimeResponse;
 import roomescape.dto.time.TimeRequest;
@@ -26,12 +25,23 @@ public class ReservationTimeService {
         this.reservationThemeDao = reservationThemeDao;
     }
 
-    public TimeResponse insertTime(TimeRequest timeRequest) {
-        validateDuplicate(timeRequest.startAt());
-        TimeInsertCondition insertCondition = new TimeInsertCondition(timeRequest.startAt());
-        ReservationTime inserted = reservationTimeDao.insert(insertCondition);
+    public List<TimeResponse> getAllTimes() {
+        return reservationTimeDao.findAll().stream()
+                .map(TimeResponse::new)
+                .toList();
+    }
+
+    public TimeResponse insertTime(TimeRequest request) {
+        ReservationTime time = getTime(request);
+        ReservationTime inserted = reservationTimeDao.insert(time);
 
         return new TimeResponse(inserted);
+    }
+
+    private ReservationTime getTime(TimeRequest request) {
+        validateDuplicate(request.startAt());
+
+        return new ReservationTime(null, request.startAt());
     }
 
     private void validateDuplicate(LocalTime time) {
@@ -40,15 +50,9 @@ public class ReservationTimeService {
         }
     }
 
-    public List<TimeResponse> getAllTimes() {
-        return reservationTimeDao.findAll().stream()
-                .map(TimeResponse::new)
-                .toList();
-    }
-
     public List<BookableTimeResponse> getAllBookableTimes(String date, Long themeId) {
         if (!reservationThemeDao.isExist(themeId)) {
-            throw new IllegalArgumentException("해당 테마는 존재하지 않습니다.");
+            throw new IllegalArgumentException("테마가 존재하지 않아 예약 가능 시간을 조회할 수 없습니다.");
         }
         return reservationTimeDao.findAll().stream()
                 .map(time -> new BookableTimeResponse(time, isBooked(date, time.getId(), themeId)))

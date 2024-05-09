@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.condition.TimeInsertCondition;
 import roomescape.domain.ReservationTime;
 
 @Repository
@@ -26,14 +25,14 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public ReservationTime insert(TimeInsertCondition insertCondition) {
-        LocalTime time = insertCondition.getStartAt();
+    public ReservationTime insert(ReservationTime time) {
+        LocalTime startAt = time.getStartAt();
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("start_at", time.toString());
+                .addValue("start_at", startAt.toString());
 
         Long id = insertActor.executeAndReturnKey(parameters).longValue();
 
-        return new ReservationTime(id, time);
+        return new ReservationTime(id, startAt);
     }
 
     public List<ReservationTime> findAll() {

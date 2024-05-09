@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dao.condition.TimeInsertCondition;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
@@ -26,7 +25,7 @@ class ReservationTimeDaoTest {
     @Test
     void insert() {
         // given
-        ReservationTime inserted = timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
+        ReservationTime inserted = timeDao.insert(new ReservationTime(null, LocalTime.parse("10:00")));
 
         // when
         Long insertedTimeId = inserted.getId();
@@ -39,8 +38,8 @@ class ReservationTimeDaoTest {
     @Test
     void findAll() {
         // given
-        timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
-        timeDao.insert(new TimeInsertCondition(LocalTime.parse("11:00")));
+        timeDao.insert(new ReservationTime(null, LocalTime.parse("10:00")));
+        timeDao.insert(new ReservationTime(null, LocalTime.parse("11:00")));
 
         // when
         List<ReservationTime> times = timeDao.findAll();
@@ -53,7 +52,7 @@ class ReservationTimeDaoTest {
     @Test
     void findById() {
         // given
-        ReservationTime inserted = timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
+        ReservationTime inserted = timeDao.insert(new ReservationTime(null, LocalTime.parse("10:00")));
 
         // when
         ReservationTime time = timeDao.findById(inserted.getId()).orElseThrow();
@@ -75,7 +74,7 @@ class ReservationTimeDaoTest {
     @Test
     void deleteById() {
         // given
-        ReservationTime inserted = timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
+        ReservationTime inserted = timeDao.insert(new ReservationTime(null, LocalTime.parse("10:00")));
 
         // when
         timeDao.deleteById(inserted.getId());
@@ -89,7 +88,7 @@ class ReservationTimeDaoTest {
     @Test
     void hasSameTime() {
         // given
-        timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
+        timeDao.insert(new ReservationTime(null, LocalTime.parse("10:00")));
 
         // when
         Boolean hasSameTime = timeDao.hasSameTime(LocalTime.parse("10:00"));

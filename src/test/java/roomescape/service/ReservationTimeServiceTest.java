@@ -107,7 +107,7 @@ class ReservationTimeServiceTest {
     void getAllBookableTimes_WithNotExistTheme() {
         assertThatThrownBy(() -> timeService.getAllBookableTimes(LocalDate.now().toString(), 1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 테마는 존재하지 않습니다.");
+                .hasMessage("테마가 존재하지 않아 예약 가능 시간을 조회할 수 없습니다.");
     }
 
     @DisplayName("ID로 시간을 삭제한다.")
