@@ -22,7 +22,6 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-
     public Token login(LoginRequest loginRequest) {
         Member findMember = memberRepository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new NoSuchRecordException("이메일: " + loginRequest.email() + " 해당하는 멤버를 찾을 수 없습니다"));
