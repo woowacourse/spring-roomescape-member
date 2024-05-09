@@ -1,41 +1,35 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.domain.User;
-import roomescape.infrastructure.TokenProvider;
-import roomescape.service.UserService;
-import roomescape.service.dto.request.LoginRequest;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.LoginService;
+import roomescape.service.dto.request.TokenRequest;
 import roomescape.service.dto.response.AuthenticationInfoResponse;
+import roomescape.service.dto.response.TokenResponse;
 
-@Controller
+@RestController
 public class LoginController {
     private static final String TOKEN_COOKIE_NAME = "token";
     private static final int COOKIE_AGE_SECONDS = 60;
 
-    private final UserService userService;
-    private final TokenProvider tokenProvider;
+    private final LoginService loginService;
 
-    public LoginController(UserService userService, TokenProvider tokenProvider) {
-        this.userService = userService;
-        this.tokenProvider = tokenProvider;
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        User user = userService.findByEmail(loginRequest.email());
-        String token = tokenProvider.generateTokenOf(user);
+    public ResponseEntity<Void> login(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
+        TokenResponse tokenResponse = loginService.login(tokenRequest);
 
-        ResponseCookie cookie = ResponseCookie.from(TOKEN_COOKIE_NAME, token)
+        ResponseCookie cookie = ResponseCookie.from(TOKEN_COOKIE_NAME, tokenResponse.accessToken())
                 .httpOnly(true)
                 .maxAge(COOKIE_AGE_SECONDS)
                 .path("/")
@@ -47,22 +41,9 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<AuthenticationInfoResponse> loginCheck(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new IllegalArgumentException("쿠키를 찾을 수 없습니다.");
-        }
-        String token = extractTokenFromCookie(cookies);
-        String authenticationInfo = tokenProvider.parseAuthenticationInfo(token);
+        AuthenticationInfoResponse authenticationInfoResponse = loginService.loginCheck(request);
         return ResponseEntity.ok()
-                .body(new AuthenticationInfoResponse(authenticationInfo));
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(TOKEN_COOKIE_NAME))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("쿠키를 찾을 수 없습니다."))
-                .getValue();
+                .body(authenticationInfoResponse);
     }
 
     @PostMapping("/logout")
