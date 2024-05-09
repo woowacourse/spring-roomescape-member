@@ -13,7 +13,6 @@ import roomescape.controller.theme.PopularThemeResponse;
 import roomescape.controller.theme.ThemeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReserveName;
 import roomescape.domain.Theme;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;

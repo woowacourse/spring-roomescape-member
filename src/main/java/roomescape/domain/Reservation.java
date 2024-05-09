@@ -8,54 +8,48 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final ReserveName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
-    public Reservation(final Long id, final ReserveName name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final LocalDate date, final ReservationTime time, final Theme theme, final Member member) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
-        validateDateBlank(date);
-        validateDateFormat(date);
+    public Reservation(final Long id, final String date, final long timeId, final long themeId, final long memberId) {
+        this(
+                id,
+                validateDateFormatAndReturn(date),
+                new ReservationTime(timeId),
+                new Theme(themeId),
+                new Member(memberId)
+        );
 
-        this.id = id;
-        this.name = new ReserveName(name);
-        this.date = LocalDate.parse(date);
-        this.time = time;
-        this.theme = theme;
     }
 
-    private void validateDateFormat(final String date) {
+    private static LocalDate validateDateFormatAndReturn(final String date) {
         try {
-            LocalDate.parse(date);
+            return LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
             throw new InvalidDateException("날짜 형식이 올바르지 않습니다.");
         }
     }
 
-    private void validateDateBlank(final String date) {
-        if (date == null || date.isBlank()) {
-            throw new InvalidDateException("날짜는 공백일 수 없습니다.");
-        }
-    }
-
     public Reservation assignId(final Long id) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, date, time, theme, member);
     }
 
     public Reservation assignTime(final ReservationTime time) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, date, time, theme, member);
     }
 
     public Reservation assignTheme(final Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, date, time, theme, member);
     }
 
     public Long getId() {

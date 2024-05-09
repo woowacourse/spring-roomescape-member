@@ -9,7 +9,6 @@ import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReserveName;
 import roomescape.domain.Theme;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;

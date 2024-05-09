@@ -18,6 +18,8 @@
 - 인증
     - [로그인](#로그인)
     - [인증 정보 조회](#인증-정보-조회)
+- 어드민
+    - [관리자 예약 추가](#관리자-예약-추가)
 
 <br>
 
@@ -339,5 +341,49 @@ Transfer-Encoding: chunked
 
 {
     "name": "어드민"
+}
+```
+
+<br>
+
+### 관리자 예약 추가
+
+**request**
+
+```http request
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+}
+```
+
+**response**
+
+```http request
+HTTP/1.1 201
+Location: reservations/{id}
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-05",
+    "time": {
+        "id": 1,
+        "startAt": "10:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
 }
 ```

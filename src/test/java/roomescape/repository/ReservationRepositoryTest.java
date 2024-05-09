@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReserveName;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;

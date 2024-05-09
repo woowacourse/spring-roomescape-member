@@ -4,14 +4,34 @@ import java.util.Objects;
 
 public class Member {
 
+    private final Long id;
+    private final String name;
     private final String email;
     private final String password;
-    private final String name;
+    private final Role role;
 
-    public Member(final String email, final String password, final String name) {
+    public Member(final Long id) {
+        this.id = id;
+        this.email = null;
+        this.password = null;
+        this.name = null;
+        this.role = null;
+    }
+
+    public Member(final Long id, final String email, final String password, final String name, final Role role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
+        this.role = role;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getEmail() {
@@ -22,8 +42,8 @@ public class Member {
         return password;
     }
 
-    public String getName() {
-        return name;
+    public Role getRole() {
+        return role;
     }
 
     @Override
@@ -32,23 +52,27 @@ public class Member {
         if (o == null || getClass() != o.getClass()) return false;
 
         final Member member = (Member) o;
-        return Objects.equals(email, member.email) && Objects.equals(password, member.password) && Objects.equals(name, member.name);
+        return Objects.equals(id, member.id) && Objects.equals(name, member.name) && Objects.equals(email, member.email) && Objects.equals(password, member.password) && role == member.role;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(email);
-        result = 31 * result + Objects.hashCode(password);
+        int result = Objects.hashCode(id);
         result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(email);
+        result = 31 * result + Objects.hashCode(password);
+        result = 31 * result + Objects.hashCode(role);
         return result;
     }
 
     @Override
     public String toString() {
         return "Member{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
                 '}';
     }
 }

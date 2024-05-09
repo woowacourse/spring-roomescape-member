@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReserveName;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
