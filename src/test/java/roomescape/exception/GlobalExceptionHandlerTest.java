@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import roomescape.controller.ReservationController;
+import roomescape.service.AuthService;
+import roomescape.service.LoginMemberService;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationRequest;
 
@@ -26,6 +28,12 @@ public class GlobalExceptionHandlerTest {
 
     @MockBean
     private ReservationService reservationService;
+
+    @MockBean
+    private AuthService authService;
+
+    @MockBean
+    private LoginMemberService loginMemberService;
 
     @Test
     public void testInvalidReservationException() throws Exception {
