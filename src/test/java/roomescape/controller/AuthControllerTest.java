@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.controller.request.LoginRequest;
+import roomescape.controller.response.LoginResponse;
 import roomescape.model.Member;
 
 import java.util.HashMap;
@@ -72,5 +73,28 @@ public class AuthControllerTest {
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @DisplayName("로그인 된 계정의 사용자 정보를 반환한다.")
+    @Test
+    void should_return_name_of_login_member() {
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+        String token = Jwts.builder()
+                .subject(String.valueOf(member.getId()))
+                .claim("name", member.getName())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
+
+        LoginResponse body = RestAssured
+                .given().log().all()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when().get("/login/check")
+                .then().log().all()
+                .extract().body().as(LoginResponse.class);
+
+        assertThat(body.getName()).isEqualTo("에버");
     }
 }

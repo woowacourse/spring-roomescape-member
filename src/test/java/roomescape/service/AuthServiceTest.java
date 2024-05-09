@@ -31,7 +31,7 @@ class AuthServiceTest {
 
     @DisplayName("사용자 정보를 통해 JWT 토큰을 생성한다.")
     @Test
-    void login() {
+    void should_create_token() {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
         AuthDto authDto = new AuthDto(member.getEmail(), member.getPassword());
         String accessToken = authService.createToken(authDto);
@@ -44,5 +44,21 @@ class AuthServiceTest {
                 .getPayload().getSubject());
 
         assertThat(memberId).isEqualTo(1L);
+    }
+
+    @DisplayName("토큰을 통해 사용자 정보를 조회한다.")
+    @Test
+    void should_check_login_state() {
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+        String token = Jwts.builder()
+                .subject(String.valueOf(member.getId()))
+                .claim("name", member.getName())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
+
+        Member loginMember = authService.checkToken(token);
+
+        assertThat(loginMember.getId()).isEqualTo(1L);
     }
 }

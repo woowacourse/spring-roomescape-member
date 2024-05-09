@@ -29,4 +29,11 @@ public class JdbcMemberDao implements MemberDao {
         Member member = jdbcTemplate.queryForObject(sql, rowMapper, email);
         return Optional.ofNullable(member);
     }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return Optional.ofNullable(member);
+    }
 }

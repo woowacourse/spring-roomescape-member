@@ -26,6 +26,15 @@ public class FakeMemberDao implements MemberDao {
         return Optional.ofNullable(result);
     }
 
+    @Override
+    public Optional<Member> findById(long id) {
+        Member result = members.stream()
+                .filter(member -> member.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> null);
+        return Optional.ofNullable(result);
+    }
+
     private long save(Member rawMember) {
         long key = index.getAndIncrement();
         Member member = new Member(key, rawMember.getName(), rawMember.getEmail(), rawMember.getPassword());

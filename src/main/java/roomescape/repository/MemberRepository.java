@@ -18,4 +18,8 @@ public class MemberRepository {
     public Optional<Member> findMemberByEmail(String email) {
         return memberDao.findByEmail(email);
     }
+
+    public Optional<Member> findMemberById(long id) {
+        return memberDao.findById(id);
+    }
 }

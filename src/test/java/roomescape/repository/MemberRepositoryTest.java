@@ -61,4 +61,14 @@ class MemberRepositoryTest {
         assertThat(actual).isNotEmpty();
         assertThat(actual).hasValue(expected);
     }
+    @DisplayName("특정 id를 가진 사용자를 조회한다.")
+    @Test
+    void should_find_member_by_id() {
+        Member expected = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+
+        Optional<Member> actual = memberRepository.findMemberById(expected.getId());
+
+        assertThat(actual).isNotEmpty();
+        assertThat(actual).hasValue(expected);
+    }
 }
