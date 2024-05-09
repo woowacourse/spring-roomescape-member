@@ -33,6 +33,12 @@ public class AuthService {
         return cookie;
     }
 
+    public Cookie deleteCookieByToken(TokenResponse token) {
+        Cookie cookie = new Cookie("token", token.token());
+        cookie.setMaxAge(0);
+        return cookie;
+    }
+
     public TokenResponse extractTokenByCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = jwtTokenExtractor.extractByCookies(cookies);
