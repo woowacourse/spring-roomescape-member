@@ -55,7 +55,7 @@ class ReservationControllerTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         //when
-        ReservationResponse saveResponse = reservationController.saveReservation(
+        ReservationResponse saveResponse = reservationController.saveReservation(DEFAULT_MEMBER.getId(),
                         new ReservationRequest(date, DEFAULT_MEMBER.getId(), TIME_ID, defualtTheme.getId()))
                 .getBody();
 

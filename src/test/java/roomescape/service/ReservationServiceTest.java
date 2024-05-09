@@ -61,7 +61,7 @@ class ReservationServiceTest {
         //when
         ReservationResponse saved = reservationService.save(new ReservationRequest(
                 LocalDate.now().plusDays(1),
-                1,
+                1L,
                 defaultTime.getId(),
                 defaultTheme.getId()
         ));
@@ -79,7 +79,7 @@ class ReservationServiceTest {
     void createPastReservationFailTest() {
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest(
                 LocalDate.now().minusDays(1),
-                1,
+                1L,
                 defaultTime.getId(),
                 defaultTheme.getId()
         )))
@@ -92,7 +92,7 @@ class ReservationServiceTest {
     void createReservationWithTimeNotExistsTest() {
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest(
                 LocalDate.now().minusDays(1),
-                1,
+                1L,
                 2L,
                 defaultTheme.getId()
         )))
@@ -105,7 +105,7 @@ class ReservationServiceTest {
     void createReservationWithThemeNotExistsTest() {
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest(
                 LocalDate.now().minusDays(1),
-                1,
+                1L,
                 defaultTime.getId(),
                 2L
         )))
