@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ReservationCRD {
-    public static Long postReservation(String token, String date, Long timeId, Long themeId, int expectedHttpCode) {
+    public static Long postUserReservation(String token, String date, Long timeId, Long themeId, int expectedHttpCode) {
         Map<?, ?> requestBody = Map.of("date", date, "timeId", timeId, "themeId", themeId);
 
         Response response = RestAssured.given().log().all()

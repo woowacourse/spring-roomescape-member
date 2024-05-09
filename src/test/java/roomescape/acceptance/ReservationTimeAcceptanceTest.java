@@ -66,7 +66,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("로그인을 한다", () -> {
                     token.set(LoginUtil.login("email1", "qq1"));
                 }),
-                dynamicTest("예약을 추가한다", () -> ReservationCRD.postReservation(token.get(), "2099-04-29", 4L, 1L, 201)),
+                dynamicTest("예약을 추가한다", () -> ReservationCRD.postUserReservation(token.get(), "2099-04-29", 4L, 1L, 201)),
                 dynamicTest("모든 예약된 시간을 조회한다 (총 4개)", () -> getAvailableTimes(200, 4))
                 );
     }
