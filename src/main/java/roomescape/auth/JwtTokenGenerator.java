@@ -1,7 +1,6 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -46,10 +45,24 @@ public class JwtTokenGenerator {
     }
 
     public Long getMemberId(Token token) {
-        return Long.valueOf(jwtParser
-                .parseClaimsJws(token.getToken())
-                .getBody()
-                .getSubject()
-        );
+        if (validateToken(token)) {
+            return Long.valueOf(jwtParser
+                    .parseClaimsJws(token.getToken())
+                    .getBody()
+                    .getSubject()
+            );
+        }
+
+        throw new IllegalArgumentException("[ERROR] 만료된 토큰입니다.");
+    }
+
+    private boolean validateToken(Token token) {
+        try {
+            Jws<Claims> claims = jwtParser.parseClaimsJws(token.getToken());
+            Date expirationDate = claims.getBody().getExpiration();
+            return !expirationDate.before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }
