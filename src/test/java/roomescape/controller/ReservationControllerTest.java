@@ -195,7 +195,24 @@ class ReservationControllerTest extends IntegrationTestSupport {
                             .then().log().all()
                             .statusCode(400);
                 }),
-                dynamicTest("예약을 삭제한다.", () -> {
+                dynamicTest("유저는 예약을 삭제할 수 없다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .when().delete("/reservations/" + createdId)
+                            .then().log().all()
+                            .statusCode(401);
+                }),
+                dynamicTest("어드민으로 로그인하기", () -> {
+                    token = RestAssured
+                            .given().log().all()
+                            .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE)
+                            .when().post("/login")
+                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                }),
+                dynamicTest("어드민은 예약을 삭제한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
