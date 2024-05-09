@@ -161,7 +161,7 @@ class ReservationTimeServiceTest {
             //given
             ReservationTime time = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
             Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             Reservation reservation = ReservationFixtures.createReservation(member, "2024-05-02", time, theme);
             reservationDao.create(reservation);
 

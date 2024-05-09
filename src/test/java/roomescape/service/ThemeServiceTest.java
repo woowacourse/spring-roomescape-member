@@ -186,7 +186,7 @@ class ThemeServiceTest {
     @DisplayName("테마 삭제시 예약이 존재한다면 예외가 발생한다.")
     void deleteExistReservation() {
         //given
-        Member member = memberDao.create(MemberFixtures.createMember("daon"));
+        Member member = memberDao.create(MemberFixtures.createUserMember("daon"));
         Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
         ReservationTime time = timeDao.create(ReservationTimeFixtures.createReservationTime("12:12"));
         reservationDao.create(ReservationFixtures.createReservation(member, time, theme));

@@ -17,6 +17,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberPassword;
+import roomescape.domain.member.MemberRole;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationStartAt;
@@ -44,6 +45,7 @@ public class JdbcReservationDao implements ReservationDao {
                     m.name AS member_name,
                     m.email AS member_email,
                     m.password AS member_password,
+                    m.role AS member_role,
                     r.`date`,
                     t.id AS time_id,
                     t.start_at AS time_value,
@@ -80,6 +82,7 @@ public class JdbcReservationDao implements ReservationDao {
                     m.name AS member_name,
                     m.email AS member_email,
                     m.password AS member_password,
+                    m.role AS member_role,
                     r.`date`,
                     t.id AS time_id,
                     t.start_at AS time_value,
@@ -260,7 +263,8 @@ public class JdbcReservationDao implements ReservationDao {
                 resultSet.getLong("member_id"),
                 new MemberName(resultSet.getString("member_name")),
                 new MemberEmail(resultSet.getString("member_email")),
-                new MemberPassword(resultSet.getString("member_password"))
+                new MemberPassword(resultSet.getString("member_password")),
+                MemberRole.from(resultSet.getString("member_role"))
         );
     }
 

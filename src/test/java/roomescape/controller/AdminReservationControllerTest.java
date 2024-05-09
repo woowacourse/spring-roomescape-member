@@ -48,7 +48,7 @@ class AdminReservationControllerTest {
     @BeforeEach
     void setUp() {
         given(authService.findPayload(anyString())).willReturn("test@test.com");
-        given(memberService.findAuthInfo(anyString())).willReturn(MemberFixtures.createMember("daon"));
+        given(memberService.findAuthInfo(anyString())).willReturn(MemberFixtures.createUserMember("daon"));
     }
 
     @Test

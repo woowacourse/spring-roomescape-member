@@ -5,6 +5,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberPassword;
+import roomescape.domain.member.MemberRole;
 
 public class MemberSignupRequest {
 
@@ -19,7 +20,13 @@ public class MemberSignupRequest {
     }
 
     public Member toDomain() {
-        return new Member(null, new MemberName(name), new MemberEmail(email), new MemberPassword(password));
+        return new Member(
+                null,
+                new MemberName(name),
+                new MemberEmail(email),
+                new MemberPassword(password),
+                MemberRole.USER
+        );
     }
 
     public String getEmail() {

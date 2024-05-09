@@ -14,13 +14,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberEmail;
-import roomescape.domain.member.MemberName;
-import roomescape.domain.member.MemberPassword;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
 import roomescape.exception.AuthorizationException;
+import roomescape.fixture.MemberFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:test_db_clean.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -55,8 +53,8 @@ class MemberServiceTest {
     @DisplayName("모든 회원 정보를 조회한다.")
     void findAll() {
         //given
-        memberDao.create(createMember("user1", "user1@test.com", "1234"));
-        memberDao.create(createMember("user2", "user2@test.com", "1234"));
+        memberDao.create(MemberFixtures.createUserMember("user1", "user1@test.com", "1234"));
+        memberDao.create(MemberFixtures.createUserMember("user2", "user2@test.com", "1234"));
 
         //when
         List<MemberResponse> result = memberService.findAll();
@@ -72,7 +70,7 @@ class MemberServiceTest {
     void createMemberWithExistEmail() {
         //given
         String email = "test@test.com";
-        memberDao.create(createMember("daon", email, "1432"));
+        memberDao.create(MemberFixtures.createUserMember("daon", email, "1432"));
         MemberSignupRequest request = new MemberSignupRequest("abc", email, "1234");
 
         //when //then
@@ -86,7 +84,7 @@ class MemberServiceTest {
         //given
         String email = "test@test.com";
         String name = "daon";
-        Member member = memberDao.create(createMember(name, email, "1234"));
+        Member member = memberDao.create(MemberFixtures.createUserMember(name, email, "1234"));
 
         //when
         Member result = memberService.findAuthInfo(email);
@@ -120,9 +118,5 @@ class MemberServiceTest {
         //when //then
         assertThatThrownBy(() -> memberService.checkLoginInfo(loginRequest))
                 .isInstanceOf(AuthorizationException.class);
-    }
-
-    private Member createMember(String name, String email, String password) {
-        return new Member(null, new MemberName(name), new MemberEmail(email), new MemberPassword(password));
     }
 }

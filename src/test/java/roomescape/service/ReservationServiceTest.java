@@ -55,7 +55,7 @@ class ReservationServiceTest {
     void findAll() {
         //given
         Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
-        Member member = memberDao.create(MemberFixtures.createMember("daon"));
+        Member member = memberDao.create(MemberFixtures.createUserMember("daon"));
         ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
         ReservationTime time2 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:20"));
         Reservation reservation1 = ReservationFixtures.createReservation(member, time1, theme);
@@ -79,7 +79,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime1 = ReservationTimeFixtures.createReservationTime("12:02");
         ReservationTime reservationTime2 = ReservationTimeFixtures.createReservationTime("12:20");
 
-        Member member = memberDao.create(MemberFixtures.createMember("daon"));
+        Member member = memberDao.create(MemberFixtures.createUserMember("daon"));
         Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
         ReservationTime time1 = reservationTimeDao.create(reservationTime1);
         reservationTimeDao.create(reservationTime2);
@@ -110,7 +110,7 @@ class ReservationServiceTest {
             LocalDate tomorrow = today.plusDays(1);
             String givenName = "wooteco";
             String givenDate = tomorrow.toString();
-            Member member = memberDao.create(MemberFixtures.createMember(givenName));
+            Member member = memberDao.create(MemberFixtures.createUserMember(givenName));
             ReservationTime reservationTime =
                     reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
@@ -133,7 +133,7 @@ class ReservationServiceTest {
         void addNotExistTimeId() {
             //given
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             long given = -1L;
             ReservationCreateRequest givenRequest = ReservationFixtures.getReservationCreateRequest(given, 1L);
@@ -148,7 +148,7 @@ class ReservationServiceTest {
         void addNotExistThemeId() {
             //given
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:24"));
             long given = -1L;
             ReservationCreateRequest givenRequest = ReservationFixtures.getReservationCreateRequest(1L, given);
@@ -164,7 +164,7 @@ class ReservationServiceTest {
         void createReservationByNullOrEmptyDate(String given) {
             //given
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
@@ -181,7 +181,7 @@ class ReservationServiceTest {
         void createReservationByInvalidDate(String given) {
             //given
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
@@ -199,7 +199,7 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate pastDay = today.minusDays(1);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
@@ -218,7 +218,7 @@ class ReservationServiceTest {
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalTime currentTime = LocalTime.of(now.getHour(), now.getMinute());
             LocalTime pastTime = currentTime.minusHours(1);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime(pastTime.toString()));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
@@ -236,7 +236,7 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
@@ -258,7 +258,7 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
@@ -280,7 +280,7 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
@@ -299,7 +299,7 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
-            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);

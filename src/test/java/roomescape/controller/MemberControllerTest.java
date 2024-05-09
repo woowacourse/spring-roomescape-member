@@ -16,7 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +24,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberEmail;
-import roomescape.domain.member.MemberName;
-import roomescape.domain.member.MemberPassword;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.LoginResponse;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
 import roomescape.exception.AuthorizationException;
+import roomescape.fixture.MemberFixtures;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
@@ -53,11 +50,10 @@ class MemberControllerTest {
     @DisplayName("모든 회원 정보를 조회한다.")
     void findAll() throws Exception {
         //given
-        List<MemberResponse> memberResponses = Stream.of(
-                        createMember("user1", "user1@test.com"),
-                        createMember("user2", "user1@test.com"))
-                .map(MemberResponse::new)
-                .toList();
+        List<MemberResponse> memberResponses = List.of(
+                MemberFixtures.createMemberResponse(1L, "user1", "user1@test.com"),
+                MemberFixtures.createMemberResponse(2L, "user2", "user1@test.com")
+        );
         given(memberService.findAll()).willReturn(memberResponses);
 
         //when //then
@@ -75,7 +71,7 @@ class MemberControllerTest {
     void signup() throws Exception {
         //given
         MemberSignupRequest request = new MemberSignupRequest("test", "test@test.com", "1234");
-        MemberResponse response = new MemberResponse(1L, "test", "test@test.com");
+        MemberResponse response = MemberFixtures.createMemberResponse(1L, "test", "test@test.com");
         given(memberService.add(any(MemberSignupRequest.class))).willReturn(response);
         String jsonRequest = objectMapper.writeValueAsString(request);
 
@@ -150,7 +146,7 @@ class MemberControllerTest {
         cookie.setHttpOnly(true);
         String name = "daon";
         String email = "test@test.com";
-        Member member = createMember(name, email);
+        Member member = MemberFixtures.createUserMember(name, email);
         given(authService.findPayload(anyString())).willReturn(email);
         given(memberService.findAuthInfo(anyString())).willReturn(member);
 
@@ -177,9 +173,5 @@ class MemberControllerTest {
                         .cookie(cookie))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
-    }
-
-    private Member createMember(String name, String email) {
-        return new Member(1L, new MemberName(name), new MemberEmail(email), new MemberPassword("1234"));
     }
 }

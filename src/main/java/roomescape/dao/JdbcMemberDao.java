@@ -12,6 +12,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberPassword;
+import roomescape.domain.member.MemberRole;
 
 @Repository
 public class JdbcMemberDao implements MemberDao {
@@ -26,7 +27,7 @@ public class JdbcMemberDao implements MemberDao {
     public List<Member> readAll() {
         String sql = """
                 SELECT
-                id, name, email, password
+                id, name, email, password, role
                 FROM
                 member
                 """;
@@ -37,7 +38,8 @@ public class JdbcMemberDao implements MemberDao {
                         resultSet.getLong("id"),
                         new MemberName(resultSet.getString("name")),
                         new MemberEmail(resultSet.getString("email")),
-                        new MemberPassword(resultSet.getString("password"))
+                        new MemberPassword(resultSet.getString("password")),
+                        MemberRole.from(resultSet.getString("role"))
                 )
         );
     }
@@ -46,7 +48,7 @@ public class JdbcMemberDao implements MemberDao {
     public Optional<Member> findByEmail(MemberEmail email) {
         String sql = """
                 SELECT
-                id, name, email, password
+                id, name, email, password, role
                 FROM
                 member
                 WHERE email = ?;
@@ -58,7 +60,8 @@ public class JdbcMemberDao implements MemberDao {
                         resultSet.getLong("id"),
                         new MemberName(resultSet.getString("name")),
                         email,
-                        new MemberPassword(resultSet.getString("password"))
+                        new MemberPassword(resultSet.getString("password")),
+                        MemberRole.from(resultSet.getString("role"))
                 ),
                 email.getValue()
         );
@@ -74,9 +77,9 @@ public class JdbcMemberDao implements MemberDao {
         String sql = """
                 INSERT
                 INTO member
-                (name, email, password)
+                (name, email, password, role)
                 VALUES
-                (?, ?, ?);
+                (?, ?, ?, ?);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -86,12 +89,13 @@ public class JdbcMemberDao implements MemberDao {
                     ps.setString(1, member.getName().getValue());
                     ps.setString(2, member.getEmail().getValue());
                     ps.setString(3, member.getPassword().getValue());
+                    ps.setString(4, member.getMemberRole().getName());
                     return ps;
                 },
                 keyHolder
         );
         long id = keyHolder.getKey().longValue();
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getMemberRole());
     }
 
     @Override
