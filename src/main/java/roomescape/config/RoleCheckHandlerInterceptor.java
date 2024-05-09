@@ -4,11 +4,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.Member;
-import roomescape.domain.Role;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.UnauthorizedException;
-import roomescape.service.AuthService;
+import roomescape.auth.service.AuthService;
 
 import java.util.Arrays;
 

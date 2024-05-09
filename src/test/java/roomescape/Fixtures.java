@@ -1,9 +1,9 @@
 package roomescape;
 
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
