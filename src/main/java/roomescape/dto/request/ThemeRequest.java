@@ -15,7 +15,7 @@ public record ThemeRequest(
         String description,
 
         @NotBlank(message = "테마 썸네일을 입력해주세요.")
-        @Pattern(regexp = "^(http|https)://.*", message = "url 형식이 유효하지 않습니다.")
+        @Pattern(regexp = "^(http|https)://.*", message = "http:// 또는 https://로 시작해야 합니다.")
         @Size(min = 1, max = 255, message = "테마 썸네일은 1자 이상 255자 이하로 입력해주세요.")
         String thumbnail
 ) {
