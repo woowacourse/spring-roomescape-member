@@ -373,16 +373,33 @@
 - http method: POST
 - uri: /login
 - request
-  ```
-  POST /login HTTP/1.1
-  content-type: application/json
-  host: localhost:8080
+  - 로그인 성공
+    ```
+    POST /login HTTP/1.1
+    content-type: application/json
+    host: localhost:8080
+    
+    {
+       "name": "사용자이름",
+       "email": "admin@email.com",
+    } 
+    ```
+  - 로그인 실패: 비밀번호 미입력 오류
+    ```
+    HTTP/1.1 400
 
-  {
-  "name": "사용자이름",
-  "email": "admin@email.com",
-  } 
-  ```
+    {
+      "message": "비밀번호를 입력해주세요."
+    }
+    ```  
+  - 추가 실패: 이메일 형식 오류
+    ```
+    HTTP/1.1 400
+
+    {
+      "message": "올바르지 않은 이메일 형식입니다."
+    }
+    ```
 - response
   ```
   HTTP/1.1 200 OK
