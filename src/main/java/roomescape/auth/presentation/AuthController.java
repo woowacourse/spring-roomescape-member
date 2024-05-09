@@ -26,13 +26,16 @@ public class AuthController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest,
                                       HttpServletResponse response) {
         Token issuedToken = authService.login(loginRequest);
+        response.addCookie(createCookie(issuedToken));
 
+        return ResponseEntity.ok().build();
+    }
+
+    private Cookie createCookie(Token issuedToken) {
         Cookie cookie = new Cookie("token", issuedToken.getAccessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok().build();
+        return cookie;
     }
 
     @GetMapping("/login/check")
