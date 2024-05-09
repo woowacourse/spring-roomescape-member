@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import static roomescape.domain.Role.ADMIN;
+import static roomescape.domain.Role.MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.INVALID_EMAIL_FORMAT;
 
@@ -16,12 +18,13 @@ public class Member {
     private final String name;
     private final String email;
     private final String encryptedPassword;
+    private final Role role;
 
     public Member(String name, String email, String encryptedPassword) {
-        this(null, name, email, encryptedPassword);
+        this(null, name, email, encryptedPassword, MEMBER);
     }
 
-    public Member(Long id, String name, String email, String encryptedPassword) {
+    public Member(Long id, String name, String email, String encryptedPassword, Role role) {
         validateName(name);
         validateEmail(email);
         validateEncryptedPassword(encryptedPassword);
@@ -29,6 +32,7 @@ public class Member {
         this.name = name;
         this.email = email;
         this.encryptedPassword = encryptedPassword;
+        this.role = role;
     }
 
     private void validateName(String name) {
@@ -59,6 +63,14 @@ public class Member {
         }
     }
 
+    public Member(Long id, String name, String email, String encryptedPassword) {
+        this(id, name, email, encryptedPassword, MEMBER);
+    }
+
+    public static Member asAdmin(String name, String email, String encryptedPassword) {
+        return new Member(null, name, email, encryptedPassword, ADMIN);
+    }
+
     public Long getId() {
         return id;
     }
@@ -73,5 +85,9 @@ public class Member {
 
     public String getEncryptedPassword() {
         return encryptedPassword;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

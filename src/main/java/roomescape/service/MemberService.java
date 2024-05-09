@@ -36,13 +36,13 @@ public class MemberService {
                 .orElseThrow(() -> new RoomescapeException(INVALID_TOKEN));
         String name = member.getName();
         long id = member.getId();
-        return new UserInfo(id, name);
+        return new UserInfo(id, name, member.getRole().name());
     }
 
     public List<UserInfo> findAll() {
         return memberRepository.findAll()
                 .stream()
-                .map(member -> new UserInfo(member.getId(), member.getName()))
+                .map(member -> new UserInfo(member.getId(), member.getName(), member.getRole().name()))
                 .toList();
     }
 }

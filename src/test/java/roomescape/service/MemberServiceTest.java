@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.domain.Sha256Encryptor;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.UserInfo;
@@ -38,6 +39,6 @@ class MemberServiceTest {
 
         UserInfo userInfo = memberService.findByUserId(1L);
         Assertions.assertThat(userInfo)
-                .isEqualTo(new UserInfo(1L, "a"));
+                .isEqualTo(new UserInfo(1L, "a", Role.MEMBER.name()));
     }
 }

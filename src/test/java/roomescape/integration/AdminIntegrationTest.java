@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AdminIntegrationTest {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static String token;
     @LocalServerPort
     private int port;
     @Autowired
@@ -37,12 +38,23 @@ public class AdminIntegrationTest {
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("INSERT INTO theme VALUES ( 1,'name','description','http://thumbnail')");
         RestAssured.port = port;
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", "email2@email.com");
+        params.put("password", "qwer");
+        token = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then()
+                .extract()
+                .cookie("token");
     }
 
     @Test
     @DisplayName("관리자 메인 페이지가 잘 접속된다.")
     void adminMainPageLoad() {
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -52,6 +64,7 @@ public class AdminIntegrationTest {
     @DisplayName("관리자 예약 페이지가 잘 접속된다.")
     void adminReservationPageLoad() {
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -77,6 +90,7 @@ public class AdminIntegrationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -112,6 +126,7 @@ public class AdminIntegrationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -121,6 +136,7 @@ public class AdminIntegrationTest {
         Assertions.assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -137,18 +153,21 @@ public class AdminIntegrationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/times/2")
                 .then().log().all()
                 .statusCode(204);

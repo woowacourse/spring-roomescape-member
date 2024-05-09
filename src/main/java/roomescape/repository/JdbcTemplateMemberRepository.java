@@ -19,7 +19,7 @@ public class JdbcTemplateMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmailAndEncryptedPassword(String email, String encryptedPassword) {
-        String query = "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?";
+        String query = "SELECT id, name, email, password, role FROM member WHERE email = ? AND password = ?";
         return jdbcTemplate.query(query, memberRowMapper, email, encryptedPassword)
                 .stream()
                 .findAny();
@@ -27,13 +27,14 @@ public class JdbcTemplateMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(long id) {
-        return jdbcTemplate.query("SELECT id, name, email, password FROM member WHERE id = ?", memberRowMapper, id)
+        return jdbcTemplate.query("SELECT id, name, email, password, role FROM member WHERE id = ?", memberRowMapper,
+                        id)
                 .stream()
                 .findAny();
     }
 
     @Override
     public List<Member> findAll() {
-        return jdbcTemplate.query("SELECT id, name, email, password FROM member", memberRowMapper);
+        return jdbcTemplate.query("SELECT id, name, email, password, role FROM member", memberRowMapper);
     }
 }

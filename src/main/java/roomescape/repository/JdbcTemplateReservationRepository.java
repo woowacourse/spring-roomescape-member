@@ -58,7 +58,8 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                    m.id AS member_id,
                    m.name AS member_name,
                    m.email AS email,
-                   m.password AS password
+                   m.password AS password,
+                   m.role AS role
                 FROM reservation AS r
                 INNER JOIN reservation_time t
                     ON r.time_id = t.id
