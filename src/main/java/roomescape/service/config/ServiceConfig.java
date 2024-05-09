@@ -1,5 +1,6 @@
 package roomescape.service.config;
 
+import java.time.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import roomescape.domain.ReservationFactory;
@@ -9,6 +10,11 @@ class ServiceConfig {
 
     @Bean
     public ReservationFactory reservationFactory() {
-        return new ReservationFactory();
+        return new ReservationFactory(clock());
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 }
