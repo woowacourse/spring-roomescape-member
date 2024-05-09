@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AuthControllerTest {
 
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert memberInsertActor;
 
@@ -66,11 +68,10 @@ public class AuthControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .extract().cookie("token");
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String actual = Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
         assertThat(actual).isEqualTo(expected);
     }
@@ -79,22 +80,36 @@ public class AuthControllerTest {
     @Test
     void should_return_name_of_login_member() {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String token = Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
-
         LoginResponse body = RestAssured
                 .given().log().all()
                 .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
                 .when().get("/login/check")
                 .then().log().all()
                 .extract().body().as(LoginResponse.class);
-
         assertThat(body.getName()).isEqualTo("에버");
+    }
+
+    @DisplayName("로그아웃을 성공할 경우 토큰 쿠키를 삭제한다.")
+    @Test
+    void should_logout() {
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        String token = Jwts.builder()
+                .subject(String.valueOf(member.getId()))
+                .claim("name", member.getName())
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
+        String tokenAfterLogout = RestAssured
+                .given().log().all()
+                .cookie("token", token)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
+        assertThat(tokenAfterLogout).isEmpty();
     }
 }
