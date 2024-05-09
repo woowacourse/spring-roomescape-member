@@ -136,6 +136,35 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
 
+    public List<Reservation> findByMemberThemePeriod(Long memberId, Long themeId,
+                                                     LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                SELECT 
+                    r.id AS reservation_id, 
+                    r.date, 
+                    t.id AS time_id, 
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email,
+                    m.role
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                INNER JOIN theme AS th
+                ON r.theme_id = th.id
+                INNER JOIN member AS m 
+                ON r.member_id = m.id
+                WHERE m.id = ? AND th.id = ? AND r.date BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, memberId, themeId, dateFrom, dateTo);
+    }
+
     public Reservation findById(Long id) {
         String sql = """
                 SELECT 

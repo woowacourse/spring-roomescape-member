@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,13 @@ public class ReservationService {
 
     public List<ReservationResponse> getAllReservations() {
         return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findReservationsWithMemberThemePeriod(Long memberId, Long themeId,
+                                                                           LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findByMemberThemePeriod(memberId, themeId, dateFrom, dateTo).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
