@@ -28,4 +28,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new CustomExceptionResponse(e.getTitle(), e.getDetail()));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CustomExceptionResponse> handelError(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new CustomExceptionResponse("서버 내부 문제가 발생했습니다.", "알 수 없는 문제가 발생했습니다."));
+    }
 }
