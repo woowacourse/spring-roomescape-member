@@ -39,34 +39,9 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse createReservation(ReservationCreateRequest request) {
-        ReservationTime reservationTime = findReservationTimeById(request.timeId());
-        Theme theme = findThemeById(request.themeId());
-        Member member = findMemberById(request.memberId());
-        Reservation reservation = request.toReservation(member, reservationTime, theme);
-
-        validateDuplicated(reservation);
-        validateRequestedTime(reservation, reservationTime);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
-    }
-
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다."));
-    }
-
-    public ReservationResponse createReservation(MemberReservationCreateRequest request, Member member) {
-        ReservationTime time = findReservationTimeById(request.timeId());
-        Theme theme = findThemeById(request.themeId());
-        Reservation reservation = request.toReservation(member, time, theme);
-
-        validateDuplicated(reservation);
-        validateRequestedTime(reservation, time);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
     }
 
     private ReservationTime findReservationTimeById(Long id) {
@@ -77,6 +52,26 @@ public class ReservationService {
     private Theme findThemeById(Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
+    }
+
+    public ReservationResponse createReservation(ReservationCreateRequest request) {
+        Member member = findMemberById(request.memberId());
+        MemberReservationCreateRequest createRequest = MemberReservationCreateRequest.from(request);
+
+        return createReservation(createRequest, member);
+    }
+
+    public ReservationResponse createReservation(MemberReservationCreateRequest request, Member member) {
+        ReservationTime time = findReservationTimeById(request.timeId());
+        Theme theme = findThemeById(request.themeId());
+
+        Reservation reservation = request.toReservation(member, time, theme);
+
+        validateDuplicated(reservation);
+        validateRequestedTime(reservation, time);
+
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(savedReservation);
     }
 
     private void validateDuplicated(Reservation reservation) {
@@ -121,7 +116,7 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         int deletedCount = reservationRepository.deleteById(id);
         if (deletedCount == 0) {
-            throw new BadRequestException("존재하지 않는 예약입니다.");
+            throw new ResourceNotFoundException("존재하지 않는 예약입니다.");
         }
     }
 }

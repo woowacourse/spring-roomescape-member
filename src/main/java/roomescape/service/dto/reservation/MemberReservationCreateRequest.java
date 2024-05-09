@@ -14,6 +14,10 @@ public record MemberReservationCreateRequest(
         @NotNull(message = "테마는 비어있을 수 없습니다.") Long themeId
 ) {
 
+    public static MemberReservationCreateRequest from(ReservationCreateRequest request) {
+        return new MemberReservationCreateRequest(request.date(), request.timeId(), request.themeId());
+    }
+
     public Reservation toReservation(Member member, ReservationTime time, Theme theme) {
         return new Reservation(member, date, time, theme);
     }

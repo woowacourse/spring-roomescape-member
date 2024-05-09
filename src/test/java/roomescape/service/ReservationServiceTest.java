@@ -187,6 +187,8 @@ class ReservationServiceTest {
     @Test
     void createWithNonExistentTime() {
         // given
+        Mockito.when(memberRepository.findById(id))
+                        .thenReturn(Optional.of(Fixtures.memberFixture));
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.empty());
 
