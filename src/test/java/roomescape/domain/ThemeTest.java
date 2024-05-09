@@ -36,7 +36,7 @@ class ThemeTest {
 
         assertThatThrownBy(() -> new Theme(name, "description", "thumbnail"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 255자를 넘을 수 없습니다.");
+                .hasMessage("이름은 30자를 넘을 수 없습니다.");
     }
 
     @ParameterizedTest

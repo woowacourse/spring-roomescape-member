@@ -70,6 +70,12 @@ class JdbcThemeRepositoryTest {
     @Test
     @DisplayName("인기 있는 테마들을 조회한다.")
     void findPopularThemes() {
+        String insertMemberSQL = """
+                    INSERT INTO member (id, email, password, name, role)
+                    VALUES (1, 'example1@gmail.com', 'password', 'name1', 'USER'),
+                           (2, 'example2@gmail.com', 'password', 'name2', 'USER');
+                """;
+
         String insertThemeSQL = """
                     INSERT INTO theme (id, name, description, thumbnail) 
                     VALUES (1, '테마1', '테마1 설명', 'https://example1.com'),
@@ -83,20 +89,21 @@ class JdbcThemeRepositoryTest {
                            (3, '11:00');
                 """;
         String insertReservationSQL = """
-                    INSERT INTO reservation (id, name, date, time_id, theme_id)
-                    VALUES (1, '예약1', '2024-05-04', 1, 1),
-                           (2, '예약2', '2024-05-05', 2, 1),
-                           (3, '예약3', '2024-05-06', 3, 1),
-                           (4, '예약4', '2024-05-07', 1, 2),
-                           (5, '예약5', '2024-05-08', 2, 2),
-                           (6, '예약6', '2024-05-09', 3, 3),
-                           (7, '예약7', '2024-05-10', 1, 3),
-                           (8, '예약8', '2024-05-11', 2, 3),
-                           (9, '예약9', '2024-05-12', 3, 3);
+                    INSERT INTO reservation (id, date, member_id, time_id, theme_id)
+                    VALUES (1, '2024-05-04', 1, 1, 1),
+                           (2, '2024-05-05', 2, 2, 1),
+                           (3, '2024-05-06', 1, 3, 1),
+                           (4, '2024-05-07', 2, 1, 2),
+                           (5, '2024-05-08', 1, 2, 2),
+                           (6, '2024-05-09', 2, 3, 3),
+                           (7, '2024-05-10', 1, 1, 3),
+                           (8, '2024-05-11', 2, 2, 3),
+                           (9, '2024-05-12', 1, 3, 3);
                 """;
 
-        jdbcTemplate.update(insertThemeSQL);
+        jdbcTemplate.update(insertMemberSQL);
         jdbcTemplate.update(insertTimeSQL);
+        jdbcTemplate.update(insertThemeSQL);
         jdbcTemplate.update(insertReservationSQL);
 
         LocalDate startDate = LocalDate.of(2024, 5, 6);

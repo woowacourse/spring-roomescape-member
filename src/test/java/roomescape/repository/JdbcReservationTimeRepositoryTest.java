@@ -59,6 +59,11 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @DisplayName("예약 가능한 시간들을 조회한다.")
     void findAvailableReservationTimes() {
+        String insertMemberSQL = """
+                INSERT INTO member (id, email, password, name, role)
+                VALUES ('1', 'example@gmail.com', 'password', 'name1', 'USER');
+                """;
+
         String insertTimeSQL = """
                 INSERT INTO reservation_time (id, start_at)
                 VALUES (1, '10:00'), 
@@ -72,11 +77,12 @@ class JdbcReservationTimeRepositoryTest {
                 """;
 
         String insertReservationSQL = """
-                INSERT INTO reservation (id, name, date, time_id, theme_id)
-                VALUES (1, '예약1', '2024-05-04', 1, 1),
-                       (2, '예약2', '2024-05-04', 3, 1);
+                INSERT INTO reservation (id, date, member_id, time_id, theme_id)
+                VALUES (1, '2024-05-04', 1, 1, 1),
+                       (2, '2024-05-04', 1, 3, 1);
                 """;
 
+        jdbcTemplate.update(insertMemberSQL);
         jdbcTemplate.update(insertTimeSQL);
         jdbcTemplate.update(insertThemeSQL);
         jdbcTemplate.update(insertReservationSQL);

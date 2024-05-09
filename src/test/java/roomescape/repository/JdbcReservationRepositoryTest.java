@@ -22,11 +22,6 @@ import roomescape.domain.theme.Theme;
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
-    private static final LocalDate DATE = LocalDate.of(2024, 5, 4);
-    private static final Member MEMBER = new Member("example@gmail.com", "password", "구름", Role.USER);
-    private static final ReservationTime TIME = new ReservationTime(LocalTime.of(10, 0));
-    private static final Theme THEME = new Theme("테마1", "테마1 설명", "https://example1.com");
-
     private final JdbcTemplate jdbcTemplate;
     private final ReservationRepository reservationRepository;
 

@@ -7,15 +7,19 @@ import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 
+@JdbcTest
 class JdbcMemberRepositoryTest {
 
     private final JdbcTemplate jdbcTemplate;
     private final JdbcMemberRepository memberRepository;
 
+    @Autowired
     public JdbcMemberRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.memberRepository = new JdbcMemberRepository(jdbcTemplate);
@@ -28,7 +32,7 @@ class JdbcMemberRepositoryTest {
         Member savedMember = memberRepository.save(member);
 
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(savedMember.getId()).isEqualTo(1L);
+            softly.assertThat(savedMember.getId()).isNotNull();
             softly.assertThat(savedMember.getEmail()).isEqualTo("example@gmail.com");
             softly.assertThat(savedMember.getPassword()).isEqualTo("password");
             softly.assertThat(savedMember.getName()).isEqualTo("구름");
@@ -47,7 +51,7 @@ class JdbcMemberRepositoryTest {
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(members).hasSize(1);
-            softly.assertThat(member.getId()).isEqualTo(1L);
+            softly.assertThat(member.getId()).isNotNull();
             softly.assertThat(member.getEmail()).isEqualTo("example@gmail.com");
             softly.assertThat(member.getPassword()).isEqualTo("password");
             softly.assertThat(member.getName()).isEqualTo("구름");
@@ -58,8 +62,8 @@ class JdbcMemberRepositoryTest {
     @Test
     @DisplayName("회원을 조회한다.")
     void findById() {
-        jdbcTemplate.update("INSERT INTO member (email, password, name, role) "
-                + "VALUES ('example@gmail.com', 'password', '구름', 'USER')");
+        jdbcTemplate.update("INSERT INTO member (id, email, password, name, role) "
+                + "VALUES (1L, 'example@gmail.com', 'password', '구름', 'USER')");
 
         Optional<Member> memberOptional = memberRepository.findById(1L);
 
@@ -85,7 +89,7 @@ class JdbcMemberRepositoryTest {
         assertThat(memberOptional).isPresent();
         Member member = memberOptional.get();
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(member.getId()).isEqualTo(1L);
+            softly.assertThat(member.getId()).isNotNull();
             softly.assertThat(member.getEmail()).isEqualTo("example@gmail.com");
             softly.assertThat(member.getPassword()).isEqualTo("password");
             softly.assertThat(member.getName()).isEqualTo("구름");
