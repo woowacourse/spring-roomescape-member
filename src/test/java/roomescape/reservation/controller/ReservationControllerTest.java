@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import roomescape.auth.config.AuthInfo;
 import roomescape.common.DateTimeFormatConfiguration;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
@@ -51,10 +52,11 @@ class ReservationControllerTest {
         // given
         Reservation reservation = ReservationFixture.getOne();
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(3000, 1, 1), "포비", 1L, 1L);
+                LocalDate.of(3000, 1, 1), 1L, 1L);
+        AuthInfo authInfo = new AuthInfo(1L, "asdf");
 
         // stub
-        Mockito.when(reservationService.createReservation(createReservationRequest))
+        Mockito.when(reservationService.createReservation(authInfo, createReservationRequest))
                 .thenReturn(CreateReservationResponse.from(reservation));
 
         // when & then

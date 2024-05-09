@@ -23,7 +23,7 @@ class AuthServiceTest {
     private final MemberRepository memberRepository;
 
     AuthServiceTest() {
-        this.tokenProvider = new TokenProvider("adffdsa", 3600000);
+        this.tokenProvider = new TokenProvider();
         this.memberRepository = new FakeMemberRepository();
         this.authService = new AuthService(memberRepository, tokenProvider);
     }
@@ -73,7 +73,7 @@ class AuthServiceTest {
         // given
         String email = "moly@hihi.com";
         Member member = memberRepository.save(MemberFixture.getOne(email));
-        String token = tokenProvider.createToken(email);
+        String token = tokenProvider.createToken(member);
 
         // when & then
         assertThat(authService.getMemberAuthInfo(token)).isEqualTo(GetAuthInfoResponse.from(member));
@@ -83,8 +83,8 @@ class AuthServiceTest {
     @DisplayName("토큰으로부터 얻은 회원 정보가 존재하지 않는 경우, 예외를 반환한다.")
     void getMemberAuthInfo_WhenMemberNotExists() {
         // given
-        String email = "moly@hihi.com";
-        String token = tokenProvider.createToken(email);
+        Member member = MemberFixture.getOne();
+        String token = tokenProvider.createToken(member);
 
         // when & then
         assertThatThrownBy(() -> authService.getMemberAuthInfo(token))

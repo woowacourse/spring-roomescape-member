@@ -22,4 +22,11 @@ public class FakeMemberRepository implements MemberRepository {
                 .filter(member -> member.isSameEmail(email))
                 .findFirst();
     }
+
+    @Override
+    public Optional<Member> findById(final Long id) {
+        return members.stream()
+                .filter(member -> member.isSameId(id))
+                .findFirst();
+    }
 }

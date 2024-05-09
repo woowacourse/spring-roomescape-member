@@ -6,36 +6,41 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+ import roomescape.auth.config.AuthInfo;
+import roomescape.member.domain.Member;
 
 @Component
 public class TokenProvider {
 
-    private final String secretKey;
-    private final long validityInMilliseconds;
+    private static final String MEMBER_ID_CLAIM = "memberId";
 
-    public TokenProvider(@Value("${security.jwt.token.secret-key}") final String secretKey,
-                         @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
-        this.secretKey = secretKey;
-        this.validityInMilliseconds = validityInMilliseconds;
-    }
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
+    @Value("${security.jwt.token.expire-length}")
+    private long validityInMilliseconds;
 
-    public String createToken(final String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(final Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
-
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(member.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(validity)
+                .claim(MEMBER_ID_CLAIM, member.getName())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    public String extractPayload(final String token) {
+    public AuthInfo extractAuthInfo(final String token) {
+        Claims claims = getClaims(token);
+        Long memberId = Long.parseLong(claims.getSubject());
+        String name = claims.get(MEMBER_ID_CLAIM, String.class);
+        return new AuthInfo(memberId, name);
+    }
+
+    private Claims getClaims(final String token) {
         return Jwts.parser().setSigningKey(secretKey)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 }

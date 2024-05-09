@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import roomescape.auth.config.AuthInfo;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -32,13 +33,15 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public CreateReservationResponse createReservation(final CreateReservationRequest createReservationRequest) {
+    public CreateReservationResponse createReservation(final AuthInfo authInfo,
+                                                       final CreateReservationRequest createReservationRequest) {
         ReservationTime reservationTime = findReservationTime(createReservationRequest.timeId());
         checkDateTimeToCreateIsPast(createReservationRequest.date(), reservationTime);
 
         Theme theme = findTheme(createReservationRequest.themeId());
 
-        Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
+        Reservation reservation = createReservationRequest.toReservation(authInfo.getName(), reservationTime, theme);
+        // TODO: 얘가 42줄이여도 될듯
         validateAlreadyExistReservation(reservationTime, theme, reservation);
 
         return CreateReservationResponse.from(reservationRepository.save(reservation));

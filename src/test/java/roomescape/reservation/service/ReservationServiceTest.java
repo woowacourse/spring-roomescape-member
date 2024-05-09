@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.config.AuthInfo;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -57,12 +57,13 @@ class ReservationServiceTest {
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
             themeRepository.save(ThemeFixture.getOne());
 
+            AuthInfo authInfo = new AuthInfo(1L, "sdf");
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                    LocalDate.of(2024, 10, 10), "포비", 1L, 1L);
+                    LocalDate.of(2024, 10, 10), 1L, 1L);
 
             // when
             CreateReservationResponse createReservationResponse = reservationService.createReservation(
-                    createReservationRequest);
+                    authInfo, createReservationRequest);
 
             // then
             assertThat(createReservationResponse.id()).isEqualTo(1L);
@@ -74,11 +75,12 @@ class ReservationServiceTest {
             // given
             themeRepository.save(ThemeFixture.getOne());
 
+            AuthInfo authInfo = new AuthInfo(1L, "포비");
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                    LocalDate.of(10, 10, 10), "포비", 1L, 1L);
+                    LocalDate.of(10, 10, 10), 1L, 1L);
 
             // when & then
-            assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
+            assertThatThrownBy(() -> reservationService.createReservation(authInfo, createReservationRequest))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessage("생성하려는 예약의 예약 시간이 존재하지 않습니다.");
         }
@@ -89,11 +91,12 @@ class ReservationServiceTest {
             // given
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
 
+            AuthInfo authInfo = new AuthInfo(1L, "포비");
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                    LocalDate.of(2024, 10, 10), "포비", 1L, 1L);
+                    LocalDate.of(2024, 10, 10), 1L, 1L);
 
             // when & then
-            assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
+            assertThatThrownBy(() -> reservationService.createReservation(authInfo, createReservationRequest))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessage("생성하려는 테마가 존재하지 않습니다.");
         }
@@ -107,11 +110,12 @@ class ReservationServiceTest {
             reservationRepository.save(
                     Reservation.of(null, "내가 먼저 예약", LocalDate.parse("2024-10-10"), reservationTime, theme));
 
+            AuthInfo authInfo = new AuthInfo(1L, "포비");
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                    LocalDate.parse("2024-10-10"), "포비", 1L, 1L);
+                    LocalDate.parse("2024-10-10"), 1L, 1L);
 
             // when & then
-            assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
+            assertThatThrownBy(() -> reservationService.createReservation(authInfo, createReservationRequest))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("동일한 시간의 예약이 존재합니다.");
         }
@@ -123,11 +127,12 @@ class ReservationServiceTest {
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
             themeRepository.save(ThemeFixture.getOne());
 
+            AuthInfo authInfo = new AuthInfo(1L, "포비");
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                    LocalDate.of(1000, 10, 10), "포비", 1L, 1L);
+                    LocalDate.of(1000, 10, 10), 1L, 1L);
 
             // when & then
-            assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
+            assertThatThrownBy(() -> reservationService.createReservation(authInfo, createReservationRequest))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("지나간 날짜에 대한 예약 생성은 불가능합니다.");
         }
@@ -137,14 +142,16 @@ class ReservationServiceTest {
         void createReservation_checkDateTimeToCreateIsPast_throwException() {
             // given
             LocalDateTime now = LocalDateTime.now();
-            ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(null, now.toLocalTime()));
+            ReservationTime reservationTime = reservationTimeRepository.save(
+                    new ReservationTime(null, now.toLocalTime()));
             themeRepository.save(ThemeFixture.getOne());
 
+            AuthInfo authInfo = new AuthInfo(1L, "포비");
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                    now.toLocalDate(), "포비", reservationTime.getId(), 1L);
+                    now.toLocalDate(), reservationTime.getId(), 1L);
 
             // when & then
-            assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
+            assertThatThrownBy(() -> reservationService.createReservation(authInfo, createReservationRequest))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("지나간 시간 또는 현재 시간에 대한 예약 생성은 불가능합니다.");
         }
