@@ -12,7 +12,7 @@ import roomescape.auth.AuthenticatedMember;
 import roomescape.domain.Member;
 import roomescape.service.auth.AuthService;
 import roomescape.service.dto.request.LoginRequest;
-import roomescape.service.dto.response.MemberNameResponse;
+import roomescape.service.dto.response.MemberIdAndNameResponse;
 
 @RestController
 public class AuthApiController {
@@ -24,8 +24,8 @@ public class AuthApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberNameResponse> getMemberLoginInfo(@AuthenticatedMember Member member) {
-        return ResponseEntity.ok(new MemberNameResponse(member.getName()));
+    public ResponseEntity<MemberIdAndNameResponse> getMemberLoginInfo(@AuthenticatedMember Member member) {
+        return ResponseEntity.ok(new MemberIdAndNameResponse(member.getId(), member.getName()));
     }
 
     @PostMapping("/login")

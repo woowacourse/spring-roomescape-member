@@ -41,4 +41,10 @@ public class MemberRepository {
         List<Member> members = jdbcTemplate.query(sql, memberRowMapper, email, password);
         return members.isEmpty() ? Optional.empty() : Optional.of(members.get(0));
     }
+
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email, password " +
+                "FROM member ";
+        return jdbcTemplate.query(sql, memberRowMapper);
+    }
 }
