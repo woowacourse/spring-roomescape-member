@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.dto.ReservationRequestDto;
+import roomescape.reservation.dto.ReservationRequest;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -87,13 +87,13 @@ public class ReservationAcceptanceTest {
                 .statusCode(201);
 
 
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("hi", LocalDate.MAX, 1, 1);
+        ReservationRequest reservationRequest = new ReservationRequest("hi", LocalDate.MAX, 1, 1);
 
         RestAssured.given()
                 .log()
                 .all()
                 .contentType(ContentType.JSON)
-                .body(reservationRequestDto)
+                .body(reservationRequest)
                 .when()
                 .post("/reservations")
                 .then()

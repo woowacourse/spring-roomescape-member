@@ -3,8 +3,8 @@ package roomescape.theme.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.ThemeRequestDto;
-import roomescape.theme.dto.ThemeResponseDto;
+import roomescape.theme.dto.ThemeRequest;
+import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 import java.net.URI;
@@ -20,22 +20,22 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> findAll() {
+    public ResponseEntity<List<ThemeResponse>> findAll() {
         final List<Theme> themes = themeService.readAll();
 
-        final List<ThemeResponseDto> themeResponseDtos = changeToThemeResponseDtos(themes);
+        final List<ThemeResponse> themeResponses = changeToThemeResponses(themes);
 
-        return ResponseEntity.ok(themeResponseDtos);
+        return ResponseEntity.ok(themeResponses);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> save(@RequestBody final ThemeRequestDto themeRequestDto) {
-        final Theme theme = themeService.create(themeRequestDto.toTheme());
+    public ResponseEntity<ThemeResponse> save(@RequestBody final ThemeRequest themeRequest) {
+        final Theme theme = themeService.create(themeRequest.toTheme());
 
-        final ThemeResponseDto themeResponseDto = changeToThemeResponseDto(theme);
-        final String url = "/themes/" + themeResponseDto.id();
+        final ThemeResponse themeResponse = changeToThemeResponse(theme);
+        final String url = "/themes/" + themeResponse.id();
 
-        return ResponseEntity.created(URI.create(url)).body(themeResponseDto);
+        return ResponseEntity.created(URI.create(url)).body(themeResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -46,21 +46,21 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponseDto>> findPopular() {
+    public ResponseEntity<List<ThemeResponse>> findPopular() {
         List<Theme> themes = themeService.findPopular();
 
-        List<ThemeResponseDto> themeResponseDtos = changeToThemeResponseDtos(themes);
+        List<ThemeResponse> themeResponses = changeToThemeResponses(themes);
 
-        return ResponseEntity.ok(themeResponseDtos);
+        return ResponseEntity.ok(themeResponses);
     }
 
-    private ThemeResponseDto changeToThemeResponseDto(final Theme theme) {
-        return new ThemeResponseDto(theme);
+    private ThemeResponse changeToThemeResponse(final Theme theme) {
+        return new ThemeResponse(theme);
     }
 
-    private List<ThemeResponseDto> changeToThemeResponseDtos(final List<Theme> themes) {
+    private List<ThemeResponse> changeToThemeResponses(final List<Theme> themes) {
         return themes.stream()
-                .map(this::changeToThemeResponseDto)
+                .map(this::changeToThemeResponse)
                 .toList();
     }
 }

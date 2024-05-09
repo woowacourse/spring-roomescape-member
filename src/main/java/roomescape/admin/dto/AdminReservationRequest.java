@@ -1,4 +1,4 @@
-package roomescape.reservation.dto;
+package roomescape.admin.dto;
 
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
@@ -8,10 +8,12 @@ import roomescape.time.domain.ReservationTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record ReservationRequestDto(LocalDate date, long timeId, long themeId) {
+public record AdminReservationRequest(LocalDate date, Long themeId, Long timeId, Long memberId) {
 
-    public Reservation toReservation(Member member) {
-        return new Reservation(null, member, date,
+    public Reservation toReservation() {
+        return new Reservation(null,
+                new Member(memberId, null, null, null, null),
+                date,
                 new ReservationTime(timeId, LocalTime.MIN),
                 new Theme(themeId, null, null, null));
     }

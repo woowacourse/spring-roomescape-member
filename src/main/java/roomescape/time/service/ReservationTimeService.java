@@ -2,7 +2,7 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.ReservationTimeStatusDto;
+import roomescape.time.dto.ReservationTimeStatus;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class ReservationTimeService {
         validateDeletionOccurred(deleteCount);
     }
 
-    public List<ReservationTimeStatusDto> findAvailableTime(final String date, final long themeId) {
+    public List<ReservationTimeStatus> findAvailableTime(final String date, final long themeId) {
         return reservationTimeRepository.findAvailableTime(date, themeId);
     }
 

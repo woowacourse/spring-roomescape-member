@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.admin.dto.AdminReservationDto;
+import roomescape.admin.dto.AdminReservationRequest;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationResponseDto;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -21,15 +21,15 @@ public class AdminController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponseDto> save(@RequestBody AdminReservationDto adminReservationDto) {
-        final Reservation reservation = reservationService.create(adminReservationDto.toReservation());
+    public ResponseEntity<ReservationResponse> save(@RequestBody AdminReservationRequest adminReservationRequest) {
+        final Reservation reservation = reservationService.create(adminReservationRequest.toReservation());
 
-        final ReservationResponseDto reservationResponseDto = changeToReservationResponseDto(reservation);
+        final ReservationResponse reservationResponse = changeToReservationResponse(reservation);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
-    private ReservationResponseDto changeToReservationResponseDto(final Reservation reservation) {
-        return new ReservationResponseDto(reservation);
+    private ReservationResponse changeToReservationResponse(final Reservation reservation) {
+        return new ReservationResponse(reservation);
     }
 }

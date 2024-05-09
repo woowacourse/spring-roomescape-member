@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationRequestDto;
-import roomescape.reservation.dto.ReservationResponseDto;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
@@ -21,22 +21,22 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> findAll() {
+    public ResponseEntity<List<ReservationResponse>> findAll() {
         final List<Reservation> reservations = reservationService.readAll();
 
-        final List<ReservationResponseDto> reservationResponseDtos = changeToReservationResponseDtos(reservations);
+        final List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
 
-        return ResponseEntity.ok(reservationResponseDtos);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto reservationRequestDto, Member member) {
-        final Reservation reservation = reservationService.create(reservationRequestDto.toReservation(member));
+    public ResponseEntity<ReservationResponse> save(@RequestBody final ReservationRequest reservationRequest, Member member) {
+        final Reservation reservation = reservationService.create(reservationRequest.toReservation(member));
 
-        final ReservationResponseDto reservationResponseDto = changeToReservationResponseDto(reservation);
-        final String url = "/reservations/" + reservationResponseDto.id();
+        final ReservationResponse reservationResponse = changeToReservationResponse(reservation);
+        final String url = "/reservations/" + reservationResponse.id();
 
-        return ResponseEntity.created(URI.create(url)).body(reservationResponseDto);
+        return ResponseEntity.created(URI.create(url)).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -46,13 +46,13 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    private ReservationResponseDto changeToReservationResponseDto(final Reservation reservation) {
-        return new ReservationResponseDto(reservation);
+    private ReservationResponse changeToReservationResponse(final Reservation reservation) {
+        return new ReservationResponse(reservation);
     }
 
-    private List<ReservationResponseDto> changeToReservationResponseDtos(final List<Reservation> reservations) {
+    private List<ReservationResponse> changeToReservationResponses(final List<Reservation> reservations) {
         return reservations.stream()
-                .map(this::changeToReservationResponseDto)
+                .map(this::changeToReservationResponse)
                 .toList();
     }
 }
