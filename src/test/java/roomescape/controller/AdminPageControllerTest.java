@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class AdminControllerTest extends ControllerTest {
+class AdminPageControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("어드민 메인 페이지를 반환한다.")

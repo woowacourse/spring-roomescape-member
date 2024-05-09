@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class UserControllerTest extends ControllerTest {
+class PageControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("사용자 메인 페이지를 반환한다.")
