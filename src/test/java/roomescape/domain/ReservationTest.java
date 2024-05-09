@@ -1,4 +1,3 @@
-/*
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,12 +12,14 @@ class ReservationTest {
     @Test
     void hasSameTheme() {
         Reservation firstReservation = new Reservation(
-                1L, new Name("first"), LocalDate.of(2024, 10,5),
+                1L, LocalDate.of(2024, 10,5),
+                new Member(1L, "name1", "email1", "password1", Role.USER),
                 new ReservationTime(1L, LocalTime.of(10, 5)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
         Reservation secondReservation = new Reservation(
-                2L, new Name("second"), LocalDate.of(2024, 10,5),
+                2L, LocalDate.of(2024, 10,5),
+                new Member(2L, "name2", "email2", "password2", Role.USER),
                 new ReservationTime(2L, LocalTime.of(10, 6)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
@@ -30,12 +31,14 @@ class ReservationTest {
     @Test
     void hasNotSameTheme() {
         Reservation firstReservation = new Reservation(
-                1L, new Name("first"), LocalDate.of(2024, 10,5),
+                1L, LocalDate.of(2024, 10,5),
+                new Member(1L, "name1", "email1", "password1", Role.USER),
                 new ReservationTime(1L, LocalTime.of(10, 5)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
         Reservation secondReservation = new Reservation(
-                2L, new Name("second"), LocalDate.of(2024, 10,5),
+                2L, LocalDate.of(2024, 10,5),
+                new Member(2L, "name2", "email2", "password2", Role.USER),
                 new ReservationTime(2L, LocalTime.of(10, 6)),
                 new Theme(2L, "name2", "description2", "thumbnail2")
         );
@@ -47,12 +50,14 @@ class ReservationTest {
     @Test
     void hasSameDateTime() {
         Reservation firstReservation = new Reservation(
-                1L, new Name("first"), LocalDate.of(2024, 10,5),
+                1L, LocalDate.of(2024, 10,5),
+                new Member(1L, "name1", "email1", "password1", Role.USER),
                 new ReservationTime(1L, LocalTime.of(10, 5)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
         Reservation secondReservation = new Reservation(
-                2L, new Name("second"), LocalDate.of(2024, 10,5),
+                2L, LocalDate.of(2024, 10,5),
+                new Member(2L, "name2", "email2", "password2", Role.USER),
                 new ReservationTime(1L, LocalTime.of(10, 5)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
@@ -64,12 +69,14 @@ class ReservationTest {
     @Test
     void hasNotSameDateTime() {
         Reservation firstReservation = new Reservation(
-                1L, new Name("first"), LocalDate.of(2024, 10,5),
+                1L, LocalDate.of(2024, 10,5),
+                new Member(1L, "name1", "email1", "password1", Role.USER),
                 new ReservationTime(1L, LocalTime.of(10, 5)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
         Reservation secondReservation = new Reservation(
-                2L, new Name("second"), LocalDate.of(2024, 10,5),
+                2L, LocalDate.of(2024, 10,5),
+                new Member(2L, "name2", "email2", "password2", Role.USER),
                 new ReservationTime(2L, LocalTime.of(10, 6)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
@@ -81,7 +88,8 @@ class ReservationTest {
     @Test
     void isBeforeNow() {
         Reservation reservation = new Reservation(
-                1L, new Name("first"), LocalDate.now().minusDays(1),
+                1L, LocalDate.now().minusDays(1),
+                new Member(1L, "name1", "email1", "password1", Role.USER),
                 new ReservationTime(1L, LocalTime.of(10, 5)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
@@ -93,7 +101,8 @@ class ReservationTest {
     @Test
     void isNotBeforeNow() {
         Reservation reservation = new Reservation(
-                1L, new Name("first"), LocalDate.now().plusDays(1),
+                1L, LocalDate.now().plusDays(1),
+                new Member(1L, "name1", "email1", "password1", Role.USER),
                 new ReservationTime(1L, LocalTime.of(10, 5)),
                 new Theme(1L, "name1", "description1", "thumbnail1")
         );
@@ -101,4 +110,3 @@ class ReservationTest {
         assertThat(reservation.isBeforeNow()).isFalse();
     }
 }
-*/
