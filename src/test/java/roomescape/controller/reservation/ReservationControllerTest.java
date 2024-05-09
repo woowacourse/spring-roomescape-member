@@ -44,7 +44,7 @@ class ReservationControllerTest {
     @DisplayName("예약을 추가하면 201 과 예약 정보를 응답한다.")
     void addReservation200AndReservation() {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final ReservationRequest request = new ReservationRequest("R 1", tomorrow, 1L, 1L);
+        final ReservationRequest request = new ReservationRequest("새양", tomorrow, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -56,7 +56,7 @@ class ReservationControllerTest {
                 .body("name", is(request.name()))
                 .body("date", is(request.date()))
                 .body("time.startAt", is("08:00"))
-                .body("theme.name", is("Theme 1"));
+                .body("theme.name", is("젠틀 먼데이"));
     }
 
     @Test

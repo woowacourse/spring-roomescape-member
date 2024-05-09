@@ -19,21 +19,21 @@ VALUES ('08:00'),
        ('11:30');
 
 INSERT INTO THEME (NAME, DESCRIPTION, THUMBNAIL)
-VALUES ('Theme 1', 'Desc 1', 'thumb 1'),
-       ('Theme 2', 'Desc 2', 'thumb 2'),
-       ('Theme 3', 'Desc 3', 'thumb 3'),
-       ('Theme 4', 'Desc 4', 'thumb 4'),
-       ('Theme 5', 'Desc 5', 'thumb 5');
+VALUES ('젠틀 먼데이', '지금은 고객이 휴가 중으로 전화를 받을 수 없습니다.', 'https://www.keyescape.co.kr/file/theme_info/42_a.jpg'),
+       ('백투더 씬', '선생님, 응급 환자입니다! 서둘러 주세요!', 'https://www.keyescape.co.kr/file/theme_info/40_a.jpg'),
+       ('메모리 컴패니', '어서오세요. 메모리 컴패니 입니다.', 'https://www.keyescape.co.kr/file/theme_info/37_a.jpg'),
+       ('스티브의 사진', '근데 투어 신청하면 VIP 기억 금고도 부여주는거 맞죠?', 'https://www.keyescape.co.kr/file/theme_info/35_a.jpg'),
+       ('머니머니 패키지', '각박한 세상 정신 똑바로 차리고 갈 수 있도록!', 'https://www.keyescape.co.kr/file/theme_info/38_a.jpg');
 
 INSERT INTO RESERVATION (NAME, DATE, THEME_ID, TIME_ID)
-VALUES ('Res 1', DATEADD(D, -3, CURRENT_DATE), 2, 2),
-       ('Res 2', DATEADD(D, -3, CURRENT_DATE), 2, 4),
+VALUES ('새양', DATEADD(D, -3, CURRENT_DATE), 2, 2),
+       ('새양', DATEADD(D, -3, CURRENT_DATE), 2, 4),
 
-       ('Res 3', DATEADD(D, -3, CURRENT_DATE), 3, 2),
-       ('Res 4', DATEADD(D, -2, CURRENT_DATE), 3, 3),
-       ('Res 5', DATEADD(D, -2, CURRENT_DATE), 3, 4),
+       ('새양', DATEADD(D, -3, CURRENT_DATE), 3, 2),
+       ('새양', DATEADD(D, -2, CURRENT_DATE), 3, 3),
+       ('새양', DATEADD(D, -2, CURRENT_DATE), 3, 4),
 
-       ('Res 6', DATEADD(D, -2, CURRENT_DATE), 5, 3),
-       ('Res 7', DATEADD(D, -1, CURRENT_DATE), 5, 4),
+       ('새양', DATEADD(D, -2, CURRENT_DATE), 5, 3),
+       ('새양', DATEADD(D, -1, CURRENT_DATE), 5, 4),
 
        ('Res 8', DATEADD(D, 1, CURRENT_DATE), 2, 2);

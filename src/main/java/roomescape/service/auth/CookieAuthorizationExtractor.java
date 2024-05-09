@@ -15,6 +15,6 @@ public class CookieAuthorizationExtractor implements AuthorizationExtractor<Stri
             }
         }
 
-        throw new TokenNotFoundException("토큰 정보를 쿠키에서 찾을 수 없습니다.");
+        throw new TokenNotFoundException("쿠키에 토큰 정보가 존재하지 않습니다.");
     }
 }

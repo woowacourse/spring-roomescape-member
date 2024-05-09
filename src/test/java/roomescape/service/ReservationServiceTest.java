@@ -19,6 +19,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.PreviousTimeException;
 import roomescape.service.exception.ReservationDuplicatedException;
+import roomescape.service.exception.ReservationNotFoundException;
 import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.exception.TimeNotFoundException;
 
@@ -135,7 +136,8 @@ class ReservationServiceTest {
 
         // then
         assertThat(reservationService.deleteReservation(actual.id())).isOne();
-        assertThat(reservationService.deleteReservation(actual.id())).isZero();
+        assertThatThrownBy(() -> reservationService.deleteReservation(actual.id()))
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test

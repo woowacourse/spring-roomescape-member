@@ -2,6 +2,7 @@ package roomescape.controller.login;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,7 @@ public class LoginController {
                 .build();
 
         return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
                 .header("Keep-Alive", "timeout=60")
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
