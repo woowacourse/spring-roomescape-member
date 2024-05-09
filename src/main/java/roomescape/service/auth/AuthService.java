@@ -3,7 +3,6 @@ package roomescape.service.auth;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.dto.request.LoginRequest;
-import roomescape.dto.response.MemberResponse;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.member.MemberService;
 
@@ -22,9 +21,8 @@ public class AuthService {
         return jwtTokenProvider.createToken(loginRequest.email());
     }
 
-    public MemberResponse findUserByToken(final String token) {
+    public Member findMemberByToken(final String token) {
         String email = jwtTokenProvider.getPayload(token);
-        Member member = memberService.findByEmail(email);
-        return new MemberResponse(member.getNameValue());
+        return memberService.findByEmail(email);
     }
 }

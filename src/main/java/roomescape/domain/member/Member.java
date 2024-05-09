@@ -15,6 +15,10 @@ public class Member {
         return new Member(new MemberName(name), email, password);
     }
 
+    public MemberName getName() {
+        return name;
+    }
+
     public String getNameValue() {
         return name.getValue();
     }
