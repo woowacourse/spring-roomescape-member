@@ -16,6 +16,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberPassword;
+import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
 import roomescape.exception.AuthorizationException;
@@ -90,6 +91,17 @@ class MemberServiceTest {
 
         //when //then
         assertThatThrownBy(() -> memberService.findAuthInfo(email))
+                .isInstanceOf(AuthorizationException.class);
+    }
+
+    @Test
+    @DisplayName("로그인 정보가 존재하지 않으면 예외가 발생한다.")
+    void checkLoginInfoWithNotExist() {
+        //given
+        LoginRequest loginRequest = new LoginRequest("test@test.com", "1111");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.checkLoginInfo(loginRequest))
                 .isInstanceOf(AuthorizationException.class);
     }
 
