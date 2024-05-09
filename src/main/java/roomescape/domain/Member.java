@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-class Member {
+public class Member {
 
     private final Name name;
     private final String email;
@@ -10,5 +10,17 @@ class Member {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public Name getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
