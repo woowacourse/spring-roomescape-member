@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.LoginMemberRepository;
 import roomescape.domain.LoginMember;
 import roomescape.exception.AuthorizationException;
-import roomescape.service.dto.LoginMemberNameResponse;
+import roomescape.service.dto.LoginMemberResponse;
 import roomescape.service.dto.TokenRequest;
 
 @Service
@@ -26,13 +26,14 @@ public class LoginMemberService {
     }
 
     private void validatePassword(TokenRequest tokenRequest, LoginMember loginMember) {
-        if (!loginMember.getPassword().equals(tokenRequest.password())) { // 개선 필요 (security)
+        if (!loginMember.getPassword().equals(tokenRequest.password())) {
             throw new AuthorizationException("잘못된 비밀번호입니다.");
         }
     }
 
-    public LoginMemberNameResponse findNameByEmail(String email) {
+    public LoginMemberResponse findByEmail(String email) {
         LoginMember loginMember = loginMemberRepository.findByEmail(email).get();
-        return new LoginMemberNameResponse(loginMember.getName());
+        return new LoginMemberResponse(
+                loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getPassword());
     }
 }
