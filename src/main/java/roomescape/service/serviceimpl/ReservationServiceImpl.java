@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
+import roomescape.dto.request.MemberRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
@@ -34,10 +35,13 @@ class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationResponse save(final ReservationRequest reservationRequest) {
+    public ReservationResponse save(
+            final ReservationRequest reservationRequest,
+            final MemberRequest memberRequest) {
         Reservation reservation = reservationRequest.toEntity(
                 findReservationTimeById(reservationRequest),
-                findThemeById(reservationRequest)
+                findThemeById(reservationRequest),
+                memberRequest.toEntity()
         );
 
         validateCreatedReservation(reservation);
