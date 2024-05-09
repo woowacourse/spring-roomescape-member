@@ -30,6 +30,15 @@ public class MemberDao {
         return jdbcTemplate.query("SELECT * FROM member", memberRowMapper);
     }
 
+    public Optional<Member> findById(final long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper), id);
+        } catch (final EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public Optional<Member> findByEmail(final String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
         try {

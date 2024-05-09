@@ -1,4 +1,4 @@
-package roomescape.controller.roomescape;
+package roomescape.controller.roomescape.member;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -17,15 +17,15 @@ import roomescape.controller.dto.response.ReservationDeleteResponse;
 import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.controller.dto.response.SelectableTimeResponse;
 import roomescape.domain.member.Member;
-import roomescape.service.roomescape.ReservationService;
+import roomescape.service.roomescape.member.ReservationService;
 import roomescape.util.configuration.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/reservations")
-public class ReservationController {
+public class MemberReservationController {
     private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public MemberReservationController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 

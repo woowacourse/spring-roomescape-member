@@ -1,4 +1,4 @@
-package roomescape.service.roomescape;
+package roomescape.service.roomescape.member;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -26,9 +26,6 @@ class ReservationControllerTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    ReservationController reservationController;
-
     Map<String, Object> reservations;
 
     @BeforeEach

@@ -1,4 +1,4 @@
-package roomescape.controller.roomescape;
+package roomescape.controller.roomescape.admin;
 
 import java.net.URI;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.controller.dto.request.ThemeSaveRequest;
 import roomescape.controller.dto.response.ThemeDeleteResponse;
 import roomescape.controller.dto.response.ThemeResponse;
-import roomescape.service.roomescape.ThemeService;
+import roomescape.service.roomescape.admin.ThemeService;
 
 @Controller
 @RequestMapping("/themes")

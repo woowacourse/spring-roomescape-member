@@ -6,7 +6,7 @@ import roomescape.domain.member.MemberName;
 
 public class Reservation {
     private final Long id;
-    private final MemberName memberName;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;

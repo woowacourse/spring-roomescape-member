@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.request.SignupRequest;
-import roomescape.controller.dto.response.MemberResponse;
+import roomescape.controller.dto.response.MemberNameResponse;
 import roomescape.controller.dto.response.SignupResponse;
 import roomescape.domain.member.Member;
 import roomescape.repository.member.MemberDao;
@@ -29,10 +29,10 @@ public class MemberService {
         return new SignupResponse(member.getNameValue(), member.getEmail(), member.getPassword());
     }
 
-    public List<MemberResponse> getAllMemberNames() {
+    public List<MemberNameResponse> getAllMemberNames() {
         return memberDao.getAll()
                 .stream()
-                .map(MemberResponse::from)
+                .map(MemberNameResponse::from)
                 .toList();
     }
 }
