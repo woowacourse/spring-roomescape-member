@@ -6,6 +6,6 @@ public record ReservationRequest(String name, LocalDate date, Long timeId, Long 
 
     public ReservationRequest {
         InputValidator.validateNotNull(name, date, timeId, themeId);
-        InputValidator.validateNotEmpty(name);
+        InputValidator.validateNotBlank(name);
     }
 }
