@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.global.exception.model.DataDuplicateException;
+import roomescape.global.exception.model.NotFoundException;
 import roomescape.global.exception.model.ValidateException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
@@ -84,5 +85,20 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationRequest(beforeTime.toLocalDate(), reservationTime.getId(), theme.getId()), member.getId()))
                 .isInstanceOf(ValidateException.class);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원이 예약을 생성하려고 하면 예외를 발생한다.")
+    void notExistMemberReservationFail() {
+        // given
+        LocalDateTime beforeTime = LocalDateTime.now().minusHours(1L);
+        ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(beforeTime.toLocalTime()));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Long NotExistMemberId = 1L;
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.addReservation(
+                new ReservationRequest(beforeTime.toLocalDate(), reservationTime.getId(), theme.getId()), NotExistMemberId))
+                .isInstanceOf(NotFoundException.class);
     }
 }
