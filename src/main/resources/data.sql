@@ -16,19 +16,23 @@ values ('16:00:00');
 insert into reservation_time(start_at)
 values ('17:00:00');
 
+insert into member(name, email, password)
+values ('썬', 'aa@gmail.com', '123'),
+       ('리비', 'bb@gmail.com', '123'),
+       ('도도', 'cc@gmail.com', '123');
 
-insert into reservation(name, date, time_id, theme_id)
-values ('리비', '2024-05-01', '1', '1');
+insert into reservation(member_id, date, time_id, theme_id)
+values (1, '2024-05-01', '1', '1');
 
-insert into reservation(name, date, time_id, theme_id)
-values ('리비', '2024-05-01', '2', '1');
+insert into reservation(member_id, date, time_id, theme_id)
+values (2, '2024-05-01', '2', '1');
 
-insert into reservation(name, date, time_id, theme_id)
-values ('리비', '2024-05-01', '3', '1');
+insert into reservation(member_id, date, time_id, theme_id)
+values (1, '2024-05-01', '3', '1');
 
-insert into reservation(name, date, time_id, theme_id)
-values ('리비', '2024-04-28', '1', '2');
+insert into reservation(member_id, date, time_id, theme_id)
+values (3, '2024-04-28', '1', '2');
 
-insert into reservation(name, date, time_id, theme_id)
-values ('리비', '2024-04-28', '2', '2');
+insert into reservation(member_id, date, time_id, theme_id)
+values (2, '2024-04-28', '2', '2');
 

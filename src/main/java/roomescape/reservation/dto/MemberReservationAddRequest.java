@@ -1,20 +1,19 @@
 package roomescape.reservation.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
-public record ReservationAddRequest(
-        @NotBlank(message = "예약자 이름은 필수입니다.") String name,
+public record MemberReservationAddRequest(
         @NotNull(message = "예약 날짜는 필수 입니다.") LocalDate date,
         @NotNull(message = "예약 시간 선택은 필수 입니다.") @Positive Long timeId,
         @NotNull(message = "테마 선택은 필수 입니다.") @Positive Long themeId) {
 
-    public Reservation toReservation(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(null, name, date, reservationTime, theme);
+    public Reservation toReservation(Member member, ReservationTime reservationTime, Theme theme) {
+        return new Reservation(null, member, date, reservationTime, theme);
     }
 }

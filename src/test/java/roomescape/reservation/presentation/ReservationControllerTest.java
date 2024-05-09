@@ -21,7 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.auth.LoginMemberArgumentResolver;
-import roomescape.reservation.dto.ReservationAddRequest;
+import roomescape.member.fixture.MemberFixture;
+import roomescape.reservation.dto.MemberReservationAddRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -54,15 +55,17 @@ class ReservationControllerTest {
     @DisplayName("예약 추가 요청을 처리할 수 있다")
     @Test
     void should_handle_save_reservation_request_when_requested() throws Exception {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest("썬", DAY_AFTER_TOMORROW, 1L, 1L);
+        MemberReservationAddRequest memberReservationAddRequest = new MemberReservationAddRequest(DAY_AFTER_TOMORROW,
+                1L, 1L);
         ReservationResponse mockResponse = new ReservationResponse(1L, "썬", DAY_AFTER_TOMORROW, 1L, 1L);
 
-        when(reservationService.saveReservation(reservationAddRequest)).thenReturn(mockResponse);
+        when(reservationService.saveReservation(MemberFixture.MEMBER_ID_1, memberReservationAddRequest))
+                .thenReturn(mockResponse);
 
         mockMvc.perform(post("/reservations")
                         .cookie(new MockCookie("token", "mock value"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reservationAddRequest)))
+                        .content(objectMapper.writeValueAsString(memberReservationAddRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/reservations/" + mockResponse.id()));
     }

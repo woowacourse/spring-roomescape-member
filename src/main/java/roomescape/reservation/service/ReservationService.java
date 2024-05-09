@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 import roomescape.global.exception.DuplicateSaveException;
 import roomescape.global.exception.IllegalReservationDateException;
 import roomescape.global.exception.NoSuchRecordException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.dto.ReservationAddRequest;
+import roomescape.reservation.dto.MemberReservationAddRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
@@ -35,7 +36,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationAddRequest request) {
+    public ReservationResponse saveReservation(Member member, MemberReservationAddRequest request) {
         if (reservationRepository.existByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
                 request.themeId())) {
             throw new DuplicateSaveException("중복되는 예약이 존재합니다");
@@ -44,7 +45,7 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTime(request.timeId());
         Theme theme = getTheme(request.themeId());
 
-        Reservation reservation = request.toReservation(reservationTime, theme);
+        Reservation reservation = request.toReservation(member, reservationTime, theme);
         if (reservation.isDateBefore(LocalDate.now())) {
             throw new IllegalReservationDateException(reservation.getDate() + ": 예약 날짜는 현재 보다 이전일 수 없습니다");
         }

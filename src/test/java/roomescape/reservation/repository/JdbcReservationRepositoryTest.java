@@ -13,15 +13,16 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.fixture.MemberFixture;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 // 테스트 초기 데이터
-// 예약1: {ID=1, NAME=리비, DATE=내일, TIME={ID=1, START_AT=10:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}}
-// 예약2: {ID=2, NAME=도도, DATE=내일, TIME={ID=2, START_AT=11:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}}
-// 예약3: {ID=3, NAME=썬 , DATE=내일, TIME={ID=2, START_AT=10:00}, THEME={ID=2, NAME=선릉 캠퍼스 탈출}}
+// 예약1: {ID=1, MEMBER=썬, DATE=내일, TIME={ID=1, START_AT=10:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}}
+// 예약2: {ID=2, MEMBER=리비, DATE=내일, TIME={ID=2, START_AT=11:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}}
+// 예약3: {ID=3, MEMBER=도도 , DATE=내일, TIME={ID=2, START_AT=10:00}, THEME={ID=2, NAME=선릉 캠퍼스 탈출}}
 @JdbcTest
 @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class JdbcReservationRepositoryTest {
@@ -58,7 +59,8 @@ class JdbcReservationRepositoryTest {
                 "미션을 빨리 진행하고 잠실 캠퍼스를 탈출하자!",
                 "https://velog.velcdn.com/images/jangws/post/cfe0e548-1242-470d-bfa8-19eeb72debc5/image.jpg");
 
-        Reservation reservation = new Reservation(null, "도도", DAY_AFTER_TOMORROW, reservationTime, theme);
+        Reservation reservation = new Reservation(null, MemberFixture.MEMBER_ID_1, DAY_AFTER_TOMORROW, reservationTime,
+                theme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         assertThat(savedReservation.getId()).isNotNull();
