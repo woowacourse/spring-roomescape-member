@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.controller.CheckLoginInterceptor;
 import roomescape.controller.member.LoginMemberArgumentResolver;
+import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.MemberService;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final MemberService memberService;
+
 
     public WebMvcConfig(final MemberService memberService) {
         this.memberService = memberService;
@@ -26,7 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckLoginInterceptor())
+        registry.addInterceptor(new CheckLoginInterceptor(memberService))
                 .addPathPatterns("/admin/**");
     }
 }
