@@ -15,7 +15,7 @@ public class ReservationDate {
         this.date = parseDate(date);
     }
 
-    private static LocalDate parseDate(final String date) {
+    private LocalDate parseDate(final String date) {
         try {
             return LocalDate.parse(date, DATE_FORMAT);
         } catch (NullPointerException | DateTimeParseException e) {
