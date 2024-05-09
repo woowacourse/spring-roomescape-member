@@ -64,6 +64,7 @@ public class ReservationService {
 
         ReservationTime requestReservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
+        // TODO: findById 로직 통일시키기
         Member member = memberDao.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorType.MEMBER_NOT_FOUND,
                         String.format("회원(Member) 정보가 존재하지 않습니다. [values: %s]", request)));
