@@ -38,10 +38,14 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Cookie cookie = Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new AuthorizationException("유효하지 않는 권한 요청입니다.");
+        }
+        Cookie cookie = Arrays.stream(cookies)
                 .filter(element -> element.getName().equals(TOKEN_KEY))
                 .findFirst()
-                .orElseThrow(() -> new AuthorizationException("토큰이 쿠키에 담겨있지 않습니다."));
+                .orElseThrow(() -> new AuthorizationException("유효하지 않는 권한 요청입니다."));
 
         String token = cookie.getValue();
 
