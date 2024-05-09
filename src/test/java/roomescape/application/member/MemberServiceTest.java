@@ -67,7 +67,7 @@ class MemberServiceTest {
         Member member = memberRepository.save(new Member("name", mail, "12341234"));
         MemberLoginRequest request = new MemberLoginRequest(mail, "12341234");
         TokenResponse response = memberService.login(request);
-        long id = tokenManager.parseToken(response.token());
+        long id = tokenManager.getMemberIdFromToken(response.token());
         assertThat(id).isEqualTo(member.getId());
     }
 }
