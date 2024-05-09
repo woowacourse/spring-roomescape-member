@@ -1,33 +1,29 @@
 package roomescape.domain.reservation;
 
-import roomescape.domain.Name;
+import roomescape.domain.member.Member;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Reservation {
     private final Long id;
-    private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
     public Reservation(
             final Long id,
-            final Name name,
             final LocalDate date,
             final ReservationTime time,
-            final Theme theme
+            final Theme theme,
+            final Member member
     ) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation(final Long reservationId, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        this(reservationId, new Name(name), date, time, theme);
+        this.member = member;
     }
 
     public boolean isBeforeThan(final LocalDateTime otherTime) {
@@ -40,7 +36,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.getValue();
+        return member.getName();
     }
 
     public LocalDate getDate() {
@@ -61,5 +57,9 @@ public class Reservation {
 
     public long getThemeId() {
         return theme.getId();
+    }
+
+    public Member getMember() {
+        return member;
     }
 }
