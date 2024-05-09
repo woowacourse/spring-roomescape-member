@@ -1,4 +1,4 @@
-package roomescape.admin;
+package roomescape.member.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.fixture.MemberFixture.getMemberAdmin;
