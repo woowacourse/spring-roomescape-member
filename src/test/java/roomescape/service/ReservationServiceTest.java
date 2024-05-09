@@ -91,7 +91,7 @@ public class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.insertReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이전 시간에 대한 예약은 불가능합니다.");
+                .hasMessage("지난 시간으로는 예약할 수 없습니다.");
     }
 
     @DisplayName("지난 시간에 대한 예약은 불가능하다.")
@@ -107,7 +107,7 @@ public class ReservationServiceTest {
         assertThatThrownBy(
                 () -> reservationService.insertReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이전 시간에 대한 예약은 불가능합니다.");
+                .hasMessage("지난 시간으로는 예약할 수 없습니다.");
     }
 
     @DisplayName("동일한 날짜, 시간, 테마에 대한 예약은 불가능하다.")
