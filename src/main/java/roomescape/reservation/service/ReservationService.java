@@ -56,25 +56,18 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
     }
 
+    public ReservationResponse createReservation(MemberReservationCreateRequest request, LoginMember loginMember) {
+        ReservationCreateRequest createRequest = ReservationCreateRequest.of(request, loginMember);
+        return createReservation(createRequest);
+    }
+
     public ReservationResponse createReservation(ReservationCreateRequest request) {
         Member member = findMemberById(request.memberId());
         ReservationTime time = findReservationTimeById(request.timeId());
         Theme theme = findThemeById(request.themeId());
 
         Reservation reservation = request.toReservation(member, time, theme);
-        return saveReservation(reservation, time);
-    }
 
-    public ReservationResponse createReservation(MemberReservationCreateRequest request, LoginMember loginMember) {
-        Member member = findMemberById(loginMember.id());
-        ReservationTime time = findReservationTimeById(request.timeId());
-        Theme theme = findThemeById(request.themeId());
-
-        Reservation reservation = request.toReservation(member, time, theme);
-        return saveReservation(reservation, time);
-    }
-
-    private ReservationResponse saveReservation(Reservation reservation, ReservationTime time) {
         validateDuplicated(reservation);
         validateRequestedTime(reservation, time);
 

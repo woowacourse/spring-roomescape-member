@@ -149,7 +149,7 @@ function onReservationButtonClick() {
       timeId: selectedTimeId,
     };
 
-    fetch('/reservations?type=member', {
+    fetch('/reservations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
