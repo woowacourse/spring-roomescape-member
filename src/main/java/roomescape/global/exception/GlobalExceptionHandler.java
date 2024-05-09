@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global.exception;
 
 import java.util.List;
 import java.util.stream.Collectors;

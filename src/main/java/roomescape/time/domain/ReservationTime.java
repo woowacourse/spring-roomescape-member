@@ -2,7 +2,7 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.ReservationTimeNotHourlyUnitException;
+import roomescape.global.exception.ReservationTimeNotHourlyUnitException;
 
 public class ReservationTime {
 

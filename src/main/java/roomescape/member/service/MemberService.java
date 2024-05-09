@@ -1,7 +1,7 @@
 package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.NoSuchRecordException;
+import roomescape.global.exception.NoSuchRecordException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 

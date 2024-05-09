@@ -8,8 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.exception.IllegalRequestException;
-import roomescape.global.AuthenticationPrincipal;
+import roomescape.global.exception.IllegalRequestException;
 import roomescape.member.service.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {

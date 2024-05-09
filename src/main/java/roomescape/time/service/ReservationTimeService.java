@@ -3,7 +3,7 @@ package roomescape.time.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.exception.DuplicateSaveException;
+import roomescape.global.exception.DuplicateSaveException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
 import roomescape.time.dto.ReservationTimeAddRequest;
