@@ -58,7 +58,12 @@ class ViewTest extends AcceptanceTest {
     @Test
     @DisplayName("[Step7] 어드민 시간 관리 페이지를 조회한다.")
     void getTimePage() {
+        Member admin = createTestAdmin();
+        String token = createTestToken(admin);
+        Cookie cookie = new Cookie.Builder("token", token).build();
+
         RestAssured.given().log().all()
+                .cookie(cookie)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
@@ -67,7 +72,12 @@ class ViewTest extends AcceptanceTest {
     @Test
     @DisplayName("[2 - Step2] 어드민 테마 관리 페이지를 조회한다.")
     void getThemePage() {
+        Member admin = createTestAdmin();
+        String token = createTestToken(admin);
+        Cookie cookie = new Cookie.Builder("token", token).build();
+
         RestAssured.given().log().all()
+                .cookie(cookie)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
