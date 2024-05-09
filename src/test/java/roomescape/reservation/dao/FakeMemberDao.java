@@ -3,6 +3,7 @@ package roomescape.reservation.dao;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 public class FakeMemberDao implements MemberRepository {
@@ -15,7 +16,8 @@ public class FakeMemberDao implements MemberRepository {
                 (long) members.size(),
                 member.getName(),
                 member.getEmail(),
-                member.getPassword());
+                member.getPassword(),
+                Role.MEMBER);
     }
 
     @Override

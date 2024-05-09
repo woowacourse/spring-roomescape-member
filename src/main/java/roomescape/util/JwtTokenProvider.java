@@ -1,4 +1,4 @@
-package roomescape.member.util;
+package roomescape.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

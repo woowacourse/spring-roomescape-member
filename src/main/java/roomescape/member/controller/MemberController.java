@@ -37,7 +37,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue("token") String token) {
-        LoginCheckResponse loginCheckResponse = memberService.findMemberByToken(token);
+        LoginCheckResponse loginCheckResponse = memberService.findMemberNameByToken(token);
         return ResponseEntity.ok(loginCheckResponse);
     }
 }

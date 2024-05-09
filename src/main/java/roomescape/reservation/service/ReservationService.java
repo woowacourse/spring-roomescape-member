@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -44,7 +45,7 @@ public class ReservationService {
         validateReservationDuplicate(reservationRequest, date);
 
         //TODO 로직 수정 예정
-        Member member = memberRepository.save(new Member(reservationRequest.name(), "email", "password"));
+        Member member = memberRepository.save(new Member(reservationRequest.name(), "email", "password", Role.MEMBER));
         Reservation reservation = reservationRepository.save(
                 new Reservation(reservationRequest.name(), date, reservationTime, theme));
         reservationRepository.saveReservationList(member.getId(), reservation.getId());

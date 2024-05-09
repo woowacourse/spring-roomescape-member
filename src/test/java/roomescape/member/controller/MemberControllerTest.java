@@ -25,8 +25,8 @@ class MemberControllerTest extends ControllerTest {
     @BeforeEach
     void setData() {
         String sql = """ 
-                  INSERT INTO member(name, email, password)
-                  VALUES ('관리자', 'admin@email.com', 'password');
+                  INSERT INTO member(name, email, password, role)
+                  VALUES ('관리자', 'admin@email.com', 'password', 'ADMIN');
                 """;
         jdbcTemplate.update(sql);
     }

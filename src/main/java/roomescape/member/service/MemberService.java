@@ -4,8 +4,9 @@ import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginCheckResponse;
+import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.LoginRequest;
-import roomescape.member.util.TokenProvider;
+import roomescape.util.TokenProvider;
 
 @Service
 public class MemberService {
@@ -29,11 +30,17 @@ public class MemberService {
         return !memberRepository.existBy(email, password);
     }
 
-    public LoginCheckResponse findMemberByToken(String token) {
+    public LoginCheckResponse findMemberNameByToken(String token) {
         String email = tokenProvider.getPayload(token);
         Member member = memberRepository.findByEmail(email);
         validateExistMember(member);
         return new LoginCheckResponse(member.getName());
+    }
+
+    public Object findLoginMemberByToken(String token) {
+        String email = tokenProvider.getPayload(token);
+        Member member = memberRepository.findByEmail(email);
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     private void validateExistMember(Member member) {

@@ -17,10 +17,11 @@ class MemberTest {
         String email2 = "email2";
         String password1 = "password1";
         String password2 = "password2";
+        Role role = Role.MEMBER;
 
         //when
-        Member member1 = new Member(id1, name1, email1, password1);
-        Member member2 = new Member(id1, name2, email2, password2);
+        Member member1 = new Member(id1, name1, email1, password1, role);
+        Member member2 = new Member(id1, name2, email2, password2, role);
 
         //then
         assertThat(member1).isEqualTo(member2);

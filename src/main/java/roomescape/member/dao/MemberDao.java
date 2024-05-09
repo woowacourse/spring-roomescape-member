@@ -9,20 +9,24 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Repository
 public class MemberDao implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Member> rowMapper = (ResultSet resultSet, int rowNum) -> {
-        return new Member(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("email"),
-                resultSet.getString("password")
-        );
-    };
+    private final RowMapper<Member> rowMapper() {
+        return (resultSet, rowNum) -> {
+            final Long memberId = resultSet.getLong("id");
+            final String name = resultSet.getString("name");
+            final String email = resultSet.getString("email");
+            final String password = resultSet.getString("password");
+            final Role role = Role.valueOf(resultSet.getString("role"));
+
+            return new Member(memberId, name, email, password, role);
+        };
+    }
 
     public MemberDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,10 +40,11 @@ public class MemberDao implements MemberRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword());
+                .addValue("password", member.getPassword())
+                .addValue("role", member.getRole());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
@@ -51,7 +56,7 @@ public class MemberDao implements MemberRepository {
 
     @Override
     public Member findByEmail(String email) {
-        String sql = "SELECT id, name, email, password FROM member WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, email);
+        String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper(), email);
     }
 }

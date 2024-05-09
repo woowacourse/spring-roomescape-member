@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
@@ -29,7 +30,8 @@ class MemberServiceTest {
         // given
         String email = "test@email.com";
         String password = "password";
-        memberRepository.save(new Member("test", email, password));
+        Role role = Role.MEMBER;
+        memberRepository.save(new Member("test", email, password, role));
 
         // when
         String token = memberService.checkLogin(new LoginRequest(email, password));
@@ -54,11 +56,12 @@ class MemberServiceTest {
         String name = "test";
         String email = "test@email.com";
         String password = "password";
-        memberRepository.save(new Member(name, email, password));
+        Role role = Role.MEMBER;
+        memberRepository.save(new Member(name, email, password, role));
         String token = memberService.checkLogin(new LoginRequest(email, password));
 
         // when
-        LoginCheckResponse loginCheckResponse = memberService.findMemberByToken(token);
+        LoginCheckResponse loginCheckResponse = memberService.findMemberNameByToken(token);
 
         //then
         assertThat(loginCheckResponse.name()).isEqualTo(name);
