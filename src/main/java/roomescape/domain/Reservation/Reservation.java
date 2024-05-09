@@ -25,6 +25,18 @@ public class Reservation {
         this(null, date, reservationTime, theme, member);
     }
 
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public Long getId() {
         return id;
     }
@@ -43,5 +55,16 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                ", member=" + member +
+                '}';
     }
 }
