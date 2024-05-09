@@ -11,12 +11,12 @@ import java.util.Date;
 
 @Component
 @PropertySource("classpath:application.properties")
-public class JwtTokenGenerator {
+public class TokenManager {
     private final long expirationTime;
     private final String secretKey;
     private final JwtParser jwtParser;
 
-    public JwtTokenGenerator(
+    public TokenManager(
             @Value("${jwt.expirationTime}") long expirationTime,
             @Value("${jwt.secretKey}") String secretKey
     ) {
@@ -38,6 +38,7 @@ public class JwtTokenGenerator {
                         .setIssuedAt(now)
                         .setExpiration(expiration)
                         .claim("name", member.getName())
+                        .claim("role", member.getRole())
                         .claim("email", member.getEmail())
                         .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                         .compact()

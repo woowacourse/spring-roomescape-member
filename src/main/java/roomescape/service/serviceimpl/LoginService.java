@@ -2,14 +2,14 @@ package roomescape.service.serviceimpl;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.infrastructure.auth.JwtTokenGenerator;
 import roomescape.infrastructure.auth.Token;
+import roomescape.infrastructure.auth.TokenManager;
 
 @Service
 public class LoginService {
-    private final JwtTokenGenerator tokenGenerator;
+    private final TokenManager tokenGenerator;
 
-    public LoginService(JwtTokenGenerator tokenGenerator) {
+    public LoginService(TokenManager tokenGenerator) {
         this.tokenGenerator = tokenGenerator;
     }
 

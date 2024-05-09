@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 @Component
-public class CookieGenerator {
+public class CookieManager {
     private static final boolean HTTP_ONLY_OPTION = true;
     private static final String ALLOWED_PATH = "/";
     private static final String TOKEN_NAME = "token";

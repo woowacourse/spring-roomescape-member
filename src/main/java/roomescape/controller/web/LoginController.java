@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
-import roomescape.infrastructure.CookieGenerator;
+import roomescape.infrastructure.CookieManager;
 import roomescape.infrastructure.auth.Token;
 import roomescape.service.serviceimpl.LoginService;
 import roomescape.service.serviceimpl.MemberService;
@@ -16,16 +16,16 @@ import roomescape.service.serviceimpl.MemberService;
 @RestController
 @RequestMapping
 public class LoginController {
-    private final CookieGenerator cookieGenerator;
+    private final CookieManager cookieManager;
     private final LoginService loginService;
     private final MemberService memberService;
 
     public LoginController(
-            final CookieGenerator cookieGenerator,
+            final CookieManager cookieManager,
             final LoginService loginService,
             final MemberService memberService
     ) {
-        this.cookieGenerator = cookieGenerator;
+        this.cookieManager = cookieManager;
         this.loginService = loginService;
         this.memberService = memberService;
     }
@@ -40,13 +40,13 @@ public class LoginController {
                 request.email(),
                 request.password()
         );
-        response.addCookie(cookieGenerator.generate(token));
+        response.addCookie(cookieManager.generate(token));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Token token = cookieGenerator.getToken(request.getCookies());
+        Token token = cookieManager.getToken(request.getCookies());
         Long memberId = loginService.findMemberIdByToken(token);
         MemberResponse memberResponse = memberService.findMemberById(memberId);
         return ResponseEntity.ok(memberResponse);
@@ -54,7 +54,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = cookieGenerator.makeResetCookie(request.getCookies());
+        Cookie cookie = cookieManager.makeResetCookie(request.getCookies());
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
