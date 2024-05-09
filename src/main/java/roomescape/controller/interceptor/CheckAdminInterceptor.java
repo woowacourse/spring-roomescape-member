@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.infrastructure.AuthorizationExtractor;
-import roomescape.auth.service.AuthService;
-import roomescape.auth.exception.AuthorizationException;
-import roomescape.controller.dto.LoginMember;
+import roomescape.controller.infrastructure.AuthorizationExtractor;
+import roomescape.service.AuthService;
+import roomescape.exception.AuthorizationException;
+import roomescape.service.dto.LoginMember;
 import roomescape.domain.Role;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {

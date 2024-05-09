@@ -1,11 +1,11 @@
-package roomescape.auth.service;
+package roomescape.service;
 
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.service.dto.MemberResponse;
-import roomescape.auth.exception.AuthorizationException;
-import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.controller.dto.LoginMember;
+import roomescape.exception.AuthorizationException;
+import roomescape.controller.infrastructure.JwtTokenProvider;
+import roomescape.service.dto.LoginMember;
 import roomescape.domain.Role;
 
 @Service

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import roomescape.IntegrationTestSupport;
-import roomescape.auth.dto.TokenRequest;
+import roomescape.controller.dto.TokenRequest;
 
 class ReservationTimeControllerTest extends IntegrationTestSupport {
 

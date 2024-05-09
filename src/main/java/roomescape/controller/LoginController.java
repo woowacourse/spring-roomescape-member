@@ -7,11 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.controller.dto.LoginMember;
+import roomescape.service.dto.LoginMember;
 import roomescape.controller.login.Login;
 import roomescape.service.dto.MemberResponse;
-import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.service.AuthService;
+import roomescape.controller.dto.TokenRequest;
+import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
 @Controller
