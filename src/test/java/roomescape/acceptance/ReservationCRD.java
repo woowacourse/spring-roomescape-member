@@ -28,7 +28,7 @@ public class ReservationCRD {
         return null;
     }
 
-    public static void getReservationTimes(int expectedHttpCode, int expectedReservationsSize) {
+    public static void getReservations(int expectedHttpCode, int expectedReservationsSize) {
         Response response = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -40,7 +40,7 @@ public class ReservationCRD {
         assertThat(reservationTimeResponses).hasSize(expectedReservationsSize);
     }
 
-    public static void deleteReservationTime(Long reservationId, int expectedHttpCode) {
+    public static void deleteReservation(Long reservationId, int expectedHttpCode) {
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + reservationId)
                 .then().log().all()

@@ -30,7 +30,7 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("예약을 추가한다", () -> ReservationCRD.postUserReservation(userToken, tomorrow.toString(), 1L, 1L, 201)),
                 dynamicTest("예약을 추가한다", () -> ReservationCRD.postUserReservation(userToken, tomorrow.toString(), 2L, 2L, 201)),
                 dynamicTest("예약을 추가한다", () -> ReservationCRD.postUserReservation(userToken, tomorrow.toString(), 3L, 3L, 201)),
-                dynamicTest("모든 예약을 조회한다 (총 3개)", () -> ReservationCRD.getReservationTimes(200, 3))
+                dynamicTest("모든 예약을 조회한다 (총 3개)", () -> ReservationCRD.getReservations(200, 3))
         );
     }
 
@@ -68,9 +68,9 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
                     reservationId.set(id);
                 }),
                 dynamicTest("예약을 추가한다", () -> ReservationCRD.postUserReservation(userToken, tomorrow.toString(), 2L, 2L, 201)),
-                dynamicTest("모든 예약을 조회한다 (총 2개)", () -> ReservationCRD.getReservationTimes(200, 2)),
-                dynamicTest("예약을 삭제한다", () -> ReservationCRD.deleteReservationTime(reservationId.longValue(), 204)),
-                dynamicTest("모든 예약을 조회한다 (총 1개)", () -> ReservationCRD.getReservationTimes(200, 1))
+                dynamicTest("모든 예약을 조회한다 (총 2개)", () -> ReservationCRD.getReservations(200, 2)),
+                dynamicTest("예약을 삭제한다", () -> ReservationCRD.deleteReservation(reservationId.longValue(), 204)),
+                dynamicTest("모든 예약을 조회한다 (총 1개)", () -> ReservationCRD.getReservations(200, 1))
         );
     }
 }
