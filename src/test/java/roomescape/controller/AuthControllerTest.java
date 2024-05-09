@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("로그인 컨트롤러")
-class LoginControllerTest {
+class AuthControllerTest {
 
     @LocalServerPort
     private int port;
@@ -28,7 +28,7 @@ class LoginControllerTest {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public LoginControllerTest(JwtTokenProvider jwtTokenProvider) {
+    public AuthControllerTest(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
