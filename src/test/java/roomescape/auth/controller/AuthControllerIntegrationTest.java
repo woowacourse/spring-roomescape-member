@@ -1,5 +1,6 @@
 package roomescape.auth.controller;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
@@ -36,6 +37,7 @@ class AuthControllerIntegrationTest {
     LoginRequest request = new LoginRequest("user@mail.com", "1234");
     String token = jwtTokenProvider.createToken(request.email());
 
+    // Then
     RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(request)
@@ -43,5 +45,22 @@ class AuthControllerIntegrationTest {
         .then().log().all()
         .statusCode(200)
         .cookie("token", notNullValue());
+  }
+
+  @DisplayName("로그인 상태를 반환한다.")
+  @Test
+  void checkLogin() {
+    // Given
+    String name = "어드민";
+    LoginRequest request = new LoginRequest("user@mail.com", "1234");
+    String token = jwtTokenProvider.createToken(request.email());
+
+    // Then
+    RestAssured.given().log().all()
+        .cookie("token", token)
+        .get("/login/check")
+        .then().log().all()
+        .statusCode(200)
+        .body("name", is(name));
   }
 }

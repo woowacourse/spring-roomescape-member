@@ -23,8 +23,7 @@ class AuthServiceIntegrationTest {
   void createUser() {
     // Given
     String email = "user@mail.com";
-    String password = "1234qwer";
-    LoginRequest loginRequest = new LoginRequest(email, password);
+    LoginRequest loginRequest = new LoginRequest(email, "1234qwer");
     // When
     String token = authService.createUser(loginRequest);
     // Then
