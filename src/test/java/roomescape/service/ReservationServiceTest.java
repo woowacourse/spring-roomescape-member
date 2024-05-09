@@ -7,10 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Email;
 import roomescape.domain.Name;
-import roomescape.domain.Reservation;
+import roomescape.dto.request.ReservationAddMemberRequest;
 import roomescape.dto.request.ReservationAddRequest;
-import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.dto.response.AuthResponse;
+import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.ReservationResponse;
 
 import java.time.LocalDate;
@@ -18,8 +20,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatNoException;
-import static roomescape.InitialDataFixture.RESERVATION_2;
-import static roomescape.InitialDataFixture.THEME_2;
+import static roomescape.InitialDataFixture.*;
+import static roomescape.InitialDataFixture.MEMBER_1;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -34,9 +36,9 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
     void addReservation() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), 1L, 1L);
-
-        ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationAddMemberRequest reservationAddMemberRequest = new ReservationAddMemberRequest(new MemberResponse(MEMBER_1));
+        ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest, reservationAddMemberRequest);
 
         assertThat(reservationResponse.id()).isNotNull();
     }
@@ -44,9 +46,9 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 time_id로 예약을 추가하면 예외를 발생시킨다.")
     void addReservationInvalidGetTimeGetId() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), -1L, 1L);
-
-        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), -1L, 1L);
+        ReservationAddMemberRequest reservationAddMemberRequest = new ReservationAddMemberRequest(new MemberResponse(MEMBER_1));
+        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest, reservationAddMemberRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -70,33 +72,30 @@ class ReservationServiceTest {
     @Test
     @DisplayName("같은 날짜, 시간, 테마에 예약을 하는 경우 예외를 발생시킨다.")
     void saveSameReservation() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"),
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime().getId(),
                 RESERVATION_2.getTheme().getId());
-        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest, new ReservationAddMemberRequest(new MemberResponse(MEMBER_1)))).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("시간과 날짜만 같고 테마가 다른 경우 예약에 성공한다.")
     void saveOnlySameGetDateGetTime() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                new Name("네오"),
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime().getId(),
                 THEME_2.getId());
-        assertThatNoException().isThrownBy(() -> reservationService.addReservation(reservationAddRequest));
+        assertThatNoException().isThrownBy(() -> reservationService.addReservation(reservationAddRequest, new ReservationAddMemberRequest(new MemberResponse(MEMBER_1))));
     }
 
     @Test
     @DisplayName("테마가 같고 날짜가 다른 경우 예약에 성공한다.")
     void saveOnlySameTheme() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                new Name("네오"),
                 RESERVATION_2.getDate().plusDays(1),
                 RESERVATION_2.getTime().getId(),
                 RESERVATION_2.getTheme().getId());
-        assertThatNoException().isThrownBy(() -> reservationService.addReservation(reservationAddRequest));
+        assertThatNoException().isThrownBy(() -> reservationService.addReservation(reservationAddRequest, new ReservationAddMemberRequest(new MemberResponse(MEMBER_1))));
     }
 }

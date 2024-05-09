@@ -34,4 +34,9 @@ public class MemberService {
         }
         return Optional.empty();
     }
+
+    public MemberResponse getMember(String email) {
+        return MemberResponse.from(memberRepository.findByEmail(new Email(email))
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 멤버가 없습니다.")));
+    }
 }

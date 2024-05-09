@@ -8,6 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.dto.response.AuthResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.AuthService;
 
@@ -28,7 +29,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         boolean hasParameterAnnotation = parameter.hasParameterAnnotation(AuthenticatedUser.class);
-        boolean hasMemberResponseType = MemberResponse.class.isAssignableFrom(parameter.getParameterType());
+        boolean hasMemberResponseType = AuthResponse.class.isAssignableFrom(parameter.getParameterType());
         return hasParameterAnnotation && hasMemberResponseType;
     }
 

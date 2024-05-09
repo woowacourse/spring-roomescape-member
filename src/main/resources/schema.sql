@@ -14,25 +14,24 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation
-(
-    id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    date VARCHAR(255) NOT NULL,
-    time_id BIGINT NOT NULL,
-    theme_id BIGINT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
-);
-
 CREATE TABLE member
 (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
 );
 
-INSERT INTO member (name, email, password)
-VALUES ('test', 'test1@test.com', 'password');
+CREATE TABLE reservation
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id BIGINT NOT NULL,
+    date VARCHAR(255) NOT NULL,
+    time_id BIGINT NOT NULL,
+    theme_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id)
+);

@@ -1,15 +1,18 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Email;
+import roomescape.domain.Member;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.dto.request.ReservationAddMemberRequest;
 import roomescape.dto.request.ReservationAddRequest;
+import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.reservation.ReservationRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,26 +20,27 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final MemberService memberService;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
     public ReservationService(
-            ReservationRepository reservationRepository,
+            ReservationRepository reservationRepository, MemberService memberService,
             ReservationTimeService reservationTimeService, ThemeService themeService
     ) {
         this.reservationRepository = reservationRepository;
+        this.memberService = memberService;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
     }
 
-    public ReservationResponse addReservation(ReservationAddRequest reservationAddRequest) {
+    public ReservationResponse addReservation(ReservationAddRequest reservationAddRequest, ReservationAddMemberRequest reservationAddMemberRequest) {
         ReservationTimeResponse timeResponse = reservationTimeService.getTime(reservationAddRequest.timeId());
         ThemeResponse themeResponse = themeService.getTheme(reservationAddRequest.themeId());
-
         validateAddReservation(reservationAddRequest, LocalDateTime.of(reservationAddRequest.date(), timeResponse.toReservationTime().getStartAt()));
 
         Reservation reservation = new Reservation(
-                reservationAddRequest.name(),
+                new Member(reservationAddMemberRequest.id(), new Name(reservationAddMemberRequest.name()), new Email(reservationAddMemberRequest.email()), null),
                 reservationAddRequest.date(),
                 timeResponse.toReservationTime(),
                 themeResponse.toTheme()

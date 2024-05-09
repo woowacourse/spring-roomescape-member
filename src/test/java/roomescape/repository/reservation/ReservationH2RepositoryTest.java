@@ -33,7 +33,7 @@ class ReservationH2RepositoryTest {
     @DisplayName("Reservation을 저장하면 id가 포함된 Reservation이 반환된다.")
     void save() {
         Reservation reservation = new Reservation(
-                new Name("네오"),
+                MEMBER_1,
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime(),
                 THEME_2

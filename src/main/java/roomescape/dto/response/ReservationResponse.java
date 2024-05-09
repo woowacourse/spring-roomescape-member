@@ -3,24 +3,23 @@ package roomescape.dto.response;
 import java.time.format.DateTimeFormatter;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
 
-public record ReservationResponse(Long id, String name, String date, ReservationTimeResponse time, ThemeResponse theme) {
+public record ReservationResponse(Long id, MemberResponse member, String date, ReservationTimeResponse time, ThemeResponse theme) {
 
     public ReservationResponse {
-        validate(id, name, date, time, theme);
+        validate(id, member, date, time, theme);
     }
 
-    private void validate(Long id, String name, String date, ReservationTimeResponse time, ThemeResponse theme) {
-        if (id == null || name == null || time == null || theme == null) {
-            throw new IllegalArgumentException("잘못된 응답입니다. id=" + id + ", name=" + name + ", date=" + date + ", time=" + time);
+    private void validate(Long id, MemberResponse member, String date, ReservationTimeResponse time, ThemeResponse theme) {
+        if (id == null || member == null || time == null || theme == null) {
+            throw new IllegalArgumentException("잘못된 응답입니다. id=" + id + ", member=" + member + ", date=" + date + ", time=" + time);
         }
     }
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName().getName(),
+                MemberResponse.from(reservation.getMember()),
                 reservation.getDate(DateTimeFormatter.ISO_DATE),
                 ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme()
