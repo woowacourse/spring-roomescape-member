@@ -44,7 +44,7 @@ public class Member {
         return id;
     }
 
-    public Role getRole() {
-        return role;
+    public String getRole() {
+        return role.getRole();
     }
 }
