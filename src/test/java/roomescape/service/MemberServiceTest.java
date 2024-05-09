@@ -7,37 +7,37 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import roomescape.domain.User;
-import roomescape.domain.repository.UserRepository;
-import roomescape.exception.user.AuthenticationFailureException;
+import roomescape.domain.Member;
+import roomescape.domain.repository.MemberRepository;
+import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.service.security.JwtUtils;
 import roomescape.web.dto.request.LoginRequest;
 
 @SpringBootTest
-class UserServiceTest {
+class MemberServiceTest {
     @Autowired
-    private UserService userService;
+    private MemberService memberService;
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     @AfterEach
     void tearDown() {
-        userRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Test
     @DisplayName("이메일과 비밀번호로 로그인 기능을 제공한다")
     void login_ShouldProvideLoginFeature() {
         // given
-        User user = new User("name", "hello", "password");
+        Member member = new Member("name", "hello", "password");
         LoginRequest request = new LoginRequest("hello", "password");
-        User savedUser = userRepository.save(user);
+        Member savedMember = memberRepository.save(member);
 
         // when
-        String token = userService.login(request);
+        String token = memberService.login(request);
 
         // then
-        Assertions.assertThat(JwtUtils.decode(token)).isEqualTo(savedUser.getId());
+        Assertions.assertThat(JwtUtils.decode(token)).isEqualTo(savedMember.getId());
     }
 
     @Test
@@ -47,7 +47,7 @@ class UserServiceTest {
         LoginRequest request = new LoginRequest("hello", "password");
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userService.login(request))
+        Assertions.assertThatThrownBy(() -> memberService.login(request))
                 .isInstanceOf(AuthenticationFailureException.class);
     }
 
@@ -55,12 +55,12 @@ class UserServiceTest {
     @DisplayName("비밀번호가 틀리면 로그인 중 예외를 발생시킨다")
     void login_ShouldFailed_WhenInvalidLoginInfo() {
         // given
-        User user = new User("name", "hello", "password");
+        Member member = new Member("name", "hello", "password");
         LoginRequest request = new LoginRequest("hello", "world");
-        userRepository.save(user);
+        memberRepository.save(member);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> userService.login(request))
+        Assertions.assertThatThrownBy(() -> memberService.login(request))
                 .isInstanceOf(AuthenticationFailureException.class);
     }
 
@@ -68,13 +68,13 @@ class UserServiceTest {
     @DisplayName("유효한 토큰인지 확인할 수 있다")
     void validateToken_ShouldVerifyToken() {
         // given
-        User user = new User("name", "hello", "password");
+        Member member = new Member("name", "hello", "password");
         LoginRequest request = new LoginRequest("hello", "password");
-        userRepository.save(user);
-        String token = userService.login(request);
+        memberRepository.save(member);
+        String token = memberService.login(request);
 
         // when & then
-        Assertions.assertThatCode(() -> userService.findUserByToken(token))
+        Assertions.assertThatCode(() -> memberService.findMemberByToken(token))
                 .doesNotThrowAnyException();
 
     }
@@ -82,7 +82,7 @@ class UserServiceTest {
     @Test
     @DisplayName("유효하지 않는 토큰인지 확인할 수 있다")
     void validateToken_ShouldThrowException_WhenTokenIsNotValid() {
-        Assertions.assertThatCode(() -> userService.findUserByToken("hello, world"))
+        Assertions.assertThatCode(() -> memberService.findMemberByToken("hello, world"))
                 .isInstanceOf(AuthenticationFailureException.class);
     }
 }

@@ -21,19 +21,19 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import roomescape.service.UserService;
+import roomescape.service.MemberService;
 import roomescape.web.dto.request.LoginRequest;
-import roomescape.web.dto.response.UserResponse;
+import roomescape.web.dto.response.MemberResponse;
 
 
-@WebMvcTest(controllers = UserController.class)
-class UserControllerTest {
+@WebMvcTest(controllers = MemberController.class)
+class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private UserService userService;
+    private MemberService memberService;
 
 
     @Test
@@ -57,7 +57,7 @@ class UserControllerTest {
         // given
         LoginRequest request = new LoginRequest("aaaa.aaa.aa", "password");
         ObjectMapper objectMapper = new ObjectMapper();
-        Mockito.when(userService.login(request))
+        Mockito.when(memberService.login(request))
                 .thenReturn("");
 
         // when & then
@@ -75,7 +75,7 @@ class UserControllerTest {
         // given
         LoginRequest request = new LoginRequest("aaaa.aaa.aa", "  ");
         ObjectMapper objectMapper = new ObjectMapper();
-        Mockito.when(userService.login(request))
+        Mockito.when(memberService.login(request))
                 .thenReturn("");
 
         // when & then
@@ -89,12 +89,12 @@ class UserControllerTest {
 
     @Test
     @DisplayName("토큰의 사용자 이름을 반환한다")
-    void findAuthenticatedUser_ShouldReturnUserName() throws Exception {
+    void findAuthenticatedMember_ShouldReturnMemberName() throws Exception {
         // given
         LoginRequest request = new LoginRequest("aaa@bbb.cc", "password");
         ObjectMapper objectMapper = new ObjectMapper();
-        UserResponse response = new UserResponse("arbitraryUser");
-        Mockito.when(userService.findUserByToken("arbitraryToken"))
+        MemberResponse response = new MemberResponse("arbitraryMember");
+        Mockito.when(memberService.findMemberByToken("arbitraryToken"))
                 .thenReturn(response);
 
         // when & then

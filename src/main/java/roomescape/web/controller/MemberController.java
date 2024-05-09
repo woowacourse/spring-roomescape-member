@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import roomescape.service.UserService;
+import roomescape.service.MemberService;
 import roomescape.web.dto.request.LoginRequest;
-import roomescape.web.dto.response.UserResponse;
+import roomescape.web.dto.response.MemberResponse;
 
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
-public class UserController {
-    private final UserService userService;
+public class MemberController {
+    private final MemberService memberService;
 
     @PostMapping
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
-        String jwtToken = userService.login(request);
+        String jwtToken = memberService.login(request);
 
         return ResponseEntity.ok()
                 .header(SET_COOKIE, jwtToken)
@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserResponse> findAuthenticatedUser(@CookieValue(value = "token") String token) {
-        UserResponse response = userService.findUserByToken(token);
+    public ResponseEntity<MemberResponse> findAuthenticatedMember(@CookieValue(value = "token") String token) {
+        MemberResponse response = memberService.findMemberByToken(token);
 
         return ResponseEntity.ok()
                 .body(response);

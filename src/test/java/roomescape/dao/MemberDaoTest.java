@@ -8,47 +8,47 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 @SpringBootTest
-class UserDaoTest {
+class MemberDaoTest {
     @Autowired
-    private UserDao userDao;
+    private MemberDao memberDao;
 
-    private User dummyUser;
+    private Member dummyMember;
 
     @BeforeEach
     void setUp() {
-        dummyUser = new User("name", "email", "password");
+        dummyMember = new Member("name", "email", "password");
     }
 
     @AfterEach
     void tearDown() {
-        userDao.deleteAll();
+        memberDao.deleteAll();
     }
 
     @Test
     @DisplayName("사용자 정보를 저장한다")
     void save_ShouldStorePersistence() {
         // given
-        dummyUser = new User("name", "email", "password");
+        dummyMember = new Member("name", "email", "password");
 
         // when
-        User savedUser = userDao.save(dummyUser);
+        Member savedMember = memberDao.save(dummyMember);
 
         // then
-        Assertions.assertThat(userDao.findById(savedUser.getId())).isPresent();
+        Assertions.assertThat(memberDao.findById(savedMember.getId())).isPresent();
     }
 
     @Test
     @DisplayName("영속성에 사용자 있으면 참을 반환한다")
     void existsByEmailAndPassword_ShouldGetPersistence() {
         // given
-        dummyUser = new User("name", "email", "password");
-        userDao.save(dummyUser);
+        dummyMember = new Member("name", "email", "password");
+        memberDao.save(dummyMember);
 
         // when & then
-        Assertions.assertThat(userDao.findByEmailAndPassword(dummyUser.getEmail(), dummyUser.getPassword()))
+        Assertions.assertThat(memberDao.findByEmailAndPassword(dummyMember.getEmail(), dummyMember.getPassword()))
                 .isPresent();
     }
 
@@ -56,7 +56,7 @@ class UserDaoTest {
     @DisplayName("영속성에 사용자 없으면 거짓을 반환한다")
     void existsByEmailAndPassword_ShouldReturnNull_WhenTargetDoesNotExist() {
         // when & then
-        Assertions.assertThat(userDao.findByEmailAndPassword(dummyUser.getEmail(), dummyUser.getPassword()))
+        Assertions.assertThat(memberDao.findByEmailAndPassword(dummyMember.getEmail(), dummyMember.getPassword()))
                 .isEmpty();
     }
 }

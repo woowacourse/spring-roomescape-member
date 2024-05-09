@@ -4,8 +4,8 @@ import java.util.Map;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import roomescape.domain.User;
-import roomescape.exception.user.AuthenticationFailureException;
+import roomescape.domain.Member;
+import roomescape.exception.member.AuthenticationFailureException;
 
 public class JwtUtils {
     private static final String SECRET_KEY = "hellowootecoworldhihowareyouiamfinethankyouandyou";
@@ -14,7 +14,7 @@ public class JwtUtils {
         throw new AssertionError("유틸 클래스입니다. 생성할 수 없습니다.");
     }
 
-    public static String encode(User user) {
+    public static String encode(Member user) {
         return Jwts.builder()
                 .subject(user.getId().toString())
                 .claims(Map.of("name", user.getName(), "email", user.getEmail()))
