@@ -36,7 +36,7 @@ class TimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(4));
     }
 
     @Test
@@ -51,31 +51,60 @@ class TimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(4));
     }
 
     @Test
     @DisplayName("예약 시간 추가하면 201 을 응답한다.")
     void addTime201AndLocation() {
+        final TimeRequest request = new TimeRequest("12:40");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .body("startAt", is(request.startAt()));
     }
 
     @Test
     @DisplayName("존재하는 예약 시간을 추가 하면 409 를 응답한다.")
     void addTime409() {
+        final TimeRequest request = new TimeRequest("08:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(409);
     }
 
     @Test
     @DisplayName("존재하는 예약 시간을 삭제하면 204 를 응답한다.")
-    void deleteTime204() {
+    void deleteTime204Present() {
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(204);
     }
 
     @Test
     @DisplayName("존재하지 않는 예약 시간을 삭제하면 404 를 응답한다.")
-    void deleteTime404() {
+    void deleteTime404NotExist() {
+        RestAssured.given().log().all()
+                .when().delete("/times/0")
+                .then().log().all()
+                .statusCode(404);
     }
 
     @Test
     @DisplayName("예약된 시간을 삭제 요청하면 400 을 응답한다.")
-    void methodName() {
+    void deleteTim400ExistReservation() {
+        RestAssured.given().log().all()
+                .when().delete("/times/2")
+                .then().log().all()
+                .statusCode(400);
     }
 }

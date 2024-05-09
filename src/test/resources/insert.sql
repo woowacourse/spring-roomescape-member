@@ -15,23 +15,22 @@ ALTER TABLE THEME
 INSERT INTO RESERVATION_TIME (START_AT)
 VALUES ('08:00'),
        ('09:10'),
-       ('10:20');
+       ('10:20'),
+       ('11:30');
 
 INSERT INTO THEME (NAME, DESCRIPTION, THUMBNAIL)
 VALUES ('Theme 1', 'Desc 1', 'thumb 1'),
        ('Theme 2', 'Desc 2', 'thumb 2'),
        ('Theme 3', 'Desc 3', 'thumb 3'),
-       ('Theme 4', 'Desc 4', 'thumb 4');
+       ('Theme 4', 'Desc 4', 'thumb 4'),
+       ('Theme 5', 'Desc 5', 'thumb 5');
 
 INSERT INTO RESERVATION (NAME, DATE, THEME_ID, TIME_ID)
-VALUES ('Res 1', DATEADD(D, -3, CURRENT_DATE), 1, 1),
-       ('Res 2', DATEADD(D, -3, CURRENT_DATE), 1, 3),
-
-       ('Res 3', DATEADD(D, -3, CURRENT_DATE), 2, 1),
-       ('Res 4', DATEADD(D, -2, CURRENT_DATE), 2, 2),
-       ('Res 5', DATEADD(D, -2, CURRENT_DATE), 2, 3),
-
-       ('Res 6', DATEADD(D, -2, CURRENT_DATE), 4, 2),
-       ('Res 7', DATEADD(D, -1, CURRENT_DATE), 4, 3),
-
-       ('Res 8', DATEADD(D, 1, CURRENT_DATE), 1, 1);
+VALUES ('Res 1', DATEADD(D, -3, CURRENT_DATE), 2, 2),
+       ('Res 2', DATEADD(D, -3, CURRENT_DATE), 2, 4),
+       ('Res 3', DATEADD(D, -3, CURRENT_DATE), 3, 2),
+       ('Res 4', DATEADD(D, -2, CURRENT_DATE), 3, 3),
+       ('Res 5', DATEADD(D, -2, CURRENT_DATE), 3, 4),
+       ('Res 6', DATEADD(D, -2, CURRENT_DATE), 5, 3),
+       ('Res 7', DATEADD(D, -1, CURRENT_DATE), 5, 4),
+       ('Res 8', DATEADD(D, 1, CURRENT_DATE), 2, 2);
