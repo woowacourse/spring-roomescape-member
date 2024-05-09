@@ -46,6 +46,16 @@
 - 테마를 삭제할 수 있다.
     - 해당 테마를 예약한 내역이 존재하면 예외를 던진다.
 
+### 로그인 페이지
+
+- `/login` 으로 접속할 수 있다.
+- 이메일과 비밀번호를 입력하면 로그인할 수 있다.
+
+### 회원 가입 페이지
+
+- `/signup` 으로 접속할 수 있다.
+- 이메일, 비밀번호, 이름을 입력하면 회원 가입할 수 있다.
+
 ### 사용자 예약 페이지
 
 - `/reservation` 으로 접속할 수 있다.
@@ -73,6 +83,13 @@
 | GET         | `/themes/popular`                    | 주간 인기 테마 목록 조회 |                                                   | [List of ThemeResponse](#List-of-ThemeResponse)                      |
 | POST        | `/themes`                            | 테마 추가          | [ThemeRequest](#ThemeRequest)                     | [ThemeResponse](#ThemeResponse)                                      |
 | DELETE      | `/themes/{id}`                       | 테마 삭제          |                                                   | `HTTP/1.1 204`                                                       |
+| GET         | `/login`                             | 로그인 페이지        |                                                   | `templates/login.html`                                               |
+| POST        | `/login`                             | 로그인            | [TokenRequest](#TokenRequest)                     | `HTTP/1.1 200`                                                       |
+| GET         | `/login/check`                       | 로그인 확인         |                                                   | [MemberResponse](#MemberResponse)                                    |
+| GET         | `/signup`                            | 회원 가입 페이지      |                                                   | `templates/signup.html`                                              |
+| POST        | `/signup`                            | 회원 가입          | [MemberRequest](#MemberRequest)                   | [MemberResponse](#MemberResponse)                                    |
+| POST        | `/logout`                            | 로그아웃           |                                                   | `HTTP/1.1 200`                                                       |
+| GET         | `/members`                           | 회원 목록 조회       |                                                   | [List of MemberResponse](#List-of-MemberResponse)                    |
 
 ### ReservationRequest
 
@@ -224,6 +241,45 @@ HTTP/1.1 200 OK
     "name": "테마1",
     "description": "테마1 설명",
     "thumbnail": "테마1 섬네일"
+  }
+]
+```
+
+### TokenRequest
+
+```json
+{
+  "email": "이메일@이메일.이메일",
+  "password": "비밀번호"
+}
+```
+
+### MemberRequest
+
+```json
+{
+  "email": "이메일@이메일.이메일",
+  "password": "비밀번호",
+  "name": "홍길동"
+}
+```
+
+### MemberResponse
+
+```json
+{
+  "id": 1,
+  "name": "홍길동"
+}
+```
+
+### List of MemberResponse
+
+```json
+[
+  {
+    "id": 1,
+    "name": "홍길동"
   }
 ]
 ```
