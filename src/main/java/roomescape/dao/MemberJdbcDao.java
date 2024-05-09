@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Name;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,8 @@ public class MemberJdbcDao implements MemberDao {
             resultSet.getLong("id"),
             new Name(resultSet.getString("name")),
             resultSet.getString("email"),
-            resultSet.getString("password"));
+            resultSet.getString("password"),
+            Role.valueOf(resultSet.getString("role")));
 
     public MemberJdbcDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,12 +38,14 @@ public class MemberJdbcDao implements MemberDao {
         final Name name = member.getName();
         final String email = member.getEmail();
         final String password = member.getPassword();
+        final Role role = member.getRole();
         final Long id = jdbcInsert.executeAndReturnKey(
                         Map.of("name", name.getName(),
                                 "email", email,
-                                "password", password))
+                                "password", password,
+                                "role", role))
                 .longValue();
-        return new Member(Objects.requireNonNull(id), name, email, password);
+        return new Member(Objects.requireNonNull(id), name, email, password, role);
     }
 
     @Override

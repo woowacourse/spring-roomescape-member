@@ -8,20 +8,22 @@ public class Member {
     private final Name name;
     private final String email;
     private final String password;
+    private final Role role;
 
     public Member(final Long id, final Name name, final String email) {
-        this(id, name, email, null);
+        this(id, name, email, null, null);
     }
 
-    public Member(final Name name, final String email, final String password) {
-        this(null, name, email, password);
+    public Member(final Name name, final String email, final String password, final Role role) {
+        this(null, name, email, password, role);
     }
 
-    public Member(final Long id, final Name name, final String email, final String password) {
+    public Member(final Long id, final Name name, final String email, final String password, final Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -42,6 +44,10 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override

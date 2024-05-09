@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
+import roomescape.domain.Role;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("사용자를 저장한다.")
     void saveMember() {
         // given
-        final Member member = new Member(new Name("미아"), "mia@email.com", "1234");
+        final Member member = new Member(new Name("미아"), "mia@email.com", "1234", Role.USER);
 
         // when
         final Member savedMember = memberDao.save(member);
@@ -33,7 +34,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("Id에 해당하는 사용자를 조회한다.")
     void findMemberById() {
         // given
-        final Member savedMember = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234"));
+        final Member savedMember = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER));
 
         // when
         final Optional<Member> member = memberDao.findById(savedMember.getId());
@@ -59,7 +60,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("email에 해당하는 사용자를 조회한다.")
     void findMemberByEmail() {
         // given
-        final Member savedMember = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234"));
+        final Member savedMember = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER));
 
         // when
         final Optional<Member> member = memberDao.findByEmail(savedMember.getEmail());
@@ -85,7 +86,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("사용자 전체 목록을 조회한다.")
     void findAllMembers() {
         // given
-        memberDao.save(new Member(new Name("미아"), "mia@email.com", "1234"));
+        memberDao.save(new Member(new Name("미아"), "mia@email.com", "1234", Role.USER));
 
         // when
         final List<Member> members = memberDao.findAll();

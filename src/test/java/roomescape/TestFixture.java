@@ -1,10 +1,6 @@
 package roomescape;
 
-import roomescape.domain.Member;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 
 public class TestFixture {
     public static final String MEMBER_MIA_NAME = "미아";
@@ -41,11 +37,11 @@ public class TestFixture {
     }
 
     public static Member MEMBER_MIA() {
-        return new Member(new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_MIA_PASSWORD);
+        return new Member(new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_MIA_PASSWORD, Role.USER);
     }
 
     public static Member MEMBER_MIA(final Long id) {
-        return new Member(id, new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_MIA_PASSWORD);
+        return new Member(id, new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_MIA_PASSWORD, Role.USER);
     }
 
     public static Theme WOOTECO_THEME() {

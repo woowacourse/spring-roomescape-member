@@ -10,7 +10,9 @@ import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,7 +37,7 @@ class ReservationJdbcDaoTest extends DaoTest {
 
     @BeforeEach
     void setUp() {
-        member = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234"));
+        member = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER));
         reservationTime = reservationTimeDao.save(new ReservationTime("19:00"));
         theme = themeDao.save(new Theme("호러", "매우 무섭습니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));

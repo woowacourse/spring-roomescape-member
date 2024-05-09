@@ -1,4 +1,6 @@
 package roomescape.dto;
 
-public record MemberLoginResponse(Long id, String name, String email) {
+import roomescape.domain.Role;
+
+public record MemberLoginResponse(Long id, String name, String email, Role role) {
 }

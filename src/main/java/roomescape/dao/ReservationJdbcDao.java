@@ -10,6 +10,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
@@ -30,7 +31,8 @@ public class ReservationJdbcDao implements ReservationDao {
                     resultSet.getLong("member_id"),
                     new Name(resultSet.getString("member_name")),
                     resultSet.getString("member_email"),
-                    resultSet.getString("member_password")
+                    resultSet.getString("member_password"),
+                    Role.valueOf(resultSet.getString("member_role"))
             ),
             resultSet.getString("date"),
             new ReservationTime(
@@ -69,7 +71,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 SELECT r.id AS reservation_id, r.member_id, r.date, 
                     t.id AS time_id, t.start_at AS time_value,
                     th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
-                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password
+                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
@@ -85,7 +87,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     r.id AS reservation_id, r.member_id, r.date, 
                     t.id AS time_id, t.start_at AS time_value,
                     th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
-                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password
+                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id

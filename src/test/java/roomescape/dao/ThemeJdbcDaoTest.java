@@ -9,7 +9,9 @@ import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -105,7 +107,7 @@ class ThemeJdbcDaoTest extends DaoTest {
     @DisplayName("최근 일주일을 기준으로 예약이 많은 순으로 테마 10개를 조회한다.")
     void findTopThemesByReservationCountDuringPeriod() {
         // given
-        final Member member = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234"));
+        final Member member = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER));
         final ReservationTime reservationTime1 = reservationTimeDao.save(new ReservationTime("18:00"));
         final ReservationTime reservationTime2 = reservationTimeDao.save(new ReservationTime("19:00"));
         final Theme theme1 = themeDao.save(new Theme("호러", "매우 무섭습니다.",

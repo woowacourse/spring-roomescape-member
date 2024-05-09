@@ -20,6 +20,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
@@ -74,8 +75,8 @@ class ReservationServiceTest {
     @DisplayName("모든 예약 목록을 조회한다.")
     void getAllReservations() {
         // given
-        final Member member1 = new Member(new Name("냥인"), "nyangin@email.com", "1234");
-        final Member member2 = new Member(new Name("미아"), "mia@email.com", "1234");
+        final Member member1 = new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER);
+        final Member member2 = new Member(new Name("미아"), "mia@email.com", "1234", Role.USER);
         final String startAt1 = "18:00";
         final String startAt2 = "19:00";
         final ReservationTime reservationTime1 = new ReservationTime(startAt1);
