@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.request.UserSignUpRequest;
+import roomescape.controller.response.CheckMemberResponse;
 import roomescape.controller.response.MemberResponse;
 import roomescape.controller.response.TokenResponse;
 import roomescape.domain.Member;
@@ -39,9 +40,9 @@ public class MemberService {
         return memberRepository.checkExistMember(email, password);
     }
 
-    public MemberResponse findByEmail(String email) {
+    public CheckMemberResponse findByEmail(String email) {
         Member byEmail = memberRepository.findByEmail(email);
-        return new MemberResponse(byEmail.getId(), byEmail.getName(), byEmail.getEmail(), byEmail.getPassword());
+        return new CheckMemberResponse(byEmail.getName());
     }
 
     public List<MemberResponse> findAll() {
@@ -52,7 +53,7 @@ public class MemberService {
                 .toList();
     }
 
-    public MemberResponse findByCookies(Cookie[] cookies) {
+    public CheckMemberResponse findByCookies(Cookie[] cookies) {
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
         String email = jwtTokenProvider.getEmailByToken(token);
         return findByEmail(email);
