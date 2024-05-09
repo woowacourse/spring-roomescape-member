@@ -9,6 +9,7 @@ import roomescape.exception.BadRequestException;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationRequestTest {
@@ -37,11 +38,10 @@ class ReservationRequestTest {
                 .hasMessage("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
     }
 
-    @DisplayName("요청된 데이터의 예약자 id가 null 혹은 비어있는 경우 예외를 발생시킨다.")
+    @DisplayName("요청된 데이터의 예약자 id가 null 혹은 비어있는 경우 예외가 발생하지 않는다.")
     @Test
     void should_throw_exception_when_invalid_memberId() {
-        assertThatThrownBy(() -> new ReservationRequest(LocalDate.now(), 1L, 1L, null))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
+        assertThatCode(() -> new ReservationRequest(LocalDate.now(), 1L, 1L, null))
+                .doesNotThrowAnyException();
     }
 }

@@ -9,21 +9,20 @@ public class ReservationRequest {
     private final LocalDate date;
     private final long timeId;
     private final long themeId;
-    private final long memberId;
+    private final Long memberId;
 
     public ReservationRequest(LocalDate date, Long timeId, Long themeId, Long memberId) {
-        validate(date, timeId, themeId, memberId);
+        validate(date, timeId, themeId);
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
         this.memberId = memberId;
     }
 
-    private void validate(LocalDate date, Long timeId, Long themeId, Long memberId) {
+    private void validate(LocalDate date, Long timeId, Long themeId) {
         validateNull(date);
         validateNull(timeId);
         validateNull(themeId);
-        validateNull(memberId);
     }
 
     private void validateNull(Object value) {
@@ -44,7 +43,7 @@ public class ReservationRequest {
         return themeId;
     }
 
-    public long getMemberId() {
+    public Long getMemberId() {
         return memberId;
     }
 }
