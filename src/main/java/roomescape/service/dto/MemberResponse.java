@@ -1,4 +1,4 @@
-package roomescape.auth.dto;
+package roomescape.service.dto;
 
 import roomescape.domain.Member;
 

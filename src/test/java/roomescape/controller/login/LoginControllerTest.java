@@ -12,7 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import roomescape.IntegrationTestSupport;
-import roomescape.auth.dto.MemberResponse;
+import roomescape.service.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 
 class LoginControllerTest extends IntegrationTestSupport {
