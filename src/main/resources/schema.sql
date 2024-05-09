@@ -1,3 +1,11 @@
+CREATE TABLE member
+(
+    id    BIGINT       NOT NULL AUTO_INCREMENT,
+    name  VARCHAR(10)  NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
