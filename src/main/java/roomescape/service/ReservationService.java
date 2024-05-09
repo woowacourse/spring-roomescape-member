@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationThemeDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.condition.ReservationInsertCondition;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationFactory;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservation.ReservationRequest;
@@ -19,12 +19,14 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationThemeDao reservationThemeDao;
+    private final ReservationFactory reservationFactory;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                              ReservationThemeDao reservationThemeDao) {
+                              ReservationThemeDao reservationThemeDao, ReservationFactory reservationFactory) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.reservationThemeDao = reservationThemeDao;
+        this.reservationFactory = reservationFactory;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -35,16 +37,20 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse insertReservation(ReservationRequest request) {
+        Reservation reservation = getReservation(request);
+        Reservation inserted = reservationDao.insert(reservation);
+
+        return new ReservationResponse(inserted);
+    }
+
+    private Reservation getReservation(ReservationRequest request) {
         validateDuplicate(request);
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         ReservationTheme theme = reservationThemeDao.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        ReservationInsertCondition insertCondition = new ReservationInsertCondition(request.name(), request.date(),
-                time, theme);
-        Reservation inserted = reservationDao.insert(insertCondition);
 
-        return new ReservationResponse(inserted);
+        return reservationFactory.createForAdd(request.name(), request.date(), time, theme);
     }
 
     private void validateDuplicate(ReservationRequest request) {

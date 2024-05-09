@@ -13,15 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dao.condition.ReservationInsertCondition;
-import roomescape.dao.condition.ThemeInsertCondition;
-import roomescape.dao.condition.TimeInsertCondition;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationFactory;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
-@Import({ReservationDao.class, ReservationTimeDao.class, ReservationThemeDao.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ReservationThemeDao.class, ReservationFactory.class})
 @Sql(scripts = {"/test_schema.sql"})
 public class ReservationDaoTest {
 
@@ -34,17 +32,20 @@ public class ReservationDaoTest {
     @Autowired
     private ReservationThemeDao themeDao;
 
+    @Autowired
+    private ReservationFactory reservationFactory;
+
     @BeforeEach
     void setUp() {
-        timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
-        themeDao.insert(new ThemeInsertCondition("theme1", "desc1", "thumb1"));
+        timeDao.insert(new ReservationTime(null, LocalTime.parse("10:00")));
+        themeDao.insert(new ReservationTheme(null, "theme1", "desc1", "thumb1"));
     }
 
     @DisplayName("예약을 추가한다.")
     @Test
     void insert() {
         // given
-        Reservation inserted = reservationDao.insert(new ReservationInsertCondition(
+        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
                 "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
@@ -62,7 +63,7 @@ public class ReservationDaoTest {
     @Test
     void findAll() {
         // given
-        reservationDao.insert(new ReservationInsertCondition(
+        reservationDao.insert(reservationFactory.createForAdd(
                 "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
@@ -80,7 +81,7 @@ public class ReservationDaoTest {
     @Test
     void findById() {
         // given
-        reservationDao.insert(new ReservationInsertCondition(
+        reservationDao.insert(reservationFactory.createForAdd(
                 "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
@@ -106,7 +107,7 @@ public class ReservationDaoTest {
     @Test
     void deleteById() {
         // given
-        Reservation inserted = reservationDao.insert(new ReservationInsertCondition(
+        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
                 "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
@@ -125,7 +126,7 @@ public class ReservationDaoTest {
     @Test
     void hasReservationForTimeId() {
         // given
-        Reservation inserted = reservationDao.insert(new ReservationInsertCondition(
+        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
                 "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
@@ -143,7 +144,7 @@ public class ReservationDaoTest {
     @Test
     void hasReservationForThemeId() {
         // given
-        Reservation inserted = reservationDao.insert(new ReservationInsertCondition(
+        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
                 "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
@@ -161,7 +162,7 @@ public class ReservationDaoTest {
     @Test
     void hasSameReservation() {
         // given
-        Reservation inserted = reservationDao.insert(new ReservationInsertCondition(
+        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
                 "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),

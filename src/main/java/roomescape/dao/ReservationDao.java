@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.condition.ReservationInsertCondition;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
@@ -48,17 +47,17 @@ public class ReservationDao {
         return jdbcTemplate.query(findAllSql, getReservationRowMapper());
     }
 
-    public Reservation insert(ReservationInsertCondition insertCondition) {
+    public Reservation insert(Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", insertCondition.getName())
-                .addValue("date", insertCondition.getDate().toString())
-                .addValue("time_id", insertCondition.getTimeId())
-                .addValue("theme_id", insertCondition.getThemeId());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate().toString())
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getThemeId());
 
         Long id = insertActor.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, insertCondition.getName(), insertCondition.getDate(), insertCondition.getTime(),
-                insertCondition.getTheme());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     public void deleteById(Long id) {
