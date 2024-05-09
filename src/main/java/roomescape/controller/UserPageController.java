@@ -14,4 +14,9 @@ public class UserPageController {
     public String bestThemePage() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 }
