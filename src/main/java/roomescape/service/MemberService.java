@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.request.UserSignUpRequest;
 import roomescape.controller.response.MemberResponse;
+import roomescape.controller.response.TokenResponse;
 import roomescape.controller.response.UserResponse;
 import roomescape.domain.Member;
 import roomescape.infrastructure.JwtTokenProvider;
@@ -27,12 +28,12 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public String createToken(UserLoginRequest userLoginRequest) {
+    public TokenResponse createToken(UserLoginRequest userLoginRequest) {
         if (!checkInvalidLogin(userLoginRequest.email(), userLoginRequest.password())) {
             throw new IllegalArgumentException("사용자 없음");
         }
         Member byEmail = memberRepository.findByEmail(userLoginRequest.email());
-        return jwtTokenProvider.createToken(byEmail);
+        return TokenResponse.from(jwtTokenProvider.createToken(byEmail));
     }
 
     private boolean checkInvalidLogin(String email, String password) {
