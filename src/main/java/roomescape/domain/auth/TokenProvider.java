@@ -14,8 +14,7 @@ public class TokenProvider {
 
     public String createToken(Member member) {
         return Jwts.builder()
-                .setSubject(member.getName())
-                .claim(EMAIL_FIELD, member.getEmail())
+                .setSubject(member.getEmail())
                 .signWith(HS256, SECRET_KEY.getBytes())
                 .compact();
     }
