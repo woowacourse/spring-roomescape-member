@@ -35,4 +35,13 @@ class UserConfigurerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("사용자 로그인 페이지를 열 수 있다.")
+    @Test
+    void loadLoginPage() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

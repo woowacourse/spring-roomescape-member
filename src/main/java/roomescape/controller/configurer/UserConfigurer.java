@@ -10,5 +10,7 @@ public class UserConfigurer implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/reservation")
                 .setViewName("/reservation");
+        registry.addViewController("/login")
+                .setViewName("login");
     }
 }
