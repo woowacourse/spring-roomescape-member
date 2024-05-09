@@ -24,7 +24,8 @@ class LoginAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("admin 페이지에 접속한다", () -> moveToAdminPage(userToken.get(), 401)),
                 dynamicTest("admin 예약 관리 페이지에 접속한다", () -> moveToReservationAdminPage(userToken.get(), 401)),
                 dynamicTest("admin 시간 관리 페이지에 접속한다", () -> moveToTimeAdminPage(userToken.get(), 401)),
-                dynamicTest("admin 테마 관리 페이지에 접속한다", () -> moveToThemeAdminPage(userToken.get(), 401))
+                dynamicTest("admin 테마 관리 페이지에 접속한다", () -> moveToThemeAdminPage(userToken.get(), 401)),
+                dynamicTest("로그아웃 한다", () -> logout(200))
         );
     }
 
@@ -39,7 +40,8 @@ class LoginAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("admin 페이지에 접속한다", () -> moveToAdminPage(adminToken.get(), 200)),
                 dynamicTest("admin 예약 관리 페이지에 접속한다", () -> moveToReservationAdminPage(adminToken.get(), 200)),
                 dynamicTest("admin 시간 관리 페이지에 접속한다", () -> moveToTimeAdminPage(adminToken.get(), 200)),
-                dynamicTest("admin 테마 관리 페이지에 접속한다", () -> moveToThemeAdminPage(adminToken.get(), 200))
+                dynamicTest("admin 테마 관리 페이지에 접속한다", () -> moveToThemeAdminPage(adminToken.get(), 200)),
+                dynamicTest("로그아웃 한다", () -> logout(200))
         );
     }
 
@@ -67,10 +69,17 @@ class LoginAcceptanceTest extends BasicAcceptanceTest {
                 .statusCode(expectedHttpCode);
     }
 
-    void moveToTimeAdminPage(String token, int expectedHttpCode) {
+    private void moveToTimeAdminPage(String token, int expectedHttpCode) {
         RestAssured.given().log().all()
                 .cookies("token", token)
                 .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(expectedHttpCode);
+    }
+
+    private void logout(int expectedHttpCode) {
+        RestAssured.given().log().all()
+                .when().post("/logout")
                 .then().log().all()
                 .statusCode(expectedHttpCode);
     }
