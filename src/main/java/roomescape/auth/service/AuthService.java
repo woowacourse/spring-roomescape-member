@@ -1,6 +1,7 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.LoginRequest;
 import roomescape.globar.infra.JwtTokenProvider;
 
 @Service
@@ -12,7 +13,7 @@ public class AuthService {
     this.jwtTokenProvider = jwtTokenProvider;
   }
 
-  public String createUser(String email) {
-    return jwtTokenProvider.createToken(email);
+  public String createUser(LoginRequest request) {
+    return jwtTokenProvider.createToken(request.email());
   }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.dto.LoginRequest;
 import roomescape.globar.infra.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -21,9 +22,11 @@ class AuthServiceIntegrationTest {
   @Test
   void createUser() {
     // Given
-    String email = "sungkyum1@gmail.com";
+    String email = "user@mail.com";
+    String password = "1234qwer";
+    LoginRequest loginRequest = new LoginRequest(email, password);
     // When
-    String token = authService.createUser(email);
+    String token = authService.createUser(loginRequest);
     // Then
     Assertions.assertThat(email).isEqualTo(jwtTokenProvider.getPayload(token));
   }
