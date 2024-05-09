@@ -1,8 +1,5 @@
 package roomescape.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Member {
 
     private final Long id;
@@ -10,7 +7,6 @@ public class Member {
     private final String email;
     private final String password;
     private final Role role;
-    private final List<Reservation> reservations = new ArrayList<>();
 
     public Member(String name, String email, String password) {
         this(null, name, email, password, Role.USER);
