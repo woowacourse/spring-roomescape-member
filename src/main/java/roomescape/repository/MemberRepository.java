@@ -5,12 +5,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public class MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
+            resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password")
@@ -21,13 +25,12 @@ public class MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean existsByEmailAndPassword(String email, String password) {
-        String sql = "SELECT exists(" +
-                "SELECT 1 " +
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT id, name, email, password " +
                 "FROM member " +
                 "WHERE email = ? " +
-                "AND password = ?)";
-
-        return jdbcTemplate.queryForObject(sql, Boolean.class, email, password);
+                "AND password = ?";
+        List<Member> members = jdbcTemplate.query(sql, memberRowMapper, email, password);
+        return members.isEmpty() ? Optional.empty() : Optional.of(members.get(0));
     }
 }

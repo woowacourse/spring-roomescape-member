@@ -3,20 +3,16 @@ package roomescape.service.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-import roomescape.service.dto.request.LoginRequest;
 
 @Component
 public class TokenProvider {
 
     private static final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
-    public String generateAccessToken(LoginRequest request) {
+    public String generateAccessToken(Long memberId) {
         return Jwts.builder()
-                .claim("name", request.email())
-                .claim("role", request.password())
+                .setSubject(memberId.toString())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
-
-
 }
