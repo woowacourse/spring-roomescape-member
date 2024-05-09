@@ -25,3 +25,7 @@ VALUES ('John Doe', '2024-04-23', 1, 1),
        ('Charlie Davis', '2024-04-27', 5, 1),
        ('Diana Adams', '2024-04-28', 6, 2),
        ('Evan Wright', '2024-04-29', 7, 2);
+
+INSERT INTO users (name, email, password)
+VALUES ('hotea', 'hotea@hotea.com', '1234'),
+       ('zeus', 'zeus@zeus.com', '1234');

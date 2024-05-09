@@ -22,6 +22,10 @@ public class Users {
         this.password = password;
     }
 
+    public Users(final String email, final String password) {
+        this(null, null, email, password);
+    }
+
     private void validateInvalidName(final String name) {
         if (Objects.isNull(name) || name.isEmpty()) {
             throw new RoomEscapeException(ExceptionMessage.INVALID_USER_NAME);
@@ -30,7 +34,7 @@ public class Users {
 
     private void validateInvalidEmail(final String email) {
         if (!EMAIL_FORMAT.matcher(email).matches()) {
-            throw new RoomEscapeException(ExceptionMessage.INVALID_EMAIL);
+            throw new RoomEscapeException(ExceptionMessage.INVALID_USER_NAME);
         }
     }
 

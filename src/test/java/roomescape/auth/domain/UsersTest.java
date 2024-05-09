@@ -26,7 +26,7 @@ class UsersTest {
     void validateInvalidEmail() {
         assertThatThrownBy(() -> new Users(1L, "hotea", "email.com", "1234"))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage(ExceptionMessage.INVALID_EMAIL.getMessage());
+                .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage());
     }
 
 }
