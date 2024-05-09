@@ -44,5 +44,11 @@ public class LoginController {
         return ResponseEntity.ok(new MemberResponse(member.getName()));
     }
 
-
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logOut(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
 }

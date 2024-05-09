@@ -42,3 +42,4 @@
     - [x] email, password로 User를 불러올 수 있다.
     - [x] 로그인 응답 cookie에 email 기반의 token값을 포함 시킨다.
 - [x] 사용자 정보 조회 API 구현 (GET "/login/check")
+- [x] 로그아웃 시 만료된 쿠키 반환( POST "/logout")
