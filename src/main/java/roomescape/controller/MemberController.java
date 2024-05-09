@@ -1,18 +1,25 @@
 package roomescape.controller;
 
+import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import roomescape.dto.MemberResponse;
+import roomescape.service.MemberService;
 
 @Controller
-public class MemberController { // TODO: 네이밍 애매함
+public class MemberController {
 
-    @GetMapping("/reservation")
-    public String reservationPage() {
-        return "/reservation";
+    private final MemberService memberService;
+
+    public MemberController(final MemberService memberService) {
+        this.memberService = memberService;
     }
 
-    @GetMapping
-    public String homePage() {
-        return "index";
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> getMembers() {
+        List<MemberResponse> responses = memberService.findAll();
+
+        return ResponseEntity.ok(responses);
     }
 }

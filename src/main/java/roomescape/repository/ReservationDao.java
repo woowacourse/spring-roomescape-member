@@ -11,7 +11,7 @@ public interface ReservationDao {
 
     boolean existByDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId);
 
-    long save(Reservation reservation);
+    Reservation save(Reservation reservation);
 
     void deleteById(Long id);
 

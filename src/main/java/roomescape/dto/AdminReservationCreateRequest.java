@@ -2,11 +2,8 @@ package roomescape.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
-public record ReservationCreateRequest(
+public record AdminReservationCreateRequest(
         Long id,
 
         @NotNull(message = "[ERROR] 날짜는 비어있을 수 없습니다.")
@@ -16,10 +13,9 @@ public record ReservationCreateRequest(
         Long timeId,
 
         @NotNull(message = "[ERROR] 테마 Id는 비어있을 수 없습니다.")
-        Long themeId
-) {
+        Long themeId,
 
-    public static Reservation toReservation(final String memberName, final LocalDate date, final ReservationTime time, final Theme theme) {
-        return new Reservation(null, memberName, date, time, theme);
-    }
+        @NotNull(message = "[ERROR] 멤버 Id는 비어있을 수 없습니다.")
+        Long memberId
+) {
 }

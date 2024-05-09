@@ -37,9 +37,9 @@ public class InMemoryReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         reservations.add(reservation);
-        return reservations.size();
+        return reservations.get(reservations.size() - 1);
     }
 
     @Override

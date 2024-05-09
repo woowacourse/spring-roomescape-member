@@ -88,10 +88,10 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameterSource);
-        return newId.longValue();
+        return findById(newId.longValue());
     }
 
     @Override
@@ -116,5 +116,6 @@ public class JdbcReservationDao implements ReservationDao {
     public boolean existByThemeId(final Long id) {
         String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count > 0;    }
+        return count > 0;
+    }
 }
