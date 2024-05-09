@@ -1,7 +1,7 @@
 package roomescape.fixture;
 
-import roomescape.domain.Theme;
-import roomescape.dto.request.ThemeAddRequest;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.ThemeAddRequest;
 
 public class ThemeFixture {
     public static final ThemeAddRequest THEME_ADD_REQUEST = new ThemeAddRequest("name", "description", "thumb");

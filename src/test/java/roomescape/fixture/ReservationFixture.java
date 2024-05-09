@@ -7,8 +7,8 @@ import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_11_00_I
 import static roomescape.fixture.ThemeFixture.THEME_1;
 import static roomescape.fixture.ThemeFixture.THEME_2;
 
-import roomescape.domain.Reservation;
-import roomescape.dto.request.ReservationAddRequest;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationAddRequest;
 
 public class ReservationFixture {
 

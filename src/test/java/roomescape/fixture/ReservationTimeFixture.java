@@ -4,8 +4,8 @@ import static roomescape.fixture.DateTimeFixture.TIME_10_00;
 import static roomescape.fixture.DateTimeFixture.TIME_11_00;
 import static roomescape.fixture.DateTimeFixture.TIME_12_00;
 
-import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.dto.ReservationTimeAddRequest;
 
 public class ReservationTimeFixture {
     public static final ReservationTimeAddRequest TIME_ADD_REQUEST_10_00 = new ReservationTimeAddRequest(TIME_10_00);
