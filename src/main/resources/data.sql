@@ -14,9 +14,9 @@ insert into member(name, email, password) values('썬', 'myoungO@gmail.com', 'su
 insert into member(name, email, password) values('아서', 'hyunta@gmail.com', 'hyunta');
 insert into member(name, email, password) values('솔라', 'sola@gmail.com', 'sola');
 
-insert into reservation(member_id, date, time_id, theme_id) values(1, '2024-04-25', 1, 1);
-insert into reservation(member_id, date, time_id, theme_id) values(2, '2024-04-26', 3, 2);
-insert into reservation(member_id, date, time_id, theme_id) values(3, '2024-04-26', 2, 2);
-insert into reservation(member_id, date, time_id, theme_id) values(4, '2024-05-01', 1, 2);
-insert into reservation(member_id, date, time_id, theme_id) values(5, '2024-05-01', 1, 3);
+insert into reservation(member_id, date, time_id, theme_id) values(1, DATEADD('DAY', -1, CURRENT_DATE()) - 1 , 1, 1);
+insert into reservation(member_id, date, time_id, theme_id) values(2, DATEADD('DAY', -2, CURRENT_DATE()) -2 , 3, 2);
+insert into reservation(member_id, date, time_id, theme_id) values(3, DATEADD('DAY', -3, CURRENT_DATE()), 2, 2);
+insert into reservation(member_id, date, time_id, theme_id) values(4, DATEADD('DAY', -4, CURRENT_DATE()), 1, 2);
+insert into reservation(member_id, date, time_id, theme_id) values(5, DATEADD('DAY', -5, CURRENT_DATE()), 1, 3);
 

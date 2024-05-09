@@ -37,7 +37,7 @@ public class RoomThemeDao {
         return jdbcTemplate.query("""
                 select t.id, t.name, t.description, t.thumbnail from theme as t
                 inner join reservation as r on r.theme_id = t.id
-                WHERE r.date > (NOW() -  8) AND r.date < NOW()
+                WHERE (NOW() -  8) < r.date and r.date < NOW()
                 group by t.id
                 order by count(t.id) desc
                 limit 10

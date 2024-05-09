@@ -42,7 +42,7 @@ public class MemberController {
         String token = extractTokenFromCookie(request.getCookies());
 
         MemberResponse memberResponse = memberService.findMember(token);
-        return ResponseEntity.ok().body(memberResponse);
+        return ResponseEntity.ok(memberResponse);
     }
 
     @GetMapping("/members")

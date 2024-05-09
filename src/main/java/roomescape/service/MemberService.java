@@ -45,9 +45,7 @@ public class MemberService {
 
     public Member findLoginMember(String token) {
         String payload = tokenProvider.getPayload(token);
-        Member member = memberDao.findById(Long.valueOf(payload))
+        return memberDao.findById(Long.valueOf(payload))
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
-
-        return member;
     }
 }
