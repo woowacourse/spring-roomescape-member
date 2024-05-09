@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -45,14 +46,16 @@ public class JwtTokenProvider {
         return Long.parseLong(memberId);
     }
 
-    public Claims toClaims(String token) {
+    private Claims toClaims(String token) {
         try {
             Jws<Claims> claimsJws = getClaimsJws(token);
 
             return claimsJws.getPayload();
         } catch (ExpiredJwtException e) {
             throw new IllegalArgumentException("Expired token");
-        } catch (Exception e) {
+        } catch (UnsupportedJwtException e) {
+            throw new IllegalArgumentException("Unsupported token");
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid token");
         }
     }

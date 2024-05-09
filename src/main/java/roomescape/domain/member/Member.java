@@ -12,7 +12,7 @@ public class Member {
     private final String email;
     private final String password;
     private final String name;
-    private  final Role role;
+    private final Role role;
 
     public Member(String email, String password, String name, Role role) {
         this(null, email, password, name, role);

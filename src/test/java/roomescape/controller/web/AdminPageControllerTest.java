@@ -1,6 +1,8 @@
 package roomescape.controller.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -20,6 +22,8 @@ class AdminPageControllerTest extends BaseControllerTest {
             "/admin/theme"
     })
     void pageTest(String path) {
+        doReturn(1L).when(jwtTokenProvider).getMemberId(any());
+
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get(path)
                 .then().log().all()
