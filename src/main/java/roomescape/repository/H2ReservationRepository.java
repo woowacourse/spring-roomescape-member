@@ -67,12 +67,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation fetchById(final long id) {
-        final String sql = "SELECT * FROM reservation WHERE ID = ?";
-
-        return jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), id)
-                .stream()
-                .findAny()
-                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
+        return findById(id).orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
     }
 
     @Override

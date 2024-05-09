@@ -53,12 +53,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime fetchById(final long id) {
-        final String sql = "SELECT * FROM RESERVATION_TIME WHERE ID = ?";
-
-        return jdbcTemplate.query(sql, this::mapRowTime, id)
-                .stream()
-                .findAny()
-                .orElseThrow(() -> new TimeNotFoundException("존재하지 않는 시간입니다."));
+        return findById(id).orElseThrow(() -> new TimeNotFoundException("존재하지 않는 시간입니다."));
     }
 
     @Override

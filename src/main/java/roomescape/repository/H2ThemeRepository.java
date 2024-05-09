@@ -45,18 +45,13 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public Theme fetchById(final long id) {
-        final String sql = "SELECT * FROM THEME WHERE ID = ?";
-
-        return jdbcTemplate.query(sql, this::mapRowTheme, id)
-                .stream()
-                .findAny()
-                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
+        return findById(id).orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
     }
 
     @Override
     public Theme save(final Theme theme) {
         final SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
-        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }

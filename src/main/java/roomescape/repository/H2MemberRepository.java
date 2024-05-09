@@ -65,7 +65,7 @@ public class H2MemberRepository implements MemberRepository {
     @Override
     public Member save(final Member member) {
         final SqlParameterSource params = new BeanPropertySqlParameterSource(member);
-        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Member(id, member.getName(), member.getEmail(), member.getPassword());
     }
