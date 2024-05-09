@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.config.AuthenticationPrincipal;
 import roomescape.domain.Reservation;
+import roomescape.dto.AdminReservationSaveRequest;
 import roomescape.dto.MemberLoginResponse;
+import roomescape.dto.MemberReservationSaveRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationSaveRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.MemberService;
@@ -25,7 +25,6 @@ import roomescape.service.ThemeService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
 
     private final MemberService memberService;
@@ -45,10 +44,10 @@ public class ReservationController {
         this.themeService = themeService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
             @AuthenticationPrincipal MemberLoginResponse loginResponse,
-            @RequestBody final ReservationSaveRequest request) {
+            @RequestBody final MemberReservationSaveRequest request) {
         final MemberResponse memberResponse = memberService.findById(loginResponse.id());
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
         final ThemeResponse themeResponse = themeService.findById(request.themeId());
@@ -57,12 +56,22 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
     }
 
-    @GetMapping
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final AdminReservationSaveRequest request) {
+        final MemberResponse memberResponse = memberService.findById(request.memberId());
+        final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
+        final ThemeResponse themeResponse = themeService.findById(request.themeId());
+
+        final Reservation reservation = request.toModel(memberResponse, themeResponse, reservationTimeResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
+    }
+
+    @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> findReservations() {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();

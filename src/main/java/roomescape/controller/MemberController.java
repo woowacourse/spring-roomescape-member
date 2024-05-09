@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.MemberLoginResponse;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.infrastructure.AuthorizationExtractor;
 import roomescape.service.MemberService;
+import java.util.List;
 
 @RestController
 public class MemberController {
@@ -50,5 +52,10 @@ public class MemberController {
         cookie.setPath("/");
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> members() {
+        return ResponseEntity.ok(memberService.findAll());
     }
 }

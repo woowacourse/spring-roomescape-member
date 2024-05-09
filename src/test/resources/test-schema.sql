@@ -40,5 +40,3 @@ CREATE TABLE reservation
     FOREIGN KEY (time_id)   REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id)  REFERENCES theme (id)
 );
-
-INSERT INTO member (id, name, email, password) VALUES (1, '냥인', 'nyangin@email.com', '1234');

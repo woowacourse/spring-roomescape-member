@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Name;
 import roomescape.domain.Member;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,5 +62,11 @@ public class MemberJdbcDao implements MemberDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 }

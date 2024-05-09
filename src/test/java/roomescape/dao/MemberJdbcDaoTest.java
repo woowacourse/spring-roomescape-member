@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
+
+import java.util.List;
 import java.util.Optional;
 
 class MemberJdbcDaoTest extends DaoTest {
@@ -18,7 +20,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("사용자를 저장한다.")
     void saveMember() {
         // given
-        final Member member = new Member(new Name("냥인"), "nyangin@email.com", "1234");
+        final Member member = new Member(new Name("미아"), "mia@email.com", "1234");
 
         // when
         final Member savedMember = memberDao.save(member);
@@ -77,5 +79,18 @@ class MemberJdbcDaoTest extends DaoTest {
 
         // then
         assertThat(member).isEmpty();
+    }
+
+    @Test
+    @DisplayName("사용자 전체 목록을 조회한다.")
+    void findAllMembers() {
+        // given
+        memberDao.save(new Member(new Name("미아"), "mia@email.com", "1234"));
+
+        // when
+        final List<Member> members = memberDao.findAll();
+
+        // then
+        assertThat(members).hasSize(1);
     }
 }

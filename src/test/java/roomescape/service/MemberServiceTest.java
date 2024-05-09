@@ -14,6 +14,8 @@ import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.dto.MemberResponse;
+
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,5 +40,24 @@ class MemberServiceTest {
 
         // then
         assertThat(memberResponse.id()).isEqualTo(expectedMember.getId());
+    }
+
+    @Test
+    @DisplayName("모든 사용자를 조회한다.")
+    void findAll() {
+        // given
+        final Member member1 = new Member(1L, new Name("냥인"), "nyangin@email.com", "1234");
+        final Member member2 = new Member(2L, new Name("미아"), "mia@email.com", "1234");
+        final List<Member> initial_members = List.of(member1, member2);
+        given(memberDao.findAll()).willReturn(initial_members);
+
+        // when
+        final List<MemberResponse> members = memberService.findAll();
+
+        // then
+        final MemberResponse memberResponse1 = MemberResponse.from(member1);
+        final MemberResponse memberResponse2 = MemberResponse.from(member2);
+        assertThat(members).hasSize(2)
+                .containsExactly(memberResponse1, memberResponse2);
     }
 }

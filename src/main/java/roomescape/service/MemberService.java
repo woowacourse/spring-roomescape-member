@@ -8,6 +8,8 @@ import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.infrastructure.JwtTokenProvider;
+
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -41,5 +43,12 @@ public class MemberService {
         final Long memberId = jwtTokenProvider.getMemberIdByToken(accessToken);
         final MemberResponse memberResponse = findById(memberId);
         return new MemberLoginResponse(memberResponse.id(), memberResponse.name(), memberResponse.email());
+    }
+
+    public List<MemberResponse> findAll() {
+        final List<Member> members = memberDao.findAll();
+        return members.stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }
