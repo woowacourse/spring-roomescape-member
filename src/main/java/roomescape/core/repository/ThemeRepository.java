@@ -8,7 +8,7 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    List<Theme> findPopularThemesInLastWeek();
+    List<Theme> findPopularThemesByPeriod(final long periodDay);
 
     Theme findById(final long id);
 

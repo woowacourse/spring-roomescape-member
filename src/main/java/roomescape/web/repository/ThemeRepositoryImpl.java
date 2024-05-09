@@ -42,9 +42,9 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemesInLastWeek() {
-        final LocalDate today = LocalDate.now();
-        final LocalDate lastWeek = today.minusWeeks(1);
+    public List<Theme> findPopularThemesByPeriod(final long periodDay) {
+        final LocalDate endDate = LocalDate.now();
+        final LocalDate startDate = endDate.minusDays(periodDay);
 
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail
@@ -56,7 +56,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
                 ORDER BY count(r.id) DESC
                 LIMIT 10
                 """;
-        return jdbcTemplate.query(query, getThemeRowMapper(), lastWeek, today);
+        return jdbcTemplate.query(query, getThemeRowMapper(), startDate, endDate);
     }
 
     @Override

@@ -120,7 +120,7 @@ class ReservationTimeControllerTest {
                 .statusCode(201);
 
         List<ReservationTimeWithStateDto> times = RestAssured.given().log().all()
-                .when().get("/times/available?date=" + TOMORROW_DATE + "&themeId=1")
+                .when().get("/times/available?date=" + TOMORROW_DATE + "&theme-id=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTimeWithStateDto.class);

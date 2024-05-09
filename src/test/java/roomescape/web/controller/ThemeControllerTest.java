@@ -175,7 +175,7 @@ class ThemeControllerTest {
         insertReservation("브라운", yesterday, 1, 1);
 
         RestAssured.given().log().all()
-                .when().get("/themes/popular")
+                .when().get("/themes/popular?period-day=7")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
