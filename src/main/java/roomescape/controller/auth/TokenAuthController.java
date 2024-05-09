@@ -15,10 +15,10 @@ import roomescape.dto.response.MemberResponse;
 import roomescape.service.auth.AuthService;
 
 @RestController
-public class TokenLoginController {
+public class TokenAuthController {
     private final AuthService authService;
 
-    public TokenLoginController(final AuthService authService) {
+    public TokenAuthController(final AuthService authService) {
         this.authService = authService;
     }
 
@@ -26,9 +26,7 @@ public class TokenLoginController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, final HttpServletResponse response) {
         Cookie cookie = new Cookie("token", authService.createToken(loginRequest));
         response.addCookie(cookie);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
@@ -47,5 +45,14 @@ public class TokenLoginController {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 쿠키에 토큰 정보를 입력해주세요."))
                 .getValue();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(final HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 }
