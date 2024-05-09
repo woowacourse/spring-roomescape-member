@@ -49,6 +49,9 @@
 
 - [x] 멤버 도메인 구현 (name, email(id), password )
 - [x] GET login 요청 시 로그인 폼이 있는 페이지 응답
-- [ ] POST login 요청 시 로그인 시도 (바디에 있음)
-- [ ] POST login은 응답으로 토큰 줘야 함
-- [ ] 로그인 상태를 체크할 수 있는 api 구현 쿠키와 호스트를 통해서 login/check
+- [x] POST login 요청 시 로그인 시도 (바디에 있음)
+- [x] POST login은 응답으로 토큰 줘야 함 (쿠키 이용)
+- [x] 로그인 상태를 체크할 수 있는 api 구현 쿠키와 호스트를 통해서 login/check
+
+## 5단계
+
