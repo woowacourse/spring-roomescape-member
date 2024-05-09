@@ -35,20 +35,18 @@ class MemberControllerTest {
     @DisplayName("사용자 예약 Page 접근 성공 테스트")
     @Test
     void responseMemberReservationPage() {
-        Response response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when().get("/reservation")
-                .then().log().all().extract().response();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+                .then().log().all()
+                .assertThat().statusCode(HttpStatus.OK.value());
     }
 
     @DisplayName("사용자 로그인 Page 접근 성공 테스트")
     @Test
     void responseMemberLoginPage() {
-        Response response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when().get("/login")
-                .then().log().all().extract().response();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+                .then().log().all()
+                .assertThat().statusCode(HttpStatus.OK.value());
     }
 }
