@@ -8,7 +8,7 @@ import roomescape.exception.EntityExistsException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ForeignKeyViolationException;
 
-@ControllerAdvice(basePackages = "roomescape.controller.api")
+@ControllerAdvice(basePackages = "roomescape.controller.rest")
 public class ApiExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
