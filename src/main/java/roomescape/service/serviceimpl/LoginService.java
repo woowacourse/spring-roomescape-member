@@ -1,10 +1,10 @@
 package roomescape.service.serviceimpl;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtTokenGenerator;
-import roomescape.auth.Token;
 import roomescape.domain.member.Member;
 import roomescape.dto.response.MemberResponse;
+import roomescape.infrastructure.auth.JwtTokenGenerator;
+import roomescape.infrastructure.auth.Token;
 import roomescape.repository.MemberDao;
 
 @Service

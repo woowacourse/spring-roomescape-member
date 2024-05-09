@@ -1,7 +1,8 @@
-package roomescape.auth;
+package roomescape.infrastructure;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
+import roomescape.infrastructure.auth.Token;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;

@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.CookieGenerator;
-import roomescape.auth.Token;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
+import roomescape.infrastructure.CookieGenerator;
+import roomescape.infrastructure.auth.Token;
 import roomescape.service.serviceimpl.LoginService;
 
 @RestController
