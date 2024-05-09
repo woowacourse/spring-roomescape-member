@@ -164,6 +164,7 @@ class ReservationDaoImpl implements ReservationDao {
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate().toString())
                 .addValue("time_id", String.valueOf(reservation.getTimeId()))
-                .addValue("theme_id", String.valueOf(reservation.getThemeId()));
+                .addValue("theme_id", String.valueOf(reservation.getThemeId()))
+                .addValue("member_id", String.valueOf(reservation.getMemberId()));
     }
 }
