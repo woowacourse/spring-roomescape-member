@@ -34,6 +34,6 @@ class MemberTest {
         long id = 1;
 
         //when & then
-        assertThatThrownBy(() -> new Member(invalidName)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Member(1L, invalidName)).isInstanceOf(IllegalArgumentException.class);
     }
 }

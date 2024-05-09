@@ -6,6 +6,7 @@ import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Service
@@ -24,7 +25,7 @@ public class MemberService {
 
     public MemberResponse create(SignUpRequest signUpRequest) {
         Member member = memberRepository.save(
-                new MemberSignUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password()));
+                new MemberSignUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName());
     }
 }

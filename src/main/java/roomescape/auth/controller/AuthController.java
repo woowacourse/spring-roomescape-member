@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.SignUpRequest;
+import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.AuthService;
-import roomescape.member.controller.dto.MemberResponse;
 
 @Controller
 public class AuthController {
@@ -49,9 +49,9 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        MemberResponse check = authService.fetchByToken(extractTokenFromCookie(request.getCookies()));
-        return ResponseEntity.ok().body(check);
+    public ResponseEntity<AuthInfo> checkLogin(HttpServletRequest request) {
+        AuthInfo authInfo = authService.fetchByToken(extractTokenFromCookie(request.getCookies()));
+        return ResponseEntity.ok().body(authInfo);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Repository
@@ -24,7 +25,8 @@ public class MemberDao implements MemberRepository {
         return new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
-                resultSet.getString("email")
+                resultSet.getString("email"),
+                Role.of(resultSet.getString("role"))
         );
     };
 
@@ -33,7 +35,8 @@ public class MemberDao implements MemberRepository {
             Member member = new Member(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
-                    resultSet.getString("email")
+                    resultSet.getString("email"),
+                    Role.of(resultSet.getString("role"))
             );
             return Optional.of(member);
         } else {
@@ -53,27 +56,28 @@ public class MemberDao implements MemberRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", memberSignUp.name())
                 .addValue("email", memberSignUp.email())
-                .addValue("password", memberSignUp.password());
+                .addValue("password", memberSignUp.password())
+                .addValue("role", memberSignUp.role().name());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Member(id, memberSignUp.name(), memberSignUp.email());
+        return new Member(id, memberSignUp.name(), memberSignUp.email(), memberSignUp.role());
     }
 
 
     @Override
     public Optional<Member> findById(long id) {
-        String sql = "SELECT id, name, email FROM member WHERE id = ?;";
+        String sql = "SELECT id, name, email, role FROM member WHERE id = ?;";
         return jdbcTemplate.query(sql, optionalResultSetExtractor, id);
     }
 
     @Override
     public Optional<Member> findBy(String email) {
-        String sql = "SELECT id, name, email FROM member WHERE email = ?;";
+        String sql = "SELECT id, name, email, role FROM member WHERE email = ?;";
         return jdbcTemplate.query(sql, optionalResultSetExtractor, email);
     }
 
     @Override
     public List<Member> findAll() {
-        String sql = "SELECT id, name, email FROM member;";
+        String sql = "SELECT id, name, email, role FROM member;";
         return jdbcTemplate.query(sql, rowMapper);
     }
 

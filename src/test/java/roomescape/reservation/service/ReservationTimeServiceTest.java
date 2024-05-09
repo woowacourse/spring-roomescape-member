@@ -132,7 +132,7 @@ class ReservationTimeServiceTest {
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234", getMemberChoco().getRole()));
         memberReservationRepository.save(member, reservation);
 
         //when

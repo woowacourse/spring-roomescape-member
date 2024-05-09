@@ -4,11 +4,12 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.controller.dto.TokenResponse;
+import roomescape.auth.domain.AuthInfo;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
-import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Service
@@ -32,16 +33,17 @@ public class AuthService {
         return new TokenResponse(tokenProvider.createAccessToken(loginRequest.email()));
     }
 
-    public MemberResponse fetchByToken(String token) {
+    public AuthInfo fetchByToken(String token) {
         if (!tokenProvider.validateToken(token)) {
             throw new BusinessException(ErrorType.INVALID_TOKEN);
         }
         Member member = memberRepository.findBy(tokenProvider.getPayload(token))
                 .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_NOT_FOUND));
-        return MemberResponse.from(member);
+        return AuthInfo.of(member);
     }
 
     public void signUp(SignUpRequest signUpRequest) {
-        memberRepository.save(new MemberSignUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password()));
+        memberRepository.save(
+                new MemberSignUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password(), Role.USER));
     }
 }

@@ -6,19 +6,17 @@ public class Member {
     private Long id;
     private Name name;
     private String email;
+    private Role role;
 
-    public Member(Long id, String name, String email) {
+    public Member(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = new Name(name);
         this.email = email;
-    }
-
-    public Member(String name) {
-        this(null, name, null);
+        this.role = role;
     }
 
     public Member(Long id, String name) {
-        this(id, name, null);
+        this(id, name, null, Role.USER);
     }
 
     public Long getId() {
@@ -31,6 +29,10 @@ public class Member {
 
     public String getEmail() {
         return email;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override

@@ -63,7 +63,7 @@ class ReservationServiceTest {
     void create() {
         //given
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234", getMemberChoco().getRole()));
         String date = "2100-04-18";
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
@@ -91,7 +91,7 @@ class ReservationServiceTest {
         Theme theme = getTheme1();
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234", getMemberChoco().getRole()));
         memberReservationRepository.save(member, reservation);
 
         //when
@@ -115,7 +115,7 @@ class ReservationServiceTest {
         Reservation reservation = getNextDayReservation(time, theme);
         reservationRepository.save(reservation);
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234", getMemberChoco().getRole()));
         long id = memberReservationRepository.save(member, reservation);
 
         //when
@@ -130,7 +130,7 @@ class ReservationServiceTest {
     void duplicatedReservation() {
         //given
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234", getMemberChoco().getRole()));
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
@@ -150,7 +150,7 @@ class ReservationServiceTest {
     void deleteMemberReservation() {
         //given
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234", getMemberChoco().getRole()));
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));

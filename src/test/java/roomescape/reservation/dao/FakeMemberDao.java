@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 public class FakeMemberDao implements MemberRepository {
@@ -32,7 +33,7 @@ public class FakeMemberDao implements MemberRepository {
 
     @Override
     public Member save(MemberSignUp memberSignUp) {
-        Member member = new Member((long) members.size() + 1, memberSignUp.name(), memberSignUp.email());
+        Member member = new Member((long) members.size() + 1, memberSignUp.name(), memberSignUp.email(), Role.USER);
         members.put((long) members.size() + 1, member);
         return member;
     }

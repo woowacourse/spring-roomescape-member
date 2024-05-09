@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.controller.dto.TokenResponse;
+import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.jwt.FakeTokenProvider;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
-import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
 import roomescape.member.domain.repository.MemberRepository;
@@ -41,7 +41,7 @@ class AuthServiceTest {
         //given
         String password = "1234";
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password, getMemberChoco().getRole()));
         LoginRequest loginRequest = new LoginRequest(password, member.getEmail());
 
         //when
@@ -58,14 +58,14 @@ class AuthServiceTest {
         //given
         String password = "1234";
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password, getMemberChoco().getRole()));
         String accessToken = tokenProvider.createAccessToken(member.getEmail());
 
         //when
-        MemberResponse memberResponse = authService.fetchByToken(accessToken);
+        AuthInfo authInfo = authService.fetchByToken(accessToken);
 
         //then
-        assertThat(memberResponse.name()).isEqualTo(member.getName());
+        assertThat(authInfo.getEmail()).isEqualTo(member.getEmail());
     }
 
     @DisplayName("유효하지 않는 토큰에 예외가 발생한다.")

@@ -9,6 +9,7 @@ import static roomescape.fixture.ThemeFixture.getTheme1;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @DisplayName("사용자 예약 내역 도메인")
 class MemberReservationTest {
@@ -17,7 +18,7 @@ class MemberReservationTest {
     void equals() {
         //given
         Long id = 1L;
-        Member member = new Member(2L, "초코칩", "dev.chocochip@gmail.com");
+        Member member = new Member(2L, "초코칩", "dev.chocochip@gmail.com", Role.USER);
         ReservationTime noon = getNoon();
         Theme theme = getTheme1();
         Reservation nextDayReservation = getNextDayReservation(noon, theme);

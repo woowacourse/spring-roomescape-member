@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import roomescape.member.controller.dto.MemberResponse;
+import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.AuthService;
 import roomescape.util.ControllerTest;
 
@@ -52,9 +52,11 @@ class AuthControllerTest extends ControllerTest {
     @Test
     void checkLogin() {
         //given
+        String email = "dev.chocochip@gmail.com";
+        String password = "1234";
         Map<String, String> params = new HashMap<>();
-        params.put("email", "dev.chocochip@gmail.com");
-        params.put("password", "1234");
+        params.put("email", email);
+        params.put("password", password);
 
         //when & then
         String token = RestAssured.given().log().all()
@@ -66,16 +68,16 @@ class AuthControllerTest extends ControllerTest {
                 .then().log().all().extract().cookie("token");
 
         //when
-        MemberResponse member = RestAssured
+        AuthInfo authInfo = RestAssured
                 .given().log().all()
                 .cookie("token", token)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract().as(MemberResponse.class);
+                .statusCode(HttpStatus.OK.value()).extract().as(AuthInfo.class);
 
         //then
-        assertThat(member.name()).isEqualTo("초코칩");
+        assertThat(authInfo.getEmail()).isEqualTo(email);
     }
 
     @DisplayName("로그아웃 시, 200을 반환한다.")
