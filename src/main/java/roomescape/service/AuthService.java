@@ -2,16 +2,12 @@ package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.exception.AuthorizationException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.dto.TokenRequest;
 import roomescape.service.dto.TokenResponse;
 
 @Service
 public class AuthService {
-    private static final String EMAIL = "admin@email.com";
-    private static final String PASSWORD = "password";
-
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthService(JwtTokenProvider jwtTokenProvider) {
@@ -19,7 +15,6 @@ public class AuthService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        validateLogin(tokenRequest);
         String accessToken = jwtTokenProvider.createToken(tokenRequest.email());
         return new TokenResponse(accessToken);
     }
@@ -32,9 +27,5 @@ public class AuthService {
         return cookie;
     }
 
-    private void validateLogin(TokenRequest tokenRequest) {
-        if (!EMAIL.equals(tokenRequest.email()) || !PASSWORD.equals(tokenRequest.password())) {
-            throw new AuthorizationException("로그인 정보가 유효하지 않습니다.");
-        }
     }
 }
