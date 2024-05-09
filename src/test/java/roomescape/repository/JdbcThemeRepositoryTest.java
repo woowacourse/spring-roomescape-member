@@ -28,6 +28,20 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("테마를 추가한다.")
+    void save() {
+        Theme save = themeRepository.save(new Theme(null, "테마1", "테마1 설명", "https://example1.com"));
+
+        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "theme");
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(count).isEqualTo(1);
+            softly.assertThat(save.getName()).isEqualTo("테마1");
+            softly.assertThat(save.getDescription()).isEqualTo("테마1 설명");
+            softly.assertThat(save.getThumbnail()).isEqualTo("https://example1.com");
+        });
+    }
+
+    @Test
     @DisplayName("모든 테마들을 조회한다.")
     void findAll() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) "
@@ -51,51 +65,6 @@ class JdbcThemeRepositoryTest {
         assertThat(foundTheme.get().getName()).isEqualTo("테마1");
         assertThat(foundTheme.get().getDescription()).isEqualTo("테마1 설명");
         assertThat(foundTheme.get().getThumbnail()).isEqualTo("https://example1.com");
-    }
-
-    @Test
-    @DisplayName("테마를 추가한다.")
-    void save() {
-        themeRepository.save(new Theme(null, "테마1", "테마1 설명", "https://example1.com"));
-
-        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "theme");
-        assertThat(count).isEqualTo(1);
-    }
-
-    @Test
-    @DisplayName("테마를 삭제한다.")
-    void deleteById() {
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail)"
-                + " VALUES (1, '테마1', '테마1 설명', 'https://example1.com')");
-
-        themeRepository.deleteById(1L);
-
-        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "theme");
-        assertThat(count).isEqualTo(0);
-    }
-
-    @Test
-    @DisplayName("id에 해당하는 테마가 존재하는지 확인한다.")
-    void existsById() {
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) "
-                + "VALUES (1, '테마1', '테마1 설명', 'https://example1.com')");
-
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(themeRepository.existsById(1L)).isTrue();
-            softly.assertThat(themeRepository.existsById(2L)).isFalse();
-        });
-    }
-
-    @Test
-    @DisplayName("name에 해당하는 테마가 존재하는지 확인한다.")
-    void existsByName() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) "
-                + "VALUES ('테마1', '테마1 설명', 'https://example1.com')");
-
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(themeRepository.existsByName("테마1")).isTrue();
-            softly.assertThat(themeRepository.existsByName("테마2")).isFalse();
-        });
     }
 
     @Test
@@ -141,6 +110,42 @@ class JdbcThemeRepositoryTest {
             softly.assertThat(popularThemes.get(0).getId()).isEqualTo(3);
             softly.assertThat(popularThemes.get(1).getId()).isEqualTo(2);
             softly.assertThat(popularThemes.get(2).getId()).isEqualTo(1);
+        });
+    }
+
+    @Test
+    @DisplayName("테마를 삭제한다.")
+    void deleteById() {
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail)"
+                + " VALUES (1, '테마1', '테마1 설명', 'https://example1.com')");
+
+        themeRepository.deleteById(1L);
+
+        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "theme");
+        assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 테마가 존재하는지 확인한다.")
+    void existsById() {
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) "
+                + "VALUES (1, '테마1', '테마1 설명', 'https://example1.com')");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(themeRepository.existsById(1L)).isTrue();
+            softly.assertThat(themeRepository.existsById(2L)).isFalse();
+        });
+    }
+
+    @Test
+    @DisplayName("name에 해당하는 테마가 존재하는지 확인한다.")
+    void existsByName() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) "
+                + "VALUES ('테마1', '테마1 설명', 'https://example1.com')");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(themeRepository.existsByName("테마1")).isTrue();
+            softly.assertThat(themeRepository.existsByName("테마2")).isFalse();
         });
     }
 }

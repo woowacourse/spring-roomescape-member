@@ -28,6 +28,16 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 추가한다.")
+    void save() {
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+
+        assertThat(savedReservationTime.getId()).isEqualTo(1L);
+        assertThat(savedReservationTime.getStartAt()).isEqualTo("10:00");
+    }
+
+    @Test
     @DisplayName("모든 예약 시간들을 조회한다.")
     void findAll() {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
@@ -74,22 +84,12 @@ class JdbcReservationTimeRepositoryTest {
         LocalDate date = LocalDate.of(2024, 5, 4);
         List<AvailableReservationTimeDto> availableReservationTimes = reservationTimeRepository
                 .findAvailableReservationTimes(date, 1L);
-        System.out.println(availableReservationTimes);
+
         assertThat(availableReservationTimes).containsExactly(
                 new AvailableReservationTimeDto(1L, LocalTime.of(10, 0), true),
                 new AvailableReservationTimeDto(2L, LocalTime.of(11, 0), false),
                 new AvailableReservationTimeDto(3L, LocalTime.of(12, 0), true)
         );
-    }
-
-    @Test
-    @DisplayName("예약 시간을 추가한다.")
-    void save() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-
-        assertThat(savedReservationTime.getId()).isEqualTo(1L);
-        assertThat(savedReservationTime.getStartAt()).isEqualTo("10:00");
     }
 
     @Test
