@@ -57,8 +57,8 @@
   - [x] 예약 생성시에도 쿠키가 같이 전달되도록 리팩터링한다.
 
 - 예약 생성 기능 변경 - 관리자 
-  - [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 한다. 
-  - [ ] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경합니다.
+  - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 한다. 
+  - [x] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경합니다.
     AS-IS: /js/reservation-new.js
     TO-BE: /js/reservation-with-member.js
-  - [ ] `POST /admin/reservation` 에서 memberId 도 포함되도록 리팩터링
+  - [x] `POST /admin/reservation` 처리하는 컨트롤러 구현하기

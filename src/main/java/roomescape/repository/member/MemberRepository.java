@@ -12,5 +12,7 @@ public interface MemberRepository {
 
     Optional<Member> findByEmail(Email email);
 
+    Optional<Member> findById(Long id);
+
     List<Member> findAll();
 }

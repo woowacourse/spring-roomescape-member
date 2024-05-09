@@ -51,6 +51,17 @@ public class MemberH2Repository implements MemberRepository{
     }
 
     @Override
+    public Optional<Member> findById(Long id) {
+        try {
+            String sql = "SELECT * FROM member WHERE id = ?";
+            Member value = jdbcTemplate.queryForObject(sql, getMemberRowMapper(), id);
+            return Optional.ofNullable(value);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Member> findAll() {
         String sql = "SELECT * FROM member";
         return jdbcTemplate.query(sql, getMemberRowMapper());

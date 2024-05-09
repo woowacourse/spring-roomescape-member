@@ -7,6 +7,7 @@ import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.repository.member.MemberRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,8 +36,19 @@ public class MemberService {
         return Optional.empty();
     }
 
-    public MemberResponse getMember(String email) {
-        return MemberResponse.from(memberRepository.findByEmail(new Email(email))
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 멤버가 없습니다.")));
+    public Optional<MemberResponse> findById(Long id) {
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        if (memberOptional.isPresent()) {
+            Member findMember = memberOptional.get();
+            return Optional.of(new MemberResponse(findMember));
+        }
+        return Optional.empty();
+    }
+
+    public List<MemberResponse> findAll() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }
