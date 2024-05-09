@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static roomescape.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
+import static roomescape.time.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;

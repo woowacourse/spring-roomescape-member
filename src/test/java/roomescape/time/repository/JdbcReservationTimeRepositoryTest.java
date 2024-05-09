@@ -1,11 +1,11 @@
 package roomescape.time.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.fixture.DateTimeFixture.TIME_10_00;
-import static roomescape.fixture.DateTimeFixture.TIME_11_00;
-import static roomescape.fixture.DateTimeFixture.TIME_12_00;
-import static roomescape.fixture.DateTimeFixture.TIME_13_00;
-import static roomescape.fixture.DateTimeFixture.TOMORROW;
+import static roomescape.time.fixture.DateTimeFixture.TIME_10_00;
+import static roomescape.time.fixture.DateTimeFixture.TIME_11_00;
+import static roomescape.time.fixture.DateTimeFixture.TIME_12_00;
+import static roomescape.time.fixture.DateTimeFixture.TIME_13_00;
+import static roomescape.time.fixture.DateTimeFixture.TOMORROW;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

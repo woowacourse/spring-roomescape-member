@@ -3,11 +3,11 @@ package roomescape.theme.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static roomescape.fixture.DateTimeFixture.SEVEN_DAYS_AGO;
-import static roomescape.fixture.DateTimeFixture.TODAY;
-import static roomescape.fixture.ThemeFixture.THEME_1;
-import static roomescape.fixture.ThemeFixture.THEME_2;
-import static roomescape.fixture.ThemeFixture.THEME_ADD_REQUEST;
+import static roomescape.theme.fixture.ThemeFixture.THEME_1;
+import static roomescape.theme.fixture.ThemeFixture.THEME_2;
+import static roomescape.theme.fixture.ThemeFixture.THEME_ADD_REQUEST;
+import static roomescape.time.fixture.DateTimeFixture.SEVEN_DAYS_AGO;
+import static roomescape.time.fixture.DateTimeFixture.TODAY;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

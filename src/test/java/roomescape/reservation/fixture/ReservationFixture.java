@@ -1,11 +1,11 @@
-package roomescape.fixture;
+package roomescape.reservation.fixture;
 
-import static roomescape.fixture.DateTimeFixture.TOMORROW;
-import static roomescape.fixture.DateTimeFixture.YESTERDAY;
-import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_10_00_ID_1;
-import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_11_00_ID_2;
-import static roomescape.fixture.ThemeFixture.THEME_1;
-import static roomescape.fixture.ThemeFixture.THEME_2;
+import static roomescape.theme.fixture.ThemeFixture.THEME_1;
+import static roomescape.theme.fixture.ThemeFixture.THEME_2;
+import static roomescape.time.fixture.DateTimeFixture.TOMORROW;
+import static roomescape.time.fixture.DateTimeFixture.YESTERDAY;
+import static roomescape.time.fixture.ReservationTimeFixture.RESERVATION_TIME_10_00_ID_1;
+import static roomescape.time.fixture.ReservationTimeFixture.RESERVATION_TIME_11_00_ID_2;
 
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationAddRequest;

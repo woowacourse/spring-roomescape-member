@@ -1,8 +1,8 @@
-package roomescape.fixture;
+package roomescape.time.fixture;
 
-import static roomescape.fixture.DateTimeFixture.TIME_10_00;
-import static roomescape.fixture.DateTimeFixture.TIME_11_00;
-import static roomescape.fixture.DateTimeFixture.TIME_12_00;
+import static roomescape.time.fixture.DateTimeFixture.TIME_10_00;
+import static roomescape.time.fixture.DateTimeFixture.TIME_11_00;
+import static roomescape.time.fixture.DateTimeFixture.TIME_12_00;
 
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.ReservationTimeAddRequest;

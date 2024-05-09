@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static roomescape.fixture.DateTimeFixture.TIME_10_00;
-import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_10_00_ID_1;
-import static roomescape.fixture.ReservationTimeFixture.TIME_ADD_REQUEST_10_00;
+import static roomescape.time.fixture.DateTimeFixture.TIME_10_00;
+import static roomescape.time.fixture.ReservationTimeFixture.RESERVATION_TIME_10_00_ID_1;
+import static roomescape.time.fixture.ReservationTimeFixture.TIME_ADD_REQUEST_10_00;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

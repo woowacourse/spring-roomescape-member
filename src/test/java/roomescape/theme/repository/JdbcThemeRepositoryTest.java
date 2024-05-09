@@ -1,8 +1,8 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
-import static roomescape.fixture.DateTimeFixture.TODAY;
+import static roomescape.time.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
+import static roomescape.time.fixture.DateTimeFixture.TODAY;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

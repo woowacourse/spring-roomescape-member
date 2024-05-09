@@ -1,8 +1,8 @@
 package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
-import static roomescape.fixture.DateTimeFixture.TOMORROW;
+import static roomescape.time.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
+import static roomescape.time.fixture.DateTimeFixture.TOMORROW;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
