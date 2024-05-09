@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Min;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,17 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.reservation.controller.dto.MemberReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservation.service.ReservationTimeService;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
     private final ReservationService reservationService;
-    private final ReservationTimeService reservationTimeService;
 
-    public AdminController(ReservationService reservationService, ReservationTimeService reservationTimeService) {
+    public AdminController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping
@@ -34,14 +30,12 @@ public class AdminController {
     }
 
     @GetMapping("/reservation")
-    public String reservation(Model model) {
-        model.addAttribute("reservations", reservationService.findMemberReservations());
+    public String reservation() {
         return "admin/reservation-new";
     }
 
     @GetMapping("/time")
-    public String time(Model model) {
-        model.addAttribute("reservationTimes", reservationTimeService.findAll());
+    public String time() {
         return "admin/time";
     }
 
