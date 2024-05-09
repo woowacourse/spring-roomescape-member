@@ -34,7 +34,6 @@ public class LoginService {
     private User findUserBy(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
-
     }
 
     public AuthenticationInfoResponse loginCheck(HttpServletRequest request) {
