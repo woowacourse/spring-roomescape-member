@@ -2,18 +2,18 @@ package roomescape.domain.roomescape;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import roomescape.domain.user.UserName;
+import roomescape.domain.member.MemberName;
 
 public class Reservation {
     private final Long id;
-    private final UserName userName;
+    private final MemberName memberName;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     public Reservation(
             final Long id,
-            final UserName userName,
+            final MemberName memberName,
             final LocalDate date,
             final ReservationTime time,
             final Theme theme
@@ -21,7 +21,7 @@ public class Reservation {
         validateDate(date);
         validateIsNotBeforeReservation(date, time);
         this.id = id;
-        this.userName = userName;
+        this.memberName = memberName;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -45,17 +45,17 @@ public class Reservation {
             final ReservationTime time, final Theme theme
     ) {
         LocalDate parsedDate = LocalDate.parse(date);
-        return new Reservation(id, new UserName(name), parsedDate, time, theme);
+        return new Reservation(id, new MemberName(name), parsedDate, time, theme);
     }
 
     public static Reservation of(
             final String name, final LocalDate date,
             final ReservationTime time, final Theme theme) {
-        return new Reservation(null, new UserName(name), date, time, theme);
+        return new Reservation(null, new MemberName(name), date, time, theme);
     }
 
     public Reservation assignId(final long id) {
-        return new Reservation(id, userName, date, time, theme);
+        return new Reservation(id, memberName, date, time, theme);
     }
 
     public long getId() {
@@ -63,7 +63,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return userName.getValue();
+        return memberName.getValue();
     }
 
     public LocalDate getDate() {

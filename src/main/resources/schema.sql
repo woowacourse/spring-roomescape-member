@@ -26,7 +26,7 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
-CREATE TABLE _user
+CREATE TABLE member
 (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,

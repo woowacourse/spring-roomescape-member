@@ -1,10 +1,10 @@
-package roomescape.domain.user;
+package roomescape.domain.member;
 
-public class UserName {
+public class MemberName {
     private static final int MAX_NAME_LENGTH = 10;
     private final String value;
 
-    public UserName(final String name) {
+    public MemberName(final String name) {
         validateName(name);
         this.value = name;
     }

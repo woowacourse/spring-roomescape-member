@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.LoginRequest;
-import roomescape.dto.response.UserResponse;
+import roomescape.dto.response.MemberResponse;
 import roomescape.service.auth.AuthService;
 
 @RestController
@@ -32,7 +32,7 @@ public class TokenLoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<UserResponse> getUserInformation(final HttpServletRequest request) {
+    public ResponseEntity<MemberResponse> getUserInformation(final HttpServletRequest request) {
         String token = extractTokenFromCookies(request.getCookies());
 
         return ResponseEntity.ok()

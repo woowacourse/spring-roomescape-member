@@ -1,14 +1,14 @@
 package roomescape.dto.request;
 
-import roomescape.domain.user.User;
-import roomescape.domain.user.UserName;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberName;
 
 public record SignupRequest(
         String name,
         String email,
         String password
 ) {
-    public User toEntity() {
-        return new User(new UserName(name), email, password);
+    public Member toEntity() {
+        return new Member(new MemberName(name), email, password);
     }
 }

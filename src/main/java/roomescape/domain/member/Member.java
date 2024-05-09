@@ -1,18 +1,18 @@
-package roomescape.domain.user;
+package roomescape.domain.member;
 
-public class User {
-    private UserName name;
+public class Member {
+    private MemberName name;
     private String email;
     private String password;
 
-    public User(final UserName name, final String email, final String password) {
+    public Member(final MemberName name, final String email, final String password) {
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public static User of(final String name, final String email, final String password) {
-        return new User(new UserName(name), email, password);
+    public static Member of(final String name, final String email, final String password) {
+        return new Member(new MemberName(name), email, password);
     }
 
     public String getNameValue() {

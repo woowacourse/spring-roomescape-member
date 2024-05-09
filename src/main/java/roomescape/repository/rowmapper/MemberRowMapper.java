@@ -4,14 +4,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import roomescape.domain.user.User;
+import roomescape.domain.member.Member;
 
 @Component
-public class UserRowMapper implements RowMapper<User> {
+public class MemberRowMapper implements RowMapper<Member> {
     @Override
-    public User mapRow(final ResultSet resultSet, final int rowNumber) {
+    public Member mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
-            return User.of(
+            return Member.of(
                     resultSet.getString("name"),
                     resultSet.getString("email"),
                     resultSet.getString("password")
