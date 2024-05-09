@@ -1,5 +1,6 @@
 package roomescape.repository.reservation;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
 
@@ -10,6 +11,8 @@ public interface ReservationRepository {
     void delete(Long id);
 
     List<Reservation> findAll();
+
+    List<Reservation> findByDateAndTheme(LocalDate date, Long themeId);
 
     boolean isAlreadyBooked(Reservation reservation);
 }

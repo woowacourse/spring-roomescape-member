@@ -8,15 +8,21 @@ import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exceptions.DuplicationException;
 import roomescape.exceptions.NotFoundException;
+import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(
+            ReservationTimeRepository reservationTimeRepository,
+            ReservationRepository reservationRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse addTime(ReservationTimeAddRequest reservationTimeAddRequest) {
@@ -35,10 +41,18 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> findTimesWithAlreadyBooked(LocalDate date, Long themeId) {
-        return reservationTimeRepository.findAllWithAlreadyBooked(date, themeId)
-                .entrySet()
+        List<Long> alreadyBookedTimeIds = reservationRepository.findByDateAndTheme(date, themeId)
                 .stream()
-                .map(e -> new ReservationTimeResponse(e.getKey(), e.getValue()))
+                .map(reservation -> reservation.getTime().getId())
+                .toList();
+
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(reservationTime -> new ReservationTimeResponse(
+                                reservationTime,
+                                reservationTime.isBelongTo(alreadyBookedTimeIds)
+                        )
+                )
                 .toList();
     }
 

@@ -8,6 +8,7 @@ import static roomescape.InitialDataFixture.NOT_RESERVATION_TIME;
 import static roomescape.InitialDataFixture.NO_RESERVATION_DATE;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
+import static roomescape.InitialDataFixture.RESERVATION_3;
 import static roomescape.InitialDataFixture.THEME_2;
 
 import java.util.List;
@@ -84,6 +85,17 @@ class ReservationH2RepositoryTest {
         List<Reservation> found = reservationH2Repository.findAll();
 
         assertThat(found).hasSize(INITIAL_RESERVATION_COUNT);
+    }
+
+    @Test
+    @DisplayName("특정 날짜와 테마에 대해 예약된 시간들을 반환한다.")
+    void findByDateAndTheme() {
+        List<Reservation> reservations = reservationH2Repository.findByDateAndTheme(
+                RESERVATION_1.getDate(),
+                RESERVATION_1.getTheme().getId()
+        );
+
+        assertThat(reservations).containsExactlyInAnyOrder(RESERVATION_1, RESERVATION_3);
     }
 
     @Test

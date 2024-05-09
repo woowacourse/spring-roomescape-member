@@ -49,7 +49,7 @@ public class InitialDataFixture {
     public static final Reservation RESERVATION_2 = new Reservation(
             2L,
             new ReservatorName("솔라"),
-            LocalDate.parse("2024-04-25"),
+            LocalDate.parse("2099-05-01"),
             RESERVATION_TIME_1,
             THEME_1
     );

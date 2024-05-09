@@ -54,10 +54,10 @@ public class ReservationH2Repository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-                "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value,theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                "SELECT r.id, r.name, r.date, time.id as time_id, time.start_at, theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
                         + "FROM reservation as r "
                         + "inner join reservation_time as time on r.time_id = time.id "
-                        + "inner join theme on r.theme_id = theme.id",
+                        + "inner join theme on r.theme_id = theme.id ",
                 getReservationRowMapper()
         );
     }
@@ -66,7 +66,7 @@ public class ReservationH2Repository implements ReservationRepository {
         return (resultSet, rowNum) -> {
             ReservationTime reservationTime = new ReservationTime(
                     resultSet.getLong("time_id"),
-                    LocalTime.parse(resultSet.getString("time_value"))
+                    LocalTime.parse(resultSet.getString("start_at"))
             );
             Theme theme = new Theme(
                     resultSet.getLong("theme_id"),
@@ -85,10 +85,24 @@ public class ReservationH2Repository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByDateAndTheme(LocalDate date, Long themeId) {
+        return jdbcTemplate.query(
+                "SELECT r.id, r.name, r.date, time.id as time_id, time.start_at, theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                        + "FROM reservation as r "
+                        + "inner join reservation_time as time on r.time_id = time.id "
+                        + "inner join theme on r.theme_id = theme.id "
+                        + "WHERE date = ? AND theme_id = ?",
+                getReservationRowMapper(),
+                date,
+                themeId
+        );
+    }
+
+    @Override
     public boolean isAlreadyBooked(Reservation reservation) {
         return !jdbcTemplate.query(
                 "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
-                (rs, rowNum) -> ANY_INTEGER_FOR_COUNTING,
+                (resultSet, rowNum) -> ANY_INTEGER_FOR_COUNTING,
                 reservation.getDate(),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()

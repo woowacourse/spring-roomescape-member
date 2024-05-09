@@ -1,10 +1,7 @@
 package roomescape.repository.reservationtime;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -84,35 +81,5 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
                 "SELECT * FROM reservation_time",
                 getReservationTimeRowMapper()
         );
-    }
-
-    @Override
-    public Map<ReservationTime, Boolean> findAllWithAlreadyBooked(LocalDate date, Long themeId) {
-        String sql = "SELECT rt.id AS time_id, rt.start_at, " +
-                "CASE WHEN r.time_id IS NOT NULL THEN true ELSE false END AS already_booked " +
-                "FROM reservation_time rt " +
-                "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? ";
-
-        return jdbcTemplate.queryForObject(
-                sql,
-                getReservationTimeWithAlreadyBookedRowMapper(),
-                date,
-                themeId
-        );
-    }
-
-    private RowMapper<Map<ReservationTime, Boolean>> getReservationTimeWithAlreadyBookedRowMapper() {
-        return (resultSet, rowNum) -> {
-            Map<ReservationTime, Boolean> result = new LinkedHashMap<>();
-            do {
-                ReservationTime reservationTime = new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                );
-                Boolean alreadyBooked = resultSet.getBoolean("already_booked");
-                result.put(reservationTime, alreadyBooked);
-            } while (resultSet.next());
-            return result;
-        };
     }
 }

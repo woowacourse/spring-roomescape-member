@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 import roomescape.exceptions.MissingRequiredFieldException;
 
@@ -33,6 +34,10 @@ public class ReservationTime {
         LocalDateTime now = LocalDateTime.now();
 
         return dateTimeToReserve.isBefore(now);
+    }
+
+    public boolean isBelongTo(List<Long> timeIds) {
+        return timeIds.contains(id);
     }
 
     public Long getId() {

@@ -6,6 +6,7 @@ import static roomescape.InitialDataFixture.INITIAL_RESERVATION_TIME_COUNT;
 import static roomescape.InitialDataFixture.NOT_RESERVATION_TIME;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
+import static roomescape.InitialDataFixture.RESERVATION_TIME_2;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -52,6 +53,21 @@ class ReservationTimeServiceTest {
         List<ReservationTimeResponse> times = reservationTimeService.findTimes();
 
         assertThat(times).hasSize(INITIAL_RESERVATION_TIME_COUNT);
+    }
+
+    @Test
+    @DisplayName("모든 예약 가능 시간을 조회한다.")
+    void findTimesWithAlreadyBooked() {
+        List<ReservationTimeResponse> timesWithAlreadyBooked = reservationTimeService.findTimesWithAlreadyBooked(
+                RESERVATION_1.getDate(),
+                RESERVATION_1.getTheme().getId()
+        );
+
+        assertThat(timesWithAlreadyBooked).containsExactlyInAnyOrder(
+                new ReservationTimeResponse(RESERVATION_TIME_1, true),
+                new ReservationTimeResponse(RESERVATION_TIME_2, true),
+                new ReservationTimeResponse(NOT_RESERVATION_TIME, false)
+        );
     }
 
     @Test
