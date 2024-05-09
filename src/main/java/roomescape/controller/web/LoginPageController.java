@@ -38,10 +38,18 @@ public class LoginPageController { // TODO Page 가 맞을까??
             return ResponseEntity.badRequest().build();
         }
         MemberResponse memberResponse = optionalLoginResponse.get();
+        Cookie cookie = makeCookie(memberResponse);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
+
+    private Cookie makeCookie(MemberResponse memberResponse) {
         TokenRequest tokenRequest = new TokenRequest(memberResponse.email(), memberResponse.name());
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
-        response.addCookie(new Cookie("token", tokenResponse.token()));
-        return ResponseEntity.ok().build();
+        Cookie cookie = new Cookie("token", tokenResponse.token());
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 
     @GetMapping("/login/check")
@@ -53,5 +61,14 @@ public class LoginPageController { // TODO Page 가 맞을까??
             return null; // TODO 조회하는 회원이 없는 경우 무엇을 반환하는게 좋을까??
         }
         return new LoginCheckResponse(optionalMemberResponse.get().name());
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
     }
 }
