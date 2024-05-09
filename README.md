@@ -11,6 +11,8 @@
 | GET    | `/admin/time`                               | 예약 시간 관리 페이지 요청       | `templates/admin/time.html`            | `@Controller`     |
 | GET    | `/admin/theme`                              | 테마 관리 페이지 요청          | `templates/admin/theme.html`           | `@Controller`     |
 | GET    | `/login`                                    | 로그인 페이지 요청            | `templates/login.html`                 | `@Controller`     |
+| POST   | `/login`                                    | 로그인 요청                |                                        | `@RestController` |
+| GET    | `/login/check`                              | 인증 정보 조회              |                                        | `@RestController` |
 | GET    | `/reservations`                             | 예약 정보 조회              |                                        | `@RestController` |
 | GET    | `/reservations/themes/{themeId}/times?date` | 특정 날짜의 특정 테마 예약 정보 조회 |                                        | `@RestController` |
 | POST   | `/reservations`                             | 예약 추가                 |                                        | `@RestController` |
@@ -22,6 +24,57 @@
 | GET    | `/themes/top?count&startAt&endAt`           | 특정 기간의 인기 테마 조회       |                                        | `@RestController` |
 | POST   | `/themes`                                   | 테마 추가                 |                                        | `@RestController` |
 | DELETE | `/themes/{id}`                              | 테마 삭제                 |                                        | `@RestController` |
+
+---
+
+### 로그인 요청 API
+
+- Request
+
+```
+POST /login HTTP/1.1
+Content-Type: application/json
+
+{
+        "password": "password",
+        "email": "admin@email.com"
+}
+```
+
+- Response
+
+```
+HTTP/1.1 200 
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+---
+
+### 인증 정보 조회 API
+
+- Request
+
+```
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+```
+
+- Response
+
+```
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+"data": {
+    "name": "이름"
+}
+```
 
 ---
 
