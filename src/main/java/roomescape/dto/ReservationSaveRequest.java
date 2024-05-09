@@ -7,7 +7,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 public record ReservationSaveRequest(
-        Long memberId,
         String date,
         Long timeId,
         Long themeId
@@ -18,7 +17,7 @@ public record ReservationSaveRequest(
             final ThemeResponse themeResponse,
             final ReservationTimeResponse timeResponse
     ) {
-        final Member member = new Member(memberResponse.id(), new Name(memberResponse.name()), memberResponse.email(), memberResponse.password());
+        final Member member = new Member(memberResponse.id(), new Name(memberResponse.name()), memberResponse.email());
         final ReservationTime time = new ReservationTime(timeResponse.id(), timeResponse.startAt());
         final Theme theme = new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(), themeResponse.thumbnail());
         return new Reservation(member, date, time, theme);

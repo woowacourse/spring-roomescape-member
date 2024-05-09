@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.config.AuthenticationPrincipal;
 import roomescape.domain.Reservation;
+import roomescape.dto.MemberLoginResponse;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
@@ -44,8 +46,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationSaveRequest request) {
-        final MemberResponse memberResponse = memberService.findById(request.memberId());
+    public ResponseEntity<ReservationResponse> createReservation(
+            @AuthenticationPrincipal MemberLoginResponse loginResponse,
+            @RequestBody final ReservationSaveRequest request) {
+        final MemberResponse memberResponse = memberService.findById(loginResponse.id());
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
         final ThemeResponse themeResponse = themeService.findById(request.themeId());
 

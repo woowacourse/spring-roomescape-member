@@ -34,12 +34,12 @@ public class MemberService {
     public MemberResponse findById(final Long id) {
         final Member member = memberDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(id + "에 해당하는 사용자가 없습니다"));
-        return new MemberResponse(member.getId(), member.getNameString(), member.getEmail(), member.getPassword());
+        return new MemberResponse(member.getId(), member.getNameString(), member.getEmail());
     }
 
     public MemberLoginResponse findMemberByToken(final String accessToken) {
         final Long memberId = jwtTokenProvider.getMemberIdByToken(accessToken);
         final MemberResponse memberResponse = findById(memberId);
-        return new MemberLoginResponse(memberResponse.name());
+        return new MemberLoginResponse(memberResponse.id(), memberResponse.name(), memberResponse.email());
     }
 }
