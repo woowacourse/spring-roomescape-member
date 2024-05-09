@@ -40,7 +40,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     private String extractTokenFromRequestCookie(final NativeWebRequest webRequest) {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(TOKEN_FIELD)) {
+            if (TOKEN_FIELD.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
