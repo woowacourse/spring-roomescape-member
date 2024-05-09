@@ -60,7 +60,7 @@ class AuthControllerTest extends ControllerTest {
                 .given(memberService)
                 .findByEmail(any());
 
-        // when
+        // when & then
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
@@ -78,7 +78,7 @@ class AuthControllerTest extends ControllerTest {
         BDDMockito.given(memberService.findByEmail(any()))
                 .willReturn(USER_MIA());
 
-        // when
+        // when & then
         mockMvc.perform(get("/login/check")
                         .cookie(cookie))
                 .andDo(print())
@@ -96,9 +96,19 @@ class AuthControllerTest extends ControllerTest {
                 .given(jwtTokenProvider)
                 .validateToken(any());
 
-        // when
+        // when & then
         mockMvc.perform(get("/login/check")
                         .cookie(cookie))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("토큰 없이 인증 정보 GET 요청 시 상태코드 401을 반환한다.")
+    void checkAuthInformationWithoutToken() throws Exception {
+        // when & then
+        mockMvc.perform(get("/login/check"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").exists());
