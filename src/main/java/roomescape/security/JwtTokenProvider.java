@@ -53,10 +53,10 @@ public class JwtTokenProvider {
             Jws<Claims> claimsJws = getClaimsJws(token);
 
             return claimsJws.getPayload();
-        } catch (SignatureException e) {
-            throw new IllegalArgumentException("Invalid token");
         } catch (ExpiredJwtException e) {
             throw new IllegalArgumentException("Expired token");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token");
         }
     }
 
