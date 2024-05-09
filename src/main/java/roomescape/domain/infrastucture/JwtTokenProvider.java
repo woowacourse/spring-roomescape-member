@@ -17,6 +17,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
+                .claim("email", member.getEmail())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
@@ -40,6 +41,15 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject());
+    }
+
+    public String getMemberEmailFrom(String token) {
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("email", String.class);
     }
 
     public String getMemberNameFrom(String token) {

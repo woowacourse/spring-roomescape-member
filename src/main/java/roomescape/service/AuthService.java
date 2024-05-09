@@ -6,7 +6,9 @@ import roomescape.domain.Member;
 import roomescape.domain.infrastucture.JwtTokenProvider;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginCheckRequest;
+import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.LoginMember;
 import roomescape.dto.response.TokenResponse;
 import roomescape.exception.AuthenticationException;
 
@@ -39,5 +41,18 @@ public class AuthService {
         String memberName = jwtTokenProvider.getMemberNameFrom(token);
 
         return new LoginCheckResponse(memberName);
+    }
+
+    public LoginMember getLoginMember(LoginMemberRequest loginMemberRequest) {
+        String token = loginMemberRequest.token();
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new AuthenticationException("권한이 없습니다.");
+        }
+
+        Long memberId = jwtTokenProvider.getMemberIdFrom(token);
+        String memberEmail = jwtTokenProvider.getMemberEmailFrom(token);
+        String memberName = jwtTokenProvider.getMemberNameFrom(token);
+
+        return new LoginMember(memberId, memberEmail, memberName);
     }
 }
