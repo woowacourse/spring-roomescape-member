@@ -25,9 +25,9 @@ public class AuthService {
         return new TokenResponse(accessToken);
     }
 
-    public Cookie createCookieByToken(String token) {
-        Cookie cookie = new Cookie("token", token);
-        cookie.setMaxAge(3600);
+    public Cookie createCookieByToken(TokenResponse token) {
+        Cookie cookie = new Cookie("token", token.token());
+        cookie.setMaxAge(3600); // 상수 분리
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;

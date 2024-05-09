@@ -31,7 +31,7 @@ public class TokenLoginController {
     public void tokenLogin(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
         loginMemberService.validateLogin(tokenRequest);
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
-        Cookie cookie = authService.createCookieByToken(tokenResponse.token());
+        Cookie cookie = authService.createCookieByToken(tokenResponse);
         response.addCookie(cookie);
     }
 
