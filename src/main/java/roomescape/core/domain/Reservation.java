@@ -64,10 +64,6 @@ public class Reservation {
         return member;
     }
 
-    public String getName() {
-        return member.getName();
-    }
-
     public LocalDate getDate() {
         return date;
     }

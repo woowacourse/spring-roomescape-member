@@ -4,9 +4,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Member;
+import roomescape.core.domain.Role;
 import roomescape.core.dto.auth.TokenRequest;
 import roomescape.core.dto.auth.TokenResponse;
 import roomescape.core.dto.member.LoginMember;
+import roomescape.core.dto.member.MemberRequest;
 import roomescape.core.dto.member.MemberResponse;
 import roomescape.core.repository.MemberRepository;
 import roomescape.infrastructure.TokenProvider;
@@ -55,5 +57,13 @@ public class MemberService {
                 .stream()
                 .map(MemberResponse::new)
                 .toList();
+    }
+
+    @Transactional
+    public MemberResponse create(final MemberRequest request) {
+        final Member member = new Member(request.getName(), request.getEmail(), request.getPassword(), Role.USER);
+        final Long id = memberRepository.save(member);
+
+        return new MemberResponse(id, member.getName());
     }
 }

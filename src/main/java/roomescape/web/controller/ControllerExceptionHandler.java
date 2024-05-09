@@ -1,6 +1,7 @@
 package roomescape.web.controller;
 
 import io.jsonwebtoken.JwtException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +31,19 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ProblemDetail> handleRuntimeException(final RuntimeException exception) {
-        return ResponseEntity.internalServerError()
-                .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()));
+    public ResponseEntity<String> handleJwtException(final JwtException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleJwtException(final JwtException exception) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+    public ResponseEntity<ProblemDetail> handleDuplicateKeyException(final DuplicateKeyException exception) {
+        return ResponseEntity.badRequest()
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ""));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ProblemDetail> handleRuntimeException(final RuntimeException exception) {
+        return ResponseEntity.internalServerError()
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()));
     }
 }

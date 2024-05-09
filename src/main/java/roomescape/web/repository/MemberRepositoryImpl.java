@@ -3,6 +3,9 @@ package roomescape.web.repository;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Member;
 import roomescape.core.domain.Role;
@@ -11,9 +14,23 @@ import roomescape.core.repository.MemberRepository;
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public MemberRepositoryImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public Long save(final Member member) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", member.getName())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword())
+                .addValue("role", member.getRole().name());
+        return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override

@@ -3,6 +3,7 @@ package roomescape.web.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.core.dto.auth.TokenRequest;
 import roomescape.core.dto.auth.TokenResponse;
+import roomescape.core.dto.member.MemberRequest;
 import roomescape.core.dto.member.MemberResponse;
 import roomescape.core.service.CookieService;
 import roomescape.core.service.MemberService;
@@ -60,6 +62,19 @@ public class MemberController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/signup")
+    public String signup() {
+        return "signup";
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity<MemberResponse> signupProcess(@RequestBody final MemberRequest request) {
+        final MemberResponse result = memberService.create(request);
+
+        return ResponseEntity.created(URI.create("/members" + result.getId()))
+                .body(result);
     }
 
     @GetMapping("/members")

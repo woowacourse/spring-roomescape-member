@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.core.dto.auth.TokenRequest;
+import roomescape.core.dto.member.MemberRequest;
 import roomescape.core.dto.member.MemberResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -89,6 +90,41 @@ class MemberControllerTest {
                 .when().post("/logout")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("회원 가입 페이지로 이동한다.")
+    void moveToSignupPage() {
+        RestAssured.given().log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("회원 가입을 수행한다.")
+    void signup() {
+        final MemberRequest request = new MemberRequest("hello@email.com", "password", "test");
+
+        RestAssured.given().log().all()
+                .contentType("application/json")
+                .body(request)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("이미 가입되어 있는 이메일로 가입하면 예외가 발생한다.")
+    void signupWithDuplicatedEmail() {
+        final MemberRequest request = new MemberRequest("test@email.com", "password", "test");
+
+        RestAssured.given().log().all()
+                .contentType("application/json")
+                .body(request)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
