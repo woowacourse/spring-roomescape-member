@@ -58,7 +58,8 @@ class LoginControllerTest {
                 .body(request)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(401)
+                .body("message", containsString("일치"));
     }
 
     @Test
