@@ -28,8 +28,7 @@ public class MemberService {
         return member;
     }
 
-    public String findNameByEmail(String email) {
-        Member member = memberDao.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
-        return member.getName();
+    public Member findByEmail(String email) {
+        return memberDao.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
     }
 }
