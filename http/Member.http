@@ -1,0 +1,29 @@
+### 회원 가입
+POST http://localhost:8080/members/signup
+Content-Type: application/json
+
+
+{
+  "email": "1234@1234.com",
+  "password": "1234",
+  "name": "재즈재즈"
+}
+
+### 로그인
+POST http://localhost:8080/members/login
+Content-Type: application/json
+host: localhost:8080
+
+{
+  "email": "1234@1234.com",
+  "password": "1234"
+}
+
+### 인증 정보 조회
+GET http://localhost:8080/members/login/check
+cookie: token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyerOymiOyerOymiCJ9.t1Oa1y2_dhNdGuLy27Rm9ONAak-LGVpN0f3HROTJjLZh_CldzvJBEBN4fPUnCt1eDWNVpWTjUFdbPyJofoPZxA; Max-Age=1440; Expires=Thu, 09 May 2024 11:08:13 GMT; Path=/; HttpOnly
+host: localhost:8080
+
+### 로그아웃
+POST http://localhost:8080/members/logout
+cookie: token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyerOymiOyerOymiCJ9.t1Oa1y2_dhNdGuLy27Rm9ONAak-LGVpN0f3HROTJjLZh_CldzvJBEBN4fPUnCt1eDWNVpWTjUFdbPyJofoPZxA; Max-Age=1440; Expires=Thu, 09 May 2024 11:08:13 GMT; Path=/; HttpOnly
