@@ -22,12 +22,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    private static void expireCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie(SESSION_KEY, null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-    }
-
     @GetMapping("/login")
     public String getLoginPage() {
         return "login";
@@ -64,8 +58,14 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        expireCookie(response);
+        expireToken(response);
         return ResponseEntity.ok().build();
+    }
+
+    private void expireToken(HttpServletResponse response) {
+        Cookie cookie = new Cookie(SESSION_KEY, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
     @GetMapping("/signup")
