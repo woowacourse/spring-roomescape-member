@@ -1,5 +1,6 @@
 package roomescape.domain.login.service;
 
+import jakarta.websocket.server.ServerEndpoint;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.login.domain.Member;
@@ -7,11 +8,11 @@ import roomescape.domain.login.repository.MemberRepository;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 @Service
-public class LoginService {
+public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public LoginService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
