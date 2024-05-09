@@ -29,7 +29,7 @@ class MemberControllerTest {
 
     @DisplayName("DB에 저장된 이메일과 비밀번호로 로그인 시도하면 토큰으로 쿠키에 저장할 수 있다.")
     @Test
-    void readReservations() {
+    void login() {
         Map<String, String> params = Map.of(
                 "email", "aaa@naver.com",
                 "password", "1111"
@@ -52,7 +52,7 @@ class MemberControllerTest {
 
     @DisplayName("DB에 저장되지 않은 이메일과 비밀번호로 로그인 시도하면 로그인이 안된다.")
     @Test
-    void readReservations_whenNotMember() {
+    void login_whenNotMember() {
         Map<String, String> params = Map.of(
                 "email", "abc@email.com",
                 "password", "1111"

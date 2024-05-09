@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import roomescape.domain.Member;
@@ -20,6 +21,21 @@ public class JwtTokenProvider {
                 .claim("password", member.password())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public Member findMember(String token) {
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+
+        Long userId = Long.valueOf(claims.getSubject());
+        String name = (String) claims.get("name");
+        String email = (String) claims.get("email");
+        String password = (String) claims.get("password");
+
+        return new Member(userId, name, email, password);
     }
 }
 
