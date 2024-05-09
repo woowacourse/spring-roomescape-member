@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Name;
 import roomescape.domain.reservation.Reservation;
 import roomescape.repository.ReservationDao;
 
@@ -52,15 +51,17 @@ class ReservationDaoImpl implements ReservationDao {
     @Override
     public Optional<Reservation> findById(long id) {
         try {
-            String sql =
-                    "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
-                            + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
-                            + "FROM reservation as r "
-                            + "INNER JOIN reservation_time as time "
-                            + "ON r.time_id = time.id "
-                            + "INNER JOIN theme as theme "
-                            + "ON r.theme_id = theme.id "
-                            + "WHERE r.id = ?";
+            String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+                    + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                    + "member.id as member_id, member.name as name, member.email, member.password, member.role "
+                    + "FROM reservation as r "
+                    + "INNER JOIN reservation_time as time "
+                    + "ON r.time_id = time.id "
+                    + "INNER JOIN theme as theme "
+                    + "ON r.theme_id = theme.id "
+                    + "INNER JOIN member as member "
+                    + "ON r.member_id = member.id "
+                    + "WHERE r.id = ?";
             return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -69,40 +70,48 @@ class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public List<Reservation> getAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
                 + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
-                + "FROM reservation as r "
-                + "INNER JOIN reservation_time as time "
-                + "ON r.time_id = time.id "
-                + "INNER JOIN theme as theme "
-                + "ON r.theme_id = theme.id ";
-        return jdbcTemplate.query(sql, reservationRowMapper
-        );
-    }
-
-    @Override
-    public List<Reservation> findByTimeId(final long timeId) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
-                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "member.id as member_id, member.name as name, member.email, member.password, member.role "
                 + "FROM reservation as r "
                 + "INNER JOIN reservation_time as time "
                 + "ON r.time_id = time.id "
                 + "INNER JOIN theme as theme "
                 + "ON r.theme_id = theme.id "
-                + "WHERE r.time_id = ?";
+                + "INNER JOIN member as member "
+                + "ON r.member_id = member.id ";
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findByTimeId(final long timeId) {
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "member.id as member_id, member.name as name, member.email, member.password, member.role "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as time "
+                + "ON r.time_id = time.id "
+                + "INNER JOIN theme as theme "
+                + "ON r.theme_id = theme.id "
+                + "INNER JOIN member as member "
+                + "ON r.member_id = member.id "
+                + "WHERE time.id = ?";
         return jdbcTemplate.query(sql, reservationRowMapper, timeId);
     }
 
     @Override
     public List<Reservation> findByThemeId(final long themeId) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
                 + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "member.id as member_id, member.name as name, member.email, member.password, member.role "
                 + "FROM reservation as r "
                 + "INNER JOIN reservation_time as time "
                 + "ON r.time_id = time.id "
                 + "INNER JOIN theme as theme "
                 + "ON r.theme_id = theme.id "
-                + "WHERE r.theme_id = ?";
+                + "INNER JOIN member as member "
+                + "ON r.member_id = member.id "
+                + "WHERE theme.id = ?";
         return jdbcTemplate.query(sql, reservationRowMapper, themeId);
     }
 
@@ -143,10 +152,10 @@ class ReservationDaoImpl implements ReservationDao {
     private Reservation makeSavedReservation(Reservation reservation, long id) {
         return new Reservation(
                 id,
-                new Name(reservation.getName()),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme()
+                reservation.getTheme(),
+                reservation.getMember()
         );
     }
 
