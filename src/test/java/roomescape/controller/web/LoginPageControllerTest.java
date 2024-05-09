@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
+import roomescape.domain.Role;
 import roomescape.repository.member.MemberRepository;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ class LoginPageControllerTest {
     @Test
     @DisplayName("로그인 요청을 처리한다.")
     void loginTest() {
-        Member member = new Member(new Name("testA"), new Email("email@email.com"), "password");
+        Member member = new Member(new Name("testA"), new Email("email@email.com"), Role.USER, "password");
 
         memberRepository.save(member);
 
@@ -60,7 +61,7 @@ class LoginPageControllerTest {
     @Test
     @DisplayName("존재하지 않는 유저의 로그인 요청을 처리한다.")
     void loginFailTest() {
-        Member member = new Member(new Name("testA"), new Email("noExist@email.com"), "password");
+        Member member = new Member(new Name("testA"), new Email("noExist@email.com"), Role.USER, "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("email", member.getEmail().getEmail());
@@ -77,7 +78,7 @@ class LoginPageControllerTest {
     @Test
     @DisplayName("로그인 조회 요청")
     void loginCheckTest() {
-        Member member = new Member(new Name("testA"), new Email("email@email.com"), "password");
+        Member member = new Member(new Name("testA"), new Email("email@email.com"), Role.USER, "password");
 
         memberRepository.save(member);
         Map<String, String> params = new HashMap<>();
@@ -103,7 +104,7 @@ class LoginPageControllerTest {
     @Test
     @DisplayName("로그아웃을 처리한다.")
     void logoutTest() {
-        Member member = new Member(new Name("testA"), new Email("email@email.com"), "password");
+        Member member = new Member(new Name("testA"), new Email("email@email.com"), Role.USER, "password");
 
         memberRepository.save(member);
         Map<String, String> params = new HashMap<>();

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
+import roomescape.domain.Role;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,9 +35,10 @@ public class MemberH2Repository implements MemberRepository{
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail().getEmail())
+                .addValue("role", member.getRole().name())
                 .addValue("password", member.getPassword());
         Long id = simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getRole(), member.getPassword());
     }
 
     @Override
@@ -73,8 +75,9 @@ public class MemberH2Repository implements MemberRepository{
             Long id = rs.getLong("id");
             Name name = new Name(rs.getString("name"));
             Email email = new Email(rs.getString("email"));
+            Role role = Role.valueOf(rs.getString("role"));
             String password = rs.getString("password");
-            return new Member(id, name, email, password);
+            return new Member(id, name, email, role, password);
         };
     }
 }

@@ -40,7 +40,7 @@ public class ReservationService {
         validateAddReservation(reservationAddRequest, LocalDateTime.of(reservationAddRequest.date(), timeResponse.toReservationTime().getStartAt()));
 
         Reservation reservation = new Reservation(
-                new Member(reservationAddMemberRequest.id(), new Name(reservationAddMemberRequest.name()), new Email(reservationAddMemberRequest.email()), null),
+                new Member(reservationAddMemberRequest.id(), new Name(reservationAddMemberRequest.name()), new Email(reservationAddMemberRequest.email()), null, null),
                 reservationAddRequest.date(),
                 timeResponse.toReservationTime(),
                 themeResponse.toTheme()

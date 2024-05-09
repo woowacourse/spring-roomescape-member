@@ -9,7 +9,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.response.AuthResponse;
-import roomescape.dto.response.MemberResponse;
 import roomescape.service.AuthService;
 
 import java.util.Arrays;

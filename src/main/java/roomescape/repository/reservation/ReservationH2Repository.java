@@ -80,6 +80,7 @@ public class ReservationH2Repository implements ReservationRepository {
                     resultSet.getLong("member_id"),
                     new Name(resultSet.getString("member_name")),
                     new Email(resultSet.getString("member_email")),
+                    null,
                     null
             );
             return new Reservation(

@@ -26,6 +26,7 @@ import roomescape.controller.api.reservation.ReservationController;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
+import roomescape.domain.Role;
 import roomescape.dto.response.MemberResponse;
 import roomescape.repository.member.MemberRepository;
 
@@ -42,7 +43,7 @@ class ReservationControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        Member member = new Member(new Name("testA"), new Email("email@email.com"), "password");
+        Member member = new Member(new Name("testA"), new Email("email@email.com"), Role.USER, "password");
 
         memberRepository.save(member);
 

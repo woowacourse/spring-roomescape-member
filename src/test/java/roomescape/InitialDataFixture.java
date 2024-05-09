@@ -17,8 +17,8 @@ public class InitialDataFixture {
     public static final Theme THEME_5 = new Theme(5L, new Name("레벨5 탈출"), "우테코 레벨5를 탈출하는 내용입니다.", "아무 내용 없음");
     public static final Theme THEME_6 = new Theme(6L, new Name("레벨6 탈출"), "우테코 레벨6를 탈출하는 내용입니다.", "아무 내용 없음");
 
-    public static final Member MEMBER_1 = new Member(1L, new Name("브라운"), new Email("brown@test.com"), "pass");
-    public static final Member MEMBER_2 = new Member(2L, new Name("솔라"), new Email("sola@test.com"), "pass");
+    public static final Member MEMBER_1 = new Member(1L, new Name("브라운"), new Email("brown@test.com"), Role.USER, "pass");
+    public static final Member MEMBER_2 = new Member(2L, new Name("솔라"), new Email("sola@test.com"), Role.ADMIN, "pass");
 
     public static final Reservation RESERVATION_1 = new Reservation(1L, MEMBER_1, LocalDate.parse("2024-04-25"), RESERVATION_TIME_1, THEME_1);
     public static final Reservation RESERVATION_2 = new Reservation(2L, MEMBER_2, LocalDate.parse("2099-05-01"), RESERVATION_TIME_1, THEME_1);

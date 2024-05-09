@@ -1,5 +1,5 @@
-INSERT INTO member (name, email, password)
-VALUES ('test', 'test1@test.com', 'password');
+INSERT INTO member (name, email, role, password)
+VALUES ('test', 'test1@test.com', 'USER', 'password');
 
 INSERT INTO reservation_time (start_at)
 VALUES ('09:00');

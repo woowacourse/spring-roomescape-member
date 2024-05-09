@@ -12,7 +12,7 @@ class MemberTest {
     void isMatchPasswordTest() {
         String password = "password";
 
-        Member member = new Member(new Name("userA"), new Email("admin@email.com"), password);
+        Member member = new Member(new Name("userA"), new Email("admin@email.com"), Role.USER, password);
 
         assertThat(member.isMatchPassword(password)).isTrue();
     }
