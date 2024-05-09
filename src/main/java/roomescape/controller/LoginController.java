@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.domain.Role;
 import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.service.MemberService;
@@ -36,7 +37,7 @@ public class LoginController {
         String accessToken = Jwts.builder()
                 .setSubject(memberResponse.id().toString())
                 .claim("name", memberResponse.name())
-                .claim("role", "member")
+                .claim("role", Role.MEMBER)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
 

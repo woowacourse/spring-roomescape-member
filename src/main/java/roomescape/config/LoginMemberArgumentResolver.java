@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.config;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractTokenFromCookie(httpServletRequest.getCookies());
 
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
+        Long memberId = Long.valueOf(Jwts.parserBuilder()    // TODO: 중복 제거
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
                 .parseClaimsJws(token)
@@ -43,7 +43,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         return memberService.findMemberById(memberId);
     }
 
-    private String extractTokenFromCookie(final Cookie[] cookies) {
+    private String extractTokenFromCookie(final Cookie[] cookies) { // TODO: 중복 제거
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();

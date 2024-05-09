@@ -142,9 +142,9 @@ Content-Type: application/json
 - [ ] TODO: [6단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정하세요.
 
 ### 접근 권한 제어
-- [ ] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있습니다.
-  - [ ] 컨트롤러에 진입하기 전에 Cookie 값을 확인하여 role를 확인하세요.
-- [ ] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답을 하세요.
+- [x] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있습니다.
+  - [x] 컨트롤러에 진입하기 전에 Cookie 값을 확인하여 role를 확인하세요.
+- [x] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답을 하세요.
 
 
 ### 예약 목록 검색

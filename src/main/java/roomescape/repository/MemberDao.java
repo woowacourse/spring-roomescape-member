@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Repository
 public class MemberDao {
@@ -14,7 +15,8 @@ public class MemberDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            Role.from(resultSet.getString("role"))
     );
 
     public MemberDao(final JdbcTemplate jdbcTemplate) {
