@@ -1,9 +1,12 @@
 package roomescape.dao;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -32,9 +35,17 @@ public class UserDao implements UserRepository {
     }
 
     @Override
-    public User findById(Long id) {
+    public Optional<User> findById(Long id) {
         String sql = "SELECT * FROM users WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, userRowMapper, id);
+        List<User> findUsers = jdbcTemplate.query(sql, userRowMapper, id);
+        return DataAccessUtils.optionalResult(findUsers);
+    }
+
+    @Override
+    public Optional<User> findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+        List<User> findUsers = jdbcTemplate.query(sql, userRowMapper, email, password);
+        return DataAccessUtils.optionalResult(findUsers);
     }
 
     @Override
@@ -45,5 +56,11 @@ public class UserDao implements UserRepository {
         Long id = jdbcInsert.executeAndReturnKey(sqlParams)
                 .longValue();
         return new User(id, user.getName(), user.getEmail(), user.getPassword());
+    }
+
+    @Override
+    public void deleteAll() {
+        String sql = "DELETE FROM users";
+        jdbcTemplate.update(sql);
     }
 }

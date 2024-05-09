@@ -2,21 +2,28 @@ package roomescape.web.controller;
 
 
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import jakarta.servlet.http.Cookie;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.service.UserService;
 import roomescape.web.dto.request.LoginRequest;
+import roomescape.web.dto.response.UserResponse;
 
 
 @WebMvcTest(controllers = UserController.class)
@@ -25,6 +32,8 @@ class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @MockBean
+    private UserService userService;
 
 
     @Test
@@ -48,6 +57,8 @@ class UserControllerTest {
         // given
         LoginRequest request = new LoginRequest("aaaa.aaa.aa", "password");
         ObjectMapper objectMapper = new ObjectMapper();
+        Mockito.when(userService.login(request))
+                .thenReturn("");
 
         // when & then
         mockMvc.perform(post("/login")
@@ -64,6 +75,8 @@ class UserControllerTest {
         // given
         LoginRequest request = new LoginRequest("aaaa.aaa.aa", "  ");
         ObjectMapper objectMapper = new ObjectMapper();
+        Mockito.when(userService.login(request))
+                .thenReturn("");
 
         // when & then
         mockMvc.perform(post("/login")
@@ -73,4 +86,25 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("이메일 또는 비밀번호를 형식에 맞춰 입력해주세요.")));
     }
+
+    @Test
+    @DisplayName("토큰의 사용자 이름을 반환한다")
+    void findAuthenticatedUser_ShouldReturnUserName() throws Exception {
+        // given
+        LoginRequest request = new LoginRequest("aaa@bbb.cc", "password");
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserResponse response = new UserResponse("arbitraryUser");
+        Mockito.when(userService.findUserByToken("arbitraryToken"))
+                .thenReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/login/check")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("token", "arbitraryToken"))
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(response)));
+    }
+
 }

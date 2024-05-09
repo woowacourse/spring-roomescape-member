@@ -47,7 +47,7 @@ class ReservationTimeDaoTest {
 
     @Test
     @DisplayName("없는 예약 시간에 대한 삭제를 시도하면 예외를 발생시킨다")
-    void delete_ShouldThrowException_WhenReservationTimeDoesNotExists() {
+    void delete_ShouldThrowException_WhenReservationTimeDoesNotExist() {
         // given
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(1, 0));
 
