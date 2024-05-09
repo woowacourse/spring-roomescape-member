@@ -4,11 +4,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AuthenticatedMember;
 import roomescape.domain.Member;
 import roomescape.service.auth.AuthService;
 import roomescape.service.dto.request.LoginRequest;
@@ -24,8 +24,7 @@ public class AuthApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberNameResponse> getMemberLoginInfo(@CookieValue String token) {
-        Member member = authService.findMemberByToken(token);
+    public ResponseEntity<MemberNameResponse> getMemberLoginInfo(@AuthenticatedMember Member member) {
         return ResponseEntity.ok(new MemberNameResponse(member.getName()));
     }
 
