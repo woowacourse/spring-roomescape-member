@@ -14,8 +14,7 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final String token = tokenProvider.getTokenFromCookies(request);
 
         tokenProvider.validateTokenExpiration(token);
