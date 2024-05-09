@@ -71,6 +71,7 @@ class AdminControllerTest extends ControllerTest {
                 .statusCode(200);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)

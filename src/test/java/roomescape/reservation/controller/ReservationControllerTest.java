@@ -99,8 +99,15 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약 조회 시 200을 반환한다.")
     @Test
     void find() {
-        //given & when & then
+        //given
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+
+        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
+
+        //when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
                 .then().log().all()

@@ -78,7 +78,7 @@ public class MemberReservationDao implements MemberReservationRepository {
                 .usingGeneratedKeyColumns("id");
         ;
     }
-    
+
     @Override
     public Optional<MemberReservation> findById(long id) {
         String sql = """

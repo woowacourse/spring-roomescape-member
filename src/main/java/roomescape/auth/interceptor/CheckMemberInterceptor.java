@@ -10,14 +10,14 @@ import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.AuthService;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
-import roomescape.member.domain.Role;
 
 @Component
-public class CheckAdminInterceptor implements HandlerInterceptor {
+public class CheckMemberInterceptor implements HandlerInterceptor {
     private static final String SESSION_KEY = "token";
 
     @Autowired
     private AuthService authService;
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -28,8 +28,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         } catch (BusinessException | NullPointerException e) {
             throw new BusinessException(ErrorType.SECURITY_EXCEPTION);
         }
-        if (authInfo == null || !authInfo.getRole().equals(Role.ADMIN)) {
-            throw new BusinessException(ErrorType.NOT_ALLOWED_PERMISSION_ERROR);
+        if (authInfo == null) {
+            throw new BusinessException(ErrorType.SECURITY_EXCEPTION);
         }
         return true;
     }
