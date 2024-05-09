@@ -13,7 +13,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
+import roomescape.domain.MemberName;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
 
@@ -23,7 +23,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_MAPPER = (resultSet, row) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    new UserName(resultSet.getString("name")),
+                    new MemberName(resultSet.getString("name")),
                     resultSet.getDate("reservation_date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),

@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
 
@@ -16,11 +16,11 @@ public class TokenProvider {
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RANDOM_VALUE.getBytes());
     private static final String AUTHENTICATION_PAYLOAD = "name";
 
-    public String generateTokenOf(User user) {
+    public String generateTokenOf(Member member) {
         return Jwts.builder()
-                .subject(user.getId().toString())
-                .claim(AUTHENTICATION_PAYLOAD, user.getName())
-                .claim("role", user.getRole())
+                .subject(member.getId().toString())
+                .claim(AUTHENTICATION_PAYLOAD, member.getName())
+                .claim("role", member.getRole())
                 .signWith(SECRET_KEY)
                 .compact();
     }
@@ -33,6 +33,13 @@ public class TokenProvider {
         return authenticationInfo;
     }
 
+    public Long parseSubject(String token) {
+        String authenticationInfo = parsePayload(token).getSubject();
+        if (authenticationInfo == null) {
+            throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
+        }
+        return Long.parseLong(authenticationInfo);
+    }
     private Claims parsePayload(String token) {
         return Jwts.parser()
                 .verifyWith(SECRET_KEY)

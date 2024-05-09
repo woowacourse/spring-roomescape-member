@@ -4,5 +4,6 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-    Optional<User> findByEmail(String email);
+    Optional<Member> findById(Long id);
+    Optional<Member> findByEmail(String email);
 }

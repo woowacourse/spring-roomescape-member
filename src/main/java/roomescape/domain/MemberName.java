@@ -3,14 +3,14 @@ package roomescape.domain;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class UserName {
+public class MemberName {
     private static final int MAX_NAME_LENGTH = 10;
     private static final String REGEX = "^[가-힣a-zA-Z]+$";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     private final String value;
 
-    public UserName(String value) {
+    public MemberName(String value) {
         validate(value);
         this.value = value;
     }
@@ -51,8 +51,8 @@ public class UserName {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UserName userName = (UserName) o;
-        return Objects.equals(value, userName.value);
+        MemberName memberName = (MemberName) o;
+        return Objects.equals(value, memberName.value);
     }
 
     @Override
