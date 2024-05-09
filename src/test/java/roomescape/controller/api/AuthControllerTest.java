@@ -17,9 +17,6 @@ import roomescape.dto.request.LoginRequest;
 
 class AuthControllerTest extends IntegrationTest {
 
-    private static final String ADMIN_EMAIL = "admin@gmail.com";
-    private static final String ADMIN_PASSWORD = "abc123";
-
     private String token;
 
     @TestFactory

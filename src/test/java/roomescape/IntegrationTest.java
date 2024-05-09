@@ -21,6 +21,8 @@ import roomescape.security.JwtTokenProvider;
 public abstract class IntegrationTest {
 
     protected static final Long ADMIN_ID = 1L;
+    protected static final String ADMIN_EMAIL = "admin@gmail.com";
+    protected static final String ADMIN_PASSWORD = "abc123";
 
     @LocalServerPort
     private int port;
