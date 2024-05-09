@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.LoginMember;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.reservationDto.ReservationRequest;
+import roomescape.dto.reservationDto.ReservationResponse;
+import roomescape.dto.reservationDto.UserReservationRequest;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -25,21 +25,24 @@ public class ReservationController {
     }
 
     // 관리자 예약 등록
-//    @PostMapping("/admin/reservation")
-//    public ResponseEntity<ReservationResponse> addReservationByAdmin(@RequestBody ReservationRequest reservationRequest
-//    ) {
-//        Long savedId = reservationService.addReservation(reservationRequest);
-//        ReservationResponse reservationResponse = reservationService.getReservation(savedId);
-//        return ResponseEntity.created(URI.create("/reservations/" + savedId)).body(reservationResponse);
-//    }
-
-//     사용자 예약 등록
-    @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> addReservationByUser(
+    @PostMapping("/admin/reservation")
+    public ResponseEntity<ReservationResponse> addReservationByAdmin(
             @RequestBody ReservationRequest reservationRequest,
             LoginMember loginMember
     ) {
-        Long savedId = reservationService.addReservation(reservationRequest, loginMember);
+        Long savedId = reservationService.addReservation(reservationRequest);
+        ReservationResponse reservationResponse = reservationService.getReservation(savedId);
+        return ResponseEntity.created(URI.create("/reservations/" + savedId)).body(reservationResponse);
+    }
+
+    // 사용자 예약 등록
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> addReservationByUser(
+            @RequestBody UserReservationRequest userReservationRequest,
+            LoginMember loginMember
+    ) {
+        ReservationRequest reservationRequest = ReservationRequest.from(userReservationRequest, loginMember.id());
+        Long savedId = reservationService.addReservation(reservationRequest);
         ReservationResponse reservationResponse = reservationService.getReservation(savedId);
         return ResponseEntity.created(URI.create("/reservations/" + savedId)).body(reservationResponse);
     }
