@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.LoginMemberRepository;
 import roomescape.domain.LoginMember;
 import roomescape.exception.AuthorizationException;
+import roomescape.service.dto.LoginMemberNameResponse;
 import roomescape.service.dto.TokenRequest;
 
 @Service
@@ -30,4 +31,8 @@ public class LoginMemberService {
         }
     }
 
+    public LoginMemberNameResponse findNameByEmail(String email) {
+        LoginMember loginMember = loginMemberRepository.findByEmail(email).get();
+        return new LoginMemberNameResponse(loginMember.getName());
+    }
 }
