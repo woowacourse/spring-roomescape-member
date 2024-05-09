@@ -44,7 +44,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("시간 생성 시, startAt 값이 null이면 예외가 발생한다.")
-    void validateTimeCreateTimeWithNull() {
+    void validateTimeCreateWithNullStartAt() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", null);
 
@@ -59,7 +59,7 @@ class ReservationTimeControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "10:89"})
     @DisplayName("시간 생성 시, startAt 값의 형식이 올바르지 않으면 예외가 발생한다.")
-    void validateTimeCreateTimeWithStartAtFormat(final String startAt) {
+    void validateTimeCreateWithStartAtFormat(final String startAt) {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", startAt);
 
@@ -94,7 +94,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("모든 시간 목록을 조회한다.")
-    void findAllTimesReservationTimes() {
+    void findAllTimes() {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -105,7 +105,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
-    void findAllTimesWithReservationState() {
+    void findAvailableTimes() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
@@ -120,7 +120,7 @@ class ReservationTimeControllerTest {
                 .statusCode(201);
 
         List<ReservationTimeWithStateDto> times = RestAssured.given().log().all()
-                .when().get("/times?date=" + TOMORROW_DATE + "&themeId=1")
+                .when().get("/times/available?date=" + TOMORROW_DATE + "&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTimeWithStateDto.class);
@@ -138,7 +138,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 있으면 예외가 발생한다.")
-    void validateTimeDeleteTime() {
+    void validateTimeDelete() {
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
@@ -147,7 +147,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 없으면 시간이 삭제된다.")
-    void deleteTimeTime() {
+    void deleteTime() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", "10:10");
 

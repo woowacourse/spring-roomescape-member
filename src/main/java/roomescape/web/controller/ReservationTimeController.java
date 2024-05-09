@@ -48,8 +48,8 @@ public class ReservationTimeController {
                 .collect(collectingAndThen(toList(), ResponseEntity::ok));
     }
 
-    @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<ReservationTimeWithStateDto>> findAllTimesWithReservationState(
+    @GetMapping("/available")
+    public ResponseEntity<List<ReservationTimeWithStateDto>> findAvailableTimes(
             @RequestParam("date") String date,
             @RequestParam("themeId") Long themeId
     ) {
