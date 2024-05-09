@@ -3,6 +3,8 @@ package roomescape.member.repository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -24,9 +26,20 @@ public class MemberDao implements MemberRepository {
     );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public Member save(Member member) {
+        Long id = simpleJdbcInsert.executeAndReturnKey(new BeanPropertySqlParameterSource(member))
+                .longValue();
+        return new Member(id, member);
     }
 
     @Override

@@ -20,6 +20,14 @@ public class Member {
         this(id, name, email, password, Role.USER);
     }
 
+    public Member(Long id, Member member) {
+        this(id, member.name, member.email, member.password);
+    }
+
+    public Member(String name, String email, String password) {
+        this(null, name, email, password);
+    }
+
     public boolean isSameMember(Member other) {
         return id.equals(other.id);
     }

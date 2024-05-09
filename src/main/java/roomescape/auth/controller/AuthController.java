@@ -1,5 +1,6 @@
 package roomescape.auth.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.LoginResponse;
+import roomescape.auth.dto.SignupRequest;
 import roomescape.auth.service.AuthService;
 
 @Controller
@@ -63,5 +65,11 @@ public class AuthController {
     @GetMapping("/signup")
     public String signup() {
         return "signup";
+    }
+
+    @ResponseBody
+    @PostMapping("/signup")
+    public LoginCheckResponse signup(@Valid @RequestBody SignupRequest request) {
+        return authService.signup(request);
     }
 }

@@ -5,9 +5,10 @@ import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.LoginResponse;
-import roomescape.member.domain.Member;
+import roomescape.auth.dto.SignupRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
 @Service
@@ -51,5 +52,21 @@ public class AuthService {
         Member member = findMemberByEmail(email);
 
         return LoginCheckResponse.from(member);
+    }
+
+    public LoginCheckResponse signup(SignupRequest request) {
+        Member member = request.toMember();
+
+        validateDuplicatedEmail(member);
+
+        Member savedMember = memberRepository.save(member);
+        return LoginCheckResponse.from(savedMember);
+    }
+
+    private void validateDuplicatedEmail(Member member) {
+        memberRepository.findByEmail(member.getEmail())
+                .ifPresent((existsMember) -> {
+                    throw new BadRequestException("이미 존재하는 이메일입니다.");
+                });
     }
 }
