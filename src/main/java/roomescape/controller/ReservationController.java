@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.LoginMember;
+import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -28,6 +29,14 @@ public class ReservationController {
         ReservationResponse savedReservationResponse = reservationService.save(loginMember, reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + savedReservationResponse.id()))
                 .body(savedReservationResponse);
+    }
+
+    @PostMapping("admin/reservations")
+    public ResponseEntity<ReservationResponse> saveReservationByAdmin(@LoginMemberParameter LoginMember loginMember,
+                                                                      @RequestBody AdminReservationRequest reservationRequest) {
+        ReservationResponse reservationResponse = reservationService.saveByAdmin(loginMember, reservationRequest);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
+                .body(reservationResponse);
     }
 
     @GetMapping("/reservations")

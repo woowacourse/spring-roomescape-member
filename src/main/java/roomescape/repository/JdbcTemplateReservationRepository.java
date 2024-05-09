@@ -51,8 +51,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
             ),
             new LoginMember(
                     rs.getLong("member_id"),
-                    rs.getString("member_name"),
-                    rs.getString("member_email")
+                    rs.getString("member_name")
             )
     );
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->

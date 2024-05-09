@@ -32,8 +32,7 @@ public class LoginService {
 
         return jwtGenerator.generateWith(Map.of(
                 "id", findMember.getId(),
-                "name", findMember.getName(),
-                "email", findMember.getEmail()
+                "name", findMember.getName()
         ));
     }
 
@@ -41,8 +40,7 @@ public class LoginService {
         Claims claims = jwtGenerator.getClaims(token);
         return new LoginMember(
                 claims.get("id", Long.class),
-                claims.get("name", String.class),
-                claims.get("email", String.class)
+                claims.get("name", String.class)
         );
     }
 }

@@ -1,8 +1,7 @@
 package roomescape.domain;
 
 public class Member {
-    private final Long id;
-    private final String name;
+    private final LoginMember loginMember;
     private final String email;
     private final String password;
 
@@ -11,22 +10,29 @@ public class Member {
     }
 
     public Member(long id, Member member) {
-        this(id, member.name, member.email, member.password);
+        this(id, member.loginMember.getName(), member.email, member.password);
     }
 
     public Member(Long id, String name, String email, String password) {
-        this.id = id;
-        this.name = name;
+        this(new LoginMember(id, name), email, password);
+    }
+
+    public Member(LoginMember loginMember, String email, String password) {
+        this.loginMember = loginMember;
         this.email = email;
         this.password = password;
     }
 
+    public LoginMember getLoginMember() {
+        return loginMember;
+    }
+
     public long getId() {
-        return id;
+        return loginMember.getId();
     }
 
     public String getName() {
-        return name;
+        return loginMember.getName();
     }
 
     public String getEmail() {
@@ -40,8 +46,7 @@ public class Member {
     @Override
     public String toString() {
         return "Member{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "loginMember=" + loginMember +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';

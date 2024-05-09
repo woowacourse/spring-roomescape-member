@@ -19,10 +19,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.LoginMember;
+import roomescape.Fixture;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -33,7 +35,6 @@ import roomescape.service.JwtGenerator;
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 public class ReservationControllerTest {
 
-    private static final LoginMember DEFAULT_LOGIN_MEMBER = new LoginMember(1L, "name", "email@email.com");
 
     @LocalServerPort
     int port;
@@ -46,8 +47,11 @@ public class ReservationControllerTest {
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
     private Theme defaultTheme = new Theme("theme1", "description", "thumbnail");
     private ReservationTime defaultTime = new ReservationTime(LocalTime.of(11, 30));
+    private Member defaultMember = Fixture.defaultMember;
     private String token;
 
     @BeforeEach
@@ -55,14 +59,14 @@ public class ReservationControllerTest {
         RestAssured.port = port;
         token = JWT_GENERATOR.generateWith(
                 Map.of(
-                        "id", 1L,
-                        "name", "아서",
-                        "email", "Hyunta@wooteco.com"
+                        "id", defaultMember.getId(),
+                        "name", defaultMember.getName()
                 )
         );
 
         defaultTheme = themeRepository.save(defaultTheme);
         defaultTime = reservationTimeRepository.save(defaultTime);
+        defaultMember = memberRepository.save(defaultMember);
     }
 
     @DisplayName("예약이 10개 존재할 때")
@@ -72,26 +76,35 @@ public class ReservationControllerTest {
         @BeforeEach
         void initData() {
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(5), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().minusDays(5), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(4), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().minusDays(4), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(3), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().minusDays(3), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(2), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().minusDays(2), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(1), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().minusDays(1), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
 
             reservationRepository.save(
-                    new Reservation(LocalDate.now(), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now(), defaultTime, defaultTheme, defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
             reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme, DEFAULT_LOGIN_MEMBER));
+                    new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme,
+                            defaultMember.getLoginMember()));
 
         }
 
@@ -122,7 +135,7 @@ public class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(201)
                     .body("id", is(11),
-                            "user.name", is("아서"),
+                            "user.name", is(defaultMember.getName()),
                             "date", is(reservationParam.get("date")),
                             "time.startAt", is(defaultTime.getStartAt().toString()),
                             "theme.name", is(defaultTheme.getName()));

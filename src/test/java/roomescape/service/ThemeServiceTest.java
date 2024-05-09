@@ -29,7 +29,7 @@ import roomescape.repository.ThemeRepository;
 
 class ThemeServiceTest {
 
-    private static final LoginMember DEFAULT_LOGIN_MEMBER = new LoginMember(1L, "name", "email@email.com");
+    private static final LoginMember DEFAULT_LOGIN_MEMBER = defaultLoginuser;
     private ThemeRepository themeRepository;
     private CollectionReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;

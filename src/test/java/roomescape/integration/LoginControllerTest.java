@@ -25,17 +25,16 @@ import roomescape.repository.MemberRepository;
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class LoginControllerTest {
 
-    private final Member defaultUser = new Member("name", "email@email.com", "password");
     @LocalServerPort
     int port;
+    private Member defaultUser = new Member("name", "email@email.com", "password");
     @Autowired
     private MemberRepository memberRepository;
 
     @BeforeEach
     void init() {
         RestAssured.port = port;
-        //defaultUser = userRepository.save(defaultUser);
-        System.out.println(defaultUser);
+        defaultUser = memberRepository.save(defaultUser);
     }
 
     @DisplayName("올바른 로그인 요청에 대해 토큰 값을 가진 쿠키가 생성된다.")

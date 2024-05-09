@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.Fixture.defaultLoginuser;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
 import static roomescape.exception.ExceptionType.NOT_FOUND_RESERVATION_TIME;
 import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
@@ -18,23 +17,27 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.Fixture;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.RoomescapeException;
+import roomescape.repository.CollectionMemberRepository;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 class ReservationServiceTest {
 
+    private final LoginMember loginMember = Fixture.defaultLoginuser;
     private ReservationRepository reservationRepository;
     private ReservationService reservationService;
-
+    private MemberRepository memberRepository;
     private ReservationTime defaultTime = new ReservationTime(LocalTime.now());
     private Theme defaultTheme = new Theme("name", "description", "thumbnail");
 
@@ -43,8 +46,9 @@ class ReservationServiceTest {
         CollectionReservationTimeRepository reservationTimeRepository = new CollectionReservationTimeRepository();
         ThemeRepository themeRepository = new CollectionThemeRepository();
         reservationRepository = new CollectionReservationRepository();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
-
+        memberRepository = new CollectionMemberRepository();
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
         defaultTime = reservationTimeRepository.save(defaultTime);
         defaultTheme = themeRepository.save(defaultTheme);
     }
@@ -54,7 +58,7 @@ class ReservationServiceTest {
     void createFutureReservationTest() {
         //when
         ReservationResponse saved = reservationService.save(
-                defaultLoginuser,
+                loginMember,
                 new ReservationRequest(
                         LocalDate.now().plusDays(1),
                         defaultTime.getId(),
@@ -73,7 +77,7 @@ class ReservationServiceTest {
     @Test
     void createPastReservationFailTest() {
         assertThatThrownBy(() -> reservationService.save(
-                defaultLoginuser,
+                loginMember,
                 new ReservationRequest(
                         LocalDate.now().minusDays(1),
                         defaultTime.getId(),
@@ -87,7 +91,7 @@ class ReservationServiceTest {
     @Test
     void createReservationWithTimeNotExistsTest() {
         assertThatThrownBy(() -> reservationService.save(
-                defaultLoginuser,
+                loginMember,
                 new ReservationRequest(
                         LocalDate.now().minusDays(1),
                         2L,
@@ -101,7 +105,7 @@ class ReservationServiceTest {
     @Test
     void createReservationWithThemeNotExistsTest() {
         assertThatThrownBy(() -> reservationService.save(
-                defaultLoginuser,
+                loginMember,
                 new ReservationRequest(
                         LocalDate.now().plusDays(1),
                         defaultTime.getId(),
@@ -116,13 +120,13 @@ class ReservationServiceTest {
     void findAllTest() {
         //given
         reservationRepository.save(new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme,
-                defaultLoginuser));
+                loginMember));
         reservationRepository.save(new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme,
-                defaultLoginuser));
+                loginMember));
         reservationRepository.save(new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme,
-                defaultLoginuser));
+                loginMember));
         reservationRepository.save(new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme,
-                defaultLoginuser));
+                loginMember));
 
         //when
         List<ReservationResponse> reservationResponses = reservationService.findAll();
@@ -140,7 +144,7 @@ class ReservationServiceTest {
 
         @BeforeEach
         void addDefaultReservation() {
-            defaultReservation = new Reservation(defaultDate, defaultTime, defaultTheme, defaultLoginuser);
+            defaultReservation = new Reservation(defaultDate, defaultTime, defaultTheme, loginMember);
             defaultReservation = reservationRepository.save(defaultReservation);
         }
 
@@ -148,8 +152,7 @@ class ReservationServiceTest {
         @Test
         void duplicatedReservationFailTest() {
             assertThatThrownBy(() -> reservationService.save(
-
-                    Fixture.defaultLoginuser,
+                    loginMember,
                     new ReservationRequest(defaultDate, defaultTime.getId(), defaultTheme.getId())))
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(DUPLICATE_RESERVATION.getMessage());

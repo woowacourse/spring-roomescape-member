@@ -53,7 +53,7 @@ class LoginServiceTest {
             //then
             Claims payload = JWT_GENERATOR.getClaims(createdToken);
             assertAll(
-                    () -> assertThat(payload.get("email")).isEqualTo(defaultUser.getEmail()),
+                    () -> assertThat(payload.get("id", Long.class)).isEqualTo(defaultUser.getId()),
                     () -> assertThat(payload.get("name")).isEqualTo(defaultUser.getName())
             );
         }

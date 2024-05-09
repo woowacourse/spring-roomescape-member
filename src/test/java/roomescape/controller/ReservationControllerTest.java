@@ -18,25 +18,29 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
+import roomescape.repository.CollectionMemberRepository;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
+import roomescape.repository.MemberRepository;
 import roomescape.service.ReservationService;
 
 class ReservationControllerTest {
-    private static final LoginMember DEFAULT_LOGINUSER = new LoginMember(1L, "아서", "Hyunta@wooteco.com");
+    private static final LoginMember DEFAULT_LOGINUSER = new LoginMember(1L, "아서");
     private ReservationTime defaultTime = new ReservationTime(1L, LocalTime.now());
     private Theme defualtTheme = new Theme("name", "description", "thumbnail");
     private CollectionReservationRepository collectionReservationRepository;
     private ReservationController reservationController;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void initController() {
         CollectionReservationTimeRepository timeRepository = new CollectionReservationTimeRepository();
         CollectionThemeRepository themeRepository = new CollectionThemeRepository();
         collectionReservationRepository = new CollectionReservationRepository();
+        memberRepository = new CollectionMemberRepository();
         ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository,
-                themeRepository);
+                themeRepository, memberRepository);
         reservationController = new ReservationController(reservationService);
 
         defaultTime = timeRepository.save(defaultTime);

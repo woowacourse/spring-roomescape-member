@@ -21,11 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.LoginMember;
+import roomescape.Fixture;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableTimeResponse;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -35,7 +37,6 @@ import roomescape.repository.ThemeRepository;
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 public class ReservationTimeControllerTest {
 
-    private final LoginMember savedUser = new LoginMember(1L, "name", "email@email.com");
     @LocalServerPort
     int port;
     @Autowired
@@ -44,13 +45,17 @@ public class ReservationTimeControllerTest {
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+
     private Theme defaultTheme = new Theme("theme1", "description", "thumbnail");
+    private Member defaultMember = Fixture.defaultMember;
 
     @BeforeEach
     void initData() {
         RestAssured.port = port;
-
         defaultTheme = themeRepository.save(defaultTheme);
+        defaultMember = memberRepository.save(defaultMember);
     }
 
     @DisplayName("여러 예약이 존재할 때 예약 가능 시간을 조회할 수 있다.")
@@ -66,7 +71,8 @@ public class ReservationTimeControllerTest {
         notUsedReservationTime = reservationTimeRepository.save(notUsedReservationTime);
 
         LocalDate findDate = LocalDate.of(2024, 5, 4);
-        reservationRepository.save(new Reservation(findDate, usedReservationTime, theme, savedUser));
+        reservationRepository.save(
+                new Reservation(findDate, usedReservationTime, theme, defaultMember.getLoginMember()));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = RestAssured.given().log().all()
@@ -151,7 +157,7 @@ public class ReservationTimeControllerTest {
         @Test
         void deleteUsedTimeTest() {
             reservationRepository.save(
-                    new Reservation(LocalDate.now(), usedReservationTime, defaultTheme, savedUser)
+                    new Reservation(LocalDate.now(), usedReservationTime, defaultTheme, defaultMember.getLoginMember())
             );
 
             RestAssured.given().log().all()
