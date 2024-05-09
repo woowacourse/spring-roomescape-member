@@ -10,7 +10,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.service.request.AuthenticationRequest;
+import roomescape.service.auth.AuthenticationRequest;
 import roomescape.support.IntegrationTestSupport;
 
 //TODO: 테스트 개선

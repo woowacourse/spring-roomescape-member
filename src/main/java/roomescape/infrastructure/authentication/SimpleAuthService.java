@@ -4,10 +4,10 @@ import java.util.Base64;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
-import roomescape.service.AuthService;
-import roomescape.service.UnauthorizedException;
-import roomescape.service.request.AuthenticationRequest;
-import roomescape.service.response.AuthenticatedMemberInfo;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticatedMemberInfo;
+import roomescape.service.auth.AuthenticationRequest;
+import roomescape.service.auth.UnauthorizedException;
 
 // TODO: 정리 필요
 @Component

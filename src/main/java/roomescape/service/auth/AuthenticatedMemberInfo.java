@@ -1,4 +1,4 @@
-package roomescape.service.response;
+package roomescape.service.auth;
 
 public record AuthenticatedMemberInfo(String name) {
 }
