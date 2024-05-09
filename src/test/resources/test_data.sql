@@ -19,3 +19,5 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('testName2', FORM
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('testName3', FORMATDATETIME(TIMESTAMPADD(DAY, -3, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), '1', '3');
 
 INSERT INTO member(name, email, password) VALUES ('name', 'email@email.com', 'password');
+INSERT INTO member(name, role, email, password) VALUES ('어드민', 'ADMIN', 'admin@email.com', 'admin');
+

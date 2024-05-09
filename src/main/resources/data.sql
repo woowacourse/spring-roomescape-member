@@ -30,3 +30,4 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('name1', FORMATDA
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('name1', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), '4', '4');
 
 INSERT INTO member(name, email, password) VALUES ('name', 'email@email.com', 'password');
+INSERT INTO member(name, role, email, password) VALUES ('어드민', 'ADMIN', 'admin@email.com', 'admin');
