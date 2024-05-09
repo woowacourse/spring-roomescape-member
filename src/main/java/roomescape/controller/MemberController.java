@@ -45,13 +45,22 @@ public class MemberController {
         return ResponseEntity.ok(memberResponse);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie(TOKEN_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/members")
     public ResponseEntity<List<MemberResponse>> findMembers() {
         List<MemberResponse> members = memberService.findAll();
         return ResponseEntity.ok(members);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    private String extractTokenFromCookie(Cookie[] cookies) { //TODO NULL 예외처리 고민
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(TOKEN_NAME)) {
                 return cookie.getValue();
