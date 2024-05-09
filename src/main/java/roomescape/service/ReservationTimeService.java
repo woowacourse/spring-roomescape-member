@@ -34,6 +34,12 @@ public class ReservationTimeService {
         return new TimeResponse(inserted);
     }
 
+    private void validateDuplicate(LocalTime time) {
+        if (reservationTimeDao.hasSameTime(time)) {
+            throw new IllegalArgumentException("동일한 시간이 존재합니다.");
+        }
+    }
+
     public List<TimeResponse> getAllTimes() {
         return reservationTimeDao.findAll().stream()
                 .map(TimeResponse::new)
@@ -49,20 +55,14 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    private Boolean isBooked(String date, Long timeId, Long themeId) {
+        return reservationDao.hasSameReservation(date, timeId, themeId);
+    }
+
     public void deleteTime(Long id) {
         if (reservationDao.hasReservationForTimeId(id)) {
             throw new IllegalStateException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteById(id);
-    }
-
-    private Boolean isBooked(String date, Long timeId, Long themeId) {
-        return reservationDao.hasSameReservation(date, timeId, themeId);
-    }
-
-    private void validateDuplicate(LocalTime time) {
-        if (reservationTimeDao.hasSameTime(time)) {
-            throw new IllegalArgumentException("동일한 시간이 존재합니다.");
-        }
     }
 }
