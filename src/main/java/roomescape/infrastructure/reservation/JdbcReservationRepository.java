@@ -90,4 +90,15 @@ public class JdbcReservationRepository implements ReservationRepository {
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(result);
     }
+
+    @Override
+    public List<Reservation> findByMemberAndThemeBetweenDates(long memberId, long themeId,
+                                                              LocalDate startDate, LocalDate endDate) {
+        String whereClause = "where member_id = ? and theme_id = ? and date between ? and ?";
+        return jdbcTemplate.query(
+                FIND_ALL_SQL + whereClause,
+                (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs),
+                memberId, themeId, startDate, endDate
+        );
+    }
 }

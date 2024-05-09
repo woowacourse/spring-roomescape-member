@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberFixture;
 import roomescape.domain.member.MemberRepository;
@@ -118,6 +119,18 @@ class JdbcReservationRepositoryTest {
 
         boolean exists = jdbcReservationRepository.existsBy(reservation.getDate(), time.getId(), theme.getId());
         assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("날짜, 테마, 사용자로 예약을 조회한다.")
+    @Sql(scripts = "/insert-reservations.sql")
+    void findByMemberAndThemeBetweenDates() {
+        List<Reservation> reservations = jdbcReservationRepository.findByMemberAndThemeBetweenDates(
+                2L,
+                3L,
+                LocalDate.of(2024, 12, 24),
+                LocalDate.of(2024, 12, 26));
+        assertThat(reservations).hasSize(3);
     }
 
     private Reservation createReservation() {

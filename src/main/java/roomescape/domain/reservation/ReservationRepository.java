@@ -22,4 +22,7 @@ public interface ReservationRepository {
     boolean existsByTimeId(long timeId);
 
     boolean existsBy(LocalDate date, long timeId, long themeId);
+
+    List<Reservation> findByMemberAndThemeBetweenDates(long memberId, long themeId,
+                                                       LocalDate startDate, LocalDate endDate);
 }
