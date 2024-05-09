@@ -1,8 +1,11 @@
 package roomescape.service;
 
 import roomescape.service.request.AuthenticationRequest;
+import roomescape.service.response.AuthenticatedMemberInfo;
 
 public interface AuthService {
 
-    boolean verify(AuthenticationRequest request);
+    String authenticate(AuthenticationRequest request);
+
+    AuthenticatedMemberInfo authorize(String token);
 }

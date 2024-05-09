@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.service.request.AuthenticationRequest;
 import roomescape.support.IntegrationTestSupport;
 
+//TODO: 테스트 개선
 class AuthControllerTest extends IntegrationTestSupport {
 
     @Test
@@ -43,6 +44,7 @@ class AuthControllerTest extends IntegrationTestSupport {
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
 
+        // TODO: check status code
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -98,14 +100,34 @@ class AuthControllerTest extends IntegrationTestSupport {
                 .body("details.message", hasItem("비밀번호는 필수입니다."));
     }
 
-    // TODO: GET /login/check
     @Test
     @DisplayName("사용자 정보를 조회한다.")
     void check() {
-        // given
+        String email = "admin@woowacourse.com";
+        String password = "password";
+        AuthenticationRequest request = new AuthenticationRequest(email, password);
 
-        // when
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .then().log().all()
+                .extract().cookie("token");
 
-        // then
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", is("admin"));
+    }
+
+    @Test
+    @DisplayName("유효한 토큰이 존재해야한다.")
+    void requiredToken() {
+        RestAssured.given().log().all()
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(401);
     }
 }
