@@ -99,6 +99,7 @@ public class ReservationControllerTest {
         params.put("name", "");
         params.put("date", "2024-04-30");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
