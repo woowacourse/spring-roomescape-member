@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.member.domain.Member;
 
 import static org.assertj.core.api.Assertions.assertThat;

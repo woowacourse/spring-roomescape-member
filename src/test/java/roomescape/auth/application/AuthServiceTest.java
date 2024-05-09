@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.dto.request.LoginRequest;
-import roomescape.exception.NotAuthenticatedException;
+import roomescape.auth.exception.AuthorizationException;
 import roomescape.member.domain.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,7 +36,7 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.createToken(loginRequest))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthorizationException.class);
     }
 
     @Test
@@ -48,6 +48,6 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.createToken(loginRequest))
-                .isInstanceOf(NotAuthenticatedException.class);
+                .isInstanceOf(AuthorizationException.class);
     }
 }

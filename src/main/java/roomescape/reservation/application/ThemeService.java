@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.response.ThemeResponse;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.ThemeRepository;
 
 import java.time.LocalDate;

@@ -7,7 +7,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.ErrorResponse;
+import roomescape.global.dto.ErrorResponse;
 import roomescape.member.domain.Member;
 import roomescape.reservation.dto.request.AdminReservationSaveRequest;
 import roomescape.reservation.dto.response.ReservationResponse;

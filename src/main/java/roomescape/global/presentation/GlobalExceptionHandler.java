@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global.presentation;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import roomescape.auth.exception.AuthorizationException;
+import roomescape.global.exception.NotFoundException;
+import roomescape.global.exception.ViolationException;
+import roomescape.global.dto.ErrorResponse;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -94,8 +98,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(NotAuthenticatedException.class)
-    public ResponseEntity<ErrorResponse> handleException(NotAuthenticatedException e) {
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleException(AuthorizationException e) {
         logErrorMessage(e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(e.getMessage()));

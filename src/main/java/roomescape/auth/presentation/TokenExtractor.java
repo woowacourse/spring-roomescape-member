@@ -2,7 +2,7 @@ package roomescape.auth.presentation;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.exception.TokenNotExistException;
+import roomescape.auth.exception.TokenNotExistException;
 
 import java.util.Arrays;
 

@@ -2,7 +2,7 @@ package roomescape.reservation.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.ViolationException;
+import roomescape.global.exception.ViolationException;
 
 import java.time.LocalTime;
 

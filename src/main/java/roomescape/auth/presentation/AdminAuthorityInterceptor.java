@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.application.AuthService;
-import roomescape.exception.NotAuthenticatedException;
+import roomescape.auth.exception.AuthorizationException;
 import roomescape.member.domain.Member;
 
 @Component
@@ -21,7 +21,7 @@ public class AdminAuthorityInterceptor implements HandlerInterceptor {
         String token = TokenExtractor.extract(request);
         Member member = authService.extractMember(token);
         if (!member.isAdmin()) {
-            throw new NotAuthenticatedException("관리자 권한이 없습니다.");
+            throw new AuthorizationException("관리자 권한이 없습니다.");
         }
         return true;
     }

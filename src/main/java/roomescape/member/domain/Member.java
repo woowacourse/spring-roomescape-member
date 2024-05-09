@@ -1,6 +1,6 @@
 package roomescape.member.domain;
 
-import roomescape.exception.ViolationException;
+import roomescape.global.exception.ViolationException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -3,7 +3,7 @@ package roomescape.auth.application;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.dto.request.LoginRequest;
-import roomescape.exception.NotAuthenticatedException;
+import roomescape.auth.exception.AuthorizationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 
@@ -21,7 +21,7 @@ public class AuthService {
     public String createToken(LoginRequest request) {
         Member member = findMemberByEmail(request.email());
         if (!member.hasSamePassword(request.password())) {
-            throw new NotAuthenticatedException("사용자의 비밀번호와 입력 비밀번호가 일치하지 않습니다.");
+            throw new AuthorizationException("사용자의 비밀번호와 입력 비밀번호가 일치하지 않습니다.");
         }
         return jwtTokenProvider.createToken(member.getEmail());
     }
@@ -34,6 +34,6 @@ public class AuthService {
 
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotAuthenticatedException("해당 이메일의 사용자가 없습니다."));
+                .orElseThrow(() -> new AuthorizationException("해당 이메일의 사용자가 없습니다."));
     }
 }

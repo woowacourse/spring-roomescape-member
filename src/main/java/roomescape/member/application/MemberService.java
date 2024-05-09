@@ -2,7 +2,7 @@ package roomescape.member.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 

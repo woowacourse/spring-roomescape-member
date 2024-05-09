@@ -1,9 +1,9 @@
-package roomescape.exception;
+package roomescape.auth.exception;
 
-public class ViolationException extends RuntimeException {
+public class AuthorizationException extends RuntimeException {
     private final String message;
 
-    public ViolationException(String message) {
+    public AuthorizationException(String message) {
         super(message);
         this.message = message;
     }

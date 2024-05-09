@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.auth.dto.request.LoginRequest;
 import roomescape.auth.dto.response.AuthInformationResponse;
-import roomescape.exception.ErrorResponse;
+import roomescape.global.dto.ErrorResponse;
 import roomescape.member.domain.Member;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;

@@ -1,6 +1,6 @@
 package roomescape.reservation.domain;
 
-import roomescape.exception.ViolationException;
+import roomescape.global.exception.ViolationException;
 
 import java.time.LocalTime;
 

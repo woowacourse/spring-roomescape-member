@@ -11,8 +11,8 @@ import org.springframework.http.MediaType;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.request.LoginRequest;
 import roomescape.common.ControllerTest;
-import roomescape.exception.IllegalTokenException;
-import roomescape.exception.NotAuthenticatedException;
+import roomescape.auth.exception.IllegalTokenException;
+import roomescape.auth.exception.AuthorizationException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,7 +51,7 @@ class AuthControllerTest extends ControllerTest {
         // given
         LoginRequest request = new LoginRequest("not existing email", TEST_PASSWORD);
 
-        BDDMockito.willThrow(new NotAuthenticatedException(TEST_ERROR_MESSAGE))
+        BDDMockito.willThrow(new AuthorizationException(TEST_ERROR_MESSAGE))
                 .given(authService)
                 .createToken(any());
 

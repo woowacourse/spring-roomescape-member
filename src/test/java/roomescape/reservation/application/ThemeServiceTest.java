@@ -7,7 +7,7 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.exception.NotFoundException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeRepository;
 import roomescape.reservation.dto.response.ThemeResponse;

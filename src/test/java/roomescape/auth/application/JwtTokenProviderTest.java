@@ -6,7 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.IllegalTokenException;
+import roomescape.auth.exception.IllegalTokenException;
 
 import java.security.Key;
 import java.util.Date;

@@ -1,9 +1,9 @@
-package roomescape.exception;
+package roomescape.global.exception;
 
-public class NotAuthenticatedException extends RuntimeException {
+public class ViolationException extends RuntimeException {
     private final String message;
 
-    public NotAuthenticatedException(String message) {
+    public ViolationException(String message) {
         super(message);
         this.message = message;
     }

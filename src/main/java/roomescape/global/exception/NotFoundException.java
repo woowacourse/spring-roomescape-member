@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global.exception;
 
 public class NotFoundException extends RuntimeException {
     private final String message;
