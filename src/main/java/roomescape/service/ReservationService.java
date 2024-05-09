@@ -8,6 +8,7 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
 import roomescape.domain.member.Member;
+import roomescape.dto.LoginMember;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.ClientErrorExceptionWithLog;
@@ -37,10 +38,10 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public Long addReservation(ReservationRequest reservationRequest) {
+    public Long addReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
         ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
         Theme theme = findTheme(reservationRequest.themeId());
-        Member member = findMember(reservationRequest.memberId());
+        Member member = findMember(loginMember.id());
 
         validateAddable(reservationRequest, reservationTime);
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime, theme, member);
