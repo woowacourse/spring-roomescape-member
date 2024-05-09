@@ -15,14 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.dao.JdbcMemberDao;
 import roomescape.dao.JdbcReservationDao;
 import roomescape.dao.JdbcReservationTimeDao;
 import roomescape.dao.JdbcThemeDao;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.fixture.MemberFixtures;
 import roomescape.fixture.ReservationFixtures;
 import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
@@ -37,6 +40,8 @@ class ReservationTimeServiceTest {
     private JdbcReservationTimeDao reservationTimeDao;
     @Autowired
     private JdbcThemeDao themeDao;
+    @Autowired
+    private JdbcMemberDao memberDao;
     @Autowired
     private ReservationTimeService reservationTimeService;
 
@@ -156,8 +161,8 @@ class ReservationTimeServiceTest {
             //given
             ReservationTime time = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
             Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
-            Reservation reservation =
-                    ReservationFixtures.createReservation("다온", "2024-05-02", time, theme);
+            Member member = memberDao.create(MemberFixtures.createMember("다온"));
+            Reservation reservation = ReservationFixtures.createReservation(member, "2024-05-02", time, theme);
             reservationDao.create(reservation);
 
             //when //then

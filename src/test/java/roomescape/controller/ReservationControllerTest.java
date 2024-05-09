@@ -25,13 +25,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberEmail;
-import roomescape.domain.member.MemberName;
-import roomescape.domain.member.MemberPassword;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.fixture.MemberFixtures;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
@@ -53,7 +51,7 @@ class ReservationControllerTest {
     @BeforeEach
     void setUp() {
         given(authService.findPayload(anyString())).willReturn("test@test.com");
-        given(memberService.findAuthInfo(anyString())).willReturn(createMember());
+        given(memberService.findAuthInfo(anyString())).willReturn(MemberFixtures.createMember("daon"));
     }
 
     @Test
@@ -72,7 +70,7 @@ class ReservationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].name", is(firstName)))
+                .andExpect(jsonPath("$[0].member.name", is(firstName)))
                 .andExpect(jsonPath("$[1].date", is(secondDate)))
                 .andExpect(jsonPath("$[1].time.startAt", is(secondStartAt)));
     }
@@ -87,7 +85,7 @@ class ReservationControllerTest {
         ReservationCreateRequest givenRequest = ReservationCreateRequest.of(expectedDate, 1L, 1L);
         ReservationResponse response = ReservationResponse.of(
                 1L,
-                expectedName,
+                MemberFixtures.createNameResponse(expectedName),
                 expectedDate,
                 ReservationTimeResponse.of(1L, expectedStartAt),
                 ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
@@ -103,7 +101,7 @@ class ReservationControllerTest {
                         .content(givenJsonRequest))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is(expectedName)))
+                .andExpect(jsonPath("$.member.name", is(expectedName)))
                 .andExpect(jsonPath("$.date", is(expectedDate)))
                 .andExpect(jsonPath("$.time.startAt", is(expectedStartAt)));
     }
@@ -140,27 +138,18 @@ class ReservationControllerTest {
         return List.of(
                 ReservationResponse.of(
                         1L,
-                        firstName,
+                        MemberFixtures.createNameResponse(firstName),
                         "2022-02-23",
                         ReservationTimeResponse.of(1L, "12:12"),
                         ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
                 ),
                 ReservationResponse.of(
                         2L,
-                        "ikjo",
+                        MemberFixtures.createNameResponse("ikjo"),
                         secondDate,
                         ReservationTimeResponse.of(2L, secondStartAt),
                         ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
                 )
-        );
-    }
-
-    private Member createMember() {
-        return new Member(
-                1L,
-                new MemberName("daon"),
-                new MemberEmail("test@test.com"),
-                new MemberPassword("1234")
         );
     }
 }
