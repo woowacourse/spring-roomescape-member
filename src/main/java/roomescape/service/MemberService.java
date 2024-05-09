@@ -15,7 +15,7 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public Member getMember(final MemberCreateRequest request) {
+    public Member findMember(final MemberCreateRequest request) {
         final Member member = Member.of(null, null, request.email(), request.password());
 
         final var savedMember = memberDao.findByEmail(member)
@@ -26,5 +26,10 @@ public class MemberService {
         }
 
         return savedMember;
+    }
+
+    public Member findMemberById(final String id) {
+        return memberDao.findById(id)
+                .orElseThrow(() -> new InvalidInputException("없는 멤버 id"));
     }
 }

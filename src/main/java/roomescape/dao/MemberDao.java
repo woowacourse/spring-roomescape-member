@@ -45,6 +45,15 @@ public class MemberDao {
         }
     }
 
+    public Optional<Member> findById(final String id) {
+        final var sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (final EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
 //    public boolean isExistByStartAt(final String startAt) {
 //        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
 //        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));

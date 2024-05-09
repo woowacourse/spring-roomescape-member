@@ -22,4 +22,8 @@ public class AuthService {
         final String accessToken = jwtTokenProvider.createToken(member);
         return new TokenResponse(accessToken);
     }
+
+    public String some(final String token) {
+        return jwtTokenProvider.getPayload(token);
+    }
 }
