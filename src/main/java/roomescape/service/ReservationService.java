@@ -12,6 +12,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
+import roomescape.service.dto.request.LoginUser;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
@@ -28,7 +29,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(ReservationRequest reservationRequest, LoginUser loginUser) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
 
@@ -40,7 +41,7 @@ public class ReservationService {
         }
         validateIsPastTime(reservationRequest.date(), reservationTime);
 
-        Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
+        Reservation reservation = reservationRequest.toEntity(loginUser.name(), reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
