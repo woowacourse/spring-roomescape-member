@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.service.exception.ReservationNotFoundException;
 
@@ -34,7 +35,7 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL, M.EMAIL, M.PASSWORD, M.NAME
+                SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL, M.EMAIL, M.PASSWORD, M.NAME, M.ROLE
                 FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
@@ -140,7 +141,8 @@ public class H2ReservationRepository implements ReservationRepository {
                         rs.getLong("MEMBER_ID"),
                         rs.getString("MEMBER.NAME"),
                         rs.getString("MEMBER.EMAIL"),
-                        rs.getString("MEMBER.PASSWORD")
+                        rs.getString("MEMBER.PASSWORD"),
+                        Role.findByName(rs.getString("MEMBER.ROLE"))
                 ),
                 rs.getDate("DATE").toLocalDate(),
                 new ReservationTime(
@@ -158,7 +160,7 @@ public class H2ReservationRepository implements ReservationRepository {
     private RowMapper<Reservation> getReservationExceptTimeAndTheme() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("ID"),
-                new Member(rs.getLong("RESERVATION.MEMBER_ID"), null, null, null),
+                new Member(rs.getLong("RESERVATION.MEMBER_ID"), null, null, null, null),
                 rs.getDate("DATE").toLocalDate(),
                 new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), null),
                 new Theme(rs.getLong("RESERVATION.THEME_ID"), null, null, null)

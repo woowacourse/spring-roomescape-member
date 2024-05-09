@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Reservation {
+
     private final Long id;
     private final Member member;
     private final LocalDate date;
@@ -64,10 +65,5 @@ public class Reservation {
                 ", time=" + time +
                 ", theme=" + theme +
                 '}';
-    }
-
-    public enum Role {
-
-        ADMIN, USER
     }
 }

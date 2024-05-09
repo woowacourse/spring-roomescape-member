@@ -5,8 +5,9 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.service.exception.MemberNotFoundException;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
+import roomescape.service.exception.MemberNotFoundException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -29,14 +30,14 @@ public class H2MemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD FROM MEMBER";
+        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD, ROLE FROM MEMBER";
 
         return jdbcTemplate.query(sql, this::mapRowMember);
     }
 
     @Override
     public Optional<Member> findByEmail(final String email) {
-        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD FROM MEMBER WHERE EMAIL = ?";
+        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD, ROLE FROM MEMBER WHERE EMAIL = ?";
 
         return jdbcTemplate.query(sql, this::mapRowMember, email)
                 .stream()
@@ -50,7 +51,7 @@ public class H2MemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(final long id) {
-        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD FROM MEMBER WHERE ID = ?";
+        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD, ROLE FROM MEMBER WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowMember, id)
                 .stream()
@@ -67,7 +68,7 @@ public class H2MemberRepository implements MemberRepository {
         final SqlParameterSource params = new BeanPropertySqlParameterSource(member);
         final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
@@ -82,7 +83,8 @@ public class H2MemberRepository implements MemberRepository {
                 rs.getLong("ID"),
                 rs.getString("NAME"),
                 rs.getString("EMAIL"),
-                rs.getString("PASSWORD")
+                rs.getString("PASSWORD"),
+                Role.findByName(rs.getString("ROLE"))
         );
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
@@ -39,14 +40,14 @@ class ReservationRepositoryTest {
         final List<Reservation> expected = List.of(
                 new Reservation(
                         1L,
-                        new Member(1L, "al", "aa@email.com", "0000"),
+                        new Member(1L, "al", "aa@email.com", "0000", Role.ADMIN),
                         LocalDate.of(2025, 1, 20),
                         new ReservationTime(1L, LocalTime.parse("10:15")),
                         new Theme(1L, "", "", "")
                 ),
                 new Reservation(
                         2L,
-                        new Member(2L, "be", "bb@email.com", "1111"),
+                        new Member(2L, "be", "bb@email.com", "1111", Role.USER),
                         LocalDate.of(2025, 2, 19),
                         new ReservationTime(2L, LocalTime.parse("11:20")),
                         new Theme(2L, "", "", "")
@@ -67,7 +68,7 @@ class ReservationRepositoryTest {
         Long id = 2L;
         Reservation expected = new Reservation(
                 id,
-                new Member(2L, "be", "bb@email.com", "1111"),
+                new Member(2L, "be", "bb@email.com", "1111", Role.USER),
                 LocalDate.of(2025, 2, 19),
                 new ReservationTime(2L, LocalTime.parse("00:00")),
                 new Theme(2L, "", "", "")

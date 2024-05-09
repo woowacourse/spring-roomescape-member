@@ -13,9 +13,9 @@ VALUES ('spring', 'Escape from spring cold',
        ('winter', 'Escape from cold',
         'https://img.youtube.com/vi/R3eHHBXPJqI/hqdefault.jpg');
 
-INSERT INTO MEMBER (NAME, EMAIL, PASSWORD)
-VALUES ('al', 'aa@email.com', '0000'),
-       ('be', 'bb@email.com', '1111');
+INSERT INTO MEMBER (NAME, EMAIL, PASSWORD, ROLE)
+VALUES ('al', 'aa@email.com', '0000', 'ADMIN'),
+       ('be', 'bb@email.com', '1111', 'USER');
 
 INSERT INTO RESERVATION (MEMBER_ID, DATE, TIME_ID, THEME_ID)
 VALUES (1, CURRENT_DATE - 1, 1, 1),

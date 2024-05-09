@@ -6,7 +6,10 @@ import roomescape.domain.Reservation;
 
 import java.time.format.DateTimeFormatter;
 
-public record ReservationResponse(Long id, MemberResponse member, String date, AvailabilityTimeResponse time,
+public record ReservationResponse(Long id,
+                                  MemberResponse member,
+                                  String date,
+                                  AvailabilityTimeResponse time,
                                   ReservationThemeResponse theme) {
 
     public static ReservationResponse from(final Reservation reservation) {

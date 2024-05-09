@@ -10,10 +10,10 @@ VALUES ('봄', '설명1', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3
        ('가을', '설명3', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('겨울', '설명4', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO MEMBER(NAME, EMAIL, PASSWORD)
-VALUES ('레디', 'redddy@gmail.com', '0000'),
-       ('재즈', 'gkatjraud1@redddybabo.com', '1234'),
-       ('제제', 'jinwuo0925@gmail.com', '486');
+INSERT INTO MEMBER(NAME, EMAIL, PASSWORD, ROLE)
+VALUES ('레디', 'redddy@gmail.com', '0000', 'ADMIN'),
+       ('재즈', 'gkatjraud1@redddybabo.com', '1234', 'USER'),
+       ('제제', 'jinwuo0925@gmail.com', '486', 'USER');
 
 INSERT INTO RESERVATION(MEMBER_ID, DATE, TIME_ID, THEME_ID)
 VALUES (1, CURRENT_DATE - 3, 1, 1),

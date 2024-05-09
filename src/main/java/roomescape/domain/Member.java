@@ -8,12 +8,14 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final Role role;
 
-    public Member(final Long id, final String name, final String email, final String password) {
+    public Member(final Long id, final String name, final String email, final String password, final Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public boolean hasValidPassword(final String target) {
@@ -34,6 +36,10 @@ public class Member {
 
     public String getPassword() {
         return password; //TODO db에 넣을 때 사용함. 암호화해야하지 않을까?
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override
