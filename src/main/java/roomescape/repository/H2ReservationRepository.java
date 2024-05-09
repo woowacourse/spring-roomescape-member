@@ -45,7 +45,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
         final String sql = """
                 SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME FROM RESERVATION AS R
                 JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
@@ -57,7 +57,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(final Long id) {
+    public Optional<Reservation> findById(final long id) {
         final String sql = "SELECT * FROM reservation WHERE ID = ?";
 
         return jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), id)
@@ -66,7 +66,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation fetchById(final Long id) {
+    public Reservation fetchById(final long id) {
         final String sql = "SELECT * FROM reservation WHERE ID = ?";
 
         return jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), id)
@@ -76,7 +76,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(final Long timeId) {
+    public boolean existsByTimeId(final long timeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), timeId)
@@ -84,7 +84,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByThemeId(final Long themeId) {
+    public boolean existsByThemeId(final long themeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), themeId)
@@ -99,27 +99,27 @@ public class H2ReservationRepository implements ReservationRepository {
                 .addValue("TIME_ID", reservation.getTime().getId())
                 .addValue("THEME_ID", reservation.getTheme().getId());
 
-        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, reservation.getMember(), reservation.getDate(),
                 reservation.getTime(), reservation.getTheme());
     }
 
     @Override
-    public boolean existsByThemesAndDateAndTimeId(final Long themeId, final Long timeId, final LocalDate date) {
+    public boolean existsByThemesAndDateAndTimeId(final long themeId, final long timeId, final LocalDate date) {
         final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? AND TIME_ID = ? AND DATE = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), themeId, timeId, date).isEmpty();
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         final String sql = "DELETE FROM RESERVATION WHERE ID = ?";
 
         jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public List<Theme> findPopularThemes(final LocalDate from, final LocalDate until, final Integer limit) {
+    public List<Theme> findPopularThemes(final LocalDate from, final LocalDate until, final int limit) {
         final String sql = """
                 SELECT R.THEME_ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS COUNT FROM RESERVATION AS R
                 JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID

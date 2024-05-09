@@ -70,7 +70,7 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public void deleteReservation(final Long id) {
+    public void deleteReservation(final long id) {
         final Reservation fetchReservation = reservationRepository.fetchById(id);
         reservationRepository.deleteById(fetchReservation.getId());
     }

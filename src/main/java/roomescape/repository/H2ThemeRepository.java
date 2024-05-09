@@ -35,7 +35,7 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(final Long id) {
+    public Optional<Theme> findById(final long id) {
         final String sql = "SELECT * FROM THEME WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTheme, id)
@@ -44,7 +44,7 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme fetchById(final Long id) {
+    public Theme fetchById(final long id) {
         final String sql = "SELECT * FROM THEME WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTheme, id)
@@ -62,7 +62,7 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void delete(final Long id) {
+    public void delete(final long id) {
         final String sql = "DELETE FROM THEME WHERE ID = ?";
 
         jdbcTemplate.update(sql, id);

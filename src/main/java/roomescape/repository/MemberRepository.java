@@ -9,7 +9,7 @@ public interface MemberRepository {
 
     List<Member> findAll();
 
-    Optional<Member> findByEmail(String email); //TODO Long 다 long으로 변경하기
+    Optional<Member> findByEmail(String email);
 
     Member fetchByEmail(String email);
 

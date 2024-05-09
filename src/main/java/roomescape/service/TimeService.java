@@ -55,7 +55,7 @@ public class TimeService {
         return AvailabilityTimeResponse.from(savedTime, false);
     }
 
-    public void deleteTime(final Long id) {
+    public void deleteTime(final long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
         }
