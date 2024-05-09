@@ -3,16 +3,33 @@ package roomescape.member.controller;
 import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.util.ControllerTest;
 
 @DisplayName("사용자 API 테스트")
 class MemberControllerTest extends ControllerTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setData() {
+        String sql = """ 
+                INSERT INTO member(name, email, password)
+                VALUES ('관리자', 'admin@email.com', 'password');
+              """;
+        jdbcTemplate.update(sql);
+    }
     @DisplayName("로그인 폼 페이지 조회에 성공한다.")
     @Test
     void popularPage() {
@@ -26,15 +43,14 @@ class MemberControllerTest extends ControllerTest {
     @DisplayName("로그인 시 가능한 유저일 경우 200을 반환한다.")
     @Test
     void login() {
-        // TODO 회원 가입 추가하고 살릴것
-        /*RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(new LoginRequest("admin@email.com", "password"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .header("Set-Cookie", containsString("token"));*/
+                .header("Set-Cookie", containsString("token"));
     }
 
     @DisplayName("로그인 시, 아이디 혹은 비밀번호가 일치하지 않는 유저일 경우 400을 반환한다.")
@@ -73,5 +89,26 @@ class MemberControllerTest extends ControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("인증 정보를 조회할 수 있다.")
+    @Test
+    void loginCheck() {
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest("admin@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract()
+                .cookie("token");
+
+        LoginCheckResponse loginCheckResponse = RestAssured
+                .given().log().all()
+                .cookie("token", accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value()).extract().as(LoginCheckResponse.class);
     }
 }

@@ -5,4 +5,9 @@ public class FakeTokenProvider implements TokenProvider {
     public String createToken(String payload) {
         return payload;
     }
+
+    @Override
+    public String getPayload(String token) {
+        return token;
+    }
 }

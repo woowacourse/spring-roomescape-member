@@ -1,7 +1,9 @@
 package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.util.TokenProvider;
 
@@ -25,5 +27,18 @@ public class MemberService {
 
     private boolean checkInvalidLogin(String email, String password) {
         return !memberRepository.existBy(email, password);
+    }
+
+    public LoginCheckResponse findMemberByToken(String token) {
+        String email = tokenProvider.getPayload(token);
+        Member member = memberRepository.findByEmail(email);
+        validateExistMember(member);
+        return new LoginCheckResponse(member.getName());
+    }
+
+    private void validateExistMember(Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
     }
 }

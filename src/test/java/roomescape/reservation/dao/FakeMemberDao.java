@@ -23,4 +23,12 @@ public class FakeMemberDao implements MemberRepository {
         return members.values().stream()
                 .anyMatch(member -> member.getEmail().equals(email) && member.getPassword().equals(password));
     }
+
+    @Override
+    public Member findByEmail(String email) {
+        return members.values().stream()
+                .filter(member -> member.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+    }
 }

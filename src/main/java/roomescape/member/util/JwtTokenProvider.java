@@ -1,6 +1,8 @@
 package roomescape.member.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
@@ -25,5 +27,18 @@ public class JwtTokenProvider implements TokenProvider {
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    @Override
+    public String getPayload(String token) {
+        validateToken(token);
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public void validateToken(String token) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        if (claims.getBody().getExpiration().before(new Date())) {
+            throw new IllegalArgumentException("이미 만료된 토큰입니다.");
+        }
     }
 }
