@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.Member;
 import roomescape.domain.roomescape.Reservation;
 import roomescape.domain.roomescape.ReservationTime;
 import roomescape.domain.roomescape.Theme;
@@ -31,15 +32,14 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponse save(final ReservationSaveRequest reservationSaveRequest) {
-        ReservationTime reservationTime = findReservationTimeById(reservationSaveRequest);
-        Theme theme = findThemeById(reservationSaveRequest);
+    public ReservationResponse save(final ReservationSaveRequest saveRequest, final Member member) {
+        ReservationTime reservationTime = findReservationTimeById(saveRequest);
+        Theme theme = findThemeById(saveRequest);
 
-        if (hasDuplicateReservation(reservationSaveRequest.date(), reservationSaveRequest.timeId(),
-                reservationSaveRequest.themeId())) {
+        if (hasDuplicateReservation(saveRequest.date(), saveRequest.timeId(), saveRequest.themeId())) {
             throw new IllegalArgumentException("[ERROR] 중복된 예약이 존재합니다.");
         }
-        Reservation reservation = reservationSaveRequest.toEntity(reservationTime, theme);
+        Reservation reservation = saveRequest.toEntity(member.getName(), reservationTime, theme);
         return ReservationResponse.from(reservationDao.save(reservation));
     }
 

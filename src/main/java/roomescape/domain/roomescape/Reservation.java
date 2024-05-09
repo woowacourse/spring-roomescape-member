@@ -48,10 +48,9 @@ public class Reservation {
         return new Reservation(id, new MemberName(name), parsedDate, time, theme);
     }
 
-    public static Reservation of(
-            final String name, final LocalDate date,
-            final ReservationTime time, final Theme theme) {
-        return new Reservation(null, new MemberName(name), date, time, theme);
+    public static Reservation of(final MemberName name, final LocalDate date, final ReservationTime time,
+                                 final Theme theme) {
+        return new Reservation(null, name, date, time, theme);
     }
 
     public Reservation assignId(final long id) {
