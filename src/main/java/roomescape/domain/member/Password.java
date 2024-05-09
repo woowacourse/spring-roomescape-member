@@ -1,33 +1,15 @@
 package roomescape.domain.member;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class Password {
-    private static final MessageDigest md;
-    private static final String SALT = "5RLs8HjD8L";
     private static final int PASSWORD_MIN_LENGTH = 8;
     private static final int PASSWORD_MAX_LENGTH = 20;
 
-    static {
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
+    private final String password;
 
-    private final String encryptedPassword;
-
-    public Password(String encryptedPassword) {
-        this.encryptedPassword = encryptedPassword;
-    }
-
-    public static Password encryptFrom(String rawPassword) {
-        validateNonBlank(rawPassword);
-        validateLength(rawPassword);
-        String encryptedPassword = encrypt(rawPassword);
-        return new Password(encryptedPassword);
+    public Password(String password) {
+        validateNonBlank(password);
+        validateLength(password);
+        this.password = password;
     }
 
     private static void validateNonBlank(String rawPassword) {
@@ -42,22 +24,12 @@ public class Password {
         }
     }
 
-    private static String encrypt(String rawPassword) {
-        String saltedPassword = rawPassword + SALT;
-        md.update(saltedPassword.getBytes());
-        byte[] byteData = md.digest();
-        StringBuilder sb = new StringBuilder();
-        for (byte b : byteData) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
 
     public boolean matches(String other) {
-        return encryptedPassword.equals(encrypt(other));
+        return password.equals(other);
     }
 
-    public String getEncryptedPassword() {
-        return encryptedPassword;
+    public String getPassword() {
+        return password;
     }
 }
