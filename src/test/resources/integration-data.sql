@@ -1,10 +1,10 @@
-INSERT INTO member (id, email, password, name, role)
-VALUES (1, 'admin@gmail.com', '$2a$10$MbGFqyn/u4wfggRK7HAqDeC1y9s1mESgmXV3b7e7GZT5u1JkIT.gm', '어드민',
+INSERT INTO member (email, password, name, role)
+VALUES ('admin@gmail.com', '$2a$10$MbGFqyn/u4wfggRK7HAqDeC1y9s1mESgmXV3b7e7GZT5u1JkIT.gm', '어드민',
         'ADMIN'), -- password: abc123
-       (2, 'alstn1@gmail.com', '1234', '구름1', 'USER'),
-       (3, 'alstn2@gmail.com', '1234', '구름2', 'USER'),
-       (4, 'alstn3@gmail.com', '1234', '구름3', 'USER'),
-       (5, 'alstn4@gmail.com', '1234', '구름4', 'USER');
+       ('alstn1@gmail.com', '1234', '구름1', 'USER'),
+       ('alstn2@gmail.com', '1234', '구름2', 'USER'),
+       ('alstn3@gmail.com', '1234', '구름3', 'USER'),
+       ('alstn4@gmail.com', '1234', '구름4', 'USER');
 
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('고풍 한옥 마을', '한국의 전통적인 아름다움이 당신을 맞이합니다.', 'https://via.placeholder.com/150/92c952'),

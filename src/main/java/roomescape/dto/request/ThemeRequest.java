@@ -6,7 +6,7 @@ import roomescape.domain.theme.Theme;
 
 public record ThemeRequest(
         @NotBlank(message = "테마 이름을 입력해주세요.")
-        @Size(min = 1, max = 255, message = "테마 이름은 1자 이상 255자 이하로 입력해주세요.")
+        @Size(min = 1, max = 30, message = "테마 이름은 1자 이상 255자 이하로 입력해주세요.")
         String name,
 
         @NotBlank(message = "테마 설명을 입력해주세요.")

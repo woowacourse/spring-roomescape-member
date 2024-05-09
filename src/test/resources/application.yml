@@ -7,7 +7,7 @@ spring:
       path: /h2-console
   sql:
     init:
-      data-locations: classpath:/data-test.sql
+      data-locations:
 
 security:
   jwt:

@@ -15,7 +15,7 @@ public record SignupRequest(
         String password,
 
         @NotBlank(message = "이름은 필수 입력 값입니다.")
-        @Size(min = 1, max = 255, message = "이름은 1자 이상 255자 이하로 입력해주세요.")
+        @Size(min = 1, max = 30, message = "이름은 1자 이상 30자 이하로 입력해주세요.")
         String name
 ) {
 }

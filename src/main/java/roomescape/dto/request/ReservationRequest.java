@@ -21,8 +21,4 @@ public record ReservationRequest(
         @Positive
         Long themeId
 ) {
-
-    public Reservation toReservation(Member member, ReservationTime time, Theme theme) {
-        return new Reservation(date, member, time, theme);
-    }
 }
