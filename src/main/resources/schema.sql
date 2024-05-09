@@ -26,3 +26,12 @@ CREATE TABLE IF NOT EXISTS reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     UNIQUE (date, time_id, theme_id)
 );
+
+CREATE TABLE IF NOT EXISTS login_member
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
