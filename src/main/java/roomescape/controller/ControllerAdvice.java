@@ -1,9 +1,11 @@
 package roomescape.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.controller.dto.ErrorMessageResponse;
+import roomescape.exception.AuthorizationException;
 import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
@@ -19,5 +21,11 @@ public class ControllerAdvice {
     public ResponseEntity<ErrorMessageResponse> handleIllegalArgumentException(RoomescapeException e) {
         ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorMessageResponse> handleAuthorizationException(AuthorizationException e) {
+        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }
