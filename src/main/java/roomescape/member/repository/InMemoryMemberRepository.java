@@ -48,6 +48,21 @@ public class InMemoryMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findByEmail(final String email) {
+        final String sql = "SELECT * FROM member WHERE email = :email";
+
+        try {
+            final MapSqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("email", email);
+            final Member member = template.queryForObject(sql, param, itemRowMapper());
+
+            return Optional.of(member);
+        } catch (final EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Member save(final Member member) {
         final String sql = """
             INSERT INTO member (role, password, name, email)

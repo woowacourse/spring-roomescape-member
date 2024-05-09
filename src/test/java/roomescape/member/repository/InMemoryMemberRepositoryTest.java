@@ -57,4 +57,17 @@ class InMemoryMemberRepositoryTest {
                 () -> assertThat(savedMember.getName().value()).isEqualTo(name)
         );
     }
+
+    @DisplayName("주어진 이메일에 일치한 member를 찾아 반환한다.")
+    @Test
+    void findByEmailTest() {
+        // Given
+        final String memberEmail = "user@mail.com";
+
+        // When
+        final Optional<Member> member = memberRepository.findByEmail(memberEmail);
+
+        // Then
+        assertThat(member).isPresent();
+    }
 }
