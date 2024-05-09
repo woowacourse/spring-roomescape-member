@@ -32,9 +32,17 @@ VALUES ('20:00');
 INSERT INTO reservation(date, time_id, theme_id)
 VALUES (DATEADD('DAY', -2, CURRENT_DATE()), 1, 1);
 INSERT INTO reservation(date, time_id, theme_id)
-VALUES (DATEADD('YEAR', 1, CURRENT_DATE()), 2, 2);
+VALUES (DATEADD('DAY', 16, CURRENT_DATE()), 1, 2);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('YEAR', 1, CURRENT_DATE()), 2, 1);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('DAY', 1, CURRENT_DATE()), 2, 2);
 INSERT INTO reservation(date, time_id, theme_id)
 VALUES (DATEADD('DAY', -4, CURRENT_DATE()), 3, 3);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('DAY', 4, CURRENT_DATE()), 3, 4);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('MONTH', 1, CURRENT_DATE()), 3, 4);
 INSERT INTO reservation(date, time_id, theme_id)
 VALUES (DATEADD('DAY', 4, CURRENT_DATE()), 3, 4);
 
@@ -56,8 +64,18 @@ VALUES (1, 1);
 INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (1, 3);
 INSERT INTO member_reservation(member_id, reservation_id)
-VALUES (1, 2);
+VALUES (1, 7);
 INSERT INTO member_reservation(member_id, reservation_id)
-VALUES (2, 3);
+VALUES (2, 2);
 INSERT INTO member_reservation(member_id, reservation_id)
-VALUES (3, 4);
+VALUES (2, 4);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (2, 8);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 3);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 5);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 6);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 7);
