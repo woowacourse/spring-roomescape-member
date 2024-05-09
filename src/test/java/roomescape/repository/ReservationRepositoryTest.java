@@ -105,9 +105,8 @@ class ReservationRepositoryTest {
         // when
         final List<Reservation> actual = reservationRepository.findAllByDateAndThemeId(date, themeId);
         final List<Reservation> expected = savedReservations.stream()
-                .filter(reservation ->
-                        reservation.getDate().equals(date) &&
-                                reservation.getTheme().getId().equals(themeId))
+                .filter(reservation -> reservation.getDate().equals(date) &&
+                        reservation.getTheme().getId().equals(themeId))
                 .toList();
 
         // then
@@ -189,6 +188,24 @@ class ReservationRepositoryTest {
 
         // when & then
         assertThat(reservationRepository.existsByThemeId(notExistThemeId)).isFalse();
+    }
+
+    @Test
+    @DisplayName("해당 날짜와 시간 그리고 테마에 예약이 되어 있는지 확인한다.")
+    void existsByDateAndTimeIdAndThemeId() {
+        // given
+        sampleReservations.forEach(reservationRepository::save);
+        final Reservation reservation = sampleReservations.get(0);
+
+        // when
+        final boolean actual = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        );
+
+        // then
+        assertThat(actual).isTrue();
     }
 
     @Test

@@ -60,7 +60,8 @@ public class ReservationService {
         final Theme theme = getWithValidateThemeNotFound(reservationRequest.themeId());
 
         final Reservation parsedReservation = reservationRequest.toDomain(time, theme);
-        final boolean isExistsReservation = reservationRepository.existsByDateAndTimeId(time.getId(), parsedReservation.getDate());
+        final boolean isExistsReservation = reservationRepository
+                .existsByDateAndTimeIdAndThemeId(parsedReservation.getDate(), time.getId(), theme.getId());
         validateTimeDuplicated(isExistsReservation);
 
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
