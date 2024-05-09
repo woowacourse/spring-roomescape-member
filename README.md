@@ -58,6 +58,6 @@
 
 #### 인증 정보 조회
 
-- [ ] GET /login/check
-    - [ ] Cookie를 이용하여 로그인 사용자의 정보를 확인
-    - [ ] 응답 body에 "name"값으로 사용자 이름을 포함합니다.
+- [x] GET /login/check
+    - [x] Cookie를 이용하여 로그인 사용자의 정보를 확인
+    - [x] 응답 body에 "name"값으로 사용자 이름을 포함합니다.
