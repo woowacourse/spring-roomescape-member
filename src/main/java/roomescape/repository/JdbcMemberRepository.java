@@ -45,14 +45,14 @@ public class JdbcMemberRepository {
     public Optional<Member> findMemberByEmail(String email) {
         String sql = "SELECT id, email, password, name FROM member WHERE email = :email";
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("email", email);
-        Member member = jdbcTemplate.queryForObject(sql, paramMap, rowMapper);
-        return Optional.ofNullable(member);
+        List<Member> members = jdbcTemplate.query(sql, paramMap, rowMapper);
+        return Optional.ofNullable(members.isEmpty() ? null : members.get(0));
     }
 
     public Optional<Member> findMemberById(long id) {
         String sql = "SELECT id, email, password, name FROM member WHERE id = :id";
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("id", id);
-        Member member = jdbcTemplate.queryForObject(sql, paramMap, rowMapper);
-        return Optional.ofNullable(member);
+        List<Member> members = jdbcTemplate.query(sql, paramMap, rowMapper);
+        return Optional.ofNullable(members.isEmpty() ? null : members.get(0));
     }
 }
