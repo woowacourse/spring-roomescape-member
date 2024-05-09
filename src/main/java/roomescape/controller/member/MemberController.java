@@ -1,5 +1,6 @@
 package roomescape.controller.member;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<SignupResponse> save(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<SignupResponse> save(@Valid @RequestBody SignupRequest signupRequest) {
         return ResponseEntity.ok(memberService.save(signupRequest));
     }
 }

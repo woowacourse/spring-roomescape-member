@@ -18,6 +18,7 @@ public class AuthService {
     }
 
     public String createToken(final LoginRequest loginRequest) {
+        memberService.findByEmail(loginRequest.email());
         return jwtTokenProvider.createToken(loginRequest.email());
     }
 
