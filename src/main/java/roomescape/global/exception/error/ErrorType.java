@@ -10,6 +10,13 @@ public enum ErrorType {
     REQUEST_DATA_BLANK("요청 데이터에 유효하지 않은 값(null OR 공백)이 포함되어있습니다."),
     INVALID_REQUEST_DATA_TYPE("요청 데이터 형식이 올바르지 않습니다."),
 
+    // 401 Unauthorized
+    EXPIRED_TOKEN("만료된 JWT 토큰입니다."),
+    UNSUPPORTED_TOKEN("지원하지 않는 JWT 토큰입니다."),
+    MALFORMED_TOKEN("형식이 맞지 않는 JWT 토큰입니다."),
+    INVALID_SIGNATURE_TOKEN("잘못된 JWT 토큰 Signature 입니다."),
+    INVALID_TOKEN("JWT 토큰의 Claim 이 비어있습니다."),
+
     // 404 Not Found
     MEMBER_NOT_FOUND("회원(Member) 정보가 존재하지 않습니다."),
 

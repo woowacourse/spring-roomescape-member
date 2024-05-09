@@ -16,6 +16,7 @@ import java.util.Optional;
 public class MemberDao {
 
     private final static RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> new Member(
+            resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password")
@@ -39,6 +40,17 @@ public class MemberDao {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Member(id, member);
+    }
+
+    public Optional<Member> findById(final Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     // WHY: 데이터 조회 시, 데이터가 존재하지 않는 부분에 대한 예외를 DAO에서 처리해주게 된다면, DAO가 여러 종류일 때 DB 벤더에 따른 예외처리를 각 DAO에 중복 작성해주어야 하기 때문에
