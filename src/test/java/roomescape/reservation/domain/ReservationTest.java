@@ -15,13 +15,11 @@ class ReservationTest {
     void equals() {
         //given
         long id = 1L;
-        String name1 = "choco";
         LocalDate date1 = LocalDate.now().plusYears(1);
         long timeId = 1;
         LocalTime localTime = LocalTime.of(12, 23, 0);
         ReservationTime time1 = new ReservationTime(timeId, localTime);
 
-        String name2 = "pororo";
         LocalDate date2 = LocalDate.now().plusYears(1);
         LocalTime time2 = LocalTime.of(11, 23, 0);
 
@@ -30,8 +28,8 @@ class ReservationTest {
         Theme theme2 = new Theme(themeId, "name", "description", "thumbnail");
 
         //when
-        Reservation reservation1 = new Reservation(id, name1, date1, time1, theme1);
-        Reservation reservation2 = new Reservation(id, name2, date2, time1, theme2);
+        Reservation reservation1 = new Reservation(id, date1, time1, theme1);
+        Reservation reservation2 = new Reservation(id, date2, time1, theme2);
 
         //then
         assertThat(reservation1).isEqualTo(reservation2);
@@ -50,7 +48,7 @@ class ReservationTest {
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
 
         //when & then
-        assertThatThrownBy(() -> new Reservation(1L, "테스트", localDate, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, localDate, time, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

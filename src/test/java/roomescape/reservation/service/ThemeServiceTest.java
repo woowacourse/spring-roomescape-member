@@ -120,7 +120,7 @@ class ThemeServiceTest {
         String thumbnail2 = "thumbnail2";
         themeService.create(new ThemeRequest(name2, description2, thumbnail2));
 
-        reservationRepository.save(new Reservation(1L, "siso", LocalDate.of(2100, 5, 5),
+        reservationRepository.save(new Reservation(1L, LocalDate.of(2100, 5, 5),
                 new ReservationTime(1L, LocalTime.now()),
                 new Theme(1L, name1, description1, thumbnail1)));
 

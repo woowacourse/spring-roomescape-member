@@ -40,6 +40,7 @@ public class MemberService {
     public Object findLoginMemberByToken(String token) {
         String email = tokenProvider.getPayload(token);
         Member member = memberRepository.findByEmail(email);
+        validateExistMember(member);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 

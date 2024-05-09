@@ -39,7 +39,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다."));
-
         return memberService.findLoginMemberByToken(token);
     }
 

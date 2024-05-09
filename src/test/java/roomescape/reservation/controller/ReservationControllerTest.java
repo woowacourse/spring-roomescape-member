@@ -12,6 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.member.domain.Role;
+import roomescape.member.dto.LoginMember;
+import roomescape.member.dto.LoginRequest;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
@@ -33,19 +39,27 @@ class ReservationControllerTest extends ControllerTest {
     @Autowired
     ThemeService themeService;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     ReservationTimeResponse reservationTimeResponse;
     ThemeResponse themeResponse;
 
     @BeforeEach
     void setData() {
+        String sql = """ 
+                  INSERT INTO member(name, email, password, role)
+                  VALUES ('관리자', 'admin@email.com', 'password', 'ADMIN');
+                """;
+        jdbcTemplate.update(sql);
         reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
         themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
         reservationService.create(new ReservationRequest(
-                        "choco",
                         "2099-04-23",
                         reservationTimeResponse.id(),
                         themeResponse.id()
-                )
+                ),
+                new LoginMember(1, "siso", "test@email.com", Role.MEMBER)
         );
     }
 
@@ -70,19 +84,27 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("예약 생성 시 200을 반환한다.")
+    @DisplayName("예약 생성 시 201을 반환한다.")
     @Test
     void create() {
         //given
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2099-08-05");
         reservation.put("timeId", reservationTimeResponse.id());
         reservation.put("themeId", themeResponse.id());
 
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest("admin@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()

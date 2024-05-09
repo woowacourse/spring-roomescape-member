@@ -92,7 +92,6 @@ class ReservationTimeServiceTest {
         reservationTimeRepository.save(new ReservationTime(id, localTime));
 
         //when
-        System.out.println(reservationRepository.findAll());
         reservationTimeService.delete(id);
 
         //then
@@ -107,7 +106,7 @@ class ReservationTimeServiceTest {
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime saveTime = reservationTimeRepository.save(new ReservationTime(id, localTime));
 
-        Reservation reservation = new Reservation(1L, "test", LocalDate.now().plusYears(1), saveTime,
+        Reservation reservation = new Reservation(1L, LocalDate.now().plusYears(1), saveTime,
                 new Theme("name", "description", "thumbnail"));
         reservationRepository.save(reservation);
 
@@ -137,7 +136,7 @@ class ReservationTimeServiceTest {
         ReservationTime saveTime2 = reservationTimeRepository.save(new ReservationTime(id2, localTime2));
 
         LocalDate date = LocalDate.now().plusYears(1);
-        Reservation reservation = new Reservation(1L, "test", date, saveTime1,
+        Reservation reservation = new Reservation(1L, date, saveTime1,
                 new Theme(1L, "name", "description", "thumbnail"));
         reservationRepository.save(reservation);
 

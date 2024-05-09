@@ -10,7 +10,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.LoginMember;
 import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
@@ -51,7 +53,6 @@ class ReservationServiceTest {
     void find() {
         //given
         long id = 1;
-        String name = "choco";
         LocalDate date = LocalDate.now().plusYears(1);
         long timeId = 1L;
         long themeId = 1L;
@@ -59,7 +60,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
 
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        reservationRepository.save(new Reservation(id, name, date, reservationTime, theme));
+        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
 
         //when
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -67,7 +68,6 @@ class ReservationServiceTest {
         //then
         assertAll(
                 () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(reservations.get(0).name()).isEqualTo(name),
                 () -> assertThat(reservations.get(0).date()).isEqualTo(date),
                 () -> assertThat(reservations.get(0).time().id()).isEqualTo(timeId),
                 () -> assertThat(reservations.get(0).time().startAt()).isEqualTo(localTime)
@@ -78,20 +78,18 @@ class ReservationServiceTest {
     @Test
     void create() {
         //given
-        String name = "choco";
         String date = "2100-04-18";
         long timeId = 1L;
         long themeId = 1L;
         reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
         themeRepository.save(new Theme(themeId, "name", "description", "thumbnail"));
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
 
         //when
-        ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+        ReservationResponse reservationResponse = reservationService.create(reservationRequest, new LoginMember(1L, "test", "test@email.com", Role.MEMBER));
 
         //then
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo(name),
                 () -> assertThat(reservationResponse.date()).isEqualTo(date),
                 () -> assertThat(reservationResponse.time().id()).isEqualTo(timeId)
         );
@@ -101,19 +99,19 @@ class ReservationServiceTest {
     @Test
     void NotExistTimeReservation() {
         //given
-        String name = "choco";
         String date = "2099-04-18";
         long timeId = 2L;
         long themeId = 1L;
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
         themeRepository.save(theme);
-        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time, theme));
+        reservationRepository.save(new Reservation(1L, LocalDate.parse(date), time, theme));
 
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(reservationRequest,
+                new LoginMember(1, "test", "test@email.com", Role.MEMBER)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -121,7 +119,6 @@ class ReservationServiceTest {
     @Test
     void NotExistThemeReservation() {
         //given
-        String name = "choco";
         String date = "2099-04-18";
         long timeId = 1L;
         long themeId = 2L;
@@ -130,10 +127,11 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
         themeRepository.save(theme);
 
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(reservationRequest,
+                new LoginMember(1, "test", "test@email.com", Role.MEMBER)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -141,7 +139,6 @@ class ReservationServiceTest {
     @Test
     void duplicateReservation() {
         //given
-        String name = "choco";
         String date = "2099-04-18";
         long timeId = 1L;
         long themeId = 1L;
@@ -149,12 +146,13 @@ class ReservationServiceTest {
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
         themeRepository.save(theme);
-        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time, theme));
+        reservationRepository.save(new Reservation(1L, LocalDate.parse(date), time, theme));
 
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(reservationRequest,
+                new LoginMember(1, "test", "test@email.com", Role.MEMBER)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -163,7 +161,6 @@ class ReservationServiceTest {
     void delete() {
         //given
         long id = 1;
-        String name = "choco";
         LocalDate date = LocalDate.now().plusYears(1);
         long timeId = 1L;
         long themeId = 1L;
@@ -171,7 +168,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
 
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        reservationRepository.save(new Reservation(id, name, date, reservationTime, theme));
+        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
 
         //when
         reservationService.delete(id);

@@ -25,7 +25,6 @@ public class FakeReservationDao implements ReservationRepository {
         reservations.put((long) reservations.size() + 1, reservation);
         return new Reservation(
                 (long) reservations.size(),
-                reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()

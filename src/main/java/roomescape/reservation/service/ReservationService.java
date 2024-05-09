@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.LoginMember;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -35,7 +36,7 @@ public class ReservationService {
         return reservationRepository.findAll().stream().map(ReservationResponse::from).toList();
     }
 
-    public ReservationResponse create(ReservationRequest reservationRequest) {
+    public ReservationResponse create(ReservationRequest reservationRequest, LoginMember member) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
         Theme theme = themeRepository.findById(reservationRequest.themeId());
         LocalDate date = LocalDate.parse(reservationRequest.date());
@@ -44,11 +45,9 @@ public class ReservationService {
         validateThemeExist(theme, reservationRequest.themeId());
         validateReservationDuplicate(reservationRequest, date);
 
-        //TODO 로직 수정 예정
-        Member member = memberRepository.save(new Member(reservationRequest.name(), "email", "password", Role.MEMBER));
         Reservation reservation = reservationRepository.save(
-                new Reservation(reservationRequest.name(), date, reservationTime, theme));
-        reservationRepository.saveReservationList(member.getId(), reservation.getId());
+                new Reservation(date, reservationTime, theme));
+        reservationRepository.saveReservationList(member.id(), reservation.getId());
 
         return ReservationResponse.from(reservation);
     }
