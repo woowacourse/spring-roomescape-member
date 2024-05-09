@@ -25,7 +25,7 @@ public class ReservationController {
     }
 
     // 관리자 예약 등록
-    @PostMapping("/admin/reservation")
+    @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> addReservationByAdmin(
             @RequestBody ReservationRequest reservationRequest,
             LoginMember loginMember
