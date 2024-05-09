@@ -48,7 +48,7 @@ public class LoginController {
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Token token = cookieManager.getToken(request.getCookies());
         Long memberId = loginService.findMemberIdByToken(token);
-        MemberResponse memberResponse = memberService.findMemberById(memberId);
+        MemberResponse memberResponse = new MemberResponse(memberService.findMemberById(memberId));
         return ResponseEntity.ok(memberResponse);
     }
 

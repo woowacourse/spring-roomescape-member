@@ -2,7 +2,6 @@ package roomescape.service.serviceimpl;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.dto.response.MemberResponse;
 import roomescape.repository.MemberDao;
 
 @Service
@@ -13,8 +12,9 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public MemberResponse findMemberById(Long id) {
-        return new MemberResponse(findById(id));
+    // TODO dto 반환으로 일관화 시키기
+    public Member findMemberById(Long id) {
+        return findById(id);
     }
 
     public Member findMemberByEmailAndPassword(final String email, final String password) {
