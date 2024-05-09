@@ -33,6 +33,9 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     }
 
     private String extractTokenFromCookies(final Cookie[] cookies) {
+        if (cookies == null || cookies.length == 0) {
+            return "";
+        }
         return Arrays.asList(cookies)
                 .stream()
                 .filter(cookie -> cookie.getName().equals("token"))

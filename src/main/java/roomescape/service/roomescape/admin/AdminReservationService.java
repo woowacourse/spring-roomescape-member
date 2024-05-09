@@ -2,6 +2,7 @@ package roomescape.service.roomescape.admin;
 
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.request.AdminReservationSaveRequest;
+import roomescape.controller.dto.response.AdminReservationResponse;
 import roomescape.domain.member.Member;
 import roomescape.domain.roomescape.Reservation;
 import roomescape.domain.roomescape.ReservationTime;
@@ -30,12 +31,13 @@ public class AdminReservationService {
         this.memberDao = memberDao;
     }
 
-    public Reservation save(final AdminReservationSaveRequest reservationSaveRequest) {
+    public AdminReservationResponse save(final AdminReservationSaveRequest reservationSaveRequest) {
+        Member member = findMemberById(reservationSaveRequest);
         ReservationTime reservationTime = findReservationTimeById(reservationSaveRequest);
         Theme theme = findThemeById(reservationSaveRequest);
-        Member member = findMemberById(reservationSaveRequest);
 
-        return new Reservation()
+        Reservation reservation = reservationDao.save(reservationSaveRequest.toEntity(member, reservationTime, theme));
+        return AdminReservationResponse.from(reservation);
     }
 
     private ReservationTime findReservationTimeById(final AdminReservationSaveRequest reservationSaveRequest) {
