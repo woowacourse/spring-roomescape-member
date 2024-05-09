@@ -33,7 +33,7 @@ class AuthControllerTest extends ControllerTest {
 
     @DisplayName("로그인 시, 200을 반환한다.")
     @Test
-    void create() {
+    void login() {
         //given
         Map<String, String> params = new HashMap<>();
         params.put("email", "dev.chocochip@gmail.com");
@@ -108,5 +108,57 @@ class AuthControllerTest extends ControllerTest {
 
         //then
         assertThat(cookie).isBlank();
+    }
+
+    @DisplayName("회원 가입 시, 201을 반환한다.")
+    @Test
+    void signup() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "chocochip2");
+        params.put("email", "dev.chocochip2@gmail.com");
+        params.put("password", "12345");
+
+        //when & then
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/signup")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("중복된 메일로 회원 생성 시, 409을 반환한다.")
+    @Test
+    void createDuplicatedEmail() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "chocochip3");
+        params.put("email", "dev.chocochip2@gmail.com");
+        params.put("password", "1234");
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/signup")
+                .then().log().all()
+                .statusCode(201);
+
+        //when & then
+        params.put("name", "chocchocchop");
+
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/signup")
+                .then().log().all()
+                .statusCode(409);
+
     }
 }

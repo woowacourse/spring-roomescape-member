@@ -115,7 +115,7 @@ function register(event) {
     };
 
     // AJAX 요청 생성 및 전송
-    fetch('/members', {
+    fetch('/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

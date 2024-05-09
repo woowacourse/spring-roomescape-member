@@ -92,4 +92,16 @@ public class MemberDao implements MemberRepository {
 
         return jdbcTemplate.query(sql, ResultSet::next, email, password);
     }
+
+    @Override
+    public boolean existsBy(String email) {
+        String sql = """
+                SELECT 1
+                FROM member 
+                WHERE email = ?
+                LIMIT 1;
+                """;
+
+        return jdbcTemplate.query(sql, ResultSet::next, email);
+    }
 }

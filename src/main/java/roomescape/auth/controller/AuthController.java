@@ -73,7 +73,7 @@ public class AuthController {
         return "signup";
     }
 
-    @PostMapping("/members")
+    @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
         authService.signUp(signUpRequest);
         return ResponseEntity.created(URI.create("/login")).build();

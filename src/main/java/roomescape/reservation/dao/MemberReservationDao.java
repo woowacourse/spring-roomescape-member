@@ -137,7 +137,7 @@ public class MemberReservationDao implements MemberReservationRepository {
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN member_reservation AS mr ON mr.reservation_id = r.id
                 INNER JOIN member AS m ON m.id = mr.member_id
-                WHERE th.id = ?  AND r.date BETWEEN ? AND ?;
+                WHERE th.id = ? AND r.date BETWEEN ? AND ?;
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, theme.getId(), startDate, endDate);

@@ -101,4 +101,15 @@ class AuthServiceTest {
                 () -> assertThat(memberOptional.get().getName()).isEqualTo(getMemberChoco().getName())
         );
     }
+
+    @DisplayName("중복 이메일 사용자 생성 시, 예외가 발생한다.")
+    @Test
+    void createDuplicatedEmail() {
+        //given
+
+        //when
+
+        //then
+
+    }
 }

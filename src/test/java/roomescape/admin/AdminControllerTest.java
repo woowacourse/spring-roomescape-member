@@ -133,23 +133,4 @@ class AdminControllerTest extends ControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
-
-    @DisplayName("회원 가입 시 201을 반환한다.")
-    @Test
-    void signUp() {
-        //given
-        String password = "1234";
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", getMemberChoco().getName());
-        params.put("email", getMemberChoco().getEmail());
-        params.put("password", password);
-
-        //when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/members")
-                .then().log().all()
-                .statusCode(201);
-    }
 }

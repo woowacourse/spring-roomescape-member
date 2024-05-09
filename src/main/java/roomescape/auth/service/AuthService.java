@@ -40,6 +40,9 @@ public class AuthService {
     }
 
     public void signUp(SignUpRequest signUpRequest) {
+        if (memberRepository.existsBy(signUpRequest.email())) {
+            throw new BusinessException(ErrorType.DUPLICATED_EMAIL_ERROR);
+        }
         memberRepository.save(
                 new MemberSignUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password(), Role.USER));
     }

@@ -15,4 +15,6 @@ public interface MemberRepository {
     List<Member> findAll();
 
     boolean existsBy(String email, String password);
+
+    boolean existsBy(String email);
 }

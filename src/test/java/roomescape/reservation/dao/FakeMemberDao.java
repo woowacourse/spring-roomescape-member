@@ -32,6 +32,12 @@ public class FakeMemberDao implements MemberRepository {
     }
 
     @Override
+    public boolean existsBy(String email) {
+        return members.values().stream()
+                .anyMatch(member -> member.getEmail().equals(email));
+    }
+
+    @Override
     public Member save(MemberSignUp memberSignUp) {
         Member member = new Member((long) members.size() + 1, memberSignUp.name(), memberSignUp.email(), Role.USER);
         members.put((long) members.size() + 1, member);
