@@ -23,9 +23,9 @@ public class MemberController {
     public ResponseEntity<List<MemberResponse>> findAll() {
         final List<Member> members = memberService.readAll();
 
-        final List<MemberResponse> memberResponses = changeToMemberResponses(members);
+        final List<MemberResponse> memberResponse = changeToMemberResponses(members);
 
-        return ResponseEntity.ok(memberResponses);
+        return ResponseEntity.ok(memberResponse);
     }
 
     private MemberResponse changeToMemberResponse(final Member member) {
