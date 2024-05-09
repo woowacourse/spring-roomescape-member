@@ -1,4 +1,4 @@
-package roomescape.ui;
+package roomescape.controller.view;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class AdminViewControllerTest {
+class AdminControllerTest {
 
     @Test
     @DisplayName("방탈출 관리 홈페이지를 매핑한다.")

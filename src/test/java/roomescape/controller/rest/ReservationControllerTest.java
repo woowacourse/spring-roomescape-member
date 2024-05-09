@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.rest.request.ReservationRequest;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationDao;
 

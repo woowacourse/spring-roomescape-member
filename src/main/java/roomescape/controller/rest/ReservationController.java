@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.rest;
 
 import java.net.URI;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.rest.request.ReservationRequest;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
