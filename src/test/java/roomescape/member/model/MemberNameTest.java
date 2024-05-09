@@ -23,11 +23,11 @@ class MemberNameTest {
     @Test
     void validateNameLengthTest() {
         // Given
-        final String invalidNameInput = "kelly6";
+        final String invalidNameInput = "kelly6bff";
 
         // When & Then
         assertThatThrownBy(() -> new MemberName(invalidNameInput))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("회원 이름은 5글자 이하여만 합니다.");
+                .hasMessage("회원 이름은 8글자 이하여만 합니다.");
     }
 }

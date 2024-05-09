@@ -2,7 +2,7 @@ package roomescape.member.model;
 
 public record MemberName(String value) {
 
-    private static final int MAXIMUM_ENABLE_NAME_LENGTH = 5;
+    private static final int MAXIMUM_ENABLE_NAME_LENGTH = 8;
 
     public MemberName {
         validateValue(value);
