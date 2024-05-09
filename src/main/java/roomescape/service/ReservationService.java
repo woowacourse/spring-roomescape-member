@@ -8,9 +8,8 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
 import roomescape.domain.member.Member;
-import roomescape.dto.LoginMember;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.reservationDto.ReservationRequest;
+import roomescape.dto.reservationDto.ReservationResponse;
 import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -38,14 +37,10 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public Long addReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
-        ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
-        Theme theme = findTheme(reservationRequest.themeId());
-        Member member = findMember(loginMember.id());
-
-        validateAddable(reservationRequest, reservationTime);
-        Reservation reservationToSave = reservationRequest.toEntity(reservationTime, theme, member);
-        return reservationRepository.save(reservationToSave);
+    public Long addReservation(ReservationRequest request) {
+        Reservation reservation = convertReservation(request);
+        validateAddable(reservation);
+        return reservationRepository.save(reservation);
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -63,6 +58,13 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         Reservation reservation = findReservationById(id);
         reservationRepository.delete(reservation.getId());
+    }
+
+    private Reservation convertReservation(ReservationRequest request) {
+        ReservationTime reservationTime = findReservationTime(request.timeId());
+        Theme theme = findTheme(request.themeId());
+        Member member = findMember(request.memberId());
+        return request.toEntity(reservationTime, theme, member);
     }
 
     private Reservation findReservationById(Long id) {
@@ -97,20 +99,20 @@ public class ReservationService {
                 ));
     }
 
-    private void validateAddable(ReservationRequest reservationRequest, ReservationTime reservationTime) {
-        validateReservationNotDuplicate(reservationRequest);
-        validateUnPassedDate(reservationRequest.date(), reservationTime.getStartAt());
+    private void validateAddable(Reservation reservation) {
+        validateReservationNotDuplicate(reservation);
+        validateUnPassedDate(reservation.getDate(), reservation.getTime().getStartAt());
     }
 
-    private void validateReservationNotDuplicate(ReservationRequest reservationRequest) {
+    private void validateReservationNotDuplicate(Reservation reservation) {
         if (reservationRepository.existDateTimeAndTheme(
-                reservationRequest.date(),
-                reservationRequest.timeId(),
-                reservationRequest.themeId())
+                reservation.getDate(),
+                reservation.getTimeId(),
+                reservation.getThemeId())
         ) {
             throw new ClientErrorExceptionWithLog(
                     "[ERROR] 해당 시간에 동일한 테마가 예약되어있어 예약이 불가능합니다.",
-                    "생성 예약 정보 : " + reservationRequest
+                    "생성 예약 정보 : " + reservation
             );
         }
     }
