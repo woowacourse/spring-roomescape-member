@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.dto.LogInRequest;
+import roomescape.dto.ProfileNameResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,5 +33,28 @@ class SiteUserEndpointTest {
                 .extract().cookie("token");
 
         assertThat(token).isNotNull();
+    }
+
+    @DisplayName("로그인 후 프로필 이름 받아오기")
+    @Test
+    void loginCheck_success() { //todo: 테스트 최적화 & dinamicTest로 변경하기
+        LogInRequest requestBody = new LogInRequest("sancho@sancho.com", "sancho");
+
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().cookie("token");
+        ProfileNameResponse response = RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().as(ProfileNameResponse.class);
+
+        assertThat(token).isNotNull();
+        assertThat(response.name()).isEqualTo("산초");
     }
 }
