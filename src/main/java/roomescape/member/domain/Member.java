@@ -24,6 +24,10 @@ public class Member {
         return id.equals(other.id);
     }
 
+    public boolean isAdminUser() {
+        return role.equals(Role.ADMIN);
+    }
+
     public Long getId() {
         return id;
     }

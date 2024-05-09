@@ -4,11 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.domain.Member;
-import roomescape.member.domain.Role;
+import roomescape.auth.service.AuthService;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.UnauthorizedException;
-import roomescape.auth.service.AuthService;
+import roomescape.member.domain.Member;
 
 import java.util.Arrays;
 
@@ -38,10 +37,14 @@ public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
                 .getValue();
 
         Member member = authService.findMemberByToken(accessToken);
-        if (!member.getRole().equals(Role.ADMIN)) {
+
+        checkAdminUser(member);
+        return true;
+    }
+
+    private void checkAdminUser(Member member) {
+        if (!member.isAdminUser()) {
             throw new ForbiddenException("허용되지 않는 사용자입니다.");
         }
-
-        return true;
     }
 }
