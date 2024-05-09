@@ -282,7 +282,7 @@ content-type: application/json
 ### 인기 테마 목록 조회
 - Request
 ```http request
-GET /themes/hot?date=${date} HTTP/1.1
+GET /themes/hot?start=${start}&end=${end}&limit=${limit}&offset=${offset} HTTP/1.1
 content-type: application/json
 ```
 - Response
