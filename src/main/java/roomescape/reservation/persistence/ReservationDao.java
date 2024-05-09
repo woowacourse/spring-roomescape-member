@@ -67,6 +67,44 @@ public class ReservationDao implements ReservationRepository {
         return jdbcTemplate.query(sql, this::mapRowToReservation);
     }
 
+    @Override
+    public List<Reservation> findAllByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId,
+                                                                       LocalDate fromDate, LocalDate toDate) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
+                FROM 
+                    reservation AS r 
+                INNER JOIN 
+                    reservation_time AS t 
+                ON 
+                    r.time_id = t.id
+                INNER JOIN 
+                    theme AS th
+                ON
+                    r.theme_id = th.id
+                INNER JOIN 
+                    member AS m
+                ON 
+                    r.member_id = m.id
+                WHERE
+                    r.member_id = ? AND r.theme_id = ? AND r.date >= ? AND r.date <= ? 
+                """;
+        return jdbcTemplate.query(sql, this::mapRowToReservation, memberId, themeId, fromDate, toDate);
+    }
+
     private Reservation mapRowToReservation(ResultSet resultSet, int rowNumber) throws SQLException {
         ReservationTime reservationTime = mapRowToReservationTime(resultSet);
         Theme theme = mapRowToTheme(resultSet);

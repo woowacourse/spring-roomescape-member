@@ -31,10 +31,15 @@ class ReservationRepositoryTest extends RepositoryTest {
                 .usingGeneratedKeyColumns("id");
         String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         jdbcTemplate.update(insertTimeSql, Time.valueOf(MIA_RESERVATION_TIME));
-        String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertThemeSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        String insertMemberSql = "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(insertMemberSql, MIA_NAME, MIA_EMAIL, TEST_PASSWORD, USER.name());
+        String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?), (?, ?, ?)";
+        jdbcTemplate.update(insertThemeSql,
+                WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL,
+                HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        String insertMemberSql = "INSERT INTO member (name, email, password, role) " +
+                "VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
+        jdbcTemplate.update(insertMemberSql,
+                MIA_NAME, MIA_EMAIL, TEST_PASSWORD, USER.name(),
+                TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD, USER.name());
     }
 
     @Test
@@ -84,7 +89,7 @@ class ReservationRepositoryTest extends RepositoryTest {
                 .addValue("date", MIA_RESERVATION_DATE)
                 .addValue("time_id", 1L)
                 .addValue("theme_id", 1L);
-        jdbcInsert.executeAndReturnKey(params);
+        jdbcInsert.execute(params);
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -99,6 +104,47 @@ class ReservationRepositoryTest extends RepositoryTest {
             softly.assertThat(reservations).extracting(Reservation::getTime)
                     .extracting(ReservationTime::getStartAt)
                     .containsExactly(MIA_RESERVATION_TIME);
+        });
+    }
+
+    @Test
+    @DisplayName("예약자, 테마, 날짜로 예약 목록을 조회한다.")
+    void findAllByMemberIdAndThemeIdAndDateBetween() {
+        // given
+        jdbcInsert.execute(new MapSqlParameterSource()
+                .addValue("member_id", 1L)
+                .addValue("date", MIA_RESERVATION_DATE)
+                .addValue("time_id", 1L)
+                .addValue("theme_id", 1L));
+
+        jdbcInsert.execute(new MapSqlParameterSource()
+                .addValue("member_id", 1L)
+                .addValue("date", MIA_RESERVATION_DATE.plusDays(2))
+                .addValue("time_id", 1L)
+                .addValue("theme_id", 1L));
+
+        jdbcInsert.execute(new MapSqlParameterSource()
+                .addValue("member_id", 2L)
+                .addValue("date", MIA_RESERVATION_DATE)
+                .addValue("time_id", 1L)
+                .addValue("theme_id", 1L));
+
+        jdbcInsert.execute(new MapSqlParameterSource()
+                .addValue("member_id", 1L)
+                .addValue("date", MIA_RESERVATION_DATE)
+                .addValue("time_id", 1L)
+                .addValue("theme_id", 2L));
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByMemberIdAndThemeIdAndDateBetween(
+                1L, 1L, MIA_RESERVATION_DATE, MIA_RESERVATION_DATE.plusDays(1));
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(reservations).hasSize(1);
+            softly.assertThat(reservations.get(0).getMemberId()).isEqualTo(1);
+            softly.assertThat(reservations.get(0).getThemeId()).isEqualTo(1);
+            softly.assertThat(reservations.get(0).getDate()).isEqualTo(MIA_RESERVATION_DATE);
         });
     }
 

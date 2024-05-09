@@ -7,6 +7,7 @@ import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.exception.ViolationException;
 import roomescape.reservation.domain.ReservationRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -41,6 +42,14 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findAllByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId,
+                                                                               LocalDate fromDate, LocalDate toDate) {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationResponse::from)

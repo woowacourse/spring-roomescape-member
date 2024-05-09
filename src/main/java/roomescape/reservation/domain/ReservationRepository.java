@@ -13,6 +13,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findAllByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId, LocalDate fromDate, LocalDate toDate);
+
     void deleteById(Long id);
 
     int countByTimeId(Long timeId);

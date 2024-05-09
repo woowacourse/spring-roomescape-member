@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -27,9 +28,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpHeaders headers,
                                                                HttpStatusCode status, WebRequest request) {
+        logErrorMessage(e);
         String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
-        logErrorMessage(e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(errorMessage));
     }
@@ -37,13 +38,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers,
                                                                HttpStatusCode status, WebRequest request) {
+        logErrorMessage(e);
         if (e.getCause() instanceof InvalidFormatException invalidFormatException) {
             String errorMessage = getMismatchedInputExceptionMessage(invalidFormatException);
-            logErrorMessage(e);
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(errorMessage));
         }
-        logErrorMessage(e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getMessage()));
     }
@@ -57,10 +57,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return fieldNames + String.format("(type: %s) 필드의 값이 잘못되었습니다.", type);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        logErrorMessage(e);
+        String errorMessage = e.getParameterName() + " 파라미터가 없습니다.";
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(errorMessage));
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        String errorMessage = getMethodArgumentTypeMismatchExceptionMessage(e);
         logErrorMessage(e);
+        String errorMessage = getMethodArgumentTypeMismatchExceptionMessage(e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(errorMessage));
     }
@@ -107,6 +116,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private void logErrorMessage(Exception e) {
-        log.error("[Exception] " + e.getClass() + " [Message] " + e.getMessage());
+        log.error("[Line number] " + e.getStackTrace()[0].getClassName() + " " + e.getStackTrace()[0].getLineNumber() +
+                " [Exception] " + e.getClass() +
+                " [Message] " + e.getMessage());
     }
 }
