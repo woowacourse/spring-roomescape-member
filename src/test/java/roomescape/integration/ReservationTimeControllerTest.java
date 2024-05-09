@@ -35,20 +35,17 @@ import roomescape.repository.ThemeRepository;
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 public class ReservationTimeControllerTest {
 
+    private final LoginUser savedUser = new LoginUser(1L, "name", "email@email.com");
     @LocalServerPort
     int port;
-
     @Autowired
     private ReservationRepository reservationRepository;
-
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
     @Autowired
     private ThemeRepository themeRepository;
-
     private Theme defaultTheme = new Theme("theme1", "description", "thumbnail");
-    private LoginUser savedUser = new LoginUser(1L, "name", "email@email.com");
+
     @BeforeEach
     void initData() {
         RestAssured.port = port;
@@ -56,11 +53,41 @@ public class ReservationTimeControllerTest {
         defaultTheme = themeRepository.save(defaultTheme);
     }
 
+    @DisplayName("여러 예약이 존재할 때 예약 가능 시간을 조회할 수 있다.")
+    @Test
+    void findAvailableTimesTest() {
+        //given
+        Theme theme = new Theme("name", "description", "thumbnail");
+        theme = themeRepository.save(theme);
+
+        ReservationTime usedReservationTime = new ReservationTime(LocalTime.of(11, 30));
+        ReservationTime notUsedReservationTime = new ReservationTime(LocalTime.of(12, 30));
+        usedReservationTime = reservationTimeRepository.save(usedReservationTime);
+        notUsedReservationTime = reservationTimeRepository.save(notUsedReservationTime);
+
+        LocalDate findDate = LocalDate.of(2024, 5, 4);
+        reservationRepository.save(new Reservation(findDate, usedReservationTime, theme, savedUser));
+
+        //when
+        List<AvailableTimeResponse> availableTimeResponses = RestAssured.given().log().all()
+                .when().params(Map.of("date", findDate.toString(),
+                        "themeId", theme.getId()))
+                .get("/times/available")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList("$", AvailableTimeResponse.class);
+
+        assertThat(availableTimeResponses).contains(
+                new AvailableTimeResponse(1, usedReservationTime.getStartAt(), true),
+                new AvailableTimeResponse(2, notUsedReservationTime.getStartAt(), false)
+        );
+    }
+
     @DisplayName("예약 시간이 1개 존재할 때")
     @Nested
     class ExistReservationTime {
-        private ReservationTime usedReservationTime = new ReservationTime(LocalTime.of(11, 30));
         private final ReservationTime notUsedReservationTime = new ReservationTime(LocalTime.of(12, 30));
+        private ReservationTime usedReservationTime = new ReservationTime(LocalTime.of(11, 30));
 
         @BeforeEach
         void init() {
@@ -136,35 +163,5 @@ public class ReservationTimeControllerTest {
             RestAssured.given().when().get("/times")
                     .then().body("size()", is(2));
         }
-    }
-
-    @DisplayName("여러 예약이 존재할 때 예약 가능 시간을 조회할 수 있다.")
-    @Test
-    void findAvailableTimesTest() {
-        //given
-        Theme theme = new Theme("name", "description", "thumbnail");
-        theme = themeRepository.save(theme);
-
-        ReservationTime usedReservationTime = new ReservationTime(LocalTime.of(11, 30));
-        ReservationTime notUsedReservationTime = new ReservationTime(LocalTime.of(12, 30));
-        usedReservationTime = reservationTimeRepository.save(usedReservationTime);
-        notUsedReservationTime = reservationTimeRepository.save(notUsedReservationTime);
-
-        LocalDate findDate = LocalDate.of(2024, 5, 4);
-        reservationRepository.save(new Reservation(findDate, usedReservationTime, theme, savedUser));
-
-        //when
-        List<AvailableTimeResponse> availableTimeResponses = RestAssured.given().log().all()
-                .when().params(Map.of("date", findDate.toString(),
-                        "themeId", theme.getId()))
-                .get("/times/available")
-                .then().log().all()
-                .statusCode(200)
-                .extract().jsonPath().getList("$", AvailableTimeResponse.class);
-
-        assertThat(availableTimeResponses).contains(
-                new AvailableTimeResponse(1, usedReservationTime.getStartAt(), true),
-                new AvailableTimeResponse(2, notUsedReservationTime.getStartAt(), false)
-        );
     }
 }

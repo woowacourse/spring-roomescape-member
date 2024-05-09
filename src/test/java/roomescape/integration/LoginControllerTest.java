@@ -25,13 +25,11 @@ import roomescape.repository.UserRepository;
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class LoginControllerTest {
 
+    private final User defaultUser = new User("name", "email@email.com", "password");
     @LocalServerPort
     int port;
-
     @Autowired
     private UserRepository userRepository;
-
-    private User defaultUser = new User("name", "email@email.com", "password");
 
     @BeforeEach
     void init() {

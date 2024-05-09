@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
-import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
 import static roomescape.exception.ExceptionType.EMPTY_USER;

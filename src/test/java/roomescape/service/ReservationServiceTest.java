@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.Fixture.DEFAULT_LOGINUSER;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
-import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.NOT_FOUND_RESERVATION_TIME;
 import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
 import static roomescape.exception.ExceptionType.PAST_TIME_RESERVATION;

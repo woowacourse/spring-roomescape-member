@@ -59,6 +59,37 @@ class ReservationTimeServiceTest {
                 .hasSize(4);
     }
 
+    @DisplayName("날짜와 테마, 시간에 대한 예약 내역을 확인할 수 있다.")
+    @Test
+    void findAvailableTimeTest() {
+        //given
+        Theme DEFUALT_THEME = new Theme(1L, "name", "description", "thumbnail");
+        themeRepository.save(DEFUALT_THEME);
+
+        ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+        ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));
+        ReservationTime reservationTime4 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
+
+        LocalDate selectedDate = LocalDate.of(2024, 1, 1);
+        reservationRepository.save(new Reservation(selectedDate, reservationTime1, DEFUALT_THEME,
+                new LoginUser(1L, "name", "email@email.com")));
+        reservationRepository.save(new Reservation(selectedDate, reservationTime3, DEFUALT_THEME,
+                new LoginUser(1L, "name", "email@email.com")));
+
+        //when
+        List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findByThemeAndDate(selectedDate,
+                DEFUALT_THEME.getId());
+
+        //then
+        assertThat(availableTimeResponses).containsExactlyInAnyOrder(
+                new AvailableTimeResponse(1L, reservationTime1.getStartAt(), true),
+                new AvailableTimeResponse(2L, reservationTime2.getStartAt(), false),
+                new AvailableTimeResponse(3L, reservationTime3.getStartAt(), true),
+                new AvailableTimeResponse(4L, reservationTime4.getStartAt(), false)
+        );
+    }
+
     @DisplayName("예약 시간이 하나 존재할 때")
     @Nested
     class OneReservationTimeExists {
@@ -113,34 +144,5 @@ class ReservationTimeServiceTest {
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(DELETE_USED_TIME.getMessage());
         }
-    }
-
-    @DisplayName("날짜와 테마, 시간에 대한 예약 내역을 확인할 수 있다.")
-    @Test
-    void findAvailableTimeTest() {
-        //given
-        Theme DEFUALT_THEME = new Theme(1L, "name", "description", "thumbnail");
-        themeRepository.save(DEFUALT_THEME);
-
-        ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
-        ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
-        ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));
-        ReservationTime reservationTime4 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
-
-        LocalDate selectedDate = LocalDate.of(2024, 1, 1);
-        reservationRepository.save(new Reservation(selectedDate, reservationTime1, DEFUALT_THEME, new LoginUser(1L, "name", "email@email.com")));
-        reservationRepository.save(new Reservation(selectedDate, reservationTime3, DEFUALT_THEME, new LoginUser(1L, "name", "email@email.com")));
-
-        //when
-        List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findByThemeAndDate(selectedDate,
-                DEFUALT_THEME.getId());
-
-        //then
-        assertThat(availableTimeResponses).containsExactlyInAnyOrder(
-                new AvailableTimeResponse(1L, reservationTime1.getStartAt(), true),
-                new AvailableTimeResponse(2L, reservationTime2.getStartAt(), false),
-                new AvailableTimeResponse(3L, reservationTime3.getStartAt(), true),
-                new AvailableTimeResponse(4L, reservationTime4.getStartAt(), false)
-        );
     }
 }

@@ -34,21 +34,19 @@ import roomescape.service.JwtGenerator;
 public class ReservationControllerTest {
 
     private static final JwtGenerator JWT_GENERATOR = new JwtGenerator();
-    private String token;
-
+    private static final LoginUser defaultLoginUser = new LoginUser(1L, "name", "email@email.com");
     @LocalServerPort
     int port;
-
+    private String token;
     @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
-
     private Theme defaultTheme = new Theme("theme1", "description", "thumbnail");
     private ReservationTime defaultTime = new ReservationTime(LocalTime.of(11, 30));
-    private static final LoginUser defaultLoginUser = new LoginUser(1L, "name", "email@email.com");
+
     @BeforeEach
     void initData() {
         RestAssured.port = port;
@@ -82,10 +80,14 @@ public class ReservationControllerTest {
                     new Reservation(LocalDate.now().minusDays(1), defaultTime, defaultTheme, defaultLoginUser));
 
             reservationRepository.save(new Reservation(LocalDate.now(), defaultTime, defaultTheme, defaultLoginUser));
-            reservationRepository.save(new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme, defaultLoginUser));
-            reservationRepository.save(new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme, defaultLoginUser));
-            reservationRepository.save(new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme, defaultLoginUser));
-            reservationRepository.save(new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme, defaultLoginUser));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme, defaultLoginUser));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme, defaultLoginUser));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme, defaultLoginUser));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme, defaultLoginUser));
 
         }
 

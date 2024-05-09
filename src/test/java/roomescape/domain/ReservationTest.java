@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
-import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
 import static roomescape.exception.ExceptionType.EMPTY_USER;
@@ -31,15 +30,18 @@ class ReservationTest {
                         .isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_USER.getMessage()),
 
-                () -> assertThatThrownBy(() -> new Reservation(null, DEFAULT_TIME, DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER))
+                () -> assertThatThrownBy(
+                        () -> new Reservation(null, DEFAULT_TIME, DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER))
                         .isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_DATE.getMessage()),
 
-                () -> assertThatThrownBy(() -> new Reservation(DEFAULT_DATE, null, DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER))
+                () -> assertThatThrownBy(
+                        () -> new Reservation(DEFAULT_DATE, null, DEFAULT_THEME, Fixture.DEFAULT_LOGINUSER))
                         .isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_TIME.getMessage()),
 
-                () -> assertThatThrownBy(() -> new Reservation(DEFAULT_DATE, DEFAULT_TIME, null, Fixture.DEFAULT_LOGINUSER))
+                () -> assertThatThrownBy(
+                        () -> new Reservation(DEFAULT_DATE, DEFAULT_TIME, null, Fixture.DEFAULT_LOGINUSER))
                         .isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_THEME.getMessage())
         );

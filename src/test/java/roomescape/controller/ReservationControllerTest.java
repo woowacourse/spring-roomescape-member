@@ -13,7 +13,6 @@ import roomescape.domain.LoginUser;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.User;
 import roomescape.dto.LoginUserResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
@@ -25,9 +24,9 @@ import roomescape.repository.CollectionThemeRepository;
 import roomescape.service.ReservationService;
 
 class ReservationControllerTest {
+    private static final LoginUser DEFAULT_LOGINUSER = new LoginUser(1L, "아서", "Hyunta@wooteco.com");
     private ReservationTime defaultTime = new ReservationTime(1L, LocalTime.now());
     private Theme defualtTheme = new Theme("name", "description", "thumbnail");
-    private static final LoginUser DEFAULT_LOGINUSER = new LoginUser(1L, "아서", "Hyunta@wooteco.com");
     private CollectionReservationRepository collectionReservationRepository;
     private ReservationController reservationController;
 
