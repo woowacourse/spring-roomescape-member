@@ -1,9 +1,9 @@
 package roomescape.service;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.persistence.MemberRepository;
+import roomescape.service.request.LoginMember;
 import roomescape.service.request.MemberLoginRequest;
 import roomescape.service.response.MemberResponse;
 import roomescape.service.response.Token;
@@ -27,30 +27,19 @@ public class MemberService {
         return new Token(jwtTokenProvider.createToken(findMember));
     }
 
-    public MemberResponse getMemberInfo(Cookie[] cookies) {
-        validateCookie(cookies);
-        String token = getToken(cookies);
-        String tokenSubject = jwtTokenProvider.getTokenSubject(token);
+    public LoginMember getLoginMember(String tokenValue) {
+        String tokenSubject = jwtTokenProvider.getTokenSubject(tokenValue);
         Long id = Long.parseLong(tokenSubject);
 
         Member findMember = memberRepository.findById(id)
                 .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
 
+        return new LoginMember(findMember.getId());
+    }
+
+    public MemberResponse getMemberInfo(LoginMember loginMember) {
+        Member findMember = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
         return new MemberResponse(findMember.getNameValue());
-    }
-
-    private void validateCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            throw new AuthenticationException("로그인된 회원 정보가 없습니다.");
-        }
-    }
-
-    private String getToken(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
