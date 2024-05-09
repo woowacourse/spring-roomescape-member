@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,6 +17,7 @@ import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.AdminReservationSearchRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.AdminReservationResponse;
 import roomescape.dto.response.LoginMember;
@@ -41,6 +43,21 @@ public class ReservationService {
 
     public List<ReservationResponse> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
+
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> getReservations(
+            @Valid AdminReservationSearchRequest adminReservationSearchRequest) {
+
+        List<Reservation> reservations = reservationRepository.findByMemberIdAndThemeId(
+                adminReservationSearchRequest.memberId(),
+                adminReservationSearchRequest.themeId(),
+                adminReservationSearchRequest.dateFrom(),
+                adminReservationSearchRequest.dateTo()
+        );
 
         return reservations.stream()
                 .map(ReservationResponse::from)
