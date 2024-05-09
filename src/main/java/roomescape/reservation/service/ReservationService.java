@@ -8,7 +8,7 @@ import roomescape.global.exception.model.ValidateException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.dao.TimeDao;
+import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationRequest;
@@ -27,16 +27,16 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationDao reservationDao;
-    private final TimeDao timeDao;
+    private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final MemberDao memberDao;
 
     public ReservationService(final ReservationDao reservationDao,
-                              final TimeDao timeDao,
+                              final ReservationTimeDao reservationTimeDao,
                               final ThemeDao themeDao,
                               final MemberDao memberDao) {
         this.reservationDao = reservationDao;
-        this.timeDao = timeDao;
+        this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
         this.memberDao = memberDao;
     }
@@ -51,7 +51,7 @@ public class ReservationService {
     }
 
     public ReservationTimeInfosResponse findReservationsByDateAndThemeId(final LocalDate date, final Long themeId) {
-        return timeDao.findByDateAndThemeId(date, themeId);
+        return reservationTimeDao.findByDateAndThemeId(date, themeId);
     }
 
     public void removeReservationById(final Long id) {
@@ -62,7 +62,7 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         LocalDate requestDate = request.date();
 
-        ReservationTime requestReservationTime = timeDao.findById(request.timeId());
+        ReservationTime requestReservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
         Member member = memberDao.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorType.MEMBER_NOT_FOUND,

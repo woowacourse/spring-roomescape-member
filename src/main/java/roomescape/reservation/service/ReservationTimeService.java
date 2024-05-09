@@ -1,32 +1,32 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.error.ErrorType;
+import roomescape.global.exception.model.AssociatedDataExistsException;
+import roomescape.global.exception.model.DataDuplicateException;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.dao.TimeDao;
+import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationTimeRequest;
 import roomescape.reservation.dto.response.ReservationTimeResponse;
 import roomescape.reservation.dto.response.ReservationTimesResponse;
-import roomescape.global.exception.error.ErrorType;
-import roomescape.global.exception.model.AssociatedDataExistsException;
-import roomescape.global.exception.model.DataDuplicateException;
 
 import java.util.List;
 
 @Service
 public class ReservationTimeService {
 
-    private final TimeDao timeDao;
+    private final ReservationTimeDao reservationTimeDao;
     private final ReservationDao reservationDao;
 
-    public ReservationTimeService(final TimeDao timeDao, final ReservationDao reservationDao) {
-        this.timeDao = timeDao;
+    public ReservationTimeService(final ReservationTimeDao reservationTimeDao, final ReservationDao reservationDao) {
+        this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
     }
 
     public ReservationTimesResponse findAllTimes() {
-        List<ReservationTimeResponse> response = timeDao.findAll()
+        List<ReservationTimeResponse> response = reservationTimeDao.findAll()
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
@@ -36,13 +36,13 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse addTime(final ReservationTimeRequest reservationTimeRequest) {
         validateTimeDuplication(reservationTimeRequest);
-        ReservationTime reservationTime = timeDao.insert(reservationTimeRequest.toTime());
+        ReservationTime reservationTime = reservationTimeDao.insert(reservationTimeRequest.toTime());
 
         return ReservationTimeResponse.from(reservationTime);
     }
 
     private void validateTimeDuplication(final ReservationTimeRequest reservationTimeRequest) {
-        List<ReservationTime> duplicateReservationTimes = timeDao.findByStartAt(reservationTimeRequest.startAt());
+        List<ReservationTime> duplicateReservationTimes = reservationTimeDao.findByStartAt(reservationTimeRequest.startAt());
 
         if (duplicateReservationTimes.size() > 0) {
             throw new DataDuplicateException(ErrorType.TIME_DUPLICATED,
@@ -56,6 +56,6 @@ public class ReservationTimeService {
             throw new AssociatedDataExistsException(ErrorType.TIME_IS_USED_CONFLICT,
                     String.format("해당 시간에 예약이 존재하여 시간을 삭제할 수 없습니다. [timeId: %d]", id));
         }
-        timeDao.deleteById(id);
+        reservationTimeDao.deleteById(id);
     }
 }
