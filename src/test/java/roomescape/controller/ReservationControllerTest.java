@@ -128,6 +128,25 @@ class ReservationControllerTest {
         assertThat(name).isEqualTo("클로버");
     }
 
+    @DisplayName("예약 컨트롤러는 로그인하지 않은 사용자가 예약을 생성하는 경우 예외가 발생한다.")
+    @Test
+    void createMemberReservationWithOutLogin() {
+        // given
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", LocalDate.MAX.toString());
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .queryParam("type", "member")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(401);
+    }
+
     @DisplayName("예약 컨트롤러는 잘못된 형식의 날짜로 예약 생성 요청 시 400을 응답한다.")
     @ValueSource(strings = {"Hello", "2024-13-20", "2900-12-32"})
     @ParameterizedTest

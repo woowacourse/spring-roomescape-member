@@ -9,7 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.JwtTokenProvider;
 import roomescape.domain.Member;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.service.LoginService;
 
 import java.util.Arrays;
@@ -37,10 +37,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        if (request == null || request.getCookies() == null) {
+            throw new UnauthorizedException("사용자 인증 정보가 없습니다.");
+        }
+
         String accessToken = Arrays.stream(request.getCookies())
                 .filter(c -> c.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(() -> new BadRequestException("사용자 인증 정보가 없습니다."))
+                .orElseThrow(() -> new UnauthorizedException("사용자 인증 정보가 없습니다."))
                 .getValue();
         String email = jwtTokenProvider.decode(accessToken);
         return loginService.findMemberByEmail(email);
