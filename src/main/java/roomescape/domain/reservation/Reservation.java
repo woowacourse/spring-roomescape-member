@@ -39,6 +39,18 @@ public class Reservation {
         return member.getName();
     }
 
+    public long getTimeId() {
+        return time.getId();
+    }
+
+    public long getThemeId() {
+        return theme.getId();
+    }
+
+    public long getMemberId() {
+        return member.getId();
+    }
+
     public LocalDate getDate() {
         return date;
     }
@@ -49,14 +61,6 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public long getTimeId() {
-        return time.getId();
-    }
-
-    public long getThemeId() {
-        return theme.getId();
     }
 
     public Member getMember() {
