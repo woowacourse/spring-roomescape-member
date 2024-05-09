@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,32 +76,6 @@ public class ReservationDaoTest {
         assertThat(reservations.size()).isEqualTo(1);
     }
 
-    @DisplayName("예약 ID를 이용하여 예약을 조회한다.")
-    @Test
-    void findById() {
-        // given
-        reservationDao.insert(reservationFactory.createForAdd(
-                "name",
-                LocalDate.parse("2025-01-01"),
-                new ReservationTime(1L, LocalTime.parse("10:00")),
-                new ReservationTheme(1L, "theme_name", "desc", "thumb"))
-        );
-
-        // when
-        Reservation reservation = reservationDao.findById(1L).orElseThrow();
-
-        // then
-        assertThat(reservation.getName()).isEqualTo("name");
-    }
-
-    @DisplayName("예약을 조회할 때 ID가 존재하지 않으면 빈 예약을 반환한다.")
-    @Test
-    void findByWrongId() {
-        Optional<Reservation> reservation = reservationDao.findById(1L);
-
-        assertThat(reservation).isEmpty();
-    }
-
     @DisplayName("ID를 이용하여 예약을 삭제한다.")
     @Test
     void deleteById() {
@@ -115,11 +88,13 @@ public class ReservationDaoTest {
         );
 
         // when
+        int sizeBeforeDelete = reservationDao.findAll().size();
         reservationDao.deleteById(inserted.getId());
-        Optional<Reservation> reservation = reservationDao.findById(inserted.getId());
+        int sizeAfterDelete = reservationDao.findAll().size();
 
         // then
-        assertThat(reservation).isEmpty();
+        assertThat(sizeBeforeDelete).isEqualTo(1);
+        assertThat(sizeAfterDelete).isEqualTo(0);
     }
 
     @DisplayName("특정 시간에 대한 예약이 존재하는지 확인한다.")

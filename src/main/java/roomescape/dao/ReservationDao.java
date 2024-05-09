@@ -65,29 +65,6 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<Reservation> findById(Long id) {
-        String sql = """
-                        SELECT 
-                            r.id as reservation_id, 
-                            r.name,     
-                            r.date, 
-                            t.id as time_id, 
-                            t.start_at as time_value, 
-                            tm.id as theme_id, 
-                            tm.name as theme_name, 
-                            tm.description,     
-                            tm.thumbnail 
-                        FROM reservation AS r 
-                        INNER JOIN reservation_time AS t 
-                        ON r.time_id = t.id 
-                        INNER JOIN theme AS tm 
-                        ON r.theme_id = tm.id
-                        WHERE t.id = ?
-                """;
-        List<Reservation> reservations = jdbcTemplate.query(sql, getReservationRowMapper(), id);
-        return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
-    }
-
     public Boolean hasReservationForTimeId(Long timeId) {
         String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
