@@ -34,4 +34,11 @@ public class JdbcSiteUserRepository {
 
         return Optional.ofNullable(siteUser);
     }
+
+    public Optional<SiteUser> findById(Long memberId) {
+        String sql = "SELECT * FROM site_user WHERE id = ?";
+        SiteUser siteUser = jdbcTemplate.queryForObject(sql, siteUserRowMapper, memberId);
+
+        return Optional.ofNullable(siteUser);
+    }
 }

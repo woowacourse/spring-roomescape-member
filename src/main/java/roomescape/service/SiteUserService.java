@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.domain.SiteUser;
 import roomescape.dto.LogInRequest;
+import roomescape.dto.ProfileNameResponse;
 import roomescape.infrastructure.JdbcSiteUserRepository;
 import roomescape.service.exception.ResourceNotFoundException;
 
@@ -14,7 +15,7 @@ import java.security.Key;
 @Service
 public class SiteUserService {
 
-    private static final String JWT_SECRET_KEY = "42616SDFKJ156S39487DF45U8OSDFK13209809NUWSC64756E67";
+    private static final Key KEY = Keys.hmacShaKeyFor("42616SDFKJ156S39487DF45U8OSDFK13209809NUWSC64756E67".getBytes());
 
     private final JdbcSiteUserRepository jdbcSiteUserRepository;
 
@@ -29,14 +30,26 @@ public class SiteUserService {
         SiteUser siteUser = jdbcSiteUserRepository.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new ResourceNotFoundException("일치하는 이메일과 비밀번호가 없습니다."));
 
-        byte[] bytes = JWT_SECRET_KEY.getBytes();
-        Key key = Keys.hmacShaKeyFor(bytes);
-
-        return Jwts.builder()
-                .setSubject(siteUser.getEmail())
+        return Jwts.builder().subject(siteUser.getId().toString())
+                .claim("email", siteUser.getEmail())
                 .claim("name", siteUser.getName())
-                .claim("password", siteUser.getPassword())
-                .signWith(SignatureAlgorithm.HS256, key)
+                .signWith(KEY)
                 .compact();
+    }
+
+    public ProfileNameResponse getNameIfLogIn(String token) {
+        Long memberId = Long.valueOf(
+                Jwts.parser().setSigningKey(KEY).build()
+                        .parseSignedClaims(token)
+                        .getPayload()
+                        .getSubject());
+        SiteUser siteUser = findValidatedSiteUserById(memberId);
+
+        return new ProfileNameResponse(siteUser.getName());
+    }
+
+    private SiteUser findValidatedSiteUserById(Long memberId) {
+        return jdbcSiteUserRepository.findById(memberId).orElseThrow(
+                () -> new ResourceNotFoundException("아이디에 해당하는 사용자가 없습니다."));
     }
 }
