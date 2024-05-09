@@ -4,37 +4,47 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static roomescape.TestFixture.*;
 
 class ReservationRepositoryTest extends RepositoryTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    private SimpleJdbcInsert jdbcInsert;
+
     @BeforeEach
     void setUp() {
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
         String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         jdbcTemplate.update(insertTimeSql, Time.valueOf(MIA_RESERVATION_TIME));
         String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
         jdbcTemplate.update(insertThemeSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        String insertMemberSql = "INSERT INTO member (name, email, password) VALUES (?, ?, ?)";
+        jdbcTemplate.update(insertMemberSql, MIA_NAME, MIA_EMAIL, TEST_PASSWORD);
     }
 
     @Test
     @DisplayName("예약을 저장한다.")
     void save() {
         // given
-        Long timeId = 1L;
-        Reservation reservation = MIA_RESERVATION(new ReservationTime(timeId, MIA_RESERVATION_TIME), WOOTECO_THEME());
+        Reservation reservation = MIA_RESERVATION(
+                new ReservationTime(1L, MIA_RESERVATION_TIME),
+                WOOTECO_THEME(1L),
+                USER_MIA(1L)
+        );
 
         // when
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -49,8 +59,12 @@ class ReservationRepositoryTest extends RepositoryTest {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(insertSql, MIA_NAME, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("member_id", 1L)
+                .addValue("date", MIA_RESERVATION_DATE)
+                .addValue("time_id", timeId)
+                .addValue("theme_id", themeId);
+        jdbcInsert.executeAndReturnKey(params);
 
         // when
         boolean existByDateAndTimeIdAndThemeId = reservationRepository.existByDateAndTimeIdAndThemeId(
@@ -64,22 +78,24 @@ class ReservationRepositoryTest extends RepositoryTest {
     @DisplayName("모든 예약 목록을 조회한다.")
     void findAll() {
         // given
-        Long timeId = 1L;
-        Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(insertSql, MIA_NAME, MIA_RESERVATION_DATE, timeId, themeId);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("member_id", 1L)
+                .addValue("date", MIA_RESERVATION_DATE)
+                .addValue("time_id", 1L)
+                .addValue("theme_id", 1L);
+        jdbcInsert.executeAndReturnKey(params);
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertAll(() -> {
-            assertThat(reservations.size()).isEqualTo(count);
-            assertThat(reservations).extracting(Reservation::getTheme)
+        assertSoftly(softly -> {
+            softly.assertThat(reservations.size()).isEqualTo(count);
+            softly.assertThat(reservations).extracting(Reservation::getTheme)
                     .extracting(Theme::getName)
                     .containsExactly(WOOTECO_THEME_NAME);
-            assertThat(reservations).extracting(Reservation::getTime)
+            softly.assertThat(reservations).extracting(Reservation::getTime)
                     .extracting(ReservationTime::getStartAt)
                     .containsExactly(MIA_RESERVATION_TIME);
         });
@@ -89,17 +105,12 @@ class ReservationRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 예약을 삭제한다.")
     void deleteById() {
         // given
-        long timeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
-            ps.setString(1, MIA_NAME);
-            ps.setDate(2, Date.valueOf(MIA_RESERVATION_DATE));
-            ps.setLong(3, timeId);
-            return ps;
-        }, keyHolder);
-        Long id = keyHolder.getKey().longValue();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("member_id", 1L)
+                .addValue("date", MIA_RESERVATION_DATE)
+                .addValue("time_id", 1L)
+                .addValue("theme_id", 1L);
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         // when
         reservationRepository.deleteById(id);
@@ -128,11 +139,11 @@ class ReservationRepositoryTest extends RepositoryTest {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
+        String insertSql = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(
                 insertSql,
-                MIA_NAME, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
-                TOMMY_NAME, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
+                1L, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
+                1L, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
         );
 
         // when

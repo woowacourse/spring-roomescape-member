@@ -17,7 +17,7 @@ VALUES (3, '토미', 'mia@gmail.com', 'jyefr');
 
 INSERT INTO reservation (id, date, member_id, theme_id, time_id)
 VALUES (1, CURRENT_DATE() - 7, 1, 1, 1);
-INSERT INTO reservation (id, date, name, theme_id, time_id)
+INSERT INTO reservation (id, date, member_id, theme_id, time_id)
 VALUES (2, CURRENT_DATE() - 2, 2, 2, 1);
-INSERT INTO reservation (id, date, name, theme_id, time_id)
+INSERT INTO reservation (id, date, member_id, theme_id, time_id)
 VALUES (3, CURRENT_DATE() - 1, 3, 2, 2);

@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import roomescape.WebMvcConfiguration;
+import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
 import roomescape.member.application.MemberService;
 import roomescape.member.dto.request.MemberJoinRequest;
@@ -17,7 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static roomescape.TestFixture.*;
 
-@WebMvcTest(MemberController.class)
+@WebMvcTest(
+        value = MemberController.class,
+        excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebMvcConfiguration.class, LoginMemberArgumentResolver.class})
+)
 class MemberControllerTest extends ControllerTest {
     @MockBean
     MemberService memberService;

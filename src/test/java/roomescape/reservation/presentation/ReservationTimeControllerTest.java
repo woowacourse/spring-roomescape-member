@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import roomescape.WebMvcConfiguration;
+import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.domain.ReservationTime;
@@ -25,7 +29,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static roomescape.TestFixture.MIA_RESERVATION_DATE;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
-@WebMvcTest(ReservationTimeController.class)
+@WebMvcTest(
+        value = ReservationTimeController.class,
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebMvcConfiguration.class, LoginMemberArgumentResolver.class})
+)
 class ReservationTimeControllerTest extends ControllerTest {
     @MockBean
     protected ReservationTimeService reservationTimeService;

@@ -11,6 +11,7 @@ import java.time.LocalTime;
 public class TestFixture {
     public static final String MIA_NAME = "미아";
     public static final String MIA_EMAIL = "testmia@gmail.com";
+    public static final String TOMMY_EMAIL = "testtommy@gmail.com";
     public static final LocalDate MIA_RESERVATION_DATE = LocalDate.of(2030, 4, 18);
     public static final LocalTime MIA_RESERVATION_TIME = LocalTime.of(15, 0);
 
@@ -31,17 +32,25 @@ public class TestFixture {
         return new Member(MIA_NAME, MIA_EMAIL, TEST_PASSWORD);
     }
 
-    public static Reservation MIA_RESERVATION() {
-        return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
+    public static Member USER_MIA(Long id) {
+        return new Member(id, MIA_NAME, MIA_EMAIL, TEST_PASSWORD);
     }
 
-    public static Reservation MIA_RESERVATION(ReservationTime time, Theme theme) {
-        return new Reservation(MIA_NAME, MIA_RESERVATION_DATE, time, theme);
+    public static Member USER_TOMMY() {
+        return new Member(TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD);
+    }
+
+    public static Reservation MIA_RESERVATION() {
+        return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(), USER_MIA());
+    }
+
+    public static Reservation MIA_RESERVATION(ReservationTime time, Theme theme, Member member) {
+        return new Reservation(member, MIA_RESERVATION_DATE, time, theme);
     }
 
     public static Reservation TOMMY_RESERVATION() {
         return new Reservation(
-                TOMMY_NAME, TOMMY_RESERVATION_DATE,
+                USER_TOMMY(), TOMMY_RESERVATION_DATE,
                 new ReservationTime(TOMMY_RESERVATION_TIME), WOOTECO_THEME()
         );
     }

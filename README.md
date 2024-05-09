@@ -22,7 +22,7 @@
 ### 사용자 페이지
 - [x] 메인 페이지: `/` 요청 시 인기 테마 페이지를 응답한다.
 - [x] 예약 페이지: `/reservation` 요청 시 응답한다.
-- [ ] 로그인 페이지: `/login` 요청 시 로그인 폼 페이지를 응답한다.
+- [x] 로그인 페이지: `/login` 요청 시 로그인 폼 페이지를 응답한다.
 
 ### 예약 API
 
@@ -70,10 +70,10 @@
       ``` 
       POST /reservations HTTP/1.1
       content-type: application/json
-    
+      cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+
       {
           "date": "2023-08-05",
-          "name": "브라운",
           "timeId": 1,
           "themeId": 1
       }

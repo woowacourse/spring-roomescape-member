@@ -113,14 +113,18 @@ class ThemeRepositoryTest extends RepositoryTest {
         jdbcTemplate.update(insertThemeSql,
                 WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL,
                 HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        String insertMemberSql = "INSERT INTO member (name, email, password) VALUES (?, ?, ?), (?, ?, ?)";
+        jdbcTemplate.update(insertMemberSql,
+                MIA_NAME, MIA_EMAIL, TEST_PASSWORD,
+                TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD);
 
         long secondRankThemeId = 1;
         long firstRankThemeId = 2;
-        String insertReservationSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)";
+        String insertReservationSql = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(insertReservationSql,
-                MIA_NAME, LocalDate.now().minusDays(7), 1L, firstRankThemeId,
-                TOMMY_NAME, LocalDate.now().minusDays(6), 2L, firstRankThemeId,
-                "냥", LocalDate.now().minusDays(1), 1L, secondRankThemeId);
+                1, LocalDate.now().minusDays(7), 1L, firstRankThemeId,
+                2, LocalDate.now().minusDays(6), 2L, firstRankThemeId,
+                2, LocalDate.now().minusDays(1), 1L, secondRankThemeId);
 
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now().minusDays(1);

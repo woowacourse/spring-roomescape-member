@@ -5,10 +5,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.domain.ReservationRepository;
 
 import javax.sql.DataSource;
 import java.sql.Date;
@@ -35,14 +36,17 @@ public class ReservationDao implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password
                 FROM 
                     reservation AS r 
                 INNER JOIN 
@@ -53,8 +57,50 @@ public class ReservationDao implements ReservationRepository {
                     theme AS th
                 ON
                     r.theme_id = th.id
+                INNER JOIN 
+                    member AS m
+                ON 
+                    r.member_id = m.id
                 """;
-        return jdbcTemplate.query(sql, this::mapRowToObject);
+        return jdbcTemplate.query(sql, this::mapRowToReservation);
+    }
+
+    private Reservation mapRowToReservation(ResultSet resultSet, int rowNumber) throws SQLException {
+        ReservationTime reservationTime = mapRowToReservationTime(resultSet);
+        Theme theme = mapRowToTheme(resultSet);
+        Member member = mapRowToMember(resultSet);
+        return new Reservation(
+                resultSet.getLong("reservation_id"),
+                member,
+                resultSet.getDate("date").toLocalDate(),
+                reservationTime,
+                theme
+        );
+    }
+
+    private ReservationTime mapRowToReservationTime(ResultSet resultSet) throws SQLException {
+        return new ReservationTime(
+                resultSet.getLong("time_id"),
+                resultSet.getTime("time_value").toLocalTime()
+        );
+    }
+
+    private Theme mapRowToTheme(ResultSet resultSet) throws SQLException {
+        return new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail")
+        );
+    }
+
+    private Member mapRowToMember(ResultSet resultSet) throws SQLException {
+        return new Member(
+                resultSet.getLong("member_id"),
+                resultSet.getString("member_name"),
+                resultSet.getString("member_email"),
+                resultSet.getString("member_password")
+        );
     }
 
     @Override
@@ -77,7 +123,7 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("member_id", reservation.getMemberId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId());
@@ -110,29 +156,5 @@ public class ReservationDao implements ReservationRepository {
         return jdbcTemplate.query(sql,
                 (resultSet, rowNumber) -> resultSet.getLong("time_id"),
                 Date.valueOf(date), themeId);
-    }
-
-    private Reservation mapRowToObject(ResultSet resultSet, int rowNumber) throws SQLException {
-        ReservationTime reservationTime = new ReservationTime(
-                resultSet.getLong("time_id"),
-                resultSet.getTime("time_value").toLocalTime()
-        );
-        Theme theme = new Theme(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("theme_description"),
-                resultSet.getString("theme_thumbnail")
-        );
-        return mapToReservation(resultSet, reservationTime, theme);
-    }
-
-    private Reservation mapToReservation(ResultSet resultSet, ReservationTime reservationTime, Theme theme) throws SQLException {
-        return new Reservation(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                reservationTime,
-                theme
-        );
     }
 }

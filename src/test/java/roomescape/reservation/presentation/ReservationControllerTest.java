@@ -1,5 +1,6 @@
 package roomescape.reservation.presentation;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,8 +8,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import roomescape.WebMvcConfiguration;
+import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
+import roomescape.common.TestWebMvcConfiguration;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
@@ -32,23 +39,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static roomescape.TestFixture.*;
 
-@WebMvcTest(ReservationController.class)
+@Import(TestWebMvcConfiguration.class)
+@WebMvcTest(
+        value = ReservationController.class,
+        excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebMvcConfiguration.class, LoginMemberArgumentResolver.class})
+)
 class ReservationControllerTest extends ControllerTest {
+    private static final Cookie COOKIE = new Cookie("token", "token");
+
     @MockBean
     private ReservationService reservationService;
 
     @MockBean
-    protected ReservationTimeService reservationTimeService;
+    private ReservationTimeService reservationTimeService;
 
     @MockBean
-    protected ThemeService themeService;
+    private ThemeService themeService;
 
     @Test
     @DisplayName("예약 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findReservations() throws Exception {
         // given
         ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
-        Reservation expectedReservation = MIA_RESERVATION(expectedTime, WOOTECO_THEME());
+        Reservation expectedReservation = MIA_RESERVATION(expectedTime, WOOTECO_THEME(), USER_MIA());
 
         BDDMockito.given(reservationService.findAll())
                 .willReturn(List.of(ReservationResponse.from(expectedReservation)));
@@ -68,10 +82,10 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약 POST 요청 시 상태코드 201을 반환한다.")
     void createReservation() throws Exception {
         // given
-        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, 1L, 1L);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, 1L, 1L);
         ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Theme expectedTheme = WOOTECO_THEME(1L);
-        ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme));
+        ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme, USER_MIA(1L)));
 
         BDDMockito.given(reservationService.create(any()))
                 .willReturn(expectedResponse);
@@ -82,6 +96,7 @@ class ReservationControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post("/reservations")
+                        .cookie(COOKIE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
@@ -98,6 +113,7 @@ class ReservationControllerTest extends ControllerTest {
     void createReservationWithNullFieldRequest(ReservationSaveRequest request) throws Exception {
         // when & then
         mockMvc.perform(post("/reservations")
+                        .cookie(COOKIE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
@@ -107,10 +123,9 @@ class ReservationControllerTest extends ControllerTest {
 
     private static Stream<ReservationSaveRequest> invalidPostRequests() {
         return Stream.of(
-                new ReservationSaveRequest(null, MIA_RESERVATION_DATE, 1L, 1L),
-                new ReservationSaveRequest(MIA_NAME, null, 1L, 1L),
-                new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, null, 1L),
-                new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, 1L, null)
+                new ReservationSaveRequest(null, 1L, 1L),
+                new ReservationSaveRequest(MIA_RESERVATION_DATE, null, 1L),
+                new ReservationSaveRequest(MIA_RESERVATION_DATE, 1L, null)
         );
     }
 
@@ -123,6 +138,7 @@ class ReservationControllerTest extends ControllerTest {
         // when & then
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(COOKIE)
                         .content(invalidDateFormatRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -136,7 +152,7 @@ class ReservationControllerTest extends ControllerTest {
         Long notExistingTimeId = 1L;
         Long themeId = 1L;
         ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(themeId));
-        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, notExistingTimeId, themeId);
 
         BDDMockito.given(themeService.findById(themeId))
                 .willReturn(themeResponse);
@@ -148,6 +164,7 @@ class ReservationControllerTest extends ControllerTest {
         // when & then
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(COOKIE)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -161,7 +178,7 @@ class ReservationControllerTest extends ControllerTest {
         Long timeId = 1L;
         Long notExistingThemeId = 1L;
         ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
-        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, timeId, notExistingThemeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, timeId, notExistingThemeId);
 
         BDDMockito.given(reservationTimeService.findById(timeId))
                 .willReturn(timeResponse);
@@ -173,6 +190,7 @@ class ReservationControllerTest extends ControllerTest {
         // when & then
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(COOKIE)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isNotFound())

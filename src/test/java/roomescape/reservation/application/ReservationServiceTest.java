@@ -57,7 +57,7 @@ class ReservationServiceTest {
     void validateDate(LocalDate invalidDate) {
         // given
         Reservation reservation = new Reservation(
-                MIA_NAME, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
+                USER_MIA(), invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservation))
@@ -76,7 +76,7 @@ class ReservationServiceTest {
     void createSameReservation() {
         // given
         ReservationTime miaReservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
-        Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L));
+        Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L), USER_MIA());
 
         BDDMockito.given(reservationRepository.existByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
                 .willReturn(true);

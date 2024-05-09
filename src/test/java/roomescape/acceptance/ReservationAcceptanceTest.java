@@ -2,6 +2,7 @@ package roomescape.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import roomescape.exception.ErrorResponse;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 
@@ -44,13 +46,18 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step3, Step6, Step8] 예약을 추가한다.")
     void createOneReservation() {
         // given
+        Member member = createTestMember();
+        String token = createTestToken(member);
         Long themeId = createTestTheme();
         Long timeId = createTestReservationTime();
-        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, timeId, themeId);
+
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, timeId, themeId);
+        Cookie cookie = new Cookie.Builder("token", token).build();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(cookie)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -66,16 +73,21 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     }
 
     @Test
-    @DisplayName("[Step3, Step6, Step8] 잘못된 형식의 예약을 추가한다.")
+    @DisplayName("[Step3, Step6, Step8] 예약 날짜가 없는 예약을 추가한다.")
     void createInvalidReservation() {
         // given
+        Member member = createTestMember();
+        String token = createTestToken(member);
         Long themeId = createTestTheme();
         Long timeId = createTestReservationTime();
-        ReservationSaveRequest request = new ReservationSaveRequest(null, MIA_RESERVATION_DATE, timeId, themeId);
+
+        ReservationSaveRequest request = new ReservationSaveRequest(null, timeId, themeId);
+        Cookie cookie = new Cookie.Builder("token", token).build();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(cookie)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -93,13 +105,18 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step3, Step6, Step8] 존재하지 않는 예약 시간에 예약을 추가한다.")
     void createReservationWithNotExistingTime() {
         // given
+        Member member = createTestMember();
+        String token = createTestToken(member);
         Long notExistingTimeId = 1L;
         Long themeId = createTestTheme();
-        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        Cookie cookie = new Cookie.Builder("token", token).build();
 
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(cookie)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
