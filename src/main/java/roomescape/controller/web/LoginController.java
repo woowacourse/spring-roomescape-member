@@ -1,5 +1,6 @@
 package roomescape.controller.web;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -13,7 +14,7 @@ import roomescape.service.serviceimpl.LoginService;
 import roomescape.service.serviceimpl.MemberService;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping
 public class LoginController {
     private final CookieGenerator cookieGenerator;
     private final LoginService loginService;
@@ -29,7 +30,7 @@ public class LoginController {
         this.memberService = memberService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(
             @RequestBody @Valid LoginRequest request,
             HttpServletResponse response
@@ -43,7 +44,7 @@ public class LoginController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Token token = cookieGenerator.getToken(request.getCookies());
         Long memberId = loginService.findMemberIdByToken(token);
@@ -52,8 +53,9 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
-        cookieGenerator.resetCookie(request.getCookies());
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = cookieGenerator.makeResetCookie(request.getCookies());
+        response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 }

@@ -24,8 +24,10 @@ public class CookieGenerator {
         return new Token(findCookie(cookies).getValue());
     }
 
-    public void resetCookie(Cookie[] cookies) {
-        findCookie(cookies).setMaxAge(0);
+    public Cookie makeResetCookie(Cookie[] cookies) {
+        Cookie cookie = findCookie(cookies);
+        cookie.setMaxAge(0);
+        return cookie;
     }
 
     private Cookie findCookie(Cookie[] cookies) {
