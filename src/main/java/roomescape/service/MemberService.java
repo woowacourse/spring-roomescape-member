@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.exception.ClientErrorExceptionWithData;
+import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.MemberRepository;
 
 @Service
@@ -16,15 +16,17 @@ public class MemberService {
 
     public Member getMemberById(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new ClientErrorExceptionWithData(
-                        "[ERROR] 존재하지 않는 사용자 입니다.", id.toString()
+                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                        "[ERROR] 존재하지 않는 사용자 입니다.",
+                        "member_id : " + id
                 ));
     }
 
     public Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ClientErrorExceptionWithData(
-                        "[ERROR] 존재하지 않는 아이디(이메일) 입니다.", email
+                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                        "[ERROR] 존재하지 않는 아이디(이메일) 입니다.",
+                        "email : " + email
                 ));
     }
 }

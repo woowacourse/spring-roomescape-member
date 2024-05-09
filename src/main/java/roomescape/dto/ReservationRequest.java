@@ -6,27 +6,28 @@ import java.util.Objects;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
+import roomescape.domain.member.Member;
 
 public record ReservationRequest(
-        String name,
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         Long timeId,
-        Long themeId
+        Long themeId,
+        Long memberId
 ) {
 
     public ReservationRequest {
-        Objects.requireNonNull(name);
         Objects.requireNonNull(date);
         Objects.requireNonNull(timeId);
         Objects.requireNonNull(themeId);
+        Objects.requireNonNull(memberId);
     }
 
-    public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
+    public Reservation toEntity(ReservationTime reservationTime, Theme theme, Member member) {
         return new Reservation(
-                name,
                 date,
                 reservationTime,
-                theme
+                theme,
+                member
         );
     }
 }
