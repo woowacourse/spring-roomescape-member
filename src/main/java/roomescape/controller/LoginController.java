@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.domain.User;
 import roomescape.service.TokenService;
 import roomescape.service.UserService;
@@ -17,7 +16,6 @@ import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.AuthenticationInfoResponse;
 
 @Controller
-@RequestMapping("/login")
 public class LoginController {
     private final UserService userService;
     private final TokenService tokenService;
@@ -27,18 +25,19 @@ public class LoginController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> postLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         User user = userService.findByEmail(loginRequest.email());
         Cookie cookie = new Cookie("token", tokenService.generateTokenOf(user));
         cookie.setHttpOnly(true);
+        cookie.setMaxAge(60);
         cookie.setPath("/");
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<AuthenticationInfoResponse> getAuthenticationInfo(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -56,5 +55,15 @@ public class LoginController {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("쿠키를 찾을 수 없습니다."))
                 .getValue();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> postLogout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 }
