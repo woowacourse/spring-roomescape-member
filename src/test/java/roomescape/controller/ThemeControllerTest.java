@@ -146,9 +146,14 @@ public class ThemeControllerTest {
         LocalDate start = LocalDate.parse("2024-05-02");
         LocalDate end = start.minusDays(7);
         Integer limit = 10;
+        Integer offset = 0;
 
         RestAssured.given().log().all()
-                .when().get("themes/hot?start=" + start + "&end=" + end + "&limit=" + limit)
+                .when().get("themes/hot?start=" + start +
+                        "&end=" + end +
+                        "&limit=" + limit +
+                        "&offset=" + offset
+                )
                 .then().log().all()
                 .statusCode(200);
     }

@@ -35,8 +35,11 @@ public class ThemeController {
 
     @GetMapping("/hot")
     public ResponseEntity<ThemeResponses> findHotThemesByDurationAndCount(
-            @RequestParam LocalDate start, @RequestParam LocalDate end, @RequestParam Integer limit) {
-        ThemeResponses themeResponses = themeService.findHotThemesByDurationAndCount(start, end, limit);
+            @RequestParam LocalDate start,
+            @RequestParam LocalDate end,
+            @RequestParam Integer limit,
+            @RequestParam Integer offset) {
+        ThemeResponses themeResponses = themeService.findHotThemesByDurationAndCount(start, end, limit, offset);
         return ResponseEntity.ok()
                 .body(themeResponses);
     }

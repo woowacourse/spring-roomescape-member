@@ -76,9 +76,10 @@ class ThemeJdbcRepositoryTest {
         LocalDate start = LocalDate.parse("2024-04-26");
         LocalDate end = LocalDate.parse("2024-05-02");
         Integer limit = 10;
+        Integer offset = 0;
 
         //when
-        List<Theme> themes = themeRepository.findHotThemesByDurationAndCount(start, end, limit);
+        List<Theme> themes = themeRepository.findHotThemesByDurationAndCount(start, end, limit, offset);
 
         //then
         assertThat(themes.size()).isEqualTo(10);

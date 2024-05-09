@@ -8,8 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const start = dateFormat(startDate);
     const end = dateFormat(endDate);
     const limit = 10;
+    let offset = 0;
 
-    requestRead(`/themes/hot?start=${start}&end=${end}&limit=${limit}`) // 인기 테마 목록 조회 API endpoint
+    requestRead(`/themes/hot?start=${start}&end=${end}&limit=${limit}&offset=${offset}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });

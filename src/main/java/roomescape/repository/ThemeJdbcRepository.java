@@ -45,7 +45,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return jdbcTemplate.queryForObject(sql, themeRowMapper, themeId);
     }
 
-    public List<Theme> findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer limit) {
+    public List<Theme> findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer limit, Integer offset) {
         String sql = """
                 SELECT
                     th.id AS theme_id,
@@ -58,9 +58,10 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY theme_id
                 ORDER BY COUNT(r.id) DESC, theme_name
-                LIMIT ?;
+                LIMIT ?
+                OFFSET ?;
                 """;
-        return jdbcTemplate.query(sql, themeRowMapper, start, end, limit);
+        return jdbcTemplate.query(sql, themeRowMapper, start, end, limit, offset);
     }
 
     public Theme save(Theme theme) {
