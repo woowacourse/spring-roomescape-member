@@ -3,11 +3,11 @@ package roomescape.user.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.user.dto.AccessToken;
 import roomescape.user.dto.LoginRequest;
 import roomescape.user.dto.LoginResponse;
 import roomescape.user.service.AuthService;
@@ -15,7 +15,8 @@ import roomescape.user.service.AuthService;
 @RestController
 public class LoginController {
     private static final String ACCESS_KEY_VALUE = "token";
-    private static final int TOKEN_MAX_AGE_SECOND = 1800;
+    private static final int MINUTE = 60;
+    private static final int ACCESS_TOKEN_MAX_AGE = 30 * MINUTE;
 
     private final AuthService authService;
 
@@ -37,13 +38,13 @@ public class LoginController {
         return ResponseCookie.from(ACCESS_KEY_VALUE, accessKey)
                 .httpOnly(true)
                 .path("/")
-                .maxAge(TOKEN_MAX_AGE_SECOND)
+                .maxAge(ACCESS_TOKEN_MAX_AGE)
                 .build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> loginCheck(@CookieValue(ACCESS_KEY_VALUE) String accessKey) {
-        LoginResponse response = authService.findUser(accessKey);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<LoginResponse> loginCheck(AccessToken accessToken) {
+        String name = accessToken.name();
+        return ResponseEntity.ok(new LoginResponse(name));
     }
 }

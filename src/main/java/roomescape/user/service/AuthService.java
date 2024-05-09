@@ -1,11 +1,12 @@
 package roomescape.user.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.user.dto.AccessToken;
 import roomescape.user.dto.LoginRequest;
-import roomescape.user.dto.LoginResponse;
 
 @Service
 public class AuthService {
@@ -17,19 +18,25 @@ public class AuthService {
 
     public String makeAccessKey(LoginRequest request) {
         return Jwts.builder()
-                .claim("name", FIXED_NAME)
+                .claims()
+                .add("email", request.email())
+                .add("name", FIXED_NAME)
+                .and()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
-    public LoginResponse findUser(String token) {
-        String name = Jwts.parser()
+    public AccessToken decode(String token) {
+        String email = getPayload(token).get("email", String.class);
+        String name = getPayload(token).get("name", String.class);
+        return new AccessToken(email, name);
+    }
+
+    private Claims getPayload(String token) {
+        return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .get("name", String.class);
-
-        return new LoginResponse(name);
+                .getPayload();
     }
 }
