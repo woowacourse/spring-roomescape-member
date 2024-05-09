@@ -41,7 +41,7 @@ class AdminControllerTest extends BaseControllerTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .cookie("token", "mock-token")
-                .when().post("/admin/reservation")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .extract();
 

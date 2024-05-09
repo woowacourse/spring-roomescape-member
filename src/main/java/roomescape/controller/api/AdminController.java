@@ -21,7 +21,7 @@ public class AdminController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservation")
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> addAdminReservation(
             @RequestBody @Valid AdminReservationRequest request
     ) {
