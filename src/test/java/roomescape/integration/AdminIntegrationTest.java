@@ -63,6 +63,7 @@ public class AdminIntegrationTest {
                 .body("size()", is(0));
     }
 
+    //todo: api 구현 후 다시 테스트
     //@Test
     @DisplayName("관리자 예약 페이지가 잘 동작한다.")
     void adminReservationPageWork() {
@@ -101,6 +102,7 @@ public class AdminIntegrationTest {
                 .body("size()", is(0));
     }
 
+    //todo: api 구현 후 다시 테스트
     //@Test
     @DisplayName("관리자 예약 페이지가 DB와 함께 잘 동작한다.")
     void adminReservationPageWorkWithDB() {
