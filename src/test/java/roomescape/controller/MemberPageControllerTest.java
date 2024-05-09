@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class MemberControllerTest {
+class MemberPageControllerTest {
     @LocalServerPort
     private int port;
 
