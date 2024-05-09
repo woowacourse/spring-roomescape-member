@@ -42,4 +42,11 @@ public class MemberDaoTest {
 
         assertThat(user.isPresent()).isTrue();
     }
+
+    @Test
+    void findByIdTest() {
+        Optional<Member> user = memberDao.findById(1L);
+
+        assertThat(user.isPresent()).isTrue();
+    }
 }

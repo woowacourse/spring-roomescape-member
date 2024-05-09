@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.annotation.AuthenticationPrincipal;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
+import roomescape.dto.AdminReservationRequestDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.service.ReservationService;
 
@@ -37,5 +38,11 @@ public class ReservationResponseController {
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<Reservation> createAdminReservation(@RequestBody AdminReservationRequestDto adminReservationRequestDto) {
+        Reservation reservation = reservationService.insertAdminReservation(adminReservationRequestDto);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 }

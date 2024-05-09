@@ -2,12 +2,15 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationThemeDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AdminReservationRequestDto;
 import roomescape.dto.ReservationRequestDto;
 
 import java.time.LocalDate;
@@ -22,11 +25,13 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationThemeDao reservationThemeDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ReservationThemeDao reservationThemeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ReservationThemeDao reservationThemeDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.reservationThemeDao = reservationThemeDao;
+        this.memberDao = memberDao;
     }
 
     public List<Reservation> getAllReservations() {
@@ -63,5 +68,21 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationDao.deleteById(id);
+    }
+
+    @Transactional
+    public Reservation insertAdminReservation(AdminReservationRequestDto adminReservationRequestDto) {
+        ReservationTime reservationTime = reservationTimeDao.findById(adminReservationRequestDto.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+        LocalDate date = adminReservationRequestDto.date();
+        validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
+        validateDuplicated(date, adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId());
+        Member member = memberDao.findById(adminReservationRequestDto.memberId())
+                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+        Long id = reservationDao.insert(
+                member.getName(), adminReservationRequestDto.date().toString(), adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId());
+        ReservationTheme reservationTheme = reservationThemeDao.findById(adminReservationRequestDto.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+        return new Reservation(id, member.getName(), adminReservationRequestDto.date().toString(), reservationTime, reservationTheme);
     }
 }

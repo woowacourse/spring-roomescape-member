@@ -57,4 +57,16 @@ public class MemberDao {
                         resultSet.getString("email"),
                         resultSet.getString("password")));
     }
+
+    public Optional<Member> findById(Long id) {
+        String findByEmailSql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        List<Member> members = jdbcTemplate.query(findByEmailSql,
+                (resultSet, numRow) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"))
+                , id);
+        return Optional.ofNullable(DataAccessUtils.singleResult(members));
+    }
 }
