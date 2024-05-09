@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class ReservationThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
+    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
         ThemeResponse response = reservationThemeService.insertTheme(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
     }

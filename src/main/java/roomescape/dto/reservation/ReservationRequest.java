@@ -1,15 +1,13 @@
 package roomescape.dto.reservation;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
-
-    public ReservationRequest {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름이 입력되지 않았습니다.");
-        }
-        if (date == null) {
-            throw new IllegalArgumentException("날짜가 입력되지 않았습니다.");
-        }
-    }
+public record ReservationRequest(
+        @NotEmpty(message = "이름을 입력해주세요.") String name,
+        @NotNull(message = "날짜를 입력해주세요.") LocalDate date,
+        Long timeId,
+        Long themeId
+) {
 }
