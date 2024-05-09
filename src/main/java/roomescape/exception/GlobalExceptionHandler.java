@@ -14,6 +14,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, e);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(final UnauthorizedException e) {
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, e);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(final NotFoundException e) {
         return createErrorResponse(HttpStatus.NOT_FOUND, e);

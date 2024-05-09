@@ -33,7 +33,7 @@ public class H2MemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(final String email) {
-        final String sql = "SELECT * FROM members WHERE email = ?";
+        final String sql = "SELECT * FROM MEMBER WHERE email = ?";
 
         return jdbcTemplate.query(sql, this::mapRowMember, email)
                 .stream()
