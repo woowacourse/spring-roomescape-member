@@ -25,7 +25,7 @@ public class MemberIntegrationTest {
     @Test
     @DisplayName("로그인 정보가 데이터베이스 정보외 일치하면 로그인에 성공한다.")
     void loginSuccess() {
-        MemberLoginRequest request = new MemberLoginRequest("test@gmail.com", "test");
+        MemberLoginRequest request = new MemberLoginRequest("user1@gmail.com", "user1");
 
         RestAssured.given().log().all()
                 .contentType("application/json")
@@ -39,7 +39,7 @@ public class MemberIntegrationTest {
     @Test
     @DisplayName("로그인 정보가 데이터베이스 정보외 일치하지 않으면 로그인에 실패한다.")
     void loginFailure() {
-        MemberLoginRequest request = new MemberLoginRequest("test@gmail.com", "1234");
+        MemberLoginRequest request = new MemberLoginRequest("user1@gmail.com", "1234");
 
         RestAssured.given()
                 .contentType("application/json")

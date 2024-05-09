@@ -36,7 +36,7 @@ class ReservationIntegrationTest {
         RestAssured.port = port;
         token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new MemberLoginRequest("test@gmail.com", "test"))
+                .body(new MemberLoginRequest("user1@gmail.com", "user1"))
                 .when().post("/login")
                 .then().log().all()
                 .extract().cookie("token");

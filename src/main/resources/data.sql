@@ -38,8 +38,10 @@ VALUES ('레벨1 탈출',
         '우테코 레벨11를 탈출하는 내용입니다.',
         'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO member (name, email, password)
-VALUES ('test', 'test@gmail.com', 'test');
+INSERT INTO member (name, email, password, role)
+VALUES ('user1', 'user1@gmail.com', 'user1','USER'),
+       ('user2', 'user2@gmail.com','user2','USER'),
+       ('admin', 'admin@gmail.com', 'admin','ADMIN');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id)
 VALUES (1, DATEADD(DAY, -7, current_date), 1, 8),
@@ -47,14 +49,14 @@ VALUES (1, DATEADD(DAY, -7, current_date), 1, 8),
        (1, DATEADD(DAY, -7, current_date), 3, 7),
        (1, current_date, 1, 7),
        (1, current_date, 2, 7),
-       (1, DATEADD(DAY, -1, current_date), 2, 7),
-       (1, DATEADD(DAY, -1, current_date), 1, 7),
-       (1, DATEADD(DAY, -1, current_date), 3, 7),
-       (1, DATEADD(DAY, -1, current_date), 2, 6),
-       (1, DATEADD(DAY, -1, current_date), 1, 6),
-       (1, DATEADD(DAY, -1, current_date), 3, 6),
-       (1, DATEADD(DAY, -7, current_date), 2, 6),
-       (1, DATEADD(DAY, -7, current_date), 1, 6),
+       (2, DATEADD(DAY, -1, current_date), 2, 7),
+       (2, DATEADD(DAY, -1, current_date), 1, 7),
+       (2, DATEADD(DAY, -1, current_date), 3, 7),
+       (2, DATEADD(DAY, -1, current_date), 2, 6),
+       (2, DATEADD(DAY, -1, current_date), 1, 6),
+       (2, DATEADD(DAY, -1, current_date), 3, 6),
+       (2, DATEADD(DAY, -7, current_date), 2, 6),
+       (2, DATEADD(DAY, -7, current_date), 1, 6),
        (1, DATEADD(DAY, -7, current_date), 3, 6),
        (1, DATEADD(DAY, -7, current_date), 2, 5),
        (1, DATEADD(DAY, -7, current_date), 1, 5),
@@ -63,9 +65,9 @@ VALUES (1, DATEADD(DAY, -7, current_date), 1, 8),
        (1, DATEADD(DAY, -6, current_date), 1, 5),
        (1, DATEADD(DAY, -6, current_date), 1, 4),
        (1, DATEADD(DAY, -6, current_date), 2, 4),
-       (1, DATEADD(DAY, -1, current_date), 1, 4),
-       (1, DATEADD(DAY, -1, current_date), 2, 4),
-       (1, DATEADD(DAY, -1, current_date), 2, 3),
-       (1, DATEADD(DAY, -1, current_date), 1, 3),
-       (1, DATEADD(DAY, -1, current_date), 3, 3),
-       (1, DATEADD(DAY, -1, current_date), 2, 1);
+       (2, DATEADD(DAY, -1, current_date), 1, 4),
+       (2, DATEADD(DAY, -1, current_date), 2, 4),
+       (2, DATEADD(DAY, -1, current_date), 2, 3),
+       (2, DATEADD(DAY, -1, current_date), 1, 3),
+       (2, DATEADD(DAY, -1, current_date), 3, 3),
+       (2, DATEADD(DAY, -1, current_date), 2, 1);

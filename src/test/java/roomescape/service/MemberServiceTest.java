@@ -27,7 +27,7 @@ class MemberServiceTest {
     @DisplayName("이메일, 비밀번호를 입력받아 토큰을 생성한다.")
     void login() {
         // given
-        MemberLoginRequest request = new MemberLoginRequest("test@gmail.com", "test");
+        MemberLoginRequest request = new MemberLoginRequest("user1@gmail.com", "user1");
 
         // when
         Token token = memberService.login(request);
@@ -40,7 +40,7 @@ class MemberServiceTest {
     @DisplayName("올바르지 않은 이메일, 비밀번호로 로그인을 시도하면 로그인에 실패한다.")
     void inValidLogin() {
         // given
-        MemberLoginRequest request = new MemberLoginRequest("test@gmail.com", "1234");
+        MemberLoginRequest request = new MemberLoginRequest("user1@gmail.com", "1234");
 
         // when, then
         assertThatThrownBy(() -> memberService.login(request)).isInstanceOf(AuthenticationException.class);
