@@ -61,3 +61,10 @@
 - [x] GET /login/check
     - [x] Cookie를 이용하여 로그인 사용자의 정보를 확인
     - [x] 응답 body에 "name"값으로 사용자 이름을 포함합니다.
+
+### 5단계
+
+#### 로그인 리팩터링
+
+- [ ] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+- [ ] `HandlerMethodArgumentResolver`을 활용하면 회원정보를 객체를 컨트롤러 메서드에 주입할 수 있습니다.

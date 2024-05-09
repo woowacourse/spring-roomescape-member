@@ -3,8 +3,9 @@ package roomescape.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.dto.LoginRequest;
-import roomescape.exception.RoomEscapeException;
+import roomescape.domain.member.service.LoginService;
+import roomescape.domain.member.dto.LoginRequest;
+import roomescape.global.exception.RoomEscapeException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

@@ -3,7 +3,8 @@ package roomescape.dto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.exception.RoomEscapeException;
+import roomescape.domain.reservation.dto.ReservationSaveRequest;
+import roomescape.global.exception.RoomEscapeException;
 
 import java.time.LocalDate;
 
