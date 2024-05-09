@@ -1,11 +1,14 @@
 package roomescape.admin.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.dto.AdminReservationDto;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationResponseDto;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -18,7 +21,15 @@ public class AdminController {
     }
 
     @PostMapping("/reservations")
-    public void save(@RequestBody AdminReservationDto adminReservationDto) {
+    public ResponseEntity<ReservationResponseDto> save(@RequestBody AdminReservationDto adminReservationDto) {
         final Reservation reservation = reservationService.create(adminReservationDto.toReservation());
+
+        final ReservationResponseDto reservationResponseDto = changeToReservationResponseDto(reservation);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponseDto);
+    }
+
+    private ReservationResponseDto changeToReservationResponseDto(final Reservation reservation) {
+        return new ReservationResponseDto(reservation);
     }
 }

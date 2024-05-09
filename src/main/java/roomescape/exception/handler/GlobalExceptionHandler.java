@@ -51,4 +51,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleAuthorization(AuthorizationException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<String> handleInvalidPassword(InvalidPasswordException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }

@@ -8,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.LoginMember;
 import roomescape.member.service.MemberService;
 
 import java.util.List;
@@ -22,15 +21,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(LoginMember.class);
+        return parameter.getParameterType().equals(Member.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String token = extractTokenFromCookie(webRequest);
-        Member member = memberService.findMemberByToken(token);
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return memberService.readByToken(token);
     }
 
     private String extractTokenFromCookie(NativeWebRequest webRequest) {

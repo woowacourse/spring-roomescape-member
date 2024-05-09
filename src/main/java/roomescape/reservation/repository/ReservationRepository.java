@@ -68,7 +68,7 @@ public class ReservationRepository {
                 INNER JOIN reservation_time rt ON r.time_id = rt.id\s
                 INNER JOIN theme t ON r.theme_id = t.id\s
                 INNER JOIN member m ON r.member_id = m.id\s
-                WHERE reservation_id = ?""";
+                WHERE r.id = ?""";
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }

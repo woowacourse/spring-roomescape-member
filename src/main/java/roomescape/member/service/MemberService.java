@@ -1,23 +1,45 @@
 package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.InvalidPasswordException;
 import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberRequest;
 import roomescape.member.infrastructure.JwtTokenProvider;
+import roomescape.member.repository.MemberRepository;
+
+import java.util.List;
 
 @Service
 public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
 
-    public MemberService(JwtTokenProvider jwtTokenProvider) {
+    public MemberService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.memberRepository = memberRepository;
     }
 
-    public Member findMemberByToken(String token) {
-        String payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
+    public Member readByToken(String token) {
+        String email = jwtTokenProvider.getPayload(token);
+
+        return memberRepository.read(email);
     }
 
-    private Member findMember(String email) {
-        return new Member(1L, "seongju", email, "1234", "student");
+    public String createToken(MemberRequest memberRequest) {
+        Member member = memberRepository.read(memberRequest.email());
+
+        validatePassword(member.getPassword(), memberRequest.password());
+
+        return jwtTokenProvider.createToken(member.getEmail());
+    }
+
+    public List<Member> readAll() {
+        return memberRepository.readAll();
+    }
+
+    public void validatePassword(String actualPassword, String expectedPassword) {
+        if (!actualPassword.equals(expectedPassword)) {
+            throw new InvalidPasswordException("패스워드가 올바르지 않습니다.");
+        }
     }
 }

@@ -1,7 +1,6 @@
 package roomescape.reservation.domain;
 
 import roomescape.exception.InvalidDateException;
-import roomescape.exception.InvalidNameException;
 import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -17,7 +16,6 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
-        validateNameExist(member);
         validateDateExist(date);
         this.id = id;
         this.member = member;
@@ -32,12 +30,6 @@ public class Reservation {
 
     public boolean isDate(LocalDate currentDate) {
         return date.equals(currentDate);
-    }
-
-    private void validateNameExist(final Member member) {
-        if (member.isNameExist()) {
-            throw new InvalidNameException("예약자명이 비어있습니다.");
-        }
     }
 
     private void validateDateExist(final LocalDate date) {
