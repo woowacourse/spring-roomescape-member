@@ -40,4 +40,11 @@ public class AuthService {
             throw new IllegalArgumentException("일치하지 않는 비밀번호입니다.");
         }
     }
+
+    public Member findAuthenticatedMember(final String accessToken) {
+        final AuthenticationToken authenticationToken = tokenProvider.convertAuthenticationToken(accessToken);
+        final String memberEmail = authenticationToken.getClaims().getSubject();
+        return memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new NoSuchElementException("해당 이메일 정보와 일치하는 회원 정보가 없습니다."));
+    }
 }

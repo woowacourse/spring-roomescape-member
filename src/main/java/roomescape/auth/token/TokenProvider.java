@@ -44,4 +44,8 @@ public class TokenProvider {
     private Date createExpirationDate() {
         return new Date(new Date().getTime() + tokenExpirationPeriod);
     }
+
+    public AuthenticationToken convertAuthenticationToken(final String accessToken) {
+        return new AuthenticationToken(tokenSecretKey, accessToken);
+    }
 }

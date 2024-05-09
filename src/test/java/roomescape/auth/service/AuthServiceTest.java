@@ -8,6 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.token.AuthenticationToken;
+import roomescape.member.model.Member;
 
 import java.util.NoSuchElementException;
 
@@ -58,5 +59,20 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.login(loginRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("일치하지 않는 비밀번호입니다.");
+    }
+
+    @DisplayName("AccessToken 입력하면 인증된 사용자 정보를 반환한다.")
+    @Test
+    void findAuthenticatedMemberTest() {
+        // Given
+        final String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsImlhdCI6MTcxNTI0MDM1NCwiZX" +
+                "hwIjoxNzE1ODQ1MTU0LCJyb2xlIjoiQURNSU4ifQ.ouMYZ8bzNDauM7xzUDj9SgaJU_8" +
+                "OT4fbEoBZ2oRteJXU8Cr2yyymXqyLToxzc39PqXwhrWxflnjMgMokqi610g";
+
+        // When
+        final Member member = authService.findAuthenticatedMember(accessToken);
+
+        // Then
+        assertThat(member.getEmail().value()).isEqualTo("admin@mail.com");
     }
 }

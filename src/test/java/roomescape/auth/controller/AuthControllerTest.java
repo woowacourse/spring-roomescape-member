@@ -1,0 +1,147 @@
+package roomescape.auth.controller;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.token.TokenProvider;
+import roomescape.member.model.MemberEmail;
+import roomescape.member.model.MemberRole;
+
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(value = {"/schema.sql", "/data.sql"}, executionPhase = BEFORE_TEST_METHOD)
+class AuthControllerTest {
+
+    @Autowired
+    private TokenProvider tokenProvider;
+
+    @LocalServerPort
+    int randomServerPort;
+
+    @BeforeEach
+    public void initReservation() {
+        RestAssured.port = randomServerPort;
+    }
+
+    @DisplayName("로그인에 성공하면 인증 토큰이 담긴 쿠키를 반환한다.")
+    @Test
+    void loginTest() {
+        // Given
+        final String email = "user@mail.com";
+        final String password = "userPw1234!";
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+
+        // When && Then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .cookie("token");
+    }
+
+    @DisplayName("존재하지 않는 이메일로 로그인 요청을 하면 에러 코드가 반환된다.")
+    @Test
+    void loginFailWithUnknownEmail() {
+        // Given
+        final String email = "hacker@mail.com";
+        final String password = "userPw1234!";
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+
+        // When & Then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("해당 이메일 정보와 일치하는 회원 정보가 없습니다."));
+    }
+
+    @DisplayName("일치하지 않는 비밀번호로 로그인 요청을 하면 에러 코드가 반환된다.")
+    @Test
+    void loginFailWithInvalidPassword() {
+        // Given
+        final String email = "user@mail.com";
+        final String password = "hackerPw1234!";
+        final LoginRequest loginRequest = new LoginRequest(email, password);
+
+        // When & Then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("일치하지 않는 비밀번호입니다."));
+    }
+
+    @DisplayName("인증 토큰이 포함된 쿠키를 전송하면 인증된 사용자 이름이 반환된다.")
+    @Test
+    void loginCheckTest() {
+        // Given
+        final MemberEmail email = new MemberEmail("user@mail.com");
+        final MemberRole role = MemberRole.USER;
+        final String accessToken = tokenProvider.createToken(email, role).getValue();
+
+        // When & Then
+        RestAssured.given().log().all()
+                .cookie("token", accessToken)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", is("일반 회원"));
+    }
+
+    @DisplayName("존재하지 않은 이메일 기반의 인증 토큰이 포함된 쿠키를 전송하면 에러 코드가 반환된다.")
+    @Test
+    void loginCheckWithUnknownEmailTest() {
+        // Given
+        final MemberEmail email = new MemberEmail("hacker@mail.com");
+        final MemberRole role = MemberRole.USER;
+        final String accessToken = tokenProvider.createToken(email, role).getValue();
+
+        // When & Then
+        RestAssured.given().log().all()
+                .cookie("token", accessToken)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("해당 이메일 정보와 일치하는 회원 정보가 없습니다."));
+    }
+
+    @DisplayName("유효하지 않은 쿠키를 포함하여 로그인 확인 요청을 하면 에러 코드가 반환된다.")
+    @Test
+    void loginCheckWithInvalidCookie() {
+        // When & Then
+        RestAssured.given().log().all()
+                .cookie("invalid-cookie", "그냥 좀 해주면 안되요?ㅋ")
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("요청에 인증 쿠키가 존재하지 않습니다."));
+    }
+
+    @DisplayName("쿠키를 포함하지 않고 로그인 확인 요청을 하면 에러 코드가 반환된다.")
+    @Test
+    void loginCheckWithoutCookie() {
+        // When & Then
+        RestAssured.given().log().all()
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("요청에 인증 쿠키가 존재하지 않습니다."));
+    }
+}
