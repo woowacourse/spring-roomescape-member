@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.global.exception.error.ErrorType;
+import roomescape.global.exception.model.AssociatedDataExistsException;
+import roomescape.global.exception.model.CustomException;
 import roomescape.global.exception.model.DataDuplicateException;
+import roomescape.global.exception.model.NotFoundException;
+import roomescape.global.exception.model.UnauthorizedException;
 import roomescape.global.exception.model.ValidateException;
 
 @RestControllerAdvice
@@ -17,6 +21,20 @@ public class ExceptionControllerAdvice {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // TODO: errorType 대신, exceptionMessage 던지기(errorType 이름도 같이 던져줄까 고민되지만 중복내용이기에 필요성 고려)
+    @ExceptionHandler(value = UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<Object> handleUnauthorizedException(final UnauthorizedException e) {
+        logger.error(e.getMessage(), e);
+        return ApiResponse.fail(e.getErrorType());
+    }
+
+    @ExceptionHandler(value = NotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<Object> handleNotFoundException(final NotFoundException e) {
+        logger.error(e.getMessage(), e);
+        return ApiResponse.fail(e.getErrorType());
+    }
+
     @ExceptionHandler(value = ValidateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Object> handleValidateException(final ValidateException e) {
@@ -31,9 +49,11 @@ public class ExceptionControllerAdvice {
         return ApiResponse.fail(ErrorType.INVALID_REQUEST_DATA_TYPE);
     }
 
-    @ExceptionHandler(value = DataDuplicateException.class)
+    @ExceptionHandler(value = {
+            DataDuplicateException.class, AssociatedDataExistsException.class
+    })
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiResponse<Object> handleConflictException(final DataDuplicateException e) {
+    public ApiResponse<Object> handleConflictException(final CustomException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(e.getErrorType());
     }
