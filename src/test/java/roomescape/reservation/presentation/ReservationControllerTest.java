@@ -13,6 +13,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import roomescape.WebMvcConfiguration;
+import roomescape.auth.presentation.AdminAuthorityInterceptor;
 import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
 import roomescape.common.TestWebMvcConfiguration;
@@ -41,7 +42,7 @@ import static roomescape.TestFixture.*;
 @WebMvcTest(
         value = ReservationController.class,
         excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
-                classes = {WebMvcConfiguration.class, LoginMemberArgumentResolver.class})
+                classes = {WebMvcConfiguration.class, LoginMemberArgumentResolver.class, AdminAuthorityInterceptor.class})
 )
 class ReservationControllerTest extends ControllerTest {
     private static final Cookie COOKIE = new Cookie("token", "token");

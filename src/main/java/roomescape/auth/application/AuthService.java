@@ -26,7 +26,13 @@ public class AuthService {
         return jwtTokenProvider.createToken(member.getEmail());
     }
 
-    public Member findMemberByEmail(String email) {
+    public Member extractMember(String token) {
+        jwtTokenProvider.validateToken(token);
+        String email = jwtTokenProvider.getPayload(token);
+        return findMemberByEmail(email);
+    }
+
+    private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NotAuthenticatedException("해당 이메일의 사용자가 없습니다."));
     }

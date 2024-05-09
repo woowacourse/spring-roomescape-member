@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import roomescape.auth.application.AuthService;
-import roomescape.auth.application.JwtTokenProvider;
 import roomescape.auth.dto.request.LoginRequest;
 import roomescape.common.ControllerTest;
 import roomescape.exception.IllegalTokenException;
@@ -24,9 +23,6 @@ import static roomescape.TestFixture.*;
 
 @WebMvcTest(AuthController.class)
 class AuthControllerTest extends ControllerTest {
-    @MockBean
-    private JwtTokenProvider jwtTokenProvider;
-
     @MockBean
     private AuthService authService;
 
@@ -74,7 +70,7 @@ class AuthControllerTest extends ControllerTest {
         // given
         Cookie cookie = new Cookie("token", "token");
 
-        BDDMockito.given(authService.findMemberByEmail(any()))
+        BDDMockito.given(authService.extractMember(any()))
                 .willReturn(USER_MIA());
 
         // when & then
@@ -92,8 +88,8 @@ class AuthControllerTest extends ControllerTest {
         Cookie cookie = new Cookie("token", "invalid-token");
 
         BDDMockito.willThrow(new IllegalTokenException(TEST_ERROR_MESSAGE))
-                .given(jwtTokenProvider)
-                .validateToken(any());
+                .given(authService)
+                .extractMember(any());
 
         // when & then
         mockMvc.perform(get("/login/check")

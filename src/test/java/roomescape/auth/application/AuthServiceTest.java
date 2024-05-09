@@ -11,8 +11,7 @@ import roomescape.exception.NotAuthenticatedException;
 import roomescape.member.domain.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.TestFixture.MIA_EMAIL;
-import static roomescape.TestFixture.USER_MIA;
+import static roomescape.TestFixture.*;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,13 +40,14 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("이메일로 조회하려는 사용자가 존재하지 않는 경우 예외가 발생한다.")
+    @DisplayName("이메일을 가진 사용자가 존재하지 않으면 토큰을 생성할 수 없다.")
     void findByEmail() {
         // given
         String notExistingEmail = "notExistingEmail@google.com";
+        LoginRequest loginRequest = new LoginRequest(notExistingEmail, TEST_PASSWORD);
 
         // when & then
-        assertThatThrownBy(() -> authService.findMemberByEmail(notExistingEmail))
+        assertThatThrownBy(() -> authService.createToken(loginRequest))
                 .isInstanceOf(NotAuthenticatedException.class);
     }
 }
