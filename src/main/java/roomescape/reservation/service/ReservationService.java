@@ -9,6 +9,7 @@ import roomescape.exception.ErrorType;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.MemberReservationRequest;
+import roomescape.reservation.controller.dto.ReservationQueryRequest;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.MemberReservation;
@@ -40,8 +41,29 @@ public class ReservationService {
         this.memberReservationRepository = memberReservationRepository;
     }
 
-    public List<ReservationResponse> findMemberReservations() {
-        return memberReservationRepository.findAll().stream().map(ReservationResponse::from).toList();
+    public List<ReservationResponse> findMemberReservations(ReservationQueryRequest request) {
+        if (request.getThemeId() == null && request.getMemberId() == null) {
+            return memberReservationRepository.findBy(request.getStartDate(), request.getEndDate()).stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+        if (request.getThemeId() == null) {
+            Member member = getMember(request.getMemberId());
+            return memberReservationRepository.findBy(member, request.getStartDate(), request.getEndDate()).stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+        if (request.getMemberId() == null) {
+            Theme theme = getTheme(request.getThemeId());
+            return memberReservationRepository.findBy(theme, request.getStartDate(), request.getEndDate()).stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+        Member member = getMember(request.getMemberId());
+        Theme theme = getTheme(request.getThemeId());
+        return memberReservationRepository.findBy(member, theme, request.getStartDate(), request.getEndDate()).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     @Transactional
@@ -108,5 +130,10 @@ public class ReservationService {
     private MemberReservation getMemberReservation(long memberReservationId) {
         return memberReservationRepository.findById(memberReservationId)
                 .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_RESERVATION_NOT_FOUND));
+    }
+
+    private Member getMember(long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_NOT_FOUND));
     }
 }

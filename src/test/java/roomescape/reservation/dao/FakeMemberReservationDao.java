@@ -24,14 +24,45 @@ public class FakeMemberReservationDao implements MemberReservationRepository {
     }
 
     @Override
-    public List<MemberReservation> findAll() {
+    public Optional<MemberReservation> findById(long id) {
+        return Optional.of(memberReservations.get(id));
+    }
+
+    @Override
+    public List<MemberReservation> findBy(Member member, Theme theme, LocalDate startDate, LocalDate endDate) {
         return memberReservations.values().stream()
+                .filter(memberReservation -> memberReservation.isMember(member) &&
+                        memberReservation.getReservation().getTheme().equals(theme) &&
+                        isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
                 .toList();
     }
 
     @Override
-    public Optional<MemberReservation> findById(long id) {
-        return Optional.of(memberReservations.get(id));
+    public List<MemberReservation> findBy(Member member, LocalDate startDate, LocalDate endDate) {
+        return memberReservations.values().stream()
+                .filter(memberReservation -> memberReservation.isMember(member) &&
+                        isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
+                .toList();
+    }
+
+    @Override
+    public List<MemberReservation> findBy(Theme theme, LocalDate startDate, LocalDate endDate) {
+        return memberReservations.values().stream()
+                .filter(memberReservation -> memberReservation.getReservation().getTheme().equals(theme) &&
+                        isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
+                .toList();
+    }
+
+    @Override
+    public List<MemberReservation> findBy(LocalDate startDate, LocalDate endDate) {
+        return memberReservations.values().stream()
+                .filter(memberReservation -> isInDateRange(memberReservation.getReservation().getDate(), startDate,
+                        endDate))
+                .toList();
+    }
+
+    private boolean isInDateRange(LocalDate today, LocalDate start, LocalDate end) {
+        return !today.isBefore(start) && !today.isAfter(end);
     }
 
     @Override

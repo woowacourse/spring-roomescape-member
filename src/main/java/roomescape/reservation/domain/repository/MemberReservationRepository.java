@@ -12,9 +12,15 @@ import roomescape.reservation.domain.Theme;
 public interface MemberReservationRepository {
     long save(Member member, Reservation reservation);
 
-    List<MemberReservation> findAll();
-
     Optional<MemberReservation> findById(long id);
+
+    List<MemberReservation> findBy(Member member, Theme theme, LocalDate startDate, LocalDate endDate);
+
+    List<MemberReservation> findBy(Member member, LocalDate startDate, LocalDate endDate);
+
+    List<MemberReservation> findBy(Theme theme, LocalDate startDate, LocalDate endDate);
+
+    List<MemberReservation> findBy(LocalDate startDate, LocalDate endDate);
 
     void deleteById(long memberReservationId);
 

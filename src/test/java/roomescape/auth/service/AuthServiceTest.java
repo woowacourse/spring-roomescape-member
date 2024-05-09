@@ -41,7 +41,8 @@ class AuthServiceTest {
         //given
         String password = "1234";
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password, getMemberChoco().getRole()));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password,
+                        getMemberChoco().getRole()));
         LoginRequest loginRequest = new LoginRequest(password, member.getEmail());
 
         //when
@@ -58,7 +59,8 @@ class AuthServiceTest {
         //given
         String password = "1234";
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password, getMemberChoco().getRole()));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password,
+                        getMemberChoco().getRole()));
         String accessToken = tokenProvider.createAccessToken(member.getEmail());
 
         //when
