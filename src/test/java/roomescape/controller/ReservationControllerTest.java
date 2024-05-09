@@ -25,6 +25,8 @@ import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.service.AuthService;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -36,6 +38,10 @@ class ReservationControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private ReservationService reservationService;
+    @MockBean
+    private MemberService memberService;
+    @MockBean
+    private AuthService authService;
 
     @Test
     @DisplayName("전체 예약을 조회한다.")

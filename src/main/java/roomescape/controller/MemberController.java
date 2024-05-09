@@ -1,21 +1,20 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
-import java.util.Arrays;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.config.LoginUser;
+import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginCheckResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.LoginResponse;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
-import roomescape.exception.AuthorizationException;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
@@ -33,15 +32,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(HttpServletRequest request) {
-        Cookie cookie = Arrays.stream(request.getCookies())
-                .filter(element -> element.getName().equals(TOKEN_KEY))
-                .findFirst()
-                .orElseThrow(() -> new AuthorizationException("토큰이 쿠키에 담겨있지 않습니다."));
-
-        String payload = authService.findPayload(cookie.getValue());
-        LoginCheckResponse response = memberService.findAuthInfo(payload);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<LoginCheckResponse> loginCheck(@LoginUser Member member) {
+        return ResponseEntity.ok(new LoginCheckResponse(member));
     }
 
     @PostMapping("/members")

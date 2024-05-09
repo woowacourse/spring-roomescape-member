@@ -19,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.service.AuthService;
+import roomescape.service.MemberService;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
@@ -30,6 +32,10 @@ class ThemeControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private ThemeService themeService;
+    @MockBean
+    private MemberService memberService;
+    @MockBean
+    private AuthService authService;
 
     @Test
     @DisplayName("전체 테마를 조회한다.")

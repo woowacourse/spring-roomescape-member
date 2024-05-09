@@ -25,7 +25,6 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberPassword;
-import roomescape.dto.member.LoginCheckResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.LoginResponse;
 import roomescape.dto.member.MemberResponse;
@@ -126,9 +125,9 @@ class MemberControllerTest {
         cookie.setHttpOnly(true);
         String name = "daon";
         String email = "test@test.com";
-        LoginCheckResponse response = new LoginCheckResponse(createMember(name, email));
+        Member member = createMember(name, email);
         given(authService.findPayload(anyString())).willReturn(email);
-        given(memberService.findAuthInfo(anyString())).willReturn(response);
+        given(memberService.findAuthInfo(anyString())).willReturn(member);
 
         //when //then
         mockMvc.perform(get("/login/check")

@@ -25,6 +25,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.service.AuthService;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeController.class)
@@ -36,6 +38,10 @@ class ReservationTimeControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private ReservationTimeService reservationTimeService;
+    @MockBean
+    private MemberService memberService;
+    @MockBean
+    private AuthService authService;
 
     @Test
     @DisplayName("전체 예약 시간을 조회한다.")

@@ -5,7 +5,6 @@ import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberPassword;
-import roomescape.dto.member.LoginCheckResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
@@ -35,10 +34,9 @@ public class MemberService {
         }
     }
 
-    public LoginCheckResponse findAuthInfo(String payload) {
+    public Member findAuthInfo(String payload) {
         MemberEmail email = new MemberEmail(payload);
-        Member member = findByEmail(email);
-        return new LoginCheckResponse(member);
+        return findByEmail(email);
     }
 
     private void validateNotExistEmail(MemberEmail memberEmail) {

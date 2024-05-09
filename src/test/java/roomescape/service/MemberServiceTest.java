@@ -16,7 +16,6 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberPassword;
-import roomescape.dto.member.LoginCheckResponse;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
 import roomescape.exception.AuthorizationException;
@@ -69,13 +68,18 @@ class MemberServiceTest {
         //given
         String email = "test@test.com";
         String name = "daon";
-        memberDao.create(createMember(name, email, "1234"));
+        Member member = memberDao.create(createMember(name, email, "1234"));
 
         //when
-        LoginCheckResponse response = memberService.findAuthInfo(email);
+        Member result = memberService.findAuthInfo(email);
 
         //then
-        assertThat(response.getName()).isEqualTo(name);
+        assertAll(
+                () -> assertThat(member.getId()).isEqualTo(result.getId()),
+                () -> assertThat(member.getName().getValue()).isEqualTo(result.getName().getValue()),
+                () -> assertThat(member.getEmail().getValue()).isEqualTo(result.getEmail().getValue()),
+                () -> assertThat(member.getPassword().getValue()).isEqualTo(result.getPassword().getValue())
+        );
     }
 
     @Test
