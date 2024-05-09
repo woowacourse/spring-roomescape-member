@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class SiteUserController {
+public class SiteUserPageController {
 
     @GetMapping
     public String getMainPage() {
@@ -12,7 +12,12 @@ public class SiteUserController {
     }
 
     @GetMapping("/reservation")
-    public String getReservation() {
+    public String getReservationPage() {
         return "reservation";
+    }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
     }
 }

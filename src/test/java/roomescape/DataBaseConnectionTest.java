@@ -29,12 +29,10 @@ class DataBaseConnectionTest {
             Assertions.assertAll(
                     () -> assertThat(connection).isNotNull(),
                     () -> assertThat(connection.getCatalog()).isEqualTo("TEST"),
-                    () -> assertThat(
-                            connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue(),
-                    () -> assertThat(
-                            connection.getMetaData().getTables(null, null, "RESERVATION_TIME", null).next()).isTrue(),
-                    () -> assertThat(
-                            connection.getMetaData().getTables(null, null, "THEME", null).next()).isTrue()
+                    () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue(),
+                    () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION_TIME", null).next()).isTrue(),
+                    () -> assertThat(connection.getMetaData().getTables(null, null, "THEME", null).next()).isTrue(),
+                    () -> assertThat(connection.getMetaData().getTables(null, null, "SITE_USER", null).next()).isTrue()
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);

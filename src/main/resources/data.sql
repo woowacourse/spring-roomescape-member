@@ -27,3 +27,6 @@ VALUES ('알알알', '2024-04-30', 1, 1),
        ('러너덕', '2024-04-30', 4, 2),
        ('위브', '2024-04-30', 3, 4),
        ('아래브', '2024-04-30', 2, 3);
+
+INSERT INTO site_user (name, email, password)
+VALUES ('산초', 'sancho@sancho.com', 'sancho');

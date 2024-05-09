@@ -8,3 +8,6 @@ VALUES ('이름1', '설명1', '썸네일1'), -- 삭제 가능
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('칸쵸와 알파고', '2024-05-01', 2, 2);
+
+INSERT INTO site_user (name, email, password)
+VALUES ('산초', 'sancho@sancho.com', 'sancho');

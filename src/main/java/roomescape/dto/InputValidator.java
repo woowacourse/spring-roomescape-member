@@ -12,9 +12,9 @@ class InputValidator {
         }
     }
 
-    static void validateNotEmpty(String... inputs) {
+    static void validateNotBlank(String... inputs) {
         for (String input : inputs) {
-            if (input.isEmpty()) {
+            if (input.isBlank()) {
                 throw new InputNotAllowedException("빈 문자열은 입력할 수 없습니다.");
             }
         }
