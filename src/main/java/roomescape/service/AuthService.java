@@ -6,7 +6,7 @@ import roomescape.dto.LoginMember;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberPayload;
 import roomescape.dto.TokenDto;
-import roomescape.exception.ClientErrorExceptionWithData;
+import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.infrastructure.JwtProvider;
 import roomescape.infrastructure.PasswordEncoder;
 
@@ -44,7 +44,7 @@ public class AuthService {
 
     private void validatePassword(LoginRequest request, Member memberToLogin) {
         if (!passwordEncoder.matches(request.password(), memberToLogin.getEncodedPassword())) {
-            throw new ClientErrorExceptionWithData("[ERROR] 잘못된 비밀번호 입니다.");
+            throw new ClientErrorExceptionWithLog("[ERROR] 잘못된 비밀번호 입니다.");
         }
     }
 
@@ -53,7 +53,10 @@ public class AuthService {
         try {
             return Long.valueOf(userId);
         } catch (NumberFormatException e) {
-            throw new ClientErrorExceptionWithData("[ERROR] 유효한 토큰이 아닙니다.", userId);
+            throw new ClientErrorExceptionWithLog(
+                    "[ERROR] 유효한 토큰이 아닙니다.",
+                    "subject(userId) : " + userId
+            );
         }
     }
 }

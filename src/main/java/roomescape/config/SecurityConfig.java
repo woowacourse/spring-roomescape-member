@@ -8,7 +8,7 @@ import roomescape.infrastructure.PasswordEncoder;
 public class SecurityConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder getPasswordEncoder() {
         return new roomescape.infrastructure.PasswordEncoder();
     }
 }

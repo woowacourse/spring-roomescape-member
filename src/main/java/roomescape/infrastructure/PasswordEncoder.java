@@ -1,6 +1,6 @@
 package roomescape.infrastructure;
 
-import roomescape.exception.ClientErrorExceptionWithData;
+import roomescape.exception.ClientErrorExceptionWithLog;
 
 public class PasswordEncoder {
 
@@ -17,7 +17,7 @@ public class PasswordEncoder {
 
     private void validateEmpty(String password) {
         if (password == null) {
-            throw new ClientErrorExceptionWithData("[ERROR] 비밀번호를 입력해주세요.");
+            throw new ClientErrorExceptionWithLog("[ERROR] 비밀번호를 입력해주세요.");
         }
     }
 }
