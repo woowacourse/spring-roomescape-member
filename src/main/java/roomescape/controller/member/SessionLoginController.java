@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.member.dto.MemberLoginRequest;
-import roomescape.controller.member.dto.MemberResponse;
+import roomescape.controller.member.dto.SessionMemberResponse;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 import roomescape.service.TokenResponse;
@@ -41,7 +41,7 @@ public class SessionLoginController { //TODO 이름 괜춘?
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> check(final HttpServletRequest request) {
+    public ResponseEntity<SessionMemberResponse> check(final HttpServletRequest request) {
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
 
@@ -50,7 +50,7 @@ public class SessionLoginController { //TODO 이름 괜춘?
             return ResponseEntity.ok()
                     .build();
         }
-        return ResponseEntity.ok(new MemberResponse(member.getName()));
+        return ResponseEntity.ok(new SessionMemberResponse(member.getName()));
     }
 
     private String extractTokenFromCookie(final Cookie[] cookies) {

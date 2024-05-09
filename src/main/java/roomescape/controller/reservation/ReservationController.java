@@ -30,7 +30,7 @@ public class ReservationController {
 
     @GetMapping
     public List<ReservationResponse> getReservations() {
-        return reservationService.getReservations();
+        return reservationService.getReservations(); //TODO 반환값 변경하기
     }
 
     @PostMapping
