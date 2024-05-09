@@ -30,7 +30,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    private RowMapper<Reservation> rowMapper = ((resultSet, rowNum) -> new Reservation(
+    private final RowMapper<Reservation> rowMapper = ((resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
             resultSet.getString("reservation_name"),
             new ReservationDate(resultSet.getString("date")),

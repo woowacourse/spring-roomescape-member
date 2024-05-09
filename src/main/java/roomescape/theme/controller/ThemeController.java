@@ -33,8 +33,8 @@ public class ThemeController {
     @GetMapping
     public ResponseEntity<List<ThemeResponseDto>> findAll() {
         List<ThemeResponseDto> themeResponseDtos = themeService.findAll().stream()
-                                                               .map(ThemeResponseDto::new)
-                                                               .toList();
+                .map(ThemeResponseDto::new)
+                .toList();
         return ResponseEntity.ok(themeResponseDtos);
     }
 
@@ -55,8 +55,8 @@ public class ThemeController {
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponseDto>> findPopularThemes() {
         List<ThemeResponseDto> themes = themeService.findPopularThemes().stream()
-                                                    .map(ThemeResponseDto::new)
-                                                    .toList();
+                .map(ThemeResponseDto::new)
+                .toList();
         return ResponseEntity.ok(themes);
     }
 }
