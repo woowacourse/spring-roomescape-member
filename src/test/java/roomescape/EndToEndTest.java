@@ -13,7 +13,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MissionStepTest { //TODO 이름 변경하기
+class EndToEndTest {
 
     @LocalServerPort
     int port;
