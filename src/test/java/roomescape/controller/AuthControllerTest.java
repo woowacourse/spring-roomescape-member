@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.controller.request.LoginRequest;
 import roomescape.controller.response.LoginResponse;
 import roomescape.model.Member;
+import roomescape.model.Role;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +40,8 @@ public class AuthControllerTest {
     @BeforeEach
     void setUp() {
         initDatabase();
-        insertMember("에버", "treeboss@gmail.com", "treeboss123!");
-        insertMember("우테코", "wtc@gmail.com", "wtc123!");
+        insertMember("에버", "treeboss@gmail.com", "treeboss123!", "USER");
+        insertMember("우테코", "wtc@gmail.com", "wtc123!", "ADMIN");
     }
 
     private void initDatabase() {
@@ -48,18 +49,19 @@ public class AuthControllerTest {
         jdbcTemplate.execute("TRUNCATE TABLE member RESTART IDENTITY");
     }
 
-    private void insertMember(String name, String email, String password) {
-        Map<String, Object> parameters = new HashMap<>(3);
+    private void insertMember(String name, String email, String password, String role) {
+        Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", name);
         parameters.put("email", email);
         parameters.put("password", password);
+        parameters.put("role", role);
         memberInsertActor.execute(parameters);
     }
 
     @DisplayName("로그인을 성공할 경우 사용자 정보를 바탕으로 토큰을 생성하여 쿠키에 담아 반환한다.")
     @Test
     void should_return_token_through_cookie_when_login_success() {
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         String expected = RestAssured
                 .given().log().all()
                 .body(new LoginRequest(member.getEmail(), member.getPassword()))
@@ -79,7 +81,7 @@ public class AuthControllerTest {
     @DisplayName("로그인 된 계정의 사용자 정보를 반환한다.")
     @Test
     void should_return_name_of_login_member() {
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         String token = Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
@@ -97,7 +99,7 @@ public class AuthControllerTest {
     @DisplayName("로그아웃을 성공할 경우 토큰 쿠키를 삭제한다.")
     @Test
     void should_logout() {
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         String token = Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())

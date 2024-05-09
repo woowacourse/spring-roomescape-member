@@ -50,8 +50,8 @@ class ReservationDaoTest {
     @BeforeEach
     void setUp() {
         initDatabase();
-        insertMember("에버", "treeboss@gmail.com", "treeboss123!");
-        insertMember("우테코", "wtc@gmail.com", "wtc123!");
+        insertMember("에버", "treeboss@gmail.com", "treeboss123!", "USER");
+        insertMember("우테코", "wtc@gmail.com", "wtc123!", "ADMIN");
         insertTheme("n1", "d1", "t1");
         insertTheme("n2", "d2", "t2");
         insertReservationTime("1:00");
@@ -68,11 +68,12 @@ class ReservationDaoTest {
         jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
     }
 
-    private void insertMember(String name, String email, String password) {
+    private void insertMember(String name, String email, String password, String role) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", name);
         parameters.put("email", email);
         parameters.put("password", password);
+        parameters.put("role", role);
         memberInsertActor.execute(parameters);
     }
 

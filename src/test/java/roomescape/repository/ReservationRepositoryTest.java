@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import roomescape.model.Member;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.*;
 import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
@@ -59,8 +56,8 @@ class ReservationRepositoryTest {
         insertTheme("n2", "d2", "t2");
         insertReservationTime("1:00");
         insertReservationTime("2:00");
-        insertMember("에버", "treeboss@gmail.com", "treeboss123!");
-        insertMember("우테코", "wtc@gmail.com", "wtc123!");
+        insertMember("에버", "treeboss@gmail.com", "treeboss123!", "USER");
+        insertMember("우테코", "wtc@gmail.com", "wtc123!", "ADMIN");
         insertReservation("2000-01-01", 1, 1, 1);
         insertReservation("2000-01-02", 2, 2, 2);
     }
@@ -87,11 +84,12 @@ class ReservationRepositoryTest {
         timeInsertActor.execute(parameters);
     }
 
-    private void insertMember(String name, String email, String password) {
-        Map<String, Object> parameters = new HashMap<>(3);
+    private void insertMember(String name, String email, String password, String role) {
+        Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", name);
         parameters.put("email", email);
         parameters.put("password", password);
+        parameters.put("role", role);
         memberInsertActor.execute(parameters);
     }
 
@@ -145,7 +143,7 @@ class ReservationRepositoryTest {
         ReservationDto reservationDto = new ReservationDto(LocalDate.of(2000, 1, 3), 1L, 1L, 1L);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(1, 0));
         Theme theme = new Theme(1L, "n1", "d1", "t1");
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
 
         Reservation before = Reservation.from(reservationDto, time, theme, member);
         Reservation actual = reservationRepository.saveReservation(before);

@@ -15,6 +15,7 @@ import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.model.Member;
+import roomescape.model.Role;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -59,8 +60,8 @@ class ReservationControllerTest {
         IntStream.range(1, 6).forEach(i -> insertReservationTime(i + ":00"));
         IntStream.range(0, 20).forEach(i -> insertTheme("n" + i, "d" + i, "t" + i));
 
-        insertMember("에버", "treeboss@gmail.com", "treeboss123!");
-        insertMember("우테코", "wtc@gmail.com", "wtc123!");
+        insertMember("에버", "treeboss@gmail.com", "treeboss123!", "USER");
+        insertMember("우테코", "wtc@gmail.com", "wtc123!", "ADMIN");
 
         LocalDate now = LocalDate.now();
         IntStream.range(0, 5).forEach(i -> insertReservation(now.minusDays(i), 1L, 1L, 1L));
@@ -90,11 +91,12 @@ class ReservationControllerTest {
         timeInsertActor.execute(parameters);
     }
 
-    private void insertMember(String name, String email, String password) {
-        Map<String, Object> parameters = new HashMap<>(3);
+    private void insertMember(String name, String email, String password, String role) {
+        Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", name);
         parameters.put("email", email);
         parameters.put("password", password);
+        parameters.put("role", role);
         memberInsertActor.execute(parameters);
     }
 
@@ -123,7 +125,7 @@ class ReservationControllerTest {
     @Test
     void should_insert_reservation() {
         String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         String token = Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())

@@ -37,7 +37,7 @@ public class FakeMemberDao implements MemberDao {
 
     private long save(Member rawMember) {
         long key = index.getAndIncrement();
-        Member member = new Member(key, rawMember.getName(), rawMember.getEmail(), rawMember.getPassword());
+        Member member = new Member(key, rawMember.getName(), rawMember.getEmail(), rawMember.getPassword(), rawMember.getRole());
         members.add(member);
         return key;
     }

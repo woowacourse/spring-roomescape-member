@@ -7,10 +7,7 @@ import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
-import roomescape.model.Member;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.*;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dao.MemberDao;
 import roomescape.repository.dao.ReservationDao;
@@ -48,8 +45,8 @@ class ReservationServiceTest {
                 new ReservationTime(2, LocalTime.of(2, 0)),
                 new ReservationTime(3, LocalTime.now()))));
         MemberDao memberDao = new FakeMemberDao(new ArrayList<>(List.of(
-                new Member(1, "에버", "treeboss@gmail.com", "treeboss123!"),
-                new Member(1, "우테코", "wtc@gmail.com", "wtc123!!"))));
+                new Member(1, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER),
+                new Member(1, "우테코", "wtc@gmail.com", "wtc123!!", Role.ADMIN))));
         ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
                 new ReservationSavedDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L),
                 new ReservationSavedDto(2L, LocalDate.of(2000, 1, 2), 2L, 2L, 2L),
