@@ -451,3 +451,38 @@ id : 1
       "name": "어드민"
       }
       ```
+
+## 5단계 요구사항
+- [ ] Member DB 테이블 생성
+- [ ] Cookie를 통해 멤버 정보를 조회하는 로직
+  - [ ] `HandlerMethodArgumentResolver` 컨트롤러에 진입하기 전에 처리
+  - [ ] `HandlerMethodArgumentResolver` 에서 만든 멤버 정보 객체를 컨트롤러 메서드에서 주입 받아 사용
+- [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 리팩터링
+    - Request
+      ```markdown
+      POST /reservations HTTP/1.1
+      content-type: application/json
+      cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+      host: localhost:8080
+      
+      {
+      "date": "2024-03-01",
+      "themeId": 1,
+      "timeId": 1
+      }
+      ```
+- [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
+  - Request
+    ```markdown
+    POST /admin/reservations HTTP/1.1
+    content-type: application/json
+    cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+    host: localhost:8080
+    
+    {
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+    }
+    ```
