@@ -2,7 +2,7 @@ package roomescape.auth.resolver;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -16,20 +16,14 @@ import roomescape.global.annotation.LoginUser;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Component
+@RequiredArgsConstructor
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String SESSION_KEY = "token";
 
-    @Autowired
     private final MemberRepository memberRepository;
 
-    @Autowired
     private final AuthService authService;
-
-    public LoginUserArgumentResolver(MemberRepository memberRepository, AuthService authService) {
-        this.memberRepository = memberRepository;
-        this.authService = authService;
-    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

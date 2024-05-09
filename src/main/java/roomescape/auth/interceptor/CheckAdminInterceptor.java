@@ -3,7 +3,7 @@ package roomescape.auth.interceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.domain.AuthInfo;
@@ -13,11 +13,11 @@ import roomescape.exception.ErrorType;
 import roomescape.member.domain.Role;
 
 @Component
+@RequiredArgsConstructor
 public class CheckAdminInterceptor implements HandlerInterceptor {
     private static final String SESSION_KEY = "token";
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {

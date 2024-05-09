@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,13 +22,10 @@ import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/themes")
 public class ThemeController {
     private final ThemeService themeService;
-
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
-    }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {

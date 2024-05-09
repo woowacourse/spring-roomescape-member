@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
@@ -16,15 +17,10 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
-
-    public ReservationTimeService(ReservationRepository reservationRepository,
-                                  ReservationTimeRepository reservationTimeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-    }
 
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
         LocalTime time = LocalTime.parse(reservationTimeRequest.startAt());

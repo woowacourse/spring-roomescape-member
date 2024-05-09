@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +16,11 @@ import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.AuthService;
 
 @Controller
+@RequiredArgsConstructor
 public class AuthController {
     private static final String SESSION_KEY = "token";
-    private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
+    private final AuthService authService;
 
     private static void expireCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie(SESSION_KEY, null);

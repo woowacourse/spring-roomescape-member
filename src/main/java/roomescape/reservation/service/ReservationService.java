@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessException;
@@ -22,24 +23,13 @@ import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
     private final MemberReservationRepository memberReservationRepository;
-
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository,
-                              MemberRepository memberRepository,
-                              MemberReservationRepository memberReservationRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
-        this.memberRepository = memberRepository;
-        this.memberReservationRepository = memberReservationRepository;
-    }
 
     public List<ReservationResponse> findMemberReservations(ReservationQueryRequest request) {
         if (request.getThemeId() == null && request.getMemberId() == null) {

@@ -1,7 +1,11 @@
 package roomescape.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+@Getter
+@RequiredArgsConstructor
 public enum ErrorType {
     SECURITY_EXCEPTION(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
 
@@ -32,17 +36,4 @@ public enum ErrorType {
 
     private final HttpStatus httpStatus;
     private final String message;
-
-    ErrorType(HttpStatus httpStatus, String message) {
-        this.httpStatus = httpStatus;
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
 }
