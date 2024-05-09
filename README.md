@@ -174,10 +174,14 @@ Content-Type: application/json
         "time": {
             "id": 1,
             "startAt": "10:00"
-        }
+        },
         "theme" : {
             "id" : 1,
             "name" : "theme 1"
+        },
+        "member" : {
+            "id" : 1,
+            "name" : "ted"
         }
     },
     {
@@ -187,10 +191,14 @@ Content-Type: application/json
         "time": {
             "id": 2,
             "startAt": "11:00"
-        }
+        },
         "theme" : {
             "id" : 1,
             "name" : "theme 1"
+        },
+        "member" : {
+            "id" : 1,
+            "name" : "ted"
         }
     }
 ]
@@ -217,11 +225,15 @@ Content-Type: application/json
     "time" : {
         "id": 1,
         "startAt" : "10:00"
-    }
+    },
     "theme" : {
             "id" : 1,
             "name" : "theme 1"
-        }
+    },
+    "member" : {
+            "id" : 1,
+            "name" : "ted"
+    }
 }
 ```
 
