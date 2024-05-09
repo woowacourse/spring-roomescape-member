@@ -6,9 +6,9 @@ import roomescape.domain.reservation.Reservation;
 
 public interface ReservationRepository {
 
-    List<Reservation> findAll(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
-
     Reservation save(Reservation reservation);
+
+    List<Reservation> findAll(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 
     void deleteById(Long id);
 

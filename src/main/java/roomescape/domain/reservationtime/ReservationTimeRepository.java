@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface ReservationTimeRepository {
 
+    ReservationTime save(ReservationTime reservationTime);
+
     List<ReservationTime> findAll();
 
     default ReservationTime getById(Long id) {
@@ -18,8 +20,6 @@ public interface ReservationTimeRepository {
     Optional<ReservationTime> findById(Long id);
 
     List<AvailableReservationTimeDto> findAvailableReservationTimes(LocalDate date, Long themeId);
-
-    ReservationTime save(ReservationTime reservationTime);
 
     void deleteById(Long id);
 

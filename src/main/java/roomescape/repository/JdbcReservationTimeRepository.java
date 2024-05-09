@@ -34,6 +34,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public ReservationTime save(ReservationTime reservationTime) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt());
+
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new ReservationTime(id, reservationTime.getStartAt());
+    }
+
+    @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
 
@@ -72,16 +82,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
             return new AvailableReservationTimeDto(id, startAt, alreadyBooked);
         }, date, themeId);
-    }
-
-    @Override
-    public ReservationTime save(ReservationTime reservationTime) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
-
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-
-        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override

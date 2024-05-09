@@ -8,9 +8,14 @@ public interface MemberRepository {
 
     Member save(Member member);
 
-    boolean existsByEmail(String email);
-
     List<Member> findAll();
+
+    default Member getById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 id의 회원이 존재하지 않습니다."));
+    }
+
+    Optional<Member> findById(Long id);
 
     default Member getByEmail(String email) {
         return findByEmail(email)
@@ -19,10 +24,5 @@ public interface MemberRepository {
 
     Optional<Member> findByEmail(String email);
 
-    default Member getById(Long id) {
-        return findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 회원이 존재하지 않습니다."));
-    }
-
-    Optional<Member> findById(Long id);
+    boolean existsByEmail(String email);
 }

@@ -13,7 +13,7 @@ import roomescape.domain.member.MemberRepository;
 import roomescape.domain.member.Role;
 
 @Repository
-public class JdbcMemberService implements MemberRepository {
+public class JdbcMemberRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -27,7 +27,7 @@ public class JdbcMemberService implements MemberRepository {
         return new Member(id, email, password, name, Role.valueOf(role));
     };
 
-    public JdbcMemberService(JdbcTemplate jdbcTemplate) {
+    public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
@@ -54,17 +54,22 @@ public class JdbcMemberService implements MemberRepository {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM member WHERE email = ?)";
-
-        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
-    }
-
-    @Override
     public List<Member> findAll() {
         String sql = "SELECT * FROM member";
 
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -80,14 +85,9 @@ public class JdbcMemberService implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findById(Long id) {
-        String sql = "SELECT * FROM member WHERE id = ?";
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM member WHERE email = ?)";
 
-        try {
-            Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
-            return Optional.of(member);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
     }
 }
