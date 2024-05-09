@@ -176,10 +176,21 @@ public class ReservationControllerTest {
         return Stream.of(
                 Map.of("timeId", "1",
                         "themeId", "1"),
+
                 Map.of("date", LocalDate.now().plusDays(1L).toString(),
                         "themeId", "1"),
+
                 Map.of("date", LocalDate.now().plusDays(1L).toString(),
                         "timeId", "1"),
+
+                Map.of("date", " ",
+                        "timeId", "1",
+                        "themeId", "1"),
+
+                Map.of("date", LocalDate.now().plusDays(1L).toString(),
+                        "timeId", " ",
+                        "themeId", "1"),
+                
                 Map.of("date", LocalDate.now().plusDays(1L).toString(),
                         "timeId", "1",
                         "themeId", " ")
