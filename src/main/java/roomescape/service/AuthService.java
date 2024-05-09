@@ -4,17 +4,19 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.dto.request.MemberLoginRequest;
+import roomescape.dto.response.LoginCheckResponse;
+import roomescape.exception.InvalidTokenException;
 import roomescape.exception.NoSuchRecordException;
 import roomescape.exception.WrongPasswordException;
 import roomescape.infrastructure.JwtTokenProvider;
 
 @Service
-public class MemberService {
+public class AuthService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -29,5 +31,17 @@ public class MemberService {
         }
 
         return jwtTokenProvider.createToken(findMember);
+    }
+
+    public LoginCheckResponse checkLogin(String token) {
+        if (jwtTokenProvider.isInvalidToken(token)) {
+            throw new InvalidTokenException("유효하지 않은 토큰입니다");
+        }
+
+        Long id = Long.valueOf(jwtTokenProvider.getPayload(token));
+        Member findMember = memberRepository.findById(id)
+                .orElseThrow(() -> new NoSuchRecordException("id: " + id + " 해당하는 회원을 찾을 수 없습니다"));
+
+        return new LoginCheckResponse(findMember.getName());
     }
 }
