@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.application.AuthService;
-import roomescape.auth.application.AuthorizationException;
+import roomescape.auth.service.AuthService;
+import roomescape.auth.exception.AuthorizationException;
 import roomescape.controller.login.LoginMember;
 import roomescape.domain.Role;
 

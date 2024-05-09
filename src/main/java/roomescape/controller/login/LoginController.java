@@ -7,18 +7,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
+import roomescape.auth.service.AuthService;
+import roomescape.service.MemberService;
 
 @Controller
 public class LoginController {
 
     public static final String TOKEN_NAME = "token";
 
+    private final MemberService memberService;
     private final AuthService authService;
 
-    public LoginController(AuthService authService) {
+    public LoginController(MemberService memberService, AuthService authService) {
+        this.memberService = memberService;
         this.authService = authService;
     }
 
@@ -29,7 +32,8 @@ public class LoginController {
 
     @PostMapping("/login")
     public void login(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
-        String accessToken = authService.createToken(tokenRequest);
+        MemberResponse memberResponse = memberService.findByEmailAndPassword(tokenRequest.getEmail(), tokenRequest.getPassword());
+        String accessToken = authService.createToken(memberResponse);
 
         Cookie cookie = new Cookie(TOKEN_NAME, accessToken);
         cookie.setHttpOnly(true);
@@ -39,7 +43,10 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> findMyInfo(@Login LoginMember loginMember) {
-        return ResponseEntity.ok().body(new MemberResponse(loginMember.id(), loginMember.name()));
+        MemberResponse memberResponse = loginMember.toMemberResponse();
+
+        return ResponseEntity.ok()
+                .body(memberResponse);
     }
 
     @PostMapping("/logout")
