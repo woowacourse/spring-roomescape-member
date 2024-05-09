@@ -7,9 +7,6 @@ import static roomescape.util.Fixture.START_AT;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.web.exception.BadRequestException;
 
 class ReservationTimeTest {
@@ -20,14 +17,12 @@ class ReservationTimeTest {
                 .doesNotThrowAnyException();
     }
 
-    @ParameterizedTest
-    @DisplayName("시간 생성 시, startAt이 null이나 빈값이면 예외가 발생한다")
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "\n"})
-    void throwExceptionWhenEmptyStartAt(String emptyStartAt) {
-        assertThatThrownBy(() -> new ReservationTime(ID, emptyStartAt))
+    @Test
+    @DisplayName("시간 생성 시, startAt이 null이면 예외가 발생한다")
+    void throwExceptionWhenStartAtNull() {
+        assertThatThrownBy(() -> new ReservationTime(null))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("시간은 null이나 빈 값일 수 없습니다.");
+                .hasMessage("시간은 null일 수 없습니다.");
     }
 
     @Test

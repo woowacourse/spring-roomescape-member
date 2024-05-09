@@ -16,23 +16,27 @@ public class ReservationTime {
     }
 
     public ReservationTime(final Long id, final String startAt) {
-        validateEmpty(startAt);
+        this(id, parseStartAt(startAt));
+    }
+
+    public ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
-        this.startAt = parseStartAt(startAt);
+        this.startAt = startAt;
     }
 
-    private void validateEmpty(final String startAt) {
-        if (startAt == null || startAt.isBlank()) {
-            throw new BadRequestException("시간은 null이나 빈 값일 수 없습니다.");
+    private static LocalTime parseStartAt(final String startAt) {
+        if (startAt == null) {
+            throw new BadRequestException("시간은 null일 수 없습니다.");
         }
-    }
-
-    private LocalTime parseStartAt(final String startAt) {
         try {
             return LocalTime.parse(startAt);
-        } catch (final DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             throw new BadRequestException("시간 형식이 잘못되었습니다.");
         }
+    }
+
+    public static void main(String[] args) {
+        LocalTime.parse(null);
     }
 
     public Long getId() {
