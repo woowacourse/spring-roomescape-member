@@ -25,8 +25,6 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
-import roomescape.reservation.dto.response.ThemeResponse;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -90,9 +88,9 @@ class ReservationControllerTest extends ControllerTest {
         BDDMockito.given(reservationService.create(any()))
                 .willReturn(expectedResponse);
         BDDMockito.given(reservationTimeService.findById(anyLong()))
-                .willReturn(ReservationTimeResponse.from(expectedTime));
+                .willReturn(expectedTime);
         BDDMockito.given(themeService.findById(anyLong()))
-                .willReturn(ThemeResponse.from(expectedTheme));
+                .willReturn(expectedTheme);
 
         // when & then
         mockMvc.perform(post("/reservations")
@@ -151,12 +149,10 @@ class ReservationControllerTest extends ControllerTest {
         // given
         Long notExistingTimeId = 1L;
         Long themeId = 1L;
-        ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(themeId));
         ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, notExistingTimeId, themeId);
 
         BDDMockito.given(themeService.findById(themeId))
-                .willReturn(themeResponse);
-
+                .willReturn(WOOTECO_THEME(themeId));
         BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
                 .given(reservationTimeService)
                 .findById(anyLong());
@@ -177,12 +173,10 @@ class ReservationControllerTest extends ControllerTest {
         // given
         Long timeId = 1L;
         Long notExistingThemeId = 1L;
-        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
         ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, timeId, notExistingThemeId);
 
         BDDMockito.given(reservationTimeService.findById(timeId))
-                .willReturn(timeResponse);
-
+                .willReturn(new ReservationTime(1L, MIA_RESERVATION_TIME));
         BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
                 .given(themeService)
                 .findById(anyLong());

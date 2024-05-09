@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static roomescape.TestFixture.HORROR_THEME;
@@ -66,26 +65,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("Id로 테마를 조회한다.")
-    void findById() {
-        // given
-        Theme expectedTheme = WOOTECO_THEME(1L);
-
-        BDDMockito.given(themeRepository.findById(anyLong()))
-                .willReturn(Optional.of(expectedTheme));
-
-        // when
-        ThemeResponse themeResponse = themeService.findById(1L);
-
-        // then
-        assertAll(() -> {
-            assertThat(themeResponse.id()).isEqualTo(expectedTheme.getId());
-            assertThat(themeResponse.name()).isEqualTo(expectedTheme.getName());
-        });
-    }
-
-    @Test
-    @DisplayName("조회하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
+    @DisplayName("Id로 조회하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
     void findByNotExistId() {
         // given
         BDDMockito.given(themeRepository.findById(anyLong()))

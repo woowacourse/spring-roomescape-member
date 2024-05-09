@@ -5,14 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.dto.LoginMember;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.request.ReservationSaveRequest;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
-import roomescape.reservation.dto.response.ThemeResponse;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.application.ThemeService;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.dto.request.ReservationSaveRequest;
+import roomescape.reservation.dto.response.ReservationResponse;
 
 import java.util.List;
 
@@ -34,9 +34,9 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationSaveRequest request,
                                                                  LoginMember loginMember) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
-        ThemeResponse themeResponse = themeService.findById(request.themeId());
-        Reservation reservation = request.toModel(themeResponse, reservationTimeResponse, loginMember.toModel());
+        ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
+        Theme theme = themeService.findById(request.themeId());
+        Reservation reservation = request.toModel(theme, reservationTime, loginMember.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
     }
 

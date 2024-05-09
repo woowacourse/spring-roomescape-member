@@ -13,10 +13,10 @@ import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.application.ThemeService;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.AdminReservationSaveRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
-import roomescape.reservation.dto.response.ThemeResponse;
 
 @RestController
 @RequestMapping("/admin/reservations")
@@ -36,10 +36,10 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid AdminReservationSaveRequest request) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
-        ThemeResponse themeResponse = themeService.findById(request.themeId());
+        ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
+        Theme theme = themeService.findById(request.themeId());
         Member member = memberService.findById(request.memberId());
-        Reservation reservation = request.toModel(themeResponse, reservationTimeResponse, member);
+        Reservation reservation = request.toModel(theme, reservationTime, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
     }
 }

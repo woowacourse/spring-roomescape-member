@@ -41,10 +41,9 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse findById(Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+    public ReservationTime findById(Long id) {
+        return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
-        return ReservationTimeResponse.from(reservationTime);
     }
 
     @Transactional

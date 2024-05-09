@@ -5,8 +5,6 @@ import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
-import roomescape.reservation.dto.response.ThemeResponse;
 
 import java.time.LocalDate;
 
@@ -20,9 +18,7 @@ public record AdminReservationSaveRequest(
         @NotNull(message = "사용자 Id는 비어있을 수 없습니다.")
         Long memberId) {
 
-    public Reservation toModel(ThemeResponse themeResponse, ReservationTimeResponse timeResponse, Member member) {
-        ReservationTime time = new ReservationTime(timeResponse.id(), timeResponse.startAt());
-        Theme theme = new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(), themeResponse.thumbnail());
+    public Reservation toModel(Theme theme, ReservationTime time, Member member) {
         return new Reservation(member, date, time, theme);
     }
 }

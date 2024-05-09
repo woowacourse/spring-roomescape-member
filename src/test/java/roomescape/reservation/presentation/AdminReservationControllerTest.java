@@ -19,8 +19,6 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.AdminReservationSaveRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
-import roomescape.reservation.dto.response.ThemeResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -58,9 +56,9 @@ class AdminReservationControllerTest extends ControllerTest {
         ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme, USER_MIA(1L)));
 
         BDDMockito.given(reservationTimeService.findById(anyLong()))
-                .willReturn(ReservationTimeResponse.from(expectedTime));
+                .willReturn(expectedTime);
         BDDMockito.given(themeService.findById(anyLong()))
-                .willReturn(ThemeResponse.from(expectedTheme));
+                .willReturn(expectedTheme);
         BDDMockito.given(memberService.findById(anyLong()))
                 .willReturn(USER_MIA(1L));
         BDDMockito.given(reservationService.create(any()))
