@@ -6,11 +6,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-public record ReservationRequest(String name,
-                                 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+public record ReservationRequest(@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
                                  LocalDate date, Long timeId, Long themeId) {
 
-    public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
+    public Reservation toEntity(String name, ReservationTime reservationTime, Theme theme) {
         return new Reservation(name, date, reservationTime, theme);
     }
 }
