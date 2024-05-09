@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import roomescape.domain.exception.AuthFailException;
 import roomescape.domain.exception.IllegalNullArgumentException;
 
 @ControllerAdvice
@@ -23,6 +24,14 @@ public class ControllerExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         return ResponseEntity
                 .internalServerError()
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler({AuthFailException.class})
+    public ResponseEntity<ProblemDetail> authFailException(Exception e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NON_AUTHORITATIVE_INFORMATION, e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NON_AUTHORITATIVE_INFORMATION)
                 .body(problemDetail);
     }
 }

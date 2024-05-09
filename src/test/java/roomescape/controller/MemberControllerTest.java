@@ -27,12 +27,12 @@ class MemberControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("이메일과 비밀번호를 토큰으로 쿠키에 저장할 수 있다.")
+    @DisplayName("DB에 저장된 이메일과 비밀번호로 로그인 시도하면 토큰으로 쿠키에 저장할 수 있다.")
     @Test
     void readReservations() {
         Map<String, String> params = Map.of(
-                "email", "email@email.com",
-                "password", "1234"
+                "email", "aaa@naver.com",
+                "password", "1111"
         );
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -48,5 +48,21 @@ class MemberControllerTest {
                 () -> assertThat(keepAlive).isEqualTo("timeout=60"),
                 () -> assertThat(accessToken.startsWith("token=")).isTrue()
         );
+    }
+
+    @DisplayName("DB에 저장되지 않은 이메일과 비밀번호로 로그인 시도하면 로그인이 안된다.")
+    @Test
+    void readReservations_whenNotMember() {
+        Map<String, String> params = Map.of(
+                "email", "abc@email.com",
+                "password", "1111"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(203);
     }
 }

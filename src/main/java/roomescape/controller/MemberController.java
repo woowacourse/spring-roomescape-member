@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.response.TokenResponse;
-import roomescape.service.AuthService;
+import roomescape.service.MemberService;
 
 @RestController
 public class MemberController {
-    private final AuthService service;
+    private final MemberService service;
 
-    public MemberController(AuthService service) {
+    public MemberController(MemberService service) {
         this.service = service;
     }
 
