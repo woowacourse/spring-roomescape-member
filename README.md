@@ -70,3 +70,13 @@
 
 - [x] `ranking.js` render 함수에서 사용할 data에는 (name, thumbnail, description)이 있어야 함
 - [x] `user-reservation.js` renderTheme 함수, fetchAvailableTimes 함수 등 수정
+
+## 4단계 기능 요구 사항
+
+- [ ] GET /login 요청 시 로그인 폼이 있는 페이지 응답
+- [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+
+- [ ] 응답 Cookie에 "token"값으로 토큰이 포함
+
+- [ ] GET /login/check 사용자의 정보를 조회할 수 있다.
+- 
