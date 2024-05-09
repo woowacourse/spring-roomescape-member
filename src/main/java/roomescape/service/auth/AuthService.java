@@ -5,5 +5,5 @@ public interface AuthService {
 
     String authenticate(AuthenticationRequest request);
 
-    AuthenticatedMemberInfo authorize(String token);
+    AuthenticatedProfile authorize(String token);
 }

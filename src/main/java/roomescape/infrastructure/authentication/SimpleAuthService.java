@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.service.auth.AuthService;
-import roomescape.service.auth.AuthenticatedMemberInfo;
+import roomescape.service.auth.AuthenticatedProfile;
 import roomescape.service.auth.AuthenticationRequest;
 import roomescape.service.auth.UnauthorizedException;
 
@@ -39,7 +39,7 @@ class SimpleAuthService implements AuthService {
     }
 
     @Override
-    public AuthenticatedMemberInfo authorize(String token) {
+    public AuthenticatedProfile authorize(String token) {
         String decoded = new String(Base64.getDecoder().decode(token));
         String[] decodedStrings = decoded.split(":");
         if (decodedStrings.length < 2) {
@@ -51,7 +51,7 @@ class SimpleAuthService implements AuthService {
         AuthenticationRequest target = new AuthenticationRequest(decodedStrings[0], decodedStrings[1]);
 
         if (onlyMemberData.equals(target)) {
-            return new AuthenticatedMemberInfo(admin.getName().value());
+            return new AuthenticatedProfile(admin.getName().value());
         }
 
         throw new UnauthorizedException();
