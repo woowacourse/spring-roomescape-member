@@ -1,19 +1,22 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.error.ErrorType;
+import roomescape.global.exception.model.DataDuplicateException;
+import roomescape.global.exception.model.NotFoundException;
+import roomescape.global.exception.model.ValidateException;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.theme.dao.ThemeDao;
 import roomescape.reservation.dao.TimeDao;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.Theme;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ReservationTimeInfosResponse;
 import roomescape.reservation.dto.response.ReservationsResponse;
-import roomescape.global.exception.error.ErrorType;
-import roomescape.global.exception.model.DataDuplicateException;
-import roomescape.global.exception.model.ValidateException;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,13 +29,16 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
     public ReservationService(final ReservationDao reservationDao,
                               final TimeDao timeDao,
-                              final ThemeDao themeDao) {
+                              final ThemeDao themeDao,
+                              final MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
     public ReservationsResponse findAllReservations() {
@@ -52,17 +58,20 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(final ReservationRequest request, final Long memberId) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDate requestDate = reservationRequest.date();
-        ReservationTime requestReservationTime = timeDao.findById(reservationRequest.timeId());
-        Theme theme = themeDao.findById(reservationRequest.themeId());
+        LocalDate requestDate = request.date();
+
+        ReservationTime requestReservationTime = timeDao.findById(request.timeId());
+        Theme theme = themeDao.findById(request.themeId());
+        Member member = memberDao.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorType.MEMBER_NOT_FOUND,
+                        String.format("회원(Member) 정보가 존재하지 않습니다. [values: %s]", request)));
 
         validateDateAndTime(requestDate, requestReservationTime, now);
-        validateReservationDuplicate(reservationRequest, theme);
+        validateReservationDuplicate(request, theme);
 
-        Reservation savedReservation = reservationDao.insert(reservationRequest.toReservation(requestReservationTime, theme));
-
+        Reservation savedReservation = reservationDao.insert(request.toEntity(requestReservationTime, theme, member));
         return ReservationResponse.from(savedReservation);
     }
 

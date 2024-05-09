@@ -29,7 +29,9 @@ CREATE TABLE reservation
     date VARCHAR(255) NOT NULL,
     time_id BIGINT    NOT NULL,
     theme_id BIGINT   NOT NULL,
+    member_id BIGINT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
 );

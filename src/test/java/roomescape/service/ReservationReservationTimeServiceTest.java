@@ -9,6 +9,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.global.exception.model.AssociatedDataExistsException;
 import roomescape.global.exception.model.DataDuplicateException;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.TimeDao;
 import roomescape.reservation.domain.Reservation;
@@ -24,7 +26,7 @@ import java.time.LocalTime;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-@Import({ReservationTimeService.class, TimeDao.class, ReservationDao.class, ThemeDao.class})
+@Import({ReservationTimeService.class, TimeDao.class, ReservationDao.class, ThemeDao.class, MemberDao.class})
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationReservationTimeServiceTest {
 
@@ -36,6 +38,8 @@ class ReservationReservationTimeServiceTest {
     private ReservationDao reservationDao;
     @Autowired
     private ThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     @Test
     @DisplayName("중복된 예약 시간을 등록하는 경우 예외가 발생한다.")
@@ -54,9 +58,10 @@ class ReservationReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.now()));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
 
         // when
-        reservationDao.insert(new Reservation(LocalDate.now().plusDays(1L), reservationTime, theme));
+        reservationDao.insert(new Reservation(LocalDate.now().plusDays(1L), reservationTime, theme, member));
 
         // then
         assertThatThrownBy(() -> reservationTimeService.removeTimeById(reservationTime.getId()))

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
 
 // TODO: Test 작성
@@ -33,7 +34,7 @@ public class MemberDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Member save(final Member member) {
+    public Member insert(final Member member) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
@@ -41,6 +42,12 @@ public class MemberDao {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Member(id, member);
+    }
+
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Optional<Member> findById(final Long id) {

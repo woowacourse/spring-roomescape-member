@@ -45,7 +45,7 @@ function render(data) {
 function fetchTimes() {
   requestRead(TIME_API_ENDPOINT)
       .then(data => {
-        timesOptions.push(...data);
+        timesOptions.push(...data.data.times);
       })
       .catch(error => console.error('Error fetching time:', error));
 }
@@ -53,7 +53,7 @@ function fetchTimes() {
 function fetchThemes() {
   requestRead(THEME_API_ENDPOINT)
       .then(data => {
-        themesOptions.push(...data);
+        themesOptions.push(...data.data.themes);
         populateSelect('theme', themesOptions, 'name');
       })
       .catch(error => console.error('Error fetching theme:', error));
@@ -62,7 +62,7 @@ function fetchThemes() {
 function fetchMembers() {
   requestRead(MEMBER_API_ENDPOINT)
       .then(data => {
-        membersOptions.push(...data);
+        membersOptions.push(...data.data.members);
         populateSelect('member', membersOptions, 'name');
       })
       .catch(error => console.error('Error fetching member:', error));
@@ -219,7 +219,7 @@ function requestCreate(reservation) {
     body: JSON.stringify(reservation)
   };
 
-  return fetch('/admin/reservations', requestOptions)
+  return fetch('/reservations', requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
         throw new Error('Create failed');

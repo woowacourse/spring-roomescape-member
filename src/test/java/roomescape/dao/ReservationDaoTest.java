@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.TimeDao;
 import roomescape.reservation.domain.Reservation;
@@ -21,18 +23,19 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Import({ReservationDao.class, TimeDao.class, ThemeDao.class})
+@Import({ReservationDao.class, TimeDao.class, ThemeDao.class, MemberDao.class})
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationDaoTest {
 
     @Autowired
     private ReservationDao reservationDao;
-
     @Autowired
     private TimeDao timeDao;
-
     @Autowired
     private ThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
+
 
     @Test
     @DisplayName("전체 예약 정보를 조회한다")
@@ -40,10 +43,14 @@ public class ReservationDaoTest {
         // given
         ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
+
+
         reservationDao.insert(new Reservation(
                 LocalDate.of(2024, 4, 25),
                 reservationTime,
-                theme
+                theme,
+                member
         ));
 
         // when
@@ -59,12 +66,14 @@ public class ReservationDaoTest {
         // given
         ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
 
         // when
         Reservation savedReservation = reservationDao.insert(new Reservation(
                 LocalDate.of(2024, 4, 25),
                 reservationTime,
-                theme
+                theme,
+                member
         ));
         int deleteCount = reservationDao.deleteById(savedReservation.getId());
 

@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.TimeDao;
 import roomescape.reservation.domain.Reservation;
@@ -32,15 +35,36 @@ public class ReservationControllerTest {
 
     @Autowired
     private ReservationDao reservationDao;
-
     @Autowired
     private TimeDao timeDao;
-
     @Autowired
     private ThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     @LocalServerPort
     private int port;
+
+    private String accessTokenCookie;
+
+    @BeforeEach
+    void init() {
+        String email = "test@email.com";
+        String password = "12341234";
+        memberDao.insert(new Member("이름", email, password));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        accessTokenCookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+    }
 
     @Test
     @DisplayName("처음으로 등록하는 예약의 id는 1이다.")
@@ -58,6 +82,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
+                .header("Cookie", accessTokenCookie)
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
@@ -72,11 +97,12 @@ public class ReservationControllerTest {
         // given
         ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
 
         // when
-        reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme));
-        reservationDao.insert(new Reservation(LocalDate.now().plusDays(1), reservationTime, theme));
-        reservationDao.insert(new Reservation(LocalDate.now().plusDays(2), reservationTime, theme));
+        reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme, member));
+        reservationDao.insert(new Reservation(LocalDate.now().plusDays(1), reservationTime, theme, member));
+        reservationDao.insert(new Reservation(LocalDate.now().plusDays(2), reservationTime, theme, member));
 
         // then
         RestAssured.given().log().all()
@@ -93,8 +119,9 @@ public class ReservationControllerTest {
         // given
         ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
 
-        Reservation reservation = reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme));
+        Reservation reservation = reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme, member));
 
         // when
         RestAssured.given().log().all()
@@ -116,10 +143,11 @@ public class ReservationControllerTest {
         ReservationTime reservationTime2 = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         ReservationTime reservationTime3 = timeDao.insert(new ReservationTime(LocalTime.of(18, 30)));
         Theme theme = themeDao.insert(new Theme("테마명1", "설명", "썸네일URL"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
 
-        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime1, theme));
-        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime2, theme));
-        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime3, theme));
+        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime1, theme, member));
+        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime2, theme, member));
+        reservationDao.insert(new Reservation(today.plusDays(1), reservationTime3, theme, member));
 
         // when & then
         RestAssured.given().log().all()

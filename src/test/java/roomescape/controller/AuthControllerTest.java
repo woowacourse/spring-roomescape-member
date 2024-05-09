@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.service.AuthService;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
-import roomescape.auth.service.AuthService;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public class AuthControllerTest {
         // given
         String email = "test@email.com";
         String password = "12341234";
-        memberDao.save(new Member("이름", email, password));
+        memberDao.insert(new Member("이름", email, password));
 
         Map<String, String> loginParams = Map.of(
                 "email", email,
@@ -63,7 +63,7 @@ public class AuthControllerTest {
         String name = "이름";
         String email = "test@email.com";
         String password = "12341234";
-        memberDao.save(new Member(name, email, password));
+        memberDao.insert(new Member(name, email, password));
 
         Map<String, String> loginParams = Map.of(
                 "email", email,

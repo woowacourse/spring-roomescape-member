@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.TimeDao;
 import roomescape.reservation.domain.Reservation;
@@ -23,7 +25,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Import({TimeDao.class, ThemeDao.class, ReservationDao.class})
+@Import({TimeDao.class, ThemeDao.class, ReservationDao.class, MemberDao.class})
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationTimeDaoTest {
 
@@ -32,6 +34,9 @@ public class ReservationTimeDaoTest {
 
     @Autowired
     private ThemeDao themeDao;
+
+    @Autowired
+    private MemberDao memberDao;
 
     @Autowired
     private ReservationDao reservationDao;
@@ -97,12 +102,13 @@ public class ReservationTimeDaoTest {
         ReservationTime reservationTime1 = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         ReservationTime reservationTime2 = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
 
         reservationDao.insert(new Reservation(
-                LocalDate.of(2024, 4, 25), reservationTime1, theme
+                LocalDate.of(2024, 4, 25), reservationTime1, theme, member
         ));
         reservationDao.insert(new Reservation(
-                LocalDate.of(2024, 4, 26), reservationTime1, theme
+                LocalDate.of(2024, 4, 26), reservationTime1, theme, member
         ));
 
         // when

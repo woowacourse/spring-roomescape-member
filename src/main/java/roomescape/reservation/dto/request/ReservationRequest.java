@@ -3,6 +3,7 @@ package roomescape.reservation.dto.request;
 import io.micrometer.common.util.StringUtils;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.ValidateException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -25,7 +26,7 @@ public record ReservationRequest(
         }
     }
 
-    public Reservation toReservation(final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(this.date, reservationTime, theme);
+    public Reservation toEntity(final ReservationTime reservationTime, final Theme theme, final Member member) {
+        return new Reservation(this.date, reservationTime, theme, member);
     }
 }
