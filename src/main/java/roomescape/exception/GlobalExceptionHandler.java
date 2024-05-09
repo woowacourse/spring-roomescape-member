@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import io.jsonwebtoken.JwtException;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

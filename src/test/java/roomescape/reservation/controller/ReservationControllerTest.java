@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -111,33 +112,12 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(201);
     }
 
-    @DisplayName("예약 생성 시, 빈 이름에 대해 400을 반환한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "           "})
-    void createNameBadRequest(String name) {
-        //given
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", "2100-12-01");
-        reservation.put("timeId", reservationTimeResponse.id());
-        reservation.put("themeId", themeResponse.id());
-
-        //when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
     @DisplayName("예약 생성 시, 잘못된 날짜 형식에 대해 400을 반환한다.")
     @ParameterizedTest
     @ValueSource(strings = {"", "20-12-31", "2020-1-30", "2020-11-0", "-1"})
     void createBadRequest(String date) {
         //given
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", date);
         reservation.put("timeId", reservationTimeResponse.id());
         reservation.put("themeId", themeResponse.id());
@@ -153,12 +133,11 @@ class ReservationControllerTest extends ControllerTest {
 
     @DisplayName("예약 생성 시, 빈 시간 id에 대해 400을 반환한다.")
     @ParameterizedTest
-    @ValueSource(strings = {"", "           "})
+    @NullAndEmptySource
     void createTimeIdBadRequest(String timeId) {
         //given
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "siso");
-        reservation.put("date", "2100-12-01");
+        reservation.put("date", "2099-12-01");
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeResponse.id());
 
@@ -173,12 +152,11 @@ class ReservationControllerTest extends ControllerTest {
 
     @DisplayName("예약 생성 시, 빈 테마 id에 대해 400을 반환한다.")
     @ParameterizedTest
-    @ValueSource(strings = {"", "           "})
+    @NullAndEmptySource
     void createThemeIdBadRequest(String themeId) {
         //given
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "siso");
-        reservation.put("date", "2100-12-01");
+        reservation.put("date", "2099-12-01");
         reservation.put("timeId", reservationTimeResponse.id());
         reservation.put("themeId", themeId);
 

@@ -13,6 +13,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.ReservationAdminRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
@@ -43,19 +44,34 @@ public class ReservationService {
 
         validateTimeExist(reservationTime, reservationRequest.timeId());
         validateThemeExist(theme, reservationRequest.themeId());
-        validateReservationDuplicate(reservationRequest, date);
+        validateReservationDuplicate(date, reservationRequest.timeId(), reservationRequest.themeId());
 
-        Reservation reservation = reservationRepository.save(
-                new Reservation(date, reservationTime, theme));
-        reservationRepository.saveReservationList(member.id(), reservation.getId());
+        return saveReservation(date, reservationTime, theme, member.id());
+    }
 
-        return ReservationResponse.from(reservation);
+    public ReservationResponse createByAdmin(ReservationAdminRequest reservationAdminRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationAdminRequest.timeId());
+        Theme theme = themeRepository.findById(reservationAdminRequest.themeId());
+        LocalDate date = LocalDate.parse(reservationAdminRequest.date());
+
+        validateTimeExist(reservationTime, reservationAdminRequest.timeId());
+        validateThemeExist(theme, reservationAdminRequest.themeId());
+        validateReservationDuplicate(date, reservationAdminRequest.timeId(), reservationAdminRequest.memberId());
+
+        return saveReservation(date, reservationTime, theme, reservationAdminRequest.memberId());
     }
 
     public void delete(long reservationId) {
         if (!reservationRepository.deleteById(reservationId)) {
             throw new IllegalArgumentException(String.format("잘못된 예약입니다. id=%d를 확인해주세요.", reservationId));
         }
+    }
+
+    private ReservationResponse saveReservation(LocalDate date, ReservationTime reservationTime, Theme theme, long member) {
+        Reservation reservation = reservationRepository.save(
+                new Reservation(date, reservationTime, theme));
+        reservationRepository.saveReservationList(member, reservation.getId());
+        return ReservationResponse.from(reservation);
     }
 
     private void validateTimeExist(ReservationTime reservationTime, long timeId) {
@@ -72,8 +88,8 @@ public class ReservationService {
         }
     }
 
-    private void validateReservationDuplicate(ReservationRequest reservationRequest, LocalDate date) {
-        if (reservationRepository.existBy(date, reservationRequest.timeId(), reservationRequest.themeId())) {
+    private void validateReservationDuplicate(LocalDate date, long timeId, long themeId) {
+        if (reservationRepository.existBy(date, timeId, themeId)) {
             throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
         }
     }
