@@ -15,10 +15,10 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.domain.Theme;
 
 @ExtendWith(MockitoExtension.class)
-class UserThemeServiceTest {
+class ThemeServiceTest {
 
     @InjectMocks
-    UserThemeService userThemeService;
+    ThemeService themeService;
 
     @Mock
     ReservationRepository reservationRepository;
@@ -30,7 +30,7 @@ class UserThemeServiceTest {
         when(reservationRepository.findThemeOrderByReservationCount())
                 .thenReturn(List.of(theme));
 
-        List<Theme> themeRanking = userThemeService.getThemeRanking();
+        List<Theme> themeRanking = themeService.getThemeRanking();
 
         assertAll(
                 () -> assertThat(themeRanking).hasSize(1),

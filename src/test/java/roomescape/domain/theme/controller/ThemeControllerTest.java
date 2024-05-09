@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.ControllerTest;
 
-class UserThemeControllerTest extends ControllerTest {
+class ThemeControllerTest extends ControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

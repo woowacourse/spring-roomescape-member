@@ -9,13 +9,13 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservationTime.repository.ReservationTimeRepository;
 
 @Service
-public class UserReservationService {
+public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public UserReservationService(ReservationRepository reservationRepository,
-                                  ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }

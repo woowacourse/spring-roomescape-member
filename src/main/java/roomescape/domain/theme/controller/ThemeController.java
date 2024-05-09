@@ -5,19 +5,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.theme.domain.Theme;
-import roomescape.domain.theme.service.UserThemeService;
+import roomescape.domain.theme.service.ThemeService;
 
 @RestController
-public class UserThemeController {
+public class ThemeController {
 
-    private final UserThemeService userThemeService;
+    private final ThemeService themeService;
 
-    public UserThemeController(UserThemeService userThemeService) {
-        this.userThemeService = userThemeService;
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @GetMapping("/theme-ranking")
     public ResponseEntity<List<Theme>> getThemeRank() {
-        return ResponseEntity.ok(userThemeService.getThemeRanking());
+        return ResponseEntity.ok(themeService.getThemeRanking());
     }
 }

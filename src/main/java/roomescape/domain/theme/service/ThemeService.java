@@ -6,11 +6,11 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.domain.Theme;
 
 @Service
-public class UserThemeService {
+public class ThemeService {
 
     private final ReservationRepository reservationRepository;
 
-    public UserThemeService(ReservationRepository reservationRepository) {
+    public ThemeService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 

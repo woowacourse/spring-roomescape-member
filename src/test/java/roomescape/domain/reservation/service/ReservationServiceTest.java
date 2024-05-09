@@ -16,9 +16,9 @@ import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.reservationTime.service.FakeReservationTimeRepository;
 import roomescape.domain.theme.domain.Theme;
 
-class UserReservationServiceTest {
+class ReservationServiceTest {
 
-    UserReservationService userReservationService;
+    ReservationService reservationService;
     FakeReservationRepository fakeReservationRepository;
     FakeReservationTimeRepository fakeReservationTimeDao;
 
@@ -26,7 +26,7 @@ class UserReservationServiceTest {
     void setUp() {
         fakeReservationRepository = new FakeReservationRepository();
         fakeReservationTimeDao = new FakeReservationTimeRepository();
-        userReservationService = new UserReservationService(fakeReservationRepository, fakeReservationTimeDao);
+        reservationService = new ReservationService(fakeReservationRepository, fakeReservationTimeDao);
     }
 
     @DisplayName("예약 가능 시각을 알 수 있습니다.")
@@ -38,7 +38,7 @@ class UserReservationServiceTest {
         fakeReservationRepository.insert(
                 new Reservation(null, "dodo", AFTER_ONE_DAYS_DATE, reservationTime, theme));
 
-        List<BookableTimeResponse> bookableTimes = userReservationService.findBookableTimes(
+        List<BookableTimeResponse> bookableTimes = reservationService.findBookableTimes(
                 new BookableTimesRequest(AFTER_ONE_DAYS_DATE, 1L));
 
         assertThat(bookableTimes.get(0).alreadyBooked()).isTrue();
@@ -54,7 +54,7 @@ class UserReservationServiceTest {
         fakeReservationRepository.insert(
                 new Reservation(null, "dodo", AFTER_ONE_DAYS_DATE, reservationTime, theme));
 
-        List<BookableTimeResponse> bookableTimes = userReservationService.findBookableTimes(
+        List<BookableTimeResponse> bookableTimes = reservationService.findBookableTimes(
                 new BookableTimesRequest(AFTER_ONE_DAYS_DATE, 1L));
 
         assertThat(bookableTimes.get(1).alreadyBooked()).isFalse();
