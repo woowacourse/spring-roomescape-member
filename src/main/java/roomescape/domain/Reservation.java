@@ -6,25 +6,21 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final MemberName memberName;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, MemberName memberName, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.memberName = memberName;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(id, new MemberName(name), date, time, theme);
-    }
-
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new MemberName(name), date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
     public boolean isSameDate(LocalDate localDate) {
@@ -39,8 +35,12 @@ public class Reservation {
         return id;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     public String getName() {
-        return memberName.getValue();
+        return member.getName();
     }
 
     public LocalDate getReservationDate() {
@@ -53,6 +53,10 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getMemberId() {
+        return member.getId();
     }
 
     public Long getTimeId() {

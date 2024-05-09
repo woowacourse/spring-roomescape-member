@@ -3,6 +3,8 @@ package roomescape.infrastructure;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
@@ -15,6 +17,7 @@ public class TokenProvider {
     private static final String RANDOM_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RANDOM_VALUE.getBytes());
     private static final String AUTHENTICATION_PAYLOAD = "name";
+    private static final String TOKEN_COOKIE_NAME = "token";
 
     public String generateTokenOf(Member member) {
         return Jwts.builder()
@@ -31,6 +34,17 @@ public class TokenProvider {
             throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
         }
         return authenticationInfo;
+    }
+
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new IllegalArgumentException("쿠키를 찾을 수 없습니다.");
+        }
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(TOKEN_COOKIE_NAME))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("쿠키를 찾을 수 없습니다."))
+                .getValue();
     }
 
     public Long parseSubject(String token) {
