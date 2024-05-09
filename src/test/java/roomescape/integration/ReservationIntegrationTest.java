@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.service.request.MemberLoginRequest;
 import roomescape.service.request.ReservationRequest;
 
 /*
@@ -25,12 +26,20 @@ import roomescape.service.request.ReservationRequest;
 @Sql(scripts = "/reset_test_data.sql")
 class ReservationIntegrationTest {
 
+    private String token;
+
     @LocalServerPort
     private int port;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new MemberLoginRequest("test@gmail.com", "test"))
+                .when().post("/login")
+                .then().log().all()
+                .extract().cookie("token");
     }
 
     @Test
@@ -47,16 +56,16 @@ class ReservationIntegrationTest {
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         LocalDate reservationDate = LocalDate.now().plusDays(1);
-        ReservationRequest createDto = new ReservationRequest("브라운", reservationDate.toString(), 1L, 1L);
+        ReservationRequest request = new ReservationRequest(reservationDate.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(createDto)
+                .cookies("token", token)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", startsWith("/reservations/"))
-                .body("name", is("브라운"))
                 .body("date", is(reservationDate.toString()));
     }
 
