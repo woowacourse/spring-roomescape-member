@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.time.domain.ReservationTime;
 
 class ReservationTimeTest {
     @DisplayName("시간이 비어있을 때 예외를 던진다.")

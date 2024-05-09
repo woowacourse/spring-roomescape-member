@@ -1,21 +1,21 @@
-package roomescape.user.domain;
+package roomescape.member.domain;
 
 import java.util.Objects;
 
-public class User {
-    private final UserName name;
+public class Member {
+    private final MemberName name;
     private final String email;
     private final String password;
 
-    public User(String email, String password) {
-        this((UserName) null, email, password);
+    public Member(String email, String password) {
+        this((MemberName) null, email, password);
     }
 
-    public User(String name, String email, String password) {
-        this(new UserName(name), email, password);
+    public Member(String name, String email, String password) {
+        this(new MemberName(name), email, password);
     }
 
-    private User(UserName name, String email, String password) {
+    private Member(MemberName name, String email, String password) {
         this.name = name;
         this.email = Objects.requireNonNull(email);
         this.password = Objects.requireNonNull(password);

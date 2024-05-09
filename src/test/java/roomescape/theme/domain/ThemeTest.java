@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.Theme;
 
 class ThemeTest {
     @DisplayName("이름이 비어있을 때 예외를 던진다.")

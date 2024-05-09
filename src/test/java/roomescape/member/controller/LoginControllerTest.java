@@ -1,4 +1,4 @@
-package roomescape.user.controller;
+package roomescape.member.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.user.dto.LoginRequest;
-import roomescape.user.dto.LoginResponse;
+import roomescape.member.dto.LoginRequest;
+import roomescape.member.dto.LoginResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

@@ -16,15 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.theme.dao.ThemeDao;
-import roomescape.time.dao.TimeDao;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.service.ReservationService;
-import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.time.dao.TimeDao;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.TimeResponse;
 
 @ExtendWith(MockitoExtension.class)

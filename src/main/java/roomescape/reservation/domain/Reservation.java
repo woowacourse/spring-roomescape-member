@@ -3,26 +3,26 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import roomescape.time.domain.ReservationTime;
+import roomescape.member.domain.MemberName;
 import roomescape.theme.domain.Theme;
-import roomescape.user.domain.UserName;
+import roomescape.time.domain.ReservationTime;
 
 public class Reservation {
     private final Long id;
-    private final UserName name;
+    private final MemberName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new UserName(name), date, time, theme);
+        this(null, new MemberName(name), date, time, theme);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(Objects.requireNonNull(id), new UserName(name), date, time, theme);
+        this(Objects.requireNonNull(id), new MemberName(name), date, time, theme);
     }
 
-    private Reservation(Long id, UserName name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(Long id, MemberName name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = Objects.requireNonNull(name);
         this.date = Objects.requireNonNull(date);

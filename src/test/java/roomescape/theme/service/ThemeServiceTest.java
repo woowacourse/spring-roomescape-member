@@ -15,7 +15,6 @@ import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {

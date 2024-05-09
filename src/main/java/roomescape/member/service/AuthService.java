@@ -1,12 +1,12 @@
-package roomescape.user.service;
+package roomescape.member.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import roomescape.user.dto.AccessToken;
-import roomescape.user.dto.LoginRequest;
+import roomescape.member.dto.AccessToken;
+import roomescape.member.dto.LoginRequest;
 
 @Service
 public class AuthService {
