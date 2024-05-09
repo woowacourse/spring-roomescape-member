@@ -9,7 +9,7 @@ import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class AdminControllerTest {
+class AdminPageControllerTest {
 
     @Test
     @DisplayName("방탈출 관리 홈페이지를 매핑한다.")
