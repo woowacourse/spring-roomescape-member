@@ -15,6 +15,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.DuplicateReservationException;
 import roomescape.service.exception.PreviousTimeException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,6 +39,15 @@ public class ReservationService {
 
     public List<Reservation> getReservations() {
         return reservationRepository.findAll()
+                .stream()
+                .toList();
+    }
+
+    public List<Reservation> getFilter(final long themeId,
+                                       final long memberId,
+                                       final LocalDate dateFrom,
+                                       final LocalDate dateTo) {
+        return reservationRepository.findFilter(themeId, memberId, dateFrom, dateTo)
                 .stream()
                 .toList();
     }

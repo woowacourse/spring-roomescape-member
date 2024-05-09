@@ -115,6 +115,20 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findFilter(final long themeId, final long memberId,
+                                        final LocalDate dateFrom, final LocalDate dateTo) {
+        final String sql = """
+                SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, M.NAME FROM RESERVATION AS R
+                JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                JOIN THEME T ON T.ID = R.THEME_ID
+                JOIN MEMBER M ON M.ID = R.MEMBER_ID
+                WHERE (R.THEME_ID = ?) AND (R.MEMBER_ID = ?) AND (R.DATE BETWEEN ? AND ?)
+                """;
+
+        return jdbcTemplate.query(sql, getFilterReservation(), themeId, memberId, dateFrom, dateTo);
+    }
+
+    @Override
     public List<Theme> findPopularThemes(final LocalDate from, final LocalDate until, final int limit) {
         final String sql = """
                 SELECT R.THEME_ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS COUNT FROM RESERVATION AS R
@@ -164,6 +178,16 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getDate("DATE").toLocalDate(),
                 new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), null),
                 new Theme(rs.getLong("RESERVATION.THEME_ID"), null, null, null)
+        );
+    }
+
+    private RowMapper<Reservation> getFilterReservation() {
+        return (rs, rowNum) -> new Reservation(
+                rs.getLong("ID"),
+                new Member(rs.getLong("RESERVATION.MEMBER_ID"), rs.getString("MEMBER.NAME"), null, null, null),
+                rs.getDate("DATE").toLocalDate(),
+                new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), rs.getTime("RESERVATION_TIME.START_AT").toLocalTime()),
+                new Theme(rs.getLong("RESERVATION.THEME_ID"), rs.getString("THEME.NAME"), null, null)
         );
     }
 }

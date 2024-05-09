@@ -28,4 +28,6 @@ public interface ReservationRepository {
     void deleteById(long id);
 
     List<Theme> findPopularThemes(LocalDate from, LocalDate until, int limit);
+
+    List<Reservation> findFilter(long themeId, long memberId, LocalDate dateFrom, LocalDate dateTO);
 }

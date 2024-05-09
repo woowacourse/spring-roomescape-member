@@ -1,6 +1,7 @@
 package roomescape.controller.reservation;
 
 import jakarta.validation.Valid;
+import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.member.dto.LoginMember;
+import roomescape.controller.reservation.dto.FilterReservationRequest;
 import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.domain.Reservation;
@@ -47,6 +49,17 @@ public class ReservationController {
 
         return ResponseEntity.created(uri)
                 .body(ReservationResponse.from(reservation));
+    }
+
+    @GetMapping(value = "/filter", params = {"themeId", "memberId", "dateFrom", "dateTo"})
+    public List<ReservationResponse> findFilter(
+            final FilterReservationRequest request) {
+        final List<Reservation> filter = reservationService.getFilter(request.themeId(), request.memberId(),
+                request.dateFrom(),
+                request.dateTo());
+        return filter.stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
