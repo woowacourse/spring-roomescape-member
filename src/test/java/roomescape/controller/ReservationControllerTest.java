@@ -41,7 +41,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .accept(MediaType.APPLICATION_JSON_VALUE)
                             .when().post("/login")
-                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                            .then().log().all().extract().cookie("token");
                 }),
                 dynamicTest("예약을 목록을 조회한다.", () -> {
                     reservationSize = RestAssured.given().log().all()
@@ -150,7 +150,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .accept(MediaType.APPLICATION_JSON_VALUE)
                             .when().post("/login")
-                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                            .then().log().all().extract().cookie("token");
                 }),
                 dynamicTest("예약을 추가한다.", () -> {
                     Map<String, Object> params = Map.of(
@@ -210,7 +210,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .accept(MediaType.APPLICATION_JSON_VALUE)
                             .when().post("/login")
-                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                            .then().log().all().extract().cookie("token");
                 }),
                 dynamicTest("어드민은 예약을 삭제한다.", () -> {
                     RestAssured.given().log().all()

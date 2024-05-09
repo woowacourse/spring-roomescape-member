@@ -1,4 +1,4 @@
-package roomescape.controller.admin;
+package roomescape.controller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ class AdminPageControllerTest extends IntegrationTestSupport {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                .then().log().all().extract().cookie("token");
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
@@ -49,7 +49,7 @@ class AdminPageControllerTest extends IntegrationTestSupport {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                .then().log().all().extract().cookie("token");
 
         RestAssured.given().log().all()
                 .cookie("token", userToken)

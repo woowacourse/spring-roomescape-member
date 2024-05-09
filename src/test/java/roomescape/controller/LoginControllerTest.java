@@ -1,4 +1,4 @@
-package roomescape.controller.login;
+package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -35,7 +35,7 @@ class LoginControllerTest extends IntegrationTestSupport {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .accept(MediaType.APPLICATION_JSON_VALUE)
                             .when().post("/login")
-                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                            .then().log().all().extract().cookie("token");
                 }),
                 dynamicTest("토큰으로 로그인 여부를 확인하여 이름을 받는다.", () -> {
                     MemberResponse member = RestAssured

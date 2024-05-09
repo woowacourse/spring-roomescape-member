@@ -42,7 +42,7 @@ class ThemeControllerTest extends IntegrationTestSupport {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .accept(MediaType.APPLICATION_JSON_VALUE)
                             .when().post("/login")
-                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                            .then().log().all().extract().cookie("token");
                 }),
                 dynamicTest("테마 목록을 조회한다.", () -> {
                     themeSize = RestAssured.given().log().all()

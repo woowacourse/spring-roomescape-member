@@ -1,4 +1,4 @@
-package roomescape.controller.admin;
+package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
 
@@ -27,7 +27,7 @@ class AdminReservationControllerTest extends IntegrationTestSupport {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                .then().log().all().extract().cookie("token");
 
         Map<String, String> params = Map.of("themeId", "1",
                 "memberId", "1",
