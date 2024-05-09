@@ -1,8 +1,10 @@
 package roomescape.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +23,7 @@ class LoginAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("role이 USER인 계정으로 로그인을 한다", () -> {
                     userToken.set(LoginUtil.login("email1", "qq1"));
                 }),
+                dynamicTest("로그인한 계정의 이름을 확인한다", () -> loginCheck(userToken.get(), 200, "name1")),
                 dynamicTest("admin 페이지에 접속한다", () -> moveToAdminPage(userToken.get(), 401)),
                 dynamicTest("admin 예약 관리 페이지에 접속한다", () -> moveToReservationAdminPage(userToken.get(), 401)),
                 dynamicTest("admin 시간 관리 페이지에 접속한다", () -> moveToTimeAdminPage(userToken.get(), 401)),
@@ -34,9 +37,10 @@ class LoginAcceptanceTest extends BasicAcceptanceTest {
     Stream<DynamicTest> moveAdminPageTest() {
         AtomicReference<String> adminToken = new AtomicReference<>();
         return Stream.of(
-                dynamicTest("role이 USER인 계정으로 로그인을 한다", () -> {
+                dynamicTest("role이 ADMIN인 계정으로 로그인을 한다", () -> {
                     adminToken.set(LoginUtil.login("admin", "admin"));
                 }),
+                dynamicTest("로그인한 계정의 이름을 확인한다", () -> loginCheck(adminToken.get(), 200, "admin")),
                 dynamicTest("admin 페이지에 접속한다", () -> moveToAdminPage(adminToken.get(), 200)),
                 dynamicTest("admin 예약 관리 페이지에 접속한다", () -> moveToReservationAdminPage(adminToken.get(), 200)),
                 dynamicTest("admin 시간 관리 페이지에 접속한다", () -> moveToTimeAdminPage(adminToken.get(), 200)),
@@ -82,5 +86,18 @@ class LoginAcceptanceTest extends BasicAcceptanceTest {
                 .when().post("/logout")
                 .then().log().all()
                 .statusCode(expectedHttpCode);
+    }
+
+    private void loginCheck(String token, int expectedHttpCode, String expectedName) {
+        Response response = RestAssured.given().log().all()
+                .cookies("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(expectedHttpCode)
+                .extract().response();
+
+        String responseName = response.jsonPath().getString("name");
+
+        assertThat(responseName).isEqualTo(expectedName);
     }
 }
