@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        String memberName,
         LocalDate date,
         ReservationTimeResponse time,
         ReservedThemeResponse theme

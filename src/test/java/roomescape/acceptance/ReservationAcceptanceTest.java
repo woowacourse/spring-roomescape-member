@@ -68,7 +68,7 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         assertSoftly(softly -> {
             checkHttpStatusCreated(softly, response);
             softly.assertThat(reservationResponse.id()).isNotNull();
-            softly.assertThat(reservationResponse.name()).isEqualTo(MIA_NAME);
+            softly.assertThat(reservationResponse.memberName()).isEqualTo(MIA_NAME);
         });
     }
 

@@ -70,7 +70,7 @@ class AdminReservationControllerTest extends ControllerTest {
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(MIA_NAME))
+                .andExpect(jsonPath("$.memberName").value(MIA_NAME))
                 .andExpect(jsonPath("$.time.id").value(1L))
                 .andExpect(jsonPath("$.time.startAt").value(MIA_RESERVATION_TIME.toString()))
                 .andExpect(jsonPath("$.date").value(MIA_RESERVATION_DATE.toString()));

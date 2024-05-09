@@ -102,7 +102,7 @@ class ReservationServiceTest {
         // then
         assertSoftly(softly -> {
             softly.assertThat(reservations).hasSize(2)
-                    .extracting(ReservationResponse::name)
+                    .extracting(ReservationResponse::memberName)
                     .containsExactly(MIA_NAME, TOMMY_NAME);
             softly.assertThat(reservations).extracting(ReservationResponse::time)
                     .extracting(ReservationTimeResponse::startAt)

@@ -69,7 +69,7 @@ class ReservationControllerTest extends ControllerTest {
         mockMvc.perform(get("/reservations").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value(MIA_NAME))
+                .andExpect(jsonPath("$[0].memberName").value(MIA_NAME))
                 .andExpect(jsonPath("$[0].time.id").value(1L))
                 .andExpect(jsonPath("$[0].time.startAt").value(MIA_RESERVATION_TIME.toString()))
                 .andExpect(jsonPath("$[0].theme.name").value(WOOTECO_THEME_NAME))
@@ -99,7 +99,7 @@ class ReservationControllerTest extends ControllerTest {
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(MIA_NAME))
+                .andExpect(jsonPath("$.memberName").value(MIA_NAME))
                 .andExpect(jsonPath("$.time.id").value(1L))
                 .andExpect(jsonPath("$.time.startAt").value(MIA_RESERVATION_TIME.toString()))
                 .andExpect(jsonPath("$.date").value(MIA_RESERVATION_DATE.toString()));
