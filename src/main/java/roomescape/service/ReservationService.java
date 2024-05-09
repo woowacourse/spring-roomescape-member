@@ -56,9 +56,11 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationCreateRequest request) {
         Member member = findMemberById(request.memberId());
-        MemberReservationCreateRequest createRequest = MemberReservationCreateRequest.from(request);
+        ReservationTime time = findReservationTimeById(request.timeId());
+        Theme theme = findThemeById(request.themeId());
 
-        return createReservation(createRequest, member);
+        Reservation reservation = request.toReservation(member, time, theme);
+        return saveReservation(reservation, time);
     }
 
     public ReservationResponse createReservation(MemberReservationCreateRequest request, Member member) {
@@ -66,7 +68,10 @@ public class ReservationService {
         Theme theme = findThemeById(request.themeId());
 
         Reservation reservation = request.toReservation(member, time, theme);
+        return saveReservation(reservation, time);
+    }
 
+    private ReservationResponse saveReservation(Reservation reservation, ReservationTime time) {
         validateDuplicated(reservation);
         validateRequestedTime(reservation, time);
 
