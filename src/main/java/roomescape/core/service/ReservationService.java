@@ -60,12 +60,11 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
-        final boolean exist = reservationRepository.hasDuplicateReservation(
-                reservation.getDateString(),
-                reservationTime.getId(),
-                reservation.getTheme().getId()
-        );
-        if (exist) {
+        final String date = reservation.getDateString();
+        final Long timeId = reservationTime.getId();
+        final Long themeId = reservation.getThemeId();
+
+        if (reservationRepository.hasDuplicateReservation(date, timeId, themeId)) {
             throw new BadRequestException("예약 내역이 존재합니다.");
         }
     }

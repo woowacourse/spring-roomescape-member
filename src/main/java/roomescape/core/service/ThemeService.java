@@ -34,8 +34,7 @@ public class ThemeService {
 
     @Transactional
     public void delete(final long id) {
-        final boolean exist = reservationRepository.hasReservationWithTheme(id);
-        if (exist) {
+        if (reservationRepository.hasReservationWithTheme(id)) {
             throw new BadRequestException("해당 테마를 예약한 내역이 존재하여 삭제할 수 없습니다.");
         }
         themeRepository.deleteById(id);
@@ -46,8 +45,8 @@ public class ThemeService {
     }
 
     private void validateDuplicatedName(final Theme theme) {
-        final boolean exist = themeRepository.hasDuplicateTheme(theme.getName());
-        if (exist) {
+        final String name = theme.getName();
+        if (themeRepository.hasDuplicateTheme(name)) {
             throw new BadRequestException("해당 이름의 테마가 이미 존재합니다.");
         }
     }

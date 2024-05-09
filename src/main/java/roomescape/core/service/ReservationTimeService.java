@@ -52,26 +52,23 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private ReservationTimeWithStateDto toDto(final ReservationTime time, final Set<Long> reservedTimeIds) {
-        if (reservedTimeIds.contains(time.getId())) {
-            return new ReservationTimeWithStateDto(time.getId(), time.getStartAtString(), true);
-        }
-        return new ReservationTimeWithStateDto(time.getId(), time.getStartAtString(), false);
-    }
-
     @Transactional
     public void delete(final long id) {
-        final boolean exist = reservationRepository.hasReservationAtTime(id);
-        if (exist) {
+        if (reservationRepository.hasReservationAtTime(id)) {
             throw new BadRequestException("해당 시간에 예약한 내역이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }
 
     private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
-        final boolean exist = reservationTimeRepository.hasDuplicateReservationTime(reservationTime.getStartAtString());
-        if (exist) {
+        final String startAt = reservationTime.getStartAtString();
+        if (reservationTimeRepository.hasDuplicateReservationTime(startAt)) {
             throw new BadRequestException("해당 시간이 이미 존재합니다.");
         }
+    }
+
+    private ReservationTimeWithStateDto toDto(final ReservationTime time, final Set<Long> reservedTimeIds) {
+        final boolean alreadyBooked = reservedTimeIds.contains(time.getId());
+        return new ReservationTimeWithStateDto(time.getId(), time.getStartAtString(), alreadyBooked);
     }
 }
