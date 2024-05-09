@@ -12,10 +12,28 @@ import io.restassured.RestAssured;
 class MemberControllerTest {
 
     @Test
-    @DisplayName("방탈출 사용자 예약 페이지를 매핑한다")
+    @DisplayName("인기 테마 페이지를 매핑한다.")
+    void index() {
+        RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("방탈출 사용자 예약 페이지를 매핑한다.")
     void reservation() {
         RestAssured.given().log().all()
                 .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("로그인 페이지를 매핑한다.")
+    void login() {
+        RestAssured.given().log().all()
+                .when().get("/login")
                 .then().log().all()
                 .statusCode(200);
     }
