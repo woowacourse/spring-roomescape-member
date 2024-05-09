@@ -14,7 +14,6 @@ import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.request.UserSignUpRequest;
 import roomescape.controller.response.MemberResponse;
 import roomescape.controller.response.TokenResponse;
-import roomescape.controller.response.UserResponse;
 import roomescape.service.MemberService;
 
 @RestController
@@ -49,10 +48,10 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<UserResponse> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        UserResponse userResponse = memberService.findByCookies(cookies);
-        return ResponseEntity.ok(userResponse);
+        MemberResponse memberResponse = memberService.findByCookies(cookies);
+        return ResponseEntity.ok(memberResponse);
     }
 
     @PostMapping("/logout")

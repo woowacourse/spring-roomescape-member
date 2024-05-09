@@ -10,7 +10,7 @@ import roomescape.domain.Member;
 
 public record ReservationResponse(
         Long id,
-        UserResponse member,
+        MemberResponse member,
         LocalDate date,
         TimeResponse time,
         ThemeResponse theme
@@ -19,7 +19,7 @@ public record ReservationResponse(
         Member member = reservation.getMember();
         return new ReservationResponse(
                 reservation.getId(),
-                new UserResponse(member.getId(), member.getName(), member.getEmail(), member.getPassword(), member.getRole()),
+                new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getPassword()),
                 reservation.getDate(),
                 TimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme()));

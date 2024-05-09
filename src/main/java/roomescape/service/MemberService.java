@@ -7,7 +7,6 @@ import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.request.UserSignUpRequest;
 import roomescape.controller.response.MemberResponse;
 import roomescape.controller.response.TokenResponse;
-import roomescape.controller.response.UserResponse;
 import roomescape.domain.Member;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;
@@ -40,9 +39,9 @@ public class MemberService {
         return memberRepository.checkExistMember(email, password);
     }
 
-    public UserResponse findByEmail(String email) {
+    public MemberResponse findByEmail(String email) {
         Member byEmail = memberRepository.findByEmail(email);
-        return new UserResponse(byEmail.getId(), byEmail.getName(), byEmail.getEmail(), byEmail.getPassword(), byEmail.getRole());
+        return new MemberResponse(byEmail.getId(), byEmail.getName(), byEmail.getEmail(), byEmail.getPassword());
     }
 
     public List<MemberResponse> findAll() {
@@ -53,7 +52,7 @@ public class MemberService {
                 .toList();
     }
 
-    public UserResponse findByCookies(Cookie[] cookies) {
+    public MemberResponse findByCookies(Cookie[] cookies) {
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
         String email = jwtTokenProvider.getEmailByToken(token);
         return findByEmail(email);
