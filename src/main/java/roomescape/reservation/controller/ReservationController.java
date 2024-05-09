@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.model.Reservation;
+import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.SaveReservationRequest;
+import roomescape.reservation.model.Reservation;
 import roomescape.reservation.service.ReservationService;
+import roomescape.resolver.Authenticated;
 
 import java.net.URI;
 import java.util.List;
@@ -25,19 +27,22 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> getReservations() {
+    public List<ReservationResponse> getReservations(@Authenticated final AuthenticatedMember authenticatedMember) {
         return reservationService.getReservations()
                 .stream()
-                .map(ReservationResponse::from)
+                .map(reservation -> ReservationResponse.from(reservation, authenticatedMember))
                 .toList();
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody final SaveReservationRequest request) {
+    public ResponseEntity<ReservationResponse> saveReservation(
+            @RequestBody final SaveReservationRequest request,
+            @Authenticated final AuthenticatedMember authenticatedMember
+    ) {
         final Reservation savedReservation = reservationService.saveReservation(request);
 
         return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId()))
-                .body(ReservationResponse.from(savedReservation));
+                .body(ReservationResponse.from(savedReservation, authenticatedMember));
     }
 
     @DeleteMapping("/reservations/{reservation-id}")
