@@ -3,7 +3,7 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -39,10 +39,13 @@ public class ReservationThemeDao {
                     thumbnail 
                 FROM theme 
                 WHERE id = ?
+                LIMIT 1
                 """;
-        List<ReservationTheme> reservationThemes = jdbcTemplate.query(sql, getReservationThemeRowMapper(), id);
-
-        return Optional.ofNullable(DataAccessUtils.singleResult(reservationThemes));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getReservationThemeRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public ReservationTheme insert(ReservationTheme theme) {
