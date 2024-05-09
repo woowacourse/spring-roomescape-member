@@ -17,6 +17,10 @@ public class Member {
         this.role = role;
     }
 
+    public boolean isNameExist() {
+        return Objects.isNull(name) || name.isBlank();
+    }
+
     public Long getId() {
         return id;
     }
