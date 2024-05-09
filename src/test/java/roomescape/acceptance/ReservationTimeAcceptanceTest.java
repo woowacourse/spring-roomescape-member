@@ -21,7 +21,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
-class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
+class ReservationTimeAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("[Step7] 예약 시간을 추가한다.")

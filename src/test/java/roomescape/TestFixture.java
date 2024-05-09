@@ -8,18 +8,22 @@ import roomescape.reservation.domain.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static roomescape.member.domain.Role.ADMIN;
 import static roomescape.member.domain.Role.USER;
 
 public class TestFixture {
     public static final String MIA_NAME = "미아";
     public static final String MIA_EMAIL = "testmia@gmail.com";
-    public static final String TOMMY_EMAIL = "testtommy@gmail.com";
     public static final LocalDate MIA_RESERVATION_DATE = LocalDate.of(2030, 4, 18);
     public static final LocalTime MIA_RESERVATION_TIME = LocalTime.of(15, 0);
 
     public static final String TOMMY_NAME = "토미";
+    public static final String TOMMY_EMAIL = "testtommy@gmail.com";
     public static final LocalDate TOMMY_RESERVATION_DATE = LocalDate.of(2030, 5, 19);
     public static final LocalTime TOMMY_RESERVATION_TIME = LocalTime.of(15, 0);
+
+    public static final String ADMIN_NAME = "어드민";
+    public static final String ADMIN_EMAIL = "admin@gmail.com";
 
     public static final String WOOTECO_THEME_NAME = "레벨2 탈출";
     public static final String WOOTECO_THEME_DESCRIPTION = "우테코 레벨2를 탈출하는 내용입니다.";
@@ -40,6 +44,10 @@ public class TestFixture {
 
     public static Member USER_TOMMY() {
         return new Member(TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD, USER);
+    }
+
+    public static Member USER_ADMIN() {
+        return new Member(ADMIN_NAME, ADMIN_EMAIL, TEST_PASSWORD, ADMIN);
     }
 
     public static Reservation MIA_RESERVATION() {

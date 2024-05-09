@@ -10,6 +10,9 @@ import roomescape.member.dto.response.MemberResponse;
 
 import java.util.List;
 
+import static roomescape.member.domain.Role.ADMIN;
+import static roomescape.member.domain.Role.USER;
+
 @RestController
 @RequestMapping("members")
 public class MemberController {
@@ -21,7 +24,13 @@ public class MemberController {
 
     @PostMapping("/join")
     public ResponseEntity<MemberResponse> join(@RequestBody MemberJoinRequest request) {
-        Member member = memberService.create(request.toModel());
+        Member member = memberService.create(request.toModel(USER));
+        return ResponseEntity.status(HttpStatus.CREATED).body(MemberResponse.from(member));
+    }
+
+    @PostMapping("/join/admin")
+    public ResponseEntity<MemberResponse> joinAdmin(@RequestBody MemberJoinRequest request) {
+        Member member = memberService.create(request.toModel(ADMIN));
         return ResponseEntity.status(HttpStatus.CREATED).body(MemberResponse.from(member));
     }
 

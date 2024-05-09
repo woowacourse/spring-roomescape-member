@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.MIA_NAME;
 import static roomescape.TestFixture.MIA_RESERVATION_DATE;
 
-class ReservationAcceptanceTest extends ApiAcceptanceTest {
+class ReservationAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("[Step2, Step5] 예약 목록을 조회한다.")
     void findReservations() {

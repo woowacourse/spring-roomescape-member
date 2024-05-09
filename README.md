@@ -308,7 +308,7 @@
         }
         ```
 ### 사용자 API
-- [x] 회원가입
+- [x] 일반 사용자 회원가입
     - Request
         ```
         POST /members/join HTTP/1.1
@@ -323,7 +323,15 @@
   - Response
       ```
       HTTP/1.1 201
+      Content-Type: application/json
+      {
+          "id": 1,
+          "email": "admin@email.com",
+          "name": "브라운"
+      }
       ```
+- [x] 관리자 회원가입
+    - 위와 동일하나, 엔드포인트만 `/members/join/admin`으로 변경됨
 - [x] 목록 조회
     - Request
         ```

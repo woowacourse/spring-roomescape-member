@@ -1,8 +1,7 @@
 package roomescape.member.dto.request;
 
 import roomescape.member.domain.Member;
-
-import static roomescape.member.domain.Role.USER;
+import roomescape.member.domain.Role;
 
 public record MemberJoinRequest(
         String email,
@@ -10,7 +9,7 @@ public record MemberJoinRequest(
         String name
 ) {
 
-    public Member toModel() {
-        return new Member(name, email, password, USER);
+    public Member toModel(Role role) {
+        return new Member(name, email, password, role);
     }
 }

@@ -16,7 +16,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static roomescape.TestFixture.MIA_EMAIL;
 import static roomescape.TestFixture.TEST_PASSWORD;
 
-public class AuthAcceptanceTest extends ApiAcceptanceTest {
+public class AuthAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("[2 - Step4] 사용자가 로그인한다.")
     void login() {

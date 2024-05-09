@@ -21,11 +21,12 @@ import roomescape.reservation.dto.response.ThemeResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
+import static roomescape.member.domain.Role.ADMIN;
 import static roomescape.member.domain.Role.USER;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-abstract class ApiAcceptanceTest {
+public abstract class AcceptanceTest {
     @LocalServerPort
     private int port;
 
@@ -65,6 +66,17 @@ abstract class ApiAcceptanceTest {
                 .then().extract()
                 .as(MemberResponse.class);
         return new Member(response.id(), response.name(), response.email(), request.password(), USER);
+    }
+
+    protected Member createTestAdmin() {
+        MemberJoinRequest request = new MemberJoinRequest(ADMIN_EMAIL, TEST_PASSWORD, ADMIN_NAME);
+        MemberResponse response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/members/join/admin")
+                .then().extract()
+                .as(MemberResponse.class);
+        return new Member(response.id(), response.name(), response.email(), request.password(), ADMIN);
     }
 
     protected String createTestToken(Member member) {
