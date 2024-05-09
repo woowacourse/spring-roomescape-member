@@ -8,6 +8,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.infrastructure.AuthorizationExtractor;
+import roomescape.controller.dto.LoginMember;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 

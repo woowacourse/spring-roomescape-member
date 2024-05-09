@@ -1,4 +1,4 @@
-package roomescape.controller.login;
+package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.controller.dto.LoginMember;
+import roomescape.controller.login.Login;
 import roomescape.service.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.service.AuthService;

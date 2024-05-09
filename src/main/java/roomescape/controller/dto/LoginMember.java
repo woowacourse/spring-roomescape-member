@@ -1,4 +1,4 @@
-package roomescape.controller.login;
+package roomescape.controller.dto;
 
 import roomescape.service.dto.MemberResponse;
 import roomescape.domain.Role;

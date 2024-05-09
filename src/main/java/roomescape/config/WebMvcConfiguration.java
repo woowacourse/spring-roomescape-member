@@ -8,9 +8,9 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.infrastructure.AuthorizationExtractor;
-import roomescape.auth.infrastructure.CheckAdminInterceptor;
+import roomescape.controller.interceptor.CheckAdminInterceptor;
 import roomescape.controller.login.AuthenticationPrincipalArgumentResolver;
-import roomescape.controller.login.CheckLoginInterceptor;
+import roomescape.controller.interceptor.CheckLoginInterceptor;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
