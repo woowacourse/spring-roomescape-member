@@ -1,7 +1,9 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
+import roomescape.dto.memberDto.MemberResponse;
 import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.MemberRepository;
 
@@ -9,6 +11,13 @@ import roomescape.repository.MemberRepository;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    public List<MemberResponse> getAllMembers() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(MemberResponse::from)
+                .toList();
+    }
 
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
