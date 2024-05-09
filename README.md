@@ -78,3 +78,19 @@
 - [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현 [GET /login/check]
   - [x] 요청 시 쿠키 값을 요청
   - [x] 응답 시 이름을 반환
+  - [ ] 응답 형식, 해석 등이 되지 않는 경우 예외 처리를 한다
+
+## 5단계 기능 요구 사항
+- 사용자의 정보를 조회하는 로직 리팩터링
+  - [ ] `HandlerMethodArgumentResolver`을 활용하여 회원정보를 객체를 컨트롤러 메서드에 주입
+- 유저 전체 조회 기능
+  - [ ] 유저의 id, name을 조회하는 기능
+- 예약 테이블 변경
+  - [ ] 예약 테이블에서 유저 id를 사용하도록 변경
+- 예약 생성 기능 변경 - 사용자
+  - [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
+  - [ ] `reservation.html`, `user-reservation.js` 변경된 명세에 맞게 클라이언트가 동작하도록 변경
+- 예약 생성 기능 변경 - 관리자
+  - [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
+  - [ ] `admin/reservation-new.html` 파일에서 로딩하는 js 파일을 변경 
+    - `/js/reservation-new.js` -> `/js/reservation-with-member.js`
