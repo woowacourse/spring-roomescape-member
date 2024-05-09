@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.repository.MemberDao;
 
+import java.util.List;
+
 @Service
 public class MemberService {
     private final MemberDao memberDao;
@@ -19,6 +21,10 @@ public class MemberService {
 
     public Member findMemberByEmailAndPassword(final String email, final String password) {
         return findByEmailAndPassword(email, password);
+    }
+
+    public List<Member> findAllMembers() {
+        return memberDao.findAll();
     }
 
     private Member findByEmailAndPassword(String email, String password) {

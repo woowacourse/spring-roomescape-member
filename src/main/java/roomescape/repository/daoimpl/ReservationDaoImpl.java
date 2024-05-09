@@ -52,7 +52,7 @@ class ReservationDaoImpl implements ReservationDao {
     public Optional<Reservation> findById(long id) {
         try {
             String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
-                    + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                    + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail, "
                     + "member.id as member_id, member.name as name, member.email, member.password, member.role "
                     + "FROM reservation as r "
                     + "INNER JOIN reservation_time as time "
@@ -71,7 +71,7 @@ class ReservationDaoImpl implements ReservationDao {
     @Override
     public List<Reservation> getAll() {
         String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
-                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.name as name, member.email, member.password, member.role "
                 + "FROM reservation as r "
                 + "INNER JOIN reservation_time as time "
@@ -79,14 +79,14 @@ class ReservationDaoImpl implements ReservationDao {
                 + "INNER JOIN theme as theme "
                 + "ON r.theme_id = theme.id "
                 + "INNER JOIN member as member "
-                + "ON r.member_id = member.id ";
+                + "ON r.member_id = member.id";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
     public List<Reservation> findByTimeId(final long timeId) {
         String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
-                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.name as name, member.email, member.password, member.role "
                 + "FROM reservation as r "
                 + "INNER JOIN reservation_time as time "
@@ -102,7 +102,7 @@ class ReservationDaoImpl implements ReservationDao {
     @Override
     public List<Reservation> findByThemeId(final long themeId) {
         String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
-                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.name as name, member.email, member.password, member.role "
                 + "FROM reservation as r "
                 + "INNER JOIN reservation_time as time "

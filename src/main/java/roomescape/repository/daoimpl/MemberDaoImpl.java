@@ -8,6 +8,7 @@ import roomescape.domain.member.Member;
 import roomescape.repository.MemberDao;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -47,4 +48,9 @@ public class MemberDaoImpl implements MemberDao {
                 .findAny();
     }
 
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM " + TABLE_NAME;
+        return jdbcTemplate.query(sql, memberRowMapper);
+    }
 }

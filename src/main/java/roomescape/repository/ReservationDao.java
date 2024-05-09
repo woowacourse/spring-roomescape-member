@@ -19,6 +19,7 @@ public interface ReservationDao {
 
     List<Reservation> findByThemeId(final long themeId);
 
+    // TODO Reservation으로 통일 시키기
     List<Long> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
 
     List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId);
