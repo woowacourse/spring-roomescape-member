@@ -1,7 +1,10 @@
 package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.infrastructure.JwtTokenExtractor;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.dto.TokenRequest;
 import roomescape.service.dto.TokenResponse;
@@ -9,9 +12,12 @@ import roomescape.service.dto.TokenResponse;
 @Service
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenExtractor jwtTokenExtractor;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider) {
+    @Autowired
+    public AuthService(JwtTokenProvider jwtTokenProvider, JwtTokenExtractor jwtTokenExtractor) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtTokenExtractor = jwtTokenExtractor;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
@@ -27,5 +33,10 @@ public class AuthService {
         return cookie;
     }
 
+    public TokenResponse extractTokenByCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = jwtTokenExtractor.extractByCookies(cookies);
+        return new TokenResponse(token);
+    }
     }
 }
