@@ -21,12 +21,17 @@ public class CookieGenerator {
     }
 
     public Token getToken(Cookie[] cookies) {
-        return new Token(
-                Stream.of(cookies)
-                        .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
-                        .findAny()
-                        .orElseThrow(() -> new NoSuchElementException("[ERROR] 토큰을 찾을 수 없습니다."))
-                        .getValue()
-        );
+        return new Token(findCookie(cookies).getValue());
+    }
+
+    public void resetCookie(Cookie[] cookies) {
+        findCookie(cookies).setMaxAge(0);
+    }
+
+    private Cookie findCookie(Cookie[] cookies) {
+        return Stream.of(cookies)
+                .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 토큰을 찾을 수 없습니다."));
     }
 }

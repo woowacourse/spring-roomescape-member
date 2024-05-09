@@ -50,4 +50,10 @@ public class LoginController {
         MemberResponse memberResponse = memberService.findMemberById(memberId);
         return ResponseEntity.ok(memberResponse);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        cookieGenerator.resetCookie(request.getCookies());
+        return ResponseEntity.ok().build();
+    }
 }
