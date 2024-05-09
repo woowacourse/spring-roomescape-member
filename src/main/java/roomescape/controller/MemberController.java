@@ -9,4 +9,9 @@ public class MemberController {
     public String findReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String findLoginPage() {
+        return "login";
+    }
 }
