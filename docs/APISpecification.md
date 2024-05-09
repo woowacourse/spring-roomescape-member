@@ -92,19 +92,45 @@ Content-Type: application/json
 }
 ```
 
-### 예약 추가
+### 예약 추가 - 사용자
 
 #### Request
 
 ```http request
 POST /reservations HTTP/1.1
 content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
 
 {
     "date": "2023-08-05",
-    "name": "브라운",
     "timeId": 1,
     "themeId": 1
+}
+```
+
+#### Response
+
+```
+HTTP/1.1 201
+Location: /reservation/{id}
+```
+
+### 예약 추가 - 관리자
+
+#### Request
+
+```http request
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
 }
 ```
 
