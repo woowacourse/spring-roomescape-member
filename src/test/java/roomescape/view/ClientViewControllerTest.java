@@ -31,4 +31,12 @@ class ClientViewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("reservation"));
     }
+
+    @DisplayName("로그인 페이지 요청을 처리할 수 있다")
+    @Test
+    void should_handle_login_page_request_when_requested() throws Exception {
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("login"));
+    }
 }
