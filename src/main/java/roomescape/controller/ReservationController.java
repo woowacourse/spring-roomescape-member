@@ -6,6 +6,7 @@ import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.exception.BadRequestException;
+import roomescape.model.LoginMember;
 import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationDto;
@@ -34,7 +35,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request, LoginMember member) {
+        System.out.println(member.getName());
         ReservationDto reservationDto = ReservationDto.from(request);
         Reservation reservation = reservationService.saveReservation(reservationDto);
         ReservationResponse response = ReservationResponse.from(reservation);

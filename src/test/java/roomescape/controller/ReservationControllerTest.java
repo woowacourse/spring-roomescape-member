@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.controller.response.ReservationResponse;
+import roomescape.model.Member;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -103,10 +106,18 @@ class ReservationControllerTest {
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void should_insert_reservation() {
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        String token = Jwts.builder()
+                .subject(String.valueOf(member.getId()))
+                .claim("name", member.getName())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
         ReservationRequest request = new ReservationRequest("n", LocalDate.now().plusDays(1), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
