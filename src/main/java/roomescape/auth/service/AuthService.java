@@ -4,7 +4,8 @@ import org.springframework.stereotype.Service;
 
 import roomescape.auth.dao.UserDao;
 import roomescape.auth.domain.Users;
-import roomescape.auth.dto.UserRequestDto;
+import roomescape.auth.dto.UserLoginRequestDto;
+import roomescape.auth.dto.UserSignUpRequestDto;
 import roomescape.configuration.JwtTokenProvider;
 
 @Service
@@ -18,9 +19,13 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String login(final UserRequestDto userRequestDto) {
-        final Users users = userDao.getByEmailAndPassword(userRequestDto.email(), userRequestDto.password());
-        String token = jwtTokenProvider.createToken(users);
+    public String login(final UserLoginRequestDto userLoginRequestDto) {
+        final Users users = userDao.getByEmailAndPassword(userLoginRequestDto.email(), userLoginRequestDto.password());
+        final String token = jwtTokenProvider.createToken(users);
         return token;
+    }
+
+    public long signUp(final UserSignUpRequestDto userSignUpRequestDto) {
+        return userDao.save(userSignUpRequestDto.toUsers());
     }
 }

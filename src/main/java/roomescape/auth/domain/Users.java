@@ -21,8 +21,8 @@ public class Users {
         this.password = password;
     }
 
-    public Users(final String email, final String password) {
-        this(null, null, email, password);
+    public Users(final String email, final String password, final String name) {
+        this(null, name, email, password);
     }
 
     private void validateInvalidName(final String name) {

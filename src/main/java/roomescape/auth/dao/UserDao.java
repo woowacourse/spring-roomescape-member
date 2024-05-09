@@ -5,6 +5,8 @@ import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -35,9 +37,15 @@ public class UserDao {
         try {
             return jdbcTemplate.queryForObject(sql, usersRowMapper, email, password);
         } catch (final EmptyResultDataAccessException exception) {
-            throw new RoomEscapeException("예약자명이 null 이거나 공백인 경우 저장을 할 수 없습니다.");
+            throw new RoomEscapeException("해당하는 사용자가 존재하지 않습니다.");
         }
     }
 
-
+    public long save(final Users users) {
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", users.getName())
+                .addValue("email", users.getEmail())
+                .addValue("password", users.getPassword());
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
 }

@@ -1,5 +1,7 @@
 package roomescape.auth.controller;
 
+import java.net.URI;
+
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpHeaders;
@@ -9,7 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import roomescape.auth.dto.UserRequestDto;
+import roomescape.auth.dto.UserLoginRequestDto;
+import roomescape.auth.dto.UserSignUpRequestDto;
 import roomescape.auth.service.AuthService;
 
 @RestController
@@ -21,8 +24,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid UserRequestDto userRequestDto) {
-        String token = authService.login(userRequestDto);
+    public ResponseEntity<Void> login(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto) {
+        String token = authService.login(userLoginRequestDto);
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .path("/")
@@ -30,5 +33,11 @@ public class AuthController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok().headers(headers).build();
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<Void> signUp(@RequestBody @Valid UserSignUpRequestDto userSignUpRequestDto) {
+        long id = authService.signUp(userSignUpRequestDto);
+        return ResponseEntity.created(URI.create("/signup/" + id)).build();
     }
 }

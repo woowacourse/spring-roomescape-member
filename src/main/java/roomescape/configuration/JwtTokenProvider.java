@@ -12,6 +12,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import roomescape.auth.domain.Users;
+import roomescape.exception.RoomEscapeException;
 
 @Component
 public class JwtTokenProvider {
@@ -33,12 +34,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(final String token) {
-        return Jwts.parser()
+    public Long getPayload(final String token) {
+        return Long.valueOf(Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey)))
                 .build()
                 .parseSignedClaims(token)
-                .getPayload().getSubject();
+                .getPayload().getSubject());
     }
 
     public boolean verifyTokenAvailable(final String token) {
@@ -49,7 +50,7 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token);
             return !claims.getPayload().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new RoomEscapeException("적합하지 않은 토큰입니다.");
         }
     }
 }
