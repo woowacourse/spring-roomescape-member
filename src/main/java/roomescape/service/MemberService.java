@@ -28,6 +28,7 @@ public class MemberService {
     }
 
     public MemberResponse getMemberInfo(Cookie[] cookies) {
+        validateCookie(cookies);
         String token = getToken(cookies);
         String tokenSubject = jwtTokenProvider.getTokenSubject(token);
         Long id = Long.parseLong(tokenSubject);
@@ -36,6 +37,12 @@ public class MemberService {
                 .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
 
         return new MemberResponse(findMember.getNameValue());
+    }
+
+    private void validateCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new AuthenticationException("로그인된 회원 정보가 없습니다.");
+        }
     }
 
     private String getToken(Cookie[] cookies) {
