@@ -52,6 +52,14 @@
 - 날짜, 테마를 선택하면 예약 가능한 시간을 볼 수 있다.
 - 날짜, 테마, 시간을 선택하고 이름을 입력하여 예약할 수 있다.
 
+### 사용자 로그인 페이지
+
+- `/login` 으로 접속할 수 있다.
+- 이메일과 비밀번호를 입력해 로그인을 할 수 있다.
+- 로그아웃을 할 수 있다.
+- 로그인 인증 정보를 조회할 수 있다.
+    - 로그인 시 우측 상단에 사용자 이름이 보여진다.
+
 ## API 명세서
 
 | HTTP Method | URI                                               | Description      |
@@ -61,6 +69,7 @@
 | GET         | `/admin/reservation`                              | 예약 관리 페이지        |
 | GET         | `/admin/time`                                     | 시간 관리 페이지        |
 | GET         | `/admin/theme`                                    | 테마 관리 페이지        |
+| GET         | `/login`                                          | 사용자 로그인 페이지      |
 | GET         | `/reservation`                                    | 사용자 예약 페이지       |
 | GET         | `/reservations`                                   | 예약 목록 조회         |
 | POST        | `/reservations`                                   | 예약 추가            | 
@@ -73,3 +82,6 @@
 | GET         | `/themes/popular?period-day={periodDay}`          | 기간 별 인기 테마 목록 조회 |
 | POST        | `/themes`                                         | 테마 추가            |
 | DELETE      | `/themes/{id}`                                    | 테마 삭제            |
+| POST        | `/login`                                          | 로그인              |
+| GET         | `/login/check`                                    | 로그인 인증 정보 조회     |
+
