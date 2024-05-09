@@ -31,19 +31,21 @@ public class JwtHandler {
                 .claim("memberId", memberId)
                 .setIssuedAt(date)
                 .setExpiration(expiredAt)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
                 .compact();
     }
 
     public Long getMemberIdFromToken(String token) {
         validateToken(token);
 
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("memberId", Long.class);
+        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token)
+                .getBody()
+                .get("memberId", Long.class);
     }
 
     private void validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException(ErrorType.EXPIRED_TOKEN,
                     String.format("Expired JWT Token: %s", e.getMessage()));
