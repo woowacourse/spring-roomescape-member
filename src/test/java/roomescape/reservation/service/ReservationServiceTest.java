@@ -21,12 +21,14 @@ import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.dao.FakeMemberDao;
+import roomescape.reservation.dao.FakeMemberReservationDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repository.MemberReservationRepository;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
@@ -37,19 +39,22 @@ class ReservationServiceTest {
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
     MemberRepository memberRepository;
+    MemberReservationRepository memberReservationRepository;
     ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationDao();
         reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
-        themeRepository = new FakeThemeDao(reservationRepository);
+        memberReservationRepository = new FakeMemberReservationDao();
+        themeRepository = new FakeThemeDao(memberReservationRepository);
         memberRepository = new FakeMemberDao();
         reservationService = new ReservationService(
                 reservationRepository,
                 reservationTimeRepository,
                 themeRepository,
-                memberRepository
+                memberRepository,
+                memberReservationRepository
         );
     }
 
@@ -87,7 +92,7 @@ class ReservationServiceTest {
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
         Member member = memberRepository.save(
                 new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
-        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
+        memberReservationRepository.save(member, reservation);
 
         //when
         List<ReservationResponse> reservations = reservationService.findMemberReservations();
@@ -111,13 +116,13 @@ class ReservationServiceTest {
         reservationRepository.save(reservation);
         Member member = memberRepository.save(
                 new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
-        long id = reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
+        long id = memberReservationRepository.save(member, reservation);
 
         //when
         reservationService.deleteMemberReservation(id);
 
         //then
-        assertThat(reservationRepository.findAllMemberReservation()).hasSize(0);
+        assertThat(memberReservationRepository.findAll()).hasSize(0);
     }
 
     @DisplayName("일자와 시간 중복 시 예외가 발생한다.")
@@ -129,7 +134,7 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
-        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
+        memberReservationRepository.save(member, reservation);
 
         ReservationRequest reservationRequest = new ReservationRequest(
                 reservation.getDate().toString(), time.getId(), theme.getId());
@@ -149,7 +154,7 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
-        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
+        memberReservationRepository.save(member, reservation);
 
         //when
         reservationService.delete(reservation.getId());

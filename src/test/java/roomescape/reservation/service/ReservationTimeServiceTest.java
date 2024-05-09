@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.fixture.MemberFixture.getMemberChoco;
 import static roomescape.fixture.ReservationFixture.getNextDayReservation;
 import static roomescape.fixture.ReservationTimeFixture.get1PM;
 import static roomescape.fixture.ReservationTimeFixture.get2PM;
@@ -15,15 +16,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberSignUp;
+import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
+import roomescape.reservation.dao.FakeMemberDao;
+import roomescape.reservation.dao.FakeMemberReservationDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repository.MemberReservationRepository;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
@@ -33,13 +40,17 @@ class ReservationTimeServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
+    MemberRepository memberRepository;
+    MemberReservationRepository memberReservationRepository;
     ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
+        memberRepository = new FakeMemberDao();
         reservationRepository = new FakeReservationDao();
         reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
-        themeRepository = new FakeThemeDao(reservationRepository);
+        memberReservationRepository = new FakeMemberReservationDao();
+        themeRepository = new FakeThemeDao(memberReservationRepository);
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 
@@ -120,7 +131,9 @@ class ReservationTimeServiceTest {
         reservationTimeRepository.save(get2PM());
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
-        reservationRepository.saveMemberReservation(1L, reservation.getId());
+        Member member = memberRepository.save(
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+        memberReservationRepository.save(member, reservation);
 
         //when
         List<AvailableTimeResponse> availableTimes

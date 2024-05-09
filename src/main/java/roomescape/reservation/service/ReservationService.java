@@ -14,6 +14,7 @@ import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repository.MemberReservationRepository;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
@@ -24,18 +25,22 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final MemberReservationRepository memberReservationRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
-                              MemberRepository memberRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository,
+                              MemberReservationRepository memberReservationRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.memberReservationRepository = memberReservationRepository;
     }
 
     public List<ReservationResponse> findMemberReservations() {
-        return reservationRepository.findAllMemberReservation().stream().map(ReservationResponse::from).toList();
+        return memberReservationRepository.findAll().stream().map(ReservationResponse::from).toList();
     }
 
     @Transactional
@@ -48,12 +53,12 @@ public class ReservationService {
             throw new BusinessException(ErrorType.INVALID_REQUEST_ERROR);
         }
 
-        if (reservationRepository.existMemberReservationBy(date, reservationTime.getId(), theme.getId())) {
+        if (memberReservationRepository.existBy(date, reservationTime, theme)) {
             throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_ERROR);
         }
 
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
-        long memberReservationId = reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
+        long memberReservationId = memberReservationRepository.save(member, reservation);
 
         return ReservationResponse.from(memberReservationId, reservation, member);
     }
@@ -64,23 +69,23 @@ public class ReservationService {
 
         LocalDate date = LocalDate.parse(memberReservationRequest.date());
 
-        if (reservationRepository.existsBy(date, reservationTime.getId(), theme.getId())) {
+        if (reservationRepository.existsBy(date, reservationTime, theme)) {
             throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_ERROR);
         }
 
         Member member = memberRepository.findById(memberReservationRequest.memberId()).orElseThrow();
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
-        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
+        memberReservationRepository.save(member, reservation);
         return reservation.getId();
     }
 
     public void deleteMemberReservation(long memberReservationId) {
-        reservationRepository.deleteMemberReservationById(memberReservationId);
+        memberReservationRepository.deleteById(memberReservationId);
     }
 
     @Transactional
     public void delete(long reservationId) {
-        reservationRepository.deleteMemberReservationByReservationId(reservationId);
+        memberReservationRepository.deleteByReservationId(reservationId);
         reservationRepository.delete(reservationId);
     }
 
