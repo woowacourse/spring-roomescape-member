@@ -7,7 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.principal.AuthenticatedMemberPrincipal;
+import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
 import roomescape.member.model.Member;
 import roomescape.util.CookieUtil;
@@ -15,11 +15,11 @@ import roomescape.util.CookieUtil;
 import java.util.Objects;
 
 @Component
-public class AuthenticatedMemberPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
 
-    public AuthenticatedMemberPrincipalArgumentResolver(final AuthService authService) {
+    public AuthenticatedMemberArgumentResolver(final AuthService authService) {
         this.authService = authService;
     }
 
@@ -27,7 +27,7 @@ public class AuthenticatedMemberPrincipalArgumentResolver implements HandlerMeth
     public boolean supportsParameter(final MethodParameter parameter) {
 
         final boolean hasLoginAnnotation = parameter.hasParameterAnnotation(Authenticated.class);
-        final boolean hasAuthenticatedMemberPrincipal = AuthenticatedMemberPrincipal.class
+        final boolean hasAuthenticatedMemberPrincipal = AuthenticatedMember.class
                 .isAssignableFrom(parameter.getParameterType());
 
         return hasLoginAnnotation && hasAuthenticatedMemberPrincipal;
@@ -46,6 +46,6 @@ public class AuthenticatedMemberPrincipalArgumentResolver implements HandlerMeth
                 .getValue());
         final Member member = authService.findAuthenticatedMember(accessToken);
 
-        return AuthenticatedMemberPrincipal.from(member);
+        return AuthenticatedMember.from(member);
     }
 }
