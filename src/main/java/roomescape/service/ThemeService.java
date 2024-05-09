@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 import roomescape.service.dto.request.ThemeRequest;
@@ -17,11 +16,9 @@ public class ThemeService {
     public static final int TOP_LIMIT_COUNT = 10;
 
     private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
-        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse save(ThemeRequest themeRequest) {
