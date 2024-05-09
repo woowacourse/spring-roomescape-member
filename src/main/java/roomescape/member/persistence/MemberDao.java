@@ -12,6 +12,7 @@ import roomescape.member.domain.MemberRepository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public class MemberDao implements MemberRepository {
     public Optional<Member> findByEmail(String email) {
         try {
             String sql = "SELECT * FROM member WHERE email = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRowToObject, email));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRowToMember, email));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -48,13 +49,19 @@ public class MemberDao implements MemberRepository {
     public Optional<Member> findById(Long id) {
         try {
             String sql = "SELECT * FROM member WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRowToObject, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRowToMember, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    private Member mapRowToObject(ResultSet resultSet, int rowNumber) throws SQLException {
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, this::mapRowToMember);
+    }
+
+    private Member mapRowToMember(ResultSet resultSet, int rowNumber) throws SQLException {
         return new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),

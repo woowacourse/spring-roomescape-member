@@ -324,3 +324,22 @@
       ```
       HTTP/1.1 201
       ```
+- [x] 목록 조회
+    - Request
+        ```
+        GET /members HTTP/1.1
+        content-type: application/json
+        ```
+    - Response
+      ```  
+      HTTP/1.1 200
+      Content-Type: application/json
+      
+      [
+         {
+            "id": 1,
+            "name": "브라운",
+            "email": "brown@gamil.com"
+         }
+      ]
+      ```

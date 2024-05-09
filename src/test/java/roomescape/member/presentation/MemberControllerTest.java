@@ -14,7 +14,10 @@ import roomescape.common.ControllerTest;
 import roomescape.member.application.MemberService;
 import roomescape.member.dto.request.MemberJoinRequest;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -47,6 +50,21 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(MIA_NAME))
                 .andExpect(jsonPath("$.email").value(MIA_EMAIL));
+    }
 
+    @Test
+    @DisplayName("사용자 목록 조회 GET 요청시 상태코드 200을 반환한다.")
+    void findAll() throws Exception {
+        // given
+        BDDMockito.given(memberService.findAll())
+                .willReturn(List.of(USER_MIA(), USER_TOMMY()));
+
+        // when & then
+        mockMvc.perform(get("/members")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value(MIA_NAME))
+                .andExpect(jsonPath("$[1].name").value(TOMMY_NAME));
     }
 }

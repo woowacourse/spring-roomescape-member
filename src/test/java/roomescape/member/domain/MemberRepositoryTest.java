@@ -9,11 +9,11 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.TestFixture.MIA_EMAIL;
-import static roomescape.TestFixture.USER_MIA;
+import static roomescape.TestFixture.*;
 
 class MemberRepositoryTest extends RepositoryTest {
     @Autowired
@@ -69,5 +69,21 @@ class MemberRepositoryTest extends RepositoryTest {
 
         // then
         assertThat(foundMember).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("사용자 목록을 조회한다.")
+    void findAll() {
+        // given
+        SqlParameterSource miaParams = new BeanPropertySqlParameterSource(USER_MIA());
+        SqlParameterSource tommyParams = new BeanPropertySqlParameterSource(USER_TOMMY());
+        jdbcInsert.execute(miaParams);
+        jdbcInsert.execute(tommyParams);
+
+        // when
+        List<Member> members = memberRepository.findAll();
+
+        // then
+        assertThat(members).hasSize(2);
     }
 }
