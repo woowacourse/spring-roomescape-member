@@ -1,9 +1,11 @@
 package roomescape.repository;
 
 import org.springframework.stereotype.Repository;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.repository.dao.MemberDao;
 import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ReservationTimeDao;
 import roomescape.repository.dao.ThemeDao;
@@ -19,11 +21,13 @@ public class ReservationRepository {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
-    public ReservationRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
     public List<Reservation> findAllReservations() {
@@ -32,7 +36,8 @@ public class ReservationRepository {
         for (ReservationSavedDto reservation : reservations) {
             ReservationTime time = reservationTimeDao.findById(reservation.getTimeId()).orElseThrow(NoSuchElementException::new);
             Theme theme = themeDao.findById(reservation.getThemeId()).orElseThrow(NoSuchElementException::new);
-            result.add(new Reservation(reservation.getId(), reservation.getName(), reservation.getDate(), time, theme));
+            Member member = memberDao.findById(reservation.getMemberId()).orElseThrow(NoSuchElementException::new);
+            result.add(new Reservation(reservation.getId(), reservation.getDate(), time, theme, member));
         }
         return result;
     }
@@ -45,19 +50,24 @@ public class ReservationRepository {
         return themeDao.findById(id);
     }
 
+    public Optional<Member> findMemberById(long id) {
+        return memberDao.findById(id);
+    }
+
     public boolean isExistReservationByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         return reservationDao.isExistByDateAndTimeIdAndThemeId(date, timeId, themeId);
     }
 
     public Reservation saveReservation(Reservation reservation) {
         ReservationSavedDto reservationSavedDto = new ReservationSavedDto(
-                reservation.getId(), reservation.getName(), reservation.getDate(),
-                reservation.getTime().getId(), reservation.getTheme().getId());
+                reservation.getId(), reservation.getDate(),
+                reservation.getTime().getId(), reservation.getTheme().getId(), reservation.getMember().getId());
         long id = reservationDao.save(reservationSavedDto);
         ReservationSavedDto saved = reservationDao.findById(id).orElseThrow(NoSuchElementException::new);
         ReservationTime time = reservationTimeDao.findById(saved.getTimeId()).orElseThrow(NoSuchElementException::new);
         Theme theme = themeDao.findById(saved.getThemeId()).orElseThrow(NoSuchElementException::new);
-        return new Reservation(id, saved.getName(), saved.getDate(), time, theme);
+        Member member = memberDao.findById(saved.getMemberId()).orElseThrow(NoSuchElementException::new);
+        return new Reservation(id, saved.getDate(), time, theme, member);
     }
 
     public boolean isExistReservationById(long id) {

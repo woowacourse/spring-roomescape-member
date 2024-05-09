@@ -16,9 +16,9 @@ class FakeReservationDaoTest {
 
     private static final int INITIAL_RESERVATION_COUNT = 3;
     private static final List<ReservationSavedDto> INITIAL_RESERVATIONS = List.of(
-            new ReservationSavedDto(1, "n1", LocalDate.now(), 1, 1),
-            new ReservationSavedDto(2, "n2", LocalDate.now(), 1, 2),
-            new ReservationSavedDto(3, "n3", LocalDate.now(), 1, 3)
+            new ReservationSavedDto(1, LocalDate.now(), 1, 1, 1),
+            new ReservationSavedDto(2, LocalDate.now(), 1, 2, 2),
+            new ReservationSavedDto(3, LocalDate.now(), 1, 3, 3)
     );
 
     private FakeReservationDao fakeReservationDao;
@@ -39,7 +39,7 @@ class FakeReservationDaoTest {
     @DisplayName("예약을 저장한 후 id를 반환한다.")
     @Test
     void should_save_reservation_time() {
-        ReservationSavedDto reservationSavedDto = new ReservationSavedDto(4, "n4", LocalDate.now(), 1, 1);
+        ReservationSavedDto reservationSavedDto = new ReservationSavedDto(4, LocalDate.now(), 1, 1, 4);
         long id = fakeReservationDao.save(reservationSavedDto);
         assertThat(id).isEqualTo(INITIAL_RESERVATION_COUNT + 1);
         assertThat(fakeReservationDao.findAll()).hasSize(INITIAL_RESERVATION_COUNT + 1);
@@ -49,7 +49,7 @@ class FakeReservationDaoTest {
     @Test
     void should_find_reservation_by_id() {
         Optional<ReservationSavedDto> time = fakeReservationDao.findById(1);
-        assertThat(time).hasValue(new ReservationSavedDto(1, "n1", LocalDate.now(), 1, 1));
+        assertThat(time).hasValue(new ReservationSavedDto(1, LocalDate.now(), 1, 1, 1));
     }
 
     @DisplayName("유효하지 않은 id를 가진 예약을 조회하려는 경우 빈 Optional 을 반환한다.")
@@ -63,7 +63,7 @@ class FakeReservationDaoTest {
     @Test
     void should_find_reservations_by_date_and_themeId() {
         List<ReservationSavedDto> reservations = fakeReservationDao.findByDateAndThemeId(LocalDate.now(), 1);
-        assertThat(reservations).containsOnly(new ReservationSavedDto(1, "n1", LocalDate.now(), 1, 1));
+        assertThat(reservations).containsOnly(new ReservationSavedDto(1, LocalDate.now(), 1, 1, 1));
     }
 
     @DisplayName("해당 날짜와 테마 id를 가진 예약이 없는 경우 빈 리스트를 반환한다.")

@@ -26,16 +26,14 @@ public class FakeReservationDao implements ReservationDao {
     public long save(ReservationSavedDto rawDto) {
         long key = index.getAndIncrement();
         ReservationSavedDto reservationSavedDto = new ReservationSavedDto(
-                key, rawDto.getName(), rawDto.getDate(),
-                rawDto.getTimeId(), rawDto.getThemeId());
+                key, rawDto.getDate(),
+                rawDto.getTimeId(), rawDto.getThemeId(), rawDto.getMemberId());
         reservations.add(reservationSavedDto);
         return key;
     }
 
     @Override
     public Optional<ReservationSavedDto> findById(long id) {
-        System.out.print("findById = " + id);
-        System.out.println(reservations);
         return reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst();

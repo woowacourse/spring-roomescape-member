@@ -35,8 +35,8 @@ class ReservationTimeServiceTest {
                 new ReservationTime(2, LocalTime.of(2, 0)),
                 new ReservationTime(3, LocalTime.of(3, 0)))));
         ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
-                new ReservationSavedDto(1, "n1", LocalDate.of(2000, 1, 1), 1L, 1L),
-                new ReservationSavedDto(2, "n2", LocalDate.of(2000, 1, 2), 2L, 2L))));
+                new ReservationSavedDto(1, LocalDate.of(2000, 1, 1), 1L, 1L, 1L),
+                new ReservationSavedDto(2, LocalDate.of(2000, 1, 2), 2L, 2L, 2L))));
         reservationTimeService = new ReservationTimeService(new ReservationTimeRepository(reservationDao, reservationTimeDao));
     }
 

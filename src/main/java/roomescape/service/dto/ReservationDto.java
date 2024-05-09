@@ -6,27 +6,24 @@ import java.time.LocalDate;
 
 public class ReservationDto {
 
-    private final String name;
     private final LocalDate date;
     private final long timeId;
     private final long themeId;
+    private final long memberId;
 
-    public ReservationDto(String name, LocalDate date, Long timeId, Long themeId) {
-        this.name = name;
+    public ReservationDto(LocalDate date, Long timeId, Long themeId, Long memberId) {
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
+        this.memberId = memberId;
     }
 
     public static ReservationDto from(ReservationRequest reservationRequest) {
-        return new ReservationDto(reservationRequest.getName(),
+        return new ReservationDto(
                 reservationRequest.getDate(),
                 reservationRequest.getTimeId(),
-                reservationRequest.getThemeId());
-    }
-
-    public String getName() {
-        return name;
+                reservationRequest.getThemeId(),
+                reservationRequest.getMemberId());
     }
 
     public LocalDate getDate() {
@@ -39,5 +36,9 @@ public class ReservationDto {
 
     public long getThemeId() {
         return themeId;
+    }
+
+    public long getMemberId() {
+        return memberId;
     }
 }

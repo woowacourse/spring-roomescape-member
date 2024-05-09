@@ -1,6 +1,7 @@
 package roomescape.repository.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.repository.dto.ReservationSavedDto;
@@ -16,6 +17,13 @@ public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
+    private final RowMapper<ReservationSavedDto> rowMapper = (resultSet, rowNum) -> new ReservationSavedDto(
+            resultSet.getLong("id"),
+            resultSet.getDate("date").toLocalDate(),
+            resultSet.getLong("time_id"),
+            resultSet.getLong("theme_id"),
+            resultSet.getLong("member_id")
+    );
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -27,48 +35,30 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public long save(ReservationSavedDto reservationSavedDto) {
         Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("name", reservationSavedDto.getName());
         parameters.put("date", reservationSavedDto.getDate());
         parameters.put("time_id", reservationSavedDto.getTimeId());
         parameters.put("theme_id", reservationSavedDto.getThemeId());
+        parameters.put("member_id", reservationSavedDto.getMemberId());
         return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
     public List<ReservationSavedDto> findAll() {
-        String sql2 = "select id, name, date, time_id, theme_id from reservation";
-        return jdbcTemplate.query(sql2, (resultSet, rowNum) -> new ReservationSavedDto(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                resultSet.getLong("time_id"),
-                resultSet.getLong("theme_id")
-        ));
+        String sql = "select id, date, time_id, theme_id, member_id from reservation";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<ReservationSavedDto> findById(long id) {
-        String sql2 = "select id, name, date, time_id, theme_id from reservation where id = ?";
-        ReservationSavedDto reservation = jdbcTemplate.queryForObject(sql2, (resultSet, rowNum) -> new ReservationSavedDto(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                resultSet.getLong("time_id"),
-                resultSet.getLong("theme_id")
-        ), id);
+        String sql = "select id, date, time_id, theme_id, member_id from reservation where id = ?";
+        ReservationSavedDto reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
         return Optional.ofNullable(reservation);
     }
 
     @Override
     public List<ReservationSavedDto> findByDateAndThemeId(LocalDate date, long themeId) {
-        String sql = "select id, name, date, time_id, theme_id from reservation where date = ? and theme_id = ?";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new ReservationSavedDto(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                resultSet.getLong("time_id"),
-                resultSet.getLong("theme_id")
-                ), date, themeId);
+        String sql = "select id, date, time_id, theme_id, member_id from reservation where date = ? and theme_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 
     @Override
@@ -81,8 +71,9 @@ public class JdbcReservationDao implements ReservationDao {
                 order by count(theme_id) desc, theme_id asc
                 limit ?
                 """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"),
-                startDate, endDate, limit);
+        return jdbcTemplate.queryForList(sql, Long.class, startDate, endDate, limit);
+//        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"),
+//                startDate, endDate, limit);
     }
 
     @Override

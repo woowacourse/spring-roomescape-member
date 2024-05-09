@@ -21,19 +21,18 @@ public class ReservationTest {
     void should_throw_exception_when_invalid_id(long id) {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "n", "d", "t");
-        assertThatThrownBy(() -> new Reservation(id, "n", LocalDate.now(), reservationTime, theme))
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        assertThatThrownBy(() -> new Reservation(id, LocalDate.now(), reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[ERROR] id는 0 이하일 수 없습니다.");
     }
 
-    @DisplayName("데이터의 이름이 null 혹은 비어있는 경우 예외를 발생시킨다.")
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "\n", "\t"})
-    void should_throw_exception_when_invalid_name(String name) {
+    @DisplayName("데이터의 사용자가 null인 경우 예외를 발생시킨다.")
+    @Test
+    void should_throw_exception_when_invalid_member() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "n", "d", "t");
-        assertThatThrownBy(() -> new Reservation(1L, name, LocalDate.now(), reservationTime, theme))
+        assertThatThrownBy(() -> new Reservation(1L, LocalDate.now(), reservationTime, theme, null))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
     }
@@ -43,7 +42,8 @@ public class ReservationTest {
     void should_throw_exception_when_invalid_date() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "n", "d", "t");
-        assertThatThrownBy(() -> new Reservation(1L, "n", null, reservationTime, theme))
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        assertThatThrownBy(() -> new Reservation(1L, null, reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
     }
@@ -53,7 +53,8 @@ public class ReservationTest {
     void should_throw_exception_when_invalid_time() {
         ReservationTime reservationTime = null;
         Theme theme = new Theme(1L, "n", "d", "t");
-        assertThatThrownBy(() -> new Reservation(1L, "n", LocalDate.now(), reservationTime, theme))
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        assertThatThrownBy(() -> new Reservation(1L, LocalDate.now(), reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
     }
@@ -63,7 +64,8 @@ public class ReservationTest {
     void should_throw_exception_when_invalid_theme() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = null;
-        assertThatThrownBy(() -> new Reservation(1L, "n", LocalDate.now(), reservationTime, theme))
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        assertThatThrownBy(() -> new Reservation(1L, LocalDate.now(), reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
     }
@@ -76,7 +78,8 @@ public class ReservationTest {
         LocalTime time = LocalTime.parse(rawTime);
         ReservationTime reservationTime = new ReservationTime(1L, time);
         Theme theme = new Theme(1L, name, description, thumbnail);
-        assertThatCode(() -> new Reservation(id, name, date, reservationTime, theme))
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        assertThatCode(() -> new Reservation(id, date, reservationTime, theme, member))
                 .doesNotThrowAnyException();
     }
 
@@ -85,9 +88,10 @@ public class ReservationTest {
     void should_be_zero_id_when_convert_dto() {
         ReservationTime time = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "n", "d", "t");
-        ReservationDto ReservationDto = new ReservationDto("n", LocalDate.now(), 1L, 1L);
+        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
+        ReservationDto ReservationDto = new ReservationDto(LocalDate.now(), 1L, 1L, 1L);
         assertThatCode(() -> {
-            Reservation reservation = Reservation.from(ReservationDto, time, theme);
+            Reservation reservation = Reservation.from(ReservationDto, time, theme, member);
             assertThat(reservation.getId()).isEqualTo(0);
         }).doesNotThrowAnyException();
     }

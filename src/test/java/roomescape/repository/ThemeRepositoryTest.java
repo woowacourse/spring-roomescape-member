@@ -51,8 +51,8 @@ class ThemeRepositoryTest {
         insertTheme("n2", "d2", "t2");
         insertReservationTime("1:00");
         insertReservationTime("2:00");
-        insertReservation("n1", "2000-01-01", 1, 1);
-        insertReservation("n2", "2000-01-02", 2, 2);
+        insertReservation("2000-01-01", 1, 1, 1);
+        insertReservation("2000-01-02", 2, 2, 2);
     }
 
     private void initDatabase() {
@@ -76,12 +76,12 @@ class ThemeRepositoryTest {
         timeInsertActor.execute(parameters);
     }
 
-    private void insertReservation(String name, String date, long timeId, long themeId) {
+    private void insertReservation(String date, long timeId, long themeId, long memberId) {
         Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("name", name);
         parameters.put("date", date);
         parameters.put("time_id", timeId);
         parameters.put("theme_id", themeId);
+        parameters.put("member_id", memberId);
         reservationInsertActor.execute(parameters);
     }
 

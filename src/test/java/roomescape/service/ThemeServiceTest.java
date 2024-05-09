@@ -33,8 +33,8 @@ class ThemeServiceTest {
                 new Theme(1, "n1", "d1", "t1"),
                 new Theme(2, "n2", "d2", "t2"))));
         ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
-                new ReservationSavedDto(1, "n1", LocalDate.now().minusDays(1), 1L, 1L),
-                new ReservationSavedDto(2, "n2", LocalDate.now().minusDays(8), 2L, 2L))));
+                new ReservationSavedDto(1, LocalDate.now().minusDays(1), 1L, 1L, 1L),
+                new ReservationSavedDto(2, LocalDate.now().minusDays(8), 2L, 2L, 2L))));
         themeService = new ThemeService(new ThemeRepository(reservationDao, themeDao));
     }
 

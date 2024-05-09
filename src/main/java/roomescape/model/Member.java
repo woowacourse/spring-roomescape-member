@@ -9,6 +9,8 @@ public class Member {
     private final String email;
     private final String password;
 
+    // TODO: role 추가
+
     public Member(long id, String name, String email, String password) {
         this.id = id;
         this.name = name;

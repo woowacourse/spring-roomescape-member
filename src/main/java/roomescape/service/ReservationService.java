@@ -5,6 +5,7 @@ import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -35,12 +36,13 @@ public class ReservationService {
     public Reservation saveReservation(ReservationDto reservationDto) {
         ReservationTime time = findReservationTime(reservationDto);
         Theme theme = findTheme(reservationDto);
+        Member member = findMember(reservationDto);
 
         LocalDate date = reservationDto.getDate();
         validateIsFuture(date, time.getStartAt());
         validateDuplication(date, time.getId(), theme.getId());
 
-        Reservation reservation = Reservation.from(reservationDto, time, theme);
+        Reservation reservation = Reservation.from(reservationDto, time, theme, member);
         return reservationRepository.saveReservation(reservation);
     }
 
@@ -54,6 +56,12 @@ public class ReservationService {
         long themeId = reservationDto.getThemeId();
         Optional<Theme> theme = reservationRepository.findThemeById(themeId);
         return theme.orElseThrow(() -> new BadRequestException("[ERROR] 존재하지 않는 데이터입니다."));
+    }
+
+    private Member findMember(ReservationDto reservationDto) {
+        long memberId = reservationDto.getMemberId();
+        Optional<Member> member = reservationRepository.findMemberById(memberId);
+        return member.orElseThrow(() -> new BadRequestException("[ERROR] 존재하지 않는 데이터입니다."));
     }
 
     public void deleteReservation(long id) {

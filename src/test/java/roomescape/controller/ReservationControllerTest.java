@@ -33,6 +33,7 @@ class ReservationControllerTest {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInsertActor;
     private final SimpleJdbcInsert timeInsertActor;
+    private final SimpleJdbcInsert memberInsertActor;
     private final SimpleJdbcInsert reservationInsertActor;
 
     @Autowired
@@ -43,6 +44,9 @@ class ReservationControllerTest {
                 .usingGeneratedKeyColumns("id");
         this.timeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+        this.memberInsertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
                 .usingGeneratedKeyColumns("id");
         this.reservationInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -55,14 +59,18 @@ class ReservationControllerTest {
         IntStream.range(1, 6).forEach(i -> insertReservationTime(i + ":00"));
         IntStream.range(0, 20).forEach(i -> insertTheme("n" + i, "d" + i, "t" + i));
 
+        insertMember("에버", "treeboss@gmail.com", "treeboss123!");
+        insertMember("우테코", "wtc@gmail.com", "wtc123!");
+
         LocalDate now = LocalDate.now();
-        IntStream.range(0, 5).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 1L));
-        IntStream.range(0, 5).forEach(i -> insertReservation("n", now.minusDays(i), 2L, 1L));
-        IntStream.range(0, 5).forEach(i -> insertReservation("n", now.minusDays(i), 3L, 1L));
+        IntStream.range(0, 5).forEach(i -> insertReservation(now.minusDays(i), 1L, 1L, 1L));
+        IntStream.range(0, 5).forEach(i -> insertReservation(now.minusDays(i), 2L, 1L, 1L));
+        IntStream.range(0, 5).forEach(i -> insertReservation(now.minusDays(i), 3L, 1L, 1L));
     }
 
     private void initDatabase() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE member RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
@@ -82,12 +90,20 @@ class ReservationControllerTest {
         timeInsertActor.execute(parameters);
     }
 
-    private void insertReservation(String name, LocalDate date, long timeId, long themeId) {
-        Map<String, Object> parameters = new HashMap<>(4);
+    private void insertMember(String name, String email, String password) {
+        Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", name);
+        parameters.put("email", email);
+        parameters.put("password", password);
+        memberInsertActor.execute(parameters);
+    }
+
+    private void insertReservation(LocalDate date, long timeId, long themeId, long memberId) {
+        Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("date", date);
         parameters.put("time_id", timeId);
         parameters.put("theme_id", themeId);
+        parameters.put("member_id", memberId);
         reservationInsertActor.execute(parameters);
     }
 
@@ -113,7 +129,7 @@ class ReservationControllerTest {
                 .claim("name", member.getName())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
-        ReservationRequest request = new ReservationRequest("n", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -149,7 +165,6 @@ class ReservationControllerTest {
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MemberReservationTimeResponse.class);
 
-        System.out.println(times);
         assertThat(times).hasSize(INITIAL_TIME_COUNT);
         assertThat(times.get(0).getIsBooked()).isTrue();
         assertThat(times.get(0).getTimeId()).isEqualTo(1);

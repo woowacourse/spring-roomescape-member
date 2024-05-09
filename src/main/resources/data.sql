@@ -6,3 +6,6 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('배키', '스릴러', 
 
 INSERT INTO member (name, email, password) VALUES ('에버', 'treeboss@gmail.com', '123');
 INSERT INTO member (name, email, password) VALUES ('우테코', 'wtc@gmail.com', '123');
+
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-05-09', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-05-09', 2, 2, 2);

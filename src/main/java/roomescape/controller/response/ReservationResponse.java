@@ -1,5 +1,6 @@
 package roomescape.controller.response;
 
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -9,33 +10,31 @@ import java.time.LocalDate;
 public class ReservationResponse {
 
     private final long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTimeResponse time;
     private final ThemeResponse theme;
+    private final MemberResponse member;
 
-    private ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse time, ThemeResponse theme) {
+    private ReservationResponse(long id, LocalDate date, ReservationTimeResponse time, ThemeResponse theme, MemberResponse member) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     } // TODO: if private, cannot parse?
 
     public static ReservationResponse from(Reservation reservation) {
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
+        Member member = reservation.getMember();
+        return new ReservationResponse(reservation.getId(), reservation.getDate(),
                 new ReservationTimeResponse(time.getId(), time.getStartAt()),
-                new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail()));
+                new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail()),
+                new MemberResponse(member.getId(), member.getName(), member.getEmail()));
     }
 
     public long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -48,5 +47,9 @@ public class ReservationResponse {
 
     public ThemeResponse getTheme() {
         return theme;
+    }
+
+    public MemberResponse getMember() {
+        return member;
     }
 }
