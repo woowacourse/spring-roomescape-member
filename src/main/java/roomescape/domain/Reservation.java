@@ -82,27 +82,6 @@ public class Reservation implements Comparable<Reservation> {
         return this.id == id;
     }
 
-    public boolean isReservationTimeOf(long id) {
-        return this.time.isIdOf(id);
-    }
-
-    public boolean isDateOf(LocalDate date) {
-        return this.date.equals(date);
-    }
-
-    public boolean isThemeOf(long id) {
-        return this.theme.isIdOf(id);
-    }
-
-    public boolean isSameDateTime(Reservation beforeSave) {
-        return LocalDateTime.of(this.date, this.getTime())
-                .equals(LocalDateTime.of(beforeSave.date, beforeSave.getTime()));
-    }
-
-    public boolean isSameTheme(Reservation reservation) {
-        return this.theme.equals(reservation.theme);
-    }
-
     public long getId() {
         return id;
     }
@@ -149,10 +128,10 @@ public class Reservation implements Comparable<Reservation> {
     @Override
     public String toString() {
         return "Reservation{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", date=" + date +
-               ", time=" + time +
-               '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", time=" + time +
+                '}';
     }
 }
