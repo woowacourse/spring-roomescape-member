@@ -85,14 +85,10 @@ public class ReservationH2Repository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndTheme(LocalDate date, Long themeId) {
+    public List<Long> findAlreadyBookedTimeIds(LocalDate date, Long themeId) {
         return jdbcTemplate.query(
-                "SELECT r.id, r.name, r.date, time.id as time_id, time.start_at, theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
-                        + "FROM reservation as r "
-                        + "inner join reservation_time as time on r.time_id = time.id "
-                        + "inner join theme on r.theme_id = theme.id "
-                        + "WHERE date = ? AND theme_id = ?",
-                getReservationRowMapper(),
+                "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?",
+                (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 date,
                 themeId
         );

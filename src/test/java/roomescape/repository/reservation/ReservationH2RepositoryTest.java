@@ -90,12 +90,15 @@ class ReservationH2RepositoryTest {
     @Test
     @DisplayName("특정 날짜와 테마에 대해 예약된 시간들을 반환한다.")
     void findByDateAndTheme() {
-        List<Reservation> reservations = reservationH2Repository.findByDateAndTheme(
+        List<Long> reservations = reservationH2Repository.findAlreadyBookedTimeIds(
                 RESERVATION_1.getDate(),
                 RESERVATION_1.getTheme().getId()
         );
 
-        assertThat(reservations).containsExactlyInAnyOrder(RESERVATION_1, RESERVATION_3);
+        assertThat(reservations).containsExactlyInAnyOrder(
+                RESERVATION_1.getTime().getId(),
+                RESERVATION_3.getTime().getId()
+        );
     }
 
     @Test

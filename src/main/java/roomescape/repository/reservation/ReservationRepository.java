@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Reservation> findByDateAndTheme(LocalDate date, Long themeId);
+    List<Long> findAlreadyBookedTimeIds(LocalDate date, Long themeId);
 
     boolean isAlreadyBooked(Reservation reservation);
 }

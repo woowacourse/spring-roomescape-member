@@ -41,10 +41,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> findTimesWithAlreadyBooked(LocalDate date, Long themeId) {
-        List<Long> alreadyBookedTimeIds = reservationRepository.findByDateAndTheme(date, themeId)
-                .stream()
-                .map(reservation -> reservation.getTime().getId())
-                .toList();
+        List<Long> alreadyBookedTimeIds = reservationRepository.findAlreadyBookedTimeIds(date, themeId);
 
         return reservationTimeRepository.findAll()
                 .stream()
