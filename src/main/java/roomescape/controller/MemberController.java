@@ -3,6 +3,7 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,15 +32,20 @@ public class MemberController {
         this.authService = authService;
     }
 
-    @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@LoginUser Member member) {
-        return ResponseEntity.ok(new LoginCheckResponse(member));
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> findAll() {
+        return ResponseEntity.ok(memberService.findAll());
     }
 
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> signup(@RequestBody MemberSignupRequest signupRequest) {
         return ResponseEntity.created(URI.create("/login"))
                 .body(memberService.add(signupRequest));
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> loginCheck(@LoginUser Member member) {
+        return ResponseEntity.ok(new LoginCheckResponse(member));
     }
 
     @PostMapping("/login")

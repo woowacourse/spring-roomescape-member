@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -14,6 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,28 @@ class MemberControllerTest {
     private MemberService memberService;
     @MockBean
     private AuthService authService;
+
+
+    @Test
+    @DisplayName("모든 회원 정보를 조회한다.")
+    void findAll() throws Exception {
+        //given
+        List<MemberResponse> memberResponses = Stream.of(
+                        createMember("user1", "user1@test.com"),
+                        createMember("user2", "user1@test.com"))
+                .map(MemberResponse::new)
+                .toList();
+        given(memberService.findAll()).willReturn(memberResponses);
+
+        //when //then
+        mockMvc.perform(get("/members"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[0].name", is("user1")))
+                .andExpect(jsonPath("$[1].name", is("user2")));
+    }
 
     @Test
     @DisplayName("회원 가입을 요청하면 201 Created를 응답한다.")

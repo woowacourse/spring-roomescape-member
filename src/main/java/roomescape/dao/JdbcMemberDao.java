@@ -23,6 +23,26 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
+    public List<Member> readAll() {
+        String sql = """
+                SELECT
+                id, name, email, password
+                FROM
+                member
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> new Member(
+                        resultSet.getLong("id"),
+                        new MemberName(resultSet.getString("name")),
+                        new MemberEmail(resultSet.getString("email")),
+                        new MemberPassword(resultSet.getString("password"))
+                )
+        );
+    }
+
+    @Override
     public Optional<Member> findByEmail(MemberEmail email) {
         String sql = """
                 SELECT

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,22 @@ class MemberServiceTest {
         assertAll(
                 () -> assertThat(result.getName()).isEqualTo(name),
                 () -> assertThat(result.getEmail()).isEqualTo(email)
+        );
+    }
+
+    @Test
+    @DisplayName("모든 회원 정보를 조회한다.")
+    void findAll() {
+        //given
+        memberDao.create(createMember("user1", "user1@test.com", "1234"));
+        memberDao.create(createMember("user2", "user2@test.com", "1234"));
+
+        //when
+        List<MemberResponse> result = memberService.findAll();
+
+        //then
+        assertAll(
+                () -> assertThat(result).hasSize(2)
         );
     }
 
