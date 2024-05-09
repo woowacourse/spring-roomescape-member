@@ -19,6 +19,7 @@ public class AuthenticationGenerator {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("email", email)
+                .setExpiration(new Date(System.currentTimeMillis() + validityInMilliseconds))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }

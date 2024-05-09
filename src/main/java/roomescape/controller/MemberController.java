@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.domain.Member;
 import roomescape.dto.LoginRequestDto;
+import roomescape.dto.LoginResponseDto;
 import roomescape.service.AuthenticationService;
 import roomescape.service.MemberService;
 
@@ -36,17 +36,18 @@ public class MemberController {
     }
 
     @GetMapping("login/check")
-    public ResponseEntity<String> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<LoginResponseDto> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         Cookie cookie = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst().orElseThrow(() -> new IllegalStateException("토큰이 존재하지 않습니다."));
         String token = cookie.getValue();
 
         String email = authenticationService.getPayload(token);
-        Member member = memberService.findByEmail(email);
-        String name = member.getName();
+        String name = memberService.findNameByEmail(email);
 
-        return ResponseEntity.ok().body(name);
+        return ResponseEntity.ok().body(new LoginResponseDto(name));
     }
+
+    //TODO: logout, register 구현
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
