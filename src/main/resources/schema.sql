@@ -1,7 +1,7 @@
 CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255) NOT NULL,
+    theme_name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
@@ -17,7 +17,7 @@ CREATE TABLE reservation_time
 CREATE TABLE member
 (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
+    member_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)

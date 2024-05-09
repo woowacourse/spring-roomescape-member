@@ -14,7 +14,7 @@ public class ThemeRowMapper implements RowMapper<Theme> {
         try {
             return new Theme(
                     resultSet.getLong("id"),
-                    new ThemeName(resultSet.getString("name")),
+                    new ThemeName(resultSet.getString("theme_name")),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );

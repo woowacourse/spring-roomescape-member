@@ -13,7 +13,7 @@ public class MemberRowMapper implements RowMapper<Member> {
         try {
             return Member.of(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    resultSet.getString("member_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password")
             );
