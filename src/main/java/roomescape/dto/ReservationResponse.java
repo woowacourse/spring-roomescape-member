@@ -20,7 +20,7 @@ public record ReservationResponse(
 
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getMember().getName(),
                 reservation.getDate(),
                 reservationTimeResponse,
                 themeResponse
