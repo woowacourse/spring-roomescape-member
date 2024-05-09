@@ -8,19 +8,27 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(long id, String name, String description, String thumbnail) {
+    private Theme(long id, Name name, String description, String thumbnail) {
         this.id = id;
-        this.name = new Name(name);
+        this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public Theme(String name, String description, String thumbnail) {
-        this(0, name, description, thumbnail);
+    private Theme(String name, String description, String thumbnail) {
+        this(0, new Name(name), description, thumbnail);
     }
 
-    public Theme(long id) {
-        this(id, null, null, null);
+    public static Theme themeOf(long id, String name, String description, String thumbnail) {
+        return new Theme(id, new Name(name), description, thumbnail);
+    }
+
+    public static Theme saveThemeOf(String name, String description, String thumbnail) {
+        return new Theme(name, description, thumbnail);
+    }
+
+    public static Theme getThemeFrom(long id) {
+        return new Theme(id, null, null, null);
     }
 
     public long getId() {

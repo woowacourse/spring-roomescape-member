@@ -15,7 +15,7 @@ import roomescape.theme.domain.Theme;
 @Component
 public class ThemeJdbcDao implements ThemeDao {
 
-    public static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) -> new Theme(
+    public static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) -> Theme.themeOf(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),

@@ -26,7 +26,7 @@ public class Reservation {
     }
 
     private Reservation(String name, LocalDate date, long timeId, long themeId) {
-        this(0, name, Date.saveDateFrom(date), new Time(timeId), new Theme(themeId));
+        this(0, name, Date.saveDateFrom(date), new Time(timeId), Theme.getThemeFrom(themeId));
     }
 
     public static Reservation reservationOf(long id, String name, LocalDate date, Time time, Theme theme) {

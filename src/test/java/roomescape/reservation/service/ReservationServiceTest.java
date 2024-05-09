@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.name.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -26,12 +27,15 @@ import roomescape.time.domain.Time;
 class ReservationServiceTest {
 
     private final Reservation reservation = Reservation.reservationOf(1L, "polla", LocalDate.now().plusDays(1),
-            new Time(1L, LocalTime.now()), new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
+            new Time(1L, LocalTime.now()), Theme.themeOf(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
 
     @InjectMocks
     private ReservationService reservationService;
     @Mock
     private ReservationRepository reservationRepository;
+
+    @Mock
+    private Name name;
 
     @Test
     @DisplayName("예약을 추가한다.")

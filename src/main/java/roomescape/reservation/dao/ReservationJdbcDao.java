@@ -25,7 +25,7 @@ public class ReservationJdbcDao implements ReservationDao {
             new Time(resultSet.getLong("time_id"),
                     resultSet.getTime("start_at")
                             .toLocalTime()),
-            new Theme(resultSet.getLong("theme_id"),
+            Theme.themeOf(resultSet.getLong("theme_id"),
                     resultSet.getString("themeName"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
@@ -102,7 +102,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 """;
 
         return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
-                        -> new Theme(
+                        -> Theme.themeOf(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("description"),

@@ -22,7 +22,7 @@ class ReservationTest {
     @Test
     @DisplayName("전달 받은 데이터로 Reservation 객체를 정상적으로 생성한다.")
     void constructReservation() {
-        Theme theme = new Theme(1, "미르", "미르 방탈출", "썸네일 Url");
+        Theme theme = Theme.themeOf(1, "미르", "미르 방탈출", "썸네일 Url");
         Time time = new Time(1, TIME);
         Reservation reservation = Reservation.reservationOf(1L, "폴라", TOMORROW, time, theme);
 

@@ -35,7 +35,7 @@ class ReservationControllerTest {
     private static final LocalDate TODAY = LocalDate.now();
 
     private final Reservation reservation = Reservation.reservationOf(1L, "polla", TODAY,
-            new Time(1L, LocalTime.of(10, 0)), new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
+            new Time(1L, LocalTime.of(10, 0)), Theme.themeOf(1L, "polla", "폴라 방탈출", "이미지~"));
     private final String expectedStartAt = "10:00:00";
 
     @Autowired
