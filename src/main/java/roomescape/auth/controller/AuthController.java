@@ -6,10 +6,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.dto.LoginCheckResponse;
-import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.dto.LoginResponse;
-import roomescape.auth.dto.SignupRequest;
+import roomescape.auth.dto.*;
 import roomescape.auth.service.AuthService;
 
 @Controller
@@ -48,8 +45,8 @@ public class AuthController {
 
     @ResponseBody
     @GetMapping("/login/check")
-    public LoginCheckResponse checkLogin(@CookieValue("token") String token) {
-        return authService.checkLogin(token);
+    public LoginCheckResponse checkLogin(LoginMember loginMember) {
+        return authService.checkLogin(loginMember);
     }
 
     @ResponseBody

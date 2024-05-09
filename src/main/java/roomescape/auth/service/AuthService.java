@@ -2,10 +2,7 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.auth.dto.LoginCheckResponse;
-import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.dto.LoginResponse;
-import roomescape.auth.dto.SignupRequest;
+import roomescape.auth.dto.*;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.member.domain.Member;
@@ -47,10 +44,8 @@ public class AuthService {
         }
     }
 
-    public LoginCheckResponse checkLogin(String token) {
-        String email = jwtTokenProvider.decode(token, "email");
-        Member member = findMemberByEmail(email);
-
+    public LoginCheckResponse checkLogin(LoginMember loginMember) {
+        Member member = findMemberByEmail(loginMember.email());
         return LoginCheckResponse.from(member);
     }
 
