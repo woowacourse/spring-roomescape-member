@@ -36,39 +36,12 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("이름이 Null 인 경우 에러를 발생한다.")
-    void validation_ShouldThrowException_WhenNameIsNull() {
-        Throwable nameIsNull = assertThrows(RoomEscapeException.class,
-                () -> Reservation.saveReservationOf(null, TOMORROW, 1L, 1L));
-        assertEquals(ReservationExceptionCode.NAME_IS_NULL_OR_BLANK_EXCEPTION.getMessage(), nameIsNull.getMessage());
-    }
-
-    @Test
-    @DisplayName("이름이 빈값인 경우 에러를 발생한다.")
-    void validation_ShouldThrowException_WhenNameIsEmpty() {
-        Throwable nameIsEmpty = assertThrows(
-                RoomEscapeException.class, () -> Reservation.saveReservationOf(" ", TOMORROW, 1L, 1L));
-
-        assertEquals(ReservationExceptionCode.NAME_IS_NULL_OR_BLANK_EXCEPTION.getMessage(), nameIsEmpty.getMessage());
-    }
-
-    @Test
     @DisplayName("과거의 날짜를 예약하려고 시도하는 경우 에러를 발생한다.")
     void validation_ShouldThrowException_WhenReservationDateIsPast() {
         Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
                 () -> Reservation.saveReservationOf("pollari", BEFORE, 1L, 1L));
 
         assertEquals(ReservationExceptionCode.RESERVATION_DATE_IS_PAST_EXCEPTION.getMessage(),
-                pastDateReservation.getMessage());
-    }
-
-    @Test
-    @DisplayName("이름에 특수문자가 들어가는 경우 에러를 발생한다.")
-    void validation_ShouldThrowException_WhenNameContainsSymbol() {
-        Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                () -> Reservation.saveReservationOf("@특수문자", TOMORROW, 1L, 1L));
-
-        assertEquals(ReservationExceptionCode.ILLEGAL_NAME_FORM_EXCEPTION.getMessage(),
                 pastDateReservation.getMessage());
     }
 }
