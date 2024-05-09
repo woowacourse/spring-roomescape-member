@@ -40,9 +40,9 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    //TODO 요녀석 언제씀?
     public boolean validateToken(final String token) {
         try {
+            //TODO static으로 어케 비비지?
             final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().before(new Date());
