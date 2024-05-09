@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.util.Date;
@@ -34,8 +35,7 @@ public class ThemeService {
     }
 
     public ThemeResponse getTheme(Long id) {
-        validateIdExist(id);
-        Theme theme = themeRepository.findById(id);
+        Theme theme = findThemeById(id);
         return ThemeResponse.from(theme);
     }
 
@@ -43,28 +43,40 @@ public class ThemeService {
         List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForDate(
                 Date.A_WEEK_AGO, Date.YESTERDAY);
         return popularThemeIds.stream()
-                .map(themeRepository::findById)
+                .map(this::findThemeById)
                 .map(ThemeResponse::from)
                 .toList();
     }
 
     public void deleteTheme(Long id) {
-        validateIdExist(id);
-        if (reservationRepository.existThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마는 예약이 존재합니다.");
-        }
+        Theme theme = findThemeById(id);
+        validateDeletable(theme);
         themeRepository.delete(id);
     }
 
-    private void validateIdExist(Long id) {
-        if (!themeRepository.existId(id)) {
-            throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
-        }
+    private Theme findThemeById(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                        "[ERROR] 잘못된 테마 정보 입니다.",
+                        "theme_id : " + themeId
+                ));
     }
 
     public void validateNameDuplicate(String name) {
         if (themeRepository.existName(name)) {
-            throw new IllegalArgumentException("[ERROR] 동일한 이름이 존재합니다. : " + name);
+            throw new ClientErrorExceptionWithLog(
+                    "[ERROR] 동일한 이름의 테마가 존재해 등록할 수 없습니다.",
+                    "theme_name : " + name
+            );
+        }
+    }
+
+    private void validateDeletable(Theme theme) {
+        if (reservationRepository.existThemeId(theme.getId())) {
+            throw new ClientErrorExceptionWithLog(
+                    "[ERROR] 예약되어있는 테마는 삭제할 수 없습니다.",
+                    "theme_id : " + theme.getId()
+            );
         }
     }
 }
