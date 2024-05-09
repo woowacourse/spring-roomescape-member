@@ -1,4 +1,3 @@
-/*
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,4 +48,3 @@ class H2ReservationTimeRepositoryTest extends BasicAcceptanceTest {
         assertThat(reservationTimeRepository.findAll()).isEqualTo(List.of(TestFixtures.TIME_2));
     }
 }
-*/
