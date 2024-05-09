@@ -6,8 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.login.domain.Member;
-import roomescape.domain.login.repository.MemberRepository;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
+import roomescape.domain.member.MemberService;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 class MemberServiceTest {
@@ -23,6 +24,12 @@ class MemberServiceTest {
         memberRepository = new FakeMemberRepository();
         memberService = new MemberService(memberRepository);
         memberRepository.insert(ADMIN_MEMBER);
+    }
+
+    @DisplayName("모든 유저를 찾을 수 있습니다.")
+    @Test
+    void should_find_all_user() {
+        assertThat(memberService.findAll()).hasSize(1);
     }
 
     @DisplayName("원하는 id의 유저를 찾을 수 있습니다.")

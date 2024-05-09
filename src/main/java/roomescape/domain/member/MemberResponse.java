@@ -1,4 +1,4 @@
-package roomescape.domain.login.dto;
+package roomescape.domain.member;
 
 public record MemberResponse(String name) {
 

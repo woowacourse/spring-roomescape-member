@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.login.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservationTime.domain.ReservationTime;

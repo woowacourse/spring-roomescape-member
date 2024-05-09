@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.RepositoryTest;
-import roomescape.domain.login.domain.Member;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
+import roomescape.domain.member.MemberRepositoryImpl;
 
 class MemberRepositoryImplTest extends RepositoryTest {
 

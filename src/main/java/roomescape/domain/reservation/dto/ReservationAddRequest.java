@@ -1,7 +1,7 @@
 package roomescape.domain.reservation.dto;
 
 import java.time.LocalDate;
-import roomescape.domain.login.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;

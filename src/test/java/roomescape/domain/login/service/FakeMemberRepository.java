@@ -1,11 +1,12 @@
 package roomescape.domain.login.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.login.domain.Member;
-import roomescape.domain.login.repository.MemberRepository;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
 
 public class FakeMemberRepository implements MemberRepository {
 
@@ -34,5 +35,10 @@ public class FakeMemberRepository implements MemberRepository {
                 .stream()
                 .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
                 .findFirst();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return members.values().stream().toList();
     }
 }

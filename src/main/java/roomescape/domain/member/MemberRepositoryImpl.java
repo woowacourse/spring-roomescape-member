@@ -1,6 +1,7 @@
-package roomescape.domain.login.repository;
+package roomescape.domain.member;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.login.domain.Member;
 
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {
@@ -58,5 +58,11 @@ public class MemberRepositoryImpl implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "select * from member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 }

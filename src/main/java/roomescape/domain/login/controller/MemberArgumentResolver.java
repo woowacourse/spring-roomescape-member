@@ -9,7 +9,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.login.service.MemberService;
+import roomescape.domain.member.MemberService;
 import roomescape.global.auth.JwtTokenProvider;
 import roomescape.global.exception.ClientIllegalArgumentException;
 

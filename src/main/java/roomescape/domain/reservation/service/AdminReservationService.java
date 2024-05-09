@@ -2,8 +2,8 @@ package roomescape.domain.reservation.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.login.domain.Member;
-import roomescape.domain.login.repository.MemberRepository;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
 import roomescape.domain.reservation.repository.ReservationRepository;

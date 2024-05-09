@@ -1,10 +1,8 @@
-package roomescape.domain.login.service;
+package roomescape.domain.member;
 
-import jakarta.websocket.server.ServerEndpoint;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.domain.login.domain.Member;
-import roomescape.domain.login.repository.MemberRepository;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 @Service
@@ -14,6 +12,10 @@ public class MemberService {
 
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 
     public Member findMemberById(Long id) {

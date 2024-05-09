@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.login.domain.Member;
 import roomescape.domain.login.dto.LoginRequest;
-import roomescape.domain.login.dto.MemberResponse;
-import roomescape.domain.login.service.MemberService;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberResponse;
+import roomescape.domain.member.MemberService;
 import roomescape.global.auth.CookieGenerator;
 import roomescape.global.auth.JwtTokenProvider;
 

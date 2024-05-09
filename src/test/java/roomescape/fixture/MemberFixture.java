@@ -1,6 +1,6 @@
 package roomescape.fixture;
 
-import roomescape.domain.login.domain.Member;
+import roomescape.domain.member.Member;
 
 public class MemberFixture {
 
