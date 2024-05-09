@@ -24,3 +24,5 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('잉크', '2024-0
                                ('뽀로로', '2024-04-27', 5, 3),
                                ('뽀로로', '2024-04-28', 6, 2),
                                ('뽀로로', '2024-04-29', 1, 2);
+
+INSERT INTO member(name, email, password) VALUES ('잉크', 'asdf@a.com', '1234');

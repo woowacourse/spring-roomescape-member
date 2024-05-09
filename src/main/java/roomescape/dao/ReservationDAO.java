@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -76,7 +77,11 @@ public class ReservationDAO {
                         "    FROM reservation " +
                         "    WHERE time_id = ?" +
                         ")";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        try {
+            return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new queryResultSizeException("db 쿼리 조회 에러");
+        }
     }
 
     public List<Long> findReservedTimeIds(LocalDate date, Long themeId) {

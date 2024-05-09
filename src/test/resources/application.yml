@@ -8,3 +8,9 @@ spring:
   sql:
     init:
       data-locations:
+
+security:
+  jwt:
+    token:
+      secret-key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
+      expire-length: 3600000
