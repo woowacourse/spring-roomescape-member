@@ -1,7 +1,6 @@
 package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +37,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue("token") String token) {
-       LoginCheckResponse loginCheckResponse = memberService.findMemberByToken(token);
-       return ResponseEntity.ok(loginCheckResponse);
+        LoginCheckResponse loginCheckResponse = memberService.findMemberByToken(token);
+        return ResponseEntity.ok(loginCheckResponse);
     }
 }

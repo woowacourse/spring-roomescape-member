@@ -25,11 +25,12 @@ class MemberControllerTest extends ControllerTest {
     @BeforeEach
     void setData() {
         String sql = """ 
-                INSERT INTO member(name, email, password)
-                VALUES ('관리자', 'admin@email.com', 'password');
-              """;
+                  INSERT INTO member(name, email, password)
+                  VALUES ('관리자', 'admin@email.com', 'password');
+                """;
         jdbcTemplate.update(sql);
     }
+
     @DisplayName("로그인 폼 페이지 조회에 성공한다.")
     @Test
     void popularPage() {
