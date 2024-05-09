@@ -11,18 +11,11 @@ public class Reservation {
     private final ReservationTheme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
-        validateId(id);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("유효하지 않은 ID 입니다.");
-        }
     }
 
     public Long getId() {
@@ -43,5 +36,13 @@ public class Reservation {
 
     public ReservationTheme getTheme() {
         return theme;
+    }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 }
