@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class InvalidInputException extends IllegalArgumentException {
+public class InvalidInputException extends CustomException {
 
     public InvalidInputException(String message) {
         super(message);

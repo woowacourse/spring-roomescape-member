@@ -13,14 +13,8 @@ public class GlobalExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler(value = {InvalidInputException.class,
-            ExistingEntryException.class,
-            NotExistingEntryException.class,
-            ReferencedRowExistsException.class,
-            ReservingPastTimeException.class,
-            NullPointerException.class
-    })
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+    @ExceptionHandler(value = CustomException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(CustomException e) {
         logger.error(e.getMessage(), e);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getMessage()));
