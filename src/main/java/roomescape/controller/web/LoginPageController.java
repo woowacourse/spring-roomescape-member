@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import roomescape.controller.AuthenticatedUser;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.LoginCheckResponse;
@@ -54,9 +55,8 @@ public class LoginPageController { // TODO Page 가 맞을까??
 
     @GetMapping("/login/check")
     @ResponseBody
-    public LoginCheckResponse loginCheck(@CookieValue String token) {
-        MemberResponse payload = authService.findPayloadByToken(token);
-        Optional<MemberResponse> optionalMemberResponse = memberService.findMemberByEmail(payload.email());
+    public LoginCheckResponse loginCheck(@AuthenticatedUser MemberResponse memberResponse) {
+        Optional<MemberResponse> optionalMemberResponse = memberService.findMemberByEmail(memberResponse.email());
         if (optionalMemberResponse.isEmpty()) {
             return null; // TODO 조회하는 회원이 없는 경우 무엇을 반환하는게 좋을까??
         }
