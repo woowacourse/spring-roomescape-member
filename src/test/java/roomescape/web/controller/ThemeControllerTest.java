@@ -21,7 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.core.dto.auth.TokenRequest;
-import roomescape.core.dto.reservation.ReservationRequest;
+import roomescape.core.dto.reservation.MemberReservationRequest;
 import roomescape.core.dto.reservationtime.ReservationTimeRequest;
 import roomescape.core.dto.theme.ThemeRequest;
 
@@ -165,26 +165,26 @@ class ThemeControllerTest {
     }
 
     private void createReservations() {
-        ReservationRequest firstThemeReservationRequest = new ReservationRequest(
+        MemberReservationRequest firstThemeMemberReservationRequest = new MemberReservationRequest(
                 LocalDate.now().format(DateTimeFormatter.ISO_DATE),
                 4L, 2L);
+        
+        RestAssured.given().log().all()
+                .cookies("token", accessToken)
+                .contentType(ContentType.JSON)
+                .body(firstThemeMemberReservationRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
-        ReservationRequest firstThemeReservationRequest2 = new ReservationRequest(
+        MemberReservationRequest firstThemeMemberReservationRequest2 = new MemberReservationRequest(
                 LocalDate.now().format(DateTimeFormatter.ISO_DATE),
                 5L, 2L);
 
         RestAssured.given().log().all()
                 .cookies("token", accessToken)
                 .contentType(ContentType.JSON)
-                .body(firstThemeReservationRequest)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .cookies("token", accessToken)
-                .contentType(ContentType.JSON)
-                .body(firstThemeReservationRequest2)
+                .body(firstThemeMemberReservationRequest2)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);

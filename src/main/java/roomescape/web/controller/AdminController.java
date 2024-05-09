@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.core.dto.reservation.ReservationAdminRequest;
+import roomescape.core.dto.reservation.ReservationRequest;
 import roomescape.core.dto.reservation.ReservationResponse;
 import roomescape.core.service.ReservationService;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final ReservationService reservationService;
+    private final ReservationService adminReservationService;
 
-    public AdminController(final ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public AdminController(final ReservationService adminReservationService) {
+        this.adminReservationService = adminReservationService;
     }
 
     @GetMapping
@@ -33,8 +33,8 @@ public class AdminController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservationAsAdmin(
-            @Valid @RequestBody final ReservationAdminRequest request) {
-        final ReservationResponse result = reservationService.createWithoutLogin(request);
+            @Valid @RequestBody final ReservationRequest request) {
+        final ReservationResponse result = adminReservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + result.getId()))
                 .body(result);
     }

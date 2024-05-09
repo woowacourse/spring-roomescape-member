@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.core.dto.auth.TokenRequest;
-import roomescape.core.dto.reservation.ReservationAdminRequest;
+import roomescape.core.dto.reservation.ReservationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -84,7 +84,7 @@ class AdminControllerTest {
     @Test
     @DisplayName("예약자를 지정해서 예약을 생성할 수 있다.")
     void createReservationAsAdmin() {
-        ReservationAdminRequest request = new ReservationAdminRequest(2L,
+        ReservationRequest request = new ReservationRequest(2L,
                 TOMORROW_DATE, 1L, 1L);
 
         RestAssured.given().log().all()

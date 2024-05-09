@@ -7,8 +7,6 @@ import roomescape.core.domain.Member;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
-import roomescape.core.dto.member.LoginMember;
-import roomescape.core.dto.reservation.ReservationAdminRequest;
 import roomescape.core.dto.reservation.ReservationRequest;
 import roomescape.core.dto.reservation.ReservationResponse;
 import roomescape.core.repository.MemberRepository;
@@ -34,28 +32,15 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse createWithLogin(final ReservationRequest request, final LoginMember loginMember) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
-        final Theme theme = themeRepository.findById(request.getThemeId());
-        final Member member = memberRepository.findById(loginMember.getId());
-        final Reservation reservation = new Reservation(member, request.getDate(), reservationTime, theme);
-
-        reservation.validateDateAndTime();
-        validateDuplicatedReservation(reservation, reservationTime);
-        final Long id = reservationRepository.save(reservation);
-
-        return new ReservationResponse(id, reservation);
-    }
-
-    @Transactional
-    public ReservationResponse createWithoutLogin(final ReservationAdminRequest request) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
-        final Theme theme = themeRepository.findById(request.getThemeId());
+    public ReservationResponse create(final ReservationRequest request) {
         final Member member = memberRepository.findById(request.getMemberId());
+        final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
+        final Theme theme = themeRepository.findById(request.getThemeId());
         final Reservation reservation = new Reservation(member, request.getDate(), reservationTime, theme);
 
-        reservation.validateDateAndTime();
         validateDuplicatedReservation(reservation, reservationTime);
+        reservation.validateDateAndTime();
+
         final Long id = reservationRepository.save(reservation);
 
         return new ReservationResponse(id, reservation);
