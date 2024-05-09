@@ -65,4 +65,9 @@ public class Reservation {
                 ", theme=" + theme +
                 '}';
     }
+
+    public enum Role {
+
+        ADMIN, USER
+    }
 }

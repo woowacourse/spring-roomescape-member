@@ -2,7 +2,6 @@ package roomescape.service;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.stereotype.Service;
-import roomescape.controller.member.dto.CreateReservationRequest;
 import roomescape.controller.member.dto.MemberLoginRequest;
 import roomescape.domain.Member;
 import roomescape.domain.exception.InvalidRequestException;
@@ -38,7 +37,7 @@ public class MemberService {
         return new TokenResponse(accessToken);
     }
 
-    public Member findMemberByToken(final String token) { //TODO domain 반환해야 재사용 가능!
+    public Member findMemberByToken(final String token) {
         if (token == null || token.isBlank()) {
             return null;
         }
