@@ -1,6 +1,5 @@
 package roomescape.infrastructure;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,12 +59,6 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public List<Member> findAll() {
-        String sql = "SELECT * FROM member";
-        return jdbcTemplate.query(sql, getMemberRowMapper());
     }
 
 
