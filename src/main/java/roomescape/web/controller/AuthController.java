@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.AuthService;
-import roomescape.service.InvalidAuthenticationException;
+import roomescape.service.UnauthorizedException;
 import roomescape.service.request.AuthenticationRequest;
 import roomescape.service.response.AuthenticatedMemberInfo;
 
@@ -45,13 +45,13 @@ class AuthController {
     ) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new InvalidAuthenticationException();
+            throw new UnauthorizedException();
         }
 
         Cookie tokenCookie = Arrays.stream(cookies)
                 .filter(c -> c.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(InvalidAuthenticationException::new);
+                .orElseThrow(UnauthorizedException::new);
 
         return ResponseEntity.ok(authService.authorize(tokenCookie.getValue()));
     }

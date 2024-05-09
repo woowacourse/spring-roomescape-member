@@ -50,8 +50,8 @@ class AuthControllerTest extends IntegrationTestSupport {
                 .body(request)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(401)
-                .body("message", is("로그인에 실패했습니다."));
+                .statusCode(400)
+                .body("message", is("올바른 인증 정보를 입력해주세요."));
     }
 
     @Test
@@ -128,6 +128,7 @@ class AuthControllerTest extends IntegrationTestSupport {
         RestAssured.given().log().all()
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(401)
+                .body("message", is("유효한 인가 정보를 입력해주세요."));
     }
 }

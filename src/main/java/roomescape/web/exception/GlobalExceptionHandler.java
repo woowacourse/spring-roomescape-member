@@ -17,7 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.service.InvalidAuthenticationException;
+import roomescape.service.UnauthorizedException;
 import roomescape.web.exception.response.ErrorResponse;
 
 @ControllerAdvice
@@ -43,7 +43,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler()
-    public ResponseEntity<ErrorResponse> handle(InvalidAuthenticationException exception) {
+    public ResponseEntity<ErrorResponse> handle(UnauthorizedException exception) {
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
