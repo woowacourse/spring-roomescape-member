@@ -2,9 +2,9 @@
   member data
  */
 INSERT INTO member (role, password, name, email)
-VALUES ('ADMIN', 'adminPw1234!', '관리자', 'admin@mail.com');
+VALUES ('ADMIN', 'N6UX5zCeUl/v6khTHKEmTRG/qLZNyrirpjySbDj+Tc0=', '관리자', 'admin@mail.com');  /** adminPw1234! */
 INSERT INTO member (role, password, name, email)
-VALUES ('ADMIN', 'adminPw1234!', '관리자', 'admin@mail.com');
+VALUES ('USER', 'c7c8DLfgOv4RFWUd7q9VDn1684F5dTghVOXoAzrc1GA=', '일반 회원', 'user@mail.com');   /** userPw1234! */
 
 /**
   theme data
