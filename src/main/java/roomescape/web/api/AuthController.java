@@ -9,18 +9,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.domain.member.Member;
+import roomescape.service.MemberService;
 
 @RestController
 public class AuthController {
+    private final MemberService memberService;
     private final TokenProvider tokenProvider;
 
-    public AuthController(TokenProvider tokenProvider) {
+    public AuthController(MemberService memberService, TokenProvider tokenProvider) {
+        this.memberService = memberService;
         this.tokenProvider = tokenProvider;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Member member = new Member(1L, "Review", "MangchoAndPk@woowa.net", "anything");
+        Member member = memberService.findByEmail(request.email());
+
         String token = tokenProvider.createToken(member);
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
