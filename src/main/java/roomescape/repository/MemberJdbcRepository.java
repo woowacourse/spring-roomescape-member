@@ -59,26 +59,21 @@ public class MemberJdbcRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existByEmailAndPassword(String email, String password) {
-        String sql = """
-                SELECT
-                CASE WHEN EXISTS (
-                        SELECT 1
-                        FROM member
-                        WHERE email = ? AND password = ?
-                    )
-                    THEN TRUE
-                    ELSE FALSE
-                END""";
-
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email, password));
-    }
-
-    @Override
     public Optional<Member> findByEmail(String email) {
         final String sql = "SELECT * FROM member WHERE email = ?";
         try {
             final Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        final String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        try {
+            final Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email, password);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();

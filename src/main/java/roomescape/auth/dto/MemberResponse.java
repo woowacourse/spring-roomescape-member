@@ -2,8 +2,12 @@ package roomescape.auth.dto;
 
 import roomescape.domain.Member;
 
-public record MemberResponse(Long id, String name) {
-    public static MemberResponse from(Member savedMember) {
-        return new MemberResponse(savedMember.getId(), savedMember.getName());
+public record MemberResponse(
+        Long id,
+        String name,
+        String role
+) {
+    public static MemberResponse from(Member member) {
+        return new MemberResponse(member.getId(), member.getName(), member.getRole().name());
     }
 }

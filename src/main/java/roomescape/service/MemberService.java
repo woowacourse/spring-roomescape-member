@@ -37,4 +37,11 @@ public class MemberService {
 
         memberRepository.deleteById(id);
     }
+
+    public MemberResponse findByEmailAndPassword(String email, String password) {
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new ReservationBusinessException("회원이 존재하지 않습니다."));
+
+        return MemberResponse.from(member);
+    }
 }
