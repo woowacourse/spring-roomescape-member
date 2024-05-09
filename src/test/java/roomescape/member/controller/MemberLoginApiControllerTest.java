@@ -1,7 +1,5 @@
 package roomescape.member.controller;
 
-import static roomescape.config.LoginArgumentResolver.COOKIE_TOKEN_KEY;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -49,7 +47,7 @@ class MemberLoginApiControllerTest {
                 .when().post("/login")
                 .thenReturn();
 
-        String cookie = String.valueOf(response.getDetailedCookie(COOKIE_TOKEN_KEY));
+        String cookie = String.valueOf(response.getDetailedCookie(MemberLoginApiController.COOKIE_TOKEN_KEY));
         RestAssured.given().log().all()
                 .cookie(cookie)
                 .when().get("/login/check")

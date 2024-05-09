@@ -4,6 +4,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.config.security.JwtTokenProvider;
 import roomescape.member.domain.Member;
+import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.repository.MemberRepository;
 
@@ -29,9 +30,8 @@ public class MemberLoginService {
                 .orElseThrow(() -> new IllegalArgumentException("일치하지 않는 이메일 또는 비밀번호입니다."));
     }
 
-    public Map<String, String> findMemberNameByToken(String token) {
-        Long memberId = jwtTokenProvider.getMemberId(token);
-        Member member = memberRepository.findById(memberId)
+    public Map<String, String> findMemberNameByLoginMember(LoginMember loginMember) {
+        Member member = memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         return Map.of("name", member.getName());
