@@ -62,7 +62,7 @@ class ReservationServiceTest {
         when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_10_00_ID_1));
         when(themeRepository.findById(1L)).thenReturn(Optional.of(THEME_1));
 
-        ReservationResponse savedReservation = reservationService.saveReservation(MemberFixture.MEMBER_ID_1,
+        ReservationResponse savedReservation = reservationService.saveMemberReservation(MemberFixture.MEMBER_ID_1,
                 RESERVATION_REQUEST_1);
 
         assertThat(savedReservation).isEqualTo(new ReservationResponse(SAVED_RESERVATION_1));
@@ -73,7 +73,8 @@ class ReservationServiceTest {
     void should_throw_exception_when_request_with_non_exist_time() {
         when(reservationTimeRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(MemberFixture.MEMBER_ID_1, RESERVATION_REQUEST_1))
+        assertThatThrownBy(
+                () -> reservationService.saveMemberReservation(MemberFixture.MEMBER_ID_1, RESERVATION_REQUEST_1))
                 .isInstanceOf(NoSuchRecordException.class);
     }
 
@@ -83,7 +84,8 @@ class ReservationServiceTest {
         when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_10_00_ID_1));
         when(themeRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(MemberFixture.MEMBER_ID_1, RESERVATION_REQUEST_1))
+        assertThatThrownBy(
+                () -> reservationService.saveMemberReservation(MemberFixture.MEMBER_ID_1, RESERVATION_REQUEST_1))
                 .isInstanceOf(NoSuchRecordException.class);
     }
 
@@ -94,7 +96,8 @@ class ReservationServiceTest {
         when(themeRepository.findById(1L)).thenReturn(Optional.of(THEME_1));
 
         assertThatThrownBy(
-                () -> reservationService.saveReservation(MemberFixture.MEMBER_ID_1, PAST_DATE_RESERVATION_REQUEST))
+                () -> reservationService.saveMemberReservation(MemberFixture.MEMBER_ID_1,
+                        PAST_DATE_RESERVATION_REQUEST))
                 .isInstanceOf(IllegalReservationDateException.class);
     }
 
@@ -103,7 +106,8 @@ class ReservationServiceTest {
     void should_throw_exception_when_reserve_date_and_time_and_theme_duplicated() {
         when(reservationRepository.existByDateAndTimeIdAndThemeId(TOMORROW, 1L, 1L)).thenReturn(true);
 
-        assertThatThrownBy(() -> reservationService.saveReservation(MemberFixture.MEMBER_ID_1, RESERVATION_REQUEST_1))
+        assertThatThrownBy(
+                () -> reservationService.saveMemberReservation(MemberFixture.MEMBER_ID_1, RESERVATION_REQUEST_1))
                 .isInstanceOf(DuplicateSaveException.class);
     }
 }

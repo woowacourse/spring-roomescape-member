@@ -31,10 +31,11 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> saveReservation(
+    public ResponseEntity<ReservationResponse> saveMemberReservation(
             @AuthenticationPrincipal Member member,
             @Valid @RequestBody MemberReservationAddRequest memberReservationAddRequest) {
-        ReservationResponse saveResponse = reservationService.saveReservation(member, memberReservationAddRequest);
+        ReservationResponse saveResponse = reservationService.saveMemberReservation(member,
+                memberReservationAddRequest);
         URI createdUri = URI.create("/reservations/" + saveResponse.id());
         return ResponseEntity.created(createdUri).body(saveResponse);
     }

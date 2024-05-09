@@ -59,7 +59,7 @@ class ReservationControllerTest {
                 1L, 1L);
         ReservationResponse mockResponse = new ReservationResponse(1L, "썬", DAY_AFTER_TOMORROW, 1L, 1L);
 
-        when(reservationService.saveReservation(MemberFixture.MEMBER_ID_1, memberReservationAddRequest))
+        when(reservationService.saveMemberReservation(MemberFixture.MEMBER_ID_1, memberReservationAddRequest))
                 .thenReturn(mockResponse);
 
         mockMvc.perform(post("/reservations")
