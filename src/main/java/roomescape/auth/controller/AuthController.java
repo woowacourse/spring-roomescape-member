@@ -1,18 +1,23 @@
 package roomescape.auth.controller;
 
 import java.net.URI;
+import java.util.Date;
 
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import roomescape.auth.dto.UserLoginRequestDto;
-import roomescape.auth.dto.UserSignUpRequestDto;
+import roomescape.auth.domain.Member;
+import roomescape.auth.dto.MemberLoginRequestDto;
+import roomescape.auth.dto.MemberResponseDto;
+import roomescape.auth.dto.MemberSignUpRequestDto;
 import roomescape.auth.service.AuthService;
 
 @RestController
@@ -24,8 +29,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto) {
-        String token = authService.login(userLoginRequestDto);
+    public ResponseEntity<Void> login(@RequestBody @Valid MemberLoginRequestDto memberLoginRequestDto) {
+        String token = authService.login(memberLoginRequestDto);
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .path("/")
@@ -36,8 +41,16 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@RequestBody @Valid UserSignUpRequestDto userSignUpRequestDto) {
-        long id = authService.signUp(userSignUpRequestDto);
+    public ResponseEntity<Void> signUp(@RequestBody @Valid MemberSignUpRequestDto memberSignUpRequestDto) {
+        long id = authService.signUp(memberSignUpRequestDto);
         return ResponseEntity.created(URI.create("/signup/" + id)).build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<MemberResponseDto> loginCheck(@CookieValue("token") String token) {
+        Member member = authService.loginCheck(token);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.DATE, new Date().toString());
+        return ResponseEntity.ok().headers(headers).body(new MemberResponseDto(member.getName()));
     }
 }

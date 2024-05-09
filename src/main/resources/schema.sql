@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS reservation_time;
 DROP TABLE IF EXISTS theme;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS member;
 
 CREATE TABLE reservation_time
 (
@@ -34,7 +34,7 @@ CREATE TABLE reservation
     UNIQUE (date, theme_id, time_id)
 );
 
-CREATE TABLE users
+CREATE TABLE member
 (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

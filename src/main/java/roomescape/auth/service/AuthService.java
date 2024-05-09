@@ -2,30 +2,39 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.auth.dao.UserDao;
-import roomescape.auth.domain.Users;
-import roomescape.auth.dto.UserLoginRequestDto;
-import roomescape.auth.dto.UserSignUpRequestDto;
+import roomescape.auth.dao.MemberDao;
+import roomescape.auth.domain.Member;
+import roomescape.auth.dto.MemberLoginRequestDto;
+import roomescape.auth.dto.MemberSignUpRequestDto;
 import roomescape.configuration.JwtTokenProvider;
+import roomescape.exception.RoomEscapeException;
 
 @Service
 public class AuthService {
 
-    private final UserDao userDao;
+    private final MemberDao memberDao;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(final UserDao userDao, final JwtTokenProvider jwtTokenProvider) {
-        this.userDao = userDao;
+    public AuthService(final MemberDao memberDao, final JwtTokenProvider jwtTokenProvider) {
+        this.memberDao = memberDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String login(final UserLoginRequestDto userLoginRequestDto) {
-        final Users users = userDao.getByEmailAndPassword(userLoginRequestDto.email(), userLoginRequestDto.password());
-        final String token = jwtTokenProvider.createToken(users);
+    public String login(final MemberLoginRequestDto memberLoginRequestDto) {
+        final Member member = memberDao.getByEmailAndPassword(memberLoginRequestDto.email(), memberLoginRequestDto.password());
+        final String token = jwtTokenProvider.createToken(member);
         return token;
     }
 
-    public long signUp(final UserSignUpRequestDto userSignUpRequestDto) {
-        return userDao.save(userSignUpRequestDto.toUsers());
+    public long signUp(final MemberSignUpRequestDto memberSignUpRequestDto) {
+        return memberDao.save(memberSignUpRequestDto.toMember());
+    }
+
+    public Member loginCheck(final String token) {
+        if (jwtTokenProvider.verifyTokenAvailable(token)) {
+            throw new RoomEscapeException("기한이 유효하지 않은 토큰입니다.");
+        }
+        long id = jwtTokenProvider.getPayload(token);
+        return memberDao.getById(id);
     }
 }

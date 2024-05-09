@@ -6,12 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import roomescape.auth.domain.Users;
+import roomescape.auth.domain.Member;
 import roomescape.exception.RoomEscapeException;
 
 @Component
@@ -21,13 +19,13 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(final Users user) {
+    public String createToken(final Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .subject(user.getId().toString())
-                .claim("email", user.getEmail())
+                .subject(member.getId().toString())
+                .claim("email", member.getEmail())
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
@@ -36,7 +34,7 @@ public class JwtTokenProvider {
 
     public Long getPayload(final String token) {
         return Long.valueOf(Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey)))
+                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload().getSubject());
@@ -44,11 +42,11 @@ public class JwtTokenProvider {
 
     public boolean verifyTokenAvailable(final String token) {
         try {
-            Jws<Claims> claims = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
-                    .parseSignedClaims(token);
-            return !claims.getPayload().getExpiration().before(new Date());
+                    .parseSignedClaims(token).getPayload();
+            return claims.getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             throw new RoomEscapeException("적합하지 않은 토큰입니다.");
         }

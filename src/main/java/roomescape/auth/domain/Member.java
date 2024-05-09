@@ -5,14 +5,14 @@ import java.util.regex.Pattern;
 
 import roomescape.exception.RoomEscapeException;
 
-public class Users {
+public class Member {
     private static final Pattern EMAIL_FORMAT = Pattern.compile("^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$");
     private final Long id;
     private final String name;
     private final String email;
     private final String password;
 
-    public Users(final Long id, final String name, final String email, final String password) {
+    public Member(final Long id, final String name, final String email, final String password) {
         validateInvalidName(name);
         validateInvalidEmail(email);
         this.id = id;
@@ -21,7 +21,7 @@ public class Users {
         this.password = password;
     }
 
-    public Users(final String email, final String password, final String name) {
+    public Member(final String email, final String password, final String name) {
         this(null, name, email, password);
     }
 
@@ -57,8 +57,8 @@ public class Users {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Users users = (Users) o;
-        return Objects.equals(id, users.id) && Objects.equals(name, users.name) && Objects.equals(email, users.email) && Objects.equals(password, users.password);
+        Member member = (Member) o;
+        return Objects.equals(id, member.id) && Objects.equals(name, member.name) && Objects.equals(email, member.email) && Objects.equals(password, member.password);
     }
 
     @Override
