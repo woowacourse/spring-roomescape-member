@@ -11,13 +11,15 @@ public class FakeMemberDao implements MemberRepository {
 
     @Override
     public Member save(final Member member) {
-        members.put((long) members.size() + 1, member);
-        return new Member(
-                (long) members.size(),
+        long newId = members.size() + 1;
+        Member savedMember = new Member(
+                newId,
                 member.getName(),
                 member.getEmail(),
                 member.getPassword(),
                 Role.MEMBER);
+        members.put(newId, savedMember);
+        return savedMember;
     }
 
     @Override
@@ -32,5 +34,13 @@ public class FakeMemberDao implements MemberRepository {
                 .filter(member -> member.getEmail().equals(email))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public Member findById(long memberId) {
+        if (members.containsKey(memberId)) {
+            return members.get(memberId);
+        }
+        return null;
     }
 }

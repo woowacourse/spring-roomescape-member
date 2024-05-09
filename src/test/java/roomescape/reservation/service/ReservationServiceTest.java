@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginMember;
@@ -34,6 +35,10 @@ class ReservationServiceTest {
     MemberRepository memberRepository;
     ReservationService reservationService;
 
+    Member member;
+    Theme theme;
+    ReservationTime reservationTime;
+
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationDao(reservationTimeRepository, themeRepository);
@@ -46,21 +51,20 @@ class ReservationServiceTest {
                 themeRepository,
                 memberRepository
         );
+
+        reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.MIDNIGHT));
+        theme = themeRepository.save(new Theme("name", "description", "thumbnail"));
+        member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
     }
 
     @DisplayName("예약 조회에 성공한다.")
     @Test
     void find() {
         //given
-        long id = 1;
         LocalDate date = LocalDate.now().plusYears(1);
-        long timeId = 1L;
-        long themeId = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        ReservationTime reservationTime = new ReservationTime(timeId, localTime);
 
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
+        reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -69,8 +73,8 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(reservations).hasSize(1),
                 () -> assertThat(reservations.get(0).date()).isEqualTo(date),
-                () -> assertThat(reservations.get(0).time().id()).isEqualTo(timeId),
-                () -> assertThat(reservations.get(0).time().startAt()).isEqualTo(localTime)
+                () -> assertThat(reservations.get(0).time().id()).isEqualTo(reservationTime.getId()),
+                () -> assertThat(reservations.get(0).time().startAt()).isEqualTo(reservationTime.getStartAt())
         );
     }
 
@@ -79,19 +83,16 @@ class ReservationServiceTest {
     void create() {
         //given
         String date = "2100-04-18";
-        long timeId = 1L;
-        long themeId = 1L;
-        reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        themeRepository.save(new Theme(themeId, "name", "description", "thumbnail"));
-        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId(), theme.getId());
 
         //when
-        ReservationResponse reservationResponse = reservationService.create(reservationRequest, new LoginMember(1L, "test", "test@email.com", Role.MEMBER));
+        ReservationResponse reservationResponse = reservationService.create(reservationRequest,
+                new LoginMember(1, "test", "test@email.com", Role.MEMBER));
 
         //then
         assertAll(
                 () -> assertThat(reservationResponse.date()).isEqualTo(date),
-                () -> assertThat(reservationResponse.time().id()).isEqualTo(timeId)
+                () -> assertThat(reservationResponse.time().id()).isEqualTo(reservationTime.getId())
         );
     }
 
@@ -100,18 +101,13 @@ class ReservationServiceTest {
     void NotExistTimeReservation() {
         //given
         String date = "2099-04-18";
-        long timeId = 2L;
-        long themeId = 1L;
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        themeRepository.save(theme);
-        reservationRepository.save(new Reservation(1L, LocalDate.parse(date), time, theme));
+        reservationRepository.save(new Reservation(1L, LocalDate.parse(date), reservationTime, theme));
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId() + 1, theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest,
-                new LoginMember(1, "test", "test@email.com", Role.MEMBER)))
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole())))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -120,18 +116,12 @@ class ReservationServiceTest {
     void NotExistThemeReservation() {
         //given
         String date = "2099-04-18";
-        long timeId = 1L;
-        long themeId = 2L;
 
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        themeRepository.save(theme);
-
-        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId(), theme.getId() + 1);
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest,
-                new LoginMember(1, "test", "test@email.com", Role.MEMBER)))
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole())))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -140,19 +130,16 @@ class ReservationServiceTest {
     void duplicateReservation() {
         //given
         String date = "2099-04-18";
-        long timeId = 1L;
-        long themeId = 1L;
-
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        themeRepository.save(theme);
-        reservationRepository.save(new Reservation(1L, LocalDate.parse(date), time, theme));
+        long timeId = reservationTime.getId();
+        long themeId = theme.getId();
 
         ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
+        reservationService.create(reservationRequest,
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest,
-                new LoginMember(1, "test", "test@email.com", Role.MEMBER)))
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole())))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -160,18 +147,16 @@ class ReservationServiceTest {
     @Test
     void delete() {
         //given
-        long id = 1;
-        LocalDate date = LocalDate.now().plusYears(1);
-        long timeId = 1L;
-        long themeId = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        ReservationTime reservationTime = new ReservationTime(timeId, localTime);
+        String date = "2099-04-18";
+        long timeId = reservationTime.getId();
+        long themeId = theme.getId();
 
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
+        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
+        ReservationResponse reservation = reservationService.create(reservationRequest,
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
-        reservationService.delete(id);
+        reservationService.delete(reservation.id());
 
         //then
         assertThat(reservationRepository.findAll()).hasSize(0);
@@ -181,7 +166,7 @@ class ReservationServiceTest {
     @Test
     void deleteNotExistReservation() {
         // give & when & then
-        assertThatThrownBy(() -> reservationService.delete(1L))
+        assertThatThrownBy(() -> reservationService.delete(5L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -107,4 +107,10 @@ public class ReservationDao implements ReservationRepository {
         String sql = "INSERT INTO reservation_list(member_id, reservation_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, memberId, reservationId);
     }
+
+    @Override
+    public long findMemberIdByReservationId(long reservationId) {
+        String sql = "SELECT member_id FROM reservation_list WHERE reservation_id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, reservationId);
+    }
 }

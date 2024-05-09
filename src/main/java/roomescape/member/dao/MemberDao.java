@@ -59,4 +59,10 @@ public class MemberDao implements MemberRepository {
         String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), email);
     }
+
+    @Override
+    public Member findById(long memberId) {
+        String sql = "SELECT id, name, email, password, role FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper(), memberId);
+    }
 }

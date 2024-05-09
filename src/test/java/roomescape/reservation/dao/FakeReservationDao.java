@@ -22,13 +22,15 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        reservations.put((long) reservations.size() + 1, reservation);
-        return new Reservation(
-                (long) reservations.size(),
+        long newId = reservations.size() + 1;
+        Reservation savedReservation = new Reservation(
+                newId,
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
         );
+        reservations.put(newId, savedReservation);
+        return savedReservation;
     }
 
     @Override
@@ -64,7 +66,12 @@ public class FakeReservationDao implements ReservationRepository {
 
 
     @Override
-    public void saveReservationList(final long memberId, final long reservationId) {
-        reservationList.put(memberId, reservationId);
+    public void saveReservationList(long reservationId, long memberId) {
+        reservationList.put(reservationId, memberId);
+    }
+
+    @Override
+    public long findMemberIdByReservationId(long reservationId) {
+        return reservationList.get(reservationId);
     }
 }

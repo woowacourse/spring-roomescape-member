@@ -21,9 +21,12 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
-        reservationTimes.put((long) reservationTimes.size() + 1, reservationTime);
-        return new ReservationTime((long) reservationTimes.size(), reservationTime.getStartAt());
+        long newId = reservationTimes.size() + 1;
+        ReservationTime savedReservationTime = new ReservationTime(newId, reservationTime.getStartAt());
+        reservationTimes.put(newId, savedReservationTime);
+        return savedReservationTime;
     }
+
 
     @Override
     public List<ReservationTime> findAll() {

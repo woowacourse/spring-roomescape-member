@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +16,24 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.service.MemberService;
+import roomescape.reservation.dao.FakeMemberDao;
+import roomescape.reservation.dao.FakeReservationDao;
+import roomescape.reservation.dao.FakeReservationTimeDao;
+import roomescape.reservation.dao.FakeThemeDao;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
 import roomescape.reservation.dto.ThemeRequest;
@@ -32,36 +46,23 @@ import roomescape.util.ControllerTest;
 @DisplayName("예약 API 통합 테스트")
 class ReservationControllerTest extends ControllerTest {
     @Autowired
+    ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    ThemeRepository themeRepository;
+    @Autowired
+    MemberRepository memberRepository;
+    @Autowired
     ReservationService reservationService;
 
-    @Autowired
-    ReservationTimeService reservationTimeService;
-
-    @Autowired
-    ThemeService themeService;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    ReservationTimeResponse reservationTimeResponse;
-    ThemeResponse themeResponse;
+    Member member;
+    Theme theme;
+    ReservationTime reservationTime;
 
     @BeforeEach
     void setData() {
-        String sql = """ 
-                  INSERT INTO member(name, email, password, role)
-                  VALUES ('관리자', 'admin@email.com', 'password', 'ADMIN');
-                """;
-        jdbcTemplate.update(sql);
-        reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
-        themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-        reservationService.create(new ReservationRequest(
-                        "2099-04-23",
-                        reservationTimeResponse.id(),
-                        themeResponse.id()
-                ),
-                new LoginMember(1, "siso", "test@email.com", Role.MEMBER)
-        );
+        reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.MIDNIGHT));
+        theme = themeRepository.save(new Theme("name", "description", "thumbnail"));
+        member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
     }
 
     @DisplayName("인기 테마 페이지 조회에 성공한다.")
@@ -77,7 +78,12 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약 조회 시 200을 반환한다.")
     @Test
     void find() {
-        //given & when & then
+        //given
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(), theme.getId());
+        ReservationResponse reservationResponse = reservationService.create(reservationRequest,
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+
+         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
@@ -91,12 +97,12 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-08-05");
-        reservation.put("timeId", reservationTimeResponse.id());
-        reservation.put("themeId", themeResponse.id());
+        reservation.put("timeId", reservationTime.getId());
+        reservation.put("themeId", theme.getId());
 
         String accessToken = RestAssured
                 .given().log().all()
-                .body(new LoginRequest("admin@email.com", "password"))
+                .body(new LoginRequest(member.getEmail(), member.getPassword()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
@@ -119,8 +125,8 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", date);
-        reservation.put("timeId", reservationTimeResponse.id());
-        reservation.put("themeId", themeResponse.id());
+        reservation.put("timeId", reservationTime.getId());
+        reservation.put("themeId", theme.getId());
 
         //when & then
         RestAssured.given().log().all()
@@ -139,7 +145,7 @@ class ReservationControllerTest extends ControllerTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-12-01");
         reservation.put("timeId", timeId);
-        reservation.put("themeId", themeResponse.id());
+        reservation.put("themeId", theme.getId());
 
         //when & then
         RestAssured.given().log().all()
@@ -157,7 +163,7 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-12-01");
-        reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("timeId", reservationTime.getId());
         reservation.put("themeId", themeId);
 
         //when & then
@@ -173,8 +179,10 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        long id = reservationService.findAllReservations().stream()
-                .findFirst().orElseThrow().id();
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(), theme.getId());
+        ReservationResponse reservationResponse = reservationService.create(reservationRequest,
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+        long id = reservationResponse.id();
 
         //when &then
         RestAssured.given().log().all()

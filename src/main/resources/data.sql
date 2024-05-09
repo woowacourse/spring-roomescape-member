@@ -24,10 +24,12 @@ VALUES (DATEADD('DAY', 4, CURRENT_DATE()), 3, 2);
 
 INSERT INTO member(name, email, password, role)
 VALUES ('관리자', 'admin@email.com', 'password', 'ADMIN');
+INSERT INTO member(name, email, password, role)
+VALUES ('멤버', 'member@email.com', 'password', 'MEMBER');
 
 INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (1, 1);
+VALUES (2, 1);
 INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (1, 3);
+VALUES (2, 3);
 INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (1, 2);
+VALUES (2, 2);

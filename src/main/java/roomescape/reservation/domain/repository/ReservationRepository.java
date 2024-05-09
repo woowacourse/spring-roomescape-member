@@ -16,4 +16,5 @@ public interface ReservationRepository {
     boolean existBy(LocalDate date, long timeId, long themeId);
 
     void saveReservationList(long memberId, long reservationId);
+    long findMemberIdByReservationId(long reservationId);
 }

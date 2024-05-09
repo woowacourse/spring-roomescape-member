@@ -34,7 +34,14 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAll().stream().map(ReservationResponse::from).toList();
+        return reservationRepository.findAll().stream()
+                .map(reservation ->
+                        ReservationResponse.from(
+                        reservation,
+                        memberRepository.findById(
+                                reservationRepository.findMemberIdByReservationId(reservation.getId()))
+                        ))
+                .toList();
     }
 
     public ReservationResponse create(ReservationRequest reservationRequest, LoginMember member) {
@@ -67,11 +74,12 @@ public class ReservationService {
         }
     }
 
-    private ReservationResponse saveReservation(LocalDate date, ReservationTime reservationTime, Theme theme, long member) {
+    private ReservationResponse saveReservation(LocalDate date, ReservationTime reservationTime, Theme theme, long memberId) {
         Reservation reservation = reservationRepository.save(
                 new Reservation(date, reservationTime, theme));
-        reservationRepository.saveReservationList(member, reservation.getId());
-        return ReservationResponse.from(reservation);
+        reservationRepository.saveReservationList(memberId, reservation.getId());
+        Member member = memberRepository.findById(memberId);
+        return ReservationResponse.from(reservation, member);
     }
 
     private void validateTimeExist(ReservationTime reservationTime, long timeId) {
