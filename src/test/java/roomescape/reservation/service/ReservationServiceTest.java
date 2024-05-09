@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.config.DatabaseCleaner;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.ReservationTime;
@@ -18,7 +19,7 @@ import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationServiceTest {
 
     @Autowired
@@ -56,14 +57,16 @@ class ReservationServiceTest {
         Theme theme = new Theme(new ThemeName("공포"), new Description("호러 방탈출"), "http://asdf.jpg");
         Long themeId = themeRepository.save(theme);
 
-        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("12:00"));
+        LocalTime localTime = LocalTime.parse("10:00");
+        ReservationTime reservationTime = new ReservationTime(localTime);
         Long timeId = reservationTimeRepository.save(reservationTime);
 
-        ReservationSaveRequest request = new ReservationSaveRequest("카키", LocalDate.parse("2024-05-05"), themeId,
-                timeId);
+        LocalDate localDate = LocalDate.now();
+        ReservationSaveRequest request = new ReservationSaveRequest("카키", localDate, themeId, timeId);
         reservationService.save(request);
 
-        assertThatThrownBy(() -> reservationService.save(request))
+        ReservationSaveRequest duplicateRequest = new ReservationSaveRequest("호기", localDate, themeId, timeId);
+        assertThatThrownBy(() -> reservationService.save(duplicateRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

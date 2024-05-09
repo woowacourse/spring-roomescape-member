@@ -18,13 +18,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.config.WebMvcControllerTestConfig;
 import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.dto.TimeSaveRequest;
 import roomescape.reservation.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeApiController.class)
+@Import(WebMvcControllerTestConfig.class)
 class ReservationTimeApiControllerTest {
 
     @Autowired

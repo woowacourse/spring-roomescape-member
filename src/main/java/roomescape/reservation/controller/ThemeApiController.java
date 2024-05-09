@@ -27,7 +27,7 @@ public class ThemeApiController {
 
     @GetMapping("/themes/popular")
     public ResponseEntity<List<PopularThemeResponse>> findTopTenThemesOfLastWeek(
-            @RequestParam(required = false, defaultValue = "10") int limitCount
+            @RequestParam(value = "limitCount", defaultValue = "10") int limitCount
     ) {
         List<PopularThemeResponse> popularThemeResponses = themeService.findThemesDescOfLastWeekForLimitCount(limitCount);
 
@@ -50,7 +50,7 @@ public class ThemeApiController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         themeService.delete(id);
 
         return ResponseEntity.noContent().build();

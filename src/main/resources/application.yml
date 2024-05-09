@@ -5,3 +5,8 @@ spring:
       path: /h2-console
   datasource:
     url: jdbc:h2:mem:database
+
+security:
+  jwt:
+    secret-key: eyJhbGciOiJIeyJzdWIilowafgfaoTazAGa
+    expiration-time: 36000000

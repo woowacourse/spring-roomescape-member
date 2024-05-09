@@ -3,7 +3,6 @@ package roomescape.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,23 +60,5 @@ class MemberLoginServiceTest {
 
         assertThatThrownBy(() -> memberLoginService.findByEmailAndPassword(memberLoginRequest))
                 .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("토큰으로 회원 이름을 조회한다.")
-    @Test
-    void findMemberNameByToken() {
-        String name = "카키";
-        String email = "kaki@email.com";
-        String password = "1234";
-
-        MemberSignUpRequest memberSignUpRequest = new MemberSignUpRequest(name, email, password);
-        memberSignUpService.save(memberSignUpRequest);
-
-        MemberLoginRequest memberLoginRequest = new MemberLoginRequest(email, password);
-        String memberToken = memberLoginService.createMemberToken(memberLoginRequest);
-
-        Map<String, String> map = memberLoginService.findMemberNameByToken(memberToken);
-
-        assertThat(map.get("name")).isEqualTo(name);
     }
 }

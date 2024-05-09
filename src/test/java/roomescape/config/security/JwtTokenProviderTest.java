@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
+import roomescape.member.dto.LoginMember;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class JwtTokenProviderTest {
@@ -33,22 +34,22 @@ class JwtTokenProviderTest {
         assertThat(token).isNotNull();
     }
 
-    @DisplayName("발급받은 JWT 토큰으로 회원 아이디를 반환한다.")
+    @DisplayName("발급받은 JWT 토큰으로 회원 정보를 반환한다.")
     @Test
     void getMemberId() {
         String token = jwtTokenProvider.generateToken(member);
-        Long tokenMemberId = jwtTokenProvider.getMemberId(token);
+        LoginMember loginMember = jwtTokenProvider.getMember(token);
 
-        assertThat(member.getId()).isEqualTo(tokenMemberId);
+        assertThat(member.getId()).isEqualTo(loginMember.id());
     }
 
     @DisplayName("유효한 토큰인지 확인한다.")
     @Test
     void validateAbleToken() {
         jwtTokenProvider.generateToken(member);
-        String invalidToken = "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZMTU4NzgwfQ.OPANxAz1dQfTo91uX3au03_M";
+        String invalidToken = "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZMTU4NzgwfQ.OPANxAz1dQfTo91uX3au03M";
 
-        assertThatThrownBy(() -> jwtTokenProvider.getMemberId(invalidToken))
+        assertThatThrownBy(() -> jwtTokenProvider.getMember(invalidToken))
                 .isInstanceOf(SignatureException.class);
     }
 }
