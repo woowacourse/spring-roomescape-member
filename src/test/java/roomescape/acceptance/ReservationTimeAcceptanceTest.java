@@ -10,6 +10,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -59,9 +60,13 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @Sql("/init-for-available-time.sql")
     @DisplayName("예약이 가능한 시간을 구분하여 반환한다.")
     Stream<DynamicTest> res() {
+        AtomicReference<String> token = new AtomicReference<>();
         return Stream.of(
                 dynamicTest("모든 예약된 시간을 조회한다 (총 3개)", () -> getAvailableTimes(200, 3)),
-                dynamicTest("예약을 추가한다", () -> ReservationCRD.postReservation("2099-04-29", 4L, 1L, 201)),
+                dynamicTest("로그인을 한다", () -> {
+                    token.set(LoginUtil.login("email1", "qq1"));
+                }),
+                dynamicTest("예약을 추가한다", () -> ReservationCRD.postReservation(token.get(), "2099-04-29", 4L, 1L, 201)),
                 dynamicTest("모든 예약된 시간을 조회한다 (총 4개)", () -> getAvailableTimes(200, 4))
                 );
     }

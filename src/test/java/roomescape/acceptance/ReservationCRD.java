@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ReservationCRD {
-    public static Long postReservation(String date, Long timeId, Long themeId, int expectedHttpCode) {
-        Map<?, ?> requestBody = Map.of("name", "포비", "date", date, "timeId", timeId, "themeId", themeId);
+    public static Long postReservation(String token, String date, Long timeId, Long themeId, int expectedHttpCode) {
+        Map<?, ?> requestBody = Map.of("date", date, "timeId", timeId, "themeId", themeId);
 
         Response response = RestAssured.given().log().all()
+                .cookies("token", token)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when().post("/reservations")
