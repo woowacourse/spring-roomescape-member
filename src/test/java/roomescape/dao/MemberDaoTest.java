@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.domain.member.dao.MemberDao;
+import roomescape.global.auth.AuthUser;
 
 import java.util.Optional;
 
@@ -19,16 +20,16 @@ class MemberDaoTest {
 
     @Test
     void findIdByEmailAndPassword() {
-        Long id = memberDao.findIdByEmailAndPassword("tenny@wooteco.com", "1234").get();
+        AuthUser authUser = memberDao.findIdByEmailAndPassword("tenny@wooteco.com", "1234").get();
 
-        assertThat(id).isEqualTo(1);
+        assertThat(authUser).isEqualTo(new AuthUser(1L, "테니"));
     }
 
     @ParameterizedTest
     @CsvSource(value = {"tenny@wooteco.com,0", "notExist,1234"})
     void findIdByEmailAndPassword_NotExistEmailAndPassword(String email, String password) {
-        Optional<Long> optionalId = memberDao.findIdByEmailAndPassword(email, password);
+        Optional<AuthUser> optionalAuthUser = memberDao.findIdByEmailAndPassword(email, password);
 
-        assertThat(optionalId.isEmpty()).isTrue();
+        assertThat(optionalAuthUser.isEmpty()).isTrue();
     }
 }

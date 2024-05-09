@@ -35,8 +35,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new RoomEscapeException("[ERROR] 잘못된 요청입니다.");
         }
         String token = extractTokenFromCookie(request.getCookies());
-        Long id = jwtProvider.parse(token);
-        return new AuthUser(id);
+        return jwtProvider.parse(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
