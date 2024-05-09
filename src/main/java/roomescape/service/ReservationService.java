@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.member.dto.CreateReservationRequest;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationRequest;
-import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -38,28 +37,14 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::from)
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll()
+                .stream()
                 .toList();
     }
 
-    public ReservationResponse addReservation(final ReservationRequest reservationRequest) { //TODO 얘 이제 테스트에서만 씀
-//        final ReservationTime time = findTime(reservationRequest);
-//        final Theme theme = findTheme(reservationRequest);
-//
-//        final Reservation parsedReservation = reservationRequest.toDomain("name", time, theme);
-//        validateDuplicate(theme, time, parsedReservation);
-//        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
-//        validateBeforeDay(reservationDateTime);
-//
-//        final Reservation savedReservation = reservationRepository.save(parsedReservation);
-//        return ReservationResponse.from(savedReservation);
-        return null;
-    }
-
-    public ReservationResponse addReservationV2(final ReservationRequest reservationRequest,
-                                                final LoginMember loginMember) {
+    public Reservation addReservationV2(final ReservationRequest reservationRequest,
+                                        final LoginMember loginMember) {
         final ReservationTime time = findTime(reservationRequest);
         final Theme theme = findTheme(reservationRequest);
         final Member member = memberRepository.fetchById(loginMember.id());
@@ -69,12 +54,10 @@ public class ReservationService {
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
         validateBeforeDay(reservationDateTime);
 
-        final Reservation savedReservation = reservationRepository.save(parsedReservation);
-        return ReservationResponse.from(savedReservation);
+        return reservationRepository.save(parsedReservation);
     }
 
-
-    public ReservationResponse addReservationAdmin(final CreateReservationRequest reservationRequest) {
+    public Reservation addReservationAdmin(final CreateReservationRequest reservationRequest) {
         final ReservationTime time = reservationTimeRepository.fetchById(reservationRequest.timeId());
         final Theme theme = themeRepository.fetchById(reservationRequest.themeId());
         final Member member = memberRepository.fetchById(reservationRequest.memberId());
@@ -85,8 +68,7 @@ public class ReservationService {
         final LocalDateTime reservationDateTime = reservation.getDate().atTime(time.getStartAt());
         validateBeforeDay(reservationDateTime);
 
-        final Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
+        return reservationRepository.save(reservation);
     }
 
 

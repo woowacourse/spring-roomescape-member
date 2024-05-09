@@ -13,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
+import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
@@ -30,20 +31,22 @@ public class ReservationController {
 
     @GetMapping
     public List<ReservationResponse> getReservations() {
-        return reservationService.getReservations(); //TODO 반환값 변경하기
+        return reservationService.getReservations()
+                .stream().map(ReservationResponse::from)
+                .toList();
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody @Valid final ReservationRequest request,
             final LoginMember loginMember) {
-        final ReservationResponse reservation = reservationService.addReservationV2(request, loginMember);
+        final Reservation reservation = reservationService.addReservationV2(request, loginMember);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
-                .buildAndExpand(reservation.id())
+                .buildAndExpand(reservation.getId())
                 .toUri();
 
         return ResponseEntity.created(uri)
-                .body(reservation);
+                .body(ReservationResponse.from(reservation));
     }
 
     @DeleteMapping("/{id}")

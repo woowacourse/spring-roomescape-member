@@ -27,6 +27,7 @@ public class UserController {
     //TODO 여기에 있는게 맞을 지 고민해보자.
     @PostMapping("/logout")
     public String logout(final HttpServletResponse response) {
+        // todo 세션도 만료시키기.
         Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
