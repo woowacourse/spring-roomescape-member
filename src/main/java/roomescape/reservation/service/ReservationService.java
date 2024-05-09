@@ -43,7 +43,7 @@ public class ReservationService {
     public Reservation validatePastAndSave(ReservationRequest request) {
         validateDuplicate(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
-        new ReservationDateTime(request, reservationTime).validatePast();
+        new ReservationDateTime(request, reservationTime).validatePast(LocalDateTime.now());
         Theme theme = themeDao.findById(request.themeId());
         return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
 

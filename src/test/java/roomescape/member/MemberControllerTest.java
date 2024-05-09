@@ -15,7 +15,7 @@ class MemberControllerTest {
     @DisplayName("방탈출 사용자 예약 페이지를 매핑한다")
     void reservation() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/member/reservation")
                 .then().log().all()
                 .statusCode(200);
     }

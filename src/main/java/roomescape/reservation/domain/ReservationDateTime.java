@@ -13,8 +13,8 @@ public class ReservationDateTime {
         dateTime = LocalDateTime.of(reservationRequest.date(), reservationTime.startAt());
     }
 
-    public void validatePast() {
-        if (dateTime.isBefore(LocalDateTime.now())) {
+    public void validatePast(LocalDateTime localDateTime) {
+        if (dateTime.isBefore(localDateTime)) {
             throw new IllegalArgumentException("Cannot create a reservation for a past date and time.");
         }
     }
