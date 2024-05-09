@@ -8,6 +8,8 @@ import roomescape.reservation.domain.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static roomescape.member.domain.Role.USER;
+
 public class TestFixture {
     public static final String MIA_NAME = "미아";
     public static final String MIA_EMAIL = "testmia@gmail.com";
@@ -29,15 +31,15 @@ public class TestFixture {
     public static final String TEST_PASSWORD = "test password";
 
     public static Member USER_MIA() {
-        return new Member(MIA_NAME, MIA_EMAIL, TEST_PASSWORD);
+        return new Member(MIA_NAME, MIA_EMAIL, TEST_PASSWORD, USER);
     }
 
     public static Member USER_MIA(Long id) {
-        return new Member(id, MIA_NAME, MIA_EMAIL, TEST_PASSWORD);
+        return new Member(id, MIA_NAME, MIA_EMAIL, TEST_PASSWORD, USER);
     }
 
     public static Member USER_TOMMY() {
-        return new Member(TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD);
+        return new Member(TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD, USER);
     }
 
     public static Reservation MIA_RESERVATION() {

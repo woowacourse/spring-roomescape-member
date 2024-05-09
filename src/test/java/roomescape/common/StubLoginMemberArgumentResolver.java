@@ -7,9 +7,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.dto.LoginMember;
 
-import static roomescape.TestFixture.MIA_EMAIL;
-import static roomescape.TestFixture.MIA_NAME;
-import static roomescape.TestFixture.TEST_PASSWORD;
+import static roomescape.TestFixture.*;
+import static roomescape.member.domain.Role.USER;
 
 public class StubLoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
@@ -20,6 +19,6 @@ public class StubLoginMemberArgumentResolver implements HandlerMethodArgumentRes
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        return new LoginMember(1L, MIA_EMAIL, MIA_NAME, TEST_PASSWORD);
+        return new LoginMember(1L, MIA_EMAIL, MIA_NAME, TEST_PASSWORD, USER);
     }
 }

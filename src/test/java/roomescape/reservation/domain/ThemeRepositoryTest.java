@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
+import static roomescape.member.domain.Role.USER;
 
 class ThemeRepositoryTest extends RepositoryTest {
     @Autowired
@@ -113,10 +114,10 @@ class ThemeRepositoryTest extends RepositoryTest {
         jdbcTemplate.update(insertThemeSql,
                 WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL,
                 HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        String insertMemberSql = "INSERT INTO member (name, email, password) VALUES (?, ?, ?), (?, ?, ?)";
+        String insertMemberSql = "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(insertMemberSql,
-                MIA_NAME, MIA_EMAIL, TEST_PASSWORD,
-                TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD);
+                MIA_NAME, MIA_EMAIL, TEST_PASSWORD, USER.name(),
+                TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD, USER.name());
 
         long secondRankThemeId = 1;
         long firstRankThemeId = 2;

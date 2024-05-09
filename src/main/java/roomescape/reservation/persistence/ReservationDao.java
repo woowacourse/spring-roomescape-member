@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
@@ -46,7 +47,8 @@ public class ReservationDao implements ReservationRepository {
                     m.id AS member_id,
                     m.name AS member_name,
                     m.email AS member_email,
-                    m.password AS member_password
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM 
                     reservation AS r 
                 INNER JOIN 
@@ -99,7 +101,8 @@ public class ReservationDao implements ReservationRepository {
                 resultSet.getLong("member_id"),
                 resultSet.getString("member_name"),
                 resultSet.getString("member_email"),
-                resultSet.getString("member_password")
+                resultSet.getString("member_password"),
+                Role.valueOf(resultSet.getString("member_role"))
         );
     }
 

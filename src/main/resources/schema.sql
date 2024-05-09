@@ -16,10 +16,11 @@ CREATE TABLE theme
 
 CREATE TABLE member
 (
-    id       BIGINT      NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(10) NOT NULL,
-    email    VARCHAR(30) NOT NULL,
-    password VARCHAR(255),
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(10)  NOT NULL,
+    email    VARCHAR(30)  NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role     VARCHAR(10)  NOT NULL,
     PRIMARY KEY (id)
 );
 

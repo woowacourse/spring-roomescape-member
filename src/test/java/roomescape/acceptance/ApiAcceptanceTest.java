@@ -21,6 +21,7 @@ import roomescape.reservation.dto.response.ThemeResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
+import static roomescape.member.domain.Role.USER;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -63,7 +64,7 @@ abstract class ApiAcceptanceTest {
                 .when().post("/members/join")
                 .then().extract()
                 .as(MemberResponse.class);
-        return new Member(response.id(), response.name(), response.email(), request.password());
+        return new Member(response.id(), response.name(), response.email(), request.password(), USER);
     }
 
     protected String createTestToken(Member member) {

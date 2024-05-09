@@ -14,22 +14,24 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final Role role;
 
-    public Member(String name, String email, String password) {
-        this(null, name, email, password);
+    public Member(String name, String email, String password, Role role) {
+        this(null, name, email, password, role);
     }
 
     public Member(Long id, Member member) {
-        this(id, member.name, member.email, member.password);
+        this(id, member.name, member.email, member.password, member.role);
     }
 
-    public Member(Long id, String name, String email, String password) {
+    public Member(Long id, String name, String email, String password, Role role) {
         validateName(name);
         validateEmail(email);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     private void validateName(String name) {
@@ -59,6 +61,10 @@ public class Member {
         return this.password.equals(password);
     }
 
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
+
     public Long getId() {
         return id;
     }
@@ -73,5 +79,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

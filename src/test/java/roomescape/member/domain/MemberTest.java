@@ -10,6 +10,7 @@ import roomescape.exception.ViolationException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.TestFixture.*;
+import static roomescape.member.domain.Role.USER;
 
 class MemberTest {
 
@@ -19,7 +20,7 @@ class MemberTest {
     @DisplayName("사용자 이름은 숫자로만 구성될 수 없고 10자 이하이다.")
     void validateName(String invalidName) {
         // when & then
-        assertThatThrownBy(() -> new Member(MIA_EMAIL, invalidName, TEST_PASSWORD))
+        assertThatThrownBy(() -> new Member(MIA_EMAIL, invalidName, TEST_PASSWORD, USER))
                 .isInstanceOf(ViolationException.class);
     }
 
@@ -29,7 +30,7 @@ class MemberTest {
     @DisplayName("사용자 email의 형식은 [계정]@[도메인].[최상위도메인]이다.")
     void validateEmail(String invalidEmail) {
         // when & then
-        assertThatThrownBy(() -> new Member(MIA_NAME, invalidEmail, TEST_PASSWORD))
+        assertThatThrownBy(() -> new Member(MIA_NAME, invalidEmail, TEST_PASSWORD, USER))
                 .isInstanceOf(ViolationException.class);
     }
 
@@ -37,7 +38,7 @@ class MemberTest {
     @DisplayName("사용자의 비밀번호를 확인한다.")
     void hasSamePassword() {
         // given
-        Member member = new Member(MIA_NAME, MIA_EMAIL, "password");
+        Member member = new Member(MIA_NAME, MIA_EMAIL, "password", USER);
 
         // when
         boolean result = member.hasSamePassword("password");

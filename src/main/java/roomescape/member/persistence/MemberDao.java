@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.Role;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -66,7 +67,8 @@ public class MemberDao implements MemberRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role"))
         );
     }
 }

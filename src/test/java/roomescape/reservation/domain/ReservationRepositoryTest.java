@@ -16,6 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static roomescape.TestFixture.*;
+import static roomescape.member.domain.Role.USER;
 
 class ReservationRepositoryTest extends RepositoryTest {
     @Autowired
@@ -32,8 +33,8 @@ class ReservationRepositoryTest extends RepositoryTest {
         jdbcTemplate.update(insertTimeSql, Time.valueOf(MIA_RESERVATION_TIME));
         String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
         jdbcTemplate.update(insertThemeSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        String insertMemberSql = "INSERT INTO member (name, email, password) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertMemberSql, MIA_NAME, MIA_EMAIL, TEST_PASSWORD);
+        String insertMemberSql = "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(insertMemberSql, MIA_NAME, MIA_EMAIL, TEST_PASSWORD, USER.name());
     }
 
     @Test
