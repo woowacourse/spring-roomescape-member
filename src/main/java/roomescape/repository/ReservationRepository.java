@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -21,7 +22,10 @@ public class ReservationRepository {
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            resultSet.getString("name"),
+            new Member(resultSet.getLong("member_id"),
+                    resultSet.getString("member_name"),
+                    resultSet.getString("member_email"),
+                    resultSet.getString("member_password")),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(resultSet.getLong("reservation_time_id"),
                     resultSet.getTime("time_value").toLocalTime()),
@@ -38,7 +42,7 @@ public class ReservationRepository {
 
     public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation " +
-                "(name, date, reservation_time_id, theme_id) " +
+                "(member_id, date, reservation_time_id, theme_id) " +
                 "VALUES (?, ?, ?, ?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -46,23 +50,28 @@ public class ReservationRepository {
             PreparedStatement ps = con.prepareStatement(
                     sql,
                     new String[]{"id"});
-            ps.setString(1, reservation.getName());
+            ps.setLong(1, reservation.getMember().getId());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getReservationTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
-        return new Reservation(keyHolder.getKey().longValue(), reservation.getName(),
+        return new Reservation(keyHolder.getKey().longValue(), reservation.getMember(),
                 reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
     }
 
     public Optional<Reservation> findById(long id) {
         String sql = "SELECT " +
+                "    m.id AS member_id, " +
+                "    m.name AS member_name, " +
+                "    m.email AS member_email, " +
+                "    m.password AS member_password, " +
                 "    r.id AS reservation_id, " +
-                "    r.name, " +
+                "    r.member_id, " +
                 "    r.date, " +
-                "    t.id AS reservation_time_id, " +
+                "    r.reservation_time_id, " +
+                "    r.theme_id, " +
                 "    t.start_at AS time_value, " +
                 "    th.id AS theme_id, " +
                 "    th.name AS theme_name, " +
@@ -73,17 +82,25 @@ public class ReservationRepository {
                 "ON r.reservation_time_id = t.id " +
                 "INNER JOIN theme AS th " +
                 "ON r.theme_id = th.id " +
+                "INNER JOIN member AS m " +
+                "ON r.member_id = m.id " +
                 "WHERE r.id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
         return reservations.isEmpty() ? Optional.empty() : Optional.of(reservations.get(0));
     }
 
+
     public List<Reservation> findAll() {
         String sql = "SELECT " +
+                "    m.id AS member_id, " +
+                "    m.name AS member_name, " +
+                "    m.email AS member_email, " +
+                "    m.password AS member_password, " +
                 "    r.id AS reservation_id, " +
-                "    r.name, " +
+                "    r.member_id, " +
                 "    r.date, " +
-                "    t.id AS reservation_time_id, " +
+                "    r.reservation_time_id, " +
+                "    r.theme_id, " +
                 "    t.start_at AS time_value, " +
                 "    th.id AS theme_id, " +
                 "    th.name AS theme_name, " +
@@ -93,7 +110,9 @@ public class ReservationRepository {
                 "INNER JOIN reservation_time AS t " +
                 "ON r.reservation_time_id = t.id " +
                 "INNER JOIN theme AS th " +
-                "ON r.theme_id = th.id";
+                "ON r.theme_id = th.id " +
+                "INNER JOIN member AS m " +
+                "ON r.member_id = m.id";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 

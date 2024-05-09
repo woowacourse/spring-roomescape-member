@@ -13,7 +13,7 @@ class ReservationSaveRequestTest {
     @Test
     @DisplayName("이름이 정상 입력될 경우 성공한다.")
     void checkNameBlank_Success() {
-        assertThatCode(() -> new ReservationSaveRequest("capy", LocalDate.now(), 1L, 1L))
+        assertThatCode(() -> new ReservationSaveRequest(LocalDate.now(), 1L, 1L))
                 .doesNotThrowAnyException();
     }
 }

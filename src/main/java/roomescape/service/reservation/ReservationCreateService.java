@@ -1,6 +1,7 @@
 package roomescape.service.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -27,7 +28,7 @@ public class ReservationCreateService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation createReservation(ReservationSaveRequest request) {
+    public Reservation createReservation(ReservationSaveRequest request, Member member) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
 
@@ -40,7 +41,7 @@ public class ReservationCreateService {
             throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
         }
 
-        Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme);
+        Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme, member);
         return reservationRepository.save(reservation);
     }
 

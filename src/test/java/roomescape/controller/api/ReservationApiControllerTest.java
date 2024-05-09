@@ -53,6 +53,7 @@ public class ReservationApiControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.cDF0ToCw0beej_PcZZQAhLPSXPZp77-iY8CHOJ9kGLk")
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -94,22 +95,5 @@ public class ReservationApiControllerTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
-    }
-
-    @Test
-    @DisplayName("이름이 빈칸인 경우 400 상태 코드를 반환한다.")
-    void nameBlankStatusCode400() {
-        Map<String, String> reservationParams = Map.of("name", "",
-                "date", LocalDate.now().plusDays(2).toString(),
-                "timeId", "1",
-                "themeId", "1"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
     }
 }

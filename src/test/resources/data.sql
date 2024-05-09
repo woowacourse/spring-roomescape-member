@@ -1,3 +1,12 @@
+DELETE
+FROM reservation;
+DELETE
+FROM member;
+DELETE
+FROM theme;
+DELETE
+FROM reservation_time;
+
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('theme1', 'description1', 'thumbnail1');
 INSERT INTO theme (name, description, thumbnail)
@@ -8,5 +17,9 @@ VALUES ('10:00');
 INSERT INTO reservation_time (start_at)
 VALUES ('11:00');
 
-INSERT INTO reservation (name, date, reservation_time_id, theme_Id)
-VALUES ('resevation', CURRENT_DATE + INTERVAL '1' DAY , 1, 1);
+INSERT INTO member
+VALUES (1, 'capy', 'test@naver.com', '1234');
+
+INSERT INTO reservation (id, member_id, date, reservation_time_id, theme_Id)
+VALUES (1, 1, CURRENT_DATE + INTERVAL '1' DAY, 1, 1);
+
