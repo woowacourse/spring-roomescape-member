@@ -1,16 +1,17 @@
 package roomescape.controller.login;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.auth.AuthService;
 import roomescape.service.auth.AuthorizationExtractor;
-import roomescape.service.auth.BearerAuthorizationExtractor;
+import roomescape.service.auth.CookieAuthorizationExtractor;
 
 @RestController
 @RequestMapping("/login")
@@ -21,11 +22,11 @@ public class LoginController {
 
     public LoginController(final AuthService authService) {
         this.authService = authService;
-        this.authorizationExtractor = new BearerAuthorizationExtractor();
+        this.authorizationExtractor = new CookieAuthorizationExtractor();
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody final TokenRequest request) {
+    public ResponseEntity<Void> loginCredential(@RequestBody final TokenRequest request) {
         final TokenResponse token = authService.createToken(request);
         final ResponseCookie cookie = ResponseCookie.from("token", token.token())
                 .path("/")
@@ -33,14 +34,18 @@ public class LoginController {
                 .build();
 
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
                 .header("Keep-Alive", "timeout=60")
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
     }
 
-    @PostMapping("/check")
-    public ResponseEntity<Void> check(@RequestBody final TokenRequest request) {
-        return ResponseEntity.ok().build();
+    @GetMapping("/check")
+    public ResponseEntity<MemberNameResponse> findInformation(HttpServletRequest request) {
+        final String token = authorizationExtractor.extract(request);
+        final MemberNameResponse member = authService.findMemberByToken(token);
+        return ResponseEntity.ok()
+                .header("Keep-Alive", "timeout=60")
+                .header(HttpHeaders.TRANSFER_ENCODING, "chunked")
+                .body(member);
     }
 }

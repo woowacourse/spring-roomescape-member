@@ -2,6 +2,8 @@ package roomescape.controller.login;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,5 +59,28 @@ class LoginControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("토큰으로 정보를 요청하면 200 과 권한을 응답한다.")
+    void getInfo200Authorization() {
+        final TokenRequest request = new TokenRequest("a@b.c", "pw");
+
+        final ExtractableResponse<Response> extract = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+        final String token = extract.cookie("token");
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("name", is("abc"));
     }
 }
