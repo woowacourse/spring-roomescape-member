@@ -106,6 +106,40 @@
       ```  
       HTTP/1.1 204
       ```
+### 관리자 예약 API
+- [x] 추가
+    - Request
+      ``` 
+      POST /admin/reservations HTTP/1.1
+      content-type: application/json
+      cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+
+      {
+          "date": "2023-08-05",
+          "timeId": 1,
+          "themeId": 1,
+          "memberId": 1
+      }
+      ```
+    - Response
+      ```  
+      HTTP/1.1 201
+      Content-Type: application/json
+    
+      {
+         "id": 1,
+         "name": "브라운",
+         "date": "2023-08-05",
+         "time": {
+              "id": 1,
+              "startAt": "15:00"
+         },
+         "theme": {
+              "id": 1,
+              "name": "레벨2 탈출"
+         }
+      }
+      ```
 
 ### 예약 시간 API
 - [x] 조회 <br>

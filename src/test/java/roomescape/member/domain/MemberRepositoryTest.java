@@ -55,4 +55,19 @@ class MemberRepositoryTest extends RepositoryTest {
         // then
         assertThat(foundMember).isNotEmpty();
     }
+
+    @Test
+    @DisplayName("Id로 사용자를 조회한다.")
+    void findById() {
+        // given
+        Member member = USER_MIA();
+        SqlParameterSource params = new BeanPropertySqlParameterSource(member);
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+
+        // when
+        Optional<Member> foundMember = memberRepository.findById(id);
+
+        // then
+        assertThat(foundMember).isNotEmpty();
+    }
 }

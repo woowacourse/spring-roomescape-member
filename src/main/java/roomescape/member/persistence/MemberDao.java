@@ -44,6 +44,16 @@ public class MemberDao implements MemberRepository {
         }
     }
 
+    @Override
+    public Optional<Member> findById(Long id) {
+        try {
+            String sql = "SELECT * FROM member WHERE id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRowToObject, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     private Member mapRowToObject(ResultSet resultSet, int rowNumber) throws SQLException {
         return new Member(
                 resultSet.getLong("id"),
