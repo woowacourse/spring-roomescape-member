@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
@@ -21,7 +22,10 @@ public class ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("reservation_id"),
-                    new Name(resultSet.getString("name")),
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            new Name(resultSet.getString("member_name")),
+                            resultSet.getString("email")),
                     new ReservationDate(
                             LocalDate.parse(resultSet.getString("date"))),
                     new ReservationTime(
@@ -47,13 +51,13 @@ public class ReservationRepository {
 
     public Reservation create(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName().name())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", reservation.getDate().date())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return new Reservation(id, reservation.getMember(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
 
@@ -107,19 +111,23 @@ public class ReservationRepository {
         String sql = """
                 SELECT 
                     r.id AS reservation_id, 
-                    r.name, 
                     r.date, 
                     t.id AS time_id, 
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description,
-                    th.thumbnail
+                    th.thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id
                 INNER JOIN theme AS th
                 ON r.theme_id = th.id
+                INNER JOIN member AS m
+                ON r.member_id = m.id;
                 """;
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
@@ -129,19 +137,23 @@ public class ReservationRepository {
         String sql = """
                 SELECT 
                     r.id AS reservation_id, 
-                    r.name, 
                     r.date, 
                     t.id AS time_id, 
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description,
-                    th.thumbnail
+                    th.thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id
                 INNER JOIN theme AS th
                 ON r.theme_id = th.id
+                INNER JOIN member AS m 
+                ON r.member_id = m.id
                 WHERE r.id = ?
                 """;
 

@@ -9,6 +9,10 @@ public class Member {
     private final String email;
     private final String password;
 
+    public Member(Long id, Name name, String email) {
+        this(id, name, email, null);
+    }
+
     public Member(Long id, Name name, String email, String password) {
         this.id = id;
         this.name = name;

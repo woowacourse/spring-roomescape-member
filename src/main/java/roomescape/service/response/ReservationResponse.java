@@ -17,7 +17,7 @@ public record ReservationResponse(
 
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName().name(),
+                reservation.getMember().getNameValue(),
                 date,
                 timeResponse,
                 themeResponse

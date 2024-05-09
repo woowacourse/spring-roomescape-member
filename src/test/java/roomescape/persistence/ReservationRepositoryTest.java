@@ -15,6 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
@@ -57,7 +58,7 @@ class ReservationRepositoryTest {
         // given
         Reservation targetReservation = new Reservation(
                 2L,
-                new Name("엘라"),
+                new Member(1L, new Name("test"), "test@gmail.com"),
                 new ReservationDate(LocalDate.parse("2024-05-04")),
                 new ReservationTime(LocalTime.parse("10:00")),
                 new Theme(null, null, null)
@@ -74,11 +75,11 @@ class ReservationRepositoryTest {
     @DisplayName("새로운 예약을 생성한다.")
     void create() {
         // given
-        Name name = new Name("브라운");
+        Member member = new Member(1L, new Name("test"), "test@gmail.com");
         ReservationDate date = new ReservationDate(LocalDate.parse("2023-08-05"));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, null, null, null);
-        Reservation createReservation = new Reservation(name, date, reservationTime, theme);
+        Reservation createReservation = new Reservation(member, date, reservationTime, theme);
 
         // when
         reservationRepository.create(createReservation);
@@ -105,11 +106,11 @@ class ReservationRepositoryTest {
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 있는지 확인한다.")
     void hasDuplicateDateTimeThemeReservation() {
         // given
-        Name name = new Name("아톰");
+        Member member = new Member(1L, new Name("test"), "test@gmail.com");
         ReservationDate date = new ReservationDate(LocalDate.parse("2024-05-04"));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "테마1", "테마1설명", "테마1이미지");
-        Reservation reservation = new Reservation(name, date, reservationTime, theme);
+        Reservation reservation = new Reservation(member, date, reservationTime, theme);
 
         // when
         boolean result = reservationRepository.hasDuplicateReservation(reservation);

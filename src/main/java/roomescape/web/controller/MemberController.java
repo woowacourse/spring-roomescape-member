@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.argumentresolver.TokenValue;
 import roomescape.service.MemberService;
 import roomescape.service.request.LoginMember;
 import roomescape.service.request.MemberLoginRequest;
@@ -34,7 +33,7 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> getMemberInfo(@TokenValue LoginMember loginMember) {
+    public ResponseEntity<MemberResponse> getMemberInfo(LoginMember loginMember) {
         MemberResponse response = memberService.getMemberInfo(loginMember);
 
         return ResponseEntity.ok(response);

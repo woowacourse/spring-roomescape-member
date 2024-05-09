@@ -8,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.service.MemberService;
+import roomescape.service.request.LoginMember;
 import roomescape.web.exception.AuthenticationException;
 
 public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -20,7 +21,7 @@ public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentRe
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(TokenValue.class);
+        return parameter.getParameterType().equals(LoginMember.class);
     }
 
     @Override

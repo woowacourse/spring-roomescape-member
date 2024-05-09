@@ -30,7 +30,7 @@ class MemberRepositoryTest {
     @DisplayName("이메일과 비밀번호에 해당되는 회원 정보를 가져온다.")
     void findByEmailAndPassword() {
         // given
-        Member targetMember = new Member(1L, new Name("test"), "test@gmail.com", "test");
+        Member targetMember = new Member(1L, new Name("test"), "test@gmail.com");
 
         // when
         Member findMember = memberRepository.findByEmailAndPassword(targetMember.getEmail(), targetMember.getPassword())
