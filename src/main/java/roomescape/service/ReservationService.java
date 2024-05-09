@@ -93,6 +93,14 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findByMemberAndThemeBetweenDates(long memberId, long themeId, LocalDate start,
+                                                                      LocalDate end) {
+        return reservationRepository.findByMemberAndThemeBetweenDates(memberId, themeId, start, end)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     public void delete(long id) {
         reservationRepository.delete(id);
     }

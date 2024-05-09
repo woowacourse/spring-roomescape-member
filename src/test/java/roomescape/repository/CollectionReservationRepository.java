@@ -33,6 +33,23 @@ public class CollectionReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByMemberAndThemeBetweenDates(long memberId, long themeId, LocalDate start,
+                                                              LocalDate end) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getReservationMember().getId() == memberId)
+                .filter(reservation -> reservation.getTheme().getId() == themeId)
+                .filter(reservation -> {
+                    LocalDate date = reservation.getDate();
+                    return date.isEqual(start) || date.isAfter(start);
+                })
+                .filter(reservation -> {
+                    LocalDate date = reservation.getDate();
+                    return date.isEqual(end) || date.isBefore(end);
+                })
+                .toList();
+    }
+
+    @Override
     public boolean existsByThemeAndDateAndTime(Theme theme, LocalDate date, ReservationTime reservationTime) {
         return reservations.stream()
                 .filter(reservation -> theme.equals(reservation.getTheme()))

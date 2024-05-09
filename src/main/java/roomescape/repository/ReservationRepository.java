@@ -11,6 +11,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findByMemberAndThemeBetweenDates(long memberId, long themeId, LocalDate start, LocalDate end);
+
     boolean existsByThemeAndDateAndTime(Theme theme, LocalDate date, ReservationTime reservationTime);
 
     boolean existsByTime(ReservationTime reservationTime);
