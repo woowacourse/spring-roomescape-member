@@ -1,7 +1,6 @@
 package roomescape.domain.login.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,7 @@ import roomescape.domain.login.domain.Member;
 import roomescape.domain.login.dto.LoginRequest;
 import roomescape.domain.login.dto.MemberResponse;
 import roomescape.domain.login.service.MemberService;
+import roomescape.global.auth.CookieGenerator;
 import roomescape.global.auth.JwtTokenProvider;
 
 @RestController
@@ -29,9 +29,8 @@ public class LoginController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberService.findMemberByEmailAndPassword(loginRequest.email(),
                 loginRequest.password());
-        Cookie cookie = new Cookie("token", jwtTokenProvider.generateToken(String.valueOf(member.getId())));
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = CookieGenerator.generate("token",
+                jwtTokenProvider.generateToken(String.valueOf(member.getId())));
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
@@ -43,8 +42,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logOut(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
-        cookie.setMaxAge(0);
+        Cookie cookie = CookieGenerator.generateExpiredToken("token");
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
