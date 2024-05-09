@@ -27,4 +27,12 @@ class UserControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    void moveToLoginPage() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
