@@ -10,20 +10,23 @@ import roomescape.dto.response.MemberResponse;
 import roomescape.infrastructure.CookieGenerator;
 import roomescape.infrastructure.auth.Token;
 import roomescape.service.serviceimpl.LoginService;
+import roomescape.service.serviceimpl.MemberService;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-
     private final CookieGenerator cookieGenerator;
     private final LoginService loginService;
+    private final MemberService memberService;
 
     public LoginController(
             final CookieGenerator cookieGenerator,
-            final LoginService loginService
+            final LoginService loginService,
+            final MemberService memberService
     ) {
         this.cookieGenerator = cookieGenerator;
         this.loginService = loginService;
+        this.memberService = memberService;
     }
 
     @PostMapping
@@ -31,7 +34,11 @@ public class LoginController {
             @RequestBody @Valid LoginRequest request,
             HttpServletResponse response
     ) {
-        Token token = loginService.login(request.email(), request.password());
+        Token token = loginService.login(
+                memberService.findMemberByEmailAndPassword(request.email(), request.password()),
+                request.email(),
+                request.password()
+        );
         response.addCookie(cookieGenerator.generate(token));
         return ResponseEntity.ok().build();
     }
@@ -39,7 +46,8 @@ public class LoginController {
     @GetMapping("/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Token token = cookieGenerator.getToken(request.getCookies());
-        MemberResponse memberResponse = loginService.checkMember(token);
+        Long memberId = loginService.findMemberIdByToken(token);
+        MemberResponse memberResponse = memberService.findMemberById(memberId);
         return ResponseEntity.ok(memberResponse);
     }
 }
