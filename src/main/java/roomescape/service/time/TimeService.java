@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.time;
 
 import org.springframework.stereotype.Service;
 import roomescape.controller.time.TimeRequest;
@@ -8,9 +8,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.exception.InvalidDateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.exception.TimeDuplicatedException;
-import roomescape.service.exception.TimeNotFoundException;
-import roomescape.service.exception.TimeUsedException;
+import roomescape.service.time.exception.TimeDuplicatedException;
+import roomescape.service.time.exception.TimeNotFoundException;
+import roomescape.service.time.exception.TimeUsedException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

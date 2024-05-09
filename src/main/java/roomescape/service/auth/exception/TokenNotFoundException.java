@@ -1,4 +1,4 @@
-package roomescape.service.exception;
+package roomescape.service.auth.exception;
 
 import roomescape.exception.BadRequestException;
 

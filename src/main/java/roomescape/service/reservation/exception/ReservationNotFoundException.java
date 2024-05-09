@@ -1,4 +1,4 @@
-package roomescape.service.exception;
+package roomescape.service.reservation.exception;
 
 import roomescape.exception.NotFoundException;
 

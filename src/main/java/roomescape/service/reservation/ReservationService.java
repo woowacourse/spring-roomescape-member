@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.controller.reservation.ReservationRequest;
@@ -9,11 +9,11 @@ import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.exception.PreviousTimeException;
-import roomescape.service.exception.ReservationDuplicatedException;
-import roomescape.service.exception.ReservationNotFoundException;
-import roomescape.service.exception.ThemeNotFoundException;
-import roomescape.service.exception.TimeNotFoundException;
+import roomescape.service.reservation.exception.PreviousTimeException;
+import roomescape.service.reservation.exception.ReservationDuplicatedException;
+import roomescape.service.reservation.exception.ReservationNotFoundException;
+import roomescape.service.theme.exception.ThemeNotFoundException;
+import roomescape.service.time.exception.TimeNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;

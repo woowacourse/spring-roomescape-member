@@ -7,7 +7,7 @@ import roomescape.controller.login.TokenResponse;
 import roomescape.domain.Member;
 import roomescape.exception.UnauthorizedException;
 import roomescape.repository.MemberRepository;
-import roomescape.service.exception.MemberNotFoundException;
+import roomescape.service.auth.exception.MemberNotFoundException;
 
 import java.util.Optional;
 

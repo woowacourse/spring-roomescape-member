@@ -17,11 +17,12 @@ import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.exception.PreviousTimeException;
-import roomescape.service.exception.ReservationDuplicatedException;
-import roomescape.service.exception.ReservationNotFoundException;
-import roomescape.service.exception.ThemeNotFoundException;
-import roomescape.service.exception.TimeNotFoundException;
+import roomescape.service.reservation.ReservationService;
+import roomescape.service.reservation.exception.PreviousTimeException;
+import roomescape.service.reservation.exception.ReservationDuplicatedException;
+import roomescape.service.reservation.exception.ReservationNotFoundException;
+import roomescape.service.theme.exception.ThemeNotFoundException;
+import roomescape.service.time.exception.TimeNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
