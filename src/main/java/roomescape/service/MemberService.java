@@ -5,6 +5,8 @@ import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.MemberDto;
 
+import java.util.List;
+
 @Service
 public class MemberService {
 
@@ -30,5 +32,9 @@ public class MemberService {
 
     public Member findByEmail(String email) {
         return memberDao.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+    }
+
+    public List<Member> getAllMembers() {
+        return memberDao.findAll();
     }
 }

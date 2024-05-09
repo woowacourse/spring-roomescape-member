@@ -47,4 +47,14 @@ public class MemberDao {
                 , email);
         return Optional.ofNullable(DataAccessUtils.singleResult(members));
     }
+
+    public List<Member> findAll() {
+        String findAllSql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(findAllSql,
+                (resultSet, numRow) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")));
+    }
 }
