@@ -16,16 +16,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
 
 class ReservationControllerTest extends BaseControllerTest {
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -35,6 +42,7 @@ class ReservationControllerTest extends BaseControllerTest {
 
     @BeforeEach
     void setUp() {
+        memberRepository.save(new Member("qwer@naver.com", "1234", "구름"));
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
     }
@@ -61,10 +69,11 @@ class ReservationControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("지나간 날짜/시간에 대한 예약은 실패한다.")
     void failWhenDateTimePassed() {
-        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 7), 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 7), 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getToken("qwer@naver.com", "1234"))
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -90,19 +99,31 @@ class ReservationControllerTest extends BaseControllerTest {
         });
     }
 
+    private String getToken(String email, String password) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new LoginRequest(email, password))
+                .when().post("/login")
+                .then().log().all()
+                .extract();
+
+        return response.cookie("token");
+    }
 
     private void addReservation() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("구름", tomorrow, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(tomorrow, 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getToken("qwer@naver.com", "1234"))
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
 
         ReservationResponse reservationResponse = response.as(ReservationResponse.class);
+        MemberResponse memberResponse = new MemberResponse(1L, "qwer@naver.com", "구름");
         ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, LocalTime.of(11, 0));
         ThemeResponse themeResponse = new ThemeResponse(1L, "테마 이름", "테마 설명", "https://example.com");
 
@@ -110,7 +131,8 @@ class ReservationControllerTest extends BaseControllerTest {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             softly.assertThat(response.header("Location")).isEqualTo("/reservations/1");
             softly.assertThat(reservationResponse).isEqualTo(
-                    new ReservationResponse(1L, "구름", tomorrow, reservationTimeResponse,
+                    new ReservationResponse(1L, memberResponse, tomorrow,
+                            reservationTimeResponse,
                             themeResponse));
         });
     }
@@ -122,8 +144,8 @@ class ReservationControllerTest extends BaseControllerTest {
                 .then().log().all()
                 .extract();
 
-        List<ReservationResponse> reservationResponses = response.jsonPath()
-                .getList(".", ReservationResponse.class);
+        List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
+        MemberResponse memberResponse = new MemberResponse(1L, "qwer@naver.com", "구름");
         ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, LocalTime.of(11, 0));
         ThemeResponse themeResponse = new ThemeResponse(1L, "테마 이름", "테마 설명", "https://example.com");
 
@@ -132,7 +154,7 @@ class ReservationControllerTest extends BaseControllerTest {
             softly.assertThat(reservationResponses).hasSize(1);
             softly.assertThat(reservationResponses)
                     .containsExactly(
-                            new ReservationResponse(1L, "구름", tomorrow, reservationTimeResponse,
+                            new ReservationResponse(1L, memberResponse, tomorrow, reservationTimeResponse,
                                     themeResponse));
         });
     }
@@ -150,10 +172,11 @@ class ReservationControllerTest extends BaseControllerTest {
 
     private void addReservationFailWhenDuplicatedReservation() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("구름", tomorrow, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(tomorrow, 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getToken("qwer@naver.com", "1234"))
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()

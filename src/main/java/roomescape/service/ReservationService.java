@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -14,6 +15,7 @@ import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.LoginMember;
 import roomescape.dto.response.ReservationResponse;
 
 @Service
@@ -40,10 +42,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
         Theme theme = themeRepository.getById(reservationRequest.themeId());
-        Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
+        Member member = loginMember.toMember();
+        Reservation reservation = reservationRequest.toReservation(member, reservationTime, theme);
 
         validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
         validateDuplicatedReservation(reservation);

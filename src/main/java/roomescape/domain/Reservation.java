@@ -6,28 +6,28 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validate(member, date, time, theme);
 
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("name은 필수 값입니다.");
+    private void validate(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        if (member == null) {
+            throw new IllegalArgumentException("member는 필수 값입니다.");
         }
         if (date == null) {
             throw new IllegalArgumentException("date는 필수 값입니다.");
@@ -61,8 +61,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

@@ -15,9 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
@@ -35,6 +37,9 @@ class ReservationTimeControllerTest extends BaseControllerTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @TestFactory
     @DisplayName("예약 시간을 생성, 조회, 삭제한다.")
@@ -72,9 +77,10 @@ class ReservationTimeControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("이미 사용 중인 예약 시간을 삭제하면 실패한다.")
     void deleteReservationTimeByIdFailWhenUsedTime() {
+        Member member = memberRepository.save(new Member(1L, "example@example.com", "password", "구름"));
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
         Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
-        reservationRepository.save(new Reservation("구름", LocalDate.of(2024, 4, 9), reservationTime, theme));
+        reservationRepository.save(new Reservation(member, LocalDate.of(2024, 4, 9), reservationTime, theme));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/times/1")
@@ -90,10 +96,11 @@ class ReservationTimeControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("이용가능한 시간들을 조회한다.")
     void getAvailableReservationTimes() {
+        Member member = memberRepository.save(new Member("example@example.com", "password", "구름"));
         ReservationTime notBookedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         ReservationTime alreadyBookedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
-        reservationRepository.save(new Reservation("구름", LocalDate.of(2024, 4, 9), alreadyBookedTime, theme));
+        reservationRepository.save(new Reservation(member, LocalDate.of(2024, 4, 9), alreadyBookedTime, theme));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .param("date", "2024-04-09")

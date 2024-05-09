@@ -43,7 +43,7 @@ public class LoginMemberPrincipalArgumentResolver implements HandlerMethodArgume
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new AuthenticationException("zzz"));
+                .orElseThrow(() -> new AuthenticationException("로그인 되지 않았습니다."));
 
         return authService.getLoginMember(new LoginMemberRequest(token));
     }

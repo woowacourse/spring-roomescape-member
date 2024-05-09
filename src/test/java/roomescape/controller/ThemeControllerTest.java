@@ -16,9 +16,11 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
@@ -35,6 +37,9 @@ class ThemeControllerTest extends BaseControllerTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @TestFactory
     @DisplayName("테마를 생성, 조회, 삭제한다.")
@@ -72,9 +77,10 @@ class ThemeControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("이미 사용 중인 테마을 삭제하면 실패한다.")
     void deleteThemeByIdFailWhenUsedTheme() {
+        Member member = memberRepository.save(new Member("example@example.com", "password", "구름"));
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
         Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
-        reservationRepository.save(new Reservation("구름", LocalDate.of(2024, 4, 9), reservationTime, theme));
+        reservationRepository.save(new Reservation(member, LocalDate.of(2024, 4, 9), reservationTime, theme));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/themes/1")
