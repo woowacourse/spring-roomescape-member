@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.persistence.MemberRepository;
@@ -26,7 +27,8 @@ public class MemberService {
         return new Token(jwtTokenProvider.createToken(findMember));
     }
 
-    public MemberResponse getMemberInfo(String token) {
+    public MemberResponse getMemberInfo(Cookie[] cookies) {
+        String token = getToken(cookies);
         String tokenSubject = jwtTokenProvider.getTokenSubject(token);
         Long id = Long.parseLong(tokenSubject);
 
@@ -34,5 +36,14 @@ public class MemberService {
                 .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
 
         return new MemberResponse(findMember.getNameValue());
+    }
+
+    private String getToken(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
     }
 }
