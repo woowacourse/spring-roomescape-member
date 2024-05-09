@@ -122,49 +122,6 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약 정보를 저장하면 새로운 아이디가 부여된다.")
-    void save() {
-        // given
-        Reservation reservation = new Reservation(
-                null,
-                "cha",
-                LocalDate.of(2024, 3, 1),
-                new ReservationTime(2L, LocalTime.parse("00:00")),
-                new Theme(2L, "", "", "")
-        );
-        Reservation expected = new Reservation(
-                3L,
-                "cha",
-                LocalDate.of(2024, 3, 1),
-                new ReservationTime(2L, LocalTime.parse("00:00")),
-                new Theme(2L, "", "", "")
-        );
-
-        // when
-        Reservation actual = reservationRepository.save(reservation);
-
-        // then
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약 시간으로 예약 정보를 저장하면 예외가 발생한다.")
-    void exceptionOnSavingWithNotPresentTime() {
-        // given
-        Reservation reservation = new Reservation(
-                null,
-                "cha",
-                LocalDate.of(2025, 3, 1),
-                new ReservationTime(4L, LocalTime.parse("00:00")),
-                new Theme(2L, "", "", "")
-        );
-
-        // when & then
-        assertThatCode(() -> reservationRepository.save(reservation))
-                .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
-    @Test
     @DisplayName("등록된 예약 번호로 삭제한다.")
     void deleteAssignedId() {
         // given

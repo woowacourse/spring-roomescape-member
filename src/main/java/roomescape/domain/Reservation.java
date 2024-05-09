@@ -5,24 +5,13 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final String name; //TODO Member 객체로 두기...?
-    private Member member;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date,
-                       final ReservationTime time, final Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
     public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
         this.id = id;
-        this.name = "";
         this.member = member;
         this.date = date;
         this.time = time;
@@ -35,10 +24,6 @@ public class Reservation {
 
     public Member getMember() {
         return member;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
