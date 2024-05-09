@@ -9,7 +9,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.login.domain.Member;
 import roomescape.domain.login.service.MemberService;
 import roomescape.global.auth.JwtTokenProvider;
 import roomescape.global.exception.ClientIllegalArgumentException;
@@ -26,7 +25,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(AuthenticationPrincipal.class);
     }
 
     @Override
