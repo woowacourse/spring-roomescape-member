@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -160,5 +162,26 @@ class AuthControllerTest extends ControllerTest {
                 .then().log().all()
                 .statusCode(409);
 
+    }
+
+    @DisplayName("메일 형식이 아닐 경우, 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "chocochip", "chocochip@"})
+    void signupInvalidMailFormat(String invalidMail) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "chocochip2");
+        params.put("email", invalidMail);
+        params.put("password", "12345");
+
+        //when & then
+        RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/signup")
+                .then().log().all()
+                .statusCode(400);
     }
 }

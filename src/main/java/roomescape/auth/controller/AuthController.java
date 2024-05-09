@@ -3,6 +3,7 @@ package roomescape.auth.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +75,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
         authService.signUp(signUpRequest);
         return ResponseEntity.created(URI.create("/login")).build();
     }

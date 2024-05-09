@@ -41,9 +41,8 @@ class AuthServiceTest {
         //given
         String password = "1234";
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password,
-                        getMemberChoco().getRole()));
-        LoginRequest loginRequest = new LoginRequest(password, member.getEmail());
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password, getMemberChoco().getRole()));
+        LoginRequest loginRequest = new LoginRequest(member.getEmail(), password);
 
         //when
         TokenResponse token = authService.createToken(loginRequest);
