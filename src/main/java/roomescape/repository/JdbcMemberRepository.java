@@ -23,7 +23,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private Optional<Member> findById(long id) {
+    public Optional<Member> findById(long id) {
         try {
             Member findMember = jdbcTemplate.queryForObject(
                     "SELECT id, name, email, password FROM MEMBER WHERE id = ?",

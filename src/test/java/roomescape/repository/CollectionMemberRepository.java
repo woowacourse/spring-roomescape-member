@@ -17,6 +17,13 @@ public class CollectionMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findById(long id) {
+        return members.stream()
+                .filter(member -> member.getId() == id)
+                .findFirst();
+    }
+
+    @Override
     public Optional<Member> findByEmail(String email) {
         return members.stream()
                 .filter(member -> member.getEmail().equals(email))
