@@ -17,6 +17,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ProblemDetail handleIllegalStateException(IllegalStateException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler
     public ProblemDetail handleException(HttpMessageNotReadableException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMostSpecificCause().getMessage());
     }
@@ -29,6 +34,11 @@ public class GlobalExceptionHandler {
                 .orElse("검증에 실패했습니다.");
 
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
+    @ExceptionHandler
+    public ProblemDetail handleValidationRoomescapeException(RoomescapeException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler
