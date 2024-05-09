@@ -8,10 +8,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.member.Member;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
+import roomescape.web.api.resolver.Auth;
+import roomescape.web.dto.ReservationAdminRequest;
 import roomescape.web.dto.ReservationListResponse;
+import roomescape.web.dto.ReservationMemberRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -25,7 +29,22 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> save(@RequestBody @Valid ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> save(@RequestBody @Valid ReservationMemberRequest request,
+                                                    @Auth Member member) {
+        ReservationRequest reservationRequest = new ReservationRequest(member.getName(), request.date(),
+                request.timeId(), request.themeId());
+
+        ReservationResponse reservationResponse = reservationService.save(reservationRequest);
+
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
+                .body(reservationResponse);
+    }
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> saveAdmin(@RequestBody @Valid ReservationAdminRequest request) {
+        ReservationRequest reservationRequest = new ReservationRequest(request.name(), request.date(),
+                request.timeId(), request.themeId());
+
         ReservationResponse reservationResponse = reservationService.save(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
