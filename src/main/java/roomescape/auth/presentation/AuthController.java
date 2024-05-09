@@ -39,8 +39,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(
-            @CookieValue(value = "token", required = false) String token) {
+    public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(value = "token") String token) {
         return ResponseEntity.ok().body(authService.checkLogin(token));
     }
 }
