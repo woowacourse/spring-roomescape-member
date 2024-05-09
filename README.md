@@ -62,3 +62,11 @@
     AS-IS: /js/reservation-new.js
     TO-BE: /js/reservation-with-member.js
   - [x] `POST /admin/reservation` 처리하는 컨트롤러 구현하기
+
+## 6단계
+- [ ] 어드민 페이지 진입은 admin권한이 있는 사람만 할 수 있도록 제한한다.
+  - [ ] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있다.
+  - [ ] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답한다.
+- [ ] 관리자가 조건에 따라 예약을 검색할 수 있도록 기능을 추가한다.
+  - [ ] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가한다.
+
