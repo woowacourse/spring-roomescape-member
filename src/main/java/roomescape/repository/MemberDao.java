@@ -7,7 +7,7 @@ import java.util.Optional;
 
 @Component
 public interface MemberDao {
-    Optional<Member> findByEmail(final String email);
+    Optional<Member> findByEmailAndPassword(final String email, final String password);
 
     Optional<Member> findById(long memberId);
 }

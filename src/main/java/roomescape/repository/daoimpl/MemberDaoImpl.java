@@ -31,9 +31,10 @@ public class MemberDaoImpl implements MemberDao {
         this.memberRowMapper = memberRowMapper;
     }
 
-    public Optional<Member> findByEmail(final String email) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE user_email = ?";
-        return jdbcTemplate.query(sql, memberRowMapper, email)
+    @Override
+    public Optional<Member> findByEmailAndPassword(final String email, final String password) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE user_email = ? " + " AND user_password= ?";
+        return jdbcTemplate.query(sql, memberRowMapper, email, password)
                 .stream()
                 .findAny();
     }
