@@ -14,7 +14,10 @@ import roomescape.security.JwtTokenProvider;
         classes = TestConfig.class,
         webEnvironment = WebEnvironment.RANDOM_PORT
 )
-@Sql("classpath:integration-data.sql")
+@Sql(value = {
+        "classpath:truncate.sql",
+        "classpath:integration-data.sql"
+})
 public abstract class BaseControllerTest {
 
     protected static final Long ADMIN_ID = 1L;
