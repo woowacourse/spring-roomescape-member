@@ -38,5 +38,8 @@ public class AuthService {
         String token = jwtTokenExtractor.extractByCookies(cookies);
         return new TokenResponse(token);
     }
+
+    public String extractEmailByToken(TokenResponse tokenResponse) {
+        return jwtTokenExtractor.extractEmailByToken(tokenResponse.token());
     }
 }
