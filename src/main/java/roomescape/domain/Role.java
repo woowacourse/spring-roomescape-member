@@ -19,4 +19,8 @@ public enum Role {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("역할을 찾을 수 없습니다."));
     }
+
+    public String getName() {
+        return name;
+    }
 }
