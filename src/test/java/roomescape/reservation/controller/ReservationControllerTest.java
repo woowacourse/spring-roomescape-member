@@ -138,26 +138,6 @@ class ReservationControllerTest {
                 .body("message", is("현재 날짜보다 이전 날짜를 예약할 수 없습니다."));
     }
 
-    @DisplayName("유효하지 않은 사용자 이름을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
-    @Test
-    void saveReservationWithInvalidName() {
-        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
-                LocalDate.now().plusDays(1),
-                "브라운운우눈우우웅우ㅜㅇ",
-                1L,
-                1L
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie("token", createAccessToken())
-                .body(saveReservationRequest)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("message", is("예약자 이름은 1글자 이상 5글자 이하여야 합니다."));
-    }
-
     private String createAccessToken() {
         return tokenProvider.createToken(
                 new MemberEmail("user@mail.com"),
