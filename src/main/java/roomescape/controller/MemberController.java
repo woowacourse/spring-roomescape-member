@@ -1,15 +1,20 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.domain.Member;
 import roomescape.dto.LoginRequestDto;
 import roomescape.service.AuthenticationService;
 import roomescape.service.MemberService;
+
+import java.util.Arrays;
 
 @Controller
 public class MemberController {
@@ -28,6 +33,19 @@ public class MemberController {
         String token = authenticationService.createToken(loginRequestDto.email());
         Cookie cookie = authenticationService.createCookie(token);
         response.addCookie(cookie);
+    }
+
+    @GetMapping("login/check")
+    public ResponseEntity<String> checkLogin(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        Cookie cookie = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst().orElseThrow(() -> new IllegalStateException("토큰이 존재하지 않습니다."));
+        String token = cookie.getValue();
+
+        String email = authenticationService.getPayload(token);
+        Member member = memberService.findByEmail(email);
+        String name = member.getName();
+
+        return ResponseEntity.ok().body(name);
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)

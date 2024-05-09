@@ -9,7 +9,7 @@
   - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지(`templates/login.html`) 응답
   - [x] `POST /login` 요청 시 로그인 폼에 입력한 이메일, 비밀번호를 body 에 포함
   - [x] 응답 Cookie 에 'token' 값으로 토큰이 포함
-- [ ] 로그인 이후 Cookie 를 이용한 사용자 정보 조회 API
+- [x] 로그인 이후 Cookie 를 이용한 사용자 정보 조회 API
 
 ---
 
