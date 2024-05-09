@@ -76,6 +76,19 @@ public class H2ReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    public boolean existsByThemeAndDateTime(Theme theme, ReservationDate date, ReservationTime time) {
+        String sql = """
+                    select exists(
+                    select 1
+                    from reservation as r
+                    where r.theme_id = ?
+                    and r.date = ?
+                    and r.time_id = ?) as count;
+                """;
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, theme.getId(), date.getStartAt(), time.getId());
+    }
+
     private String getBasicSelectQuery() {
         return """
                     select 

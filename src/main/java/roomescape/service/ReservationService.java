@@ -3,10 +3,10 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationFactory;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.theme.Theme;
 import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
@@ -46,10 +46,10 @@ public class ReservationService {
     }
 
     private void rejectDuplicateReservation(Reservation reservation) {
-        List<Reservation> savedReservations = reservationRepository.findAll();
-        boolean isDuplicateReservationPresent = savedReservations.stream()
-                .filter(reservation::hasSameTheme)
-                .anyMatch(reservation::hasSameDateTime);
+        boolean isDuplicateReservationPresent = reservationRepository.existsByThemeAndDateTime(
+                reservation.getTheme(),
+                reservation.getDate(),
+                reservation.getTime());
 
         if (isDuplicateReservationPresent) {
             throw new IllegalStateException("중복된 예약이 존재합니다.");
