@@ -16,9 +16,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = IllegalUserRequestException.class)
     public ResponseEntity<ProblemDetail> handleIllegalUserRequestException(IllegalUserRequestException exception) {
         System.err.println(exception.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
-        problemDetail.setTitle("유효하지 않은 요청 데이터입니다.");
-        return ResponseEntity.badRequest().body(problemDetail);
+        return ResponseEntity.badRequest().body(exception.getBody());
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
