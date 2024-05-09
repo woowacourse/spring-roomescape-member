@@ -20,6 +20,7 @@ import roomescape.exceptions.NotDeleteableException;
 public class ThemeH2Repository implements ThemeRepository {
 
     private static final String TABLE_NAME = "THEME";
+    private static final int ANY_INTEGER_FOR_COUNTING = 0;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -45,7 +46,7 @@ public class ThemeH2Repository implements ThemeRepository {
     @Override
     public boolean hasTheme(ThemeName name) {
         String sql = "SELECT * FROM theme WHERE name = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, name.name()).isEmpty();
+        return !jdbcTemplate.query(sql, (resultSet, rowNum) -> ANY_INTEGER_FOR_COUNTING, name.name()).isEmpty();
     }
 
     @Override
