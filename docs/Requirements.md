@@ -28,10 +28,22 @@
 
 ### 사용자 로그인
 
-* [ ] GET /login 요청시 로그인 폼 응답
-* [ ] POST /login 요청시 body 에 email, password 포함
-* [ ] 응답 쿠키에 "token"값으로 토큰 포함
+* [x] GET /login 요청시 로그인 폼 응답
+* [x] POST /login 요청시 body 에 email, password 포함
+* [x] 응답 쿠키에 "token"값으로 토큰 포함
 
-#### 인증 정보 조회
+### 인증 정보 조회
 
-* [ ] GET /login/check 요청시 쿠키를 사용해 로그인 사용자 정보 반환
+* [x] GET /login/check 요청시 쿠키를 사용해 로그인 사용자 정보 반환
+
+### 관리자 기능
+
+* [ ] member의 role이 admin인 사람만 /admin 접근 권한 허용
+
+### 예약 목록 검색
+
+* [ ] 예약자별, 테마별, 날짜별 검색 조건 기능
+
+### 리팩터링 항목
+
+* [ ] 같은 날짜 지난시간 disable하게 하기
