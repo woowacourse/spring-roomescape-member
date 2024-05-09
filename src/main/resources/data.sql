@@ -48,3 +48,8 @@ INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('홍길동', '2024-05-08', 1, 5);
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('홍길동', '2024-05-09', 1, 6);
+
+INSERT INTO member (name, email, password)
+VALUES ('홍길동', 'hong@gmail.com', '1234');
+INSERT INTO member (name, email, password)
+VALUES ('행성이', 'planet@gmail.com', '0000');

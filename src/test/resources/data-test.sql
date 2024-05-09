@@ -26,3 +26,8 @@ VALUES ('테마11', '테마11 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc4
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('홍길동', '2024-05-05', 1, 1);
+
+INSERT INTO member (name, email, password)
+VALUES ('홍길동', 'hong@gmail.com', '1234');
+INSERT INTO member (name, email, password)
+VALUES ('행성이', 'planet@gmail.com', '0000');
