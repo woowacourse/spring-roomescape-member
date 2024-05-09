@@ -26,7 +26,6 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-
     public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
                               final ThemeRepository themeRepository,
@@ -43,10 +42,10 @@ public class ReservationService {
                 .toList();
     }
 
-    public Reservation addReservationV2(final ReservationRequest reservationRequest,
-                                        final LoginMember loginMember) {
-        final ReservationTime time = findTime(reservationRequest);
-        final Theme theme = findTheme(reservationRequest);
+    public Reservation addReservation(final ReservationRequest reservationRequest,
+                                      final LoginMember loginMember) {
+        final ReservationTime time = reservationTimeRepository.fetchById(reservationRequest.timeId());
+        final Theme theme = themeRepository.fetchById(reservationRequest.themeId());
         final Member member = memberRepository.fetchById(loginMember.id());
 
         final Reservation parsedReservation = reservationRequest.toDomain(member, time, theme);
@@ -71,7 +70,6 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-
     public void deleteReservation(final Long id) {
         final Reservation fetchReservation = reservationRepository.fetchById(id);
         reservationRepository.deleteById(fetchReservation.getId());
@@ -90,13 +88,5 @@ public class ReservationService {
         if (isExistsReservation) {
             throw new DuplicateReservationException("중복된 시간으로 예약이 불가합니다.");
         }
-    }
-
-    private Theme findTheme(final ReservationRequest reservationRequest) {
-        return themeRepository.fetchById(reservationRequest.themeId());
-    }
-
-    private ReservationTime findTime(final ReservationRequest reservationRequest) {
-        return reservationTimeRepository.fetchById(reservationRequest.timeId());
     }
 }

@@ -40,7 +40,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody @Valid final ReservationRequest request,
             final LoginMember loginMember) {
-        final Reservation reservation = reservationService.addReservationV2(request, loginMember);
+        final Reservation reservation = reservationService.addReservation(request, loginMember);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.getId())
                 .toUri();
