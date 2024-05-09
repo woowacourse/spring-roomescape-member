@@ -2,6 +2,7 @@ package roomescape.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -19,7 +20,8 @@ public record ReservationCreateRequest(
         Long themeId
 ) {
 
-    public static Reservation toReservation(final String memberName, final LocalDate date, final ReservationTime time, final Theme theme) {
-        return new Reservation(null, memberName, date, time, theme);
+    public static Reservation toReservation(final String memberName, final LocalDate date, final ReservationTime time, final Theme theme,
+                                            final Member member) {
+        return new Reservation(null, memberName, date, time, theme, member);
     }
 }

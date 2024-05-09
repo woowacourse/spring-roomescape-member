@@ -148,10 +148,9 @@ Content-Type: application/json
 
 
 ### 예약 목록 검색
-- [ ] 어드민 > 예약 관리 페이지에서 검색 조건을 선택하고 적용을 누르면,
-  - [ ] reservation-with-member.js의 applyFilter() 함수가 실행 됩니다.
-- [ ] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가하세요.
-  - [ ] 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성하세요.
+- [x] 어드민 > 예약 관리 페이지에서 검색 조건을 선택하고 적용을 누르면, reservation-with-member.js의 applyFilter() 함수가 실행 됩니다.
+- [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가하세요.
+  - [x] 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성하세요.
 
 
 ## 리팩토링 할 것
