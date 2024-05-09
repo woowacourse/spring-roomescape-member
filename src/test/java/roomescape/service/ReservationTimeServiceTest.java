@@ -27,16 +27,16 @@ class ReservationTimeServiceTest extends IntegrationTestSupport {
     @DisplayName("예약 시간 목록 조회")
     @Test
     void getTimes() {
-        final List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getTimes();
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getTimes();
         assertThat(reservationTimeResponses).hasSize(7);
     }
 
     @DisplayName("예약 시간 추가")
     @Test
     void saveTime() {
-        final ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(
+        ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(
                 LocalTime.parse("01:00"));
-        final ReservationTimeResponse reservationTimeResponse = reservationTimeService.saveTime(
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.saveTime(
                 reservationTimeSaveRequest);
         assertThat(reservationTimeResponse.startAt()).isEqualTo(LocalTime.parse("01:00"));
     }
@@ -44,7 +44,7 @@ class ReservationTimeServiceTest extends IntegrationTestSupport {
     @DisplayName("예약 시간 삭제")
     @Test
     void deleteTime() {
-        final int size = reservationTimeService.getTimes().size();
+        int size = reservationTimeService.getTimes().size();
 
         reservationTimeService.deleteTime(6L);
         assertThat(reservationTimeService.getTimes()).hasSize(size - 1);
@@ -82,7 +82,7 @@ class ReservationTimeServiceTest extends IntegrationTestSupport {
         var reservationTimeBookedRequest = new ReservationTimeBookedRequest(LocalDate.parse("2024-05-04"), 1L);
 
         // when
-        final List<ReservationTimeBookedResponse> timesWithBooked = reservationTimeService.getTimesWithBooked(
+        List<ReservationTimeBookedResponse> timesWithBooked = reservationTimeService.getTimesWithBooked(
                 reservationTimeBookedRequest);
 
         // then

@@ -9,11 +9,11 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(final String name, final String description, final String thumbnail) {
+    public Theme(String name, String description, String thumbnail) {
         this(null, name, description, thumbnail);
     }
 
-    public Theme(final Long id, final String name, final String description, final String thumbnail) {
+    public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -44,7 +44,7 @@ public class Theme {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Theme theme = (Theme) o;
+        Theme theme = (Theme) o;
         return Objects.equals(id, theme.id);
     }
 

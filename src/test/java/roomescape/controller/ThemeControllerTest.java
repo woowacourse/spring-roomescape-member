@@ -109,7 +109,7 @@ class ThemeControllerTest extends IntegrationTestSupport {
     @DisplayName("인기 테마 조회")
     @Test
     void themeNameBlank() {
-        final Map<String, String> params = Map.of("startDate", "2024-05-04",
+        Map<String, String> params = Map.of("startDate", "2024-05-04",
                 "endDate", "2024-05-09",
                 "limit", "2");
 

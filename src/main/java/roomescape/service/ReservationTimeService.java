@@ -34,16 +34,16 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse saveTime(final ReservationTimeSaveRequest reservationTimeSaveRequest) {
-        final ReservationTime reservationTime = reservationTimeSaveRequest.toReservationTime();
+    public ReservationTimeResponse saveTime(ReservationTimeSaveRequest reservationTimeSaveRequest) {
+        ReservationTime reservationTime = reservationTimeSaveRequest.toReservationTime();
 
         validateUniqueReservationTime(reservationTime);
 
-        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         return new ReservationTimeResponse(savedReservationTime);
     }
 
-    private void validateUniqueReservationTime(final ReservationTime reservationTime) {
+    private void validateUniqueReservationTime(ReservationTime reservationTime) {
         boolean isTimeExist = reservationTimeRepository.existByStartAt(reservationTime.getStartAt());
 
         if (isTimeExist) {
@@ -52,12 +52,12 @@ public class ReservationTimeService {
 
     }
 
-    public void deleteTime(final Long id) {
+    public void deleteTime(Long id) {
         validateDeleteTime(id);
         reservationTimeRepository.deleteById(id);
     }
 
-    private void validateDeleteTime(final Long id) {
+    private void validateDeleteTime(Long id) {
         if (reservationTimeRepository.findById(id).isEmpty()) {
             throw new ReservationBusinessException("존재하지 않는 시간입니다.");
         }
@@ -67,15 +67,14 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeBookedResponse> getTimesWithBooked(
-            final ReservationTimeBookedRequest reservationTimeBookedRequest) {
+    public List<ReservationTimeBookedResponse> getTimesWithBooked(ReservationTimeBookedRequest reservationTimeBookedRequest) {
         if (themeRepository.findById(reservationTimeBookedRequest.themeId()).isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
 
-        final List<ReservationTime> bookedTimes = reservationRepository.findTimeByDateAndThemeId(reservationTimeBookedRequest.date(),
+        List<ReservationTime> bookedTimes = reservationRepository.findTimeByDateAndThemeId(reservationTimeBookedRequest.date(),
                 reservationTimeBookedRequest.themeId());
-        final List<ReservationTime> times = reservationTimeRepository.findAll();
+        List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
                 .sorted(Comparator.comparing(ReservationTime::getStartAt))

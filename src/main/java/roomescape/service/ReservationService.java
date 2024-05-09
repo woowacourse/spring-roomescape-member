@@ -24,9 +24,9 @@ public class ReservationService {
     private final MemberRepository memberRepository;
 
     public ReservationService(
-            final ReservationRepository reservationRepository,
-            final ReservationTimeRepository reservationTimeRepository,
-            final ThemeRepository themeRepository, MemberRepository memberRepository
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository, MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -41,25 +41,25 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest) {
-        final ReservationTime time = reservationTimeRepository.findById(reservationSaveRequest.timeId())
+    public ReservationResponse saveReservation(ReservationSaveRequest reservationSaveRequest) {
+        ReservationTime time = reservationTimeRepository.findById(reservationSaveRequest.timeId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 예약 시간입니다."));
 
-        final Theme theme = themeRepository.findById(reservationSaveRequest.themeId())
+        Theme theme = themeRepository.findById(reservationSaveRequest.themeId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 테마입니다."));
 
-        final Member member = memberRepository.findById(reservationSaveRequest.memberId())
+        Member member = memberRepository.findById(reservationSaveRequest.memberId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 회원입니다."));
 
-        final Reservation reservation = new Reservation(member, reservationSaveRequest.date(), time, theme);
+        Reservation reservation = new Reservation(member, reservationSaveRequest.date(), time, theme);
         validateUnique(reservation);
 
-        final Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
         return new ReservationResponse(savedReservation);
     }
 
-    private void validateUnique(final Reservation reservation) {
-        final boolean isReservationExist = reservationRepository.existByDateAndTimeIdAndThemeId(reservation.getDate(),
+    private void validateUnique(Reservation reservation) {
+        boolean isReservationExist = reservationRepository.existByDateAndTimeIdAndThemeId(reservation.getDate(),
                 reservation.getTimeId(), reservation.getThemeId());
 
         if (isReservationExist) {
@@ -67,7 +67,7 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(final Long id) {
+    public void deleteReservation(Long id) {
         if (reservationRepository.findById(id).isEmpty()) {
             throw new ReservationBusinessException("존재하지 않는 예약입니다.");
         }
@@ -76,7 +76,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findReservationsByCondition(
-            final ReservationConditionRequest reservationConditionRequest) {
+            ReservationConditionRequest reservationConditionRequest) {
         return reservationRepository.findByDurationAndThemeIdAndMemberId(
                         reservationConditionRequest.memberId(),
                         reservationConditionRequest.themeId(),

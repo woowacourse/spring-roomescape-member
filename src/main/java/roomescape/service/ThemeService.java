@@ -16,14 +16,14 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public ThemeResponse saveTheme(final ThemeSaveRequest themeSaveRequest) {
-        final Theme theme = themeSaveRequest.toTheme();
-        final Theme savedTheme = themeRepository.save(theme);
+    public ThemeResponse saveTheme(ThemeSaveRequest themeSaveRequest) {
+        Theme theme = themeSaveRequest.toTheme();
+        Theme savedTheme = themeRepository.save(theme);
         return new ThemeResponse(savedTheme);
     }
 
@@ -33,20 +33,20 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getPopularThemes(final PopularThemeRequest popularThemeRequest) {
+    public List<ThemeResponse> getPopularThemes(PopularThemeRequest popularThemeRequest) {
         return reservationRepository.findTopThemesDurationOrderByCount(popularThemeRequest.startDate(), popularThemeRequest.endDate(), popularThemeRequest.limit())
                 .stream()
                 .map(ThemeResponse::new)
                 .toList();
     }
 
-    public void deleteTheme(final Long id) {
+    public void deleteTheme(Long id) {
         validateDeleteTheme(id);
 
         themeRepository.deleteById(id);
     }
 
-    private void validateDeleteTheme(final Long id) {
+    private void validateDeleteTheme(Long id) {
         if (reservationRepository.existByThemeId(id)) {
             throw new ReservationBusinessException("예약이 존재하는 테마입니다.");
         }

@@ -14,7 +14,7 @@ public record ReservationResponse(
         ThemeResponse theme
 ) {
 
-    public ReservationResponse(final Reservation reservation) {
+    public ReservationResponse(Reservation reservation) {
         this(
                 reservation.getId(),
                 MemberResponse.from(reservation.getMember()),

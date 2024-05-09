@@ -39,13 +39,13 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("예약 저장")
     @Test
     void saveReservation() {
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        final Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
 
-        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"),
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"),
                 time.getId(), theme.getId());
-        final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
+        ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
 
         assertAll(
                 () -> assertThat(reservationResponse.member().name()).isEqualTo("고구마"),
@@ -62,9 +62,9 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 예약 시간으로 예약 저장")
     @Test
     void timeForSaveReservationNotFound() {
-        final Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
+        Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
 
-        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"), 100L, 1L);
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"), 100L, 1L);
         assertThatThrownBy(() -> {
             reservationService.saveReservation(reservationSaveRequest);
         }).isInstanceOf(ReservationBusinessException.class);

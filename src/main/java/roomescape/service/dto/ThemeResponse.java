@@ -9,7 +9,7 @@ public record ThemeResponse(
         String thumbnail
 ) {
 
-    public ThemeResponse(final Theme theme) {
+    public ThemeResponse(Theme theme) {
         this(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 }

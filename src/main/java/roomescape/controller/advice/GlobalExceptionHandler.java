@@ -28,8 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ProblemDetail> handleHttpMessageNotReadableException(
-            final HttpMessageNotReadableException e) {
+    public ResponseEntity<ProblemDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         logger.error(e.getMessage(), e);
 
         return ResponseEntity.badRequest()
@@ -40,10 +39,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+    public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         logger.error(e.getMessage(), e);
 
-        final String errorMessage = e.getFieldErrors().stream()
+        String errorMessage = e.getFieldErrors().stream()
                 .map(error -> error.getField() + "는 " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
@@ -55,7 +54,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ReservationBusinessException.class)
-    public ResponseEntity<ProblemDetail> handleIllegalArgument(final ReservationBusinessException e) {
+    public ResponseEntity<ProblemDetail> handleIllegalArgument(ReservationBusinessException e) {
         logger.error(e.getMessage(), e);
         return ResponseEntity.badRequest()
                 .body(ProblemDetail.forStatusAndDetail(
@@ -65,7 +64,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetail> handleException(final Exception e) {
+    public ResponseEntity<ProblemDetail> handleException(Exception e) {
         logger.error(e.getMessage(), e);
         return ResponseEntity.internalServerError()
                 .body(ProblemDetail.forStatusAndDetail(

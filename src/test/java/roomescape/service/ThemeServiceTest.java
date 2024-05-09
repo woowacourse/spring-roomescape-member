@@ -47,9 +47,9 @@ class ThemeServiceTest extends IntegrationTestSupport {
     @Test
     void save() {
         // given
-        final ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
+        ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
         // when
-        final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
+        ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
 
         // then
         assertAll(
@@ -62,7 +62,7 @@ class ThemeServiceTest extends IntegrationTestSupport {
     @DisplayName("테마 조회")
     @Test
     void getThemes() {
-        final List<ThemeResponse> themeResponses = themeService.getThemes();
+        List<ThemeResponse> themeResponses = themeService.getThemes();
 
         assertThat(themeResponses).hasSize(13);
     }
@@ -71,8 +71,8 @@ class ThemeServiceTest extends IntegrationTestSupport {
     @Test
     void deleteTheme() {
         // given
-        final ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
-        final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
+        ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
+        ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
 
         // when
         themeService.deleteTheme(themeResponse.id());
@@ -92,9 +92,9 @@ class ThemeServiceTest extends IntegrationTestSupport {
     @Test
     void deleteExistReservation() {
         // given
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        final Member member = memberRepository.save(new Member("생강", "email@email.com", "1234"));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        Member member = memberRepository.save(new Member("생강", "email@email.com", "1234"));
         reservationRepository.save(new Reservation(member, LocalDate.parse("2025-05-13"), time, theme));
 
         // when & then
@@ -106,10 +106,10 @@ class ThemeServiceTest extends IntegrationTestSupport {
     @Test
     void getPopularTheme() {
         // given
-        final PopularThemeRequest popularThemeRequest = new PopularThemeRequest(LocalDate.parse("2024-05-04"), LocalDate.parse("2024-05-10"), 2);
+        PopularThemeRequest popularThemeRequest = new PopularThemeRequest(LocalDate.parse("2024-05-04"), LocalDate.parse("2024-05-10"), 2);
 
         // when
-        final List<ThemeResponse> popularThemes = themeService.getPopularThemes(popularThemeRequest);
+        List<ThemeResponse> popularThemes = themeService.getPopularThemes(popularThemeRequest);
 
         // then
         assertThat(popularThemes).hasSize(2)

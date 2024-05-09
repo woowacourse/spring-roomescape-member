@@ -35,17 +35,17 @@ public class MemberJdbcRepository implements MemberRepository {
 
     @Override
     public Member save(Member member) {
-        final BeanPropertySqlParameterSource memberParameters = new BeanPropertySqlParameterSource(member);
-        final Long savedThemeId = jdbcInsert.executeAndReturnKey(memberParameters).longValue();
+        BeanPropertySqlParameterSource memberParameters = new BeanPropertySqlParameterSource(member);
+        Long savedThemeId = jdbcInsert.executeAndReturnKey(memberParameters).longValue();
 
         return new Member(savedThemeId, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
     public Optional<Member> findById(Long id) {
-        final String sql = "SELECT * FROM member WHERE id = ?";
+        String sql = "SELECT * FROM member WHERE id = ?";
         try {
-            final Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, id);
+            Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, id);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -54,15 +54,15 @@ public class MemberJdbcRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        final String sql = "SELECT * FROM member";
+        String sql = "SELECT * FROM member";
         return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        final String sql = "SELECT * FROM member WHERE email = ?";
+        String sql = "SELECT * FROM member WHERE email = ?";
         try {
-            final Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email);
+            Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -71,9 +71,9 @@ public class MemberJdbcRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        final String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         try {
-            final Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email, password);
+            Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email, password);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -81,7 +81,7 @@ public class MemberJdbcRepository implements MemberRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM member WHERE id = ?", id);
     }
 }

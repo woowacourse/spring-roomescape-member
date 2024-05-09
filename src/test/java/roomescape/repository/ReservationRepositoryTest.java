@@ -38,17 +38,17 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @DisplayName("예약 생성")
     @Test
     void save() {
-        final ReservationTime reservationTime = new ReservationTime(LocalTime.parse("08:00"));
-        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("08:00"));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        final Theme theme = new Theme("이름", "설명", "썸네일");
-        final Theme savedTheme = themeRepository.save(theme);
+        Theme theme = new Theme("이름", "설명", "썸네일");
+        Theme savedTheme = themeRepository.save(theme);
 
-        final Member member = new Member("생강", "email@email.com", "1234");
-        final Member savedMember = memberRepository.save(member);
+        Member member = new Member("생강", "email@email.com", "1234");
+        Member savedMember = memberRepository.save(member);
 
-        final Reservation reservation = new Reservation(savedMember, LocalDate.parse("2025-01-01"), savedReservationTime, savedTheme);
-        final Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation reservation = new Reservation(savedMember, LocalDate.parse("2025-01-01"), savedReservationTime, savedTheme);
+        Reservation savedReservation = reservationRepository.save(reservation);
         assertAll(
                 () -> assertThat(savedReservation.getMember().getName()).isEqualTo("생강"),
                 () -> assertThat(savedReservation.getDate()).isEqualTo("2025-01-01"),

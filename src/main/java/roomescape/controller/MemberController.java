@@ -21,12 +21,12 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    public MemberController(final MemberService memberService) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
     @PostMapping
-    public ResponseEntity<MemberResponse> save(@RequestBody @Valid final MemberSaveRequest memberRequest) {
+    public ResponseEntity<MemberResponse> save(@RequestBody @Valid MemberSaveRequest memberRequest) {
         MemberResponse memberResponse = memberService.save(memberRequest);
 
         return ResponseEntity.created(URI.create("/members/" + memberResponse.id()))
@@ -42,7 +42,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable("id") final Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
         memberService.delete(id);
         return ResponseEntity.noContent().build();
     }

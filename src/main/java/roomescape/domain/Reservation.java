@@ -12,11 +12,11 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
         this(null, member, date, time, theme);
     }
 
-    public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.member = member;
         this.date = date;
@@ -24,7 +24,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean isTime(final ReservationTime time) {
+    public boolean isTime(ReservationTime time) {
         return this.time.equals(time);
     }
 
@@ -72,7 +72,7 @@ public class Reservation {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Reservation that = (Reservation) o;
+        Reservation that = (Reservation) o;
         return Objects.equals(id, that.id);
     }
 
