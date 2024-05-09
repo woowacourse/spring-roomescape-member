@@ -3,28 +3,28 @@ package roomescape.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 @Repository
-public class UserRepository {
+public class MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<User> userRowMapper = (resultSet, rowNum) -> new User(
+    private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password")
     );
 
 
-    public UserRepository(JdbcTemplate jdbcTemplate) {
+    public MemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public boolean existsByEmailAndPassword(String email, String password) {
         String sql = "SELECT exists(" +
                 "SELECT 1 " +
-                "FROM user " +
+                "FROM member " +
                 "WHERE email = ? " +
                 "AND password = ?)";
 
