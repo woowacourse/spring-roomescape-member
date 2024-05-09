@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.condition.ThemeInsertCondition;
 import roomescape.domain.ReservationTheme;
 
 @Repository
@@ -46,10 +45,10 @@ public class ReservationThemeDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationThemes));
     }
 
-    public ReservationTheme insert(ThemeInsertCondition insertCondition) {
-        String name = insertCondition.getName();
-        String description = insertCondition.getDescription();
-        String thumbnail = insertCondition.getThumbnail();
+    public ReservationTheme insert(ReservationTheme theme) {
+        String name = theme.getName();
+        String description = theme.getDescription();
+        String thumbnail = theme.getThumbnail();
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)

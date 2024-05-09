@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationThemeDao;
-import roomescape.dao.condition.ThemeInsertCondition;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
@@ -28,13 +27,23 @@ public class ReservationThemeService {
                 .toList();
     }
 
-    public ThemeResponse insertTheme(ThemeRequest themeRequest) {
-        validateDuplicate(themeRequest.name());
-        ThemeInsertCondition insertCondition = new ThemeInsertCondition(themeRequest.name(),
-                themeRequest.description(), themeRequest.thumbnail());
-        ReservationTheme inserted = reservationThemeDao.insert(insertCondition);
+    public ThemeResponse insertTheme(ThemeRequest request) {
+        ReservationTheme theme = getTheme(request);
+        ReservationTheme inserted = reservationThemeDao.insert(theme);
 
         return new ThemeResponse(inserted);
+    }
+
+    public ReservationTheme getTheme(ThemeRequest request) {
+        validateDuplicate(request.name());
+
+        return new ReservationTheme(null, request.name(), request.description(), request.thumbnail());
+    }
+
+    private void validateDuplicate(String name) {
+        if (reservationThemeDao.hasSameName(name)) {
+            throw new IllegalArgumentException("이름이 동일한 테마가 존재합니다.");
+        }
     }
 
     public void deleteTheme(Long id) {
@@ -52,11 +61,5 @@ public class ReservationThemeService {
         return reservationThemeDao.findBestThemesInWeek(from, to).stream()
                 .map(WeeklyThemeResponse::new)
                 .toList();
-    }
-
-    private void validateDuplicate(String name) {
-        if (reservationThemeDao.hasSameName(name)) {
-            throw new IllegalArgumentException("이름이 동일한 테마가 존재합니다.");
-        }
     }
 }

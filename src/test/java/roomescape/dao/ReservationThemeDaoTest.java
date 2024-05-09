@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dao.condition.ThemeInsertCondition;
 import roomescape.domain.ReservationTheme;
 
 @JdbcTest
@@ -26,7 +25,7 @@ public class ReservationThemeDaoTest {
     @Test
     void findAll() {
         // given
-        themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+        themeDao.insert(new ReservationTheme(null, "name", "desc", "thumb"));
 
         // when
         List<ReservationTheme> reservationThemes = themeDao.findAll();
@@ -39,7 +38,7 @@ public class ReservationThemeDaoTest {
     @Test
     void findById() {
         // given
-        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+        ReservationTheme inserted = themeDao.insert(new ReservationTheme(null, "name", "desc", "thumb"));
 
         // when
         ReservationTheme theme = themeDao.findById(inserted.getId()).orElseThrow();
@@ -60,7 +59,7 @@ public class ReservationThemeDaoTest {
     @Test
     void insert() {
         // given
-        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+        ReservationTheme inserted = themeDao.insert(new ReservationTheme(null, "name", "desc", "thumb"));
 
         // when
         Long insertedThemeId = inserted.getId();
@@ -73,7 +72,7 @@ public class ReservationThemeDaoTest {
     @Test
     void deleteById() {
         // given
-        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+        ReservationTheme inserted = themeDao.insert(new ReservationTheme(null, "name", "desc", "thumb"));
 
         // when
         themeDao.deleteById(inserted.getId());
@@ -87,7 +86,7 @@ public class ReservationThemeDaoTest {
     @Test
     void isExist() {
         // given
-        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+        ReservationTheme inserted = themeDao.insert(new ReservationTheme(null, "name", "desc", "thumb"));
 
         // when
         Boolean isExist = themeDao.isExist(inserted.getId());
@@ -100,7 +99,7 @@ public class ReservationThemeDaoTest {
     @Test
     void hasSameName() {
         // given
-        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+        ReservationTheme inserted = themeDao.insert(new ReservationTheme(null, "name", "desc", "thumb"));
 
         // when
         Boolean hasSameName = themeDao.hasSameName("name");
