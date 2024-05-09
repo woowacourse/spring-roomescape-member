@@ -25,6 +25,16 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT m.id, m.name, m.email, m.password FROM member AS m WHERE m.id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT m.id, m.name, m.email, m.password FROM member AS m WHERE m.email = ?";
         try {
