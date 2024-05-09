@@ -11,12 +11,12 @@ import roomescape.service.dto.login.LoginRequest;
 import roomescape.service.dto.login.LoginResponse;
 
 @Service
-public class LoginService {
+public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
-    public LoginService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.memberRepository = memberRepository;
     }

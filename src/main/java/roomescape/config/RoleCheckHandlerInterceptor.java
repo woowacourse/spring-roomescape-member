@@ -9,7 +9,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.UnauthorizedException;
-import roomescape.service.LoginService;
+import roomescape.service.AuthService;
 
 import java.util.Arrays;
 
@@ -17,11 +17,11 @@ import java.util.Arrays;
 public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public RoleCheckHandlerInterceptor(JwtTokenProvider jwtTokenProvider, LoginService loginService) {
+    public RoleCheckHandlerInterceptor(JwtTokenProvider jwtTokenProvider, AuthService authService) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.loginService = loginService;
+        this.authService = authService;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new UnauthorizedException("사용자 인증 정보가 없습니다."))
                 .getValue();
         String email = jwtTokenProvider.decode(accessToken);
-        Member member = loginService.findMemberByEmail(email);
+        Member member = authService.findMemberByEmail(email);
 
         if (!member.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenException("허용되지 않는 사용자입니다.");

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import roomescape.service.LoginService;
+import roomescape.service.AuthService;
 import roomescape.service.dto.login.LoginCheckResponse;
 import roomescape.service.dto.login.LoginRequest;
 import roomescape.service.dto.login.LoginResponse;
@@ -13,10 +13,10 @@ import roomescape.service.dto.login.LoginResponse;
 @Controller
 public class AuthController {
 
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public AuthController(LoginService loginService) {
-        this.loginService = loginService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @GetMapping("/login")
@@ -27,7 +27,7 @@ public class AuthController {
     @ResponseBody
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        LoginResponse data = loginService.login(request);
+        LoginResponse data = authService.login(request);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, "token=" + data.accessToken())
@@ -37,7 +37,7 @@ public class AuthController {
     @ResponseBody
     @GetMapping("/login/check")
     public LoginCheckResponse checkLogin(@CookieValue("token") String token) {
-        return loginService.checkLogin(token);
+        return authService.checkLogin(token);
     }
 
     @ResponseBody

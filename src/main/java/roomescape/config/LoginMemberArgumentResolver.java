@@ -10,7 +10,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.exception.UnauthorizedException;
-import roomescape.service.LoginService;
+import roomescape.service.AuthService;
 
 import java.util.Arrays;
 
@@ -18,11 +18,11 @@ import java.util.Arrays;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider, LoginService loginService) {
+    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider, AuthService authService) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.loginService = loginService;
+        this.authService = authService;
     }
 
     @Override
@@ -47,6 +47,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 .orElseThrow(() -> new UnauthorizedException("사용자 인증 정보가 없습니다."))
                 .getValue();
         String email = jwtTokenProvider.decode(accessToken);
-        return loginService.findMemberByEmail(email);
+        return authService.findMemberByEmail(email);
     }
 }
