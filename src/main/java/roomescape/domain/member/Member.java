@@ -36,4 +36,8 @@ public class Member {
     public String getPassword() {
         return password;
     }
+
+    public long getId() {
+        return id;
+    }
 }

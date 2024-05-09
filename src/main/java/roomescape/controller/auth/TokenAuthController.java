@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.LoginRequest;
-import roomescape.controller.dto.response.MemberResponse;
+import roomescape.controller.dto.response.MemberNameResponse;
 import roomescape.domain.member.Member;
 import roomescape.service.auth.AuthService;
 import roomescape.util.configuration.AuthenticationPrincipal;
@@ -30,10 +30,10 @@ public class TokenAuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> getUserInformation(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<MemberNameResponse> getUserInformation(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new MemberResponse(member.getNameValue()));
+                .body(new MemberNameResponse(member.getNameValue()));
     }
 
     @PostMapping("/logout")

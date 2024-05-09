@@ -11,11 +11,16 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
 
     private final ReservationTimeRowMapper reservationTimeRowMapper;
     private final ThemeRowMapper themeRowMapper;
+    private final MemberRowMapper memberRowMapper;
 
-    public ReservationRowMapper(final ReservationTimeRowMapper reservationTimeRowMapper,
-                                final ThemeRowMapper themeRowMapper) {
+    public ReservationRowMapper(
+            final ReservationTimeRowMapper reservationTimeRowMapper,
+            final ThemeRowMapper themeRowMapper,
+            final MemberRowMapper memberRowMapper
+    ) {
         this.reservationTimeRowMapper = reservationTimeRowMapper;
         this.themeRowMapper = themeRowMapper;
+        this.memberRowMapper = memberRowMapper;
     }
 
     @Override
@@ -23,7 +28,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         try {
             return Reservation.of(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    memberRowMapper.mapRow(resultSet, rowNumber),
                     resultSet.getString("date"),
                     reservationTimeRowMapper.mapRow(resultSet, rowNumber),
                     themeRowMapper.mapRow(resultSet, rowNumber)

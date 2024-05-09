@@ -2,7 +2,7 @@ package roomescape.domain.roomescape;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import roomescape.domain.member.MemberName;
+import roomescape.domain.member.Member;
 
 public class Reservation {
     private final Long id;
@@ -13,7 +13,7 @@ public class Reservation {
 
     public Reservation(
             final Long id,
-            final MemberName memberName,
+            final Member member,
             final LocalDate date,
             final ReservationTime time,
             final Theme theme
@@ -21,7 +21,7 @@ public class Reservation {
         validateDate(date);
         validateIsNotBeforeReservation(date, time);
         this.id = id;
-        this.memberName = memberName;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -41,28 +41,36 @@ public class Reservation {
     }
 
     public static Reservation of(
-            final long id, final String name, final String date,
+            final long id, final Member member, final String date,
             final ReservationTime time, final Theme theme
     ) {
         LocalDate parsedDate = LocalDate.parse(date);
-        return new Reservation(id, new MemberName(name), parsedDate, time, theme);
+        return new Reservation(id, member, parsedDate, time, theme);
     }
 
-    public static Reservation of(final MemberName name, final LocalDate date, final ReservationTime time,
+    public static Reservation of(final Member member, final LocalDate date, final ReservationTime time,
                                  final Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, member, date, time, theme);
     }
 
     public Reservation assignId(final long id) {
-        return new Reservation(id, memberName, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 
     public long getId() {
         return id;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
+    public long getMemberId() {
+        return member.getId();
+    }
+
     public String getName() {
-        return memberName.getValue();
+        return member.getNameValue();
     }
 
     public LocalDate getDate() {
@@ -73,12 +81,12 @@ public class Reservation {
         return time;
     }
 
-    public Theme getTheme() {
-        return theme;
-    }
-
     public long getTimeId() {
         return time.getId();
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     public long getThemeId() {

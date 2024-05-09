@@ -33,7 +33,7 @@ public class MemberDao {
     public Optional<Member> findById(final long id) {
         String sql = "SELECT * FROM member WHERE id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper), id);
+            return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper, id));
         } catch (final EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

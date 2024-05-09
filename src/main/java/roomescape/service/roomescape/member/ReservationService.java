@@ -39,7 +39,7 @@ public class ReservationService {
         if (hasDuplicateReservation(saveRequest.date(), saveRequest.timeId(), saveRequest.themeId())) {
             throw new IllegalArgumentException("[ERROR] 중복된 예약이 존재합니다.");
         }
-        Reservation reservation = saveRequest.toEntity(member.getName(), reservationTime, theme);
+        Reservation reservation = saveRequest.toEntity(member, reservationTime, theme);
         return ReservationResponse.from(reservationDao.save(reservation));
     }
 
