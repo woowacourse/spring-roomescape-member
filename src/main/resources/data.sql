@@ -19,3 +19,7 @@ INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('brown', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1);
 INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('brown', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 3);
+
+INSERT INTO member(name, email, password)
+VALUES ('AaAa', 'a@a.com', '123a!'),
+       ('BbBb', 'b@b.com', '123b!')

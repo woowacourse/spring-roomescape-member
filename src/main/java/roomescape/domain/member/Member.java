@@ -18,6 +18,10 @@ public class Member {
         this.password = new Password(rawPassword);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name.getValue();
     }

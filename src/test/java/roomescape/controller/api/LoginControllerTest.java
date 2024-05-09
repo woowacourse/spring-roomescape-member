@@ -17,7 +17,7 @@ class LoginControllerTest {
     @DisplayName("성공: 로그인 성공")
     @Test
     void login_Success() {
-        LoginRequest request = new LoginRequest("a@a.com", "123!");
+        LoginRequest request = new LoginRequest("a@a.com", "123a!");
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(request)

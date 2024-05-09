@@ -1,14 +1,26 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.domain.member.Member;
+import roomescape.exception.AuthorizationException;
+import roomescape.repository.MemberRepository;
 
 @Service
 public class LoginService {
 
-    private static final String EMAIL = "a@a.com";
-    private static final String PASSWORD = "123!";
+    private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public boolean isInvalidLogin(String email, String password) {
-        return !email.equals(EMAIL) || !password.equals(PASSWORD);
+    public LoginService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    public String createToken(String email, String password) {
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+            .orElseThrow(() -> new AuthorizationException("아이디 혹은 패스워드가 일치하지 않습니다."));
+
+        return jwtTokenProvider.createToken(member);
     }
 }
