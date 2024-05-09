@@ -210,6 +210,38 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        try {
+            String sql = """
+                    SELECT
+                        r.id AS reservation_id,
+                        m.id AS member_id,
+                        m.name AS member_name,
+                        m.email AS member_email,
+                        m.password AS member_password,
+                        r.date,
+                        t.id AS time_id,
+                        t.start_at AS start_at,
+                        th.id AS theme_id,
+                        th.name AS theme_name,
+                        th.description AS theme_description,
+                        th.thumbnail AS theme_thumbnail
+                    FROM reservation AS r
+                        INNER JOIN reservation_time AS t
+                            ON r.time_id = t.id
+                        INNER JOIN theme AS th
+                            ON r.theme_id = th.id
+                        INNER JOIN member AS m
+                            ON r.member_id = m.id
+                    WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?""";
+            Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, date, timeId, themeId);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);

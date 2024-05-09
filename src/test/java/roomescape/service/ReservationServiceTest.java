@@ -168,8 +168,8 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.themeFixture));
         Mockito.when(memberRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.memberFixture));
-        Mockito.when(reservationRepository.findAll())
-                .thenReturn(List.of(Fixtures.reservationFixture));
+        Mockito.when(reservationRepository.findByDateAndTimeIdAndThemeId(any(), any(), any()))
+                .thenReturn(Optional.of(Fixtures.reservationFixture));
         ReservationCreateRequest request = new ReservationCreateRequest(
                 Fixtures.reservationFixture.getMember().getId(),
                 Fixtures.reservationFixture.getDate(),
@@ -208,8 +208,8 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.themeFixture));
-        Mockito.when(reservationRepository.findAll())
-                .thenReturn(List.of(Fixtures.reservationFixture));
+        Mockito.when(reservationRepository.findByDateAndTimeIdAndThemeId(any(), any(), any()))
+                .thenReturn(Optional.of(Fixtures.reservationFixture));
         Mockito.when(memberRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.memberFixtures.get(0)));
         ReservationCreateRequest request = new ReservationCreateRequest(id, date, id, id);

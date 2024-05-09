@@ -20,6 +20,10 @@ public class Member {
         this(id, name, email, password, Role.USER);
     }
 
+    public boolean isSameMember(Member other) {
+        return id.equals(other.id);
+    }
+
     public Long getId() {
         return id;
     }

@@ -18,6 +18,7 @@ import roomescape.repository.reservationtime.ReservationTimeRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -80,17 +81,18 @@ public class ReservationService {
     }
 
     private void validateDuplicated(Reservation reservation) {
-        reservationRepository.findAll().stream()
-                .filter(reservation::isDuplicated)
-                .findFirst()
-                .ifPresent(duplicatedReservation -> validateSameUser(duplicatedReservation, reservation));
-    }
+        Optional<Reservation> existsReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        );
 
-    private void validateSameUser(Reservation duplicatedReservation, Reservation reservation) {
-        if (duplicatedReservation.isSameUser(reservation)) {
-            throw new BadRequestException("중복된 예약입니다.");
-        }
-        throw new BadRequestException("이미 예약된 테마입니다.");
+        existsReservation.ifPresent((duplicated) -> {
+            if (duplicated.isSameMember(reservation)) {
+                throw new BadRequestException("중복된 예약입니다.");
+            }
+            throw new BadRequestException("이미 예약된 테마입니다.");
+        });
     }
 
     private void validateRequestedTime(Reservation reservation, ReservationTime reservationTime) {
