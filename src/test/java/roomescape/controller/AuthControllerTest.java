@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dao.MemberDao;
-import roomescape.domain.member.Member;
-import roomescape.service.AuthService;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
+import roomescape.auth.service.AuthService;
 
 import java.util.Map;
 
@@ -50,7 +50,6 @@ public class AuthControllerTest {
                 .body(loginParams)
                 .when().post("/login")
                 .then().log().all().extract().header("Set-Cookie").split(";")[0];
-
 
         // then
         String tokenResponsePrefix = "token=";

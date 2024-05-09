@@ -7,9 +7,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.theme.Theme;
-import roomescape.domain.time.Time;
+import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.dao.TimeDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -35,12 +38,12 @@ public class ReservationDaoTest {
     @DisplayName("전체 예약 정보를 조회한다")
     void readDbReservations() {
         // given
-        Time time = timeDao.insert(new Time(LocalTime.of(17, 30)));
+        ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
         reservationDao.insert(new Reservation(
                 "브라운",
                 LocalDate.of(2024, 4, 25),
-                time,
+                reservationTime,
                 theme
         ));
 
@@ -55,14 +58,14 @@ public class ReservationDaoTest {
     @DisplayName("하나의 예약만 등록한 경우, 예약 삭제 뒤 DB를 조회 했을 때 조회 결과 개수는 0개이다.")
     void readReservationsSizeFromDbAfterPostAndDelete() {
         // given
-        Time time = timeDao.insert(new Time(LocalTime.of(17, 30)));
+        ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when
         Reservation savedReservation = reservationDao.insert(new Reservation(
                 "브라운",
                 LocalDate.of(2024, 4, 25),
-                time,
+                reservationTime,
                 theme
         ));
         int deleteCount = reservationDao.deleteById(savedReservation.getId());

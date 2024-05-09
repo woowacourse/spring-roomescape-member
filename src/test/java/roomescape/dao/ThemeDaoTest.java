@@ -7,7 +7,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.domain.theme.Theme;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.util.List;

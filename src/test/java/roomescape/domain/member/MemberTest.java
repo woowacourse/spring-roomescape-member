@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.global.exception.model.ValidateException;
+import roomescape.member.domain.Member;
 
 import java.util.stream.Stream;
 

@@ -7,14 +7,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ThemeDao;
-import roomescape.dao.TimeDao;
-import roomescape.domain.theme.Theme;
-import roomescape.domain.time.Time;
-import roomescape.dto.reservation.ReservationRequest;
+import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.reservation.dao.TimeDao;
+import roomescape.theme.domain.Theme;
+import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.global.exception.model.DataDuplicateException;
 import roomescape.global.exception.model.ValidateException;
+import roomescape.reservation.service.ReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,15 +39,15 @@ class ReservationServiceTest {
     @DisplayName("동일한 날짜와 시간과 테마에 예약을 생성하면 예외가 발생한다")
     void duplicateTimeReservationAddFail() {
         // given
-        Time time = timeDao.insert(new Time(LocalTime.of(12, 30)));
+        ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(12, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when & then
         reservationService.addReservation(
-                new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId()));
+                new ReservationRequest("예약", LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId()));
 
         assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId())))
+                new ReservationRequest("예약", LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId())))
                 .isInstanceOf(DataDuplicateException.class);
     }
 
@@ -54,13 +55,13 @@ class ReservationServiceTest {
     @DisplayName("이미 지난 날짜로 예약을 생성하면 예외가 발생한다")
     void beforeDateReservationFail() {
         // given
-        Time time = timeDao.insert(new Time(LocalTime.of(12, 30)));
+        ReservationTime reservationTime = timeDao.insert(new ReservationTime(LocalTime.of(12, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
         LocalDate beforeDate = LocalDate.now().minusDays(1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
+                new ReservationRequest("예약", beforeDate, reservationTime.getId(), theme.getId())))
                 .isInstanceOf(ValidateException.class);
     }
 
@@ -69,12 +70,12 @@ class ReservationServiceTest {
     void beforeTimeReservationFail() {
         // given
         LocalDateTime beforeTime = LocalDateTime.now().minusHours(1L);
-        Time time = timeDao.insert(new Time(beforeTime.toLocalTime()));
+        ReservationTime reservationTime = timeDao.insert(new ReservationTime(beforeTime.toLocalTime()));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationRequest("예약", beforeTime.toLocalDate(), time.getId(), theme.getId())))
+                new ReservationRequest("예약", beforeTime.toLocalDate(), reservationTime.getId(), theme.getId())))
                 .isInstanceOf(ValidateException.class);
     }
 }
