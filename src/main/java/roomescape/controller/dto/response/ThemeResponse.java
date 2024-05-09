@@ -3,7 +3,7 @@ package roomescape.controller.dto.response;
 import roomescape.domain.roomescape.Theme;
 
 public record ThemeResponse(
-        long themeId,
+        long id,
         String name,
         String description,
         String thumbnail

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.request.MemberResponse;
 import roomescape.controller.dto.request.SignupRequest;
-import roomescape.controller.dto.response.MemberNameResponse;
 import roomescape.controller.dto.response.SignupResponse;
 import roomescape.service.member.MemberService;
 
@@ -28,7 +28,7 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberNameResponse>> getAllMemberNames() {
-        return ResponseEntity.ok(memberService.getAllMemberNames());
+    public ResponseEntity<List<MemberResponse>> getAll() {
+        return ResponseEntity.ok(memberService.getAll());
     }
 }
