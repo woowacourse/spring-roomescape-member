@@ -10,9 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.*;
 
 @Repository
 public class ReservationRepository {
@@ -29,9 +27,16 @@ public class ReservationRepository {
                 selectedReservation.getString("thumbnail")
         );
 
+        final Member member = new Member(
+                selectedReservation.getLong("member_id"),
+                selectedReservation.getString("member_name"),
+                Role.from(selectedReservation.getString("role")),
+                selectedReservation.getString("email")
+        );
+
         return new Reservation(
                 selectedReservation.getLong("id"),
-                null,
+                member,
                 LocalDate.parse(selectedReservation.getString("date")),
                 time,
                 theme
@@ -75,12 +80,18 @@ public class ReservationRepository {
                 t.id as theme_id,
                 t.name as theme_name,
                 t.description,
-                t.thumbnail
+                t.thumbnail,
+                m.id as member_id,
+                m.name as member_name,
+                m.role,
+                m.email
             FROM reservation as r
             INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
+            INNER JOIN member as m 
+            ON r.member_id = m.id
         """;
         return jdbcTemplate.query(selectQuery, ROW_MAPPER)
                 .stream()
@@ -97,12 +108,18 @@ public class ReservationRepository {
                 t.id as theme_id,
                 t.name as theme_name,
                 t.description,
-                t.thumbnail
+                t.thumbnail,
+                m.id as member_id,
+                m.name as member_name,
+                m.role,
+                m.email
             FROM reservation as r
             INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
-            ON r.theme_id = t.id
+            ON r.theme_id = t.id 
+            INNER JOIN member as m 
+            ON r.member_id = m.id 
             WHERE r.date = ? AND r.theme_id = ?
         """;
         return jdbcTemplate.query(selectQuery, ROW_MAPPER, date, themId)
@@ -140,12 +157,18 @@ public class ReservationRepository {
                 t.id as theme_id,
                 t.name as theme_name,
                 t.description,
-                t.thumbnail
+                t.thumbnail,
+                m.id as member_id,
+                m.name as member_name,
+                m.role,
+                m.email
             FROM reservation as r
             INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
+            INNER JOIN member as m 
+            ON r.member_id = m.id
             WHERE r.id = ?
             LIMIT 1
         """;
