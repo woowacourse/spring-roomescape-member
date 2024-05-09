@@ -4,14 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.PopularThemePeriod;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private static final int POPULAR_THEME_START_DATE_BOUNDARY = 7;
-    private static final int POPULAR_THEME_END_DATE_BOUNDARY = 1;
     private static final int COUNT_OF_POPULAR_THEME = 10;
 
     private final ThemeDao themeDao;
@@ -28,9 +27,9 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.minusDays(POPULAR_THEME_START_DATE_BOUNDARY);
-        LocalDate endDate = currentDate.minusDays(POPULAR_THEME_END_DATE_BOUNDARY);
+        PopularThemePeriod popularThemePeriod = new PopularThemePeriod();
+        LocalDate startDate = popularThemePeriod.getStartDate();
+        LocalDate endDate = popularThemePeriod.getEndDate();
 
         return themeDao.findThemesSortedByCountOfReservation(startDate, endDate, COUNT_OF_POPULAR_THEME)
                 .stream()
