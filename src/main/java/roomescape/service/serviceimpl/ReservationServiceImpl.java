@@ -5,7 +5,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
 import roomescape.dto.request.MemberRequest;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.repository.ReservationDao;
@@ -36,11 +36,11 @@ class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationResponse save(
-            final ReservationRequest reservationRequest,
+            final UserReservationRequest userReservationRequest,
             final MemberRequest memberRequest) {
-        Reservation reservation = reservationRequest.toEntity(
-                findReservationTimeById(reservationRequest),
-                findThemeById(reservationRequest),
+        Reservation reservation = userReservationRequest.toEntity(
+                findReservationTimeById(userReservationRequest),
+                findThemeById(userReservationRequest),
                 memberRequest.toEntity()
         );
 
@@ -67,13 +67,13 @@ class ReservationServiceImpl implements ReservationService {
         return SelectableTimeResponse.listOf(reservationTimes, usedTimeId);
     }
 
-    private ReservationTime findReservationTimeById(ReservationRequest reservationRequest) {
-        return reservationTimeDao.findById(reservationRequest.timeId())
+    private ReservationTime findReservationTimeById(UserReservationRequest userReservationRequest) {
+        return reservationTimeDao.findById(userReservationRequest.timeId())
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 잘못된 예약 가능 시간 번호를 입력하였습니다."));
     }
 
-    private Theme findThemeById(ReservationRequest reservationRequest) {
-        return themeDao.findById(reservationRequest.themeId())
+    private Theme findThemeById(UserReservationRequest userReservationRequest) {
+        return themeDao.findById(userReservationRequest.themeId())
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
     }
 
