@@ -29,21 +29,16 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
 
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (request == null) {
-            throw new UnauthorizedException("잘못된 접근입니다."); //TODO 이름
-        }
 
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
-        if (cookies == null || cookies.length == 0) {
-            throw new UnauthorizedException("잘못된 접근입니다."); // TODO 엥 이거 맞음?
+        if (cookies == null || cookies.length == 0 || token == null || token.isBlank()) {
+//            throw new UnauthorizedException("잘못된 접근입니다."); // TODO 엥 이거 맞음?
+            return null;
         }
 
         final Member member = memberService.findMemberByToken(token);
-        if (member == null) { //TODO null이 너무 덕지덕지
-            return null;
-        }
-        return new LoginMember(member.getId(), member.getName(), member.getEmail());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
     }
 
     private String extractTokenFromCookie(final Cookie[] cookies) {

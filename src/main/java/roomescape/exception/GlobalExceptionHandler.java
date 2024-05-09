@@ -42,4 +42,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse("예기치 않은 오류가 발생했습니다."));
     }
+    
+    //TODO NoResourceFoundException 낫파운드로 바꾸기
 }

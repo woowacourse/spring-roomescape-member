@@ -41,7 +41,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody @Valid final ReservationRequest request,
-            final LoginMember loginMember) {
+            final LoginMember loginMember) { //TODO valid 하기 널이면 로긘안한 상태
         final Reservation reservation = reservationService.addReservation(request, loginMember);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.getId())

@@ -26,7 +26,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
 
         final Member member = memberService.findMemberByToken(token);
 
-        if (member == null || member.getRole() != Role.ADMIN) {
+        if (member.getRole() != Role.ADMIN) {
             throw new AuthorizationException("어드민만 올수 있어");
         }
         return true;

@@ -4,5 +4,6 @@ package roomescape.controller.member.dto;
 public record LoginMember(
         Long id,
         String name,
-        String email) {
+        String email,
+        String role) {
 }
