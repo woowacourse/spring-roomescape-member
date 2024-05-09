@@ -1,24 +1,57 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.dao.MemberDao;
+import roomescape.domain.member.Member;
+import roomescape.service.AuthService;
+
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AuthControllerTest {
+@Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+public class AuthControllerTest {
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private MemberDao memberDao;
 
     @LocalServerPort
     private int port;
 
     @Test
-    @DisplayName("/login 으로 GET 요청을 보내면 login 페이지와 200 OK 를 받는다.")
-    void getMainPage() {
-        RestAssured.given().log().all()
+    @DisplayName("로그인에 성공하면 JWT accessToken을 Response 받는다.")
+    void getJwtAccessTokenWhenlogin() {
+        // given
+        String email = "test@email.com";
+        String password = "12341234";
+        memberDao.save(new Member("이름", email, password));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        // when
+        String cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
                 .port(port)
-                .when().get("/login")
-                .then().log().all()
-                .statusCode(200);
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+
+        // then
+        String tokenResponsePrefix = "token=";
+        Assertions.assertThat(cookie.startsWith(tokenResponsePrefix)).isTrue();
     }
 }

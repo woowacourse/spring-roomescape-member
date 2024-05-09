@@ -53,13 +53,11 @@ public class TimeDao {
     public ReservationTimeInfosResponse findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 SELECT
-                    rt.id, start_at, IFNULL(is_reserved, 'False') AS is_reserved
+                    rt.id,
+                    rt.start_at,
+                    CASE WHEN r.time_id IS NOT NULL THEN 'True' ELSE 'False' END AS is_reserved
                 FROM reservation_time rt
-                LEFT JOIN (
-                    SELECT r.time_id, 'True' AS is_reserved
-                    FROM reservation r
-                    WHERE r.date = ? AND r.theme_id = ?
-                ) r ON rt.id = r.time_id
+                LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ?;
                 """;
 
         List<ReservationTimeInfoResponse> results = jdbcTemplate.query(sql, (rs, rowNum) -> {

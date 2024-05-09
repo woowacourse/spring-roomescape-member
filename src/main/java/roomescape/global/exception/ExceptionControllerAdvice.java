@@ -16,6 +16,7 @@ import roomescape.global.exception.model.ValidateException;
 public class ExceptionControllerAdvice {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    // TODO: errorType 대신, exceptionMessage 던지기(errorType 이름도 같이 던져줄까 고민되지만 중복내용이기에 필요성 고려)
     @ExceptionHandler(value = ValidateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Object> handleValidateException(final ValidateException e) {

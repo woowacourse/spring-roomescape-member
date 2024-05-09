@@ -1,3 +1,6 @@
+INSERT INTO member (name, password, email)
+VALUES ('이름', '12341234', 'test@test.com');
+
 -- 테마 목록 : 11개
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('테마1', '재밌는 테마입니다',
