@@ -93,7 +93,6 @@ class ThemeServiceTest extends BaseServiceTest {
             softly.assertThat(popularThemes.get(2).name()).isEqualTo("우주 탐험");
             softly.assertThat(popularThemes.get(2).description()).isEqualTo("끝없는 우주에 숨겨진 비밀을 파헤치세요.");
             softly.assertThat(popularThemes.get(2).thumbnail()).isEqualTo("https://via.placeholder.com/150/771796");
-
         });
     }
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 
 public record AdminReservationRequest(
-        @NotBlank(message = "날짜는 필수 값입니다.")
+        @NotNull(message = "날짜는 필수 값입니다.")
         LocalDate date,
 
         @NotNull(message = "테마 id는 필수 값입니다.")

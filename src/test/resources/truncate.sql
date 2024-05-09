@@ -1,8 +1,6 @@
-SET
-referential_integrity FALSE;
+SET referential_integrity FALSE;
 TRUNCATE TABLE member RESTART IDENTITY;
 TRUNCATE TABLE theme RESTART IDENTITY;
 TRUNCATE TABLE reservation_time RESTART IDENTITY;
 TRUNCATE TABLE reservation RESTART IDENTITY;
-SET
-referential_integrity TRUE;
+SET referential_integrity TRUE;

@@ -62,9 +62,9 @@ public class ReservationService {
     public ReservationResponse addReservation(ReservationRequest reservationRequest, Accessor accessor) {
         return createReservation(
                 reservationRequest.date(),
-                accessor.id(),
                 reservationRequest.timeId(),
-                reservationRequest.themeId()
+                reservationRequest.themeId(),
+                accessor.id()
         );
     }
 
@@ -72,17 +72,17 @@ public class ReservationService {
     public ReservationResponse addAdminReservation(AdminReservationRequest request) {
         return createReservation(
                 request.date(),
-                request.memberId(),
                 request.timeId(),
-                request.themeId()
+                request.themeId(),
+                request.memberId()
         );
     }
 
     private ReservationResponse createReservation(
             LocalDate date,
-            Long memberId,
             Long timeId,
-            Long themeId
+            Long themeId,
+            Long memberId
     ) {
         Member member = memberRepository.getById(memberId);
         ReservationTime reservationTime = reservationTimeRepository.getById(timeId);

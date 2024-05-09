@@ -10,8 +10,10 @@ import io.restassured.response.Response;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.BaseControllerTest;
 
+@Sql("/integration-data.sql")
 class AdminPageControllerTest extends BaseControllerTest {
 
     @ParameterizedTest(name = "{0} 페이지를 조회한다.")
