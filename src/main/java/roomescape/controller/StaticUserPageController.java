@@ -15,4 +15,9 @@ public class StaticUserPageController {
     public String getReservation() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
 }

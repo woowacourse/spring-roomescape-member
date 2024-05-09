@@ -31,5 +31,5 @@
 - [ ] 로그인 기능 구현
   - [ ] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API 구현
     - [ ] 응답 Cookie에 "token"값으로 토큰이 포함
-  - [ ] `GET /login` 요청 시 로그인 폼이 있는 페이지를 응답
+  - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지를 응답
   - [ ] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
