@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.annotation.Auth;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.UserInfo;
 import roomescape.service.MemberService;
@@ -29,9 +29,11 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
         long userId = memberService.login(loginRequest);
         LocalDateTime now = LocalDateTime.now();
-        String token = tokenService.createToken(userId, now, Duration.between(now, now.plusHours(1)));
+        Duration tokenLifeTime = Duration.between(now, now.plusHours(1));
+        String token = tokenService.createToken(userId, now, tokenLifeTime);
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
+                .maxAge(tokenLifeTime)
                 .build();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -39,8 +41,7 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<UserInfo> myInfo(@CookieValue String token) {
-        long userId = tokenService.findUserIdFromToken(token);
+    public ResponseEntity<UserInfo> myInfo(@Auth long userId) {
         UserInfo userInfo = memberService.findByUserId(userId);
         return ResponseEntity.ok(userInfo);
     }
