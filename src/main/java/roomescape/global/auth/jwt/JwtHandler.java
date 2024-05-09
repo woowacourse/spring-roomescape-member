@@ -6,8 +6,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.global.exception.error.ErrorType;
@@ -17,7 +15,6 @@ import java.util.Date;
 
 @Component
 public class JwtHandler {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
@@ -59,7 +56,7 @@ public class JwtHandler {
             throw new UnauthorizedException(ErrorType.INVALID_SIGNATURE_TOKEN,
                     String.format("Can not validate JWT Token Signature: %s", e.getMessage()));
         } catch (IllegalArgumentException e) {
-            throw new UnauthorizedException(ErrorType.INVALID_TOKEN,
+            throw new UnauthorizedException(ErrorType.ILLEGAL_TOKEN,
                     String.format("JWT claims string is empty: %s", e.getMessage()));
         }
     }

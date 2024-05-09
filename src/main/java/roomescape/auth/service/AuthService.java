@@ -30,8 +30,7 @@ public class AuthService {
         return new LoginResponse(member.getId(), accessToken);
     }
 
-    public LoginCheckResponse getMemberIdFromToken(final String accessToken) {
-        Long memberId = jwtHandler.getMemberIdFromToken(accessToken);
+    public LoginCheckResponse checkLogin(final Long memberId) {
         Member member = memberDao.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorType.MEMBER_NOT_FOUND,
                         String.format("회원(Member) 정보가 존재하지 않습니다. [memberId: %d]", memberId)));

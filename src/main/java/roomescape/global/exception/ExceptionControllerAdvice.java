@@ -21,23 +21,9 @@ public class ExceptionControllerAdvice {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // TODO: errorType 대신, exceptionMessage 던지기(errorType 이름도 같이 던져줄까 고민되지만 중복내용이기에 필요성 고려)
-    @ExceptionHandler(value = UnauthorizedException.class)
+    @ExceptionHandler(value = {NotFoundException.class, ValidateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Object> handleUnauthorizedException(final UnauthorizedException e) {
-        logger.error(e.getMessage(), e);
-        return ApiResponse.fail(e.getErrorType());
-    }
-
-    @ExceptionHandler(value = NotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Object> handleNotFoundException(final NotFoundException e) {
-        logger.error(e.getMessage(), e);
-        return ApiResponse.fail(e.getErrorType());
-    }
-
-    @ExceptionHandler(value = ValidateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Object> handleValidateException(final ValidateException e) {
+    public ApiResponse<Object> handleNotFoundException(final CustomException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(e.getErrorType());
     }
@@ -47,6 +33,13 @@ public class ExceptionControllerAdvice {
     public ApiResponse<Object> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(ErrorType.INVALID_REQUEST_DATA_TYPE);
+    }
+
+    @ExceptionHandler(value = UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiResponse<Object> handleUnauthorizedException(final UnauthorizedException e) {
+        logger.error(e.getMessage(), e);
+        return ApiResponse.fail(e.getErrorType());
     }
 
     @ExceptionHandler(value = {
