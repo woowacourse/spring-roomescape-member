@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.LoginRequest;
@@ -18,7 +17,6 @@ import roomescape.dto.response.TokenResponse;
 import roomescape.service.AuthService;
 
 @RestController
-@RequestMapping("/login")
 public class AuthController {
 
     private final AuthService authService;
@@ -27,7 +25,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest,
                                         HttpServletResponse servletResponse) {
         TokenResponse tokenResponse = authService.createToken(loginRequest);
@@ -38,7 +36,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue String token) {
         LoginCheckRequest loginCheckRequest = new LoginCheckRequest(token);
 
@@ -47,10 +45,25 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginCheckResponse);
     }
 
+    @PostMapping("/logout")
+    ResponseEntity<Void> checkLogin(HttpServletResponse servletResponse) {
+        servletResponse.addCookie(deleteTokenCookie());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     private Cookie createTokenCookie(String tokenValue) {
         Cookie token = new Cookie("token", tokenValue);
         token.setPath("/");
         token.setHttpOnly(true);
+        return token;
+    }
+
+    private Cookie deleteTokenCookie() {
+        Cookie token = new Cookie("token", "");
+        token.setPath("/");
+        token.setHttpOnly(true);
+        token.setMaxAge(0);
         return token;
     }
 }
