@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
+import roomescape.domain.Role;
 import roomescape.exception.InvalidInputException;
 
 @Repository
@@ -14,6 +15,7 @@ public class MemberDao {
     private final RowMapper<Member> rowMapper = (rs, rowNum) -> new Member(
             rs.getLong("id"),
             new Name(rs.getString("name")),
+            Role.valueOf(rs.getString("role")),
             rs.getString("email"),
             rs.getString("password")
     );
