@@ -41,6 +41,7 @@ class ThemeControllerTest {
     @Test
     void getThemesTest() {
         RestAssured.given().log().all()
+                .cookie("token", createUserAccessToken())
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
@@ -97,6 +98,7 @@ class ThemeControllerTest {
 
         // 예약 시간 정보 조회
         final List<ThemeResponse> themes = RestAssured.given().log().all()
+                .cookie("token", createAdminAccessToken())
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()

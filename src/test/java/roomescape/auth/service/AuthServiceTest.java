@@ -15,6 +15,7 @@ import roomescape.member.model.MemberRole;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -38,7 +39,7 @@ class AuthServiceTest {
         final AuthenticationToken authenticationToken = authService.login(loginRequest);
 
         // Then
-        assertThat(authenticationToken.validate()).isTrue();
+        assertThatCode(authenticationToken::getClaims).doesNotThrowAnyException();
     }
 
     @DisplayName("존재하지 않는 회원 이메일 정보를 입력하면 예외가 발생한다.")

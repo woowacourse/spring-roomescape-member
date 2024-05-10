@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.web;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;

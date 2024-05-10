@@ -42,6 +42,7 @@ class ReservationControllerTest {
     @Test
     void getReservationsTest() {
         RestAssured.given().log().all()
+                .cookie("token", createUserAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -118,6 +119,7 @@ class ReservationControllerTest {
                 .statusCode(204);
 
         final List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", createAdminAccessToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
