@@ -100,45 +100,28 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.theme_id = th.id
                 """;
 
+        List<String> conditions = new ArrayList<>();
         List<Object> params = new ArrayList<>();
-        boolean isFirstCondition = true;
 
-        if (memberId != null) {
-            sql += " WHERE m.id = ?";
-            isFirstCondition = false;
-            params.add(memberId);
-        }
+        addCondition(memberId, conditions, "r.member_id = ?", params);
+        addCondition(themeId, conditions, "r.theme_id = ?", params);
+        addCondition(dateFrom, conditions, "r.date >= ?", params);
+        addCondition(dateTo, conditions, "r.date <= ?", params);
 
-        if (themeId != null) {
-            if (isFirstCondition) {
-                sql += " WHERE th.id = ?";
-                isFirstCondition = false;
-            } else {
-                sql += " AND th.id = ?";
-            }
-            params.add(themeId);
-        }
-
-        if (dateFrom != null) {
-            if (isFirstCondition) {
-                sql += " WHERE r.date >= ?";
-                isFirstCondition = false;
-            } else {
-                sql += " AND r.date >= ?";
-            }
-            params.add(dateFrom);
-        }
-
-        if (dateTo != null) {
-            if (isFirstCondition) {
-                sql += " WHERE r.date <= ?";
-            } else {
-                sql += " AND r.date <= ?";
-            }
-            params.add(dateTo);
+        if (!conditions.isEmpty()) {
+            sql += " WHERE " + String.join(" AND ", conditions);
         }
 
         return jdbcTemplate.query(sql, rowMapper, params.toArray());
+    }
+
+    private void addCondition(Object param, List<String> conditions, String sql, List<Object> params) {
+        if (param == null) {
+            return;
+        }
+
+        conditions.add(sql);
+        params.add(param);
     }
 
     @Override
