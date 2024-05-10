@@ -3,6 +3,7 @@ CREATE TABLE member
     id    BIGINT       NOT NULL AUTO_INCREMENT,
     name  VARCHAR(10)  NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
+    role  VARCHAR(5)   DEFAULT 'USER' NOT NULL CHECK (role IN ('ADMIN', 'USER')),
     PRIMARY KEY (id)
 );
 

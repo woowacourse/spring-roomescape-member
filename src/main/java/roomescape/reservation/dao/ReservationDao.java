@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -31,7 +32,8 @@ public class ReservationDao {
                 new Member(
                         resultSet.getLong("member_id"),
                         resultSet.getString("name"),
-                        resultSet.getString("email")),
+                        resultSet.getString("email"),
+                        resultSet.getString("role")),
                 resultSet.getObject("date", LocalDate.class),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -47,7 +49,7 @@ public class ReservationDao {
     public List<Reservation> findReservations() {
         String sql = """
                 SELECT reservation.id, reservation.member_id, reservation.date, reservation.time_id, reservation.theme_id,
-                        member.name, member.email,
+                        member.name, member.email, member.role,
                         reservation_time.start_at,
                         theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
@@ -61,7 +63,7 @@ public class ReservationDao {
     private Optional<Reservation> findReservationById(Long id) {
         String sql = """
                 SELECT reservation.id, reservation.member_id, reservation.date, reservation.time_id, reservation.theme_id,
-                        member.name, member.email,
+                        member.name, member.email, member.role,
                         reservation_time.start_at,
                         theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
