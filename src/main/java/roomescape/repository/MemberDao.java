@@ -3,7 +3,6 @@ package roomescape.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Component
 public class MemberDao {
     private static final String TABLE_NAME = "member";
     private static final String KEY_COLUMN_NAME = "id";

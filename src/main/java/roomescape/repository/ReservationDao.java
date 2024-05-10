@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
 
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Component
 public class ReservationDao {
     private static final String TABLE_NAME = "reservation";
     private static final String KEY_COLUMN_NAME = "id";
