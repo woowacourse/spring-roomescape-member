@@ -6,15 +6,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthenticationException;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.AuthorizationException;
 import roomescape.service.AuthService;
 import roomescape.service.dto.LoginMember;
 
-public class CheckLoginInterceptor implements HandlerInterceptor {
+public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
 
-    public CheckLoginInterceptor(AuthService authService) {
+    public CheckAdminInterceptor(AuthService authService) {
         this.authService = authService;
     }
 
@@ -27,7 +27,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         LoginMember loginMember = authService.findLoginMember(request.getCookies());
 
         if (loginMember.getRole() != ADMIN) {
-            throw new BadRequestException("접근권한이 없습니다.");
+            throw new AuthorizationException("접근권한이 없습니다.");
         }
 
         return true;
