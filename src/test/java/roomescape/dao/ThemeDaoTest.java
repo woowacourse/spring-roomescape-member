@@ -69,10 +69,10 @@ class ThemeDaoTest {
         Theme savedTheme2 = themeDao.save(theme2);
         Theme savedTheme3 = themeDao.save(theme3);
         Theme savedTheme4 = themeDao.save(theme4);
-        reservationDao.save(new Reservation("name", LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme1));
-        reservationDao.save(new Reservation("name", LocalDate.of(2023, FEBRUARY, 2), savedTime, savedTheme2));
-        reservationDao.save(new Reservation("name", LocalDate.of(2023, FEBRUARY, 3), savedTime, savedTheme3));
-        reservationDao.save(new Reservation("name", LocalDate.of(2023, FEBRUARY, 4), savedTime, savedTheme4));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme1));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 2), savedTime, savedTheme2));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 3), savedTime, savedTheme3));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 4), savedTime, savedTheme4));
 
         // when
         List<Theme> themesByPeriodWithLimit = themeDao.findThemesByPeriodWithLimit("2023-02-02", "2023-02-03", 5);

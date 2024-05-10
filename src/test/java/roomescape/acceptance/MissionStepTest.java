@@ -95,8 +95,8 @@ class MissionStepTest extends AcceptanceTest {
 
     @Test
     void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
+                "2023-08-05", "1", "1");
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")

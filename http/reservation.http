@@ -7,7 +7,6 @@ Content-Type: application/json
 
 {
   "date": "2024-10-11",
-  "name": "브라운",
   "timeId": 1,
   "themeId": 1
 }

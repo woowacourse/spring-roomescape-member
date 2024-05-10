@@ -35,8 +35,8 @@ class ThemeAcceptanceTest extends AcceptanceTest {
     class FindAllPopularTheme {
         @Test
         void 최근_일주일동안_예약_건수_많은_순서대로_10개_테마를_인기_테마로_조회할_수_있다() {
-            jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                    "브라운", LocalDate.now().minusDays(1).toString(), "1", "1");
+            jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
+                    LocalDate.now().minusDays(1).toString(), "1", "1");
 
             RestAssured.given().log().all()
                     .when().get("/themes/ranking")

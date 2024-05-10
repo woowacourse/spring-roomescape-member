@@ -44,7 +44,7 @@ class ReservationDaoTest {
 
         // when
         reservationDao.save(
-                new Reservation("name", LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme));
+                new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme));
 
         // then
         Assertions.assertThat(reservationDao.findAll())
@@ -60,7 +60,7 @@ class ReservationDaoTest {
         ReservationTime savedTime = reservationTimeDao.save(time);
         Theme savedTheme = themeDao.save(theme);
         Reservation savedReservation = reservationDao.save(
-                new Reservation("name", LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme));
+                new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme));
 
         // when
         reservationDao.delete(savedReservation);
@@ -78,7 +78,7 @@ class ReservationDaoTest {
         Theme theme = new Theme("name", "description", "thumbnail");
         ReservationTime savedTime = reservationTimeDao.save(time);
         Theme savedTheme = themeDao.save(theme);
-        Reservation reservation = new Reservation("name", LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme);
+        Reservation reservation = new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme);
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationDao.delete(reservation))

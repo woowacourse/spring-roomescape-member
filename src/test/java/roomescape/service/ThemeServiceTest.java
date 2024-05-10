@@ -108,6 +108,6 @@ class ThemeServiceTest {
     }
 
     private void creatReservation(int day, ReservationTime reservationTime, Theme theme) {
-        reservationRepository.save(new Reservation("fram1", LocalDate.of(2023, FEBRUARY, day), reservationTime, theme));
+        reservationRepository.save(new Reservation(LocalDate.of(2023, FEBRUARY, day), reservationTime, theme));
     }
 }

@@ -17,7 +17,6 @@ CREATE TABLE theme
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
     date     VARCHAR(255) NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,
@@ -36,4 +35,4 @@ CREATE TABLE member
 );
 
 INSERT INTO member (name, email, password)
-values ('name', 'aa@aa.aa', 'password')
+values ('name', 'aa@aa.aa', 'password');

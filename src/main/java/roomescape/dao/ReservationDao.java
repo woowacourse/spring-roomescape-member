@@ -28,7 +28,6 @@ public class ReservationDao implements ReservationRepository {
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            resultSet.getString("name"),
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -52,7 +51,7 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, 
+                SELECT reservation.id, reservation.date, 
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
                 theme.id AS theme_id, theme.name AS theme_name, 
                 theme.description AS theme_description, theme.thumbnail AS theme_thumbnail 
@@ -66,7 +65,7 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, 
+                SELECT reservation.id, reservation.date, 
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
                 theme.id AS theme_id, theme.name AS theme_name, 
                 theme.description AS theme_description, theme.thumbnail AS theme_thumbnail 
@@ -98,13 +97,12 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
         Long id = (Long) jdbcInsert.executeAndReturnKey(parameters);
         return new Reservation(
-                id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+                id, reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override
