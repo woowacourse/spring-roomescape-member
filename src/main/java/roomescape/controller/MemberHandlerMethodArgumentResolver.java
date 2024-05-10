@@ -1,9 +1,8 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.Cookie;
+import static roomescape.controller.TokenExtractor.extractTokenFromCookie;
+
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -43,15 +42,5 @@ public class MemberHandlerMethodArgumentResolver implements HandlerMethodArgumen
         MemberAppResponse appResponse = memberAuthService.findMemberByToken(token);
 
         return new LoginMemberInformation(appResponse.id(), appResponse.name(), appResponse.role());
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-
-        Optional<String> token = Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals("token"))
-            .map(Cookie::getValue)
-            .findFirst();
-
-        return token.orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다."));
     }
 }

@@ -53,7 +53,7 @@ public class MemberAuthService {
             return jwtProvider.createToken(request.email());
         }
 
-        throw new AuthorizationException();
+        throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
     }
 
     public MemberAppResponse findMemberByToken(String token) {

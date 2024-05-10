@@ -1,13 +1,13 @@
 package roomescape.controller;
 
+import static roomescape.controller.TokenExtractor.extractTokenFromCookie;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,15 +86,5 @@ public class MemberAuthController {
             .toList();
 
         return ResponseEntity.ok().body(responses);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-
-        Optional<String> token = Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals("token"))
-            .map(Cookie::getValue)
-            .findFirst();
-
-        return token.orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다."));
     }
 }
