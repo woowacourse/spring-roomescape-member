@@ -4,11 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.service.AuthService;
-import roomescape.exception.AuthorizationException;
-import roomescape.service.dto.LoginMember;
+import roomescape.controller.LoginController;
 import roomescape.domain.Role;
+import roomescape.service.AuthService;
+import roomescape.service.dto.LoginMember;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
@@ -26,7 +27,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         logger.trace("request = {}", request.getRequestURI());
 
-        String token = authenticationExtractor.extract(request);
+        String token = authenticationExtractor.extract(request, LoginController.TOKEN_NAME);
         LoginMember member = authService.findMemberByToken(token);
         if (Role.ADMIN != member.role()) {
             throw new AuthorizationException();

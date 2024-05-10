@@ -10,14 +10,14 @@ import roomescape.exception.AuthorizationException;
 @Component
 public class AuthenticationExtractor {
 
-    public String extract(HttpServletRequest request) {
+    public String extract(HttpServletRequest request, String cookieName) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             throw new AuthenticationException();
         }
 
         return Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
+                .filter(cookie -> cookieName.equals(cookie.getName()))
                 .findFirst()
                 .orElseThrow(AuthorizationException::new)
                 .getValue();
