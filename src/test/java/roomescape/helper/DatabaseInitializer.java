@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -11,6 +12,7 @@ import roomescape.domain.Theme;
 @Component
 public class DatabaseInitializer {
     private final JdbcTemplate jdbcTemplate;
+    private Member member;
     private Theme theme;
     private ReservationTime time;
     private Reservation reservation;
@@ -20,9 +22,16 @@ public class DatabaseInitializer {
     }
 
     public void execute() {
+        member = createMember();
         theme = createTheme();
         time = createInitTime();
         reservation = createInitReservation(time, theme);
+    }
+
+    private Member createMember() {
+        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)",
+                "어드민", "admin@email.com", "password");
+        return new Member(1L, "어드민", "admin@email.com", "password");
     }
 
     private Theme createTheme() {
