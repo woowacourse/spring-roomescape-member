@@ -1,6 +1,7 @@
 package roomescape.auth.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import roomescape.member.domain.Member;
@@ -28,5 +29,10 @@ public class FakeMemberRepository implements MemberRepository {
         return members.stream()
                 .filter(member -> member.isSameId(id))
                 .findFirst();
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return Collections.unmodifiableList(members);
     }
 }
