@@ -10,8 +10,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
@@ -74,9 +76,11 @@ class ThemeServiceTest {
         // given
         themeDao.themes.add(new Theme(1L,"이름", "설명", "썸네일"));
         timeDao.times.add(new ReservationTime(1L, LocalTime.of(10, 0)));
-        reservationDao.reservations.add(new Reservation(1L, "테니", LocalDate.of(2099,12,31),
+        reservationDao.reservations.add(new Reservation(1L, LocalDate.of(2099,12,31),
                 new ReservationTime(1L, LocalTime.of(10,0)),
-                new Theme(1L, "이름", "설명", "썸네일")));
+                new Theme(1L, "이름", "설명", "썸네일"),
+                new Member(1, "커비", "email", "password", Role.MEMBER)
+        ));
 
         // when && then
         assertThatThrownBy(() -> themeService.deleteThemeById(1L))

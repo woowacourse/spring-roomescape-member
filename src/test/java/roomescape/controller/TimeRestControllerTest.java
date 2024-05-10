@@ -9,16 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
-import roomescape.repository.JdbcTimeDao;
+import roomescape.repository.repositoryImpl.JdbcTimeDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -29,6 +31,14 @@ class TimeRestControllerTest {
 
     @Autowired
     private JdbcTimeDao jdbcTimeDao;
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @DisplayName("모든 시간을 조회한다.")
     @Test
@@ -72,7 +82,7 @@ class TimeRestControllerTest {
 
     @DisplayName("시간을 생성한다.")
     @Test
-    void create() { //TODO: location 테스트 추가
+    void create() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");

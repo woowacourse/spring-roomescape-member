@@ -5,17 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookies;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
+import roomescape.dto.MemberRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationDao;
 
@@ -29,14 +33,24 @@ class ReservationControllerTest {
     @Autowired
     private ReservationDao reservationDao;
 
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
+
     @DisplayName("모든 예약을 조회한다.")
     @Test
     void getAll() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "커비",
-                "2099-12-31", 1, 1);
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)", "커비", "email",
+                "password", "ADMIN");
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                "2099-12-31", 1, 1, 1);
 
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -62,16 +76,29 @@ class ReservationControllerTest {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)", "커비", "email",
+                "password", "ADMIN");
         Map<String, String> params = Map.of(
-                "name", "커비",
                 "date", "2099-12-31",
                 "timeId", "1",
                 "themeId", "1"
         );
 
+        MemberRequest memberRequest = new MemberRequest("password", "email");
+
+        Cookies cookies = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberRequest)
+                .when().post("/login")
+                .then().log().all()
+                .extract()
+                .response()
+                .getDetailedCookies();
+
         // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies(cookies)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -83,7 +110,7 @@ class ReservationControllerTest {
         // then
         assertAll(
                 () -> assertThat(reservation.getId()).isEqualTo(1),
-                () -> assertThat(reservation.getName()).isEqualTo("커비"),
+                () -> assertThat(reservation.getMemberName()).isEqualTo("커비"),
                 () -> assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2099, 12, 31)),
                 () -> assertThat(reservation.getThemeId()).isEqualTo(1),
                 () -> assertThat(reservation.getThemeId()).isEqualTo(1)
@@ -95,6 +122,11 @@ class ReservationControllerTest {
     void delete() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+
+        Map<String, String> body = Map.of(
+                "password", "password",
+                "email", "email"
+        );
 
         // when
         RestAssured.given().log().all()
