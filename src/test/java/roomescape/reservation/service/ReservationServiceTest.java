@@ -12,6 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.auth.config.AuthInfo;
+import roomescape.auth.service.FakeMemberRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -25,6 +28,7 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.util.MemberFixture;
 import roomescape.util.ReservationFixture;
 import roomescape.util.ReservationTimeFixture;
 import roomescape.util.ThemeFixture;
@@ -36,15 +40,17 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository(reservationRepository);
+        memberRepository = new FakeMemberRepository();
 
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
-                themeRepository);
+                themeRepository, memberRepository);
     }
 
     @Nested
@@ -54,6 +60,7 @@ class ReservationServiceTest {
         @DisplayName("예약 생성 시 해당 데이터의 id값을 반환한다.")
         void createReservation() {
             // given
+            memberRepository.save(MemberFixture.getOne());
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
             themeRepository.save(ThemeFixture.getOne());
 
@@ -107,8 +114,9 @@ class ReservationServiceTest {
             // given
             ReservationTime reservationTime = reservationTimeRepository.save(ReservationTimeFixture.getOne());
             Theme theme = themeRepository.save(ThemeFixture.getOne());
+            Member member = memberRepository.save(MemberFixture.getOne());
             reservationRepository.save(
-                    Reservation.of(null, "내가 먼저 예약", LocalDate.parse("2024-10-10"), reservationTime, theme));
+                    new Reservation(null, member, LocalDate.parse("2024-10-10"), reservationTime, theme));
 
             AuthInfo authInfo = new AuthInfo(1L, "포비");
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
@@ -209,7 +217,7 @@ class ReservationServiceTest {
 
         Theme theme = themeRepository.save(ThemeFixture.getOne());
 
-        reservationRepository.save(ReservationFixture.getOne(date, reservationTime1, theme));
+        reservationRepository.save(ReservationFixture.getOneWithDateTimeTheme(date, reservationTime1, theme));
 
         // when & then
         assertThat(reservationService.getAvailableTimes(date, 1L))

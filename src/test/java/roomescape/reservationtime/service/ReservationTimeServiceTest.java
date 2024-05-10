@@ -20,6 +20,7 @@ import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.util.ReservationFixture;
 import roomescape.util.ReservationTimeFixture;
+import roomescape.util.ThemeFixture;
 
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
@@ -134,7 +135,7 @@ class ReservationTimeServiceTest {
     void deleteById_ifAlreadyUsed_throwException() {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTimeFixture.getOne());
-        reservationRepository.save(ReservationFixture.getOne(savedTime));
+        reservationRepository.save(ReservationFixture.getOneWithTimeTheme(savedTime, ThemeFixture.getOne()));
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(savedTime.getId()))

@@ -70,9 +70,9 @@ class ThemeServiceTest {
                 .map(theme -> themeRepository.save(theme))
                 .toList();
 
-        reservationRepository.save(ReservationFixture.getOne(savedThemes.get(7)));
-        reservationRepository.save(ReservationFixture.getOne(savedThemes.get(7)));
-        reservationRepository.save(ReservationFixture.getOne(savedThemes.get(5)));
+        reservationRepository.save(ReservationFixture.getOneWithTheme(savedThemes.get(7)));
+        reservationRepository.save(ReservationFixture.getOneWithTheme(savedThemes.get(7)));
+        reservationRepository.save(ReservationFixture.getOneWithTheme(savedThemes.get(5)));
 
         // when & then
         assertThat(themeService.getPopularThemes(10)).containsExactly(
@@ -112,7 +112,7 @@ class ThemeServiceTest {
     void deleteById_ifAlreadyUsed_throwException() {
         // given
         Theme savedTheme = themeRepository.save(ThemeFixture.getOne());
-        reservationRepository.save(ReservationFixture.getOne(savedTheme));
+        reservationRepository.save(ReservationFixture.getOneWithTheme(savedTheme));
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(savedTheme.getId()))
