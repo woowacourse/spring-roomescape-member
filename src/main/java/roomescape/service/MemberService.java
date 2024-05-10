@@ -1,48 +1,32 @@
 package roomescape.service;
 
-import jakarta.servlet.http.Cookie;
-
 import org.springframework.stereotype.Service;
 
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.domain.exception.AuthFailException;
-import roomescape.dto.request.MemberCreateRequest;
-import roomescape.dto.response.MemberResponse;
-import roomescape.dto.response.TokenResponse;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.dto.MemberModel;
+import roomescape.dto.request.MemberFindRequest;
 
 @Service
 public class MemberService {
-    private final JwtTokenProvider jwtTokenProvider;
     private final MemberDao memberDao;
 
-    public MemberService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 
-    public TokenResponse createToken(MemberCreateRequest request) {
-        Member member = memberDao.readMemberByEmailAndPassword(request)
+    public MemberModel readMember(MemberFindRequest request) {
+        Member member = memberDao.readMemberByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(AuthFailException::new);
-        String accessToken = jwtTokenProvider.createToken(member);
-        return new TokenResponse(accessToken);
+
+        return MemberModel.from(member);
     }
 
-    public MemberResponse findMember(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
-        String name = jwtTokenProvider.findMember(token);
-        return new MemberResponse(name);
+    public MemberModel readMember(Long id) {
+        Member member = memberDao.readMemberById(id)
+                .orElseThrow(AuthFailException::new);
+
+        return MemberModel.from(member);
     }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
-    }
-
 }

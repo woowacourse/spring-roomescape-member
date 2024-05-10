@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import roomescape.domain.Member;
+import roomescape.dto.MemberModel;
 
 @Component
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
 
-    public String createToken(Member member) {
+    public String createToken(MemberModel member) {
         return Jwts.builder()
                 .setSubject(member.id().toString())
                 .claim("name", member.name())
@@ -21,16 +21,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String findMember(String token) {
+    public Long findMember(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
 
-        Long userId = Long.valueOf(claims.getSubject());
-        String name = claims.get("name", String.class);
-
-        return name;
+        return Long.valueOf(claims.getSubject());
     }
 }
 

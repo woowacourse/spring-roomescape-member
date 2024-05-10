@@ -1,4 +1,4 @@
 package roomescape.domain;
 
-public record Member(Long id, String name, String email, String password) {
+public record Member(Long id, String name, String email) {
 }

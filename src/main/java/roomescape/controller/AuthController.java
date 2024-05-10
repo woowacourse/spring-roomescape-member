@@ -12,22 +12,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.domain.exception.AuthFailException;
-import roomescape.dto.request.MemberCreateRequest;
-import roomescape.dto.response.MemberResponse;
+import roomescape.dto.MemberModel;
+import roomescape.dto.request.MemberFindRequest;
 import roomescape.dto.response.TokenResponse;
 import roomescape.service.MemberService;
+import roomescape.service.TokenService;
 
 @RestController
 public class AuthController {
-    private final MemberService service;
+    private final TokenService tokenService;
+    private final MemberService memberService;
 
-    public AuthController(MemberService service) {
-        this.service = service;
+    public AuthController(TokenService tokenService, MemberService memberService) {
+        this.tokenService = tokenService;
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody MemberCreateRequest request, HttpServletResponse response) {
-        TokenResponse tokenResponse = service.createToken(request);
+    public ResponseEntity<Void> login(@RequestBody MemberFindRequest request, HttpServletResponse response) {
+        MemberModel member = memberService.readMember(request);
+        TokenResponse tokenResponse = tokenService.createToken(member);
 
         Cookie cookie = new Cookie("token", tokenResponse.accessToken());
         cookie.setHttpOnly(true);
@@ -37,8 +41,9 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        MemberResponse response = service.findMember(request.getCookies());
+    public ResponseEntity<MemberModel> checkLogin(HttpServletRequest request) {
+        Long id = tokenService.findTokenId(request.getCookies());
+        MemberModel response = memberService.readMember(id);
         return ResponseEntity.ok(response);
     }
 
