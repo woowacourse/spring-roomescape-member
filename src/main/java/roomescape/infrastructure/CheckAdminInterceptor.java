@@ -2,6 +2,7 @@ package roomescape.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
@@ -34,12 +35,14 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler
-    ) throws Exception {
+    ) {
         Member foundMember = findMember(request);
         if (Role.mapTo(foundMember.getRole()) == ADMIN) {
             return true;
         }
-        throw new IllegalAccessException("[ERROR] 어드민 페이지는 관리자만 접속할 수 있어요");
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        return false;
     }
 
     private Member findMember(HttpServletRequest request) {
