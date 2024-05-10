@@ -1,6 +1,7 @@
 package roomescape.core.repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -121,7 +122,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAllByMemberAndThemeAndPeriod(final Long memberId, final Long themeId,
                                                               final String dateFrom, final String dateTo) {
-        final String query = """
+
+        String query = """
                 SELECT
                     r.id as reservation_id,
                     r.date,
@@ -143,10 +145,30 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 on r.time_id = t.id
                 inner join theme as h
                 on r.theme_id = h.id
-                WHERE r.member_id = ? AND r.theme_id = ? AND r.date BETWEEN ? AND ?
                 """;
+        query += buildConditionalQuery(memberId, themeId, dateFrom, dateTo);
 
-        return jdbcTemplate.query(query, getReservationRowMapper(), memberId, themeId, dateFrom, dateTo);
+        return jdbcTemplate.query(query, getReservationRowMapper());
+    }
+
+    private String buildConditionalQuery(final Long memberId, final Long themeId, final String dateFrom,
+                                         final String dateTo) {
+        final List<String> queries = new ArrayList<>();
+
+        if (memberId != null) {
+            queries.add("r.member_id = " + memberId);
+        }
+        if (themeId != null) {
+            queries.add("r.theme_id = " + themeId);
+        }
+        if (!dateFrom.isEmpty() && !dateTo.isEmpty()) {
+            queries.add("r.date BETWEEN '" + dateFrom + "' AND '" + dateTo + "'");
+        }
+
+        if (queries.isEmpty()) {
+            return "";
+        }
+        return "WHERE " + String.join(" AND ", queries);
     }
 
     @Override
