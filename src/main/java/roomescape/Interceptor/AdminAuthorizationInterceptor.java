@@ -36,8 +36,5 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         }
         response.setStatus(401);
         return false;
-        // 의문점 - resolver 이전에 처리되기 때문에 request 의 쿠키를 통해 Member 를 다시 만들어서 Role 을 확인해야 한다.
-        // 이 과정이 resolver 의 행동과 중복되는 것이 맞을까?
-        // 일단 하고 물어보기!
     }
 }
