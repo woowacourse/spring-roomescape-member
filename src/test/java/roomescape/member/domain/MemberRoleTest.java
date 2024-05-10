@@ -1,6 +1,7 @@
 package roomescape.member.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +17,13 @@ class MemberRoleTest {
 
     @Test
     @DisplayName("회원의 권한이 관리자가 아닌 경우, 참을 반환한다.")
-    void isAdmin() {
+    void isNotAdmin() {
         assertTrue(MemberRole.USER.isNotAdmin());
+    }
+
+    @Test
+    @DisplayName("회원의 권한이 관리자인 경우, 거짓을 반환한다.")
+    void isAdmin() {
+        assertFalse(MemberRole.ADMIN.isNotAdmin());
     }
 }
