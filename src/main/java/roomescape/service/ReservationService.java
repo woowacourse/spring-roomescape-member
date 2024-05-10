@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
@@ -20,7 +19,6 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class ReservationService {

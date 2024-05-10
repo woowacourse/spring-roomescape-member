@@ -21,7 +21,7 @@ public class ReservationResponse {
         this.time = time;
         this.theme = theme;
         this.member = member;
-    } // TODO: if private, cannot parse?
+    }
 
     public static ReservationResponse from(Reservation reservation) {
         ReservationTime time = reservation.getTime();

@@ -24,7 +24,6 @@ public class AuthService {
     }
 
     public String createToken(AuthDto authDto) {
-        // TODO: 없는 이메일, 비밀번호 불일치 예외 처리 다르게
         Member member = memberRepository.findMemberByEmailAndPassword(authDto.getEmail(), authDto.getPassword())
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당하는 계정이 없습니다."));
         return Jwts.builder()

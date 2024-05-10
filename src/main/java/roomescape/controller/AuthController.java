@@ -1,6 +1,8 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +34,6 @@ public class AuthController {
         AuthDto authDto = AuthDto.from(loginRequest);
         String accessToken = authService.createToken(authDto);
         Cookie cookie = createCookie(TOKEN, accessToken);
-        System.out.println(accessToken);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
