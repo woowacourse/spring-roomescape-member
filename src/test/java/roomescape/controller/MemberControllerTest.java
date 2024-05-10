@@ -52,7 +52,7 @@ class MemberControllerTest extends BaseControllerTest {
     }
 
     private void addMember() {
-        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자", Role.NORMAL);
+        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -72,7 +72,7 @@ class MemberControllerTest extends BaseControllerTest {
     }
 
     private void addMemberFailWhenDuplicatedEmail() {
-        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자", Role.NORMAL);
+        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

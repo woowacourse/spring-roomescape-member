@@ -15,7 +15,7 @@ public class Member {
     }
 
     public Member(Long id, String email, String password, String name, Role role) {
-        validate(email, password, name);
+        validate(email, name);
 
         this.id = id;
         this.email = email;
@@ -24,13 +24,10 @@ public class Member {
         this.role = role;
     }
 
-    private void validate(String email, String password, String name) {
+    private void validate(String email, String name) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("email는 필수 값입니다.");
         }
-//        if (password == null || password.isBlank()) {
-//            throw new IllegalArgumentException("password은 필수 값입니다.");
-//        }
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("name은 필수 값입니다.");
         }

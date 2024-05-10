@@ -10,6 +10,7 @@ import roomescape.domain.Role;
 import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.response.LoginMember;
 import roomescape.exception.AuthenticationException;
+import roomescape.exception.ForbiddenException;
 import roomescape.service.AuthService;
 
 @Component
@@ -39,6 +40,10 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
 
         LoginMember loginMember = authService.getLoginMember(new LoginMemberRequest(token));
 
-        return loginMember.role() == Role.ADMIN;
+        if (loginMember.role() != Role.ADMIN) {
+            throw new ForbiddenException("관리자 전용 입니다.");
+        }
+
+        return true;
     }
 }
