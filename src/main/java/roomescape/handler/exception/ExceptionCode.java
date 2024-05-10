@@ -11,7 +11,7 @@ public enum ExceptionCode {
     DUPLICATE_RESERVATION("동일한 시간에 중복 예약을 할 수 없습니다."),
     NO_AUTHENTICATION_INFO("권한 정보가 없는 토큰입니다."),
     BAD_REQUEST("잘못된 요청입니다."),
-    ;
+    NO_AUTHENTICATION_ACCESS("접근 권한이 없습니다.");
 
     private final String errorMessage;
 

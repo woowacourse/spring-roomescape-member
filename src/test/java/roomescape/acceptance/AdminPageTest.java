@@ -2,19 +2,14 @@ package roomescape.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.service.dto.request.ReservationRequest;
-import roomescape.service.dto.request.ReservationTimeRequest;
-import roomescape.service.dto.request.ThemeRequest;
 import roomescape.service.dto.request.TokenRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class AdminTest extends AcceptanceTest{
+class AdminPageTest extends AcceptanceTest{
 
     private String accessToken;
 

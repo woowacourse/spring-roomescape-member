@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Role;
+import roomescape.handler.exception.CustomException;
+import roomescape.handler.exception.ExceptionCode;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
@@ -18,6 +20,9 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Role role = tokenProvider.parseAuthenticationRoleFromCookies(request.getCookies());
-        return role == Role.ADMIN;
+        if (role == Role.USER) {
+            throw new CustomException(ExceptionCode.NO_AUTHENTICATION_ACCESS);
+        }
+        return true;
     }
 }
