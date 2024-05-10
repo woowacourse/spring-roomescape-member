@@ -47,7 +47,7 @@ class PopularThemeRequestDtoTest {
         Set<ConstraintViolation<PopularThemeRequestDto>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
-                containsOnly("불러올 테마 개수는 자연수여야 합니다. 입력 값: " + themeCount + "은 사용할 수 없습니다.");
+                containsOnly("불러올 테마 개수는 자연수여야 합니다. " + themeCount + "은 사용할 수 없습니다.");
     }
 
     @DisplayName("잘못된 날짜 형식이 입력되면 예외가 발생한다.")
