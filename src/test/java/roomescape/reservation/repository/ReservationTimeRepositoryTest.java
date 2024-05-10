@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberName;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationName;
@@ -18,7 +21,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
 
 @JdbcTest
-@Import({ReservationTimeRepository.class, ThemeRepository.class, ReservationRepository.class})
+@Import({ReservationTimeRepository.class, ThemeRepository.class, ReservationRepository.class, MemberRepository.class})
 class ReservationTimeRepositoryTest {
 
     @Autowired
@@ -26,6 +29,9 @@ class ReservationTimeRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -67,8 +73,10 @@ class ReservationTimeRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
-        reservationRepository.save(reservation);
+        Long memberId = memberRepository.save(new Member(new MemberName("카키"), "hogi@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        reservationRepository.save(new Reservation(member, LocalDate.now(), theme, reservationTime));
         boolean exist = reservationTimeRepository.findReservationInSameId(timeId).isPresent();
 
         assertThat(exist).isTrue();

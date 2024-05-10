@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberName;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationName;
@@ -18,7 +21,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
 
 @JdbcTest
-@Import({ReservationRepository.class, ThemeRepository.class, ReservationTimeRepository.class})
+@Import({ReservationRepository.class, ThemeRepository.class, ReservationTimeRepository.class, MemberRepository.class})
 public class ReservationRepositoryTest {
 
     @Autowired
@@ -29,6 +32,9 @@ public class ReservationRepositoryTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("DB 조회 테스트")
@@ -45,13 +51,14 @@ public class ReservationRepositoryTest {
         );
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation1 = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
-        Reservation reservation2 = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
-        reservationRepository.save(reservation1);
-        reservationRepository.save(reservation2);
+        Long memberId = memberRepository.save(new Member(new MemberName("카키"), "hogi@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        reservationRepository.save(new Reservation(member, LocalDate.now(), theme, reservationTime));
+
         List<Reservation> reservations = reservationRepository.findAll();
 
-        assertThat(reservations.size()).isEqualTo(2);
+        assertThat(reservations.size()).isEqualTo(1);
     }
 
     @Test
@@ -69,8 +76,11 @@ public class ReservationRepositoryTest {
         );
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
-        Long reservationId = reservationRepository.save(reservation);
+
+        Long memberId = memberRepository.save(new Member(new MemberName("카키"), "hogi@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        Long reservationId = reservationRepository.save(new Reservation(member, LocalDate.now(), theme, reservationTime));
         Reservation findReservation = reservationRepository.findById(reservationId).get();
 
         assertThat(findReservation.getId()).isEqualTo(reservationId);
@@ -91,7 +101,10 @@ public class ReservationRepositoryTest {
         );
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
+        Long memberId = memberRepository.save(new Member(new MemberName("카키"), "hogi@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        Reservation reservation = new Reservation(member, LocalDate.now(), theme, reservationTime);
         reservationRepository.save(reservation);
 
         List<Long> timeIds = reservationRepository.findTimeIdsByDateAndThemeId(reservation.getDate(), themeId);
@@ -114,8 +127,10 @@ public class ReservationRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Reservation reservation = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
-        Long reservationId = reservationRepository.save(reservation);
+        Long memberId = memberRepository.save(new Member(new MemberName("카키"), "hogi@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        Long reservationId = reservationRepository.save(new Reservation(member, LocalDate.now(), theme, reservationTime));
         Reservation findReservation = reservationRepository.findById(reservationId).get();
 
         boolean exist = reservationRepository.existReservation(findReservation);
@@ -138,8 +153,10 @@ public class ReservationRepositoryTest {
         );
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
-        Long reservationId = reservationRepository.save(reservation);
+        Long memberId = memberRepository.save(new Member(new MemberName("카키"), "hogi@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        Long reservationId = reservationRepository.save(new Reservation(member, LocalDate.now(), theme, reservationTime));
         reservationRepository.delete(reservationId);
         List<Reservation> reservations = reservationRepository.findAll();
 

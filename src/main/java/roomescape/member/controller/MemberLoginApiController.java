@@ -2,7 +2,6 @@ package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.Login;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.MemberLoginRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberLoginService;
 
 @RestController
@@ -32,12 +32,14 @@ public class MemberLoginApiController {
         cookie.setMaxAge(COOKIE_MAX_AGE);
         cookie.setPath("/");
         response.addCookie(cookie);
+
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<Map<String, String>> loginCheck(@Login LoginMember loginMember) {
-        Map<String, String> response = memberLoginService.findMemberNameByLoginMember(loginMember);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<MemberResponse> loginCheck(@Login LoginMember loginMember) {
+        MemberResponse memberResponse = memberLoginService.findMemberNameByLoginMember(loginMember);
+
+        return ResponseEntity.ok(memberResponse);
     }
 }

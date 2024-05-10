@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ class ReservationPageControllerTest {
     @Test
     @DisplayName("/reservation 를 요청하면 reservation.html 를 반환한다.")
     void requestUserReservation() throws Exception {
-        mockMvc.perform(get("/reservation"))
+        mockMvc.perform(get("/reservation")
+                        .cookie(new Cookie("token", "cookieValue")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("reservation"));
     }
@@ -30,7 +32,8 @@ class ReservationPageControllerTest {
     @Test
     @DisplayName("/admin/reservation 를 요청하면 admin/reservation-new.html 를 반환한다.")
     void requestAdminReservation() throws Exception {
-        mockMvc.perform(get("/admin/reservation"))
+        mockMvc.perform(get("/admin/reservation")
+                        .cookie(new Cookie("token", "cookieValue")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/reservation-new"));
     }

@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ class ReservationTimeApiControllerTest {
         doReturn(new ArrayList<>()).when(reservationTimeService).findAll();
 
         mockMvc.perform(get("/times")
+                        .cookie(new Cookie("token", "cookieValue"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -59,6 +61,7 @@ class ReservationTimeApiControllerTest {
         mockMvc.perform(get("/times/available")
                         .param("date", date.toString())
                         .param("theme-id", themeId.toString())
+                        .cookie(new Cookie("token", "cookieValue"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -78,6 +81,7 @@ class ReservationTimeApiControllerTest {
         mockMvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(timeSaveRequest))
+                        .cookie(new Cookie("token", "cookieValue"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/times/1"))
@@ -88,6 +92,7 @@ class ReservationTimeApiControllerTest {
     @DisplayName("시간 삭제 성공시 204 응답을 받는다.")
     void deleteByIdSuccessTest() throws Exception {
         mockMvc.perform(delete("/times/{id}", 1L)
+                        .cookie(new Cookie("token", "cookieValue"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

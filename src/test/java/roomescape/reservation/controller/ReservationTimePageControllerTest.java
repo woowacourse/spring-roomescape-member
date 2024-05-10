@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ class ReservationTimePageControllerTest {
     @Test
     @DisplayName("/time 을 요청하면 time.html 를 반환한다.")
     void requestTime() throws Exception {
-        mockMvc.perform(get("/admin/time"))
+        mockMvc.perform(get("/admin/time")
+                        .cookie(new Cookie("token", "cookieValue")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/time"));
     }

@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberName;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationName;
@@ -19,7 +22,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
 
 @JdbcTest
-@Import({ThemeRepository.class, ReservationTimeRepository.class, ReservationRepository.class})
+@Import({ThemeRepository.class, ReservationTimeRepository.class, ReservationRepository.class, MemberRepository.class})
 class ThemeRepositoryTest {
 
     @Autowired
@@ -30,6 +33,9 @@ class ThemeRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("id로 엔티티를 찾는다.")
@@ -96,10 +102,23 @@ class ThemeRepositoryTest {
         );
         Theme theme3 = themeRepository.findById(theme3Id).get();
 
-        reservationRepository.save(new Reservation(new ReservationName("호기"), LocalDate.now(), theme1, reservationTime));
-        reservationRepository.save(new Reservation(new ReservationName("카키"), LocalDate.now(), theme2, reservationTime));
-        reservationRepository.save(new Reservation(new ReservationName("네오"), LocalDate.now(), theme2, reservationTime));
-        reservationRepository.save(new Reservation(new ReservationName("솔라"), LocalDate.now(), theme3, reservationTime));
+
+        Long member1Id = memberRepository.save(new Member( new MemberName("호기"), "hogi@email.com", "1234"));
+        Member member1 = memberRepository.findById(member1Id).get();
+
+        Long member2Id = memberRepository.save(new Member(new MemberName("카키"), "kaki@email.com", "1234"));
+        Member member2 = memberRepository.findById(member2Id).get();
+
+        Long member3Id = memberRepository.save(new Member(new MemberName("솔라"), "solar@email.com", "1234"));
+        Member member3 = memberRepository.findById(member3Id).get();
+
+        Long member4Id = memberRepository.save(new Member(new MemberName("네오"), "neo@email.com", "1234"));
+        Member member4 = memberRepository.findById(member4Id).get();
+        
+        reservationRepository.save(new Reservation(member1, LocalDate.now(), theme1, reservationTime));
+        reservationRepository.save(new Reservation(member2, LocalDate.now(), theme2, reservationTime));
+        reservationRepository.save(new Reservation(member3, LocalDate.now(), theme2, reservationTime));
+        reservationRepository.save(new Reservation(member4, LocalDate.now(), theme3, reservationTime));
 
         List<Theme> themes = themeRepository.findPopularThemesDescOfLastWeekForLimit(2);
 

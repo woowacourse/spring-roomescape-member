@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ public class AdminControllerTest {
     @Test
     @DisplayName("/admin 을 요청하면 index.html 를 반환한다.")
     void requestAdmin() throws Exception {
-        mockMvc.perform(get("/admin"))
+        mockMvc.perform(get("/admin")
+                .cookie(new Cookie("token", "cookieValue")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/index"));
     }

@@ -2,17 +2,29 @@
 
 GET http://localhost:8080/reservations
 
-### 예약 추가 API
+### 사용자 예약 추가 API
 
 POST http://localhost:8080/reservations
 Content-Type: application/json
 
 {
-  "name": "러너덕",
-  "date": "2024-05-10",
+  "date": "2024-05-11",
   "timeId": 1,
   "themeId": 1
 }
+
+### 관리자 예약 추가 API
+
+POST http://localhost:8080/admin/reservations
+Content-Type: application/json
+
+{
+  "date": "2024-05-12",
+  "themeId": 1,
+  "timeId": 1,
+  "memberId": 1
+}
+
 
 ### 예약 삭제 API
 

@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.config.DatabaseCleaner;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberName;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationName;
@@ -38,6 +41,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -72,7 +78,15 @@ class ReservationTimeServiceTest {
         );
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime1);
+        Long memberId = memberRepository.save(new Member(1L, new MemberName("카키"), "kaki@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        Reservation reservation = new Reservation(
+                member,
+                LocalDate.now(),
+                theme,
+                reservationTime1
+        );
         reservationRepository.save(reservation);
 
         List<AvailableReservationTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(
@@ -94,7 +108,15 @@ class ReservationTimeServiceTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
+        Long memberId = memberRepository.save(new Member(1L, new MemberName("카키"), "kaki@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        Reservation reservation = new Reservation(
+                member,
+                LocalDate.now(),
+                theme,
+                reservationTime
+        );
         reservationRepository.save(reservation);
 
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
