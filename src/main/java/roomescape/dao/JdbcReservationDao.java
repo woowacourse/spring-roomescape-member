@@ -74,6 +74,51 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> readAllByMemberAndThemeAndDateBetweenFromAndTo(Member member,
+                                                                            Theme theme,
+                                                                            ReservationDate from,
+                                                                            ReservationDate to) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role,
+                    r.`date`,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation r
+                INNER JOIN
+                    member m ON r.member_id = m.id
+                INNER JOIN
+                    reservation_time t ON r.time_id = t.id
+                INNER JOIN
+                    theme th ON r.theme_id = th.id
+                WHERE r.member_id = ? AND r.theme_id = ? AND r.date BETWEEN ? AND ?;
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> getReservation(
+                        resultSet,
+                        getMember(resultSet),
+                        getReservationTime(resultSet),
+                        getTheme(resultSet)
+                ),
+                member.getId(),
+                theme.getId(),
+                from.toStringDate(),
+                to.toStringDate()
+        );
+    }
+
+    @Override
     public Optional<Reservation> readById(Long id) {
         String sql = """
                 SELECT
