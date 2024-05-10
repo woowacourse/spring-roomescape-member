@@ -40,4 +40,9 @@ public class PageController {
     public String login() {
         return "login";
     }
+
+    @GetMapping("/signup")
+    public String register() {
+        return "signup";
+    }
 }

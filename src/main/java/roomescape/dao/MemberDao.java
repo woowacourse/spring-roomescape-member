@@ -20,17 +20,16 @@ public class MemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long insert(String name, String role, String email, String password) {
-        String insertSql = "INSERT INTO member(name, role, email, password) VALUES (?, ?, ?, ?)";
+    public Long insert(String name, String email, String password) {
+        String insertSql = "INSERT INTO member(name, email, password) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     insertSql,
                     new String[]{"id"});
             ps.setString(1, name);
-            ps.setString(2, role);
-            ps.setString(3, email);
-            ps.setString(4, password);
+            ps.setString(2, email);
+            ps.setString(3, password);
             return ps;
         }, keyHolder);
 

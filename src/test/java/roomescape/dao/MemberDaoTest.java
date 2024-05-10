@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Member;
@@ -20,21 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MemberDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private MemberDao memberDao;
 
     @Test
     void insertTest() {
         String name = "name";
-        String role = null;
         String email = "email@email.com";
         String password = "password";
 
-        Member member = new Member(memberDao.insert(name, role, email, password), "USER", name, email, password);
+        Long id = memberDao.insert(name, email, password);
 
-        assertThat(member).isNotNull();
+        assertThat(id).isNotNull();
     }
 
     @Test
