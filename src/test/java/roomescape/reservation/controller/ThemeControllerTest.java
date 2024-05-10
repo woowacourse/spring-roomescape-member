@@ -56,7 +56,7 @@ class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("themeId", is(16));
+                .body("id", is(16));
     }
 
     @DisplayName("테마 정보를 삭제한다.")

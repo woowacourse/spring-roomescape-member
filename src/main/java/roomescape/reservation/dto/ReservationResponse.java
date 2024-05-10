@@ -15,7 +15,11 @@ public record ReservationResponse(
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                new MemberResponse(reservation.getMember().getName().value()),
+                new MemberResponse(
+                        reservation.getMember().getId(),
+                        reservation.getMember().getName().value(),
+                        reservation.getMember().getEmail().value()
+                ),
                 reservation.getDate().value(),
                 ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme())
