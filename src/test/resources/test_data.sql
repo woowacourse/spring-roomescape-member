@@ -1,9 +1,9 @@
 INSERT INTO member
     (name, email, password, role)
-VALUES ('사용자1', 'test1@test.com', '1234', 'admin'),
-       ('사용자2', 'test2@test.com', '1234', 'admin'),
-       ('사용자3', 'test3@test.com', '1234', 'user'),
-       ('사용자4', 'test4@test.com', '1234', 'user');
+VALUES ('관리자1', 'test1@test.com', '1234', 'admin'),
+       ('관리자2', 'test2@test.com', '1234', 'admin'),
+       ('사용자1', 'test3@test.com', '1234', 'user'),
+       ('사용자2', 'test4@test.com', '1234', 'user');
 
 INSERT INTO reservation_time
     (start_at)
