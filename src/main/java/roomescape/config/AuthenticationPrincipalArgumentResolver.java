@@ -40,12 +40,12 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new AuthorizationException("유효하지 않는 권한 요청입니다.");
+            throw new AuthorizationException("쿠키가 존재하지 않습니다.");
         }
         Cookie cookie = Arrays.stream(cookies)
                 .filter(element -> element.getName().equals(TOKEN_KEY))
                 .findFirst()
-                .orElseThrow(() -> new AuthorizationException("유효하지 않는 권한 요청입니다."));
+                .orElseThrow(() -> new AuthorizationException("토큰이 저장된 쿠키가 존재하지 않습니다."));
 
         String token = cookie.getValue();
 
