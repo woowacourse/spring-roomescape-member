@@ -6,6 +6,7 @@ import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.domain.exception.AuthFailException;
 import roomescape.dto.MemberModel;
+import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.request.MemberFindRequest;
 
 @Service
@@ -28,5 +29,10 @@ public class MemberService {
                 .orElseThrow(AuthFailException::new);
 
         return MemberModel.from(member);
+    }
+
+    public void createMember(MemberCreateRequest request) {
+        Member member = request.createMember();
+        memberDao.createMember(member);
     }
 }

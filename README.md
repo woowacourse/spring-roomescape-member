@@ -84,4 +84,4 @@
 
 - [x] GET /login/check 사용자의 정보(이름)를 조회할 수 있다.
 - [x] POST /logout 요청 시 쿠키에 로그인 정보를 제거한다.
-- [ ] POST /members 요청 시 member를 생성해준다. (name, email, password)
+- [x] POST /members 요청 시 member를 생성해준다. (name, email, password)
