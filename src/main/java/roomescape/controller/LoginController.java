@@ -1,15 +1,20 @@
 package roomescape.controller;
 
+import static roomescape.exception.ExceptionType.REQUIRED_LOGIN;
+
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.config.CookieExtractor;
 import roomescape.domain.LoginMember;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.LoginResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.service.LoginService;
 
 @Controller
@@ -34,6 +39,14 @@ public class LoginController {
         response.addCookie(cookie);
         //todo ResponseEntity 를 사용해서 쿠키를 넣어주는 방법?
         //return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie token = CookieExtractor.getCookie(request, "token")
+                .orElseThrow(() -> new RoomescapeException(REQUIRED_LOGIN));
+        token.setMaxAge(0);
+        response.addCookie(token);
     }
 
     @GetMapping("/login/check")
