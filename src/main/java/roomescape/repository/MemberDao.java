@@ -3,15 +3,15 @@ package roomescape.repository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Password;
 import roomescape.domain.dto.LoginRequest;
 import roomescape.domain.dto.SignupRequest;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,9 +33,14 @@ public class MemberDao {
             };
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public MemberDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingColumns("email", "password", "salt", "name")
+                .usingGeneratedKeyColumns("id");
     }
 
     public List<Member> findAll() {
@@ -62,18 +67,12 @@ public class MemberDao {
     }
 
     public Long create(final SignupRequest signupRequest, final Password password) {
-        String sql = "insert into member(email, password, salt, name) values(?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, signupRequest.email());
-            ps.setString(2, password.getHashValue());
-            ps.setString(3, password.getSalt());
-            ps.setString(4, signupRequest.name());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("email", signupRequest.email())
+                .addValue("password", password.getHashValue())
+                .addValue("salt", password.getSalt())
+                .addValue("name", signupRequest.name());
+        return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 
     public boolean isExist(final SignupRequest signupRequest) {

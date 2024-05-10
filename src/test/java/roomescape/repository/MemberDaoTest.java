@@ -20,10 +20,6 @@ class MemberDaoTest {
         this.memberDao = new MemberDao(jdbcTemplate);
     }
 
-    private long getItemSize() {
-        return memberDao.findAll().size();
-    }
-
     @DisplayName("Db에 등록된 모든 회원 목록을 조회한다.")
     @Test
     void given_when_findAll_then_returnReservations() {
