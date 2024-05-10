@@ -35,7 +35,7 @@ public class Member {
     }
 
     public String getPassword() {
-        return password; //TODO db에 넣을 때 사용함. 암호화해야하지 않을까?
+        return password;
     }
 
     public Role getRole() {

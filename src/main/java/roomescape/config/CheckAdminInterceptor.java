@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.controller.AuthenticationException;
 import roomescape.controller.AuthorizationException;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
@@ -23,13 +24,12 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
         if (token.isEmpty()) {
-            throw new AuthorizationException("인가 오류"); //TODO 인기가요 아님 주의 인증 오류?
+            throw new AuthenticationException("인증되지 않은 사용자입니다.");
         }
 
         final Member member = memberService.findMemberByToken(token);
-
         if (member.getRole() != Role.ADMIN) {
-            throw new AuthorizationException("어드민만 올수 있어");
+            throw new AuthorizationException("어드민만 접근할 수 있습니다.");
         }
         return true;
     }
