@@ -18,6 +18,11 @@ public class FakeMemberDao implements MemberDao {
     }
 
     @Override
+    public List<Member> findAll() {
+        return members;
+    }
+
+    @Override
     public Optional<Member> findByEmail(String email) {
         Member result = members.stream()
                 .filter(member -> member.getEmail().equals(email))

@@ -105,4 +105,13 @@ public class FakeReservationDao implements ReservationDao {
                         && reservation.getTimeId() == timeId
                         && reservation.getThemeId() == themeId);
     }
+
+    @Override
+    public List<ReservationSavedDto> findByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getMemberId() == memberId
+                        && reservation.getThemeId() == themeId
+                        && isBetweenDate(reservation.getDate(), from, to))
+                .toList();
+    }
 }

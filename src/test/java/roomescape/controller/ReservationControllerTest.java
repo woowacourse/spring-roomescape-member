@@ -180,6 +180,21 @@ class ReservationControllerTest {
         assertThat(times.get(4).getTimeId()).isEqualTo(5);
     }
 
+    @DisplayName("날짜, 테마, 사용자 조건으로 예약을 검색한다.")
+    @Test
+    void should_get_reservations_by_date_and_theme_and_member() {
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .param("member_id", 1L)
+                .param("theme_id", 1L)
+                .param("from", "2024-04-30")
+                .param("to", "2024-05-10")
+                .get("/reservations/filter")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", ReservationResponse.class);
+        System.out.println(reservations);
+    }
+
     private Integer countAllReservations() {
         return jdbcTemplate.queryForObject("SELECT count(id) from reservation", Integer.class);
     }

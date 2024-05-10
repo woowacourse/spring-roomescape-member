@@ -61,6 +61,18 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<List<ReservationResponse>> searchReservations(@RequestParam(name = "member_id") Long memberId,
+                                                                        @RequestParam(name = "theme_id") Long themeId,
+                                                                        @RequestParam(name = "from") LocalDate from,
+                                                                        @RequestParam(name = "to") LocalDate to) {
+        List<Reservation> responses = reservationService.findReservationsByConditions(memberId, themeId, from, to);
+        List<ReservationResponse> response = responses.stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
+    }
+
     private void validateNull(Long value) {
         if (value == null) {
             throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");

@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Member;
 import roomescape.model.Role;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class JdbcMemberDao implements MemberDao {
-
     private final JdbcTemplate jdbcTemplate;
+
     private final RowMapper<Member> rowMapper = (resultSet, ignore) ->
             new Member(
                     resultSet.getLong("id"),
@@ -22,6 +23,12 @@ public class JdbcMemberDao implements MemberDao {
 
     public JdbcMemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email, password, role FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override

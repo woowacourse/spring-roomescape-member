@@ -84,7 +84,7 @@ public class ReservationRepository {
         Set<Long> timeIds = reservations.stream()
                 .map(ReservationSavedDto::getTimeId)
                 .collect(Collectors.toSet());
-        for (long timeId : timeIds) {
+        for (long timeId : timeIds) { // TODO: findByIds()
             ReservationTime time = reservationTimeDao.findById(timeId).orElseThrow(NoSuchElementException::new);
             result.add(time);
         }
@@ -95,6 +95,21 @@ public class ReservationRepository {
         List<ReservationTime> result = reservationTimeDao.findAll();
         List<ReservationTime> bookedTimes = findReservationTimeBooked(date, themeId);
         result.removeAll(bookedTimes);
+        return result;
+    }
+
+    public List<Reservation> findReservationsByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
+        List<Reservation> result = new ArrayList<>();
+        List<ReservationSavedDto> reservations = reservationDao.findByMemberIdAndThemeIdAndDate(memberId, themeId, from, to);
+        for (ReservationSavedDto reservation : reservations) {
+            ReservationTime time = reservationTimeDao.findById(reservation.getTimeId())
+                    .orElseThrow(NoSuchElementException::new);
+            Theme theme = themeDao.findById(reservation.getThemeId())
+                    .orElseThrow(NoSuchElementException::new);
+            Member member = memberDao.findById(reservation.getMemberId())
+                    .orElseThrow(NoSuchElementException::new);
+            result.add(new Reservation(reservation.getId(), reservation.getDate(), time, theme, member));
+        }
         return result;
     }
 }

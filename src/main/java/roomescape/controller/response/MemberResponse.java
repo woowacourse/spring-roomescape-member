@@ -1,5 +1,7 @@
 package roomescape.controller.response;
 
+import roomescape.model.Member;
+
 public class MemberResponse {
 
     private final long id;
@@ -10,6 +12,10 @@ public class MemberResponse {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public static MemberResponse from(Member member) {
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public long getId() {

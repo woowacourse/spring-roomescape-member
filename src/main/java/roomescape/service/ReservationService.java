@@ -90,6 +90,10 @@ public class ReservationService {
         return Stream.concat(first.stream(), second.stream()).toList();
     }
 
+    public List<Reservation> findReservationsByConditions(long memberId, long themeId, LocalDate from, LocalDate to) {
+        return reservationRepository.findReservationsByMemberIdAndThemeIdAndDate(memberId, themeId, from, to);
+    }
+
     private void validateIsFuture(LocalDate date, LocalTime time) {
         LocalDateTime timeToBook = LocalDateTime.of(date, time).truncatedTo(ChronoUnit.SECONDS);
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);

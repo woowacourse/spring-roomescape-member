@@ -99,4 +99,14 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = "select exists (select id from reservation where date = ? and time_id = ? and theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
+
+    @Override
+    public List<ReservationSavedDto> findByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
+        String sql = """
+                select id, date, time_id, theme_id, member_id
+                from reservation
+                where member_id = ? and theme_id = ? and date between ? and ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, memberId, themeId, from, to);
+    }
 }

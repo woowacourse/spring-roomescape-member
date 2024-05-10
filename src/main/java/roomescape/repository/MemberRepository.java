@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Member;
 import roomescape.repository.dao.MemberDao;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,5 +22,9 @@ public class MemberRepository {
 
     public Optional<Member> findMemberById(long id) {
         return memberDao.findById(id);
+    }
+
+    public List<Member> findAllMembers() {
+        return memberDao.findAll();
     }
 }
