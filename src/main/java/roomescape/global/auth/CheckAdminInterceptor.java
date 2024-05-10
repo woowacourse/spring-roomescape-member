@@ -22,6 +22,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
 
@@ -38,7 +39,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         if (authUser.isAdmin()) {
             return true;
         }
-        response.setStatus(401);
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         return false;
     }
 }
