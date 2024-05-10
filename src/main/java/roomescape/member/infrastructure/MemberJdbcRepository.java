@@ -64,4 +64,10 @@ public class MemberJdbcRepository implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM member WHERE email = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, email) > 0;
+    }
 }

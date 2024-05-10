@@ -88,4 +88,27 @@ class MemberJdbcRepositoryTest {
         assertThat(result.getId()).isEqualTo(member.getId());
     }
 
+    @DisplayName("같은 이메일을 가진 사용자가 존재한다.")
+    @Test
+    void existsMemberByEmail() {
+        //given
+        Member member = memberJdbcRepository.save(new Member("lini","lini@email.com","lini123", Role.GUEST));
+
+        //when
+        boolean result = memberJdbcRepository.existsByEmail(member.getEmail());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("같은 이메일을 가진 사용자가 존재하지 않는다.")
+    @Test
+    void notExistsMemberByEmail() {
+        //when
+        boolean result = memberJdbcRepository.existsByEmail("no@email.com");
+
+        //then
+        assertThat(result).isFalse();
+    }
+
 }

@@ -19,4 +19,6 @@ public interface MemberRepository {
     default Member getById(long id) {
         return findById(id).orElseThrow(() -> new InvalidMemberException("존재하지 않는 회원입니다."));
     }
+
+    boolean existsByEmail(String email);
 }
