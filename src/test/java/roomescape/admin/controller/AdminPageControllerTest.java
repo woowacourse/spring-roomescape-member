@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.provider.JwtTokenProvider;
 import roomescape.member.domain.Member;
@@ -13,6 +14,10 @@ import roomescape.member.domain.Member;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AdminPageControllerTest {
+    private static final String NAME = "한태웅";
+    private static final String EMAIL = "taewoong@example.com";
+    private static final String PASSWORD = "123";
+    private static final String ROLE = "ADMIN";
 
     @LocalServerPort
     private int port;
@@ -25,8 +30,7 @@ public class AdminPageControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        adminToken = jwtTokenProvider.createToken(
-                new Member(1L, "한태웅", "taewoong@example.com", "123", "ADMIN"));
+        adminToken = jwtTokenProvider.createToken(new Member(1L, NAME, EMAIL, PASSWORD, ROLE));
     }
 
     private void testAdminPage(String path) {
@@ -39,7 +43,7 @@ public class AdminPageControllerTest {
                 .then()
                 .log()
                 .all()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value());
     }
 
     @Test
