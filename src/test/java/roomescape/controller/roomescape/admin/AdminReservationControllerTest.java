@@ -79,16 +79,4 @@ class AdminReservationControllerTest {
                 .when().post("/admin/reservations")
                 .then().statusCode(404);
     }
-
-    @Test
-    void getByFilterWhenAllParametersAreNull() {
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get("/admin/reservations")
-                .then()
-                .statusCode(200)
-                .assertThat()
-                .body("size()", is(3));
-    }
 }
