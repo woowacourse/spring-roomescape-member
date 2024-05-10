@@ -1,5 +1,6 @@
 package roomescape.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
 import static roomescape.exception.ExceptionType.PAST_TIME_RESERVATION;
@@ -24,6 +25,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.ReservationResponse;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -49,7 +51,9 @@ public class ReservationControllerTest {
     private ThemeRepository themeRepository;
     @Autowired
     private MemberRepository memberRepository;
-    private Theme defaultTheme = new Theme("theme1", "description", "thumbnail");
+    private Theme defaultTheme1 = new Theme("theme1", "description", "thumbnail");
+    private Theme defaultTheme2 = new Theme("theme2", "description", "thumbnail");
+
     private ReservationTime defaultTime = new ReservationTime(LocalTime.of(11, 30));
     private Member defaultMember = Fixture.defaultMember;
     private String token;
@@ -65,7 +69,8 @@ public class ReservationControllerTest {
                 )
         );
 
-        defaultTheme = themeRepository.save(defaultTheme);
+        defaultTheme1 = themeRepository.save(defaultTheme1);
+        defaultTheme2 = themeRepository.save(defaultTheme2);
         defaultTime = reservationTimeRepository.save(defaultTime);
         defaultMember = memberRepository.save(defaultMember);
     }
@@ -73,40 +78,49 @@ public class ReservationControllerTest {
     @DisplayName("예약이 10개 존재할 때")
     @Nested
     class ExistReservationTest {
+        Reservation reservation1;
+        Reservation reservation2;
+        Reservation reservation3;
+        Reservation reservation4;
+        Reservation reservation5;
+        Reservation reservation6;
+        Reservation reservation7;
+        Reservation reservation8;
+        Reservation reservation9;
+        Reservation reservation10;
 
         @BeforeEach
         void initData() {
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(5), defaultTime, defaultTheme,
+            reservation1 = reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(5), defaultTime, defaultTheme1,
                             defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(4), defaultTime, defaultTheme,
+            reservation2 = reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(4), defaultTime, defaultTheme1,
                             defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(3), defaultTime, defaultTheme,
+            reservation3 = reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(3), defaultTime, defaultTheme1,
                             defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(2), defaultTime, defaultTheme,
+            reservation4 = reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(2), defaultTime, defaultTheme1,
                             defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().minusDays(1), defaultTime, defaultTheme,
-                            defaultMember.getLoginMember()));
-
-            reservationRepository.save(
-                    new Reservation(LocalDate.now(), defaultTime, defaultTheme, defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme,
-                            defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme,
-                            defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme,
-                            defaultMember.getLoginMember()));
-            reservationRepository.save(
-                    new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme,
+            reservation5 = reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(1), defaultTime, defaultTheme1,
                             defaultMember.getLoginMember()));
 
+            reservation6 = reservationRepository.save(
+                    new Reservation(LocalDate.now(), defaultTime, defaultTheme2, defaultMember.getLoginMember()));
+            reservation7 = reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme2,
+                            defaultMember.getLoginMember()));
+            reservation8 = reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(2), defaultTime, defaultTheme2,
+                            defaultMember.getLoginMember()));
+            reservation9 = reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(3), defaultTime, defaultTheme2,
+                            defaultMember.getLoginMember()));
+            reservation10 = reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(4), defaultTime, defaultTheme2,
+                            defaultMember.getLoginMember()));
         }
 
         @DisplayName("존재하는 모든 예약을 조회할 수 있다.")
@@ -139,7 +153,7 @@ public class ReservationControllerTest {
                             "member.name", is(defaultMember.getName()),
                             "date", is(reservationParam.get("date")),
                             "time.startAt", is(defaultTime.getStartAt().toString()),
-                            "theme.name", is(defaultTheme.getName()));
+                            "theme.name", is(defaultTheme1.getName()));
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -175,9 +189,9 @@ public class ReservationControllerTest {
                     .cookie("token", token)
                     .contentType(ContentType.JSON)
                     .body(Map.of(
-                            "date", LocalDate.now().toString(),
-                            "timeId", 1,
-                            "themeId", 1))
+                            "date", reservation6.getDate().toString(),
+                            "timeId", reservation6.getReservationTime().getId(),
+                            "themeId", reservation6.getTheme().getId()))
                     .post("/reservations")
                     .then().log().all()
                     .statusCode(400)
@@ -197,6 +211,66 @@ public class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(9));
+        }
+
+        @DisplayName("날짜를 이용해서 검색할 수 있다.")
+        @Test
+        void searchWithDateTest() {
+            ReservationResponse[] reservationResponses = RestAssured.given().log().all()
+                    .queryParams(Map.of(
+                            "dateFrom", reservation3.getDate().toString(),
+                            "dateTo", reservation7.getDate().toString()
+                    ))
+                    .get("/reservations/search")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .body().as(ReservationResponse[].class);
+
+            assertThat(reservationResponses).containsExactlyInAnyOrder(
+                    ReservationResponse.from(reservation3),
+                    ReservationResponse.from(reservation4),
+                    ReservationResponse.from(reservation5),
+                    ReservationResponse.from(reservation6),
+                    ReservationResponse.from(reservation7)
+            );
+        }
+
+        @DisplayName("날짜를 입력하지 않고 검색하면 자동으로 오늘의 날짜가 사용된다.")
+        @Test
+        void searchWithoutDateTest() {
+            ReservationResponse[] reservationResponses = RestAssured.given().log().all()
+                    .get("/reservations/search")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .body().as(ReservationResponse[].class);
+
+            assertThat(reservationResponses).containsExactlyInAnyOrder(
+                    ReservationResponse.from(reservation6)
+            );
+        }
+
+        @DisplayName("날짜와 테마를 이용해서 검색할 수 있다.")
+        @Test
+        void searchWithDateAndThemeTest() {
+            ReservationResponse[] reservationResponses = RestAssured.given().log().all()
+                    .queryParams(Map.of(
+                            "themeId", 1,
+                            "dateFrom", reservation3.getDate().toString(),
+                            "dateTo", reservation7.getDate().toString()
+                    ))
+                    .get("/reservations/search")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .body().as(ReservationResponse[].class);
+
+            assertThat(reservationResponses).containsExactlyInAnyOrder(
+                    ReservationResponse.from(reservation3),
+                    ReservationResponse.from(reservation4),
+                    ReservationResponse.from(reservation5)
+            );
         }
     }
 }
