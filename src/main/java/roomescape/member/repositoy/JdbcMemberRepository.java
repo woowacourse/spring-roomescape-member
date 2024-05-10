@@ -8,8 +8,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import roomescape.member.model.Member;
 
+@Repository
 public class JdbcMemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -38,12 +40,14 @@ public class JdbcMemberRepository {
         return new Member(id, member.getName(), member.getEmail(), member.getPassword());
     }
 
-    public Optional<Member> findByEmail(String email) {
-        String sql = "SELECT * FROM member WHERE email = ?";
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email, password));
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
+
+//        return jdbcTemplate.queryForObject(sql, Member.class, email, password);
     }
 }

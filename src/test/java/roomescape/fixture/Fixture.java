@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
+import roomescape.member.model.Member;
 
 public class Fixture {
 
@@ -16,10 +17,15 @@ public class Fixture {
             "https://sherlock-holmes.co.kr/attach/theme/17000394031.jpg");
     public static final Theme THEME_3 = new Theme(3L, "SF", "신기해",
             "https://sherlock-holmes.co.kr/attach/theme/16941579841.jpg");
+    public static final Member MEMBER_1 = new Member(1L, "마크", "email1@woowa.com", "password");
+    public static final Member MEMBER_2 = new Member(2L, "러너덕", "email2@woowa.com", "password");
+    public static final Member MEMBER_3 = new Member(3L, "포비", "email3@woowa.com", "password");
+
     public static final Reservation RESERVATION_1 = new Reservation(1L, "마크", LocalDate.of(2124, 5, 1),
             RESERVATION_TIME_1, THEME_1);
     public static final Reservation RESERVATION_2 = new Reservation(2L, "러너덕", LocalDate.of(2124, 5, 2),
             RESERVATION_TIME_1, THEME_2);
-    public static final Reservation RESERVATION_3 = new Reservation(3L, "러너덕", LocalDate.of(2124, 5, 3),
+    public static final Reservation RESERVATION_3 = new Reservation(3L, "포비", LocalDate.of(2124, 5, 3),
             RESERVATION_TIME_1, THEME_2);
+
 }

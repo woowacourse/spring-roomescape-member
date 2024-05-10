@@ -16,6 +16,20 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('오락', '재밌어', 
 INSERT INTO theme (name, description, thumbnail) VALUES ('판타지', '말이 안돼', 'https://i.postimg.cc/8k2PQ4yv/theme.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('감성', '감동적', 'https://sherlock-holmes.co.kr/attach/theme/16788523411.jpg');
 
+INSERT INTO member (name, email, password) VALUES ('아서', 'email1@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('몰리', 'email2@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('마크', 'email3@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('비밥', 'email4@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('러너덕','email5@woowa.com', 'password' );
+INSERT INTO member (name, email, password) VALUES ('현구막','email6@woowa.com', 'password' );
+INSERT INTO member (name, email, password) VALUES ('찰리', 'email7@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('네오', 'email8@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('포비', 'email9@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('솔라', 'email10@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('브리', 'email11@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('리사', 'email12@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('왼손', 'email13@woowa.com', 'password');
+
 INSERT INTO reservation (name, date, time_id, theme_id) values ( '아서', '2024-04-23', 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) values ( '몰리', '2024-04-24', 2, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) values ( '마크', '2024-04-25', 3, 1);

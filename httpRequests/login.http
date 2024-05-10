@@ -4,8 +4,8 @@ content-type: application/json
 host: localhost:8080
 
 {
-  "password": "password",
-  "email": "admin@email.com"
+  "email": "email1@woowa.com",
+  "password": "password1"
 }
 
 ### 인증 정보 조회
