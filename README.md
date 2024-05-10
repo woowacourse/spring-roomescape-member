@@ -51,9 +51,9 @@
     - email을 로그인의 id로, password를 비밀번호로 사용합니다.
     
 ### 로그인
-- [ ] GET `/login` 요청 시 로그인 폼이 있는 페이지를 응답. `templates/login.html` 반환
+- [x] GET `/login` 요청 시 로그인 폼이 있는 페이지를 응답. `templates/login.html` 반환
 - [ ] POST `/login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
-- [ ] 응답 Cookie에 "token"값으로 토큰이 포함
+  - [ ] 응답 Cookie에 "token"값으로 토큰이 포함
 
 - [ ] 로그인 기능 구현 완료 후 클라이언트 코드에 있는 로그인 관련 로직을 활성화.
   - "TODO: [4단계]" 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정
