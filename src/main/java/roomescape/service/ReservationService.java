@@ -7,12 +7,12 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationAddMemberRequest;
 import roomescape.dto.request.ReservationAddRequest;
-import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.reservation.ReservationRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -65,6 +65,13 @@ public class ReservationService {
 
     public List<ReservationResponse> findReservations() {
         return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findReservationsByCondition(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findByCondition(memberId, themeId, dateFrom, dateTo)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

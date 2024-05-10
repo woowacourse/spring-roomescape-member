@@ -1,10 +1,7 @@
 package roomescape.controller.api.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.dto.request.AdminReservationAddRequest;
 import roomescape.dto.request.ReservationAddMemberRequest;
 import roomescape.dto.request.ReservationAddRequest;
@@ -14,6 +11,8 @@ import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,5 +39,15 @@ public class AdminReservationController {
         ReservationResponse addReservationResponse = reservationService.addReservation(reservationAddRequest, memberRequest);
         return ResponseEntity.created(URI.create("reservations/" + addReservationResponse.id()))
                 .body(addReservationResponse);
+    }
+
+    @GetMapping
+    public List<ReservationResponse> getReservations(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo
+    ) {
+        return reservationService.findReservationsByCondition(memberId, themeId, dateFrom, dateTo);
     }
 }

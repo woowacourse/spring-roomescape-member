@@ -3,6 +3,7 @@ package roomescape.repository.reservation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 
@@ -62,6 +63,39 @@ public class ReservationH2Repository implements ReservationRepository {
                         "inner join member on r.member_id = member.id",
                 getReservationRowMapper()
         );
+    }
+
+    @Override
+    public List<Reservation> findByCondition(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                SELECT r.id as reservation_id, r.member_id, member.name as member_name, member.email as member_email , r.date, time.id as time_id, time.start_at as time_value, theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail
+                FROM reservation as r
+                inner join reservation_time as time on r.time_id = time.id
+                inner join theme on r.theme_id = theme.id
+                inner join member on r.member_id = member.id 
+                """ + makeCondition(memberId, themeId, dateFrom, dateTo);
+
+        return jdbcTemplate.query(sql, getReservationRowMapper());
+    }
+
+    private String makeCondition(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        if (memberId == null && themeId == null && dateFrom == null && dateTo == null) {
+            return "";
+        }
+        List<String> conditions = new ArrayList<>();
+        if (memberId != null) {
+            conditions.add("member_id = " + memberId);
+        }
+        if (themeId != null) {
+            conditions.add("theme_id = " + themeId);
+        }
+        if (dateFrom != null) {
+            conditions.add("date >= '" + dateFrom.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "'");
+        }
+        if (dateTo != null) {
+            conditions.add("date <= '" + dateTo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "'");
+        }
+        return "WHERE " + String.join(" AND ", conditions);
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
