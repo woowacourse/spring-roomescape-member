@@ -1,5 +1,6 @@
 package roomescape.member.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.request.CreateReservationRequest;
@@ -19,9 +20,10 @@ public class AdminService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public AdminService(final MemberRepository memberRepository,
-                        final ReservationTimeRepository reservationTimeRepository,
-                        final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
+    public AdminService(@Qualifier("jdbcMemberRepository") final MemberRepository memberRepository,
+                        @Qualifier("jdbcReservationTimeRepository") final ReservationTimeRepository reservationTimeRepository,
+                        @Qualifier("jdbcThemeRepository") final ThemeRepository themeRepository,
+                        @Qualifier("jdbcReservationRepository") final ReservationRepository reservationRepository) {
         this.memberRepository = memberRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;

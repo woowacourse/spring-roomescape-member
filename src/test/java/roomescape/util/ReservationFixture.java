@@ -63,6 +63,17 @@ public class ReservationFixture {
         );
     }
 
+    public static Reservation getOneWithMemberTimeTheme(final Member member, final ReservationTime reservationTime,
+                                                        final Theme theme) {
+        return new Reservation(
+                null,
+                member,
+                LocalDate.parse("3000-10-10"),
+                reservationTime,
+                theme
+        );
+    }
+
     public static List<Reservation> get(final int count) {
         final List<Reservation> reservations = new ArrayList<>();
         for (int i = 0; i < count; i++) {
