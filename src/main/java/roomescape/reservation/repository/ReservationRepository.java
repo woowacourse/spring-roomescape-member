@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.SearchInfo;
+import roomescape.reservation.provider.WhereQueryProvider;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -76,27 +76,8 @@ public class ReservationRepository {
     }
 
     public List<Reservation> readBySearchInfo(SearchInfo searchInfo) {
-        List<Object> params = new ArrayList<>();
-        List<String> conditions = new ArrayList<>();
-
-        if (searchInfo.getMemberId() != null) {
-            conditions.add("m.id = ?");
-            params.add(searchInfo.getMemberId());
-        }
-        if (searchInfo.getThemeId() != null) {
-            conditions.add("t.id = ?");
-            params.add(searchInfo.getThemeId());
-        }
-        if (searchInfo.getDateFrom() != null && searchInfo.getDateTo() != null) {
-            conditions.add("r.date BETWEEN ? AND ?");
-            params.add(searchInfo.getDateFrom());
-            params.add(searchInfo.getDateTo());
-        }
-
-        String whereClause = String.join(" AND ", conditions);
-        if (!whereClause.isEmpty()) {
-            whereClause = " WHERE " + whereClause;
-        }
+        WhereQueryProvider whereQueryProvider = new WhereQueryProvider();
+        String whereQuery = whereQueryProvider.makeQuery(searchInfo);
 
         String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
@@ -105,9 +86,9 @@ public class ReservationRepository {
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme t ON r.theme_id = t.id
                 INNER JOIN member m ON r.member_id = m.id
-                """ + whereClause;
+                """ + whereQuery;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, params.toArray());
+        return jdbcTemplate.query(sql, ROW_MAPPER, whereQueryProvider.getParams());
     }
 
     public Long create(Reservation reservation) {

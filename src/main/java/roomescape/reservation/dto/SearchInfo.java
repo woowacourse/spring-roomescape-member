@@ -16,6 +16,18 @@ public class SearchInfo {
         this.dateTo = dateTo;
     }
 
+    public boolean isMemberIdNotNull() {
+        return memberId != null;
+    }
+
+    public boolean isThemeIdNotNull() {
+        return themeId != null;
+    }
+
+    public boolean isDurationNotNull() {
+        return dateFrom != null && dateTo != null;
+    }
+
     public Long getMemberId() {
         return memberId;
     }
