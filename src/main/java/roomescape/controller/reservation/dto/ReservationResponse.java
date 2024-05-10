@@ -21,11 +21,4 @@ public record ReservationResponse(Long id,
                 ReservationThemeResponse.from(reservation.getTheme())
         );
     }
-
-    @Override
-    public String toString() {
-        return "new ReservationResponse(" + id +"L, " + "new MemberResponse(\"" + member.name() + "\")," + "\"" + date +
-                "\"," + "new AvailabilityTimeResponse(" + time.id() + "L, \"" + time.startAt() + "\", " + time.booked() +
-                ")," + "new ReservationThemeResponse(\"" + theme.name() + "\")" + ")";
-    }
 }

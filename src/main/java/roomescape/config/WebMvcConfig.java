@@ -13,7 +13,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final MemberService memberService;
 
-
     public WebMvcConfig(final MemberService memberService) {
         this.memberService = memberService;
     }

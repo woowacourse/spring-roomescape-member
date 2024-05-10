@@ -9,6 +9,5 @@ public record MemberLoginRequest(
         String email,
 
         @NotBlank
-        String password
-) {
+        String password) {
 }
