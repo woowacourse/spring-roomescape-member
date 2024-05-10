@@ -1,8 +1,10 @@
-package roomescape.domain.member;
+package roomescape.domain.member.service;
 
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.domain.Member;
+import roomescape.domain.member.repository.MemberRepository;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 @Service

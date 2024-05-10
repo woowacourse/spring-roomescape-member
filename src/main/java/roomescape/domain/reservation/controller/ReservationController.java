@@ -12,29 +12,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.login.controller.AuthenticationPrincipal;
-import roomescape.domain.member.Member;
-import roomescape.domain.reservation.domain.Reservation;
+import roomescape.domain.member.domain.Member;
+import roomescape.domain.reservation.domain.reservation.Reservation;
 import roomescape.domain.reservation.dto.BookableTimeResponse;
 import roomescape.domain.reservation.dto.BookableTimesRequest;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
-import roomescape.domain.reservation.service.AdminReservationService;
 import roomescape.domain.reservation.service.ReservationService;
 
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final AdminReservationService adminReservationService;
 
-    public ReservationController(ReservationService reservationService,
-                                 AdminReservationService adminReservationService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.adminReservationService = adminReservationService;
     }
 
     @GetMapping("/reservations")
     public ResponseEntity<List<Reservation>> getReservationList() {
-        return ResponseEntity.ok(adminReservationService.findAllReservation());
+        return ResponseEntity.ok(reservationService.findAllReservation());
     }
 
     @GetMapping("/reservations/search")
@@ -52,13 +48,13 @@ public class ReservationController {
                                                       @AuthenticationPrincipal Member member) {
         reservationAddRequest = new ReservationAddRequest(reservationAddRequest.date(), reservationAddRequest.timeId(),
                 reservationAddRequest.themeId(), member.getId());
-        Reservation reservation = adminReservationService.addReservation(reservationAddRequest);
+        Reservation reservation = reservationService.addReservation(reservationAddRequest);
         return ResponseEntity.created(URI.create("/reservation/" + reservation.getId())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> removeReservation(@PathVariable("id") Long id) {
-        adminReservationService.removeReservation(id);
+        reservationService.removeReservation(id);
         return ResponseEntity.noContent().build();
     }
 

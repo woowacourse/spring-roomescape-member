@@ -1,7 +1,7 @@
-package roomescape.domain.member;
+package roomescape.domain.member.domain;
 
 import java.util.Objects;
-import roomescape.domain.reservation.domain.Name;
+import roomescape.domain.reservation.domain.reservation.Name;
 
 public class Member {
     private Long id;

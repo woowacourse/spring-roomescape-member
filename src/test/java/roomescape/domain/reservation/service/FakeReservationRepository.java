@@ -1,6 +1,6 @@
 package roomescape.domain.reservation.service;
 
-import static roomescape.domain.member.Role.MEMBER;
+import static roomescape.domain.member.domain.Role.MEMBER;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.member.Member;
-import roomescape.domain.reservation.domain.Reservation;
+import roomescape.domain.member.domain.Member;
+import roomescape.domain.reservation.domain.reservation.Reservation;
+import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 
 public class FakeReservationRepository implements ReservationRepository {

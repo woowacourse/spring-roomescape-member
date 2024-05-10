@@ -1,8 +1,8 @@
 package roomescape.fixture;
 
-import static roomescape.domain.member.Role.ADMIN;
+import static roomescape.domain.member.domain.Role.ADMIN;
 
-import roomescape.domain.member.Member;
+import roomescape.domain.member.domain.Member;
 
 public class MemberFixture {
 

@@ -1,9 +1,9 @@
 package roomescape.domain.reservation.dto;
 
 import java.time.LocalDate;
-import roomescape.domain.member.Member;
-import roomescape.domain.reservation.domain.Reservation;
-import roomescape.domain.reservationTime.domain.ReservationTime;
+import roomescape.domain.member.domain.Member;
+import roomescape.domain.reservation.domain.reservation.Reservation;
+import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.global.exception.ClientIllegalArgumentException;
 

@@ -1,14 +1,14 @@
 package roomescape.domain.login.service;
 
-import static roomescape.domain.member.Role.MEMBER;
+import static roomescape.domain.member.domain.Role.MEMBER;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberRepository;
+import roomescape.domain.member.domain.Member;
+import roomescape.domain.member.repository.MemberRepository;
 
 public class FakeMemberRepository implements MemberRepository {
 

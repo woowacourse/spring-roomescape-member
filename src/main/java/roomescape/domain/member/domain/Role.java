@@ -1,4 +1,4 @@
-package roomescape.domain.member;
+package roomescape.domain.member.domain;
 
 import java.util.Arrays;
 import roomescape.global.exception.ClientIllegalArgumentException;

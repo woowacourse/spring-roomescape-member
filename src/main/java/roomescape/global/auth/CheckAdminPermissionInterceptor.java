@@ -1,14 +1,14 @@
 package roomescape.global.auth;
 
-import static roomescape.domain.member.Role.ADMIN;
+import static roomescape.domain.member.domain.Role.ADMIN;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberService;
+import roomescape.domain.member.domain.Member;
+import roomescape.domain.member.service.MemberService;
 
 @Component
 public class CheckAdminPermissionInterceptor implements HandlerInterceptor {

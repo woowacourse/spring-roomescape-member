@@ -1,6 +1,7 @@
 package roomescape.domain.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.reservation.service.FakeReservationRepository;
 import roomescape.domain.theme.domain.Theme;
+import roomescape.domain.theme.dto.ThemeAddRequest;
+import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
@@ -36,6 +41,42 @@ class ThemeServiceTest {
                 () -> assertThat(themeRanking).hasSize(1),
                 () -> assertThat(themeRanking.get(0)).isEqualTo(theme)
         );
+    }
 
+    @DisplayName("모든 테마를 불러올 수 있습니다.")
+    @Test
+    void should_get_all_theme() {
+        ThemeRepository themeRepository = new FakeThemeRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository();
+        themeService = new ThemeService(themeRepository, reservationRepository);
+        themeRepository.insert(new Theme(1L, "테마1", "테마1설명", "url"));
+
+        List<Theme> allTheme = themeService.findAllTheme();
+
+        assertThat(allTheme.size()).isOne();
+    }
+
+    @DisplayName("테마를 추가할 수 있습니다.")
+    @Test
+    void should_add_theme() {
+        ThemeRepository themeRepository = new FakeThemeRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository();
+        themeService = new ThemeService(themeRepository, reservationRepository);
+        Theme expectedTheme = new Theme(1L, "테마1", "테마1설명", "url");
+
+        Theme savedTheme = themeService.addTheme(new ThemeAddRequest("테마1", "테마1설명", "url"));
+
+        assertThat(savedTheme).isEqualTo(expectedTheme);
+    }
+
+    @DisplayName("존재하지 않는 테마 삭제 요청시 예외가 발생합니다")
+    @Test
+    void should_throw_ClientIllegalArgumentException_when_theme_id_no_exist() {
+        ThemeRepository themeRepository = new FakeThemeRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository();
+        themeService = new ThemeService(themeRepository, reservationRepository);
+        assertThatThrownBy(() -> themeService.removeTheme(1L))
+                .isInstanceOf(ClientIllegalArgumentException.class)
+                .hasMessage("해당 id를 가진 테마가 존재하지 않습니다.");
     }
 }

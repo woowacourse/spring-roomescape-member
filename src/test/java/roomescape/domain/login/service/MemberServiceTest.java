@@ -7,9 +7,9 @@ import static roomescape.fixture.MemberFixture.ADMIN_MEMBER;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberRepository;
-import roomescape.domain.member.MemberService;
+import roomescape.domain.member.domain.Member;
+import roomescape.domain.member.repository.MemberRepository;
+import roomescape.domain.member.service.MemberService;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 class MemberServiceTest {
