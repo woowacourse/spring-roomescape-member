@@ -52,13 +52,13 @@ public class ReservationTimeRepository {
     }
 
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", reservationTimeRowMapper());
+        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", getReservationTimeRowMapper());
     }
 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -86,7 +86,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, getAvailableReservationTimeResponseRowMapper(), date, themeId);
     }
 
-    private RowMapper<ReservationTime> reservationTimeRowMapper() {
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));
             return new ReservationTime(resultSet.getLong("id"), startAt);

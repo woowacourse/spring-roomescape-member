@@ -114,10 +114,10 @@ public class ReservationRepository {
                 ON r.member_id = m.id
                 """;
 
-        return jdbcTemplate.query(sql, reservationRowMapper());
+        return jdbcTemplate.query(sql, getReservationRowMapper());
     }
 
-    private RowMapper<Reservation> reservationRowMapper() {
+    private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));
             return new Reservation(
