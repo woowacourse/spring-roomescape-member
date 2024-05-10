@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.service.dto;
 
 public class LoginMember {
 

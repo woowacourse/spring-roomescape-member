@@ -7,10 +7,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.exception.BadRequestException;
 import roomescape.service.MemberService;
+import roomescape.service.dto.LoginMember;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -32,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         if (request.getCookies() == null) {
-            throw new BadRequestException("쿠키가 존재하지 않습니다."); //TODO 로그인페이지에서 쿠키 존재하지 않는다는 에러 나오지 않게
+            return null;
         }
 
         String token = extractTokenFromCookie(request.getCookies());

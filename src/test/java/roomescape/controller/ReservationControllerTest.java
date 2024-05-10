@@ -106,9 +106,21 @@ class ReservationControllerTest {
     @ValueSource(strings = {"20223-10-11", "2024-13-1"})
     void invalidDateReservation(String value) {
         // given
+        Member member = memberDao.save(MEMBER_BROWN);
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(member.getEmail(), member.getPassword()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
         Map reservationRequest = createReservationRequest(MEMBER_BROWN, value);
+
         // when & then
         RestAssured.given().log().all()
+                .header("cookie", accessToken)
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
                 .when().post("/reservations")
@@ -119,9 +131,21 @@ class ReservationControllerTest {
     @Test
     void outdatedReservation() {
         // given
+        Member member = memberDao.save(MEMBER_BROWN);
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(member.getEmail(), member.getPassword()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+
         Map reservationRequest = createReservationRequest(MEMBER_BROWN, "2023-12-12");
         // when & then
         RestAssured.given().log().all()
+                .header("cookie", accessToken)
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
                 .when().post("/reservations")
@@ -132,15 +156,29 @@ class ReservationControllerTest {
     @Test
     void duplicateReservation() {
         // given
-        Map reservationRequest = createReservationRequest(MEMBER_BROWN,
-                VALID_STRING_DATE);
+        Member member = memberDao.save(MEMBER_BROWN);
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(member.getEmail(), member.getPassword()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        Map reservationRequest = createReservationRequest(MEMBER_BROWN, VALID_STRING_DATE);
+
+        // 중복된 시간을 저장한다.
         RestAssured.given().log().all()
+                .header("cookie", accessToken)
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all();
+
         // when & then
         RestAssured.given().log().all()
+                .header("cookie", accessToken)
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
                 .when().post("/reservations")

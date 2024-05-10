@@ -1,16 +1,16 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.exception.BadRequestException;
 import roomescape.service.MemberService;
+import roomescape.service.dto.LoginMember;
 import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberResponse;
 
@@ -26,7 +26,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String token = memberService.login(loginRequest);
 
         Cookie cookie = new Cookie(TOKEN_NAME, token);
@@ -38,10 +38,12 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> findMember(HttpServletRequest request) {
-        String token = extractTokenFromCookie(request.getCookies());
+    public ResponseEntity<MemberResponse> findMember(LoginMember loginMember) {
+        if (loginMember == null) {
+            return ResponseEntity.ok().build();
+        }
 
-        MemberResponse memberResponse = memberService.findMember(token);
+        MemberResponse memberResponse = new MemberResponse(loginMember.getId(), loginMember.getName());
         return ResponseEntity.ok(memberResponse);
     }
 
@@ -58,15 +60,5 @@ public class MemberController {
     public ResponseEntity<List<MemberResponse>> findMembers() {
         List<MemberResponse> members = memberService.findAll();
         return ResponseEntity.ok(members);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) { //TODO NULL 예외처리 고민
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(TOKEN_NAME)) {
-                return cookie.getValue();
-            }
-        }
-
-        throw new BadRequestException("올바르지 않은 토큰값입니다.");
     }
 }

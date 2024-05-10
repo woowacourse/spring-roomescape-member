@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', function () {
-  updateUIBasedOnLogin();
+document.addEventListener('DOMContentLoaded', function() {
+        updateUIBasedOnLogin();
 });
 
 document.getElementById('logout-btn').addEventListener('click', function (event) {

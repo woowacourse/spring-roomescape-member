@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.BadRequestException;
 import roomescape.service.MemberService;
 
@@ -22,7 +23,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (request.getCookies() == null) {
-            throw new BadRequestException("쿠키가 존재하지 않습니다.");
+            throw new AuthenticationException("인증되지 않은 사용자입니다.");
         }
 
         String token = extractTokenFromCookie(request.getCookies());
