@@ -5,8 +5,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
-import roomescape.member.domain.Member;
 import roomescape.exception.UnauthorizedException;
+import roomescape.member.domain.Member;
 
 import java.util.Date;
 

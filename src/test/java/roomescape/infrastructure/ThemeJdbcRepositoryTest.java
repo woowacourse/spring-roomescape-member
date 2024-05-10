@@ -6,13 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.exception.InvalidReservationException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.infrastructure.MemberJdbcRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
-import roomescape.exception.InvalidReservationException;
 import roomescape.reservation.infrastructure.ReservationJdbcRepository;
 import roomescape.reservation.infrastructure.ReservationTimeJdbcRepository;
 import roomescape.reservation.infrastructure.ThemeJdbcRepository;
@@ -27,6 +31,7 @@ class ThemeJdbcRepositoryTest {
     private ThemeRepository themeRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -36,6 +41,7 @@ class ThemeJdbcRepositoryTest {
         themeRepository = new ThemeJdbcRepository(jdbcTemplate);
         reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
         reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
+        memberRepository = new MemberJdbcRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 테마를 저장한다.")
@@ -98,7 +104,7 @@ class ThemeJdbcRepositoryTest {
     void notExistsByName() {
         //given
         String name = "레벨2 탈출";
-        Theme theme = saveThemeByName(name);
+        saveThemeByName(name);
 
         //when
         String otherName = "레벨3 탈출";
@@ -143,10 +149,11 @@ class ThemeJdbcRepositoryTest {
         String name3 = "레벨3 탈출";
         Theme theme1 = saveThemeByName(name1);
         Theme theme2 = saveThemeByName(name2);
-        Theme theme3 = saveThemeByName(name3);
-        saveReservation(reservationTime, "2222-04-01", theme1);
-        saveReservation(reservationTime, "2222-04-02", theme1);
-        saveReservation(reservationTime, "2222-04-03", theme2);
+        saveThemeByName(name3);
+        Member member = saveMemberByEmail("lini@email.com");
+        saveReservation(member, reservationTime, "2222-04-01", theme1);
+        saveReservation(member, reservationTime, "2222-04-02", theme1);
+        saveReservation(member, reservationTime, "2222-04-03", theme2);
 
         //when
         List<Theme> themes = themeRepository.findByReservationTermAndCount("2222-04-01", "2222-04-07", 10);
@@ -165,12 +172,12 @@ class ThemeJdbcRepositoryTest {
         String name3 = "레벨3 탈출";
         Theme theme1 = saveThemeByName(name1);
         Theme theme2 = saveThemeByName(name2);
-        Theme theme3 = saveThemeByName(name3);
-        saveReservation(reservationTime, "2222-04-01", theme1);
-        saveReservation(reservationTime, "2222-03-01", theme1);
-        saveReservation(reservationTime, "2222-03-02", theme1);
-        saveReservation(reservationTime, "2222-04-02", theme2);
-        saveReservation(reservationTime, "2222-04-03", theme2);
+        Member member = saveMemberByEmail("linirini@email.com");
+        saveReservation(member, reservationTime, "2222-04-01", theme1);
+        saveReservation(member, reservationTime, "2222-03-01", theme1);
+        saveReservation(member, reservationTime, "2222-03-02", theme1);
+        saveReservation(member, reservationTime, "2222-04-02", theme2);
+        saveReservation(member, reservationTime, "2222-04-03", theme2);
 
         //when
         List<Theme> themes = themeRepository.findByReservationTermAndCount("2222-04-01", "2222-04-07", 10);
@@ -179,8 +186,12 @@ class ThemeJdbcRepositoryTest {
         assertThat(themes.stream().map(Theme::getName).toList()).containsExactly(name2, name1);
     }
 
-    private void saveReservation(ReservationTime reservationTime, String date, Theme theme1) {
-        Reservation reservation = new Reservation("브라운", date, reservationTime, theme1);
+    private Member saveMemberByEmail(String email) {
+        return memberRepository.save(new Member("lily", email, "lily123", Role.GUEST));
+    }
+
+    private void saveReservation(Member member, ReservationTime reservationTime, String date, Theme theme) {
+        Reservation reservation = new Reservation(date, member, reservationTime, theme);
         reservationRepository.save(reservation);
     }
 

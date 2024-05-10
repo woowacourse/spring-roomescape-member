@@ -6,13 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.exception.InvalidReservationException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
-import roomescape.exception.InvalidReservationException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationRequest;
 import roomescape.reservation.service.dto.ReservationResponse;
@@ -36,13 +39,17 @@ class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
     private ReservationTime reservationTime;
     private Theme theme;
+    private Member member;
 
     @BeforeEach
     void setUp() {
         reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        member = memberRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
 
     }
 
@@ -50,9 +57,8 @@ class ReservationServiceTest {
     @Test
     void create() {
         //given
-        String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(), theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), reservationTime.getId(), theme.getId());
 
         //when
         ReservationResponse result = reservationService.create(reservationRequest);
@@ -69,7 +75,7 @@ class ReservationServiceTest {
     @Test
     void findAll() {
         //given
-        Reservation reservation = new Reservation("lini", LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), reservationTime, theme);
+        Reservation reservation = new Reservation(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
@@ -83,7 +89,7 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         //given
-        Reservation reservation = new Reservation("lini", LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), reservationTime, theme);
+        Reservation reservation = new Reservation(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme);
         Reservation target = reservationRepository.save(reservation);
 
         //when
@@ -98,10 +104,10 @@ class ReservationServiceTest {
     void duplicatedReservation() {
         //given
         String date = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
-        Reservation reservation = new Reservation("lini", date, reservationTime, theme);
+        Reservation reservation = new Reservation(date, member, reservationTime, theme);
         reservationRepository.save(reservation);
 
-        ReservationRequest reservationRequest = new ReservationRequest("lini", date, reservationTime.getId(), theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), reservationTime.getId(), theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
@@ -113,9 +119,8 @@ class ReservationServiceTest {
     @Test
     void cannotCreateByUnknownTime() {
         //given
-        String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, 0, theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), 0, theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
@@ -129,7 +134,7 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(), 0);
+        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), reservationTime.getId(), 0);
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))

@@ -1,6 +1,9 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.InvalidReservationException;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationTime;
@@ -8,7 +11,6 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
-import roomescape.exception.InvalidReservationException;
 import roomescape.reservation.service.dto.ReservationRequest;
 import roomescape.reservation.service.dto.ReservationResponse;
 
@@ -20,22 +22,26 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Theme theme = findThemeById(reservationRequest.themeId());
+        Member member = findMemberById(reservationRequest.memberId());
 
         validate(reservationRequest.date(), reservationTime, theme);
 
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime, theme);
+        Reservation reservation = new Reservation(reservationRequest.date(), member, reservationTime, theme);
 
         return new ReservationResponse(reservationRepository.save(reservation));
     }
@@ -46,6 +52,10 @@ public class ReservationService {
 
     private Theme findThemeById(long themeId) {
         return themeRepository.getById(themeId);
+    }
+
+    private Member findMemberById(long memberId) {
+        return memberRepository.getById(memberId);
     }
 
     private void validate(String date, ReservationTime reservationTime, Theme theme) {

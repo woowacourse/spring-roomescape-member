@@ -12,7 +12,7 @@ public record ReservationResponse(
         ReservationTimeResponse time,
         ThemeResponse theme) {
     public ReservationResponse(Reservation reservation) {
-        this(reservation.getId(), reservation.getName(), reservation.getDate(),
+        this(reservation.getId(), reservation.getMember().getMemberName(), reservation.getDate(),
                 new ReservationTimeResponse(reservation.getReservationTime()),
                 new ThemeResponse(reservation.getTheme()));
     }

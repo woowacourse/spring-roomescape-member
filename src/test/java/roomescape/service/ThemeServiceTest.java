@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -23,6 +26,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.map;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -36,6 +40,8 @@ class ThemeServiceTest {
     private ReservationRepository reservationRepository;
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("테마를 생성한다.")
     @Test
@@ -97,7 +103,8 @@ class ThemeServiceTest {
         //given
         Theme theme = createTheme("레벨2 탈출");
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
-        reservationRepository.save(new Reservation("lini", "2024-10-04", reservationTime, theme));
+        Member member = memberRepository.save(new Member("member", "member@email.com", "member123", Role.GUEST));
+        reservationRepository.save(new Reservation("2024-10-04", member, reservationTime, theme));
 
         //when&then
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
@@ -114,10 +121,11 @@ class ThemeServiceTest {
         Theme theme3 = createTheme("레벨3 탈출");
 
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
+        Member member = memberRepository.save(new Member("member", "member@email.com", "member123", Role.GUEST));
 
-        reservationRepository.save(new Reservation("lini", LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE), reservationTime, theme1));
-        reservationRepository.save(new Reservation("lini", LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE), reservationTime, theme2));
-        reservationRepository.save(new Reservation("lini", LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE), reservationTime, theme3));
+        reservationRepository.save(new Reservation(LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme1));
+        reservationRepository.save(new Reservation(LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme2));
+        reservationRepository.save(new Reservation(LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme3));
 
         //when
         List<ThemeResponse> result = themeService.findPopularThemes();

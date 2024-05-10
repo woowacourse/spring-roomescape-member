@@ -1,7 +1,7 @@
 package roomescape.member.domain.repository;
 
+import roomescape.exception.InvalidMemberException;
 import roomescape.member.domain.Member;
-import roomescape.exception.InvalidReservationException;
 
 import java.util.Optional;
 
@@ -11,6 +11,12 @@ public interface MemberRepository {
     Optional<Member> findByEmail(String email);
 
     default Member getByEmail(String email) {
-        return findByEmail(email).orElseThrow(() -> new InvalidReservationException());
+        return findByEmail(email).orElseThrow(() -> new InvalidMemberException());
+    }
+
+    Optional<Member> findById(long id);
+
+    default Member getById(long id) {
+        return findById(id).orElseThrow(() -> new InvalidMemberException());
     }
 }

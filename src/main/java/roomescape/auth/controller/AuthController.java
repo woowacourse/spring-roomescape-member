@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.service.AuthService;
+import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
+import roomescape.auth.service.dto.SignUpRequest;
+
+import java.net.URI;
 
 @RestController
 public class AuthController {
@@ -25,6 +29,12 @@ public class AuthController {
         cookie.setPath("/");
         httpServletResponse.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<LoginCheckResponse> signUp(@RequestBody SignUpRequest signUpRequest, HttpServletResponse httpServletResponse) {
+        authService.signUp(signUpRequest);
+        return ResponseEntity.created(URI.create("/login")).build();
     }
 
 }

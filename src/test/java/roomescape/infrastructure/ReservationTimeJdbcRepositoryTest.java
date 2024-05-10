@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.infrastructure.MemberJdbcRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -28,6 +32,7 @@ class ReservationTimeJdbcRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -37,6 +42,7 @@ class ReservationTimeJdbcRepositoryTest {
         reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
         reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
         themeRepository = new ThemeJdbcRepository(jdbcTemplate);
+        memberRepository = new MemberJdbcRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 예약 시간을 저장한다.")
@@ -153,7 +159,8 @@ class ReservationTimeJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
         String reservationDate = "2222-05-01";
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Member member = memberRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when

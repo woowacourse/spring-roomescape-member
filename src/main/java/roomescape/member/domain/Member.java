@@ -6,24 +6,26 @@ public class Member {
     private final MemberName memberName;
     private final String email;
     private final String password;
+    private final Role role;
 
-    public Member(final long id, final MemberName memberName, final String email, final String password) {
+    public Member(long id, MemberName memberName, String email, String password, Role role) {
         this.id = id;
         this.memberName = memberName;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public Member(String name, String email, String password) {
-        this(NO_ID, new MemberName(name), email, password);
+    public Member(String name, String email, String password, Role role) {
+        this(NO_ID, new MemberName(name), email, password, role);
     }
 
     public Member(long id, Member member) {
-        this(id, member.memberName, member.email, member.password);
+        this(id, member.memberName, member.email, member.password, member.role);
     }
 
-    public Member(long id, String name, String email, String password) {
-        this(id, new MemberName(name), email, password);
+    public Member(long id, String name, String email, String password, String role) {
+        this(id, new MemberName(name), email, password, Role.valueOf(role));
     }
 
     public long getId() {
@@ -40,5 +42,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return role.name();
     }
 }

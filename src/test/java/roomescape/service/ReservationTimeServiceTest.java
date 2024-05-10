@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -36,6 +39,8 @@ class ReservationTimeServiceTest {
     private ThemeRepository themeRepository;
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("새로운 예약 시간을 저장한다.")
     @Test
@@ -88,7 +93,8 @@ class ReservationTimeServiceTest {
         //given
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationRepository.save(new Reservation("lily", "2222-10-04", reservationTime, theme));
+        Member member = memberRepository.save(new Member("lily", "lily@email.com", "lily123", Role.GUEST));
+        reservationRepository.save(new Reservation("2222-10-04", member, reservationTime, theme));
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTime.getId()))
@@ -103,8 +109,9 @@ class ReservationTimeServiceTest {
         ReservationTime bookedReservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         ReservationTime notBookedReservationTime = reservationTimeRepository.save(new ReservationTime("11:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Member member = memberRepository.save(new Member("lily", "lily@email.com", "lily123", Role.GUEST));
         String date = "2222-10-04";
-        reservationRepository.save(new Reservation("lily", date, bookedReservationTime, theme));
+        reservationRepository.save(new Reservation(date, member, bookedReservationTime, theme));
 
         //when
         List<AvailableReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(date, theme.getId()));

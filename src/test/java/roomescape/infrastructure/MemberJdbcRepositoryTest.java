@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.infrastructure.MemberJdbcRepository;
 
 import java.util.Map;
@@ -18,10 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class MemberJdbcRepositoryTest {
-
-    private static final String MEMBER_TABLE_NAME = "member";
     private MemberJdbcRepository memberJdbcRepository;
-    private SimpleJdbcInsert simpleJdbcInsert;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -29,9 +27,6 @@ class MemberJdbcRepositoryTest {
     @BeforeEach
     void setUp() {
         this.memberJdbcRepository = new MemberJdbcRepository(jdbcTemplate);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(MEMBER_TABLE_NAME)
-                .usingGeneratedKeyColumns("id");
     }
 
     @DisplayName("사용자를 저장한다.")
@@ -43,7 +38,7 @@ class MemberJdbcRepositoryTest {
         String password = "l2n2r2n2";
 
         //when
-        Member member = memberJdbcRepository.save(new Member(name, email, password));
+        Member member = memberJdbcRepository.save(new Member(name, email, password, Role.GUEST));
 
         //then
         assertAll(
@@ -58,18 +53,13 @@ class MemberJdbcRepositoryTest {
     @Test
     void findMemberByEmail() {
         //given
-        Member member = new Member("lini", "lini@email.com", "linirini");
-        Map<String, ?> params = Map.of(
-                "name", member.getMemberName(),
-                "email", member.getEmail(),
-                "password", member.getPassword());
-        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        Member member = memberJdbcRepository.save(new Member("lini","lini@email.com","lini123", Role.GUEST));
 
         //when
         Optional<Member> result = memberJdbcRepository.findByEmail(member.getEmail());
 
         //then
-        assertThat(result.get().getId()).isEqualTo(id);
+        assertThat(result.get().getId()).isEqualTo(member.getId());
     }
 
     @DisplayName("이메일로 사용자를 찾을 수 없다.")
@@ -89,18 +79,13 @@ class MemberJdbcRepositoryTest {
     @Test
     void getMemberByEmail() {
         //given
-        Member member = new Member("lini", "lini@email.com", "linirini");
-        Map<String, ?> params = Map.of(
-                "name", member.getMemberName(),
-                "email", member.getEmail(),
-                "password", member.getPassword());
-        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        Member member = memberJdbcRepository.save(new Member("lini","lini@email.com","lini123", Role.GUEST));
 
         //when
         Member result = memberJdbcRepository.getByEmail(member.getEmail());
 
         //then
-        assertThat(result.getId()).isEqualTo(id);
+        assertThat(result.getId()).isEqualTo(member.getId());
     }
 
 }

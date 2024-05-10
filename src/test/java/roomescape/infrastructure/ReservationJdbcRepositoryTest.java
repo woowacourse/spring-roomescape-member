@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.infrastructure.MemberJdbcRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -28,6 +32,7 @@ class ReservationJdbcRepositoryTest {
     private String reservationDate;
     private ReservationTime reservationTime;
     private Theme theme;
+    private Member member;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -37,17 +42,19 @@ class ReservationJdbcRepositoryTest {
         reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
         ThemeRepository themeRepository = new ThemeJdbcRepository(jdbcTemplate);
+        MemberRepository memberRepository = new MemberJdbcRepository(jdbcTemplate);
 
         reservationDate = LocalDate.now().plusDays(1).toString();
         reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.now().toString()));
         theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        member = memberRepository.save(new Member("lini","lini@email.com","lini123", Role.GUEST));
     }
 
     @DisplayName("새로운 예약을 저장한다.")
     @Test
     void saveReservation() {
         //given
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
 
         //when
         Reservation result = reservationRepository.save(reservation);
@@ -60,7 +67,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void findAllReservationTest() {
         //given
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
         reservationRepository.save(reservation);
         int expectedSize = 1;
 
@@ -75,7 +82,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void deleteReservationByIdTest() {
         //given
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
         Reservation target = reservationRepository.save(reservation);
         int expectedSize = 0;
 
@@ -90,7 +97,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void existsByDateAndTimeAndThemeTest() {
         //given
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
@@ -105,7 +112,7 @@ class ReservationJdbcRepositoryTest {
     void notExistsByDateAndTimeAndThemeTest() {
         //given
         String newDate = LocalDate.now().plusDays(2).toString();
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
@@ -120,7 +127,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void existsByTimeIdTest() {
         //given
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
@@ -144,7 +151,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void existsByThemeIdTest() {
         //given
-        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when

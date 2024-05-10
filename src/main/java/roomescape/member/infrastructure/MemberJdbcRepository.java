@@ -22,7 +22,8 @@ public class MemberJdbcRepository implements MemberRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password"));
+                resultSet.getString("password"),
+                resultSet.getString("role"));
         return member;
     };
 
@@ -38,7 +39,8 @@ public class MemberJdbcRepository implements MemberRepository {
         Map<String, ?> params = Map.of(
                 "name", member.getMemberName(),
                 "email", member.getEmail(),
-                "password", member.getPassword());
+                "password", member.getPassword(),
+                "role", member.getRole());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Member(id, member);
     }
@@ -48,6 +50,16 @@ public class MemberJdbcRepository implements MemberRepository {
         String sql = "SELECT * FROM member WHERE email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

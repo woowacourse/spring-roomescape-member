@@ -4,6 +4,11 @@ INSERT INTO theme(name, description, thumbnail) VALUES ('테마3', '설명3', 'h
 
 INSERT INTO reservation_time(start_at) VALUES ('10:00');
 
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('리니', DATEADD('DAY', -1, CURRENT_DATE), 1, 1);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('릴리', DATEADD('DAY', -7, CURRENT_DATE), 1, 2);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('토미', DATEADD('DAY', -8, CURRENT_DATE), 1, 3);
+INSERT INTO member(name, email, password, role) VALUES('리니', 'lini@email.com', 'lini123', 'GUEST');
+INSERT INTO member(name, email, password, role) VALUES('릴리', 'lily@email.com', 'lily123', 'GUEST');
+INSERT INTO member(name, email, password, role) VALUES('토미', 'tomi@email.com', 'tomi123', 'GUEST');
+
+
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (DATEADD('DAY', -1, CURRENT_DATE), 1, 1, 1);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (DATEADD('DAY', -7, CURRENT_DATE), 2, 1, 2);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (DATEADD('DAY', -8, CURRENT_DATE), 3, 1, 3);
