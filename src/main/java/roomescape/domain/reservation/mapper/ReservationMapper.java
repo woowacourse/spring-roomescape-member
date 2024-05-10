@@ -12,7 +12,7 @@ import roomescape.domain.theme.domain.Theme;
 public class ReservationMapper {
 
     public ReservationResponse mapToResponse(Reservation reservation) {
-        MemberResponse member = new MemberResponse(reservation.getId(), reservation.getName());
+        MemberResponse member = new MemberResponse(reservation.getMemberId(), reservation.getName());
         return new ReservationResponse(reservation.getId(), member, reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 

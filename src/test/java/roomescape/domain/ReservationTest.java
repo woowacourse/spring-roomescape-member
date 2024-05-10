@@ -16,13 +16,13 @@ class ReservationTest {
     @ParameterizedTest
     @NullSource
     public void reservation_NullDate_ThrownException(LocalDate date) {
-        assertThatThrownBy(() -> new Reservation(0L, RESERVATION_MEMBER, date, RESERVATION_TIME_NOW, THEME))
+        assertThatThrownBy(() -> new Reservation(0L, RESERVATION_MEMBER, date, RESERVATION_TIME_NOW, THEME1))
                 .isInstanceOf(RoomEscapeException.class);
     }
 
     @Test
     public void reservation_NullReservationTime_ThrownException() {
-        assertThatThrownBy(() -> new Reservation(0L, RESERVATION_MEMBER, LocalDate.now(), null, THEME))
+        assertThatThrownBy(() -> new Reservation(0L, RESERVATION_MEMBER, LocalDate.now(), null, THEME1))
                 .isInstanceOf(RoomEscapeException.class);
     }
 

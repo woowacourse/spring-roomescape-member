@@ -22,7 +22,10 @@ class ThemeServiceTest {
     void findAllThemes() {
         List<ThemeResponse> allThemes = themeService.findAllThemes();
 
-        assertThat(allThemes).containsExactly(new ThemeResponse(1L, "테마1", "설명", "썸네일"));
+        assertThat(allThemes).containsExactly(
+                new ThemeResponse(1L, "테마1", "설명", "썸네일"),
+                new ThemeResponse(2L, "테마2", "설명", "썸네일")
+        );
     }
 
     @Test

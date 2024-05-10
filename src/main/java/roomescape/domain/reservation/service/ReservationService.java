@@ -42,6 +42,13 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        List<Reservation> reservations = reservationDao.findByMemberIdAndThemeIdAndDateBetween(memberId, themeId, from, to);
+        return reservations.stream()
+                .map(reservationMapper::mapToResponse)
+                .toList();
+    }
+
     public ReservationResponse saveReservation(ReservationSaveRequest request, AuthUser authUser) {
         ReservationTime time = timeDao.findById(request.timeId())
                 .orElseThrow(() -> new RoomEscapeException("[ERROR] 예약 시간을 찾을 수 없습니다"));

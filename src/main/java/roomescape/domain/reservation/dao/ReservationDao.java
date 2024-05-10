@@ -71,6 +71,28 @@ public class ReservationDao {
         return Collections.unmodifiableList(reservations);
     }
 
+    public List<Reservation> findByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        List<Reservation> reservations = jdbcTemplate.query("""
+                SELECT
+                r.id,
+                m.id as member_id,
+                m.name as member_name,
+                r.date,
+                t.id as time_id,
+                t.start_at,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
+                FROM reservation as r
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as th on r.theme_id = th.id
+                inner join member as m on r.member_id = m.id
+                WHERE r.member_id = ? AND r.theme_id = ? AND r.date >= ? AND r.date <= ?
+                """, reservationRowMapper, memberId, themeId, from, to);
+        return Collections.unmodifiableList(reservations);
+    }
+
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
