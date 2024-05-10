@@ -16,7 +16,7 @@ class MemberNameTest {
     void blankName(final String value) {
         assertThatThrownBy(() -> new MemberName(value))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자 이름이 비어 있습니다.");
+                .hasMessage("멤버 이름이 비어 있습니다.");
     }
 
     @DisplayName("이름에 숫자만 입력 시 예외 발생")
@@ -25,7 +25,7 @@ class MemberNameTest {
     void numericName(final String value) {
         assertThatThrownBy(() -> new MemberName(value))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(String.format("(%s) 숫자만으로 이루어진 예약자 이름은 사용할 수 없습니다.", value));
+                .hasMessage(String.format("(%s) 숫자만으로 이루어진 멤버 이름은 사용할 수 없습니다.", value));
     }
 
     @DisplayName("최대 길이를 넘은 예약 이름 입력 시 예외 발생")
@@ -34,7 +34,7 @@ class MemberNameTest {
         final String value = "b".repeat(31);
         assertThatThrownBy(() -> new MemberName(value))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(String.format("(%s) 예약자 이름이 최대 길이인 30자를 넘었습니다.", value));
+                .hasMessage(String.format("(%s) 멤버 이름이 최대 길이인 30자를 넘었습니다.", value));
     }
 
     @DisplayName("올바른 이름 입력")
