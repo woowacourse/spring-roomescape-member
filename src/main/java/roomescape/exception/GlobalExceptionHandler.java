@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler
-    protected ResponseEntity<ExceptionTemplate> handleInvalidReservationException(InvalidReservationException exception) {
+    @ExceptionHandler(value = {UnauthorizedException.class, InvalidReservationException.class})
+    protected ResponseEntity<ExceptionTemplate> handleInvalidReservationException(Exception exception) {
         return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
     }
 
