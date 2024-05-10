@@ -67,34 +67,7 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public List<Reservation> findAll(final Long memberId, final Long themeId,
                                      final LocalDate dateFrom,
-                                     final LocalDate dateTo) { // TODO: 필터 옵션 없는 경우 처리
-        String whereSql = "";
-        String memberIdSql = "";
-        String themeIdSql = "";
-        String dateFromIdSql = "";
-        String dateToIdSql = "";
-
-        List<String> filterSqls = new ArrayList<>();
-        if (memberId != null || themeId != null || dateFrom != null || dateTo != null) {
-            whereSql = "WHERE";
-        }
-        if (memberId != null) {
-            memberIdSql = " member_id = " + memberId;
-            filterSqls.add(memberIdSql);
-        }
-        if (themeId != null) {
-            themeIdSql = " theme_id = " + themeId;
-            filterSqls.add(themeIdSql);
-        }
-        if (dateFrom != null) {
-            dateFromIdSql = " date > " + dateFrom;
-            filterSqls.add(dateFromIdSql);
-        }
-        if (dateTo != null) {
-            dateToIdSql = " date < " + dateTo;
-            filterSqls.add(dateToIdSql);
-        }
-
+                                     final LocalDate dateTo) {
         String sql = """
                 SELECT
                 r.id as reservation_id,
@@ -116,7 +89,6 @@ public class JdbcReservationDao implements ReservationDao {
                 INNER JOIN member as m on r.member_id = m.id
                 WHERE member_id = ? AND theme_id = ? AND date > ? AND date < ?
                 """;
-//                     + whereSql + String.join(" AND", filterSqls);
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 

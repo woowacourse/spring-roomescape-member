@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractTokenFromCookie(httpServletRequest.getCookies());
 
-        Long memberId = Long.valueOf(Jwts.parserBuilder()    // TODO: 중복 제거
+        Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
                 .parseClaimsJws(token)
@@ -43,7 +43,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         return memberService.findMemberById(memberId);
     }
 
-    private String extractTokenFromCookie(final Cookie[] cookies) { // TODO: 중복 제거
+    private String extractTokenFromCookie(final Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();

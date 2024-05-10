@@ -38,7 +38,6 @@ public class ReservationService {
         return ReservationResponse.fromReservations(reservations);
     }
 
-//    public List<ReservationResponse> findByMemberIdAndThemeIdAndDateFromTo(final Long memberId, final Long themeId, final LocalDate dateFrom, final LocalDate dateTo) {
     public List<ReservationResponse> findAll(final Long memberId, final Long themeId, final LocalDate dateFrom, final LocalDate dateTo) {
         List<Reservation> reservations = reservationDao.findAll(memberId, themeId, dateFrom, dateTo);
         return ReservationResponse.fromReservations(reservations);
