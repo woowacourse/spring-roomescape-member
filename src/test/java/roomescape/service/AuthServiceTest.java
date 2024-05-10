@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.NoSuchElementException;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.SignupRequest;
+import roomescape.dto.response.LoginedMemberResponse;
+import roomescape.dto.response.MemberResponse;
 import roomescape.security.JwtTokenProvider;
 
 class AuthServiceTest extends BaseServiceTest {
@@ -43,9 +46,15 @@ class AuthServiceTest extends BaseServiceTest {
 
         LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
 
-        String token = authService.createToken(request);
+        LoginedMemberResponse loginedMemberResponse = authService.createToken(request);
+        String token = loginedMemberResponse.token();
+        MemberResponse memberResponse = loginedMemberResponse.memberResponse();
 
-        assertThat(token).isEqualTo("created_token");
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(token).isEqualTo("created_token");
+            softly.assertThat(memberResponse.email()).isEqualTo(EMAIL);
+            softly.assertThat(memberResponse.name()).isEqualTo(NICKNAME);
+        });
     }
 
     @Test

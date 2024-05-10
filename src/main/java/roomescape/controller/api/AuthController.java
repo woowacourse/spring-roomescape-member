@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.exception.UnauthorizedException;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.LoginedMemberResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
@@ -27,14 +28,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    public ResponseEntity<MemberResponse> login(
             @RequestBody @Valid LoginRequest loginRequest,
             HttpServletResponse response
     ) {
-        String token = authService.createToken(loginRequest);
+        LoginedMemberResponse loginedMemberResponse = authService.createToken(loginRequest);
+        String token = loginedMemberResponse.token();
+        MemberResponse memberResponse = loginedMemberResponse.memberResponse();
+
         CookieUtil.setTokenCookie(response, token);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(memberResponse);
     }
 
     @GetMapping("/login/check")

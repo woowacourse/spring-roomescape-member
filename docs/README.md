@@ -77,6 +77,14 @@ content-type: application/json
 ```http
 HTTP/1.1 200
 Content-Type: application/json
+
+{
+    "id": 1,
+    "email": "example@gmail.com",
+    "name": "브라운",
+    "role": "USER"
+}
+
 ```
 
 </details>
