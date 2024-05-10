@@ -1,7 +1,9 @@
 package roomescape.auth.service.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record LoginRequest(
-        String password,
-        String email
+        @NotBlank String password,
+        @NotBlank String email
 ) {
 }
