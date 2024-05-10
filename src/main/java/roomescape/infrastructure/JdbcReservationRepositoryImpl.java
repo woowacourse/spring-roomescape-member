@@ -8,6 +8,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
+import roomescape.domain.MemberEmail;
+import roomescape.domain.MemberName;
+import roomescape.domain.MemberPassword;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
@@ -30,10 +34,10 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> saveSource = Map.ofEntries(
-            Map.entry("name", reservation.getName()),
             Map.entry("date", reservation.getReservationDate().getDate()),
             Map.entry("time_id", reservation.getReservationTime().getId()),
-            Map.entry("theme_id", reservation.getTheme().getId())
+            Map.entry("theme_id", reservation.getTheme().getId()),
+            Map.entry("member_id", reservation.getMember().getId())
         );
 
         long id = simpleJdbcInsert
@@ -42,7 +46,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
 
         return new Reservation(
             id,
-            reservation.getName(),
+            reservation.getMember(),
             reservation.getReservationDate(),
             reservation.getReservationTime(),
             reservation.getTheme()
@@ -54,7 +58,9 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
         String sql = """
             SELECT 
                 r.id AS reservation_id, 
-                r.name AS reservation_name , 
+                m.name AS member_name , 
+                m.email AS member_email , 
+                m.password AS member_password , 
                 r.date AS reservation_date, 
                 t.id AS time_id, 
                 t.start_at AS time_value,
@@ -63,8 +69,9 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
                 th.description AS theme_description,
                 th.thumbnail AS theme_thumbnail 
             FROM reservation AS r 
-            INNER JOIN reservation_time AS t ON r.time_id = t.id
-            INNER JOIN theme AS th ON r.theme_id = th.id
+            JOIN reservation_time AS t ON r.time_id = t.id
+            JOIN theme AS th ON r.theme_id = th.id
+            JOIN member AS m ON r.member_id = m.id
             """;
 
         return jdbcTemplate.query(
@@ -101,17 +108,20 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
         String sql = """
             SELECT 
                 r.id AS reservation_id, 
-                r.name AS reservation_name , 
+                m.name AS member_name, 
+                m.email AS member_email,
+                m.password AS member_password,
                 r.date AS reservation_date, 
                 t.id AS time_id, 
                 t.start_at AS time_value,
                 th.id AS theme_id,
                 th.name AS theme_name,
                 th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail 
+                th.thumbnail AS theme_thumbnail            
             FROM reservation AS r 
             INNER JOIN reservation_time AS t ON r.time_id = t.id
             INNER JOIN theme AS th ON r.theme_id = th.id
+            INNER JOIN member AS m ON r.member_id = m.id
             WHERE date = ? AND theme_id = ?
             """;
 
@@ -122,17 +132,18 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     private RowMapper<Reservation> getReservationRowMapper() {
         return (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
-            rs.getString("reservation_name"),
-            new ReservationDate(rs.getString("reservation_date")),
+            new Member(new MemberName(rs.getString("member_name")),
+                new MemberEmail(rs.getString("member_email")),
+                new MemberPassword(rs.getString("member_password"))),
+            new ReservationDate(
+                rs.getString("reservation_date")),
             new ReservationTime(
                 rs.getLong("time_id"),
-                rs.getString("time_value")
-            ),
+                rs.getString("time_value")),
             new Theme(
                 rs.getString("theme_name"),
                 rs.getString("theme_description"),
-                rs.getString("theme_thumbnail")
-            )
+                rs.getString("theme_thumbnail"))
         );
     }
 }
