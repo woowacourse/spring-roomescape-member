@@ -18,7 +18,7 @@ public class AuthService {
     }
 
     public String createToken(MemberRequest memberRequest) {
-        Member member = memberRepository.read(memberRequest.email());
+        Member member = memberRepository.readByEmail(memberRequest.email());
 
         validatePassword(member.getPassword(), memberRequest.password());
 
@@ -28,7 +28,7 @@ public class AuthService {
     public Member readByToken(String token) {
         String email = jwtTokenProvider.getEmail(token);
 
-        return memberRepository.read(email);
+        return memberRepository.readByEmail(email);
     }
 
     private void validatePassword(String actualPassword, String expectedPassword) {
