@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exceptions.ValidationException;
 
@@ -33,16 +33,16 @@ class ReservationTimeServiceTest {
     @DisplayName("중복된 시간을 저장하려고 하면 예외가 발생한다.")
     void saveDuplicatedGetTime() {
         assertThatThrownBy(
-                () -> reservationTimeService.addTime(new ReservationTimeAddRequest(RESERVATION_TIME_1.getStartAt()))
+                () -> reservationTimeService.addTime(new ReservationTimeRequest(RESERVATION_TIME_1.getStartAt()))
         ).isInstanceOf(ValidationException.class);
     }
 
     @Test
     @DisplayName("예약 가능 시간을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
     void addGetTime() {
-        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(15, 0));
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 0));
 
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.addTime(reservationTimeAddRequest);
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.addTime(reservationTimeRequest);
 
         assertThat(reservationTimeResponse.id()).isNotNull();
     }

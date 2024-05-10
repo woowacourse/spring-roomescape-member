@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.request.ThemeAddRequest;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exceptions.ValidationException;
 
@@ -30,25 +30,25 @@ class ThemeServiceTest {
     @Test
     @DisplayName("중복된 테마를 저장하려고 하면 예외가 발생한다.")
     void saveDuplicatedTheme() {
-        ThemeAddRequest themeAddRequest = new ThemeAddRequest(
+        ThemeRequest themeRequest = new ThemeRequest(
                 THEME_1.getName().name(),
                 THEME_1.getDescription(),
                 THEME_1.getThumbnail()
         );
-        assertThatThrownBy(() -> themeService.addTheme(themeAddRequest))
+        assertThatThrownBy(() -> themeService.addTheme(themeRequest))
                 .isInstanceOf(ValidationException.class);
     }
 
     @Test
     @DisplayName("테마를 저장하면 id를 자동으로 생성한다.")
     void saveTheme() {
-        ThemeAddRequest themeAddRequest = new ThemeAddRequest(
+        ThemeRequest themeRequest = new ThemeRequest(
                 "새로운 테마 이름",
                 THEME_1.getDescription(),
                 THEME_1.getThumbnail()
         );
 
-        ThemeResponse themeResponse = themeService.addTheme(themeAddRequest);
+        ThemeResponse themeResponse = themeService.addTheme(themeRequest);
 
         assertThat(themeResponse.id()).isNotNull();
     }

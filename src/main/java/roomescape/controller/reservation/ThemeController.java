@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.request.ThemeAddRequest;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
@@ -27,8 +27,8 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(
-            @RequestBody ThemeAddRequest themeAddRequest) {
-        ThemeResponse themeResponse = themeService.addTheme(themeAddRequest);
+            @RequestBody ThemeRequest themeRequest) {
+        ThemeResponse themeResponse = themeService.addTheme(themeRequest);
         return ResponseEntity.created(URI.create("/times/" + themeResponse.id()))
                 .body(themeResponse);
     }

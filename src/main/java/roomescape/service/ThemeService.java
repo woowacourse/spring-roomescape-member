@@ -6,7 +6,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
-import roomescape.dto.request.ThemeAddRequest;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exceptions.DuplicationException;
 import roomescape.exceptions.NotFoundException;
@@ -21,18 +21,18 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public ThemeResponse addTheme(ThemeAddRequest themeAddRequest) {
-        validateDuplicatedName(themeAddRequest);
+    public ThemeResponse addTheme(ThemeRequest themeRequest) {
+        validateDuplicatedName(themeRequest);
         try {
-            Theme theme = themeRepository.save(themeAddRequest.toTheme());
+            Theme theme = themeRepository.save(themeRequest.toTheme());
             return new ThemeResponse(theme);
         } catch (DuplicateKeyException e) {
             throw new DuplicationException("이미 존재하는 테마 이름입니다.");
         }
     }
 
-    private void validateDuplicatedName(ThemeAddRequest themeAddRequest) {
-        if (themeRepository.hasTheme(new ThemeName(themeAddRequest.name()))) {
+    private void validateDuplicatedName(ThemeRequest themeRequest) {
+        if (themeRepository.hasTheme(new ThemeName(themeRequest.name()))) {
             throw new DuplicationException("이미 존재하는 테마 이름입니다.");
         }
     }

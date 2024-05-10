@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exceptions.DuplicationException;
 import roomescape.exceptions.NotFoundException;
@@ -25,11 +25,11 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse addTime(ReservationTimeAddRequest reservationTimeAddRequest) {
-        if (reservationTimeRepository.isDuplicatedTime(reservationTimeAddRequest.startAt())) {
+    public ReservationTimeResponse addTime(ReservationTimeRequest reservationTimeRequest) {
+        if (reservationTimeRepository.isDuplicatedTime(reservationTimeRequest.startAt())) {
             throw new DuplicationException("이미 존재하는 시간입니다.");
         }
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTimeAddRequest.toReservationTime());
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTimeRequest.toReservationTime());
         return new ReservationTimeResponse(reservationTime);
     }
 

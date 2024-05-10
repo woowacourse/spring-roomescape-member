@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservatorName;
-import roomescape.dto.request.ReservationAddRequest;
+import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
@@ -28,13 +28,13 @@ public class ReservationService {
         this.themeService = themeService;
     }
 
-    public ReservationResponse addReservation(ReservationAddRequest reservationAddRequest) {
-        ReservationTimeResponse timeResponse = reservationTimeService.getTime(reservationAddRequest.timeId());
-        ThemeResponse themeResponse = themeService.getTheme(reservationAddRequest.themeId());
+    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+        ReservationTimeResponse timeResponse = reservationTimeService.getTime(reservationRequest.timeId());
+        ThemeResponse themeResponse = themeService.getTheme(reservationRequest.themeId());
 
         Reservation reservation = new Reservation(
-                new ReservatorName(reservationAddRequest.name()),
-                reservationAddRequest.date(),
+                new ReservatorName(reservationRequest.name()),
+                reservationRequest.date(),
                 timeResponse.toReservationTime(),
                 themeResponse.toTheme()
         );
