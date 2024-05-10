@@ -10,7 +10,7 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final LoginMemberArgumentResolver loginMemberArgumentResolver; // TODO: check
+    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final CheckAdminInterceptor checkAdminInterceptor;
 
     public WebMvcConfiguration(LoginMemberArgumentResolver loginMemberArgumentResolver, CheckAdminInterceptor checkAdminInterceptor) {
@@ -20,7 +20,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(checkAdminInterceptor);
+        registry.addInterceptor(checkAdminInterceptor)
+                .addPathPatterns("/admin/**");
     }
 
     @Override

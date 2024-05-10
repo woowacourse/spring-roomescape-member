@@ -22,10 +22,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // TODO: refactoring code
-        if (!request.getServletPath().startsWith("/admin")) {
-            return true;
-        }
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             throw new AuthorizationException();
@@ -34,7 +30,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
                 .orElseThrow(AuthorizationException::new);
-
         MemberInfo loginMember = authService.checkToken(token.getValue());
         if (loginMember.isNotAdmin()) {
             throw new AuthorizationException();
