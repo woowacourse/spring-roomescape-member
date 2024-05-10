@@ -23,7 +23,7 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponse> save(@RequestBody @Valid ThemeRequest themeRequest) {
         ThemeResponse themeResponse = themeService.save(themeRequest);
-        return ResponseEntity.created(URI.create("/themes/" + themeResponse.themeId()))
+        return ResponseEntity.created(URI.create("/themes/" + themeResponse.id()))
                 .body(themeResponse);
     }
 
