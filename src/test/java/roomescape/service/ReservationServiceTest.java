@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.dto.AdminReservationRequestDto;
 import roomescape.dto.FilterConditionDto;
+import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -67,7 +68,7 @@ public class ReservationServiceTest {
         AdminReservationRequestDto adminReservationRequestDto = new AdminReservationRequestDto(localDate, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.insertReservation(adminReservationRequestDto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongStateException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }
 
@@ -80,7 +81,7 @@ public class ReservationServiceTest {
         reservationService.insertReservation(adminReservationRequestDto);
 
         assertThatThrownBy(() -> reservationService.insertReservation(adminReservationRequestDto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongStateException.class)
                 .hasMessage("이미 해당 시간에 예약이 존재합니다.");
     }
 

@@ -47,9 +47,4 @@ public class ReservationTimeResponseController {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(value = NullPointerException.class)
-    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
-        return ResponseEntity.badRequest().body("시간을 선택해야 합니다.");
-    }
 }

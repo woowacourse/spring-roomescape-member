@@ -8,6 +8,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
+import roomescape.exception.NotRemovableByConstraintException;
+import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -59,7 +61,7 @@ public class ReservationTimeServiceTest {
     @Test
     void deleteInvalidTimeIdTest() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(NotRemovableByConstraintException.class);
     }
 
     @DisplayName("예약이 가능한 시간인지 확인한다.")
@@ -74,7 +76,7 @@ public class ReservationTimeServiceTest {
     @Test
     void dateLimitTest() {
         assertThatThrownBy(() -> reservationTimeService.isBooked("1999-01-01", 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongStateException.class)
                 .hasMessage("2020년 이전의 날짜는 입력할 수 없습니다.");
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequestDto;
+import roomescape.exception.NotRemovableByConstraintException;
+import roomescape.exception.WrongStateException;
 
 import java.util.List;
 
@@ -59,7 +61,7 @@ public class ReservationThemeServiceTest {
     @Test
     void deleteInvalidThemeIdTest() {
         assertThatThrownBy(() -> reservationThemeService.deleteTheme(1L))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(NotRemovableByConstraintException.class);
     }
 
     @DisplayName("지난 일주일간 가장 많이 예약된 테마를 조회한다.")
@@ -80,7 +82,7 @@ public class ReservationThemeServiceTest {
         ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(name, "testDesc", "testImg");
 
         assertThatThrownBy(() -> reservationThemeService.insertTheme(reservationThemeRequestDto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongStateException.class)
                 .hasMessage("이미 존재하는 테마 이름입니다.");
     }
 }

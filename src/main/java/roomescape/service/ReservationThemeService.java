@@ -5,6 +5,8 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationThemeDao;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequestDto;
+import roomescape.exception.NotRemovableByConstraintException;
+import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -26,7 +28,7 @@ public class ReservationThemeService {
 
     public ReservationTheme insertTheme(ReservationThemeRequestDto reservationThemeRequestDto) {
         if (reservationThemeDao.existName(reservationThemeRequestDto.name())) {
-            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
+            throw new WrongStateException("이미 존재하는 테마 이름입니다.");
         }
         Long id = reservationThemeDao.insert(reservationThemeRequestDto.name(), reservationThemeRequestDto.description(), reservationThemeRequestDto.thumbnail());
         return new ReservationTheme(id, reservationThemeRequestDto.name(), reservationThemeRequestDto.description(), reservationThemeRequestDto.thumbnail());
@@ -34,7 +36,7 @@ public class ReservationThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationDao.countByThemeId(id) != 0) {
-            throw new IllegalStateException("예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new NotRemovableByConstraintException("예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
         reservationThemeDao.deleteById(id);
     }

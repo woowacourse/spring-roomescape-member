@@ -10,6 +10,12 @@
 - [x] 예약 목록 검색
   - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색 API 구현
 
+### 커스텀 예외 추가
+
+- NotRemovableByConstraintException - Foreign Key Constraint 로 삭제가 불가능할 때에 발생하는 예외
+- NullRequestParameterException - Request 로 null 혹은 빈 값이 입력되었을 때에 발생하는 예외
+- WrongStateException - 로직 수행 중 잘못된 상황에 발생하는 예외
+
 ## 5단게 - 로그인 리팩터링
 
 ### 요구사항 분석

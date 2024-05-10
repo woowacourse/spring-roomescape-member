@@ -3,6 +3,7 @@ package roomescape.service;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.exception.WrongStateException;
 
 import java.util.Date;
 
@@ -27,7 +28,7 @@ public class AuthenticationService {
         if (validateToken(token)) {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         }
-        throw new IllegalStateException("올바른 토큰이 아닙니다.");
+        throw new WrongStateException("올바른 토큰이 아닙니다.");
     }
 
     public boolean validateToken(String token) {

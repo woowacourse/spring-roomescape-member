@@ -12,6 +12,7 @@ import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AdminReservationRequestDto;
 import roomescape.dto.FilterConditionDto;
+import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,16 +42,16 @@ public class ReservationService {
     @Transactional
     public Reservation insertReservation(AdminReservationRequestDto adminReservationRequestDto) {
         ReservationTime reservationTime = reservationTimeDao.findById(adminReservationRequestDto.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+                .orElseThrow(() -> new WrongStateException("올바르지 않은 입력입니다."));
         LocalDate date = adminReservationRequestDto.date();
         validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
         validateDuplicated(date, adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId());
         Member member = memberDao.findById(adminReservationRequestDto.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+                .orElseThrow(() -> new WrongStateException("올바르지 않은 입력입니다."));
         Long id = reservationDao.insert(
                 adminReservationRequestDto.date().toString(), adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId(), member.getId());
         ReservationTheme reservationTheme = reservationThemeDao.findById(adminReservationRequestDto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+                .orElseThrow(() -> new WrongStateException("올바르지 않은 입력입니다."));
         return new Reservation(id, adminReservationRequestDto.date().toString(), reservationTime, reservationTheme, member);
     }
 
@@ -58,13 +59,13 @@ public class ReservationService {
         LocalDateTime inputDateTime = LocalDateTime.of(localDate, localTime);
         ZoneId kst = ZoneId.of("Asia/Seoul");
         if (LocalDateTime.now(kst).isAfter(inputDateTime)) {
-            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+            throw new WrongStateException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 
     private void validateDuplicated(LocalDate date, Long timeId, Long themeId) {
         if (reservationDao.count(date.toString(), timeId, themeId) != 0) {
-            throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
+            throw new WrongStateException("이미 해당 시간에 예약이 존재합니다.");
         }
     }
 
