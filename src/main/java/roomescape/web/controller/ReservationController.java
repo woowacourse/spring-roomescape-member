@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
 import roomescape.service.response.ReservationResponse;
+import roomescape.web.controller.request.CreateReservationAdminRequest;
 import roomescape.web.controller.request.CreateReservationWebRequest;
 
 @RestController
@@ -24,7 +25,9 @@ class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody CreateReservationWebRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(
+            @Valid @RequestBody CreateReservationWebRequest request
+    ) {
         ReservationResponse response = reservationService.createReservation(request.toServiceRequest(1L));
         URI uri = URI.create("/reservations/" + response.id());
 
@@ -32,8 +35,10 @@ class ReservationController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> createAdminReservation(@Valid @RequestBody CreateReservationWebRequest request) {
-        ReservationResponse response = reservationService.createReservation(request.toServiceRequest(1L));
+    public ResponseEntity<ReservationResponse> createAdminReservation(
+            @Valid @RequestBody CreateReservationAdminRequest request
+    ) {
+        ReservationResponse response = reservationService.createReservation(request.toServiceRequest());
         URI uri = URI.create("/reservations/" + response.id());
 
         return ResponseEntity.created(uri).body(response);
