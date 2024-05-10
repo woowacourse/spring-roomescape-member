@@ -37,7 +37,8 @@ public class AdminReservationController {
                                                      @RequestParam(value = "memberId") long memberId,
                                                      @RequestParam(value = "dateFrom") String dateFrom,
                                                      @RequestParam(value = "dateTo") String dateTo) {
-        ReservationReadRequest reservationReadRequest = new ReservationReadRequest(themeId, memberId, dateFrom, dateTo);
+        @Valid ReservationReadRequest reservationReadRequest =
+                new ReservationReadRequest(themeId, memberId, dateFrom, dateTo);
         return reservationService.findByThemeAndMemberAndDate(reservationReadRequest);
     }
 }

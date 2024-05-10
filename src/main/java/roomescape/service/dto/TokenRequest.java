@@ -1,4 +1,6 @@
 package roomescape.service.dto;
 
-public record TokenRequest(String password, String email) {
+import jakarta.validation.constraints.Email;
+
+public record TokenRequest(String password, @Email String email) {
 }

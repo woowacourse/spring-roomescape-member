@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ public class TokenLoginController {
     }
 
     @PostMapping
-    public void tokenLogin(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
+    public void tokenLogin(@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse response) {
         loginMemberService.validateLogin(tokenRequest);
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
         Cookie cookie = authService.createCookieByToken(tokenResponse);
