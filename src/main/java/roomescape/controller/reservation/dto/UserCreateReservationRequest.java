@@ -8,7 +8,7 @@ import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 
-public record ReservationRequest(
+public record UserCreateReservationRequest(
         @NotNull
         LocalDate date,
         @NotNull

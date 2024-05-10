@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.member.dto.CreateReservationRequest;
+import roomescape.controller.member.dto.AdminCreateReservationRequest;
 import roomescape.controller.member.dto.LoginMember;
-import roomescape.controller.reservation.dto.ReservationRequest;
+import roomescape.controller.reservation.dto.UserCreateReservationRequest;
 import roomescape.controller.reservation.dto.ReservationSearch;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
@@ -51,13 +51,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public Reservation addReservation(final ReservationRequest reservationRequest,
+    public Reservation addReservation(final UserCreateReservationRequest userCreateReservationRequest,
                                       final LoginMember loginMember) {
-        final ReservationTime time = reservationTimeRepository.fetchById(reservationRequest.timeId());
-        final Theme theme = themeRepository.fetchById(reservationRequest.themeId());
+        final ReservationTime time = reservationTimeRepository.fetchById(userCreateReservationRequest.timeId());
+        final Theme theme = themeRepository.fetchById(userCreateReservationRequest.themeId());
         final Member member = memberRepository.fetchById(loginMember.id());
 
-        final Reservation parsedReservation = reservationRequest.toDomain(member, time, theme);
+        final Reservation parsedReservation = userCreateReservationRequest.toDomain(member, time, theme);
         validateDuplicate(theme, time, parsedReservation);
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
         validateBeforeDay(reservationDateTime);
@@ -65,7 +65,7 @@ public class ReservationService {
         return reservationRepository.save(parsedReservation);
     }
 
-    public Reservation addReservationAdmin(final CreateReservationRequest reservationRequest) {
+    public Reservation addReservationAdmin(final AdminCreateReservationRequest reservationRequest) {
         final ReservationTime time = reservationTimeRepository.fetchById(reservationRequest.timeId());
         final Theme theme = themeRepository.fetchById(reservationRequest.themeId());
         final Member member = memberRepository.fetchById(reservationRequest.memberId());
