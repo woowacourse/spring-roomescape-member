@@ -56,13 +56,13 @@ public class MemberService {
         return new TokenResponse(accessToken);
     }
 
-    public LoginResponse loginCheck(final String accessToken) {
+    public Member getMemberInfo(final String accessToken) {
         if (!jwtTokenProvider.validateToken(accessToken)) {
             throw new AccessNotAllowException("로그인 정보가 일치하지 않습니다.");
         }
         final String payload = jwtTokenProvider.getPayload(accessToken);
         final Member member = memberDao.findByEmail(payload)
                 .orElseThrow(() -> new AccessNotAllowException("로그인 정보가 부적절 합니다."));
-        return LoginResponse.from(member);
+        return member;
     }
 }

@@ -42,7 +42,7 @@ public class MemberController {
     @GetMapping("/login/check")
     ResponseEntity<LoginResponse> loginCheck(HttpServletRequest request) {
         String accessToken = authorizationExtractor.extract(request);
-        final LoginResponse loginResponse = memberService.loginCheck(accessToken);
+        final LoginResponse loginResponse = LoginResponse.from(memberService.getMemberInfo(accessToken));
         return ResponseEntity.ok(loginResponse);
     }
 }
