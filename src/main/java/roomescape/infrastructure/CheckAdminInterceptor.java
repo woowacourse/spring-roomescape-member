@@ -30,7 +30,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         String token = authenticationExtractor.extract(request, LoginController.TOKEN_NAME);
         LoginMember member = authService.findMemberByToken(token);
         if (Role.ADMIN != member.role()) {
-            throw new AuthorizationException();
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return false;
         }
 
         return true;
