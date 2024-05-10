@@ -3,10 +3,10 @@ package roomescape.reservation.presentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.response.ThemeResponse;
-import roomescape.reservation.dto.request.ThemeSaveRequest;
 import roomescape.reservation.application.ThemeService;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.dto.request.ThemeSaveRequest;
+import roomescape.reservation.dto.response.ThemeResponse;
 
 import java.util.List;
 
@@ -21,13 +21,18 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeSaveRequest request) {
-        Theme theme = request.toModel();
-        return ResponseEntity.status(HttpStatus.CREATED).body(themeService.create(theme));
+        Theme newTheme = request.toModel();
+        Theme createTheme = themeService.create(newTheme);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ThemeResponse.from(createTheme));
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {
-        return ResponseEntity.ok(themeService.findAll());
+        List<Theme> themes = themeService.findAll();
+        return ResponseEntity.ok(themes.stream()
+                .map(ThemeResponse::from)
+                .toList());
     }
 
     @DeleteMapping("/{id}")
@@ -38,6 +43,9 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> findAllPopular() {
-        return ResponseEntity.ok(themeService.findAllPopular());
+        List<Theme> themes = themeService.findAllPopular();
+        return ResponseEntity.ok(themes.stream()
+                .map(ThemeResponse::from)
+                .toList());
     }
 }

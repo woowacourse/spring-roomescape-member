@@ -3,7 +3,6 @@ package roomescape.auth.application;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.auth.dto.request.LoginRequest;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.common.ServiceTest;
 
@@ -19,12 +18,10 @@ class AuthServiceTest extends ServiceTest {
     void createTokenWithInvalidEmail() {
         // given
         createTestMember(USER_MIA());
-
         String invalidPassword = "invalid";
-        LoginRequest loginRequest = new LoginRequest(MIA_EMAIL, invalidPassword);
 
         // when & then
-        assertThatThrownBy(() -> authService.createToken(loginRequest))
+        assertThatThrownBy(() -> authService.createToken(MIA_EMAIL, invalidPassword))
                 .isInstanceOf(AuthorizationException.class);
     }
 
@@ -33,10 +30,9 @@ class AuthServiceTest extends ServiceTest {
     void findByEmail() {
         // given
         String notExistingEmail = "notExistingEmail@google.com";
-        LoginRequest loginRequest = new LoginRequest(notExistingEmail, TEST_PASSWORD);
 
         // when & then
-        assertThatThrownBy(() -> authService.createToken(loginRequest))
+        assertThatThrownBy(() -> authService.createToken(notExistingEmail, TEST_PASSWORD))
                 .isInstanceOf(AuthorizationException.class);
     }
 }

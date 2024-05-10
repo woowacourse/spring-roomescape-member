@@ -2,9 +2,8 @@ package roomescape.reservation.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.response.ThemeResponse;
 import roomescape.global.exception.NotFoundException;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeRepository;
 
 import java.time.LocalDate;
@@ -13,6 +12,10 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
+    private static final int NUMBER_OF_POPULAR = 10;
+    private static final int DAYS_TO_SUBTRACT_AT_START_POPULAR = 7;
+    private static final int DAYS_TO_SUBTRACT_AT_END_POPULAR = 1;
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -20,16 +23,12 @@ public class ThemeService {
     }
 
     @Transactional
-    public ThemeResponse create(Theme theme) {
-        Theme savedTheme = themeRepository.save(theme);
-        return ThemeResponse.from(savedTheme);
+    public Theme create(Theme theme) {
+        return themeRepository.save(theme);
     }
 
-    public List<ThemeResponse> findAll() {
-        List<Theme> themes = themeRepository.findAll();
-        return themes.stream()
-                .map(ThemeResponse::from)
-                .toList();
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
     }
 
     public Theme findById(Long id) {
@@ -42,12 +41,9 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> findAllPopular() {
-        LocalDate startDate = LocalDate.now().minusDays(7);
-        LocalDate endDate = LocalDate.now().minusDays(1);
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllByDateBetweenAndOrderByReservationCount(startDate, endDate, 10);
-        return allOrderByReservationCountInLastWeek.stream()
-                .map(ThemeResponse::from)
-                .toList();
+    public List<Theme> findAllPopular() {
+        LocalDate startDate = LocalDate.now().minusDays(DAYS_TO_SUBTRACT_AT_START_POPULAR);
+        LocalDate endDate = LocalDate.now().minusDays(DAYS_TO_SUBTRACT_AT_END_POPULAR);
+        return themeRepository.findAllByDateBetweenAndOrderByReservationCount(startDate, endDate, NUMBER_OF_POPULAR);
     }
 }

@@ -8,7 +8,6 @@ import roomescape.global.exception.ViolationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.response.AvailableReservationTimeResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -28,10 +27,10 @@ class ReservationTimeServiceTest extends ServiceTest {
         ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
         // when
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(reservationTime);
+        ReservationTime createdReservationTime = reservationTimeService.create(reservationTime);
 
         // then
-        assertThat(reservationTimeResponse.id()).isNotNull();
+        assertThat(createdReservationTime.getId()).isNotNull();
     }
 
     @Test
@@ -42,11 +41,11 @@ class ReservationTimeServiceTest extends ServiceTest {
         createTestReservationTime(reservationTime);
 
         // when
-        List<ReservationTimeResponse> responses = reservationTimeService.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
 
         // then
-        assertThat(responses).hasSize(1)
-                .extracting(ReservationTimeResponse::startAt)
+        assertThat(reservationTimes).hasSize(1)
+                .extracting(ReservationTime::getStartAt)
                 .contains(MIA_RESERVATION_TIME);
     }
 

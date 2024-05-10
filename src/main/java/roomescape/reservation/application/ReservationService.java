@@ -2,9 +2,8 @@ package roomescape.reservation.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.global.exception.ViolationException;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 
 import java.time.LocalDate;
@@ -20,11 +19,10 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(Reservation reservation) {
+    public Reservation create(Reservation reservation) {
         validateReservationDate(reservation);
         validateDuplicatedReservation(reservation);
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
+        return reservationRepository.save(reservation);
     }
 
     private void validateReservationDate(Reservation reservation) {
@@ -41,20 +39,13 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
-        return reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> findAll() {
+        return reservationRepository.findAll();
     }
 
-    public List<ReservationResponse> findAllByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId,
+    public List<Reservation> findAllByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId,
                                                                                LocalDate fromDate, LocalDate toDate) {
-        List<Reservation> reservations = reservationRepository.findAllByMemberIdAndThemeIdAndDateBetween(
-                memberId, themeId, fromDate, toDate);
-        return reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
+        return reservationRepository.findAllByMemberIdAndThemeIdAndDateBetween(memberId, themeId, fromDate, toDate);
     }
 
     @Transactional

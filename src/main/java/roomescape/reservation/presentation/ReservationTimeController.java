@@ -23,14 +23,20 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody @Valid ReservationTimeSaveRequest request) {
-        ReservationTime reservationTime = request.toModel();
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeService.create(reservationTime));
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
+            @RequestBody @Valid ReservationTimeSaveRequest request) {
+        ReservationTime newReservationTime = request.toModel();
+        ReservationTime createReservationTime = reservationTimeService.create(newReservationTime);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ReservationTimeResponse.from(createReservationTime));
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findReservationTimes() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
+        return ResponseEntity.ok(reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList());
     }
 
     @DeleteMapping("/{id}")

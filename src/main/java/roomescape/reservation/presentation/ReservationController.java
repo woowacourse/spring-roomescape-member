@@ -3,14 +3,7 @@ package roomescape.reservation.presentation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.auth.dto.LoginMember;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
@@ -44,21 +37,27 @@ public class ReservationController {
                                                                  LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
         Theme theme = themeService.findById(request.themeId());
-        Reservation reservation = request.toModel(theme, reservationTime, loginMember.toModel());
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
+        Reservation newReservation = request.toModel(theme, reservationTime, loginMember.toModel());
+        Reservation createReservation = reservationService.create(newReservation);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ReservationResponse.from(createReservation));
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findReservations() {
-        return ResponseEntity.ok(reservationService.findAll());
+        List<Reservation> reservations = reservationService.findAll();
+        return ResponseEntity.ok(reservations.stream().map(ReservationResponse::from).toList());
     }
 
     @GetMapping("/searching")
     public ResponseEntity<List<ReservationResponse>> findReservationsByMemberIdAndThemeIdAndDateBetween(
             @RequestParam Long memberId, @RequestParam Long themeId,
             @RequestParam LocalDate fromDate, @RequestParam LocalDate toDate) {
-        return ResponseEntity.ok(
-                reservationService.findAllByMemberIdAndThemeIdAndDateBetween(memberId, themeId, fromDate, toDate));
+        List<Reservation> reservations = reservationService.findAllByMemberIdAndThemeIdAndDateBetween(
+                memberId, themeId, fromDate, toDate);
+        return ResponseEntity.ok(reservations.stream()
+                .map(ReservationResponse::from)
+                .toList());
     }
 
     @DeleteMapping("/{id}")

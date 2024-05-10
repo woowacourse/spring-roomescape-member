@@ -8,13 +8,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import roomescape.global.config.WebMvcConfiguration;
 import roomescape.auth.presentation.AdminAuthorizationInterceptor;
 import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
+import roomescape.global.config.WebMvcConfiguration;
 import roomescape.reservation.application.ThemeService;
 import roomescape.reservation.dto.request.ThemeSaveRequest;
-import roomescape.reservation.dto.response.ThemeResponse;
 
 import java.util.List;
 
@@ -40,10 +39,9 @@ class ThemeControllerTest extends ControllerTest {
     void createTheme() throws Exception {
         // given
         ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
         BDDMockito.given(themeService.create(any()))
-                .willReturn(expectedResponse);
+                .willReturn(WOOTECO_THEME(1L));
 
         // when & then
         mockMvc.perform(post("/themes")
@@ -61,10 +59,8 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findAllThemes() throws Exception {
         // given
-        ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-
         BDDMockito.given(themeService.findAll())
-                .willReturn(List.of(expectedResponse));
+                .willReturn(List.of(WOOTECO_THEME(1L)));
 
         // when & then
         mockMvc.perform(get("/themes")
@@ -95,11 +91,8 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("최근 일주일 인기 테마 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findAllPopular() throws Exception {
         // given
-        ThemeResponse expectedWootecoResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        ThemeResponse expectedHorrorResponse = new ThemeResponse(2L, HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
-
         BDDMockito.given(themeService.findAllPopular())
-                .willReturn(List.of(expectedWootecoResponse, expectedHorrorResponse));
+                .willReturn(List.of(WOOTECO_THEME(1L), HORROR_THEME(2L)));
 
         // when & then
         mockMvc.perform(get("/themes/popular")

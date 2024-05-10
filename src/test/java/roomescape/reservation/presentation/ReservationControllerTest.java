@@ -12,11 +12,11 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import roomescape.global.config.WebMvcConfiguration;
 import roomescape.auth.presentation.AdminAuthorizationInterceptor;
 import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
 import roomescape.common.TestWebMvcConfiguration;
+import roomescape.global.config.WebMvcConfiguration;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
@@ -25,7 +25,6 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -64,7 +63,7 @@ class ReservationControllerTest extends ControllerTest {
         Reservation expectedReservation = MIA_RESERVATION(expectedTime, WOOTECO_THEME(), USER_MIA());
 
         BDDMockito.given(reservationService.findAll())
-                .willReturn(List.of(ReservationResponse.from(expectedReservation)));
+                .willReturn(List.of(expectedReservation));
 
         // when & then
         mockMvc.perform(get("/reservations").contentType(MediaType.APPLICATION_JSON))
@@ -85,7 +84,7 @@ class ReservationControllerTest extends ControllerTest {
         Reservation expectedReservation = MIA_RESERVATION(expectedTime, WOOTECO_THEME(), USER_MIA());
 
         BDDMockito.given(reservationService.findAllByMemberIdAndThemeIdAndDateBetween(anyLong(), anyLong(), any(), any()))
-                .willReturn(List.of(ReservationResponse.from(expectedReservation)));
+                .willReturn(List.of(expectedReservation));
 
         // when & then
         mockMvc.perform(get("/reservations/searching")
@@ -124,10 +123,10 @@ class ReservationControllerTest extends ControllerTest {
         ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, 1L, 1L);
         ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Theme expectedTheme = WOOTECO_THEME(1L);
-        ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme, USER_MIA(1L)));
+        Reservation expectedReservation = MIA_RESERVATION(expectedTime, expectedTheme, USER_MIA(1L));
 
         BDDMockito.given(reservationService.create(any()))
-                .willReturn(expectedResponse);
+                .willReturn(expectedReservation);
         BDDMockito.given(reservationTimeService.findById(anyLong()))
                 .willReturn(expectedTime);
         BDDMockito.given(themeService.findById(anyLong()))

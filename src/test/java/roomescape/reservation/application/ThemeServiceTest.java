@@ -8,7 +8,6 @@ import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.response.ThemeResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,13 +25,13 @@ class ThemeServiceTest extends ServiceTest {
     @DisplayName("테마를 생성한다.")
     void create() {
         // given
-        Theme expectedTheme = WOOTECO_THEME();
+        Theme theme = WOOTECO_THEME();
 
         // when
-        ThemeResponse response = themeService.create(expectedTheme);
+        Theme createdTheme = themeService.create(theme);
 
         // then
-        assertThat(response.id()).isNotNull();
+        assertThat(createdTheme.getId()).isNotNull();
     }
 
     @Test
@@ -43,11 +42,11 @@ class ThemeServiceTest extends ServiceTest {
         createTestTheme(HORROR_THEME());
 
         // when
-        List<ThemeResponse> responses = themeService.findAll();
+        List<Theme> themes = themeService.findAll();
 
         // then
-        assertThat(responses).hasSize(2)
-                .extracting(ThemeResponse::name)
+        assertThat(themes).hasSize(2)
+                .extracting(Theme::getName)
                 .contains(WOOTECO_THEME_NAME, HORROR_THEME_NAME);
     }
 
@@ -83,11 +82,11 @@ class ThemeServiceTest extends ServiceTest {
                 new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME())).getThemeId();
 
         // when
-        List<ThemeResponse> responses = themeService.findAllPopular();
+        List<Theme> themes = themeService.findAllPopular();
 
         // then
-        assertThat(responses).hasSize(2)
-                .extracting(ThemeResponse::id)
+        assertThat(themes).hasSize(2)
+                .extracting(Theme::getId)
                 .containsExactly(firstRankThemeId, secondRankThemeId);
     }
 }

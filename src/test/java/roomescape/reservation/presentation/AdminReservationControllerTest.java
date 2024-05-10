@@ -8,18 +8,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import roomescape.global.config.WebMvcConfiguration;
 import roomescape.auth.presentation.AdminAuthorizationInterceptor;
 import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
+import roomescape.global.config.WebMvcConfiguration;
 import roomescape.member.application.MemberService;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.application.ThemeService;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.AdminReservationSaveRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -54,7 +54,7 @@ class AdminReservationControllerTest extends ControllerTest {
         AdminReservationSaveRequest request = new AdminReservationSaveRequest(MIA_RESERVATION_DATE, 1L, 1L, 1L);
         ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Theme expectedTheme = WOOTECO_THEME(1L);
-        ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme, USER_MIA(1L)));
+        Reservation expectedReservation = MIA_RESERVATION(expectedTime, expectedTheme, USER_MIA(1L));
 
         BDDMockito.given(reservationTimeService.findById(anyLong()))
                 .willReturn(expectedTime);
@@ -63,7 +63,7 @@ class AdminReservationControllerTest extends ControllerTest {
         BDDMockito.given(memberService.findById(anyLong()))
                 .willReturn(USER_MIA(1L));
         BDDMockito.given(reservationService.create(any()))
-                .willReturn(expectedResponse);
+                .willReturn(expectedReservation);
 
         // when
         mockMvc.perform(post("/admin/reservations")

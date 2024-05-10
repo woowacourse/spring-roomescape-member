@@ -8,15 +8,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import roomescape.global.config.WebMvcConfiguration;
 import roomescape.auth.presentation.AdminAuthorizationInterceptor;
 import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
+import roomescape.global.config.WebMvcConfiguration;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationTimeSaveRequest;
 import roomescape.reservation.dto.response.AvailableReservationTimeResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -44,10 +43,10 @@ class ReservationTimeControllerTest extends ControllerTest {
     void createReservationTime() throws Exception {
         // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
-        ReservationTimeResponse expectedResponse = ReservationTimeResponse.from(new ReservationTime(1L, request.toModel()));
+        ReservationTime expectedReservationTime = new ReservationTime(1L, request.toModel());
 
         BDDMockito.given(reservationTimeService.create(any()))
-                .willReturn(expectedResponse);
+                .willReturn(expectedReservationTime);
 
         // when & then
         mockMvc.perform(post("/times")
@@ -109,7 +108,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     void findReservationTimes() throws Exception {
         // given
         BDDMockito.given(reservationTimeService.findAll())
-                .willReturn(List.of(ReservationTimeResponse.from(new ReservationTime(MIA_RESERVATION_TIME))));
+                .willReturn(List.of(new ReservationTime(MIA_RESERVATION_TIME)));
 
         // when & then
         mockMvc.perform(get("/times").contentType(MediaType.APPLICATION_JSON))

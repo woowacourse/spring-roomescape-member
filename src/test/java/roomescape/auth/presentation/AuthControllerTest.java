@@ -19,6 +19,7 @@ import roomescape.common.ControllerTest;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,7 +38,7 @@ class AuthControllerTest extends ControllerTest {
         String expectedToken = "token";
         LoginRequest request = new LoginRequest(MIA_EMAIL, TEST_PASSWORD);
 
-        BDDMockito.given(authService.createToken(any()))
+        BDDMockito.given(authService.createToken(anyString(), anyString()))
                 .willReturn(expectedToken);
 
         // when & then
@@ -81,7 +82,7 @@ class AuthControllerTest extends ControllerTest {
 
         BDDMockito.willThrow(new AuthorizationException(TEST_ERROR_MESSAGE))
                 .given(authService)
-                .createToken(any());
+                .createToken(anyString(), anyString());
 
         // when & then
         mockMvc.perform(post("/login")

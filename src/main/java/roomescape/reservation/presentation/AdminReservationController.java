@@ -39,7 +39,9 @@ public class AdminReservationController {
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
         Theme theme = themeService.findById(request.themeId());
         Member member = memberService.findById(request.memberId());
-        Reservation reservation = request.toModel(theme, reservationTime, member);
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
+        Reservation newReservation = request.toModel(theme, reservationTime, member);
+        Reservation createdReservation = reservationService.create(newReservation);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ReservationResponse.from(createdReservation));
     }
 }

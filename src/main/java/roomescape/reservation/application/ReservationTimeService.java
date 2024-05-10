@@ -2,13 +2,12 @@ package roomescape.reservation.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.dto.response.AvailableReservationTimeResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
 import roomescape.global.exception.NotFoundException;
 import roomescape.global.exception.ViolationException;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
+import roomescape.reservation.dto.response.AvailableReservationTimeResponse;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -29,16 +28,12 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponse create(ReservationTime reservationTime) {
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.from(savedReservationTime);
+    public ReservationTime create(ReservationTime reservationTime) {
+        return reservationTimeRepository.save(reservationTime);
     }
 
-    public List<ReservationTimeResponse> findAll() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        return reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+    public List<ReservationTime> findAll() {
+        return reservationTimeRepository.findAll();
     }
 
     public ReservationTime findById(Long id) {

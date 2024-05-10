@@ -11,9 +11,6 @@ import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
-import roomescape.reservation.dto.response.ReservedThemeResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,10 +35,10 @@ class ReservationServiceTest extends ServiceTest {
         Reservation reservation = MIA_RESERVATION(reservationTime, theme, member);
 
         // when
-        ReservationResponse response = reservationService.create(reservation);
+        Reservation createdReservation = reservationService.create(reservation);
 
         // then
-        assertThat(response).isNotNull();
+        assertThat(createdReservation.getId()).isNotNull();
     }
 
     @ParameterizedTest
@@ -87,18 +84,18 @@ class ReservationServiceTest extends ServiceTest {
         createTestReservation(TOMMY_RESERVATION());
 
         // when
-        List<ReservationResponse> reservations = reservationService.findAll();
+        List<Reservation> reservations = reservationService.findAll();
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(reservations).hasSize(2)
-                    .extracting(ReservationResponse::memberName)
+                    .extracting(Reservation::getMemberName)
                     .containsExactly(MIA_NAME, TOMMY_NAME);
-            softly.assertThat(reservations).extracting(ReservationResponse::time)
-                    .extracting(ReservationTimeResponse::startAt)
+            softly.assertThat(reservations).extracting(Reservation::getTime)
+                    .extracting(ReservationTime::getStartAt)
                     .containsExactly(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);
-            softly.assertThat(reservations).extracting(ReservationResponse::theme)
-                    .extracting(ReservedThemeResponse::name)
+            softly.assertThat(reservations).extracting(Reservation::getTheme)
+                    .extracting(Theme::getName)
                     .containsExactly(WOOTECO_THEME_NAME, WOOTECO_THEME_NAME);
         });
     }
@@ -111,12 +108,12 @@ class ReservationServiceTest extends ServiceTest {
         Reservation tommyReservation = createTestReservation(TOMMY_RESERVATION());
 
         // when
-        List<ReservationResponse> reservations = reservationService.findAllByMemberIdAndThemeIdAndDateBetween(
+        List<Reservation> reservations = reservationService.findAllByMemberIdAndThemeIdAndDateBetween(
                 miaReservation.getMemberId(), miaReservation.getThemeId(), miaReservation.getDate(), tommyReservation.getDate());
 
         // then
         assertThat(reservations).hasSize(1)
-                .extracting(ReservationResponse::memberName)
+                .extracting(Reservation::getMemberName)
                 .containsExactly(MIA_NAME);
     }
 
