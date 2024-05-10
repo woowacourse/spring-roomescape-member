@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
-@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeJdbcRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;

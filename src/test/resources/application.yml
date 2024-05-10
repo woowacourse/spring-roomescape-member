@@ -1,0 +1,7 @@
+spring:
+  sql:
+    init:
+      schema-locations: classpath:/schema.sql
+      data-locations: classpath:/truncate.sql
+datasource:
+  url: jdbc:h2:mem:database

@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeJdbcRepositoryTest {
     private ThemeRepository themeRepository;
     private ReservationTimeRepository reservationTimeRepository;
@@ -41,7 +40,8 @@ class ThemeJdbcRepositoryTest {
     @Test
     void saveTheme() {
         //given
-        Theme theme = saveThemeByName("레벨2 탈출");
+        Theme theme = new Theme("레벨2 탈출z", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         //when
         Theme result = themeRepository.save(theme);
@@ -82,8 +82,7 @@ class ThemeJdbcRepositoryTest {
     void existsByName() {
         //given
         String name = "레벨2 탈출";
-        Theme theme = saveThemeByName(name);
-        themeRepository.save(theme);
+        saveThemeByName(name);
 
         //when
         boolean result = themeRepository.existsByName(name);
@@ -98,7 +97,6 @@ class ThemeJdbcRepositoryTest {
         //given
         String name = "레벨2 탈출";
         Theme theme = saveThemeByName(name);
-        themeRepository.save(theme);
 
         //when
         String otherName = "레벨3 탈출";

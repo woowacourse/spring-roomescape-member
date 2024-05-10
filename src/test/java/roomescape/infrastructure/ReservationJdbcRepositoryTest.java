@@ -21,18 +21,14 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @JdbcTest
-@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationJdbcRepositoryTest {
-    private final JdbcTemplate jdbcTemplate;
     private ReservationRepository reservationRepository;
     private String reservationDate;
     private ReservationTime reservationTime;
     private Theme theme;
 
     @Autowired
-    ReservationJdbcRepositoryTest(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
