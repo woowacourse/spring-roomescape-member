@@ -40,8 +40,8 @@ public class MemberService {
         return memberRepository.checkExistMember(email, password);
     }
 
-    public CheckMemberResponse findByEmail(String email) {
-        Member member = memberRepository.findByEmail(email);
+    public CheckMemberResponse findById(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow();
         return new CheckMemberResponse(member.getName());
     }
 
@@ -54,7 +54,7 @@ public class MemberService {
     }
 
     public CheckMemberResponse findByCookies(Cookie[] cookies) {
-        String email = jwtTokenProvider.getEmailByCookie(cookies);
-        return findByEmail(email);
+        Long memberId = jwtTokenProvider.getMemberIdByCookie(cookies);
+        return findById(memberId);
     }
 }

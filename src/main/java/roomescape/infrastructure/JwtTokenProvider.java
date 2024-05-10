@@ -11,7 +11,6 @@ import roomescape.domain.Member;
 
 @Component
 public class JwtTokenProvider {
-    private static final String EMAIL = "email";
     private static final String ROLE = "role";
     private static final String TOKEN = "token";
     private static final String ADMIN = "ADMIN";
@@ -22,7 +21,6 @@ public class JwtTokenProvider {
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim(EMAIL, member.getEmail())
                 .claim(ROLE, member.getRole())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
@@ -43,14 +41,6 @@ public class JwtTokenProvider {
             }
         }
         return "";
-    }
-
-    public String getEmailByCookie(Cookie[] cookies) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(extractTokenFromCookie(cookies))
-                .getBody();
-        return String.valueOf(claims.get(EMAIL));
     }
 
     public String getRoleByCookie(Cookie[] cookies) {
