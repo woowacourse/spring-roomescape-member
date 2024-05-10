@@ -38,10 +38,6 @@ public class Reservation {
         return member.getId();
     }
 
-    public String getMemberName() {
-        return member.getName().value();
-    }
-
     public ReservationTime getTime() {
         return time;
     }
