@@ -1,4 +1,4 @@
-package roomescape.controller.interceptor;
+package roomescape.interceptor;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

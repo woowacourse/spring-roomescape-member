@@ -1,4 +1,4 @@
-package roomescape.controller.interceptor;
+package roomescape.interceptor;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,12 +10,12 @@ import roomescape.infrastructure.AuthorizationExtractor;
 import roomescape.infrastructure.JwtProvider;
 
 @Component
-public class UserAuthorizationInterceptor implements HandlerInterceptor {
+public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
     private final AuthorizationExtractor authorizationExtractor;
     private final JwtProvider jwtProvider;
 
-    public UserAuthorizationInterceptor(AuthorizationExtractor authorizationExtractor, JwtProvider jwtProvider) {
+    public AdminAuthorizationInterceptor(AuthorizationExtractor authorizationExtractor, JwtProvider jwtProvider) {
         this.authorizationExtractor = authorizationExtractor;
         this.jwtProvider = jwtProvider;
     }
@@ -29,16 +29,16 @@ public class UserAuthorizationInterceptor implements HandlerInterceptor {
             return AuthorizationResponseHandler.redirectLogin(response);
         }
 
-        if (!isUser(token)) {
+        if (!isAdmin(token)) {
             return AuthorizationResponseHandler.responseUnauthorized(response);
         }
 
         return true;
     }
 
-    private boolean isUser(String token) {
+    private boolean isAdmin(String token) {
         Claims claims = jwtProvider.getClaims(token);
         String role = claims.get("role", String.class);
-        return Role.valueOf(role) == Role.USER;
+        return Role.valueOf(role) == Role.ADMIN;
     }
 }
