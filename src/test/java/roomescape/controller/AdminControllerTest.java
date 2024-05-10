@@ -20,6 +20,9 @@ import java.util.Map;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AdminControllerTest {
 
+    private static final AuthDto userDto = new AuthDto("treeboss@gmail.com", "treeboss123!");
+    private static final AuthDto adminDto = new AuthDto("admin@gmail.com", "admin123!");
+
     private final JdbcTemplate jdbcTemplate;
     private final AuthService authService;
     private final SimpleJdbcInsert memberInsertActor;
@@ -57,8 +60,7 @@ public class AdminControllerTest {
     @DisplayName("관리자가 어드민 API 접근에 시도할 경우 예외를 반환하지 않는다.")
     @Test
     void should_throw_exception_when_admin_contact() {
-        AuthDto authDto = new AuthDto("admin@gmail.com");
-        String token = authService.createToken(authDto);
+        String token = authService.createToken(adminDto);
         AdminReservationRequest request = new AdminReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
 
         RestAssured
@@ -74,8 +76,7 @@ public class AdminControllerTest {
     @DisplayName("일반 유저가 어드민 API 접근에 시도할 경우 예외를 반환한다.")
     @Test
     void should_not_throw_exception_when_user_contact() {
-        AuthDto authDto = new AuthDto("treeboss@gmail.com");
-        String token = authService.createToken(authDto);
+        String token = authService.createToken(userDto);
         AdminReservationRequest request = new AdminReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
 
         RestAssured

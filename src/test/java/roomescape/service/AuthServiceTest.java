@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthServiceTest {
 
+    private static final AuthDto userDto = new AuthDto("treeboss@gmail.com", "treeboss123!");
+
     private AuthService authService;
 
     @BeforeEach
@@ -32,8 +34,7 @@ class AuthServiceTest {
     @DisplayName("사용자 정보를 통해 JWT 토큰을 생성한다.")
     @Test
     void should_create_token() {
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
-        AuthDto authDto = new AuthDto(member.getEmail());
+        AuthDto authDto = new AuthDto(userDto.getEmail(), userDto.getPassword());
 
         String accessToken = authService.createToken(authDto);
 
@@ -45,8 +46,7 @@ class AuthServiceTest {
     @DisplayName("토큰을 통해 사용자 정보를 조회한다.")
     @Test
     void should_check_login_state() {
-        AuthDto authDto = new AuthDto("treeboss@gmail.com");
-        String token = authService.createToken(authDto);
+        String token = authService.createToken(userDto);
 
         MemberInfo loginMember = authService.checkToken(token);
 

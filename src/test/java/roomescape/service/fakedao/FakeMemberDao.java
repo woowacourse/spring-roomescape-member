@@ -46,4 +46,11 @@ public class FakeMemberDao implements MemberDao {
         members.add(member);
         return key;
     }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        return members.stream()
+                .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
+                .findFirst();
+    }
 }

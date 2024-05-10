@@ -12,4 +12,6 @@ public interface MemberDao {
     Optional<Member> findById(long id);
 
     List<Member> findAll();
+
+    Optional<Member> findByEmailAndPassword(String email, String password);
 }

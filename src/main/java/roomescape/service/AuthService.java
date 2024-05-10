@@ -24,8 +24,9 @@ public class AuthService {
     }
 
     public String createToken(AuthDto authDto) {
-        Member member = memberRepository.findMemberByEmail(authDto.getEmail())
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 이메일을 가진 계정이 없습니다."));
+        // TODO: 없는 이메일, 비밀번호 불일치 예외 처리 다르게
+        Member member = memberRepository.findMemberByEmailAndPassword(authDto.getEmail(), authDto.getPassword())
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당하는 계정이 없습니다."));
         return Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
@@ -35,7 +36,7 @@ public class AuthService {
                 .compact();
     }
 
-    public MemberInfo checkToken(String token) { // TODO: 비밀번호 체크
+    public MemberInfo checkToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()

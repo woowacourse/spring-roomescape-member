@@ -28,6 +28,8 @@ class ReservationControllerTest {
 
     private static final int INITIAL_TIME_COUNT = 5;
     private static final int INITIAL_RESERVATION_COUNT = 15;
+    private static final AuthDto userDto = new AuthDto("treeboss@gmail.com", "treeboss123!");
+
 
     private final JdbcTemplate jdbcTemplate;
     private final AuthService authService;
@@ -124,8 +126,7 @@ class ReservationControllerTest {
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void should_insert_reservation() {
-        AuthDto authDto = new AuthDto("treeboss@gmail.com");
-        String token = authService.createToken(authDto);
+        String token = authService.createToken(userDto);
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
 
         RestAssured.given().log().all()
@@ -187,7 +188,6 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", ReservationResponse.class);
-        System.out.println(reservations);
     }
 
     private Integer countAllReservations() {

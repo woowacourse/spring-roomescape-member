@@ -27,4 +27,8 @@ public class MemberRepository {
     public List<Member> findAllMembers() {
         return memberDao.findAll();
     }
+
+    public Optional<Member> findMemberByEmailAndPassword(String email, String password) {
+        return memberDao.findByEmailAndPassword(email, password);
+    }
 }
