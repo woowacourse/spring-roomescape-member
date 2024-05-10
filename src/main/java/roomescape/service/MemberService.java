@@ -2,12 +2,12 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.dto.request.UserLoginRequest;
 import roomescape.dto.request.UserSignUpRequest;
 import roomescape.dto.response.CheckMemberResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
-import roomescape.domain.Member;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;
 
@@ -22,9 +22,22 @@ public class MemberService {
     }
 
     public MemberResponse save(UserSignUpRequest userSignUpRequest) {
-        Member member = userSignUpRequest.toEntity();
-        Member savedMember = memberRepository.save(member);
+        Member requestMember = userSignUpRequest.toEntity();
+
+        rejectDuplicateMember(requestMember);
+
+        Member savedMember = memberRepository.save(requestMember);
         return MemberResponse.from(savedMember);
+    }
+
+    private void rejectDuplicateMember(Member member) {
+        List<Member> savedMembers = memberRepository.findAll();
+        boolean isDuplicateReservationTimePresent = savedMembers.stream()
+                .anyMatch(member::hasSameEmail);
+
+        if (isDuplicateReservationTimePresent) {
+            throw new IllegalArgumentException("중복된 이메일의 계정이 존재합니다. 입력한 이메일: " + member.getEmail());
+        }
     }
 
     public TokenResponse createToken(UserLoginRequest userLoginRequest) {
