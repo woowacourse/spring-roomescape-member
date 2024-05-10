@@ -19,13 +19,13 @@ public class TokenProvider {
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RANDOM_VALUE.getBytes());
     private static final String AUTHENTICATION_PAYLOAD = "name";
     private static final String TOKEN_COOKIE_NAME = "token";
-    public static final String AUTHENCATION_ROLE = "role";
+    public static final String AUTHENTICATION_ROLE = "role";
 
     public String generateTokenOf(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim(AUTHENTICATION_PAYLOAD, member.getName())
-                .claim(AUTHENCATION_ROLE, member.getRole())
+                .claim(AUTHENTICATION_ROLE, member.getRole())
                 .signWith(SECRET_KEY)
                 .compact();
     }
@@ -39,7 +39,7 @@ public class TokenProvider {
     }
 
     public Role parseAuthenticationRole(String token) {
-        String authenticationInfo = parsePayload(token).get(AUTHENCATION_ROLE, String.class);
+        String authenticationInfo = parsePayload(token).get(AUTHENTICATION_ROLE, String.class);
         if (authenticationInfo == null) {
             throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
         }

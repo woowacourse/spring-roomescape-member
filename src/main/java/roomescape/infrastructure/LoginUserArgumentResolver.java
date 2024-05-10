@@ -1,4 +1,4 @@
-package roomescape.handler;
+package roomescape.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -11,7 +11,6 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
-import roomescape.infrastructure.TokenProvider;
 import roomescape.service.dto.request.LoginUser;
 
 @Component
