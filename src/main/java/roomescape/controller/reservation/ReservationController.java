@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.controller.AuthorizationException;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
@@ -40,7 +41,10 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody @Valid final ReservationRequest request,
-            final LoginMember loginMember) { //TODO valid 하기 널이면 로긘안한 상태
+            @Valid final LoginMember loginMember) {
+        if (loginMember == null) {
+            throw new AuthorizationException("로그인되지 않은 유저입니다.");
+        }
         final Reservation reservation = reservationService.addReservation(request, loginMember);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.getId())

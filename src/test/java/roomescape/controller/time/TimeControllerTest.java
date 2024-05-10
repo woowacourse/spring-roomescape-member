@@ -4,15 +4,21 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TimeControllerTest {
@@ -23,6 +29,16 @@ class TimeControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    @Test
+    @DisplayName("타임 조회")
+    void getTimes() {
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(4));
     }
 
     @ParameterizedTest
@@ -38,6 +54,49 @@ class TimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("시간 삭제")
+    void deleteTime() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "00:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        final List<Object> values = RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList("$");
+
+        RestAssured.given().log().all()
+                .when().delete("/times/" + values.size())
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().delete("/times/" + values.size())
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 가능 시간 조회")
+    void getAvailableTimes() {
+        LocalDate date = LocalDate.now();
+        long themeId = 1L;
+
+        RestAssured.given().log().all()
+                .when().get("/times/availability?date=" + date.format(DateTimeFormatter.ISO_DATE) + "&themeId=" + themeId)
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(4));
     }
 
     static Stream<Arguments> invalidRequestParameterProvider() {
