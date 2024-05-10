@@ -38,9 +38,17 @@ public class AuthService {
     }
 
     private Member authenticateUser(LoginRequest request) {
-        Member member = memberRepository.findByEmail(request.email()).orElseThrow();
+        Member member = getMemberByEmail(request.email());
         validatePassword(request, member);
         return member;
+    }
+
+    private Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                        "[ERROR] 등록된 아이디가 아닙니다.",
+                        "id(email) : " + email
+                ));
     }
 
     private Long extractUserIdByToken(String token) {
@@ -56,7 +64,7 @@ public class AuthService {
     }
 
     private void validateToken(String token) {
-        if (jwtProvider.isValidateToken(token)) {
+        if (token == null || !jwtProvider.isValidateToken(token)) {
             throw new ClientErrorExceptionWithLog("[ERROR] 유효한 토큰이 아닙니다.");
         }
     }
