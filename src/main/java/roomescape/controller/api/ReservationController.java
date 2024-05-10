@@ -18,7 +18,7 @@ import roomescape.service.ReservationService;
 import roomescape.service.dto.SaveReservationDto;
 
 @RestController
-@RequestMapping("/reservations")
+@RequestMapping("/admin/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -29,7 +29,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<CreateReservationResponse> save(@RequestBody CreateReservationRequest request) {
-        Reservation newReservation = reservationService.save(new SaveReservationDto(request.name(),
+        Reservation newReservation = reservationService.save(new SaveReservationDto(request.memberId(),
             request.date(),
             request.timeId(),
             request.themeId())
@@ -39,7 +39,7 @@ public class ReservationController {
 
         CreateReservationResponse response = new CreateReservationResponse(
             id,
-            newReservation.getName(),
+            newReservation.getLoginMember(),
             newReservation.getDate(),
             newReservation.getTime(),
             newReservation.getTheme()

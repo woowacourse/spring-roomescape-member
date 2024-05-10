@@ -7,10 +7,6 @@ public class Member {
     private final Email email;
     private final Password password;
 
-    public Member(String rawName, String rawEmail, String rawPassword) {
-        this(null, rawName, rawEmail, rawPassword);
-    }
-
     public Member(Long id, String rawName, String rawEmail, String rawPassword) {
         this.id = id;
         this.name = new Name(rawName);

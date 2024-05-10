@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.LoginMember;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -28,7 +29,11 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         this.reservationMapper = (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
-            rs.getString("reservation_name"),
+            new LoginMember(
+                rs.getLong("member_id"),
+                rs.getString("member_email"),
+                rs.getString("member_name")
+            ),
             rs.getString("reservation_date"),
             new ReservationTime(
                 rs.getLong("time_id"),
@@ -46,7 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> saveSource = Map.ofEntries(
-            Map.entry("name", reservation.getName()),
+            Map.entry("member_id", reservation.getLoginMember().id()),
             Map.entry("date", reservation.getDate()),
             Map.entry("time_id", reservation.getTime().getId()),
             Map.entry("theme_id", reservation.getTheme().getId())
@@ -59,7 +64,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
             SELECT
                 r.id AS reservation_id,
-                r.name AS reservation_name,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
                 r.date AS reservation_date,
                 t.id AS time_id,
                 t.start_at AS time_value,
@@ -68,6 +75,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 th.description AS theme_description,
                 th.thumbnail AS theme_thumbnail
             FROM reservation AS r
+            INNER JOIN member AS m ON r.member_id = m.id
             INNER JOIN reservation_time AS t ON r.time_id = t.id
             INNER JOIN theme AS th ON r.theme_id = th.id
             WHERE r.id = ?
@@ -81,7 +89,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
             SELECT
                 r.id AS reservation_id,
-                r.name AS reservation_name,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
                 r.date AS reservation_date,
                 t.id AS time_id,
                 t.start_at AS time_value,
@@ -90,6 +100,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 th.description AS theme_description,
                 th.thumbnail AS theme_thumbnail
             FROM reservation AS r
+            INNER JOIN member AS m ON r.member_id = m.id
             INNER JOIN reservation_time AS t ON r.time_id = t.id
             INNER JOIN theme AS th ON r.theme_id = th.id
             """;
@@ -126,7 +137,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
             SELECT
                 r.id AS reservation_id,
-                r.name AS reservation_name,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
                 r.date AS reservation_date,
                 t.id AS time_id,
                 t.start_at AS time_value,
@@ -135,6 +148,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 th.description AS theme_description,
                 th.thumbnail AS theme_thumbnail
             FROM reservation AS r
+            INNER JOIN member AS m ON r.member_id = m.id
             INNER JOIN reservation_time AS t ON r.time_id = t.id
             INNER JOIN theme AS th ON r.theme_id = th.id
             WHERE date = ? AND theme_id = ?
