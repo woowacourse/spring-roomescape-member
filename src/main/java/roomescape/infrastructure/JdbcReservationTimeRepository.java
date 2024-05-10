@@ -26,7 +26,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
