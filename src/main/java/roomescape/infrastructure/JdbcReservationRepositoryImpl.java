@@ -62,6 +62,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
                 m.name AS member_name , 
                 m.email AS member_email , 
                 m.password AS member_password , 
+                m.role AS member_role , 
                 r.date AS reservation_date, 
                 t.id AS time_id, 
                 t.start_at AS time_value,
