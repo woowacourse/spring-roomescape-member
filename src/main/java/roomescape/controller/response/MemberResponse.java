@@ -2,8 +2,8 @@ package roomescape.controller.response;
 
 import roomescape.domain.Member;
 
-public record MemberResponse(Long id, String name, String email, String password) {
+public record MemberResponse(Long id, String name) {
     public static MemberResponse from(Member member) {
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getPassword());
+        return new MemberResponse(member.getId(), member.getName());
     }
 }
