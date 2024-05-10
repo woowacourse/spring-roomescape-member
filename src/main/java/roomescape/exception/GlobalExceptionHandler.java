@@ -25,8 +25,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+    //TODO : 기깔나게 상위 클래스로 묶어버리기
     @ExceptionHandler(DeleteNotAllowException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(DeleteNotAllowException e, HttpServletRequest req) {
+        final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, req.getRequestURI(), e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(SignupFailException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(SignupFailException e, HttpServletRequest req) {
         final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, req.getRequestURI(), e.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }

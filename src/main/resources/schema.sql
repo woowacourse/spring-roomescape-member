@@ -26,3 +26,12 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)            -- 외래키 추가
 );
 
+CREATE TABLE member
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    password CHAR(64) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
