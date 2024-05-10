@@ -22,10 +22,10 @@ public class MemberService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public void save(UserSignUpRequest userSignUpRequest) {
+    public MemberResponse save(UserSignUpRequest userSignUpRequest) {
         Member member = userSignUpRequest.toEntity();
-
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+        return MemberResponse.from(member);
     }
 
     public TokenResponse createToken(UserLoginRequest userLoginRequest) {

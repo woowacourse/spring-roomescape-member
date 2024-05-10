@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +35,10 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<Void> save(@RequestBody @Valid UserSignUpRequest userSignUpRequest) {
-        memberService.save(userSignUpRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<MemberResponse> save(@RequestBody @Valid UserSignUpRequest userSignUpRequest) {
+        MemberResponse memberResponse = memberService.save(userSignUpRequest);
+        return ResponseEntity.created(URI.create("/members/" + memberResponse.id()))
+                .body(memberResponse);
     }
 
     @PostMapping("/login")
