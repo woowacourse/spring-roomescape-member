@@ -10,6 +10,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationSearchCondRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
@@ -40,7 +41,6 @@ public class ReservationService {
 
         return reservationRepository.save(reservation);
     }
-
 
     private Reservation getValidatedReservation(
             ReservationSaveRequest reservationSaveRequest,
@@ -81,6 +81,12 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
+                .map(ReservationResponse::toResponse)
+                .toList();
+    }
+
+    public List<ReservationResponse> findAllBySearchCond(ReservationSearchCondRequest reservationSearchCondRequest) {
+        return reservationRepository.findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(reservationSearchCondRequest).stream()
                 .map(ReservationResponse::toResponse)
                 .toList();
     }

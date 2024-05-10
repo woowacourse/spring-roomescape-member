@@ -2,6 +2,9 @@
 
 GET http://localhost:8080/reservations
 
+### 테마 아이디, 회원 아이디, 기간 조건 별 조회 API
+GET http://localhost:8080/reservations/search?themeId=?&memberId=?&dateFrom=?&dateTo=?
+
 ### 사용자 예약 추가 API
 
 POST http://localhost:8080/reservations

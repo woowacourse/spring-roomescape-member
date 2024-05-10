@@ -19,6 +19,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
+import roomescape.reservation.dto.ReservationSearchCondRequest;
 
 @Repository
 public class ReservationRepository {
@@ -115,6 +116,42 @@ public class ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, createReservationRowMapper());
+    }
+
+    public List<Reservation> findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(ReservationSearchCondRequest reservationSearchCondRequest) {
+        String sql = """
+                select
+                r.id,
+                m.id as member_id,
+                m.role,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password,
+                r.date,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail,
+                rt.id as time_id,
+                rt.start_at
+                from reservation r
+                join reservation_time rt
+                on r.time_id = rt.id
+                join theme t
+                on r.theme_id = t.id
+                join member m
+                on r.member_id = m.id
+                where theme_id = ? and member_id = ? and r.date BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                createReservationRowMapper(),
+                reservationSearchCondRequest.themeId(),
+                reservationSearchCondRequest.memberId(),
+                reservationSearchCondRequest.dateFrom(),
+                reservationSearchCondRequest.dateTo()
+        );
     }
 
     public boolean existReservation(Reservation reservation) {
