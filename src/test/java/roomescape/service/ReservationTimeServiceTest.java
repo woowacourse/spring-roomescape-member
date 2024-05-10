@@ -12,9 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.*;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.*;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -36,6 +35,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("예약 시간 목록 조회")
     @Test
@@ -90,9 +92,10 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 시간 삭제 시 예외 발생")
     @Test
     void deleteTimeExistReservation() {
+        final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        reservationRepository.save(new Reservation("이름", LocalDate.now().plusMonths(1), reservationTime, theme));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusMonths(1), reservationTime, theme));
 
         assertThatThrownBy(() -> reservationTimeService.deleteTime(reservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -102,13 +105,14 @@ class ReservationTimeServiceTest {
     @DisplayName("특정 날짜의 테마에 대한 전체 시간 예약 여부 오름차순 조회")
     @Test
     void getTimesWithBooked() {
+        final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
         final List<ReservationTime> reservationTimes = Stream.of("10:00", "09:00", "11:00")
                 .map((time) -> reservationTimeRepository.save(new ReservationTime(LocalTime.parse(time))))
                 .toList();
         final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
         final LocalDate localDate = LocalDate.now().plusWeeks(1);
-        reservationRepository.save(new Reservation("이름1", localDate, reservationTimes.get(0), theme));
-        reservationRepository.save(new Reservation("이름2", localDate, reservationTimes.get(1), theme));
+        reservationRepository.save(new Reservation(member, localDate, reservationTimes.get(0), theme));
+        reservationRepository.save(new Reservation(member, localDate, reservationTimes.get(1), theme));
         final List<ReservationTimeBookedResponse> reservationTimeBookedResponses = reservationTimeService.getTimesWithBooked(
                 new ReservationTimeBookedRequest(localDate, theme.getId()));
 
