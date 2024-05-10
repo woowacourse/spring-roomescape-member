@@ -30,4 +30,13 @@ class UserControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("회원가입 페이지를 요청한다.")
+    void readSignUpPage() {
+        RestAssured.given().log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
