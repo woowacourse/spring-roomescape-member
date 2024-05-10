@@ -25,7 +25,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.member.UserLoginRequest;
+import roomescape.dto.member.MemberLoginRequest;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.MemberReservationCreateRequest;
 
@@ -65,7 +65,7 @@ class ReservationControllerTest {
                             MemberReservationCreateRequest.of(date, 1L, 1L);
 
                     String token = RestAssured.given()
-                            .body(UserLoginRequest.of("user1", "user1@wooteco.com"))
+                            .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .when().post("/login")
                             .getHeader("Set-Cookie");

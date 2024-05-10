@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.member.MemberResponse;
-import roomescape.dto.member.UserLoginRequest;
+import roomescape.dto.member.LoginMemberResponse;
+import roomescape.dto.member.MemberLoginRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -35,18 +35,18 @@ class LoginControllerTest {
                 "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
 
         String accessToken = RestAssured.given()
-                .body(UserLoginRequest.of("user1", "user1@wooteco.com"))
+                .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .getHeader("Set-Cookie");
 
-        MemberResponse member = RestAssured
+        LoginMemberResponse member = RestAssured
                 .given().log().all()
                 .header("Cookie", accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract().as(MemberResponse.class);
+                .statusCode(HttpStatus.OK.value()).extract().as(LoginMemberResponse.class);
 
         assertThat(member.name()).isEqualTo("사용자1");
     }
