@@ -40,7 +40,7 @@ public class ReservationJDBCRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
+    @Override //수정해야 하나? (일단 건드려놓긴 함)
     public List<Reservation> findAll() {
         String sql = "SELECT r.id as reservation_id, r.name as reservation_name, r.date, "
                 + "rt.id as time_id, rt.start_at, "
@@ -81,5 +81,19 @@ public class ReservationJDBCRepository implements ReservationRepository {
     public boolean existsByThemeId(long id) {
         String sql = "SELECT COUNT(*) FROM Reservation WHERE theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+    }
+
+    @Override
+    public List<Reservation> findByThemeAndMemberAndDate(long themeId, long memberId, String dateFrom, String dateTo) {
+        String sql = "SELECT r.id as reservation_id, r.name as reservation_name, r.date, "
+                + "rt.id as time_id, rt.start_at, "
+                + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail, "
+                + "m.id as member_id, m.name as member_name, m.email "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as rt ON r.time_id = rt.id "
+                + "INNER JOIN theme as t ON r.theme_id = t.id "
+                + "INNER JOIN login_member as m ON r.member_id = m.id "
+                + "WHERE t.id = ? AND m.id = ? AND r.date BETWEEN ? AND ?";
+        return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
     }
 }

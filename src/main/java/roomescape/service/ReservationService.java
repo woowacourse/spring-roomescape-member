@@ -73,4 +73,12 @@ public class ReservationService {
     public void deleteById(final long id) {
         reservationRepository.deleteById(id);
     }
+
+    public List<ReservationResponse> findByThemeAndMemberAndDate(ReservationReadRequest reservationReadRequest) {
+        return reservationRepository.findByThemeAndMemberAndDate(reservationReadRequest.themeId(),
+                        reservationReadRequest.memberId(), reservationReadRequest.dateFrom(), reservationReadRequest.dateTo())
+                .stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
 }
