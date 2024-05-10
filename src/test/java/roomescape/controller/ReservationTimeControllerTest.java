@@ -1,7 +1,7 @@
 package roomescape.controller;
 
-import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
 import static roomescape.TestFixture.TIME_FIXTURE;
+import static roomescape.TestFixture.createReservationTime;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.dto.request.ReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,13 +24,10 @@ class ReservationTimeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert simpleJdbcInsert;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .usingGeneratedKeyColumns("id");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -48,7 +44,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("예약 시간 추가 테스트")
     @Test
-    void createReservationTime() {
+    void createReservationTimeTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new ReservationTimeRequest(TIME_FIXTURE))
@@ -74,8 +70,7 @@ class ReservationTimeControllerTest {
     @Test
     void duplicateReservationTime() {
         // given
-        simpleJdbcInsert.withTableName("reservation_time")
-                .execute(RESERVATION_TIME_PARAMETER_SOURCE);
+        createReservationTime(jdbcTemplate);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -88,9 +83,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTImeSuccess() {
         // given
-        long id = simpleJdbcInsert.withTableName("reservation_time")
-                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
-                .longValue();
+        long id = createReservationTime(jdbcTemplate);
         // when & then
         RestAssured.given().log().all()
                 .when().delete("/times/" + id)

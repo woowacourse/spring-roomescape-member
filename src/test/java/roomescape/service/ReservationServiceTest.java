@@ -8,10 +8,10 @@ import static roomescape.TestFixture.EMAIL_FIXTURE;
 import static roomescape.TestFixture.MEMBER_NAME_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
 import static roomescape.TestFixture.PASSWORD_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
-import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
 import static roomescape.TestFixture.THEME_NAME_FIXTURE;
 import static roomescape.TestFixture.TIME_FIXTURE;
+import static roomescape.TestFixture.createReservationTime;
+import static roomescape.TestFixture.createTheme;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.TestFixture;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Role;
@@ -60,7 +60,7 @@ class ReservationServiceTest {
     @Test
     void save() {
         // given
-        Member member = createMember();
+        Member member = createAndGetMember();
         MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
         // when
         ReservationResponse response = reservationService.save(memberReservationRequest, member);
@@ -78,7 +78,7 @@ class ReservationServiceTest {
     @Test
     void pastReservationSave() {
         // given
-        Member member = createMember();
+        Member member = createAndGetMember();
         MemberReservationRequest memberReservationRequest = createReservationRequest(
                 LocalDate.of(2000, 11, 9));
         // when & then
@@ -91,7 +91,7 @@ class ReservationServiceTest {
     @Test
     void duplicatedReservationSave() {
         // given
-        Member member = createMember();
+        Member member = createAndGetMember();
         MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
         reservationService.save(memberReservationRequest, member);
         // when & then
@@ -104,7 +104,7 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         // given
-        Member member = createMember();
+        Member member = createAndGetMember();
         MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
         ReservationResponse response = reservationService.save(memberReservationRequest, member);
         // when
@@ -121,27 +121,15 @@ class ReservationServiceTest {
                 .hasMessage("삭제할 예약이 존재하지 않습니다.");
     }
 
-    private Member createMember() {
-        Long memberId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(MEMBER_PARAMETER_SOURCE)
-                .longValue();
+    private Member createAndGetMember() {
+        Long memberId = TestFixture.createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
         return new Member(memberId, new Name(MEMBER_NAME_FIXTURE), Role.NORMAL, EMAIL_FIXTURE,
                 PASSWORD_FIXTURE);
     }
 
     private MemberReservationRequest createReservationRequest(LocalDate date) {
-        Long timeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
-                .longValue();
-        Long themeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
-                .longValue();
+        Long timeId = createReservationTime(jdbcTemplate);
+        Long themeId = createTheme(jdbcTemplate);
         return new MemberReservationRequest(date, timeId, themeId);
     }
 }

@@ -2,9 +2,12 @@ package roomescape.controller;
 
 import static roomescape.TestFixture.ADMIN_PARAMETER_SOURCE;
 import static roomescape.TestFixture.DATE_FIXTURE;
+import static roomescape.TestFixture.EMAIL_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
-import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
-import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
+import static roomescape.TestFixture.PASSWORD_FIXTURE;
+import static roomescape.TestFixture.createMember;
+import static roomescape.TestFixture.createReservationTime;
+import static roomescape.TestFixture.createTheme;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,7 +21,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.LoginRequest;
 
@@ -45,12 +47,7 @@ class AdminControllerTest {
         // given
         AdminReservationRequest reservationRequest
                 = createReservationRequest(DATE_FIXTURE, ADMIN_PARAMETER_SOURCE);
-        LoginRequest loginRequest = new LoginRequest("hkim1109@naver.com", "qwer1234");
-        String cookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(loginRequest)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String cookie = getCookie();
         // when & then
         RestAssured.given().log().all()
                 .header("cookie", cookie)
@@ -66,12 +63,7 @@ class AdminControllerTest {
         // given
         AdminReservationRequest reservationRequest
                 = createReservationRequest(DATE_FIXTURE, MEMBER_PARAMETER_SOURCE);
-        LoginRequest loginRequest = new LoginRequest("hkim1109@naver.com", "qwer1234");
-        String cookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(loginRequest)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String cookie = getCookie();
         // when & then
         RestAssured.given().log().all()
                 .header("cookie", cookie)
@@ -81,35 +73,20 @@ class AdminControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.FORBIDDEN.value());
     }
 
+    private String getCookie() {
+        LoginRequest loginRequest = new LoginRequest(EMAIL_FIXTURE, PASSWORD_FIXTURE);
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+    }
+
     private AdminReservationRequest createReservationRequest(
             LocalDate date, SqlParameterSource memberSource) {
         Long memberId = createMember(jdbcTemplate, memberSource);
         Long timeId = createReservationTime(jdbcTemplate);
         Long themeId = createTheme(jdbcTemplate);
         return new AdminReservationRequest(date, memberId, timeId, themeId);
-    }
-
-    private long createMember(JdbcTemplate jdbcTemplate, SqlParameterSource memberSource) {
-        return new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(memberSource)
-                .longValue();
-    }
-
-    private long createReservationTime(JdbcTemplate jdbcTemplate) {
-        return new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
-                .longValue();
-    }
-
-    private long createTheme(JdbcTemplate jdbcTemplate) {
-        return new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
-                .longValue();
     }
 }

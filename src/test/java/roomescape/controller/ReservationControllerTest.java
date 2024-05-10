@@ -4,8 +4,9 @@ import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.EMAIL_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
 import static roomescape.TestFixture.PASSWORD_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
-import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
+import static roomescape.TestFixture.createMember;
+import static roomescape.TestFixture.createReservationTime;
+import static roomescape.TestFixture.createTheme;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.MemberReservationRequest;
 
@@ -164,10 +164,7 @@ class ReservationControllerTest {
     }
 
     private String createMemberAndReturnCookie() {
-        new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id")
-                .execute(MEMBER_PARAMETER_SOURCE);
+        createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
         LoginRequest loginRequest = new LoginRequest(EMAIL_FIXTURE, PASSWORD_FIXTURE);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -177,16 +174,8 @@ class ReservationControllerTest {
     }
 
     private MemberReservationRequest createMemberReservationRequest(LocalDate date) {
-        Long timeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
-                .longValue();
-        Long themeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
-                .longValue();
+        Long timeId = createReservationTime(jdbcTemplate);
+        Long themeId = createTheme(jdbcTemplate);
         return new MemberReservationRequest(date, timeId, themeId);
     }
 }

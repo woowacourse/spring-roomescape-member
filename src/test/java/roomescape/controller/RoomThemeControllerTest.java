@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
 import static roomescape.TestFixture.THEME_DESCRIPTION_FIXTURE;
 import static roomescape.TestFixture.THEME_NAME_FIXTURE;
 import static roomescape.TestFixture.THEME_THUMBNAIL_FIXTURE;
@@ -17,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.TestFixture;
 import roomescape.dto.request.RoomThemeCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,13 +26,10 @@ class RoomThemeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert simpleJdbcInsert;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .usingGeneratedKeyColumns("id");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -58,7 +54,7 @@ class RoomThemeControllerTest {
 
     @DisplayName("테마 추가 테스트")
     @Test
-    void createTheme() {
+    void createThemeTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new RoomThemeCreateRequest(THEME_NAME_FIXTURE,
@@ -104,9 +100,7 @@ class RoomThemeControllerTest {
     @Test
     void deleteTheme() {
         // given
-        long id = simpleJdbcInsert.withTableName("theme")
-                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
-                .longValue();
+        long id = TestFixture.createTheme(jdbcTemplate);
         // when & then
         RestAssured.given().log().all()
                 .when().delete("/themes/" + id)

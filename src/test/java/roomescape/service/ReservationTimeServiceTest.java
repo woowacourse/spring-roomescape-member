@@ -5,9 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
-import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
-import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
 import static roomescape.TestFixture.TIME_FIXTURE;
+import static roomescape.TestFixture.createMember;
+import static roomescape.TestFixture.createReservationTime;
+import static roomescape.TestFixture.createTheme;
 
 import io.restassured.RestAssured;
 import java.util.List;
@@ -58,21 +59,9 @@ class ReservationTimeServiceTest {
     @Test
     void findReservationTimesWithBookStatus() {
         // given
-        Long memberId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(MEMBER_PARAMETER_SOURCE)
-                .longValue();
-        Long timeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
-                .longValue();
-        Long themeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
-                .longValue();
+        Long memberId = createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
+        Long timeId = createReservationTime(jdbcTemplate);
+        Long themeId = createTheme(jdbcTemplate);
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("date", DATE_FIXTURE)
                 .addValue("memberId", memberId)

@@ -3,8 +3,10 @@ package roomescape;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
@@ -42,4 +44,29 @@ public class TestFixture {
             .addValue("name", THEME_NAME_FIXTURE)
             .addValue("description", THEME_DESCRIPTION_FIXTURE)
             .addValue("thumbnail", THEME_THUMBNAIL_FIXTURE);
+
+
+    public static long createMember(JdbcTemplate jdbcTemplate, SqlParameterSource memberSource) {
+        return new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(memberSource)
+                .longValue();
+    }
+
+    public static long createReservationTime(JdbcTemplate jdbcTemplate) {
+        return new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
+                .longValue();
+    }
+
+    public static long createTheme(JdbcTemplate jdbcTemplate) {
+        return new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
+                .longValue();
+    }
 }

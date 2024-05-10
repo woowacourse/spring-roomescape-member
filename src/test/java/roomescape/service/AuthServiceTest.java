@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.MEMBER_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
+import static roomescape.TestFixture.createMember;
 
 import io.restassured.RestAssured;
 import jakarta.servlet.http.Cookie;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 
@@ -29,13 +29,10 @@ class AuthServiceTest {
     private MemberDao memberDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert simpleJdbcInsert;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .usingGeneratedKeyColumns("id");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -46,8 +43,7 @@ class AuthServiceTest {
     @Test
     void generateCookie() {
         // given
-        simpleJdbcInsert.withTableName("member")
-                .execute(MEMBER_PARAMETER_SOURCE);
+        createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
         Member foundMember = memberDao.find(MEMBER_FIXTURE);
         // when
         Cookie cookie = authService.generateCookie(foundMember);
@@ -62,8 +58,7 @@ class AuthServiceTest {
     @Test
     void findMemberIdByCookie() {
         // given
-        simpleJdbcInsert.withTableName("member")
-                .execute(MEMBER_PARAMETER_SOURCE);
+        createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
         Member foundMember = memberDao.find(MEMBER_FIXTURE);
         Cookie cookie = authService.generateCookie(foundMember);
         Cookie[] cookies = new Cookie[]{cookie};

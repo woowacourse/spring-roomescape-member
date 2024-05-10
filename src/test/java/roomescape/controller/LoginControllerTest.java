@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
+import static roomescape.TestFixture.createMember;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.dto.request.LoginRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -22,13 +22,10 @@ class LoginControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert simpleJdbcInsert;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .usingGeneratedKeyColumns("id");
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -39,8 +36,7 @@ class LoginControllerTest {
     @Test
     void loginSuccessful() {
         // given
-        simpleJdbcInsert.withTableName("member")
-                .execute(MEMBER_PARAMETER_SOURCE);
+        createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
         LoginRequest loginRequest = new LoginRequest("hkim1109@naver.com", "qwer1234");
         // when & then
         RestAssured.given().log().all()
@@ -54,8 +50,7 @@ class LoginControllerTest {
     @Test
     void findMemberProfileByCookie() {
         // given
-        simpleJdbcInsert.withTableName("member")
-                .execute(MEMBER_PARAMETER_SOURCE);
+        createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
         LoginRequest loginRequest = new LoginRequest("hkim1109@naver.com", "qwer1234");
         String cookie = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
