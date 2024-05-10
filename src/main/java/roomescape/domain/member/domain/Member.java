@@ -6,16 +6,14 @@ import java.util.Objects;
 
 public class Member {
 
-    private Long id;
-    private String name;
+    private ReservationMember reservationMember;
     private String email;
     private String password;
     private Role role;
 
-    public Member(Long id, String name, String email, String password, Role role) {
+    public Member(ReservationMember reservationMember, String email, String password, Role role) {
         checkNull(email, password, role);
-        this.id = id;
-        this.name = name;
+        this.reservationMember = reservationMember;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -29,9 +27,5 @@ public class Member {
         } catch (NullPointerException e) {
             throw new RoomEscapeException(e.getMessage());
         }
-    }
-
-    public String getName() {
-        return name;
     }
 }
