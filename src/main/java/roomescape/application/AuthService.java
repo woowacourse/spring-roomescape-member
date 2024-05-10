@@ -2,6 +2,7 @@ package roomescape.application;
 
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.request.TokenCreationRequest;
+import roomescape.application.dto.response.MemberNameResponse;
 import roomescape.domain.user.User;
 import roomescape.domain.user.repository.UserRepository;
 import roomescape.infrastructure.JwtProvider;
@@ -33,5 +34,12 @@ public class AuthService {
         if (!user.matchPassword(password)) {
             throw new IllegalArgumentException(WRONG_EMAIL_OR_PASSWORD_MESSAGE);
         }
+    }
+
+    public MemberNameResponse getMemberName(String token) {
+        long memberId = jwtProvider.parseToken(token);
+        User member = userRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return new MemberNameResponse(member.getName());
     }
 }
