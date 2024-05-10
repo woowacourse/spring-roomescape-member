@@ -15,4 +15,14 @@ public class MemberPageController {
     public String userLoginPage() {
         return "login";
     }
+
+    @GetMapping("/reservation")
+    public String userReservationPage() {
+        return "reservation";
+    }
+
+    @GetMapping("/")
+    public String popularPage() {
+        return "index";
+    }
 }
