@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.domain.exception.RoleNotFoundException;
+
 public enum Role {
 
     ADMIN,
@@ -12,6 +14,6 @@ public enum Role {
         if ("USER".equals(target)) {
             return Role.USER;
         }
-        throw new IllegalArgumentException("Invalid role: " + target); // TODO 예외 다르게
+        throw new RoleNotFoundException("존재하지 않는 role입니다.");
     }
 }
