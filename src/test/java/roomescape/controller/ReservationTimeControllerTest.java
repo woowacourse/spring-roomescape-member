@@ -10,39 +10,21 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
 import roomescape.IntegrationTestSupport;
-import roomescape.controller.dto.TokenRequest;
 
 class ReservationTimeControllerTest extends IntegrationTestSupport {
 
-    String token;
     String createdId;
     int timeSize;
-
-    @LocalServerPort
-    int port;
 
     @DisplayName("예약 시간 CRUD")
     @TestFactory
     Stream<DynamicTest> dynamicUserTestsFromCollection() {
-        RestAssured.port = port;
-
         return Stream.of(
-                dynamicTest("어드민으로 로그인", () -> {
-                    token = RestAssured
-                            .given().log().all()
-                            .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .accept(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/login")
-                            .then().log().all().extract().cookie("token");
-                }),
                 dynamicTest("예약 시간 목록을 조회한다.", () -> {
                     timeSize = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/times")
                             .then().log().all()
                             .statusCode(200).extract()
@@ -53,7 +35,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
 
                     createdId = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .body(param)
                             .when().post("/admin/times")
                             .then().log().all()
@@ -62,7 +44,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                 dynamicTest("예약 시간 목록 개수가 1증가한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/times")
                             .then().log().all()
                             .statusCode(200).body("size()", is(timeSize + 1));
@@ -72,7 +54,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
 
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .body(param)
                             .when().post("/admin/times")
                             .then().log().all()
@@ -81,7 +63,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                 dynamicTest("시간을 삭제한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().delete("/admin/times/" + createdId)
                             .then().log().all()
                             .statusCode(204);
@@ -89,7 +71,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                 dynamicTest("예약 시간 목록 개수가 1감소한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/times")
                             .then().log().all()
                             .statusCode(200).body("size()", is(timeSize));

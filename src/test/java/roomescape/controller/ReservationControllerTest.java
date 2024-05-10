@@ -7,46 +7,24 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
 import roomescape.IntegrationTestSupport;
-import roomescape.controller.dto.TokenRequest;
 
 class ReservationControllerTest extends IntegrationTestSupport {
 
-    String token;
     String createdId;
     int reservationSize;
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("어드민의 예약 CRUD")
     @TestFactory
     Stream<DynamicTest> dynamicAdminTestsFromCollection() {
         return Stream.of(
-                dynamicTest("어드민으로 로그인하기", () -> {
-                    token = RestAssured
-                            .given().log().all()
-                            .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .accept(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/login")
-                            .then().log().all().extract().cookie("token");
-                }),
                 dynamicTest("예약을 목록을 조회한다.", () -> {
                     reservationSize = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/admin/reservations")
                             .then().log().all()
                             .statusCode(200).extract()
@@ -61,7 +39,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
                     createdId = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .body(params)
                             .when().post("/admin/reservations")
                             .then().log().all()
@@ -76,7 +54,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .body(params)
                             .when().post("/admin/reservations")
                             .then().log().all()
@@ -91,7 +69,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .body(params)
                             .when().post("/admin/reservations")
                             .then().log().all()
@@ -106,7 +84,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .body(params)
                             .when().post("/admin/reservations")
                             .then().log().all()
@@ -115,7 +93,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 dynamicTest("예약 목록을 조회한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/admin/reservations")
                             .then().log().all()
                             .statusCode(200).body("size()", is(reservationSize + 1));
@@ -123,7 +101,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 dynamicTest("예약을 삭제한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(204);
@@ -131,7 +109,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 dynamicTest("이미 삭제된 예약을 삭제시도하면 statusCode가 400이다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(400);
@@ -143,15 +121,6 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @TestFactory
     Stream<DynamicTest> dynamicUserTestsFromCollection() {
         return Stream.of(
-                dynamicTest("유저로 로그인하기", () -> {
-                    token = RestAssured
-                            .given().log().all()
-                            .body(new TokenRequest(USER_EMAIL, USER_PASSWORD))
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .accept(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/login")
-                            .then().log().all().extract().cookie("token");
-                }),
                 dynamicTest("예약을 추가한다.", () -> {
                     Map<String, Object> params = Map.of(
                             "date", "2025-10-05",
@@ -160,7 +129,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
                     createdId = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", USER_TOKEN)
                             .body(params)
                             .when().post("/reservations")
                             .then().log().all()
@@ -174,7 +143,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", USER_TOKEN)
                             .body(params)
                             .when().post("/reservations")
                             .then().log().all()
@@ -189,7 +158,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", USER_TOKEN)
                             .body(params)
                             .when().post("/reservations")
                             .then().log().all()
@@ -198,24 +167,15 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 dynamicTest("유저는 예약을 삭제할 수 없다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", USER_TOKEN)
                             .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(404);
                 }),
-                dynamicTest("어드민으로 로그인하기", () -> {
-                    token = RestAssured
-                            .given().log().all()
-                            .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .accept(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/login")
-                            .then().log().all().extract().cookie("token");
-                }),
                 dynamicTest("어드민은 예약을 삭제한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(204);

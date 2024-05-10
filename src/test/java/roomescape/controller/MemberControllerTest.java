@@ -10,10 +10,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import roomescape.IntegrationTestSupport;
-import roomescape.controller.dto.TokenRequest;
 
 class MemberControllerTest extends IntegrationTestSupport {
 
@@ -21,32 +19,17 @@ class MemberControllerTest extends IntegrationTestSupport {
     public static final String TEST_PASSWORD = "1234";
     public static final String TEST_NAME = "테스트";
 
-    String token;
     String createdId;
     int memberSize;
-
-    @LocalServerPort
-    int port;
 
     @DisplayName("회원 CRUD")
     @TestFactory
     Stream<DynamicTest> dynamicUserTestsFromCollection() {
-        RestAssured.port = port;
-
         return Stream.of(
-                dynamicTest("어드민으로 토큰 발급", () -> {
-                    token = RestAssured
-                            .given().log().all()
-                            .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .accept(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/login")
-                            .then().log().all().extract().cookie("token");
-                }),
                 dynamicTest("회원 목록을 조회한다.", () -> {
                     memberSize = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/admin/members")
                             .then().log().all()
                             .statusCode(200).extract()
@@ -85,7 +68,7 @@ class MemberControllerTest extends IntegrationTestSupport {
                 dynamicTest("회원 목록 개수가 1증가한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/admin/members")
                             .then().log().all()
                             .statusCode(200).body("size()", is(memberSize + 1));
@@ -108,7 +91,7 @@ class MemberControllerTest extends IntegrationTestSupport {
                 dynamicTest("회원을 삭제한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().delete("/admin/members/" + createdId)
                             .then().log().all()
                             .statusCode(204);
@@ -116,7 +99,7 @@ class MemberControllerTest extends IntegrationTestSupport {
                 dynamicTest("회원 목록 개수가 1감소한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
-                            .cookie("token", token)
+                            .cookie("token", ADMIN_TOKEN)
                             .when().get("/admin/members")
                             .then().log().all()
                             .statusCode(200).body("size()", is(memberSize));
