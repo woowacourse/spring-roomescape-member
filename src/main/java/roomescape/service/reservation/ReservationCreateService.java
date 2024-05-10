@@ -33,17 +33,10 @@ public class ReservationCreateService {
     }
 
     public Reservation createReservationByAdmin(ReservationAdminSaveRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
-
+        ReservationTime reservationTime = getValidReservationTime(request.timeId());
         validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
-
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
-
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
-            throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
-        }
+        Theme theme = getValidTheme(request.themeId());
+        validateAlreadyBooked(request.date(), request.timeId(), request.themeId());
 
         Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
@@ -53,20 +46,31 @@ public class ReservationCreateService {
     }
 
     public Reservation createReservationByUser(ReservationSaveRequest request, Member member) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
-
+        ReservationTime reservationTime = getValidReservationTime(request.timeId());
         validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
-
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
-
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
-            throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
-        }
+        Theme theme = getValidTheme(request.themeId());
+        validateAlreadyBooked(request.date(), request.timeId(), request.themeId());
 
         Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme, member);
         return reservationRepository.save(reservation);
+    }
+
+    private ReservationTime getValidReservationTime(long request) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(request)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
+        return reservationTime;
+    }
+
+    private Theme getValidTheme(long request) {
+        Theme theme = themeRepository.findById(request)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
+        return theme;
+    }
+
+    private void validateAlreadyBooked(LocalDate date, long timeId, long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
+        }
     }
 
     private void validateDateIsFuture(LocalDateTime localDateTime) {
