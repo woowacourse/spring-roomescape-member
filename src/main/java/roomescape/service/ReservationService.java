@@ -71,15 +71,21 @@ public class ReservationService {
     }
 
     public List<SelectableTimeResponse> findSelectableTime(final LocalDate date, final long themeId) {
-        List<Long> usedTimeId = reservationDao.findTimeIdByDateAndThemeId(date, themeId);
+        List<Long> usedTimeId = findUsedTimeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
-
         return SelectableTimeResponse.listOf(reservationTimes, usedTimeId);
     }
 
     public List<ReservationResponse> findReservationBy(long themeId, long memberId, LocalDate start, LocalDate end) {
         List<Reservation> filteredReservations = reservationDao.findByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
         return ReservationResponse.listOf(filteredReservations);
+    }
+
+    private List<Long> findUsedTimeId(LocalDate date, long themeId) {
+        return reservationDao.findTimeIdByDateAndThemeId(date, themeId)
+                .stream()
+                .map(Reservation::getId)
+                .toList();
     }
 
     private Member findMemberById(Long memberId) {

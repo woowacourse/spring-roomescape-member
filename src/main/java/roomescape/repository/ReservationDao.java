@@ -110,20 +110,39 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, themeId);
     }
 
-    public List<Long> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
-        String sql = "SELECT time_id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return jdbcTemplate.query(
-                sql, (resultSet, rowNum) -> resultSet.getLong("time_id"),
-                date.toString(), timeId, themeId
-        );
+    public List<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+                + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
+                + "member.id as member_id, member.member_name, member.email, member.password, member.role "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as time "
+                + "ON r.time_id = time.id "
+                + "INNER JOIN theme as theme "
+                + "ON r.theme_id = theme.id "
+                + "INNER JOIN member as member "
+                + "ON r.member_id = member.id "
+                + "WHERE r.date= ? "
+                + "AND time.id = ? "
+                + "AND theme.id = ?";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);
     }
 
-    public List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
-        String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
-        return jdbcTemplate.query(
-                sql, (resultSet, rowNum) -> resultSet.getLong("time_id"),
-                date.toString(), themeId
-        );
+    public List<Reservation> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+                + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
+                + "member.id as member_id, member.member_name, member.email, member.password, member.role "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as time "
+                + "ON r.time_id = time.id "
+                + "INNER JOIN theme as theme "
+                + "ON r.theme_id = theme.id "
+                + "INNER JOIN member as member "
+                + "ON r.member_id = member.id "
+                + "WHERE r.date= ? "
+                + "AND theme.id = ?";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
     public List<Long> findRanking(final LocalDate from, final LocalDate to, final int count) {
@@ -138,7 +157,6 @@ public class ReservationDao {
     public void delete(final long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", Long.valueOf(id));
     }
-
 
     public List<Reservation> findByThemeIdAndMemberIdInDuration(
             final long themeId,
