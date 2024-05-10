@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,15 +33,22 @@ class ThemeServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
     @Autowired
     private ThemeService themeService;
+
+    @MockBean
+    private Clock clock;
+
+    @BeforeEach
+    void setUp() {
+        given(clock.instant()).willReturn(Instant.parse("2024-05-10T00:00:00Z"));
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
+    }
 
     @Nested
     @DisplayName("테마 조회 테스트")
     class FindTheme {
-
-        @MockBean
-        private Clock clock;
 
         @Test
         @DisplayName("모든 테마 정보를 조회한다.")
@@ -54,12 +62,9 @@ class ThemeServiceTest {
         }
 
         @Test
-        @Sql(value = "classpath:popular_data.sql")
+        @Sql(value = "classpath:test_data.sql")
         @DisplayName("전달한 날짜 기준 이전 일주일 간 예약이 많이된 상위 10개의 테마를 조회한다.")
         void findPopulars() {
-            given(clock.instant()).willReturn(Instant.parse("2024-05-10T00:00:00Z"));
-            given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
-
             List<ThemeResponse> results = themeService.findPopulars();
 
             assertAll(
