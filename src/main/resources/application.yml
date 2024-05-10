@@ -7,4 +7,5 @@ spring:
       path: /h2-console
 
 jwt:
+  secret: prinroomescapeprinroomescapeprinroomescapeprinroomescapeprinroomescapeprinroomescape
   expiration: 36000000
