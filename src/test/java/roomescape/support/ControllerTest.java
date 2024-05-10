@@ -8,9 +8,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.application.ReservationService;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
-import roomescape.controller.ReservationController;
-import roomescape.controller.ReservationTimeController;
-import roomescape.controller.ThemeController;
+import roomescape.controller.api.ReservationController;
+import roomescape.controller.api.ReservationTimeController;
+import roomescape.controller.api.ThemeController;
 
 @WebMvcTest(controllers = {
         ReservationController.class,
