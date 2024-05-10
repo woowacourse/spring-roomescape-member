@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static roomescape.TestFixture.ADMIN_PARAMETER_SOURCE;
 import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
 import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
@@ -16,8 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.LoginRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AdminControllerTest {
@@ -38,34 +41,75 @@ class AdminControllerTest {
 
     @DisplayName("어드민으로 예약 생성 테스트")
     @Test
-    void adminReservationTest() {
+    void adminReservation() {
         // given
-        AdminReservationRequest adminReservationRequest
-                = createAdminReservationRequest(DATE_FIXTURE);
+        AdminReservationRequest reservationRequest
+                = createReservationRequest(DATE_FIXTURE, ADMIN_PARAMETER_SOURCE);
+        LoginRequest loginRequest = new LoginRequest("hkim1109@naver.com", "qwer1234");
+        String cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
         // when & then
         RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .contentType(ContentType.JSON)
-                .body(adminReservationRequest)
+                .body(reservationRequest)
                 .when().post("/admin/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
 
-    private AdminReservationRequest createAdminReservationRequest(LocalDate date) {
-        Long memberId = new SimpleJdbcInsert(jdbcTemplate)
+    @DisplayName("일반 멤버로 admin 예약을 생성하려 시도하면 예외가 발생한다.")
+    @Test
+    void adminReservationByNormal() {
+        // given
+        AdminReservationRequest reservationRequest
+                = createReservationRequest(DATE_FIXTURE, MEMBER_PARAMETER_SOURCE);
+        LoginRequest loginRequest = new LoginRequest("hkim1109@naver.com", "qwer1234");
+        String cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        // when & then
+        RestAssured.given().log().all()
+                .header("cookie", cookie)
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/admin/reservations")
+                .then().log().all().assertThat().statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    private AdminReservationRequest createReservationRequest(
+            LocalDate date, SqlParameterSource memberSource) {
+        Long memberId = createMember(jdbcTemplate, memberSource);
+        Long timeId = createReservationTime(jdbcTemplate);
+        Long themeId = createTheme(jdbcTemplate);
+        return new AdminReservationRequest(date, memberId, timeId, themeId);
+    }
+
+    private long createMember(JdbcTemplate jdbcTemplate, SqlParameterSource memberSource) {
+        return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(MEMBER_PARAMETER_SOURCE)
+                .executeAndReturnKey(memberSource)
                 .longValue();
-        Long timeId = new SimpleJdbcInsert(jdbcTemplate)
+    }
+
+    private long createReservationTime(JdbcTemplate jdbcTemplate) {
+        return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id")
                 .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
                 .longValue();
-        Long themeId = new SimpleJdbcInsert(jdbcTemplate)
+    }
+
+    private long createTheme(JdbcTemplate jdbcTemplate) {
+        return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id")
                 .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
                 .longValue();
-        return new AdminReservationRequest(date, memberId, timeId, themeId);
     }
 }

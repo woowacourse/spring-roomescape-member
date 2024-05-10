@@ -1,9 +1,9 @@
 insert into member(name, role, email, password)
-values ('명오', 'admin', 'hkim1109@naver.com', 'qwer1234');
+values ('명오', 'ADMIN', 'hkim1109@naver.com', 'qwer1234');
 insert into member(name, role, email, password)
-values ('폰드', 'member', 'tack0913@naver.com', 'asdf1234');
+values ('폰드', 'NORMAL', 'tack0913@naver.com', 'asdf1234');
 insert into member(name, role, email, password)
-values ('제제', 'member', 'jinwoo22@gmail.com', '1q2w3e4r');
+values ('제제', 'NORMAL', 'jinwoo22@gmail.com', '1q2w3e4r');
 
 insert into reservation_time(start_at)
 values ('15:00');

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.RoomTheme;
 
 public class TestFixture {
@@ -27,6 +28,12 @@ public class TestFixture {
 
     public static SqlParameterSource MEMBER_PARAMETER_SOURCE = new MapSqlParameterSource()
             .addValue("name", MEMBER_NAME_FIXTURE)
+            .addValue("role", Role.NORMAL.name())
+            .addValue("email", EMAIL_FIXTURE)
+            .addValue("password", PASSWORD_FIXTURE);
+    public static SqlParameterSource ADMIN_PARAMETER_SOURCE = new MapSqlParameterSource()
+            .addValue("name", MEMBER_NAME_FIXTURE)
+            .addValue("role", Role.ADMIN.name())
             .addValue("email", EMAIL_FIXTURE)
             .addValue("password", PASSWORD_FIXTURE);
     public static SqlParameterSource RESERVATION_TIME_PARAMETER_SOURCE = new MapSqlParameterSource()

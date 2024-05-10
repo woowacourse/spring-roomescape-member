@@ -3,6 +3,7 @@ package roomescape.service;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.exception.InvalidInputException;
 import roomescape.util.JwtTokenProvider;
 
@@ -22,23 +23,32 @@ public class AuthService {
     }
 
     public Long findMemberId(Cookie[] cookies) {
-        if (cookies == null) {
+        String token = getTokenFromCookies(cookies);
+        return jwtTokenProvider.getMemberIdFromToken(token);
+    }
 
+    public boolean isAdmin(Cookie[] cookies) {
+        String token = getTokenFromCookies(cookies);
+        return Role.ADMIN == jwtTokenProvider.getMemberRoleFromToken(token);
+    }
+
+    private String getTokenFromCookies(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new InvalidInputException("쿠키가 존재하지 않습니다.");
         }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                String token = cookie.getValue();
-                return getMemberIdFromCookie(token);
+                return getValidatedToken(cookie);
             }
         }
         throw new InvalidInputException("잘못된 요청입니다.");
     }
 
-    private Long getMemberIdFromCookie(String token) {
-        boolean isValid = jwtTokenProvider.validateToken(token);
-        if (isValid) {
-            return jwtTokenProvider.getMemberIdFromToken(token);
+    private String getValidatedToken(Cookie cookie) {
+        String token = cookie.getValue();
+        if (jwtTokenProvider.validateToken(token)) {
+            return token;
         }
-        throw new InvalidInputException("시간이 지나 자동 로그아웃 되었습니다. 다시 로그인 해주세요.");
+        throw new InvalidInputException("토큰이 만료되었습니다. 다시 로그인 해주세요.");
     }
 }

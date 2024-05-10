@@ -39,6 +39,10 @@ public class Member {
         return role;
     }
 
+    public String getRoleName() {
+        return role.name();
+    }
+
     public String getEmail() {
         return email;
     }

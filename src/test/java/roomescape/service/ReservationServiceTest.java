@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
+import roomescape.domain.Role;
 import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidInputException;
@@ -126,7 +127,8 @@ class ReservationServiceTest {
                 .usingGeneratedKeyColumns("id")
                 .executeAndReturnKey(MEMBER_PARAMETER_SOURCE)
                 .longValue();
-        return new Member(memberId, new Name(MEMBER_NAME_FIXTURE), EMAIL_FIXTURE, PASSWORD_FIXTURE);
+        return new Member(memberId, new Name(MEMBER_NAME_FIXTURE), Role.NORMAL, EMAIL_FIXTURE,
+                PASSWORD_FIXTURE);
     }
 
     private MemberReservationRequest createReservationRequest(LocalDate date) {

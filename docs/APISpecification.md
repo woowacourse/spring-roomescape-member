@@ -17,6 +17,7 @@
 | POST   |                 | /admin/reservations    | 관리자 예약 추가           |                         | date, memberId, timeId, themeId                                                                 |
 |        | 201 CREATED     | /reservations/{id}     | 예약 추가 성공            |                         | id, date, member{id, name, email}, time{id, startAt}, theme{id, name, description, thumbnail}   |
 |        | 400 BAD REQUEST |                        | 입력 양식으로 인한 예약 추가 실패 |                         | error message                                                                                   |
+|        | 403 FORBIDDEN   |                        | 권한 없음으로 인한 예약 추가 실패 |                         | error message                                                                                   |
 | DELETE |                 | /reservations/{id}     | 예약 삭제               |                         |                                                                                                 |
 |        | 204 NO CONTENT  |                        | 예약 삭제 성공            |                         |                                                                                                 |
 |        | 404 NOT FOUND   |                        | 예약 삭제 실패            |                         | error message                                                                                   |

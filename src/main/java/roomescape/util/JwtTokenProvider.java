@@ -9,6 +9,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Component
 public class JwtTokenProvider {
@@ -25,6 +26,9 @@ public class JwtTokenProvider {
                 .subject(member.getId().toString())
                 .issuedAt(now)
                 .expiration(validity)
+                .claim("name", member.getName())
+                .claim("role", member.getRoleName())
+                .claim("email", member.getEmail())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
@@ -36,6 +40,15 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject());
+    }
+
+    public Role getMemberRoleFromToken(String token) {
+        return Role.valueOf(Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class));
     }
 
     public boolean validateToken(String token) {

@@ -28,6 +28,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.RoomTheme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -142,7 +143,7 @@ class ReservationDaoTest {
                 .withTableName("theme")
                 .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
                 .longValue();
-        Member member = new Member(memberId, new Name(MEMBER_NAME_FIXTURE),
+        Member member = new Member(memberId, new Name(MEMBER_NAME_FIXTURE), Role.NORMAL,
                 EMAIL_FIXTURE, PASSWORD_FIXTURE);
         ReservationTime reservationTime = new ReservationTime(timeId, TIME_FIXTURE);
         RoomTheme roomTheme = new RoomTheme(themeId, THEME_NAME_FIXTURE,
