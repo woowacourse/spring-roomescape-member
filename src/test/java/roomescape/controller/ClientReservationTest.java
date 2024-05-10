@@ -9,9 +9,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.dto.TimeSlotResponse;
-
-import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -22,14 +19,6 @@ class ClientReservationTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    private int getTotalTimeSlotsCount() {
-        List<TimeSlotResponse> timeSlots = RestAssured.given().port(port)
-                .when().get("/times")
-                .then().extract().body()
-                .jsonPath().getList("", TimeSlotResponse.class);
-        return timeSlots.size();
     }
 
     @DisplayName("날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.")
