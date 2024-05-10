@@ -24,11 +24,6 @@ public class AdminReservationController {
         this.adminReservationService = adminReservationService;
     }
 
-    @GetMapping("/reservations")
-    public ResponseEntity<List<Reservation>> getReservationList() {
-        return ResponseEntity.ok(adminReservationService.findAllReservation());
-    }
-
     @PostMapping("/admin/reservations")
     public ResponseEntity<Reservation> addReservation(@RequestBody ReservationAddRequest reservationAddRequest,
                                                       @AuthenticationPrincipal Member member) {
@@ -36,11 +31,5 @@ public class AdminReservationController {
                 reservationAddRequest.themeId(), member.getId());
         Reservation reservation = adminReservationService.addReservation(reservationAddRequest);
         return ResponseEntity.created(URI.create("/reservation/" + reservation.getId())).body(reservation);
-    }
-
-    @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> removeReservation(@PathVariable("id") Long id) {
-        adminReservationService.removeReservation(id);
-        return ResponseEntity.noContent().build();
     }
 }

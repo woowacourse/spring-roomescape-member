@@ -25,9 +25,4 @@ public class AdminViewController {
     public String themePage() {
         return "admin/theme";
     }
-
-    @GetMapping("/login")
-    public String loginPage() {
-        return "login";
-    }
 }
