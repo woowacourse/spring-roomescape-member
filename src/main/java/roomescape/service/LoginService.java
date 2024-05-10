@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.domain.User;
@@ -11,11 +10,11 @@ import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.UserRepository;
 
 @Service
-public class UserService {
+public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    public UserService(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    public LoginService(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
     }
@@ -26,13 +25,7 @@ public class UserService {
     }
 
     public UserResponse createUserResponse(Cookie[] cookies) {
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-
-        Long userId = Jwts.parser()
-                .setSigningKey("spring-roomescape-member-secret-key")
-                .parseClaimsJws(token)
-                .getBody().get("id", Long.class);
-
+        Long userId = jwtTokenProvider.getUserIdFromToken(cookies);
         User user = userRepository.findById(userId);
 
         return new UserResponse(user.getName());

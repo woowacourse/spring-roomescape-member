@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 import roomescape.domain.User;
 
+import java.util.Arrays;
 import java.util.Date;
 
 @Component
@@ -29,14 +30,19 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
+    public Long getUserIdFromToken(Cookie[] cookies) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(extractTokenFromCookie(cookies))
+                .getBody().get("id", Long.class);
+    }
 
-        return "";
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse("");
     }
 }
 
