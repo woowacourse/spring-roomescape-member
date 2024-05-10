@@ -11,12 +11,12 @@ public interface MemberRepository {
     Optional<Member> findByEmail(String email);
 
     default Member getByEmail(String email) {
-        return findByEmail(email).orElseThrow(() -> new InvalidMemberException("해당 이메일을 가진 회원을 찾을 수 없습니다."));
+        return findByEmail(email).orElseThrow(() -> new InvalidMemberException("이메일 또는 비밀번호가 잘못되었습니다."));
     }
 
     Optional<Member> findById(long id);
 
     default Member getById(long id) {
-        return findById(id).orElseThrow(() -> new InvalidMemberException("해당 id을 가진 회원을 찾을 수 없습니다."));
+        return findById(id).orElseThrow(() -> new InvalidMemberException("존재하지 않는 회원입니다."));
     }
 }

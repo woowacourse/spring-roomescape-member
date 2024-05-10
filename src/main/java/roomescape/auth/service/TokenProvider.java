@@ -47,13 +47,13 @@ public class TokenProvider {
             validateExpiration(claims);
             return claims;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
+            throw new UnauthorizedException("권한이 없는 접근입니다.");
         }
     }
 
     public void validateExpiration(Claims claims) {
         if (claims.getExpiration().before(new Date())) {
-            throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
+            throw new UnauthorizedException("권한이 없는 접근입니다.");
         }
     }
 }

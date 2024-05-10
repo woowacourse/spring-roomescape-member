@@ -31,7 +31,7 @@ public class AuthService {
 
     private void validatePassword(LoginRequest request, Member member) {
         if (!member.getPassword().equals(request.password())) {
-            throw new UnauthorizedException("비밀번호가 잘못되었습니다.");
+            throw new UnauthorizedException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
     }
 
