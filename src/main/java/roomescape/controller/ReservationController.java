@@ -52,7 +52,7 @@ public class ReservationController {
     }
 
     @GetMapping("/admin/reservations")
-    public ResponseEntity<List<ReservationResponse>> findBy( //TODO 네이밍 변경
+    public ResponseEntity<List<ReservationResponse>> findBy(
             @RequestParam(required = false , value = "themeId") Long themeId,
             @RequestParam(required = false, value = "memberId") Long memberId,
             @RequestParam(required = false, value = "dateFrom") LocalDate dateFrom,
