@@ -1,4 +1,4 @@
-package roomescape.web.repository;
+package roomescape.core.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +14,6 @@ import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Role;
 import roomescape.core.domain.Theme;
-import roomescape.core.repository.ReservationRepository;
 
 @Repository
 public class ReservationRepositoryImpl implements ReservationRepository {

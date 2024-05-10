@@ -1,4 +1,4 @@
-package roomescape.web.repository;
+package roomescape.core.repository;
 
 import java.util.List;
 import javax.sql.DataSource;
@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Theme;
-import roomescape.core.repository.ThemeRepository;
 
 @Repository
 public class ThemeRepositoryImpl implements ThemeRepository {

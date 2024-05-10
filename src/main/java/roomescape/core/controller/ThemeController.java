@@ -1,4 +1,4 @@
-package roomescape.web.controller;
+package roomescape.core.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;

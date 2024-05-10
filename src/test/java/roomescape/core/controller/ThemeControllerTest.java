@@ -1,4 +1,4 @@
-package roomescape.web.controller;
+package roomescape.core.controller;
 
 import static org.hamcrest.Matchers.is;
 
@@ -168,7 +168,7 @@ class ThemeControllerTest {
         MemberReservationRequest firstThemeMemberReservationRequest = new MemberReservationRequest(
                 LocalDate.now().format(DateTimeFormatter.ISO_DATE),
                 4L, 2L);
-        
+
         RestAssured.given().log().all()
                 .cookies("token", accessToken)
                 .contentType(ContentType.JSON)

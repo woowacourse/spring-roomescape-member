@@ -1,4 +1,4 @@
-package roomescape.web.repository;
+package roomescape.core.repository;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Member;
 import roomescape.core.domain.Role;
-import roomescape.core.repository.MemberRepository;
 
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {

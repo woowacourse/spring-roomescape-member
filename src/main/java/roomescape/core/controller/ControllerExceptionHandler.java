@@ -1,4 +1,4 @@
-package roomescape.web.controller;
+package roomescape.core.controller;
 
 import io.jsonwebtoken.JwtException;
 import org.springframework.dao.DuplicateKeyException;
