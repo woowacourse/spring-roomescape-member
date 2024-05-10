@@ -42,6 +42,18 @@ public class H2ReservationRepository implements ReservationRepository {
         );
     }
 
+    private Reservation mapRowTime(ResultSet rs, int rowNum) throws SQLException {
+        return new Reservation(
+                rs.getLong("RESERVATION.ID"),
+                rs.getString("RESERVATION.DATE"),
+                new ReservationTime(
+                        rs.getLong("RESERVATION_TIME.ID"),
+                        rs.getString("RESERVATION_TIME.START_AT")),
+                new Theme(rs.getLong("RESERVATION.THEME_ID")),
+                new Member(rs.getLong("RESERVATION.MEMBER_ID"))
+        );
+    }
+
     private Reservation mapRowFull(final ResultSet rs, final int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("RESERVATION.ID"),
@@ -56,9 +68,9 @@ public class H2ReservationRepository implements ReservationRepository {
                         rs.getString("THEME.THUMBNAIL")),
                 new Member(
                         rs.getLong("MEMBER.ID"),
+                        rs.getString("MEMBER.NAME"),
                         rs.getString("MEMBER.EMAIL"),
                         rs.getString("MEMBER.PASSWORD"),
-                        rs.getString("MEMBER.NAME"),
                         Role.valueOf(rs.getString("MEMBER.ROLE"))
                 )
         );
@@ -70,21 +82,22 @@ public class H2ReservationRepository implements ReservationRepository {
                 SELECT * FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
+                LEFT JOIN MEMBER M ON M.ID = R.MEMBER_ID
                 """;
 
         return jdbcTemplate.query(sql, this::mapRowFull);
     }
 
+    // TODO: Sub Query 써서 Time Repository 로 넘길지 고려
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
         final String sql = """
                 SELECT * FROM RESERVATION AS R
                 INNER JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
-                INNER JOIN THEME T ON T.ID = R.THEME_ID
-                WHERE R.DATE = ? AND T.ID = ?
+                WHERE R.DATE = ? AND R.THEME_ID = ?
                 """;
 
-        return jdbcTemplate.query(sql, this::mapRowFull, date, themeId);
+        return jdbcTemplate.query(sql, this::mapRowTime, date, themeId);
     }
 
     @Override

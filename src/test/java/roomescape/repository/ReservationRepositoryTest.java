@@ -105,6 +105,9 @@ class ReservationRepositoryTest {
         final List<Reservation> expected = savedReservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date) &&
                         reservation.getTheme().getId().equals(themeId))
+                .map(reservation -> reservation
+                        .assignTheme(new Theme(reservation.getTheme().getId()))
+                        .assignMember(new Member(reservation.getMember().getId())))
                 .toList();
 
         // then
@@ -119,13 +122,13 @@ class ReservationRepositoryTest {
         final Reservation savedReservation = reservationRepository.save(reservation);
         final Long savedId = savedReservation.getId();
 
-
         // when
         final Optional<Reservation> actual = reservationRepository.findById(savedId);
         final Reservation expected = reservation
                 .assignId(savedId)
                 .assignTime(new ReservationTime(reservation.getTime().getId()))
-                .assignTheme(new Theme(reservation.getTheme().getId()));
+                .assignTheme(new Theme(reservation.getTheme().getId()))
+                .assignMember(new Member(reservation.getMember().getId()));
 
         // then
         assertThat(actual).hasValue(expected);
