@@ -20,9 +20,7 @@ public class MemberDao implements MemberRepository {
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password"),
-            Role.findByName(
-                    resultSet.getString("role")
-            )
+            Role.valueOf(resultSet.getString("role"))
     );
 
     private final JdbcTemplate jdbcTemplate;
