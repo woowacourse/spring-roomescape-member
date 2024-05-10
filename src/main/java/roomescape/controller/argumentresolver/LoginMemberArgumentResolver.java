@@ -3,19 +3,24 @@ package roomescape.controller.argumentresolver;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.login.LoginMember;
 import roomescape.dto.token.TokenDto;
+import roomescape.infrastructure.AuthorizationExtractor;
 import roomescape.service.AuthService;
 
+@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private final AuthorizationExtractor authorizationExtractor;
     private final AuthService authService;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
+    public LoginMemberArgumentResolver(AuthorizationExtractor authorizationExtractor, AuthService authService) {
+        this.authorizationExtractor = authorizationExtractor;
         this.authService = authService;
     }
 
@@ -28,19 +33,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        return authService.findUserByToken(new TokenDto(token));
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
+        String token = authorizationExtractor.extract(cookies);
+        return authService.checkLogin(new TokenDto(token));
     }
 }
