@@ -1,6 +1,8 @@
 package roomescape.member.dao;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -24,5 +26,14 @@ public class MemberDao {
     public List<Member> findMembers() {
         String sql = "SELECT id, name, email FROM member";
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public Optional<Member> findMemberByEmail(String email) {
+        String sql = "SELECT id, name, email FROM member WHERE email = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 }

@@ -25,6 +25,10 @@ public class Member {
         return name.value();
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {

@@ -8,8 +8,10 @@ import io.restassured.http.Cookies;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.LoginResponse;
@@ -19,6 +21,8 @@ import roomescape.member.dto.LoginResponse;
 public class LoginControllerTest {
     @LocalServerPort
     private int port;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -28,8 +32,9 @@ public class LoginControllerTest {
     @DisplayName("로그인을 하고, 해당 정보를 받아올 수 있다.")
     @Test
     void loginTest() {
+        jdbcTemplate.update("INSERT INTO member(name, email) VALUES ('커찬', 'abc@abc.com')");
         LoginRequest request = new LoginRequest("abc@abc.com", "1234");
-        LoginResponse expectedResponse = new LoginResponse("admin");
+        LoginResponse expectedResponse = new LoginResponse("커찬");
 
         Cookies cookies = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
