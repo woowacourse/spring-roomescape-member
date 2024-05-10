@@ -13,15 +13,15 @@ public class AuthInfo {
         this.memberRole = memberRole;
     }
 
+    public boolean isNotAdmin() {
+        return this.memberRole.isNotAdmin();
+    }
+
     public Long getMemberId() {
         return memberId;
     }
 
     public String getName() {
         return name;
-    }
-
-    public boolean isNotAdmin() {
-        return this.memberRole.isNotAdmin();
     }
 }
