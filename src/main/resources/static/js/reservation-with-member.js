@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('filter-form').addEventListener('submit', applyFilter);
 
   requestRead(RESERVATION_API_ENDPOINT)
+      .then(data=>data.data)
       .then(render)
       .catch(error => console.error('Error fetching reservations:', error));
 
@@ -23,14 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function render(data) {
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = '';
-
   data.forEach(item => {
     const row = tableBody.insertRow();
-
-    /*
-    TODO: [5단계] 예약 생성 기능 변경 - 관리자
-          예약 목록 조회 API 응답에 맞게 적용
-    */
     row.insertCell(0).textContent = item.id;              // 예약 id
     row.insertCell(1).textContent = item.member.name;     // 사용자 name
     row.insertCell(2).textContent = item.theme.name;      // 테마 name
@@ -44,6 +39,7 @@ function render(data) {
 
 function fetchTimes() {
   requestRead(TIME_API_ENDPOINT)
+      .then(data=>data.data)
       .then(data => {
         timesOptions.push(...data);
       })
@@ -52,6 +48,7 @@ function fetchTimes() {
 
 function fetchThemes() {
   requestRead(THEME_API_ENDPOINT)
+      .then(data=>data.data)
       .then(data => {
         themesOptions.push(...data);
         populateSelect('theme', themesOptions, 'name');
@@ -61,6 +58,7 @@ function fetchThemes() {
 
 function fetchMembers() {
   requestRead(MEMBER_API_ENDPOINT)
+      .then(data=>data.data)
       .then(data => {
         membersOptions.push(...data);
         populateSelect('member', membersOptions, 'name');
