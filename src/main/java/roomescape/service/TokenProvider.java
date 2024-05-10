@@ -4,4 +4,6 @@ import roomescape.model.User;
 
 public interface TokenProvider {
     String createToken(User user);
+
+    String getPayload(String token);
 }

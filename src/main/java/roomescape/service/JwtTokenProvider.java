@@ -31,4 +31,9 @@ public class JwtTokenProvider implements TokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+
+    @Override
+    public String getPayload(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
 }

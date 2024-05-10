@@ -24,4 +24,15 @@ class JwtTokenProviderTest {
 
         assertThat(token).isNotBlank();
     }
+
+    @DisplayName("주어진 사용자로 토큰을 생성한다.")
+    @Test
+    void should_get_payload_when_given_token() {
+        User user = new User(1L, "썬", "sun@email.com", "1234");
+        String token = jwtTokenProvider.createToken(user); //todo 이렇게 해도 되는 건가? provider를 두번 사용하는 것이 되잖아.
+
+        String payload = jwtTokenProvider.getPayload(token);
+
+        assertThat(payload).isEqualTo("1");
+    }
 }
