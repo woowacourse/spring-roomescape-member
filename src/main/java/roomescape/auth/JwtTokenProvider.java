@@ -16,8 +16,8 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-    public static final String EMAIL_KEY = "email";
-    public static final String ID_KEY = "id";
+    private static final String EMAIL_KEY = "email";
+    private static final String ID_KEY = "id";
     private static final long EXPIRED_PERIOD = (long) 1000 * 60 * 60; // 30일
 
     @Value("${jwt.secret")
