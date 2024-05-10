@@ -103,4 +103,17 @@ class AuthControllerTest {
 
         assertThat(name).isEqualTo("켬미");
     }
+
+    @DisplayName("로그아웃 시 쿠키에 저장된 값을 삭제한다.")
+    @Test
+    void logout() {
+        String cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        assertThat(cookie).isEqualTo("token=");
+    }
 }
