@@ -32,7 +32,7 @@ public class MemberDao {
                 .addValue("name", member.getName())
                 .addValue("password", member.getPassword())
                 .addValue("email", member.getEmail())
-                .addValue("role", member.getRole().getValue());
+                .addValue("role", member.getRole());
 
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();
