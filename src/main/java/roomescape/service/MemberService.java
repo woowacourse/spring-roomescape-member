@@ -25,15 +25,15 @@ public class MemberService {
     public MemberResponse save(UserSignUpRequest userSignUpRequest) {
         Member member = userSignUpRequest.toEntity();
         Member savedMember = memberRepository.save(member);
-        return MemberResponse.from(member);
+        return MemberResponse.from(savedMember);
     }
 
     public TokenResponse createToken(UserLoginRequest userLoginRequest) {
         if (!checkInvalidLogin(userLoginRequest.email(), userLoginRequest.password())) {
             throw new IllegalArgumentException("사용자 없음");
         }
-        Member byEmail = memberRepository.findByEmail(userLoginRequest.email());
-        return new TokenResponse(jwtTokenProvider.createToken(byEmail));
+        Member member = memberRepository.findByEmail(userLoginRequest.email());
+        return new TokenResponse(jwtTokenProvider.createToken(member));
     }
 
     private boolean checkInvalidLogin(String email, String password) {
@@ -41,8 +41,8 @@ public class MemberService {
     }
 
     public CheckMemberResponse findByEmail(String email) {
-        Member byEmail = memberRepository.findByEmail(email);
-        return new CheckMemberResponse(byEmail.getName());
+        Member member = memberRepository.findByEmail(email);
+        return new CheckMemberResponse(member.getName());
     }
 
     public List<MemberResponse> findAll() {
