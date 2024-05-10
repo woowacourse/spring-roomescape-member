@@ -17,8 +17,9 @@ import java.util.stream.Collectors;
 @Service
 public class ThemeService {
 
-    public static final long POPULAR_THEME_PERIOD = 7L;
-    public static final long POPULAR_THEME_COUNT = 10L;
+    private static final long POPULAR_THEME_PERIOD = 7L;
+    private static final long POPULAR_THEME_COUNT = 10L;
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 

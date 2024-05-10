@@ -18,10 +18,11 @@ public class JwtTokenProvider {
 
     private static final String EMAIL_KEY = "email";
     private static final String ID_KEY = "id";
-    private static final long EXPIRED_PERIOD = (long) 1000 * 60 * 60; // 30일
 
-    @Value("${jwt.secret")
+    @Value("${jwt.secret}")
     private String jwtSecret;
+    @Value("${jwt.expired-period}")
+    private long expiredPeriod;
 
     public String generate(Member member) {
         long now = new Date().getTime();
@@ -29,7 +30,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .claim(ID_KEY, member.getId())
                 .claim(EMAIL_KEY, member.getEmail())
-                .setExpiration(new Date(now + EXPIRED_PERIOD))
+                .setExpiration(new Date(now + expiredPeriod))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }

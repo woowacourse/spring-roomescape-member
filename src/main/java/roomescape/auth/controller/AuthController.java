@@ -1,6 +1,7 @@
 package roomescape.auth.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,9 @@ import roomescape.auth.service.AuthService;
 @Controller
 public class AuthController {
 
-    private static final long EXPIRED_PERIOD = (long) 1000 * 60 * 60; // 30일
-
     private final AuthService authService;
+    @Value("${jwt.expired-period}")
+    private long expiredPeriod;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -36,7 +37,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse data = authService.login(request);
-        String cookie = createTokenCookie(data.accessToken(), EXPIRED_PERIOD);
+        String cookie = createTokenCookie(data.accessToken(), expiredPeriod);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie)

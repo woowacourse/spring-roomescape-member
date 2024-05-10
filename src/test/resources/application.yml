@@ -12,3 +12,4 @@ spring:
 
 jwt:
   secret: secreteKey
+  expired-period: 3600000
