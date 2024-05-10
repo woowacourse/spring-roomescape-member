@@ -59,7 +59,7 @@ class ReservationServiceTest {
 
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2030, 12, 12), reservationTime.id(),
                 theme.id(), member.id());
-        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
+        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest, reservationRequest.memberId());
 
         assertAll(
                 () -> assertThat(reservationResponse.member()).isEqualTo(member),
@@ -74,7 +74,7 @@ class ReservationServiceTest {
         ThemeResponse theme = themeService.createTheme(themeRequest);
 
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2030, 12, 12), 1L, theme.id(), 1L);
-        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
+        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest, reservationRequest.memberId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ExceptionCode.NOT_FOUND_RESERVATION_TIME.getErrorMessage());
     }
@@ -89,7 +89,7 @@ class ReservationServiceTest {
         ThemeResponse theme = themeService.createTheme(themeRequest);
 
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(1999, 12, 12), reservationTime.id(), theme.id(), 1L);
-        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
+        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest, reservationRequest.memberId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ExceptionCode.PAST_TIME_SLOT_RESERVATION.getErrorMessage());
     }
@@ -108,7 +108,7 @@ class ReservationServiceTest {
         MemberResponse member = memberService.createMember(memberRequest);
 
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2999, 12, 12), reservationTime.id(), theme.id(), member.id());
-        reservationService.createReservation(reservationRequest);
+        reservationService.createReservation(reservationRequest, reservationRequest.memberId());
 
 
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -133,7 +133,7 @@ class ReservationServiceTest {
         MemberResponse member = memberService.createMember(memberRequest);
 
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2030, 12, 12), reservationTime.id(), theme.id(), member.id());
-        ReservationResponse savedReservation = reservationService.createReservation(reservationRequest);
+        ReservationResponse savedReservation = reservationService.createReservation(reservationRequest, reservationRequest.memberId());
 
         reservationService.deleteReservation(savedReservation.id());
 

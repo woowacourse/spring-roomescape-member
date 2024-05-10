@@ -37,28 +37,8 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest, Long loginMemberId) {
-        Member member = memberRepository.findById(loginMemberId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
-
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
-
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_THEME));
-
-        if (reservationRepository.existByTimeIdAndDate(reservationRequest.themeId(), reservationRequest.date())) {
-            throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
-        }
-        validateIsPastTime(reservationRequest.date(), reservationTime);
-
-        Reservation reservation = reservationRequest.toEntity(member, reservationTime, theme);
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
-    }
-
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
-        Member member = memberRepository.findById(reservationRequest.memberId())
+    public ReservationResponse createReservation(ReservationRequest reservationRequest, Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
 
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
