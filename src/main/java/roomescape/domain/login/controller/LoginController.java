@@ -17,6 +17,7 @@ import roomescape.global.auth.JwtTokenProvider;
 @RestController
 public class LoginController {
 
+    private static final String COOKIE_NAME = "token";
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
 
@@ -29,20 +30,20 @@ public class LoginController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberService.findMemberByEmailAndPassword(loginRequest.email(),
                 loginRequest.password());
-        Cookie cookie = CookieGenerator.generate("token",
+        Cookie cookie = CookieGenerator.generate(COOKIE_NAME,
                 jwtTokenProvider.generateToken(String.valueOf(member.getId())));
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<MemberResponse> checkLogin(@MemberResolver Member member) {
         return ResponseEntity.ok(new MemberResponse(member.getName()));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logOut(HttpServletResponse response) {
-        Cookie cookie = CookieGenerator.generateExpiredToken("token");
+        Cookie cookie = CookieGenerator.generateExpiredToken(COOKIE_NAME);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }

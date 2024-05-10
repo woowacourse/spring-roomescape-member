@@ -16,9 +16,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<String> handleInternalServerError(Exception e) {
-//        log.error(e.getMessage());
-//        return ResponseEntity.internalServerError().body("서버 관리자에게 문의하세요");
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleInternalServerError(Exception e) {
+        log.error(e.getMessage());
+        return ResponseEntity.internalServerError().body("서버 관리자에게 문의하세요");
+    }
 }
