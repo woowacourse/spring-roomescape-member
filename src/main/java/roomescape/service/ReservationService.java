@@ -20,16 +20,11 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final MemberService memberService;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
-    public ReservationService(
-            ReservationRepository reservationRepository, MemberService memberService,
-            ReservationTimeService reservationTimeService, ThemeService themeService
-    ) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeService reservationTimeService, ThemeService themeService) {
         this.reservationRepository = reservationRepository;
-        this.memberService = memberService;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
     }

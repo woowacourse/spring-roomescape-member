@@ -29,11 +29,7 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody AdminReservationAddRequest request) { // TODO 테스트추가
-        Optional<MemberResponse> optionalMemberResponse = memberService.findById(request.memberId()); // TODO Optional 로 받는게 맞을까?? 그냥 예외를 터트리면 안될까??
-        if (optionalMemberResponse.isEmpty()) {
-            throw new IllegalArgumentException("요청이 잘못되었습니다. 유저 id를 확인해주세요.");
-        }
-        MemberResponse memberResponse = optionalMemberResponse.get();
+        MemberResponse memberResponse = memberService.findById(request.memberId());
         ReservationAddMemberRequest memberRequest = new ReservationAddMemberRequest(memberResponse);
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(request.date(), request.timeId(), request.themeId());
         ReservationResponse addReservationResponse = reservationService.addReservation(reservationAddRequest, memberRequest);

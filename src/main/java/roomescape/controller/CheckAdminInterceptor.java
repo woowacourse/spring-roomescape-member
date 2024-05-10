@@ -44,8 +44,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private void validateAdmin(Cookie findCookie) {
         AuthResponse authResponse = authService.findPayloadByToken(findCookie.getValue());
-        Optional<MemberResponse> optionalMemberResponse = memberService.findMemberByEmail(authResponse.email());
-        if (optionalMemberResponse.isEmpty() || optionalMemberResponse.get().role() != Role.ADMIN) {
+        MemberResponse memberResponse = memberService.findMemberByEmail(authResponse.email());
+        if (memberResponse.role() != Role.ADMIN) {
             throw new InvalidAccessException("관리자 페이지에 접근할 권한이 없습니다.");
         }
     }

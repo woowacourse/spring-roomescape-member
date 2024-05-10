@@ -19,30 +19,30 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Optional<MemberResponse> login(LoginRequest loginRequest) {
+    public MemberResponse login(LoginRequest loginRequest) {
         Optional<Member> memberOptional = memberRepository.findByEmail(new Email(loginRequest.email()));
         if (memberOptional.isPresent() && memberOptional.get().isMatchPassword(loginRequest.password())) {
-            return Optional.of(new MemberResponse(memberOptional.get()));
+            return new MemberResponse(memberOptional.get());
         }
-        return Optional.empty();
+        throw new IllegalArgumentException("요청을 처리할 수 없습니다. 로그인 정보를 다시 확인해주세요.");
     }
 
-    public Optional<MemberResponse> findMemberByEmail(String email) {
+    public MemberResponse findMemberByEmail(String email) {
         Optional<Member> memberOptional = memberRepository.findByEmail(new Email(email));
         if (memberOptional.isPresent()) {
             Member findMember = memberOptional.get();
-            return Optional.of(new MemberResponse(findMember));
+            return new MemberResponse(findMember);
         }
-        return Optional.empty();
+        throw new IllegalArgumentException("요청을 처리할 수 없습니다. 이메일을 다시 확인해주세요.");
     }
 
-    public Optional<MemberResponse> findById(Long id) {
+    public MemberResponse findById(Long id) {
         Optional<Member> memberOptional = memberRepository.findById(id);
         if (memberOptional.isPresent()) {
             Member findMember = memberOptional.get();
-            return Optional.of(new MemberResponse(findMember));
+            return new MemberResponse(findMember);
         }
-        return Optional.empty();
+        throw new IllegalArgumentException("요청을 처리할 수 없습니다. ID를 다시 확인해주세요.");
     }
 
     public List<MemberResponse> findAll() {

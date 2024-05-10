@@ -36,7 +36,7 @@ public class ReservationController {
             @RequestBody ReservationAddRequest reservationAddRequest,
             @AuthenticatedUser AuthResponse authResponse
             ) {
-        MemberResponse memberResponse = memberService.findMemberByEmail(authResponse.email()).get();
+        MemberResponse memberResponse = memberService.findMemberByEmail(authResponse.email());
         ReservationAddMemberRequest reservationAddMemberRequest = new ReservationAddMemberRequest(memberResponse);
         ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest, reservationAddMemberRequest);
 

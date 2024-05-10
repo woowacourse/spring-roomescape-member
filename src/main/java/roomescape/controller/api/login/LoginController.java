@@ -29,24 +29,16 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        Optional<MemberResponse> optionalLoginResponse = memberService.login(loginRequest);
-        if (optionalLoginResponse.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        MemberResponse memberResponse = optionalLoginResponse.get();
+        MemberResponse memberResponse = memberService.login(loginRequest);
         Cookie cookie = makeCookie(memberResponse);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 
-
     @GetMapping("/login/check")
     public LoginCheckResponse loginCheck(@AuthenticatedUser AuthResponse authResponse) {
-        Optional<MemberResponse> optionalMemberResponse = memberService.findMemberByEmail(authResponse.email());
-        if (optionalMemberResponse.isEmpty()) {
-            return null; // TODO 조회하는 회원이 없는 경우 무엇을 반환하는게 좋을까??
-        }
-        return new LoginCheckResponse(optionalMemberResponse.get().name());
+        MemberResponse memberResponse = memberService.findMemberByEmail(authResponse.email());
+        return new LoginCheckResponse(memberResponse.name());
     }
 
     @PostMapping("/logout")
