@@ -61,13 +61,13 @@ public class ThemeService {
 
     private void validateExistedThemeName(String name) {
         if (themeDao.exist(name)) {
-            throw new IllegalArgumentException("동일한 테마명이 존재합니다.");
+            throw new IllegalArgumentException("이미 동일한 테마명이 있어 추가할 수 없습니다.");
         }
     }
 
     private void validateExistReservationByThemeId(Long id) {
         if (reservationDao.existByThemeId(id)) {
-            throw new IllegalArgumentException("해당 테마를 사용하는 예약이 존재합니다.");
+            throw new IllegalArgumentException("해당 테마를 사용하는 예약이 존재하여 삭제할 수 없습니다.");
         }
     }
 }

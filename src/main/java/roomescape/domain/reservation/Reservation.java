@@ -25,9 +25,9 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public void validatePast(ReservationTime reservationTime, LocalDateTime now) {
+    public void validatePast(LocalDateTime now) {
         if (reservationDate.isAfter(now) || reservationDate.isSame(now) && reservationTime.isBefore(now)) {
-            throw new IllegalArgumentException("예약 일과 예약 시간은 과거일 수 없습니다.");
+            throw new IllegalArgumentException("예약일과 예약 시간은 과거일 수 없습니다.");
         }
     }
 

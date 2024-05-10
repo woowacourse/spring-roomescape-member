@@ -75,7 +75,8 @@ class MemberServiceTest {
 
         //when //then
         assertThatThrownBy(() -> memberService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("동일한 이메일이 존재합니다.");
     }
 
     @Test

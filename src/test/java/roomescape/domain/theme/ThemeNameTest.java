@@ -1,0 +1,22 @@
+package roomescape.domain.theme;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+class ThemeNameTest {
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "   "})
+    @DisplayName("테마명이 비어있거나 공백이명 예외가 발생한다.")
+    void createThemeNameWhenNullOrBlank(String given) {
+        //when //then
+        assertThatThrownBy(() -> ThemeName.from(given))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("테마명은 비어있을 수 없습니다.");
+    }
+}

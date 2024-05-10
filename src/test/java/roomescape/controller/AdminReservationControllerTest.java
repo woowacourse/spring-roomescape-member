@@ -144,7 +144,8 @@ class AdminReservationControllerTest {
     @DisplayName("필터링한 데이터를 조회시 예외가 발생하면 400 Bad Request를 응답한다.")
     void getFilteredWhenIllegalArgumentException() throws Exception {
         //given
-        ReservationFilterRequest filterRequest = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-05");
+        ReservationFilterRequest filterRequest =
+                new ReservationFilterRequest(1L, 1L, null, null);
         given(reservationService.findFiltered(filterRequest)).willThrow(IllegalArgumentException.class);
 
         //when //then

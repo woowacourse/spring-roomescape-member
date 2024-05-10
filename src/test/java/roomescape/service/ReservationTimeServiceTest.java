@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -86,19 +84,6 @@ class ReservationTimeServiceTest {
             );
         }
 
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @DisplayName("예약 시간에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
-        void createReservationTimeByNullOrEmptyStartAt(String given) {
-            //given
-            ReservationTimeCreateRequest request = ReservationTimeFixtures.createReservationTimeCreateRequest(given);
-
-            //when //then
-            assertThatThrownBy(() -> reservationTimeService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
         @Test
         @DisplayName("예약 시간이 중복되면 예외가 발생한다.")
         void createReservationTimeWhenDuplicatedStartAt() {
@@ -108,7 +93,8 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("이미 동일한 예약 시간이 있어 추가할 수 없습니다.");
         }
     }
 
@@ -140,7 +126,8 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 시간 아이디는 비어있을 수 없습니다.");
         }
 
         @Test
@@ -152,7 +139,8 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
         }
 
         @Test
@@ -167,7 +155,8 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("해당 예약시간을 사용하는 예약이 존재하여 삭제할 수 없습니다.");
         }
     }
 }

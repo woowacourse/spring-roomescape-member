@@ -47,17 +47,13 @@ public class ReservationService {
     public List<ReservationResponse> findFiltered(ReservationFilterRequest request) {
         ReservationDate from = ReservationDate.from(request.getDateFrom());
         ReservationDate to = ReservationDate.from(request.getDateTo());
-
         Member member = findMemberById(request.getMemberId());
         Theme theme = findThemeBy(request.getThemeId());
+
         validateFromDateIsNotAfterToDate(from, to);
 
-        List<Reservation> reservations = reservationDao.readAllByMemberAndThemeAndDateBetweenFromAndTo(
-                member,
-                theme,
-                from,
-                to
-        );
+        List<Reservation> reservations =
+                reservationDao.readAllByMemberAndThemeAndDateBetweenFromAndTo(member, theme, from, to);
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -77,7 +73,7 @@ public class ReservationService {
         Theme theme = findThemeBy(request.getThemeId());
         Member member = findMemberById(request.getMemberId());
         Reservation reservation = request.toDomain(member, reservationTime, theme);
-        reservation.validatePast(reservationTime, now);
+        reservation.validatePast(now);
         validateDuplicate(reservation);
         return ReservationResponse.from(reservationDao.create(reservation));
     }
@@ -86,7 +82,7 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTimeBy(request.getTimeId());
         Theme theme = findThemeBy(request.getThemeId());
         Reservation reservation = request.toDomain(member, reservationTime, theme);
-        reservation.validatePast(reservationTime, now);
+        reservation.validatePast(now);
         validateDuplicate(reservation);
         return ReservationResponse.from(reservationDao.create(reservation));
     }
@@ -105,7 +101,7 @@ public class ReservationService {
 
     private void validateDuplicate(Reservation reservation) {
         if (reservationDao.hasSame(reservation)) {
-            throw new IllegalArgumentException("중복된 예약을 생성할 수 없습니다.");
+            throw new IllegalArgumentException("이미 예약이 있어 추가할 수 없습니다.");
         }
     }
 
@@ -125,7 +121,7 @@ public class ReservationService {
 
     private Reservation findReservationBy(Long id) {
         return reservationDao.readById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("예약 아이디에 해당하는 예약이 존재하지 않습니다."));
     }
 
     private ReservationTime findReservationTimeBy(Long id) {
@@ -135,7 +131,7 @@ public class ReservationService {
 
     private Member findMemberById(Long id) {
         return memberDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("회원 아이디와 일치하는 회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("회원 아이디에 해당하는 회원이 존재하지 않습니다."));
     }
 
     private Theme findThemeBy(Long id) {

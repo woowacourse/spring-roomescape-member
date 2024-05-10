@@ -55,6 +55,6 @@ public class MemberService {
 
     private Member findByEmail(MemberEmail email) {
         return memberDao.findByEmail(email)
-                .orElseThrow(() -> new AuthorizationException("이메일과 동일한 회원 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new AuthorizationException("이메일에 해당하는 회원 정보가 존재하지 않습니다."));
     }
 }

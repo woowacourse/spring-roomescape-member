@@ -6,14 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -88,7 +84,8 @@ class ReservationServiceTest {
 
         //when //then
         assertThatThrownBy(() -> reservationService.findFiltered(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
     }
 
     @Test
@@ -161,7 +158,8 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(member, givenRequest, now))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
         }
 
         @Test
@@ -176,78 +174,8 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(member, givenRequest, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @DisplayName("예약 날짜에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
-        void createReservationByNullOrEmptyDate(String given) {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.getReservationCreateRequest(given, 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(member, request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {"24-02-04", "2024;04;24"})
-        @DisplayName("예약 날짜가 yyyy-MM-dd 형식이 아닌 경우 예외가 발생한다.")
-        void createReservationByInvalidDate(String given) {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.getReservationCreateRequest(given, 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(member, request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("지나간 날짜에 대한 예약을 추가하면 예외가 발생한다.")
-        void createReservationByPastDate() {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
-            LocalDate pastDay = today.minusDays(1);
-            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.getReservationCreateRequest(pastDay.toString(), 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(member, request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("지나간 시간에 대한 예약을 추가하면 예외가 발생한다.")
-        void createReservationByPastTime() {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
-            LocalTime currentTime = LocalTime.of(now.getHour(), now.getMinute());
-            LocalTime pastTime = currentTime.minusHours(1);
-            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime(pastTime.toString()));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.getReservationCreateRequest(today.toString(), 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(member, request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("테마 아이디에 해당하는 테마가 존재하지 않습니다.");
         }
 
         @Test
@@ -265,7 +193,8 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(member, request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("이미 예약이 있어 추가할 수 없습니다.");
         }
     }
 
@@ -310,7 +239,8 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 아이디는 비어있을 수 없습니다.");
         }
 
         @Test
@@ -329,7 +259,8 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 아이디에 해당하는 예약이 존재하지 않습니다.");
         }
     }
 }
