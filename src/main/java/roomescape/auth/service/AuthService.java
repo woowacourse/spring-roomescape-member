@@ -1,7 +1,7 @@
 package roomescape.auth.service;
 
-import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.AuthInformationResponse;
 import roomescape.auth.dto.CreateTokenRequest;
 import roomescape.auth.dto.CreateTokenResponse;
 import roomescape.common.exception.AuthorizationException;
@@ -26,5 +26,10 @@ public class AuthService {
 
         String accessToken = jwtTokenProvider.createToken(member);
         return new CreateTokenResponse(accessToken);
+    }
+
+    public AuthInformationResponse findMemberByToken(String token) {
+        String payload = jwtTokenProvider.getPayload(token, "name");
+        return new AuthInformationResponse(payload);
     }
 }
