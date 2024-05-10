@@ -5,6 +5,6 @@ insert into theme(theme_name, description, thumbnail) values
     ('콜러', '공포 테마 중독자 추천', '콜러 썸네일'),
     ('제로', '심약자는 도전하지 마시오', '제로 썸네일');
 insert into member(member_name, email, password, member_role) values
-    ('anna', 'anna@gmail.com', 'password', 'admin'),
-    ('parang', 'parang@gmail.com', 'password', 'member');
+    ('anna', 'anna@gmail.com', 'password', 'ADMIN'),
+    ('parang', 'parang@gmail.com', 'password', 'MEMBER');
 
