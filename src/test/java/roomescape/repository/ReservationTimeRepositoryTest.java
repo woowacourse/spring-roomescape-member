@@ -33,7 +33,8 @@ class ReservationTimeRepositoryTest {
                 new ReservationTime(1L, LocalTime.of(15, 0)),
                 new ReservationTime(2L, LocalTime.of(16, 0)),
                 new ReservationTime(3L, LocalTime.of(17, 0)),
-                new ReservationTime(4L, LocalTime.of(18, 0))
+                new ReservationTime(4L, LocalTime.of(18, 0)),
+                new ReservationTime(5L, LocalTime.of(19, 0))
         );
 
         // when
@@ -71,7 +72,7 @@ class ReservationTimeRepositoryTest {
     void save() {
         // given
         ReservationTime time = new ReservationTime(null, LocalTime.of(13, 30));
-        ReservationTime expected = new ReservationTime(5L, LocalTime.of(13, 30));
+        ReservationTime expected = new ReservationTime(6L, LocalTime.of(13, 30));
 
         // when
         ReservationTime actual = timeRepository.save(time);

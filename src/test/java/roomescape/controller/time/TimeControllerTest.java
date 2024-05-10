@@ -38,7 +38,7 @@ class TimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(5));
     }
 
     @ParameterizedTest
@@ -96,7 +96,7 @@ class TimeControllerTest {
                 .when().get("/times/availability?date=" + date.format(DateTimeFormatter.ISO_DATE) + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(5));
     }
 
     static Stream<Arguments> invalidRequestParameterProvider() {

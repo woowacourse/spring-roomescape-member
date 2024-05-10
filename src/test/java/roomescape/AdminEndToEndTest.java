@@ -55,17 +55,17 @@ class AdminEndToEndTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(5));
+                .body("size()", is(6));
 
         RestAssured.given().log().all()
                 .cookie("token", accessToken)
-                .when().delete("/times/5")
+                .when().delete("/times/6")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
                 .cookie("token", accessToken)
-                .when().delete("/times/5")
+                .when().delete("/times/6")
                 .then().log().all()
                 .statusCode(400);
     }

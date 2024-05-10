@@ -2,7 +2,8 @@ INSERT INTO RESERVATION_TIME(START_AT)
 VALUES ('15:00'),
        ('16:00'),
        ('17:00'),
-       ('18:00');
+       ('18:00'),
+       ('19:00');
 
 INSERT INTO THEME(NAME, DESCRIPTION, THUMBNAIL)
 VALUES ('봄', '설명1', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
