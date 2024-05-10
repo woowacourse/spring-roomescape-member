@@ -1,21 +1,31 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.user.User;
+import roomescape.domain.member.Member;
+import roomescape.exception.AuthorizationException;
 import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.repository.MemberCredentialRepository;
 import roomescape.service.dto.login.LoginRequest;
 
 @Service
 public class AuthService {
 
-    private JwtTokenProvider jwtTokenProvider;
+    private final MemberCredentialRepository memberCredentialRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberCredentialRepository memberCredentialRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberCredentialRepository = memberCredentialRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String createToken(LoginRequest loginRequest) {
-        // TODO: 회원 조회
-        return jwtTokenProvider.createToken(new User(1L, "naknak"));
+        Member member = memberCredentialRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
+                .orElseThrow(() -> new AuthorizationException("유효하지 않은 id/pw 입니다."));
+
+        return jwtTokenProvider.createToken(member);
+    }
+
+    public Member findMemberByToken(String token) {
+        return jwtTokenProvider.getMember(token);
     }
 }
