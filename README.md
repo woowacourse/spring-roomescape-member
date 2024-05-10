@@ -106,4 +106,4 @@
 - 관리자가 조건에 따라 예약을 검색하는 기능
   - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가
     - themeId, memberId, startDate, endDate 값을 사용 
-  - [ ] `reservation-with-member.js`를 요청 형식에 맞게 수정
+  - [x] `reservation-with-member.js`를 요청 형식에 맞게 수정
