@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record ReservationTimeResponse(
-        long timeId,
+        long id,
 
         @JsonFormat(pattern = "kk:mm")
         LocalTime startAt
