@@ -3,14 +3,15 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import roomescape.controller.request.UserLoginRequest;
+import roomescape.controller.response.UserNameResponse;
 import roomescape.model.User;
 import roomescape.service.AuthService;
 import roomescape.service.UserService;
@@ -32,5 +33,12 @@ public class UserController {
         Cookie cookie = authService.createCookieByUser(user);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<UserNameResponse> login(HttpServletRequest request) {
+        Long userId = authService.findUserNameByCookies(request.getCookies());
+        String username = userService.findUserNameById(userId);
+        return ResponseEntity.ok(new UserNameResponse(username));
     }
 }
