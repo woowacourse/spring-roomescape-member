@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +20,8 @@ import roomescape.service.MemberService;
 
 @RestController
 public class MemberController {
+    private static final String TOKEN = "token";
+
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -44,7 +45,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(HttpServletResponse response, @RequestBody @Valid UserLoginRequest userLoginRequest) {
         TokenResponse tokenResponse = memberService.createToken(userLoginRequest);
-        Cookie cookie = new Cookie("token", tokenResponse.token());
+        Cookie cookie = new Cookie(TOKEN, tokenResponse.token());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -60,7 +61,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(TOKEN, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
