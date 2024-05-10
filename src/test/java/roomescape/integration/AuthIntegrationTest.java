@@ -58,26 +58,47 @@ class AuthIntegrationTest extends IntegrationTest {
 
             assertThat(response.getName()).isEqualTo("어드민");
         }
+
+        @Test
+        void 토큰이_존재하지_않으면_예외가_발생한다() {
+            RestAssured.given().log().all()
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/login/check")
+                    .then().log().all()
+                    .statusCode(HttpStatus.UNAUTHORIZED.value());
+        }
+
+        @Test
+        void 토큰이_유효하지_않으면_예외가_발생한다() {
+            RestAssured.given().log().all()
+                    .header("Cookie", new Cookie("token", "wrongtoken"))
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/login/check")
+                    .then().log().all()
+                    .statusCode(HttpStatus.UNAUTHORIZED.value());
+        }
+
+        // TODO: 만료된 토큰 테스트하기
     }
 
-    @Test
-    void 토큰이_존재하지_않으면_예외가_발생한다() {
-        RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/login/check")
-                .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
+    @Nested
+    @DisplayName("로그아웃 API")
+    class Logout {
+        @Test
+        void 토큰으로_로그아웃_할_수_있다() {
+            String cookie = RestAssured.given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(new LoginRequest("admin@email.com", "password"))
+                    .when().post("/login")
+                    .then().log().all()
+                    .extract().header("Set-Cookie").split(";")[0];
 
-    @Test
-    void 토큰이_유효하지_않으면_예외가_발생한다() {
-        RestAssured.given().log().all()
-                .header("Cookie", new Cookie("token", "wrongtoken"))
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/login/check")
-                .then().log().all()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+            RestAssured.given().log().all()
+                    .header("Cookie", cookie)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/logout")
+                    .then().log().all()
+                    .statusCode(HttpStatus.OK.value());
+        }
     }
-
-    // TODO: 만료된 토큰 테스트하기
 }
