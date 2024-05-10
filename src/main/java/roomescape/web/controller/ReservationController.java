@@ -14,6 +14,7 @@ import roomescape.service.ReservationService;
 import roomescape.service.response.ReservationResponse;
 import roomescape.web.controller.request.CreateReservationAdminRequest;
 import roomescape.web.controller.request.CreateReservationWebRequest;
+import roomescape.web.security.AuthenticatedMemberId;
 
 @RestController
 class ReservationController {
@@ -26,9 +27,10 @@ class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(
+            @AuthenticatedMemberId Long id,
             @Valid @RequestBody CreateReservationWebRequest request
     ) {
-        ReservationResponse response = reservationService.createReservation(request.toServiceRequest(1L));
+        ReservationResponse response = reservationService.createReservation(request.toServiceRequest(id));
         URI uri = URI.create("/reservations/" + response.id());
 
         return ResponseEntity.created(uri).body(response);

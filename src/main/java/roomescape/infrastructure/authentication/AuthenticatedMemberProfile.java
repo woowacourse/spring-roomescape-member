@@ -1,4 +1,4 @@
 package roomescape.infrastructure.authentication;
 
-public record AuthenticatedMemberProfile(String name) {
+public record AuthenticatedMemberProfile(Long id, String name) {
 }

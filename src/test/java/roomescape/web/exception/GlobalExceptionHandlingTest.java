@@ -25,12 +25,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.infrastructure.authentication.AuthService;
 
 @WebMvcTest(GlobalExceptionHandlingTest.TestHandler.class)
 class GlobalExceptionHandlingTest {
 
     @MockBean
     TestHandler target;
+
+    @MockBean
+    AuthService authService;
 
     @Autowired
     MockMvc mockMvc;

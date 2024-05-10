@@ -41,8 +41,9 @@ public class AuthService {
         try {
             Claims payload = parser.parseSignedClaims(token)
                     .getPayload();
+            Long id = Long.valueOf(payload.getSubject());
             String name = payload.get("name", String.class);
-            return new AuthenticatedMemberProfile(name);
+            return new AuthenticatedMemberProfile(id, name);
         } catch (JwtException e) {
             throw new UnauthorizedException();
         }
