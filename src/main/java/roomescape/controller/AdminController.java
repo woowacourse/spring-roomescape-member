@@ -2,9 +2,7 @@ package roomescape.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
 import roomescape.dto.AdminReservationSaveRequest;
 import roomescape.dto.MemberResponse;
@@ -16,6 +14,7 @@ import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
+@RequestMapping("/admin")
 @RestController
 public class AdminController {
 
@@ -36,7 +35,7 @@ public class AdminController {
         this.themeService = themeService;
     }
 
-    @PostMapping("/admin/reservations")
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final AdminReservationSaveRequest request) {
         final MemberResponse memberResponse = memberService.findById(request.memberId());
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
