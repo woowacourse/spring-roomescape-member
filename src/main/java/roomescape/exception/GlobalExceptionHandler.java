@@ -44,6 +44,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+    @ExceptionHandler(AccessNotAllowException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(AccessNotAllowException e, HttpServletRequest req) {
+        final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, req.getRequestURI(), e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Object handleMissingServletRequestParameterException(
             MissingServletRequestParameterException ex, HttpServletRequest req) {

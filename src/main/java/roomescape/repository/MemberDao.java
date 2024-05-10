@@ -6,6 +6,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Password;
+import roomescape.domain.dto.LoginRequest;
 import roomescape.domain.dto.SignupRequest;
 
 import java.sql.PreparedStatement;
@@ -32,15 +34,15 @@ public class MemberDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Long create(final SignupRequest signupRequest) {
-        //TODO : salt 추가하기 - 현재 동일 패스워드로 저장하면 해시값 동일함
-        String sql = "insert into member(email,password,name) values(?, HASH('SHA256', STRINGTOUTF8(?), 1000), ?)";
+    public Long create(final SignupRequest signupRequest, final Password password) {
+        String sql = "insert into member(email, password, salt, name) values(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, signupRequest.email());
-            ps.setString(2, signupRequest.password());
-            ps.setString(3, signupRequest.name());
+            ps.setString(2, password.getHashValue());
+            ps.setString(3, password.getSalt());
+            ps.setString(4, signupRequest.name());
             return ps;
         }, keyHolder);
 
@@ -50,5 +52,10 @@ public class MemberDao {
     public boolean isExist(final SignupRequest signupRequest) {
         String sql = "select count(email) from member where email = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, signupRequest.email()) != 0;
+    }
+
+    public boolean isLoginFail(final LoginRequest loginRequest, Password password) {
+        String sql = "select count(*) from member where email = ? and password = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, loginRequest.email(), password.getHashValue()) == 0;
     }
 }

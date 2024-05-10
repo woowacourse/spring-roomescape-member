@@ -1,10 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.dto.MemberResponse;
-import roomescape.domain.dto.MemberResponses;
-import roomescape.domain.dto.SignupRequest;
-import roomescape.domain.dto.SignupResponse;
+import roomescape.domain.Password;
+import roomescape.domain.dto.*;
+import roomescape.exception.AccessNotAllowException;
 import roomescape.exception.SignupFailException;
 import roomescape.repository.MemberDao;
 
@@ -28,7 +27,8 @@ public class MemberService {
 
     public SignupResponse createUser(final SignupRequest signupRequest) {
         validateExist(signupRequest);
-        Long id = memberDao.create(signupRequest);
+        Password password = new Password(signupRequest.password());
+        Long id = memberDao.create(signupRequest, password);
         return new SignupResponse(id);
     }
 
@@ -36,5 +36,14 @@ public class MemberService {
         if (memberDao.isExist(signupRequest)) {
             throw new SignupFailException("회원 정보가 이미 존재합니다.");
         }
+    }
+
+    public void login(final LoginRequest loginRequest) {
+        //hash 값 반환
+        Password password = new Password(loginRequest.password());
+        if (memberDao.isLoginFail(loginRequest, password)) {
+            throw new AccessNotAllowException("회원 정보가 일치하지 않습니다.");
+        }
+        // TODO 토큰 반환하기
     }
 }

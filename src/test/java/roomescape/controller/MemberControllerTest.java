@@ -55,4 +55,19 @@ class MemberControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @DisplayName("로그인 실패 시 400을 응답한다.")
+    @Test
+    void given_when_loginSuccess_then_statusCodeOk() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", "poke@test.com");
+        params.put("password", "1q2w3e4r!");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(400);
+    }
 }

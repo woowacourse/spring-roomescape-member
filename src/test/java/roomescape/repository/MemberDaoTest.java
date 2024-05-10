@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Password;
+import roomescape.domain.dto.LoginRequest;
 import roomescape.domain.dto.SignupRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +37,18 @@ class MemberDaoTest {
         //given
         SignupRequest signupRequest = new SignupRequest("ash@test.com", "123456", "ash");
         //when, then
-        assertThat(memberDao.create(signupRequest)).isEqualTo(2);
+        assertThat(memberDao.create(signupRequest, new Password(signupRequest.password()))).isEqualTo(2);
+    }
+
+
+    @DisplayName("Db에 이메일의 패스워드가 일치하는지 확인한다.")
+    @Test
+    void given_LoginRequest_when_then_returnNoting() {
+        //given
+        SignupRequest signupRequest = new SignupRequest("ash@test.com", "123456", "ash");
+        memberDao.create(signupRequest, new Password(signupRequest.password(), "salt"));
+        LoginRequest loginRequest = new LoginRequest("ash@test.com", "123456");
+        //when, then
+        assertThat(memberDao.isLoginFail(loginRequest, new Password(loginRequest.password(), "salt"))).isFalse();
     }
 }

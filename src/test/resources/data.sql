@@ -31,7 +31,7 @@ VALUES ('애쉬', '2099-04-30', 1, 1);
 INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('애쉬', '2099-04-30', 1, 1);
 
-INSERT INTO member(email, password, name)
-VALUES ('poke@test.com', HASH('SHA256', STRINGTOUTF8('password'), 1000), 'poke')
+INSERT INTO member(email, password, salt, name)
+VALUES ('poke@test.com', 'hashedpassword', 'salt', 'poke')
 
 

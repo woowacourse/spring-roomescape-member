@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.dto.LoginRequest;
 import roomescape.domain.dto.SignupRequest;
+import roomescape.exception.AccessNotAllowException;
 import roomescape.exception.SignupFailException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,5 +53,14 @@ class MemberServiceTest {
         //when, then
         assertThatThrownBy(() -> service.createUser(signupRequest)).isInstanceOf(SignupFailException.class);
         assertThat(getMemberSize()).isEqualTo(1);
+    }
+
+    @DisplayName("로그인 정보가 일치하지 않으면 예외를 발생시킨다. ")
+    @Test
+    void given_LoginRequest_when_loginFail_then_thrownException() {
+        //given
+        LoginRequest loginRequest = new LoginRequest("poke@test.com", "password");
+        //when, then
+        assertThatThrownBy(() -> service.login(loginRequest)).isInstanceOf(AccessNotAllowException.class);
     }
 }
