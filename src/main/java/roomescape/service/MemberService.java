@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
-import roomescape.repository.MemberDao;
+import roomescape.repository.repositoryImpl.JdbcMemberDao;
 
 @Service
 public class MemberService {
 
-    private final MemberDao memberDao;
+    private final JdbcMemberDao memberDao;
 
-    public MemberService(final MemberDao memberDao) {
+    public MemberService(final JdbcMemberDao memberDao) {
         this.memberDao = memberDao;
     }
 
