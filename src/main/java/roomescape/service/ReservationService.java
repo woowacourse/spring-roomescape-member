@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.*;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.MemberReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.exception.OperationNotAllowedException;
 import roomescape.service.exception.ResourceNotFoundException;
@@ -34,13 +34,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse addReservation(ReservationRequest request) {
+    public ReservationResponse addMemberReservation(MemberReservationRequest request, Member member) {
         ReservationTime reservationTime = findValidatedReservationTime(request.timeId());
         validateNotPast(request.date(), reservationTime.getStartAt());
         validateNotDuplicatedTime(request.date(), request.timeId(), request.themeId());
         Theme theme = findValidatedTheme(request.themeId());
 
-        Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
+        Reservation reservation = new Reservation(member, request.date(), reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);

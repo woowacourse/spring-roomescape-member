@@ -47,7 +47,7 @@ public class TimeController {
                 .build();
     }
 
-    @GetMapping("/available")
+    @GetMapping("/available") // todo: rest 한 api 이름으로 바꾸기
     public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimeBookedStatus(
             @RequestParam LocalDate date,
             @RequestParam Long themeId) {
