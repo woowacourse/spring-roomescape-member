@@ -40,7 +40,7 @@ public class ReservationJDBCRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override //수정해야 하나? (일단 건드려놓긴 함)
+    @Override
     public List<Reservation> findAll() {
         String sql = "SELECT r.id as reservation_id, r.name as reservation_name, r.date, "
                 + "rt.id as time_id, rt.start_at, "

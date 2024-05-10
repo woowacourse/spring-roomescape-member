@@ -36,7 +36,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         TokenResponse tokenResponse = authService.extractTokenByCookies(request);
-        String email = authService.extractEmailByToken(tokenResponse); //emailDto 도 있어야 하나
+        String email = authService.extractEmailByToken(tokenResponse);
         LoginMemberResponse loginMemberResponse = loginMemberService.findByEmail(email);
         return new LoginMember(
                 loginMemberResponse.id(), loginMemberResponse.name(),

@@ -1,8 +1,6 @@
 package roomescape.domain;
 
 public class Reservation {
-    private static final long NO_ID = 0;
-
     private final long id;
     private final MemberName name;
     private final Schedule schedule;
