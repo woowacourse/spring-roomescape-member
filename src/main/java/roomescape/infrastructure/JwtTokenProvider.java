@@ -21,7 +21,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Long findMember(String token) {
+    public Long findTokenSubject(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

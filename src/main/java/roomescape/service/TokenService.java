@@ -23,7 +23,7 @@ public class TokenService {
 
     public Long findTokenId(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
-        return jwtTokenProvider.findMember(token);
+        return jwtTokenProvider.findTokenSubject(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
