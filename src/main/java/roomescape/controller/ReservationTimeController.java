@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.ReservationTimeWebRequest;
-import roomescape.controller.response.ReservationTimeUserWebResponse;
+import roomescape.controller.response.BookableReservationTimeWebResponse;
 import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.request.ReservationTimeAppRequest;
+import roomescape.service.response.BookableReservationTimeAppResponse;
 import roomescape.service.response.ReservationTimeAppResponse;
-import roomescape.service.response.ReservationTimeAppResponseWithBookable;
 
 @RestController
 @RequestMapping("/times")
@@ -60,15 +60,15 @@ public class ReservationTimeController {
         return ResponseEntity.ok(reservationTimeWebResponses);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<ReservationTimeUserWebResponse>> getReservationTimesWithAvailability(
+    @GetMapping("/availability")
+    public ResponseEntity<List<BookableReservationTimeWebResponse>> getReservationTimesWithAvailability(
         @RequestParam LocalDate date, @RequestParam Long id) {
 
-        List<ReservationTimeAppResponseWithBookable> appResponses = reservationTimeService
+        List<BookableReservationTimeAppResponse> appResponses = reservationTimeService
             .findAllWithBookAvailability(date, id);
 
-        List<ReservationTimeUserWebResponse> webResponses = appResponses.stream()
-            .map(response -> new ReservationTimeUserWebResponse(
+        List<BookableReservationTimeWebResponse> webResponses = appResponses.stream()
+            .map(response -> new BookableReservationTimeWebResponse(
                 response.id(),
                 response.startAt(),
                 response.alreadyBooked()))
@@ -76,5 +76,4 @@ public class ReservationTimeController {
 
         return ResponseEntity.ok(webResponses);
     }
-    
 }
