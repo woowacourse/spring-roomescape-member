@@ -35,10 +35,6 @@ public class ReservationTime {
         }
     }
 
-    public static void main(String[] args) {
-        LocalTime.parse(null);
-    }
-
     public Long getId() {
         return id;
     }
