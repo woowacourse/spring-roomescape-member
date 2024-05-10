@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import roomescape.controller.request.AdminReservationRequest;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
@@ -32,8 +33,9 @@ class ReservationServiceTest {
     private final FakeThemeDao fakeThemeDao = new FakeThemeDao();
     private final FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
     private final FakeReservationDao fakeReservationDao = new FakeReservationDao();
+    private final FakeUserDao userDao = new FakeUserDao();
     private final ReservationService reservationService =
-            new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
+            new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao, userDao);
 
     @BeforeEach
     void setUp() {//todo 기본값 수정
@@ -62,15 +64,38 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(2);
     }
 
-    @DisplayName("예약 시간을 추가한다")
+    @DisplayName("사용자가 예약 시간을 추가한다")
     @Test
-    void should_add_reservation_times() {
+    void should_add_reservation_times_when_give_user_request() {
         ReservationRequest request = new ReservationRequest(now().plusDays(2), 1L, 1L);
         User user = new User(2L, "배키", "dmsgml@email.com", "2222");
         reservationService.addReservation(request, user);
 
         List<Reservation> allReservations = fakeReservationDao.getAllReservations();
         assertThat(allReservations).hasSize(1);
+    }
+
+    @DisplayName("관리자가 예약 시간을 추가한다")
+    @Test
+    void should_add_reservation_times_when_give_admin_request() {
+        userDao.addUser(new User(1L, "썬", "sun@email.com", "1111"));
+        AdminReservationRequest request =
+                new AdminReservationRequest(now().plusDays(2), 1L, 1L, 1L);
+        reservationService.addReservation(request);
+
+        List<Reservation> allReservations = fakeReservationDao.getAllReservations();
+        assertThat(allReservations).hasSize(1);
+    }
+
+    @DisplayName("관리자가 예약 시간을 추가할 때 사용자가 없으면 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_not_exist_user() {
+        AdminReservationRequest request =
+                new AdminReservationRequest(now().plusDays(2), 1L, 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] 아이디가 1인 사용자가 존재하지 않습니다.");
     }
 
     @DisplayName("예약 시간을 삭제한다")

@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.controller.request.AdminReservationRequest;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.response.ReservationResponse;
@@ -33,9 +34,9 @@ class ReservationControllerTest {
                 .jsonPath().getList(".", ReservationResponse.class);
     }
 
-    @DisplayName("예약을 추가할 수 있다.")
+    @DisplayName("사용자가 예약을 추가할 수 있다.")
     @Test
-    void should_insert_reservation() {
+    void should_insert_reservation_when_user_request() {
         UserLoginRequest loginRequest = new UserLoginRequest("1234", "sun@email.com");
 
         String cookie = RestAssured
@@ -57,6 +58,58 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", "/reservations/7");
+    }
+
+    @DisplayName("관리자가 예약을 추가할 수 있다.")
+    @Test
+    void should_insert_reservation_when_admin_request() {
+        UserLoginRequest loginRequest = new UserLoginRequest("1234", "sun@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
+        AdminReservationRequest request = new AdminReservationRequest(
+                LocalDate.of(2030, 8, 5), 10L, 6L, 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie(cookie)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/reservations/9");
+    }
+
+    @DisplayName("예약을 추가할 수 있다.")
+    @Test
+    void should_add_reservation_when_admin_request() {
+        UserLoginRequest loginRequest = new UserLoginRequest("1234", "sun@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
+        ReservationRequest request = new ReservationRequest(
+                LocalDate.of(2030, 8, 5), 6L, 10L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie(cookie)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/reservations/8");
     }
 
     @DisplayName("존재하는 예약이라면 예약을 삭제할 수 있다.")
