@@ -47,6 +47,14 @@ public class MemberDao {
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
+        if (email == null) {
+            throw new BadRequestException("이메일이 빈값일 수 없습니다.");
+        }
+
+        if (password == null) {
+            throw new BadRequestException("비밀번호가 빈값일 수 없습니다.");
+        }
+
         String selectSQL = """
                SELECT
                    m.ID as member_id,
@@ -66,6 +74,10 @@ public class MemberDao {
     }
 
     public Optional<Member> findById(Long id) {
+        if (id == null) {
+            throw new BadRequestException("사용자가 빈값일 수 없습니다.");
+        }
+
         String selectSQL = """
                SELECT
                    m.ID as member_id,
@@ -88,6 +100,7 @@ public class MemberDao {
         if (member == null) {
             throw new BadRequestException("사용자가 빈값일 수 없습니다.");
         }
+
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", member.getId())
                 .addValue("name", member.getName())

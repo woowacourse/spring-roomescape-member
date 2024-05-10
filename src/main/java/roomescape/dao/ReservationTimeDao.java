@@ -52,15 +52,16 @@ public class ReservationTimeDao {
         if (startAt == null) {
             throw new BadRequestException("시간이 빈값일 수 없습니다.");
         }
-        return jdbcTemplate.queryForObject(
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT * FROM reservation_time WHERE start_at = ?)",
-                Boolean.class, startAt);
+                Boolean.class, startAt));
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
         if (reservationTime == null) {
             throw new BadRequestException("시간이 빈값일 수 없습니다.");
         }
+
         SqlParameterSource params = new MapSqlParameterSource("start_at",
                 reservationTime.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(params)

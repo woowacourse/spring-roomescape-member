@@ -26,7 +26,7 @@ public class ReservationDao {
                     m.ID AS member_id,
                     m.NAME AS member_name,
                     m.EMAIL AS member_email,
-                    m.PASSWORD AS member_password, //TODO 패스워드 가져와도 되나??
+                    m.PASSWORD AS member_password,
                     m.ROLE AS member_role,
                     r.DATE AS reservation_date,
                     t.ID AS time_id,
@@ -156,6 +156,7 @@ public class ReservationDao {
         if (themeId == null) {
             throw new BadRequestException("테마가 빈값일 수 없습니다.");
         }
+
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)",
                 Boolean.class, date, timeId, themeId));
@@ -165,6 +166,7 @@ public class ReservationDao {
         if (reservation == null) {
             throw new BadRequestException("예약이 빈값일 수 없습니다.");
         }
+
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", reservation.getDate())
