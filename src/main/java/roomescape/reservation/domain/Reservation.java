@@ -2,6 +2,8 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 
 public class Reservation {
     private Long id;
@@ -23,7 +25,7 @@ public class Reservation {
 
     private void validate(LocalDate date, ReservationTime time) {
         if (date == null || time == null) {
-            throw new IllegalArgumentException("날짜 및 시간은 null을 허용하지 않습니다.");
+            throw new BusinessException(ErrorType.MISSING_REQUIRED_VALUE_ERROR);
         }
     }
 

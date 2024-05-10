@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 
 @DisplayName("테마 도메인 테스트")
 class ThemeTest {
@@ -45,11 +47,14 @@ class ThemeTest {
         //when & then
         assertAll(
                 () -> assertThatThrownBy(() -> new Theme(id, value, description, thumbnail))
-                        .isInstanceOf(IllegalArgumentException.class),
+                        .isInstanceOf(BusinessException.class)
+                        .hasMessage(ErrorType.MISSING_REQUIRED_VALUE_ERROR.getMessage()),
                 () -> assertThatThrownBy(() -> new Theme(id, name, value, thumbnail))
-                        .isInstanceOf(IllegalArgumentException.class),
+                        .isInstanceOf(BusinessException.class)
+                        .hasMessage(ErrorType.MISSING_REQUIRED_VALUE_ERROR.getMessage()),
                 () -> assertThatThrownBy(() -> new Theme(id, name, description, value))
-                        .isInstanceOf(IllegalArgumentException.class)
+                        .isInstanceOf(BusinessException.class)
+                        .hasMessage(ErrorType.MISSING_REQUIRED_VALUE_ERROR.getMessage())
         );
     }
 }
