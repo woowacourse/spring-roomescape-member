@@ -42,8 +42,8 @@ class ReservationRepositoryTest {
             new Theme(null, "Theme 2", "Description 2", "Thumbnail 2")
     );
     List<Member> sampleMembers = List.of(
-            new Member(null, "a@b.c", "pw", "user", Role.USER),
-            new Member(null, "admin@b.c", "pw", "admin", Role.ADMIN)
+            new Member(null, "User", "a@b.c", "pw", Role.USER),
+            new Member(null, "Admin", "admin@b.c", "pw", Role.ADMIN)
     );
 
     @Autowired

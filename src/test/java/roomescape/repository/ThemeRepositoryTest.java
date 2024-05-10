@@ -94,7 +94,7 @@ class ThemeRepositoryTest {
     void findPopularThemes() {
         // given
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
-        final Member member = memberRepository.save(new Member(null, "a@b.c", "pw", "User", Role.USER));
+        final Member member = memberRepository.save(new Member(null, "User", "a@b.c", "pw", Role.USER));
         final List<Theme> themes = sampleThemes.stream()
                 .map(themeRepository::save)
                 .toList();

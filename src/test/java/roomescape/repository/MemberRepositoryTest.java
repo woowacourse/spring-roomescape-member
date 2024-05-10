@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class MemberRepositoryTest {
 
     final List<Member> sampleMembers = List.of(
-            new Member(null, "a@b.c", "pw", "User", Role.USER),
-            new Member(null, "admin@b.c", "pw", "Admin", Role.ADMIN)
+            new Member(null, "User", "a@b.c", "pw", Role.USER),
+            new Member(null, "Admin", "admin@b.c", "pw", Role.ADMIN)
     );
 
     @Autowired

@@ -118,7 +118,7 @@ class ThemeServiceTest {
     void exceptionOnDeletingThemeAlreadyReserved() {
         final ThemeResponse themeResponse = themeService.addTheme(sampleThemes.get(0));
         final Long themeId = themeResponse.id();
-        final Member member = new Member(null, "a@b.c", "pw", "User", Role.USER);
+        final Member member = new Member(null, "User", "a@b.c", "pw", Role.USER);
         final ReservationTime time = new ReservationTime(null, "08:00");
         final Reservation reservation = new Reservation(
                 null,
@@ -146,7 +146,7 @@ class ThemeServiceTest {
     void getPopularThemes(final int days, final int limit) {
         // given
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
-        final Member member = new Member(null, "a@b.c", "pw", "User", Role.USER);
+        final Member member = new Member(null, "User", "a@b.c", "pw", Role.USER);
         final List<ThemeResponse> themes = sampleThemes.stream()
                 .map(themeService::addTheme)
                 .toList();
