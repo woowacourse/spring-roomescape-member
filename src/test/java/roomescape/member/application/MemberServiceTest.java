@@ -3,9 +3,7 @@ package roomescape.member.application;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.jdbc.Sql;
+import roomescape.common.ServiceTest;
 import roomescape.global.exception.NotFoundException;
 import roomescape.member.domain.Member;
 
@@ -13,12 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.TestFixture.USER_MIA;
 
-@Sql("/test-schema.sql")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MemberServiceTest {
-    @LocalServerPort
-    private int port;
-
+class MemberServiceTest extends ServiceTest {
     @Autowired
     private MemberService memberService;
 

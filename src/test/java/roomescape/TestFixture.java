@@ -59,10 +59,12 @@ public class TestFixture {
     }
 
     public static Reservation TOMMY_RESERVATION() {
-        return new Reservation(
-                USER_TOMMY(), TOMMY_RESERVATION_DATE,
-                new ReservationTime(TOMMY_RESERVATION_TIME), WOOTECO_THEME()
-        );
+        return new Reservation(USER_TOMMY(), TOMMY_RESERVATION_DATE, new ReservationTime(TOMMY_RESERVATION_TIME),
+                WOOTECO_THEME());
+    }
+
+    public static Reservation TOMMY_RESERVATION(ReservationTime time, Theme theme, Member member) {
+        return new Reservation(member, TOMMY_RESERVATION_DATE, time, theme);
     }
 
     public static Theme WOOTECO_THEME() {
