@@ -24,7 +24,7 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.update(
-                "INSERT INTO member (name, email, password) VALUES ('user1', 'user1@wooteco.com', 'user1')");
+                "INSERT INTO member (name, email, password, role) VALUES ('user1', 'user1@wooteco.com', 'user1', 'USER')");
     }
 
     @Test

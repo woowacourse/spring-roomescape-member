@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.domain.member.Role.USER;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,6 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.exception.InvalidValueException;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.MemberReservationCreateRequest;
@@ -40,7 +42,7 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.update(
-                "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+                "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '1번 방탈출', '썸네일1')");
     }
@@ -117,7 +119,7 @@ class ReservationServiceTest {
                     1L,
                     1L
             );
-            Member member = new Member(1L, "사용자1", "user1@wooteco.com", "user1");
+            Member member = new Member(1L, "사용자1", "user1@wooteco.com", "user1", USER);
 
             ReservationResponse result = reservationService.add(request, member);
 

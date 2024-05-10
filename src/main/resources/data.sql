@@ -1,13 +1,15 @@
-INSERT INTO member (name, email, password)
-VALUES ('사용자1', 'user1@wooteco.com', 'user1');
-INSERT INTO member (name, email, password)
-VALUES ('사용자2', 'user2@wooteco.com', 'user2');
-INSERT INTO member (name, email, password)
-VALUES ('사용자3', 'user3@wooteco.com', 'user3');
-INSERT INTO member (name, email, password)
-VALUES ('사용자4', 'user4@wooteco.com', 'user4');
-INSERT INTO member (name, email, password)
-VALUES ('사용자5', 'user5@wooteco.com', 'user5');
+INSERT INTO member (name, email, password, role)
+VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER');
+INSERT INTO member (name, email, password, role)
+VALUES ('사용자2', 'user2@wooteco.com', 'user2', 'USER');
+INSERT INTO member (name, email, password, role)
+VALUES ('사용자3', 'user3@wooteco.com', 'user3', 'USER');
+INSERT INTO member (name, email, password, role)
+VALUES ('사용자4', 'user4@wooteco.com', 'user4', 'USER');
+INSERT INTO member (name, email, password, role)
+VALUES ('사용자5', 'user5@wooteco.com', 'user5', 'USER');
+INSERT INTO member (name, email, password, role)
+VALUES ('관리자1', 'admin1@wooteco.com', 'admin1', 'ADMIN');
 
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00');

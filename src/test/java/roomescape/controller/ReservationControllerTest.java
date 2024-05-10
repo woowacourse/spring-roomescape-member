@@ -50,12 +50,12 @@ class ReservationControllerTest {
         String date = LocalDate.now().plusDays(1).toString();
 
         jdbcTemplate.update(
-                "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+                "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '방탈출 1번', '썸네일1')");
 
         jdbcTemplate.update(
-                "INSERT INTO member (name, email, password) VALUES ('사용자2', 'user2@wooteco.com', 'user2')");
+                "INSERT INTO member (name, email, password, role) VALUES ('사용자2', 'user2@wooteco.com', 'user2', 'USER')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:22')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출2', '방탈출 2번', '썸네일2')");
 
@@ -134,7 +134,7 @@ class ReservationControllerTest {
         @BeforeEach
         void setUp() {
             jdbcTemplate.update(
-                    "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+                    "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '방탈출 1번', '썸네일1')");
         }

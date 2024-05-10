@@ -31,9 +31,9 @@ class MemberControllerTest {
     @DisplayName("모든 회원의 ID와 이름을 응답한다.")
     void readMembers() {
         jdbcTemplate.update(
-                "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+                "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
         jdbcTemplate.update(
-                "INSERT INTO member (name, email, password) VALUES ('사용자2', 'user2@wooteco.com', 'user2')");
+                "INSERT INTO member (name, email, password, role) VALUES ('사용자2', 'user2@wooteco.com', 'user2', 'USER')");
 
         RestAssured.given().log().all()
                 .when().get("/members")

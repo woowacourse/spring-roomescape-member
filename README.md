@@ -495,7 +495,7 @@ id : 1
 - [x] 존재하지 않는 멤버 아이디로 예약 생성시 예외 발생
 
 ## 6단계 요구사항
-- [ ] Member에 Role 추가
+- [x] Member에 Role 추가
 - [ ] 접근 권한 제어
     - [ ] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근 가능
     - [ ] `HandlerInterceptor`를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답

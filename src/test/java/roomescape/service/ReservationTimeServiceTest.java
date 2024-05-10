@@ -111,7 +111,7 @@ class ReservationTimeServiceTest {
         @DisplayName("특정 시간에 대한 예약이 존재할 때, 해당 시간을 삭제하면 예외가 발생한다.")
         void deleteWhenReservationExist() {
             jdbcTemplate.update(
-                    "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+                    "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '1번 방탈출', '썸네일1')");
             jdbcTemplate.update(

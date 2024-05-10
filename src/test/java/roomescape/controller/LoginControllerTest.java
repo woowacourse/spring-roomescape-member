@@ -35,7 +35,7 @@ class LoginControllerTest {
     @DisplayName("로그인 시 토큰을 발행하고 발행된 토큰을 확인한다.")
     void login() {
         jdbcTemplate.update(
-                "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+                "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
 
         String accessToken = RestAssured.given()
                 .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
