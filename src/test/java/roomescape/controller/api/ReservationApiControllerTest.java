@@ -6,8 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.service.dto.request.LoginRequest;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -26,10 +28,26 @@ public class ReservationApiControllerTest {
     @Test
     @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
     void moveToReservationPage_Success() {
+        String token = RestAssured.given().log().all()
+                .body(new LoginRequest("admin@naver.com", "1234"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
+
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
+    void moveToReservationPage_Failure() {
+        RestAssured.given().log().all()
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(401);
     }
 
     @Test
