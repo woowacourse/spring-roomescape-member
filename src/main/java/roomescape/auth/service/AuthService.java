@@ -17,12 +17,6 @@ public class AuthService {
         this.memberRepository = memberRepository;
     }
 
-    public Member readByToken(String token) {
-        String email = jwtTokenProvider.getEmail(token);
-
-        return memberRepository.read(email);
-    }
-
     public String createToken(MemberRequest memberRequest) {
         Member member = memberRepository.read(memberRequest.email());
 
@@ -31,7 +25,13 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public void validatePassword(String actualPassword, String expectedPassword) {
+    public Member readByToken(String token) {
+        String email = jwtTokenProvider.getEmail(token);
+
+        return memberRepository.read(email);
+    }
+
+    private void validatePassword(String actualPassword, String expectedPassword) {
         if (!actualPassword.equals(expectedPassword)) {
             throw new InvalidPasswordException("패스워드가 올바르지 않습니다.");
         }
