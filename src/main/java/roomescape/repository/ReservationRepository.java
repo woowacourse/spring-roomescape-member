@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 import java.sql.Date;
@@ -25,7 +26,8 @@ public class ReservationRepository {
             new Member(resultSet.getLong("member_id"),
                     resultSet.getString("member_name"),
                     resultSet.getString("member_email"),
-                    resultSet.getString("member_password")),
+                    resultSet.getString("member_password"),
+                    Role.valueOf(resultSet.getString("member_role"))),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(resultSet.getLong("reservation_time_id"),
                     resultSet.getTime("time_value").toLocalTime()),
@@ -67,6 +69,7 @@ public class ReservationRepository {
                 "    m.name AS member_name, " +
                 "    m.email AS member_email, " +
                 "    m.password AS member_password, " +
+                "    m.role AS member_role, " +
                 "    r.id AS reservation_id, " +
                 "    r.member_id, " +
                 "    r.date, " +
@@ -96,6 +99,7 @@ public class ReservationRepository {
                 "    m.name AS member_name, " +
                 "    m.email AS member_email, " +
                 "    m.password AS member_password, " +
+                "    m.role AS member_role, " +
                 "    r.id AS reservation_id, " +
                 "    r.member_id, " +
                 "    r.date, " +

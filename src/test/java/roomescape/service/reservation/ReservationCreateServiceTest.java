@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -37,7 +38,7 @@ class ReservationCreateServiceTest {
     void checkDuplicateReservationTime_Success() {
         ReservationSaveRequest request = new ReservationSaveRequest(
                 LocalDate.now().plusDays(1L), 2L, 2L);
-        Member member = new Member(1L, "capy", "test@naver.com", "1234");
+        Member member = new Member(1L, "capy", "test@naver.com", "1234", Role.USER);
 
         assertThatCode(() -> reservationCreateService.createReservationByUser(request, member))
                 .doesNotThrowAnyException();
@@ -48,7 +49,7 @@ class ReservationCreateServiceTest {
     void checkDuplicateReservationTime_Failure() {
         ReservationSaveRequest request = new ReservationSaveRequest(
                 LocalDate.now().plusDays(1L), 1L, 1L);
-        Member member = new Member("capy", "abc@gmail.com", "1234");
+        Member member = new Member("capy", "abc@gmail.com", "1234", Role.USER);
 
         assertThatThrownBy(() -> reservationCreateService.createReservationByUser(request, member))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -60,7 +61,7 @@ class ReservationCreateServiceTest {
     void checkReservationDateTimeIsFuture_Failure() {
         ReservationSaveRequest request = new ReservationSaveRequest(
                 LocalDate.now().minusDays(1L), 2L, 2L);
-        Member member = new Member("capy", "abc@gmail.com", "1234");
+        Member member = new Member("capy", "abc@gmail.com", "1234", Role.USER);
 
         assertThatThrownBy(() -> reservationCreateService.createReservationByUser(request, member))
                 .isInstanceOf(IllegalArgumentException.class)

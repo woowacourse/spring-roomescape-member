@@ -18,7 +18,7 @@ INSERT INTO reservation_time (start_at)
 VALUES ('11:00');
 
 INSERT INTO member
-VALUES (1, 'capy', 'test@naver.com', '1234');
+VALUES (1, 'capy', 'test@naver.com', '1234', 'USER');
 
 INSERT INTO reservation (id, member_id, date, reservation_time_id, theme_Id)
 VALUES (1, 1, CURRENT_DATE + INTERVAL '1' DAY, 1, 1);

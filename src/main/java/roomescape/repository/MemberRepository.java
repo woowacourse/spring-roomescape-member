@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,8 @@ public class MemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            Role.valueOf(resultSet.getString("role"))
     );
 
 
@@ -26,7 +28,7 @@ public class MemberRepository {
     }
 
     public Optional<Member> findById(long id) {
-        String sql = "SELECT id, name, email, password " +
+        String sql = "SELECT id, name, email, password, role " +
                 "FROM member " +
                 "WHERE id = ?";
         List<Member> members = jdbcTemplate.query(sql, memberRowMapper, id);
@@ -34,7 +36,7 @@ public class MemberRepository {
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id, name, email, password " +
+        String sql = "SELECT id, name, email, password, role " +
                 "FROM member " +
                 "WHERE email = ? " +
                 "AND password = ?";
@@ -43,7 +45,7 @@ public class MemberRepository {
     }
 
     public List<Member> findAll() {
-        String sql = "SELECT id, name, email, password " +
+        String sql = "SELECT id, name, email, password, role " +
                 "FROM member ";
         return jdbcTemplate.query(sql, memberRowMapper);
     }
