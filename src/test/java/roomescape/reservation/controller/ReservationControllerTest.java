@@ -69,6 +69,26 @@ class ReservationControllerTest {
                 .body("id", is(17));
     }
 
+    @DisplayName("사용자 아이디를 포함하여 예약 정보를 저장한다.")
+    @Test
+    void saveReservationForAdminTest() {
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                LocalDate.now().plusDays(1),
+                3L,
+                1L,
+                1L
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", createAccessToken())
+                .body(saveReservationRequest)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(17));
+    }
+
     @DisplayName("예약 정보를 삭제한다.")
     @Test
     void deleteReservationTest() {

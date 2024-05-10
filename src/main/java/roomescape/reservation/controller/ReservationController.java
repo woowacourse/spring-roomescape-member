@@ -46,6 +46,14 @@ public class ReservationController {
                 .body(ReservationResponse.from(savedReservation));
     }
 
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody final SaveReservationRequest request) {
+        final Reservation savedReservation = reservationService.saveReservation(request);
+
+        return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId()))
+                .body(ReservationResponse.from(savedReservation));
+    }
+
     @DeleteMapping("/reservations/{reservation-id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("reservation-id") final Long reservationId) {
         reservationService.deleteReservation(reservationId);
