@@ -1,0 +1,49 @@
+package roomescape.member.repositoy;
+
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.member.model.Member;
+
+public class JdbcMemberRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+    private static final RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> new Member(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("email"),
+            resultSet.getString("password")
+    );;
+
+    public JdbcMemberRepository(JdbcTemplate jdbcTemplate, DataSource source) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(source)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    public Member save(Member member) {
+        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", member.getName())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword()); // TODO: 암호화
+
+        Long id = simpleJdbcInsert.executeAndReturnKey(mapSqlParameterSource).longValue();
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+    }
+
+    public Optional<Member> findByEmail(String email) {
+        String sql = "SELECT * FROM member WHERE email = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email));
+        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
+    }
+}
