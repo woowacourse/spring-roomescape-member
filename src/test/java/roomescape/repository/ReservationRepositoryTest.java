@@ -44,7 +44,7 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
         Theme theme = new Theme("이름", "설명", "썸네일");
         Theme savedTheme = themeRepository.save(theme);
 
-        Member member = new Member("생강", "email@email.com", "1234");
+        Member member = Member.createUser("생강", "email@email.com", "1234");
         Member savedMember = memberRepository.save(member);
 
         Reservation reservation = new Reservation(savedMember, LocalDate.parse("2025-01-01"), savedReservationTime, savedTheme);

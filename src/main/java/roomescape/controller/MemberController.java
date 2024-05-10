@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.dto.MemberResponse;
 import roomescape.service.MemberService;
-import roomescape.service.dto.MemberSaveRequest;
+import roomescape.service.dto.MemberJoinRequest;
 
 @RestController
 @RequestMapping("/members")
@@ -26,8 +26,8 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberResponse> save(@RequestBody @Valid MemberSaveRequest memberRequest) {
-        MemberResponse memberResponse = memberService.save(memberRequest);
+    public ResponseEntity<MemberResponse> save(@RequestBody @Valid MemberJoinRequest memberRequest) {
+        MemberResponse memberResponse = memberService.join(memberRequest);
 
         return ResponseEntity.created(URI.create("/members/" + memberResponse.id()))
                 .body(memberResponse);
@@ -43,7 +43,7 @@ public class MemberController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
-        memberService.delete(id);
+        memberService.withdraw(id);
         return ResponseEntity.noContent().build();
     }
 }

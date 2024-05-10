@@ -41,7 +41,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
     void saveReservation() {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
+        Member member = memberRepository.save(Member.createUser("고구마", "email@email.com", "1234"));
 
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"),
                 time.getId(), theme.getId());
@@ -62,7 +62,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 예약 시간으로 예약 저장")
     @Test
     void timeForSaveReservationNotFound() {
-        Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
+        Member member = memberRepository.save(Member.createUser("고구마", "email@email.com", "1234"));
 
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"), 100L, 1L);
         assertThatThrownBy(() -> {

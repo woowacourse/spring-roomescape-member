@@ -6,7 +6,7 @@ import roomescape.service.dto.MemberResponse;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.exception.RoomEscapeBusinessException;
-import roomescape.service.dto.MemberSaveRequest;
+import roomescape.service.dto.MemberJoinRequest;
 
 @Service
 public class MemberService {
@@ -17,8 +17,8 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public MemberResponse save(MemberSaveRequest memberRequest) {
-        Member member = memberRequest.toMember();
+    public MemberResponse join(MemberJoinRequest memberRequest) {
+        Member member = memberRequest.toUserMember();
         if (memberRepository.existByEmail(member.getEmail())) {
             throw new RoomEscapeBusinessException("중복된 이메일입니다.");
         }
@@ -34,7 +34,7 @@ public class MemberService {
                  .toList();
     }
 
-    public void delete(Long id) {
+    public void withdraw(Long id) {
         if (memberRepository.findById(id).isEmpty()) {
             throw new RoomEscapeBusinessException("회원이 존재하지 않습니다.");
         }

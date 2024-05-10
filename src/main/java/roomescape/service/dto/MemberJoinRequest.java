@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import roomescape.domain.Member;
 
-public record MemberSaveRequest(
+public record MemberJoinRequest(
         @NotBlank
         @Email
         String email,
@@ -18,7 +18,7 @@ public record MemberSaveRequest(
         @Size(max = 15)
         String name
 ) {
-        public Member toMember() {
-                return new Member(name, email, password);
+        public Member toUserMember() {
+                return Member.createUser(name, email, password);
         }
 }
