@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -173,5 +174,26 @@ class MemberControllerTest {
                         .cookie(cookie))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("로그아웃을 시도하면 쿠키를 null로 바꾸고 200 OK를 반환한다.")
+    void logout() throws Exception {
+        //given
+        Cookie cookie = new Cookie("token", "1234");
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        String name = "daon";
+        String email = "test@test.com";
+        Member member = MemberFixtures.createUserMember(name, email);
+        given(authService.findPayload(anyString())).willReturn(email);
+        given(memberService.findAuthInfo(anyString())).willReturn(member);
+
+        //when //then
+        mockMvc.perform(post("/logout")
+                        .cookie(cookie))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().string("token", nullValue()));
     }
 }
