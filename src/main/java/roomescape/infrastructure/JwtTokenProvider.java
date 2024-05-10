@@ -19,8 +19,6 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-
-
     public String generateToken(final String userId) {
         final Claims claims = Jwts.claims().setSubject(userId);
         final Date now = new Date();
@@ -44,7 +42,6 @@ public class JwtTokenProvider {
 
     public boolean validateToken(final String token) {
         try {
-            //TODO static으로 어케 비비지?
             final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().before(new Date());

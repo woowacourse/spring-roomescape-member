@@ -30,7 +30,6 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
             throw new AuthorizationException("어드민만 올수 있어");
         }
         return true;
-//        return JwtTokenProvider.validateToken(token);
     }
 
     private String extractTokenFromCookie(final Cookie[] cookies) {

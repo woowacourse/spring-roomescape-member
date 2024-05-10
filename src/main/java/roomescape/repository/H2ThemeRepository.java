@@ -29,7 +29,7 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        final String sql = "SELECT * FROM THEME"; //TODO * 없애기
+        final String sql = "SELECT * FROM THEME";
 
         return jdbcTemplate.query(sql, this::mapRowTheme);
     }

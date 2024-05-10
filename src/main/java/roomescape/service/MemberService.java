@@ -6,6 +6,7 @@ import roomescape.domain.Member;
 import roomescape.domain.exception.InvalidRequestException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;
+import roomescape.service.exception.InvalidTokenException;
 
 import java.util.List;
 
@@ -14,7 +15,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
 
     public MemberService(final MemberRepository memberRepository, final JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
@@ -37,6 +37,9 @@ public class MemberService {
     }
 
     public Member findMemberByToken(final String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new InvalidTokenException("유효하지 않는 토큰입니다.");
+        }
         final String payload = jwtTokenProvider.getPayload(token);
         return findMember(payload);
     }
