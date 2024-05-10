@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.exception.BadRequestException;
 
 @Repository
@@ -22,7 +23,8 @@ public class MemberDao {
             rs.getLong("member_id"),
             rs.getString("member_name"),
             rs.getString("member_email"),
-            rs.getString("member_password"));
+            rs.getString("member_password"),
+            Role.findBy(rs.getString("member_role")));
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,7 +39,8 @@ public class MemberDao {
                 m.id AS member_id,
                 m.name AS member_name,
                 m.email AS member_email,
-                m.password AS member_password
+                m.password AS member_password,
+                m.role AS member_role
                 FROM member AS m;
                 """;
         return jdbcTemplate.query(selectSQL, memberRowMapper);
@@ -49,7 +52,8 @@ public class MemberDao {
                    m.ID as member_id,
                    m.NAME as member_name,
                    m.EMAIL as member_email,
-                   m.PASSWORD as member_password
+                   m.PASSWORD as member_password,
+                   m.role AS member_role
                FROM member AS m
                WHERE m.EMAIL = ? and m.PASSWORD = ?
                """;
@@ -67,7 +71,8 @@ public class MemberDao {
                    m.ID as member_id,
                    m.NAME as member_name,
                    m.EMAIL as member_email,
-                   m.PASSWORD as member_password
+                   m.PASSWORD as member_password,
+                   m.role AS member_role
                FROM member AS m
                WHERE m.ID = ?
                """;
@@ -87,7 +92,8 @@ public class MemberDao {
                 .addValue("id", member.getId())
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword());
+                .addValue("password", member.getPassword())
+                .addValue("role", member.getRole());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return member.setId(id);
     }

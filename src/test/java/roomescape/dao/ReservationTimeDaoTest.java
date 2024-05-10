@@ -2,7 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.DATE_AFTER_1DAY;
 import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
@@ -112,7 +112,7 @@ class ReservationTimeDaoTest {
         Member member = memberDao.save(MEMBER_BROWN);
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
-        reservationDao.save(new Reservation(member, DATE, reservationTime, roomTheme));
+        reservationDao.save(new Reservation(member, DATE_AFTER_1DAY, reservationTime, roomTheme));
         // when
         reservationTimeDao.deleteById(reservationTime.getId());
         // then

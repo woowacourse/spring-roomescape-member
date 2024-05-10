@@ -1,6 +1,7 @@
 package roomescape.controller;
 
-import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.ADMIN_ZEZE;
+import static roomescape.TestFixture.DATE_AFTER_1DAY;
 import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -28,6 +30,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.request.ReservationCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -77,10 +80,21 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         // given
-        Map reservationRequest = createReservationRequest(MEMBER_BROWN,
-                VALID_STRING_DATE);
+        Member member = memberDao.save(ADMIN_ZEZE);
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(member.getEmail(), member.getPassword()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        Map reservationRequest = createReservationRequest(MEMBER_BROWN, VALID_STRING_DATE);
+
         // then
         RestAssured.given().log().all()
+                .header("cookie", accessToken)
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
                 .when().post("/reservations")
@@ -136,9 +150,22 @@ class ReservationControllerTest {
     @DisplayName("참조키가 존재하지 않음으로 인한 예약 추가 실패 테스트")
     @Test
     void noPrimaryKeyReservation() {
+        // given
+        Member member = memberDao.save(ADMIN_ZEZE);
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest(member.getEmail(), member.getPassword()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        // when & then
         RestAssured.given().log().all()
+                .header("cookie", accessToken)
                 .contentType(ContentType.JSON)
-                .body(new ReservationCreateRequest(1L, DATE, 1L, 1L))
+                .body(new ReservationCreateRequest(1L, DATE_AFTER_1DAY, 1L, 1L))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
     }
@@ -152,7 +179,7 @@ class ReservationControllerTest {
                 new ReservationTime(TIME));
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
         Reservation savedReservation = reservationDao.save(
-                new Reservation(member, DATE, savedReservationTime, savedRoomTheme));
+                new Reservation(member, DATE_AFTER_1DAY, savedReservationTime, savedRoomTheme));
         // when & then
         Long id = savedReservation.getId();
         RestAssured.given().log().all()

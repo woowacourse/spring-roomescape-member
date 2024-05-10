@@ -2,10 +2,12 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.ADMIN_ZEZE;
+import static roomescape.TestFixture.DATE_AFTER_1DAY;
 import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
+import static roomescape.TestFixture.ROOM_THEME2;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +58,34 @@ class ReservationDaoTest {
         assertThat(reservationDao.findAll()).isEmpty();
     }
 
+    @DisplayName("이름에 대한 검색 조건 결과를 반환한다.")
+    @Test
+    void findBy() {
+        // given
+        Member brown = memberDao.save(MEMBER_BROWN);
+        Member zeze = memberDao.save(ADMIN_ZEZE);
+
+        RoomTheme roomTheme1 = roomThemeDao.save(ROOM_THEME1);
+        RoomTheme roomTheme2 = roomThemeDao.save(ROOM_THEME2);
+
+        ReservationTime reservationTime10AM = reservationTimeDao.save(RESERVATION_TIME_10AM);
+
+        Reservation brownReservation = reservationDao.save(
+                new Reservation(brown, DATE_AFTER_1DAY, reservationTime10AM, roomTheme1));
+        Reservation zezeReservation = reservationDao.save(
+                new Reservation(zeze, DATE_AFTER_1DAY, reservationTime10AM, roomTheme2));
+
+        // when
+        List<Reservation> reservations = reservationDao.findBy(null, brown.getId(), null, null);
+
+        // then
+        Reservation reservation = reservations.get(0);
+        assertAll(
+                () -> assertThat(reservations.size()).isEqualTo(1),
+                () -> assertThat(reservation.getId()).isEqualTo(brownReservation.getId())
+        );
+    }
+
     @DisplayName("날짜와 시간이 같은 예약이 존재하는지 여부를 반환한다.")
     @Test
     void duplicatedReservationTest() {
@@ -64,11 +94,11 @@ class ReservationDaoTest {
         ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
         boolean existsFalse
-                = reservationDao.existsByDateTime(DATE, savedReservationTime.getId(), savedRoomTheme.getId());
-        reservationDao.save(new Reservation(member, DATE, savedReservationTime, savedRoomTheme));
+                = reservationDao.existsByDateTime(DATE_AFTER_1DAY, savedReservationTime.getId(), savedRoomTheme.getId());
+        reservationDao.save(new Reservation(member, DATE_AFTER_1DAY, savedReservationTime, savedRoomTheme));
         // when
         boolean existsTrue
-                = reservationDao.existsByDateTime(DATE, savedReservationTime.getId(), savedRoomTheme.getId());
+                = reservationDao.existsByDateTime(DATE_AFTER_1DAY, savedReservationTime.getId(), savedRoomTheme.getId());
         // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
@@ -84,7 +114,7 @@ class ReservationDaoTest {
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
         // when
-        reservationDao.save(new Reservation(member, DATE, reservationTime, roomTheme));
+        reservationDao.save(new Reservation(member, DATE_AFTER_1DAY, reservationTime, roomTheme));
         // then
         assertThat(reservationDao.findAll()).hasSize(1);
     }
@@ -97,7 +127,7 @@ class ReservationDaoTest {
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
         Reservation savedReservation = reservationDao.save(
-                new Reservation(member, DATE, reservationTime, roomTheme));
+                new Reservation(member, DATE_AFTER_1DAY, reservationTime, roomTheme));
         // when
         reservationDao.deleteById(savedReservation.getId());
         // then
@@ -112,7 +142,7 @@ class ReservationDaoTest {
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
         Reservation savedReservation = reservationDao.save(
-                new Reservation(member, DATE, reservationTime, roomTheme));
+                new Reservation(member, DATE_AFTER_1DAY, reservationTime, roomTheme));
         // when
         boolean deleted = reservationDao.deleteById(savedReservation.getId());
         // then

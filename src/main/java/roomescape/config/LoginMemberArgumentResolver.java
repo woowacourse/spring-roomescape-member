@@ -30,6 +30,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+
+        if (request.getCookies() == null) {
+            throw new BadRequestException("쿠키가 존재하지 않습니다."); //TODO 로그인페이지에서 쿠키 존재하지 않는다는 에러 나오지 않게
+        }
+
         String token = extractTokenFromCookie(request.getCookies());
 
         Member member = memberService.findLoginMember(token);

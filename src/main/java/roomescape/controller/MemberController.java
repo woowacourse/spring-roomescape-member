@@ -17,7 +17,7 @@ import roomescape.service.dto.response.MemberResponse;
 @RestController
 public class MemberController {
 
-    private static final String TOKEN_NAME = "token";
+    public static final String TOKEN_NAME = "token";
 
     private final MemberService memberService;
 

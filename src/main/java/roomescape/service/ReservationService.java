@@ -45,6 +45,12 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationDao.findBy(themeId, memberId, dateFrom, dateTo)
+                .stream().map(ReservationResponse::from)
+                .toList();
+    }
+
     public ReservationResponse save(ReservationCreateRequest reservationCreateRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationCreateRequest.timeId())
                 .orElseThrow(() -> new NotFoundException("예약시간을 찾을 수 없습니다."));

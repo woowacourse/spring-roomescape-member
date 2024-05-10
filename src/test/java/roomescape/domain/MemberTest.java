@@ -14,7 +14,7 @@ class MemberTest {
     @ParameterizedTest
     @NullAndEmptySource
     void nullEmptyName(String value) {
-        Assertions.assertThatThrownBy(() -> new Member(value, "zeze@gmail.com", "zeze"))
+        Assertions.assertThatThrownBy(() -> new Member(value, "zeze@gmail.com", "zeze", Role.ADMIN))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("이름에 빈값을 입력할 수 없습니다.");
     }
@@ -23,7 +23,7 @@ class MemberTest {
     @ParameterizedTest
     @NullSource
     void nullEmail(String value) {
-        Assertions.assertThatThrownBy(() -> new Member("제제", value, "zeze"))
+        Assertions.assertThatThrownBy(() -> new Member("제제", value, "zeze", Role.ADMIN))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("이메일에 빈값을 입력할 수 없습니다.");
     }
@@ -32,7 +32,7 @@ class MemberTest {
     @ParameterizedTest
     @ValueSource(strings = {"zeze", "zeze@", "@gmail.com"})
     void invalidEmailPattern(String value) {
-        Assertions.assertThatThrownBy(() -> new Member("제제", value, "zeze"))
+        Assertions.assertThatThrownBy(() -> new Member("제제", value, "zeze", Role.ADMIN))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("이메일 형식이 올바르지 않습니다.");
     }
@@ -41,7 +41,7 @@ class MemberTest {
     @ParameterizedTest
     @NullAndEmptySource
     void nullEmptyPassword(String value) {
-        Assertions.assertThatThrownBy(() -> new Member("제제", "zeze@gmail.com" , value))
+        Assertions.assertThatThrownBy(() -> new Member("제제", "zeze@gmail.com" , value, Role.ADMIN))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("비밀번호에 빈값을 입력할 수 없습니다.");
     }

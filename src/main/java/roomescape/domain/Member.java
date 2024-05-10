@@ -10,19 +10,21 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final Role role;
 
-    public Member(String name, String email, String password) {
-        this(null, name, email, password);
+    public Member(String name, String email, String password, Role role) {
+        this(null, name, email, password, role);
     }
 
-    public Member(Long id, String name, String email, String password) {
+    public Member(Long id, String name, String email, String password, Role role) {
         validateName(name);
         validateEmail(email);
-        validatePassword(password);
+        validatePassword(password); //TODO 역할 검증로직 추가
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     private void validateName(String name) {
@@ -48,7 +50,7 @@ public class Member {
     }
 
     public Member setId(Long id) {
-        return new Member(id, name, email, password);
+        return new Member(id, name, email, password, role);
     }
 
     public Long getId() {
@@ -65,5 +67,9 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }
