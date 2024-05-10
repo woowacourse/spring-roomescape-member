@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,6 +24,12 @@ public class JdbcMemberDao implements MemberDao {
 
     public JdbcMemberDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    @Override
+    public List<Member> readAll() {
+        String sql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 
     @Override

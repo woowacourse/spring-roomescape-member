@@ -477,7 +477,7 @@ id : 1
       }
       ```
 - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
-    - [ ] 유저 정보를 모두 조회할 수 있는 API 생성 
+    - [x] 유저 정보를 모두 조회할 수 있는 API 생성 
     - Request
       ```markdown
       POST /admin/reservations HTTP/1.1

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,7 @@ class LoginControllerTest {
 
     @LocalServerPort
     int port;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -30,6 +32,7 @@ class LoginControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 시 토큰을 발행하고 발행된 토큰을 확인한다.")
     void login() {
         jdbcTemplate.update(
                 "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
