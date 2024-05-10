@@ -40,7 +40,6 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public List<CompletedReservation> findAll() {
-        System.out.println(reservationList);
         List<Reservation> reservationValues = reservations.values().stream().toList();
         return reservationValues.stream()
                 .map(reservation -> new CompletedReservation(reservation.getId(), reservation.getDate(),
@@ -50,9 +49,25 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<CompletedReservation> findBy(Long themeId, Long memberId, Date dateFrom, Date dateTo) {
-        return null;
+    public List<CompletedReservation> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservations.values().stream()
+                .map(reservation -> new CompletedReservation(
+                        reservation.getId(),
+                        reservation.getDate(),
+                        reservation.getTime(),
+                        reservation.getTheme(),
+                        memberRepository.findById(reservationList.get(reservation.getId()))
+                ))
+                .filter(reservation ->
+                        (themeId == null || reservation.theme().getId() == themeId) &&
+                                (memberId == null || reservation.member().getId() == memberId) &&
+                                (dateFrom == null || reservation.date().isAfter(dateFrom)) &&
+                                (dateTo == null || reservation.date().isBefore(dateTo))
+                )
+                .toList();
     }
+
+
 
     @Override
     public boolean deleteById(final long reservationId) {

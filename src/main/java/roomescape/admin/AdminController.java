@@ -2,6 +2,8 @@ package roomescape.admin;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.member.dto.LoginMember;
 import roomescape.reservation.dto.ReservationAdminRequest;
 import roomescape.reservation.dto.ReservationRequest;
@@ -36,6 +39,14 @@ public class AdminController {
     public String readReservation(Model model) {
         model.addAttribute("reservations", reservationService.findAllReservations());
         return "admin/reservation-new";
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> reservationByFilter(@RequestParam(value = "themeId", required = false) Long themeId,
+                                                                         @RequestParam(value = "memberId", required = false) Long memberId,
+                                                                         @RequestParam(value = "dateFrom", required = false) LocalDate dateFrom,
+                                                                         @RequestParam(value = "dateTo", required = false)  LocalDate dateTo) {
+        return ResponseEntity.ok(reservationService.findReservationsBy(themeId, memberId, dateFrom, dateTo));
     }
 
     @PostMapping("/reservations")

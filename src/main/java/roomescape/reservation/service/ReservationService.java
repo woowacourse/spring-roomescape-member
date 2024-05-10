@@ -40,7 +40,10 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findReservationsBy(Long themeId, Long memberId, Date dateFrom, Date dateTo) {
+    public List<ReservationResponse> findReservationsBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        if (dateFrom != null && dateTo != null) {
+            validateDate(dateFrom, dateTo);
+        }
         return reservationRepository.findBy(themeId, memberId, dateFrom, dateTo).stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -101,6 +104,12 @@ public class ReservationService {
     private void validateReservationDuplicate(LocalDate date, long timeId, long themeId) {
         if (reservationRepository.existBy(date, timeId, themeId)) {
             throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
+        }
+    }
+
+    private void validateDate(LocalDate dateFrom, LocalDate dateTo) {
+        if (dateFrom.isAfter(dateTo)) {
+            throw new IllegalArgumentException("끝 날짜가 시작 날짜보다 전일 수 없습니다.");
         }
     }
 }

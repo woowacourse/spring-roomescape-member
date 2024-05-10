@@ -170,4 +170,75 @@ class AdminControllerTest extends ControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
+
+    @DisplayName("모든 조건에 따라 멤버 예약을 조회할 수 있다.")
+    @Test
+    void readReservationByAllFilter() {
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservations?themeId=1&memberId=2&dateFrom=2024-05-05&dateTo=2024-05-13")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("테마 조건에 따라 멤버 예약을 조회할 수 있다.")
+    @Test
+    void readReservationByThemeFilter() {
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservations?themeId=1")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("멤버 조건에 따라 멤버 예약을 조회할 수 있다.")
+    @Test
+    void readReservationByMemberFilter() {
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservations?memberId=2")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("시작 날짜 조건에 따라 멤버 예약을 조회할 수 있다.")
+    @Test
+    void readReservationByDayFromFilter() {
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservations?dateFrom=2024-05-05")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("끝 날짜 조건에 따라 멤버 예약을 조회할 수 있다.")
+    @Test
+    void readReservationByDayToFilter() {
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservations?dateTo=2024-05-05")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("조건이 없어도 멤버 예약을 조회할 수 있다.")
+    @Test
+    void readReservationByNoneFilter() {
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("멤버 예약 조회 시, 시작 날짜보다 끝 날짜가 전이면 예외가 발생한다.")
+    @Test
+    void readReservationByFilterException() {
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin/reservations?themeId=1&memberId=2&dateFrom=2024-05-20&dateTo=2024-05-13")
+                .then().log().all()
+                .statusCode(400);
+    }
+
 }

@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     List<CompletedReservation> findAll();
 
-    List<CompletedReservation> findBy(Long themeId, Long memberId, Date dateFrom, Date dateTo);
+    List<CompletedReservation> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
 
     boolean deleteById(long reservationId);
 
