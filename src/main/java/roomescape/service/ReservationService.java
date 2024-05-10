@@ -23,7 +23,7 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
-    private final MemberDao memberDao; // TODO: 이것까지 갖고있는 게 맞을까?
+    private final MemberDao memberDao;
 
     public ReservationService(ReservationDao reservationDao, final TimeDao timeDao, ThemeDao themeDao,
                               final MemberDao memberDao) {
@@ -66,7 +66,7 @@ public class ReservationService {
         return ReservationResponse.fromReservation(reservationDao.save(reservation));
     }
 
-    public ReservationResponse save(ReservationCreateRequest request, final Member member) { // TODO: 중복제거
+    public ReservationResponse save(ReservationCreateRequest request, final Member member) {
         if (request.date().isBefore(LocalDate.now())) {
             throw new IllegalReservationException("[ERROR] 과거 날짜는 예약할 수 없습니다.");
         }
