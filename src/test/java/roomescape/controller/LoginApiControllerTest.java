@@ -13,6 +13,7 @@ import roomescape.controller.api.dto.request.MemberLoginRequest;
 import roomescape.controller.api.dto.response.TokenLoginResponse;
 import roomescape.service.MemberService;
 import roomescape.service.dto.input.MemberCreateInput;
+import roomescape.util.DatabaseCleaner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,16 +29,11 @@ class LoginApiControllerTest {
     @LocalServerPort
     int port;
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseCleaner databaseCleaner;
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.update("TRUNCATE TABLE member");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
     }
 
     @Test

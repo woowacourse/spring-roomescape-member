@@ -1,17 +1,20 @@
 package roomescape.service;
 
+import io.restassured.RestAssured;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.MemberDao;
 import roomescape.domain.user.Member;
 import roomescape.exception.NotExistEmailException;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
+import roomescape.util.DatabaseCleaner;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -23,16 +26,11 @@ class MemberServiceTest {
     MemberDao memberDao;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.update("TRUNCATE TABLE member");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
     }
 
     @Test

@@ -1,10 +1,12 @@
 package roomescape.service;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -16,6 +18,7 @@ import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationSearchInput;
+import roomescape.util.DatabaseCleaner;
 
 import java.time.LocalDate;
 
@@ -34,19 +37,14 @@ class ReservationServiceTest {
     ThemeDao themeDao;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private MemberService memberService;
 
     @Autowired
-    private MemberService memberService;
+    DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.update("TRUNCATE TABLE member");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
     }
 
     @Test

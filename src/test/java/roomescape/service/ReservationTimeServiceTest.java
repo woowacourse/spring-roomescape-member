@@ -30,6 +30,7 @@ import roomescape.service.dto.output.AvailableReservationTimeOutput;
 import roomescape.service.dto.output.MemberCreateOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
+import roomescape.util.DatabaseCleaner;
 
 @SpringBootTest
 class ReservationTimeServiceTest {
@@ -44,20 +45,16 @@ class ReservationTimeServiceTest {
 
     @Autowired
     ThemeService themeService;
+
     @Autowired
     MemberService memberService;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.update("TRUNCATE TABLE member");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
     }
 
     @Test

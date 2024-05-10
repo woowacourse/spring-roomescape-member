@@ -24,6 +24,7 @@ import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.util.TokenProvider;
+import roomescape.util.DatabaseCleaner;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationApiControllerTest {
@@ -37,7 +38,7 @@ class ReservationApiControllerTest {
     @Autowired
     ReservationTimeService reservationTimeService;
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseCleaner databaseCleaner;
 
     @LocalServerPort
     int port;
@@ -49,12 +50,7 @@ class ReservationApiControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.update("TRUNCATE TABLE member");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
         final var output = memberService.createMember(MemberFixture.getUserCreateInput());
         token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
     }

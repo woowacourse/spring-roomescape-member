@@ -25,6 +25,7 @@ import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.input.ThemeInput;
+import roomescape.util.DatabaseCleaner;
 
 //@formatter:off
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -41,7 +42,7 @@ class ThemeApiControllerTest {
     ThemeService themeService;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseCleaner databaseCleaner;
 
     @LocalServerPort
     int port;
@@ -49,12 +50,7 @@ class ThemeApiControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.update("TRUNCATE TABLE member");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
     }
 
     @Test

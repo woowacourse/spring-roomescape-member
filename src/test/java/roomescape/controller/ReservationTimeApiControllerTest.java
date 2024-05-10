@@ -24,6 +24,7 @@ import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
+import roomescape.util.DatabaseCleaner;
 
 //@formatter:off
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -39,22 +40,17 @@ class ReservationTimeApiControllerTest {
     @Autowired
     ThemeService themeService;
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
     @LocalServerPort
     int port;
 
+    @Autowired
+    DatabaseCleaner databaseCleaner;
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.update("TRUNCATE TABLE member");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
     }
+
 
     @Test
     @DisplayName("시간 생성에 성공하면, 201을 반환한다")
