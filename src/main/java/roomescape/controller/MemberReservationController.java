@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.LoginMemberInformation;
 import roomescape.controller.request.MemberReservationWebRequest;
-import roomescape.controller.response.ReservationWebResponse;
+import roomescape.controller.response.MemberReservationWebResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.request.ReservationAppRequest;
 import roomescape.service.response.ReservationAppResponse;
@@ -29,18 +29,18 @@ public class MemberReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationWebResponse> reserve(@Valid @RequestBody MemberReservationWebRequest request,
-                                                          @Valid @AuthArgumentResolver
-                                                          LoginMemberInformation loginMemberInformation) {
+    public ResponseEntity<MemberReservationWebResponse> reserve(@Valid @RequestBody MemberReservationWebRequest request,
+                                                                @Valid @Auth
+                                                                LoginMemberInformation loginMemberInformation) {
         ReservationAppResponse appResponse = reservationService.save(
-            new ReservationAppRequest(loginMemberInformation.name(), request.date(), request.timeId(),
+            new ReservationAppRequest(request.date(), request.timeId(),
                 request.themeId(), loginMemberInformation.id()));
 
         Long id = appResponse.id();
-        ReservationWebResponse reservationWebResponse = ReservationWebResponse.from(appResponse);
+        MemberReservationWebResponse memberReservationWebResponse = MemberReservationWebResponse.from(appResponse);
 
         return ResponseEntity.created(URI.create("/reservations/" + id))
-            .body(reservationWebResponse);
+            .body(memberReservationWebResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -51,13 +51,13 @@ public class MemberReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationWebResponse>> getReservations() {
+    public ResponseEntity<List<MemberReservationWebResponse>> getReservations() {
         List<ReservationAppResponse> appResponses = reservationService.findAll();
-        List<ReservationWebResponse> reservationWebResponse = appResponses.stream()
-            .map(ReservationWebResponse::from)
+        List<MemberReservationWebResponse> memberReservationWebResponse = appResponses.stream()
+            .map(MemberReservationWebResponse::from)
             .toList();
 
-        return ResponseEntity.ok(reservationWebResponse);
+        return ResponseEntity.ok(memberReservationWebResponse);
     }
 
 }

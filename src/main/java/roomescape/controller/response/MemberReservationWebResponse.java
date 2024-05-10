@@ -3,15 +3,15 @@ package roomescape.controller.response;
 import java.time.LocalDate;
 import roomescape.service.response.ReservationAppResponse;
 
-public record ReservationWebResponse(
+public record MemberReservationWebResponse(
     Long id,
     String name,
     LocalDate date,
     ReservationTimeWebResponse time,
     ThemeWebResponse theme) {
 
-    public static ReservationWebResponse from(ReservationAppResponse appResponse) {
-        return new ReservationWebResponse(
+    public static MemberReservationWebResponse from(ReservationAppResponse appResponse) {
+        return new MemberReservationWebResponse(
             appResponse.id(),
             appResponse.name(),
             appResponse.date().getDate(),

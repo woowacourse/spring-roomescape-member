@@ -1,4 +1,4 @@
 package roomescape.controller.response;
 
-public record MemberWebResponse(String name) {
+public record MemberWebResponse(Long id, String name) {
 }
