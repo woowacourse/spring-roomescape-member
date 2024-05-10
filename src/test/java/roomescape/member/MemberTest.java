@@ -30,8 +30,8 @@ public class MemberTest {
     @BeforeEach
     void saveMember() {
         RestAssured.port = port;
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES (?, ?, ?)",
-                memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword());
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)",
+                memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword(), memberFixture.getRole().toString());
     }
 
     @DisplayName("로그인 테스트")

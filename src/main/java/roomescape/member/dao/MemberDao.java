@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,8 +17,8 @@ public class MemberDao {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("email"),
-                    rs.getString("password")
-            )
+                    rs.getString("password"),
+                    Enum.valueOf(MemberRole.class, rs.getString("role")))
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -32,5 +34,19 @@ public class MemberDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public Optional<Member> findMemberById(Long id) {
+        String sql = "SELECT * FROM member WHERE member.id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public List<Member> findAllMembers() {
+        String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER);
     }
 }

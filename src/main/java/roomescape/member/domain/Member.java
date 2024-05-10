@@ -13,8 +13,9 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final MemberRole role;
 
-    public Member(Long id, String name, String email, String password) {
+    public Member(Long id, String name, String email, String password, MemberRole role) {
         validateName(name);
         validateEmail(email);
 
@@ -22,6 +23,7 @@ public class Member {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     private void validateName(String name) {
@@ -52,6 +54,10 @@ public class Member {
         return password;
     }
 
+    public MemberRole getRole() {
+        return role;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,5 +69,9 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean isAdmin() {
+        return role.equals(MemberRole.ADMIN);
     }
 }

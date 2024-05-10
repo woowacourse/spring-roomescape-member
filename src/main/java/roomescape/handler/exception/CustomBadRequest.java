@@ -13,8 +13,6 @@ public enum CustomBadRequest implements CustomExceptionCode {
     NOT_FOUND_THEME("테마를 찾을 수 없습니다."),
     INVALID_EMAIL("유효하지 않은 이메일 형식입니다."),
     NOT_MEMBER("존재하지 않는 회원입니다."),
-    NOT_LOGIN("로그인하지 않은 상태입니다."),
-    NO_LOGIN_TOKEN("로그인 토큰이 존재하지 않습니다."),
     ;
 
     private static final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;

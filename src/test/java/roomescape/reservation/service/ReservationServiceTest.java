@@ -37,9 +37,9 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getThumbnail());
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", reservationTimeFixture.getStartAt());
-        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES(?, ?, ?)", memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword());
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getThumbnail());
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", reservationTimeFixture.getStartAt());
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)", memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword(), memberFixture.getRole().toString());
     }
 
     @DisplayName("예약시간이 없는 경우 예외가 발생한다.")

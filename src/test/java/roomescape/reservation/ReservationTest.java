@@ -41,7 +41,7 @@ class ReservationTest {
     void insert() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", reservationTimeFixture.getStartAt());
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getDescription());
-        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)", memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword());
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)", memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword(), memberFixture.getRole().toString());
         jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id, created_at) VALUES(?, ?, ?, ?, ?)",
                 memberFixture.getId(), reservationDate, reservationTimeFixture.getId(), themeFixture.getId(), createdAt);
     }

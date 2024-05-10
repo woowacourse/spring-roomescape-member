@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.handler.exception.CustomException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -17,7 +18,7 @@ class ReservationTest {
     private final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 30));
     private final Theme theme = new Theme(1L, "themeName", "description", "thumbnail");
     private final LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
-    private final Member member = new Member(1L, "space", "abcd@gmail.com", "2580");
+    private final Member member = new Member(1L, "space", "abcd@gmail.com", "2580", MemberRole.USER);
 
     @DisplayName("실패: 생성 시간보다 예약 시간이 과거일 수 없다")
     @Test

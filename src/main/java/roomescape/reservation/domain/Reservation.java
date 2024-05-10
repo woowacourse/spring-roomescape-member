@@ -62,6 +62,10 @@ public class Reservation {
         return createdAt;
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public Long getTimeId() {
         return time.getId();
     }

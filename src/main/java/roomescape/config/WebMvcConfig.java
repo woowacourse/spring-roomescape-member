@@ -2,7 +2,9 @@ package roomescape.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.member.controller.CheckAdminInterceptor;
 import roomescape.member.controller.MemberArgumentResolver;
 import roomescape.member.service.AuthService;
 import java.util.List;
@@ -14,6 +16,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     public WebMvcConfig(AuthService authService) {
         this.authService = authService;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new CheckAdminInterceptor(authService)).addPathPatterns("/admin/**");
     }
 
     @Override

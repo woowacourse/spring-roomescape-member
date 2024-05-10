@@ -27,8 +27,8 @@ VALUES ('hi1', 'happy1', 'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2
        ('hi11', 'happy11', 'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FsYpXc%2FbtqDhvJwpgl%2FHdOH4fsVgyK5kazXCbmiz0%2Fimg.jpg'),
        ('hi12', 'happy12', 'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FsYpXc%2FbtqDhvJwpgl%2FHdOH4fsVgyK5kazXCbmiz0%2Fimg.jpg');
 
-INSERT INTO member (name, email, password)
-VALUES ('space', 'abcd@gmail.com', '2580');
+INSERT INTO member (name, email, password, role)
+VALUES ('space', 'abcd@gmail.com', '2580', 'USER');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id, created_at)
 VALUES (1, '2024-04-25', 1, 1, '2024-04-24 12:30'),

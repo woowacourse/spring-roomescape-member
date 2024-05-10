@@ -20,6 +20,7 @@ CREATE TABLE member
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -37,5 +38,6 @@ CREATE TABLE reservation
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
-INSERT INTO member (name, email, password)
-VALUES ('test', 'test@gmail.com', '2580');
+INSERT INTO member (name, email, password, role)
+VALUES ('test', 'test@gmail.com', '2580', 'USER'),
+       ('admin', 'admin@gmail.com', '0000', 'ADMIN');

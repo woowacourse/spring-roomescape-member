@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.handler.exception.CustomBadRequest;
 import roomescape.handler.exception.CustomException;
+import roomescape.handler.exception.CustomUnauthorized;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberToken;
 import roomescape.member.dto.LogInRequest;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -63,7 +65,19 @@ public class AuthService {
                     .getBody()
                     .get("email", String.class);
         }
-        //TODO
-        throw new IllegalArgumentException();
+        throw new CustomException(CustomUnauthorized.NO_LOGIN_TOKEN);
+    }
+
+    public boolean checkAdmin(String email) {
+        return findByEmail(email).isAdmin();
+    }
+
+    public Member findById(Long id) {
+        return memberDao.findMemberById(id)
+                .orElseThrow(() -> new CustomException(CustomBadRequest.NOT_MEMBER));
+    }
+
+    public List<Member> findAll() {
+        return memberDao.findAllMembers();
     }
 }
