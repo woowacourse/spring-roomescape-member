@@ -27,19 +27,19 @@ public class MemberService {
         return member;
     }
 
-    public Member findByEmail(String email) {
-        return memberDao.findByEmail(email).orElseThrow(() -> new WrongStateException("존재하지 않는 아이디입니다."));
-    }
-
-    public List<Member> getAllMembers() {
-        return memberDao.findAll();
-    }
-
     public Member register(RegisterRequestDto registerRequestDto) {
         memberDao.findByEmail(registerRequestDto.email()).ifPresent(a -> {
             throw new WrongStateException("이미 존재하는 아이디입니다.");
         });
         Long id = memberDao.insert(registerRequestDto.name(), registerRequestDto.email(), registerRequestDto.password());
         return new Member(id, registerRequestDto.name(), "USER", registerRequestDto.email(), registerRequestDto.password());
+    }
+
+    public Member findByEmail(String email) {
+        return memberDao.findByEmail(email).orElseThrow(() -> new WrongStateException("존재하지 않는 아이디입니다."));
+    }
+
+    public List<Member> getAllMembers() {
+        return memberDao.findAll();
     }
 }

@@ -35,10 +35,6 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public List<Reservation> getAllReservations() {
-        return reservationDao.findAll();
-    }
-
     @Transactional
     public Reservation insertReservation(AdminReservationRequestDto adminReservationRequestDto) {
         ReservationTime reservationTime = reservationTimeDao.findById(adminReservationRequestDto.timeId())
@@ -55,6 +51,18 @@ public class ReservationService {
         return new Reservation(id, adminReservationRequestDto.date().toString(), reservationTime, reservationTheme, member);
     }
 
+    public List<Reservation> getFilteredReservations(FilterConditionDto filterConditionDto) {
+        return reservationDao.findFilteredReservations(filterConditionDto.themeId(), filterConditionDto.memberId(), filterConditionDto.dateFrom().toString(), filterConditionDto.dateTo().toString());
+    }
+
+    public List<Reservation> getAllReservations() {
+        return reservationDao.findAll();
+    }
+
+    public void deleteReservation(Long id) {
+        reservationDao.deleteById(id);
+    }
+
     private void validatePast(LocalDate localDate, LocalTime localTime) {
         LocalDateTime inputDateTime = LocalDateTime.of(localDate, localTime);
         ZoneId kst = ZoneId.of("Asia/Seoul");
@@ -67,13 +75,5 @@ public class ReservationService {
         if (reservationDao.count(date.toString(), timeId, themeId) != 0) {
             throw new WrongStateException("이미 해당 시간에 예약이 존재합니다.");
         }
-    }
-
-    public void deleteReservation(Long id) {
-        reservationDao.deleteById(id);
-    }
-
-    public List<Reservation> getFilteredReservations(FilterConditionDto filterConditionDto) {
-        return reservationDao.findFilteredReservations(filterConditionDto.themeId(), filterConditionDto.memberId(), filterConditionDto.dateFrom().toString(), filterConditionDto.dateTo().toString());
     }
 }

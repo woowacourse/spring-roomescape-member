@@ -31,7 +31,7 @@ public class AuthenticationService {
         throw new WrongStateException("올바른 토큰이 아닙니다.");
     }
 
-    public boolean validateToken(String token) {
+    private boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 

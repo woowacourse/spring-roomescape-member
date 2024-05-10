@@ -49,17 +49,6 @@ public class MemberDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(members));
     }
 
-    public List<Member> findAll() {
-        String findAllSql = "SELECT id, name, role, email, password FROM member";
-        return jdbcTemplate.query(findAllSql,
-                (resultSet, numRow) -> new Member(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("role"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password")));
-    }
-
     public Optional<Member> findById(Long id) {
         String findByEmailSql = "SELECT id, name, role, email, password FROM member WHERE id = ?";
         List<Member> members = jdbcTemplate.query(findByEmailSql,
@@ -71,5 +60,16 @@ public class MemberDao {
                         resultSet.getString("password"))
                 , id);
         return Optional.ofNullable(DataAccessUtils.singleResult(members));
+    }
+
+    public List<Member> findAll() {
+        String findAllSql = "SELECT id, name, role, email, password FROM member";
+        return jdbcTemplate.query(findAllSql,
+                (resultSet, numRow) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("role"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")));
     }
 }

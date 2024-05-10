@@ -34,13 +34,6 @@ public class ReservationThemeService {
         return new ReservationTheme(id, reservationThemeRequestDto.name(), reservationThemeRequestDto.description(), reservationThemeRequestDto.thumbnail());
     }
 
-    public void deleteTheme(Long id) {
-        if (reservationDao.countByThemeId(id) != 0) {
-            throw new NotRemovableByConstraintException("예약이 존재하는 테마는 삭제할 수 없습니다.");
-        }
-        reservationThemeDao.deleteById(id);
-    }
-
     public List<ReservationTheme> getBestThemes() {
         ZoneId kst = ZoneId.of("Asia/Seoul");
         LocalDate now = LocalDate.now(kst);
@@ -48,5 +41,12 @@ public class ReservationThemeService {
         LocalDate to = now.minusDays(1);
 
         return reservationThemeDao.findBestThemesBetweenDates(from.toString(), to.toString(), 10);
+    }
+
+    public void deleteTheme(Long id) {
+        if (reservationDao.countByThemeId(id) != 0) {
+            throw new NotRemovableByConstraintException("예약이 존재하는 테마는 삭제할 수 없습니다.");
+        }
+        reservationThemeDao.deleteById(id);
     }
 }

@@ -22,34 +22,6 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAll() {
-        String findAllSql = """
-                SELECT 
-                    r.id as reservation_id,      
-                    r.date, 
-                    t.id as time_id, 
-                    t.start_at as time_value, 
-                    tm.id as theme_id, 
-                    tm.name as theme_name, 
-                    tm.description,     
-                    tm.thumbnail, 
-                    m.id as member_id,
-                    m.name as name,
-                    m.role,
-                    m.email,
-                    m.password
-                    
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                INNER JOIN theme AS tm 
-                ON r.theme_id = tm.id
-                INNER JOIN member AS m 
-                ON r.member_id = m.id
-        """;
-        return jdbcTemplate.query(findAllSql,getReservationRowMapper());
-    }
-
     public Long insert(String date, Long timeId, Long themeId, Long memberId) {
         String insertSql = "INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -65,26 +37,6 @@ public class ReservationDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
-    }
-
-    public void deleteById(Long id) {
-        String deleteFromIdSql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(deleteFromIdSql, id);
-    }
-
-    public int countByTimeId(Long timeId) {
-        String findByIdSql = "SELECT count(*) FROM reservation WHERE time_id =?";
-        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId);
-    }
-
-    public int countByThemeId(Long themeId) {
-        String findByIdSql = "SELECT count(*) FROM reservation WHERE theme_id =?";
-        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, themeId);
-    }
-
-    public int count(String date, Long timeId, Long themeId) {
-        String findByIdSql = "SELECT count(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
-        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId, themeId, date);
     }
 
     public List<Reservation> findFilteredReservations(Long themeId, Long memberId, String dateFrom, String dateTo) {
@@ -118,6 +70,54 @@ public class ReservationDao {
                     (r.date BETWEEN ? AND ?)
         """;
         return jdbcTemplate.query(findFilteredSql, getReservationRowMapper(), themeId, memberId, dateFrom, dateTo);
+    }
+
+    public List<Reservation> findAll() {
+        String findAllSql = """
+                SELECT 
+                    r.id as reservation_id,      
+                    r.date, 
+                    t.id as time_id, 
+                    t.start_at as time_value, 
+                    tm.id as theme_id, 
+                    tm.name as theme_name, 
+                    tm.description,     
+                    tm.thumbnail, 
+                    m.id as member_id,
+                    m.name as name,
+                    m.role,
+                    m.email,
+                    m.password
+                    
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS tm 
+                ON r.theme_id = tm.id
+                INNER JOIN member AS m 
+                ON r.member_id = m.id
+        """;
+        return jdbcTemplate.query(findAllSql,getReservationRowMapper());
+    }
+
+    public void deleteById(Long id) {
+        String deleteFromIdSql = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(deleteFromIdSql, id);
+    }
+
+    public int countByTimeId(Long timeId) {
+        String findByIdSql = "SELECT count(*) FROM reservation WHERE time_id =?";
+        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId);
+    }
+
+    public int countByThemeId(Long themeId) {
+        String findByIdSql = "SELECT count(*) FROM reservation WHERE theme_id =?";
+        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, themeId);
+    }
+
+    public int count(String date, Long timeId, Long themeId) {
+        String findByIdSql = "SELECT count(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
+        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId, themeId, date);
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
