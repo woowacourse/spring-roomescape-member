@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import roomescape.domain.member.Member;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.UserLoginRequest;
 import roomescape.service.AuthService;
-import roomescape.service.exception.AuthorizationException;
 
 @RestController
 @RequestMapping("/login")
@@ -36,21 +34,7 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> check(HttpServletRequest request, HttpServletResponse response) {
-        if (request.getCookies() == null) {
-            throw new AuthorizationException("사용자 정보를 조회할 수 없습니다.");
-        }
-        String token = extractTokenFromCookie(request.getCookies());
-        Member member = authService.findMemberByToken(token);
+    public ResponseEntity<MemberResponse> check(Member member) {
         return ResponseEntity.ok().body(MemberResponse.from(member.getName()));
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
