@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.ServiceTest;
 import roomescape.global.exception.NotFoundException;
+import roomescape.global.exception.ViolationException;
 import roomescape.member.domain.Member;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.TestFixture.USER_MIA;
+import static roomescape.TestFixture.*;
+import static roomescape.member.domain.Role.USER;
 
 class MemberServiceTest extends ServiceTest {
     @Autowired
@@ -37,5 +39,17 @@ class MemberServiceTest extends ServiceTest {
         // when & then
         assertThatThrownBy(() -> memberService.findById(notExistingId))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("중복된 이메일로 가입할 수 없다.")
+    void createWithDuplicatedEmail() {
+        // given
+        Member mia = createTestMember(USER_MIA());
+        Member duplicatedEmailMember = new Member(TOMMY_NAME, mia.getEmail(), TEST_PASSWORD, USER);
+
+        // when & then
+        assertThatThrownBy(() -> memberService.create(duplicatedEmailMember))
+                .isInstanceOf(ViolationException.class);
     }
 }

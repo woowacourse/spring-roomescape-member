@@ -3,6 +3,7 @@ package roomescape.member.application;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.NotFoundException;
+import roomescape.global.exception.ViolationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 
@@ -19,7 +20,16 @@ public class MemberService {
 
     @Transactional
     public Member create(Member member) {
+        validateDuplicatedEmail(member);
         return memberRepository.save(member);
+    }
+
+    private void validateDuplicatedEmail(Member member) {
+        boolean isDuplicatedEmail = memberRepository.findByEmail(member.getEmail())
+                .isPresent();
+        if (isDuplicatedEmail) {
+            throw new ViolationException("중복된 이메일입니다.");
+        }
     }
 
     public Member findById(Long id) {
