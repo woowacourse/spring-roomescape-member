@@ -110,7 +110,8 @@ function renderAvailableTimes(date, times) {
   times.forEach(time => {
     const startAt = time.startAt;
     const timeId = time.timeId;
-    const alreadyBooked = isBeforeNow(date, startAt) ? true : time.alreadyBooked;
+    const isBeforeNow = time.isBeforeNow;
+    const alreadyBooked = isBeforeNow ? true : time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
@@ -179,9 +180,4 @@ function requestRead(endpoint) {
       if (response.status === 200) return response.json();
       throw new Error('Read failed');
     });
-}
-
-function isBeforeNow(date, time) {
-  const selectedDateTime = new Date(`${date}T${time}`);
-  return selectedDateTime < new Date();
 }

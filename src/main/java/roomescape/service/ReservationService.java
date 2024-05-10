@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,10 @@ public class ReservationService {
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
         List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
         return reservationTimes.stream()
-                .map(time -> AvailableReservationResponse.of(time, ids.contains(time.getId())))
+                .map(time -> AvailableReservationResponse.of(
+                        time,
+                        ids.contains(time.getId()),
+                        isBeforeNow(reservationDate, time)))
                 .toList();
     }
 
@@ -94,6 +98,11 @@ public class ReservationService {
     public void delete(Long id) {
         validateNotExistReservation(id);
         reservationDao.delete(id);
+    }
+
+    private boolean isBeforeNow(ReservationDate date, ReservationTime time) {
+        LocalDateTime selectedDateTime = LocalDateTime.of(date.getValue(), time.getStartAt().getValue());
+        return selectedDateTime.isBefore(LocalDateTime.now(clock));
     }
 
     private Member findMember(Long memberId) {

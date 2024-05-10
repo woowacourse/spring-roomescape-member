@@ -2,17 +2,14 @@ package roomescape.dto.reservation;
 
 import roomescape.domain.reservationtime.ReservationTime;
 
-public record AvailableReservationResponse(String startAt, Long timeId, boolean alreadyBooked) {
+public record AvailableReservationResponse(String startAt, Long timeId, boolean alreadyBooked, boolean isBeforeNow) {
 
-    public static AvailableReservationResponse of(String startAt, Long timeId, boolean alreadyBooked) {
-        return new AvailableReservationResponse(startAt, timeId, alreadyBooked);
-    }
-
-    public static AvailableReservationResponse of(ReservationTime reservationTime, boolean alreadyBooked) {
+    public static AvailableReservationResponse of(ReservationTime reservationTime, boolean alreadyBooked, boolean isBeforeNow) {
         return new AvailableReservationResponse(
                 reservationTime.getStartAt().toStringTime(),
                 reservationTime.getId(),
-                alreadyBooked
+                alreadyBooked,
+                isBeforeNow
         );
     }
 }
