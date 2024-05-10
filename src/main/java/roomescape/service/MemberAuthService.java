@@ -10,7 +10,6 @@ import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.MemberPassword;
 import roomescape.domain.vo.MemberRole;
 import roomescape.exception.AuthorizationException;
-import roomescape.exception.EmailAlreadyExistsException;
 import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.request.TokenAppRequest;
 import roomescape.service.response.MemberAppResponse;
@@ -30,7 +29,7 @@ public class MemberAuthService {
 
     public MemberAppResponse signUp(MemberSignUpAppRequest request) {
         if (isExistsMember(request.email(), request.password())) {
-            throw new EmailAlreadyExistsException();
+            throw new AuthorizationException("해당 이메일의 회원이 이미 존재합니다.");
         }
 
         Member newMember = new Member(

@@ -10,8 +10,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.AuthorizationException;
-import roomescape.exception.EmailAlreadyExistsException;
-import roomescape.exception.ExpiredJwtException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationExistsException;
 
@@ -28,12 +26,8 @@ public class ControllerAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(value = {
-        AuthorizationException.class,
-        EmailAlreadyExistsException.class,
-        ExpiredJwtException.class
-    })
-    public ResponseEntity<String> handleAuthException(RuntimeException e) {
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String> handleAuthException(AuthorizationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
