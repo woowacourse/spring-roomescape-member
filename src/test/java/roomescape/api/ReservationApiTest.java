@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.reservation.ReservationRequest;
 
 @Sql("/reservation-api-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -36,10 +36,10 @@ class ReservationApiTest {
                 .statusCode(201)
                 .header("Location", "/reservations/1")
                 .body("id", equalTo(1))
-                .body("name", equalTo(reservationRequest.name()))
                 .body("date", equalTo(reservationRequest.date().toString()))
                 .body("time.id", equalTo(reservationRequest.timeId().intValue()))
-                .body("theme.id", equalTo(reservationRequest.themeId().intValue()));
+                .body("theme.id", equalTo(reservationRequest.themeId().intValue()))
+                .body("member.id", equalTo(reservationRequest.memberId().intValue()));
     }
 
     @Test
@@ -54,10 +54,10 @@ class ReservationApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("id", equalTo(1))
-                .body("name", equalTo("ted"))
                 .body("date", equalTo(reservationRequest.date().toString()))
                 .body("time.id", equalTo((reservationRequest.timeId().intValue())))
-                .body("theme.id", equalTo(reservationRequest.themeId().intValue()));
+                .body("theme.id", equalTo(reservationRequest.themeId().intValue()))
+                .body("member.id", equalTo(reservationRequest.memberId().intValue()));
     }
 
     @Test
@@ -88,7 +88,7 @@ class ReservationApiTest {
     }
 
     private ReservationRequest createReservationRequest() {
-        return new ReservationRequest("ted", LocalDate.now().plusDays(1), 1L, 1L);
+        return new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
     }
 
     private void addReservation(final ReservationRequest reservationRequest) {

@@ -2,6 +2,7 @@ SET REFERENTIAL_INTEGRITY FALSE;
 TRUNCATE TABLE reservation RESTART IDENTITY;
 TRUNCATE TABLE reservation_time RESTART IDENTITY;
 TRUNCATE TABLE theme RESTART IDENTITY;
+TRUNCATE TABLE member RESTART IDENTITY;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 INSERT INTO theme (name, description, thumbnail) VALUES
@@ -23,28 +24,34 @@ INSERT INTO reservation_time (start_at) VALUES
 ('12:00'),
 ('14:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES
-('테드', CURRENT_DATE() - INTERVAL '1' DAY, 1, 1),
-('테드', CURRENT_DATE() - INTERVAL '3' DAY, 1, 1),
-('테드', CURRENT_DATE() - INTERVAL '5' DAY, 1, 1),
-('테드', CURRENT_DATE() - INTERVAL '7' DAY, 1, 1),
+INSERT INTO member(name, email, password, role) VALUES
+('테드', 'test1@email.com', '1450575459', 'USER'),
+('종리', 'test2@email.com', '1450575459', 'USER'),
+('범블비', 'test3@email.com', '1450575459', 'USER'),
+('제이', 'test4@email.com', '1450575459', 'USER');
 
-('종이', CURRENT_DATE() - INTERVAL '1' DAY, 1, 2),
-('종이', CURRENT_DATE() - INTERVAL '3' DAY, 1, 2),
-('종이', CURRENT_DATE() - INTERVAL '7' DAY, 1, 2),
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES
+(CURRENT_DATE() - INTERVAL '1' DAY, 1, 1, 1),
+(CURRENT_DATE() - INTERVAL '3' DAY, 1, 1, 1),
+(CURRENT_DATE() - INTERVAL '5' DAY, 1, 1, 1),
+(CURRENT_DATE() - INTERVAL '7' DAY, 1, 1, 1),
 
-('범블비', CURRENT_DATE() - INTERVAL '1' DAY, 1, 3),
-('범블비', CURRENT_DATE() - INTERVAL '2' DAY, 1, 4),
-('범블비', CURRENT_DATE() - INTERVAL '3' DAY, 1, 5),
-('범블비', CURRENT_DATE() - INTERVAL '4' DAY, 1, 6),
-('범블비', CURRENT_DATE() - INTERVAL '5' DAY, 1, 7),
-('범블비', CURRENT_DATE() - INTERVAL '6' DAY, 1, 8),
-('범블비', CURRENT_DATE() - INTERVAL '7' DAY, 1, 9),
-('범블비', CURRENT_DATE() - INTERVAL '7' DAY, 2, 10),
-('범블비', CURRENT_DATE() - INTERVAL '7' DAY, 3, 11),
+(CURRENT_DATE() - INTERVAL '1' DAY, 1, 2, 2),
+(CURRENT_DATE() - INTERVAL '3' DAY, 1, 2, 2),
+(CURRENT_DATE() - INTERVAL '7' DAY, 1, 2, 2),
 
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 1, 2),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 2, 2),
-('제이', CURRENT_DATE() - INTERVAL '9' DAY, 1, 12),
-('제이', CURRENT_DATE() - INTERVAL '9' DAY, 2, 12),
-('제이', CURRENT_DATE() - INTERVAL '9' DAY, 3, 12);
+(CURRENT_DATE() - INTERVAL '1' DAY, 1, 3, 3),
+(CURRENT_DATE() - INTERVAL '2' DAY, 1, 4, 3),
+(CURRENT_DATE() - INTERVAL '3' DAY, 1, 5, 3),
+(CURRENT_DATE() - INTERVAL '4' DAY, 1, 6, 3),
+(CURRENT_DATE() - INTERVAL '5' DAY, 1, 7, 3),
+(CURRENT_DATE() - INTERVAL '6' DAY, 1, 8, 3),
+(CURRENT_DATE() - INTERVAL '7' DAY, 1, 9, 3),
+(CURRENT_DATE() - INTERVAL '7' DAY, 2, 10, 3),
+(CURRENT_DATE() - INTERVAL '7' DAY, 3, 11, 3),
+
+(CURRENT_DATE() - INTERVAL '8' DAY, 1, 2 4),
+(CURRENT_DATE() - INTERVAL '8' DAY, 2, 2, 4),
+(CURRENT_DATE() - INTERVAL '9' DAY, 1, 12, 4),
+(CURRENT_DATE() - INTERVAL '9' DAY, 2, 12, 4),
+(CURRENT_DATE() - INTERVAL '9' DAY, 3, 12, 4);

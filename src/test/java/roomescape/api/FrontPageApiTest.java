@@ -36,4 +36,13 @@ class FrontPageApiTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    void 로그인_페이지_이동() {
+        given().log().all()
+                .port(port)
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
