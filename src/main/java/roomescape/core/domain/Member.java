@@ -23,6 +23,16 @@ public class Member {
             final String name,
             final String email,
             final String password,
+            final String role
+    ) {
+        this(id, name, email, password, Role.valueOf(role));
+    }
+
+    public Member(
+            final Long id,
+            final String name,
+            final String email,
+            final String password,
             final Role role
     ) {
         validateEmpty(name, email, password, role);
@@ -51,6 +61,10 @@ public class Member {
         if (role == null) {
             throw new BadRequestException("사용자 역할은 null일 수 없습니다.");
         }
+    }
+
+    public boolean hasMatchedPassword(final String password) {
+        return this.password.equals(password);
     }
 
     public Long getId() {
