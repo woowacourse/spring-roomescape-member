@@ -11,6 +11,7 @@ import roomescape.member.domain.Member;
 import roomescape.member.service.AuthService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.AdminReservationRequest;
+import roomescape.reservation.dto.request.ReservationFilter;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 import java.net.URI;
