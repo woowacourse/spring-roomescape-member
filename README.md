@@ -2,7 +2,7 @@
 
 ## 📄 API 명세서
 
-### 예약 조회
+### 전체 예약 조회
 
 | HTTP Method | GET           |
 |-------------|---------------|
@@ -14,8 +14,10 @@
 | Name              | Type   | Description                          |
 |-------------------|--------|--------------------------------------|
 | id                | Number | 예약 ID(고유한 값)                         |
-| name              | String | 예약자 이름                               |
 | date              | String | 예약한 날짜 `연-월-일`로 표현된다(ex. 2024-05-05) |
+| member            | Object | 예약 회원                                |
+| member.id         | Number | 예약 회원 ID(고유한 값)                      |
+| member.name       | String | 예약 회원 이름                             |
 | time              | Object | 예약 시간                                |
 | time.id           | Number | 예약 시간 ID(고유한 값)                      |
 | time.startAt      | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00)      |
@@ -32,7 +34,58 @@
         "date": "2024-05-12",
         "member": {
             "id": 1,
-            "name": "user"
+            "name": "브라운"
+        },
+        "time": {
+            "id": 1,
+            "startAt": "10:00"
+        },
+        "theme": {
+            "id": 1,
+            "name": "방탈출1",
+            "description": "1번 방탈출",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
+    },
+    {
+        ...
+    }
+]
+```
+
+### 필터링 예약 조회
+
+| HTTP Method | GET                                                                                     |
+|-------------|-----------------------------------------------------------------------------------------|
+| End Point   | /reservations?themeId={themeId}&memberId={memberId}&dateFrom={dateFrom}&dateTo={dateTo} |
+| Status Code | 200 OK                                                                                  |
+
+#### Response Body
+
+| Name              | Type   | Description                          |
+|-------------------|--------|--------------------------------------|
+| id                | Number | 예약 ID(고유한 값)                         |
+| date              | String | 예약한 날짜 `연-월-일`로 표현된다(ex. 2024-05-05) |
+| member            | Object | 예약 회원                                |
+| member.id         | Number | 예약 회원 ID(고유한 값)                      |
+| member.name       | String | 예약 회원 이름                             |
+| time              | Object | 예약 시간                                |
+| time.id           | Number | 예약 시간 ID(고유한 값)                      |
+| time.startAt      | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00)      |
+| theme             | Object | 예약 테마                                |
+| theme.id          | Number | 예약 테마 ID(고유한 값)                      |
+| theme.name        | String | 예약한 테마 이름                            |
+| theme.description | String | 예약한 테마 설명                            |
+| theme.thumbnail   | String | 예약한 테마 썸네일 이미지 url                   |
+
+``` json
+[
+    {
+        "id": 1,
+        "date": "2024-05-12",
+        "member": {
+            "id": 1,
+            "name": "브라운"
         },
         "time": {
             "id": 1,
@@ -65,13 +118,15 @@
 | startAt       | String  | 예약 시간 `시간:분`으로 표현된다(ex. 13:00) |
 | timeId        | Number  | 예약 시간 ID(고유한 값)                |
 | alreadyBooked | boolean | 예약 여부                          |
+| isBeforeNow   | boolean | 해당 날짜와 시간이 현재 이전인지 여부          |
 
 ``` json
 [
   {
     "startAt": "12:00",
     "timeId": 1,
-    "alreadyBooked": true
+    "alreadyBooked": true,
+    "isBeforeNow": true
   },
   {
    ...
@@ -79,25 +134,29 @@
 ]
 ```
 
-### 예약 추가
+### 사용자 예약 추가
 
 | HTTP Method | POST          |
 |-------------|---------------|
 | End Point   | /reservations |
 | Status Code | 201 Created   |
 
+#### Request Header
+
+| Name   | Type  | Description |
+|--------|-------|-------------|
+| Cookie | token | 회원 jwt 토큰   |
+
 #### Request Body
 
 | Name    | Type   | Description                        |
 |---------|--------|------------------------------------|
-| name    | String | 예약자 이름                             |
 | date    | String | 예약한 날짜 `연-월-일`로 입력(ex. 2024-05-05) |
 | timeId  | Number | 예약 시간 ID(고유한 값)                    |
 | themeId | Number | 예약 테마 ID(고유한 값)                    |
 
 ``` json
 {
-    "name" : "브라운",
     "date" : "2024-05-05",
     "timeId" : 1,
     "themeId" : 1
@@ -109,8 +168,10 @@
 | Name              | Type   | Description                          |
 |-------------------|--------|--------------------------------------|
 | id                | Number | 예약 ID(고유한 값)                         |
-| name              | String | 예약자 이름                               |
 | date              | String | 예약한 날짜 `연-월-일`로 표현된다(ex. 2024-05-05) |
+| member            | Object | 예약 회원                                |
+| member.id         | Number | 예약 회원 ID(고유한 값)                      |
+| member.name       | String | 예약 회원 이름                             |
 | time              | Object | 예약 시간                                |
 | time.id           | Number | 예약 시간 ID(고유한 값)                      |
 | time.startAt      | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00)      |
@@ -123,17 +184,89 @@
 ``` json
 [
     {
-        "id": 1,
-        "name": "브라운",
-        "date": "2024-05-05",
+        "id": 23,
+        "date": "2024-05-12",
+        "member": {
+            "id": 1,
+            "name": "사용자1"
+        },
         "time": {
-            "id" : 1,
-            "startAt" : "13:00"
-        }
+            "id": 1,
+            "startAt": "10:00"
+        },
         "theme": {
             "id": 1,
-            "name": "방탈출 1",
-            "description": "공포 테마 방탈출입니다.",
+            "name": "방탈출1",
+            "description": "1번 방탈출",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
+    },
+    {
+        ...
+    }
+]
+```
+
+### 관리자 예약 추가
+
+| HTTP Method | POST          |
+|-------------|---------------|
+| End Point   | /reservations |
+| Status Code | 201 Created   |
+
+#### Request Body
+
+| Name     | Type   | Description                        |
+|----------|--------|------------------------------------|
+| memberId | Number | 예약 회원 ID(고유한 값)                    |
+| timeId   | Number | 예약 시간 ID(고유한 값)                    |
+| date     | String | 예약한 날짜 `연-월-일`로 입력(ex. 2024-05-05) |
+| themeId  | Number | 예약 테마 ID(고유한 값)                    |
+
+``` json
+{
+    "memberId": "2",
+    "themeId":"1",
+    "date":"2024-05-12",
+    "timeId":"2"
+}
+```
+
+#### Response Body
+
+| Name              | Type   | Description                          |
+|-------------------|--------|--------------------------------------|
+| id                | Number | 예약 ID(고유한 값)                         |
+| date              | String | 예약한 날짜 `연-월-일`로 표현된다(ex. 2024-05-05) |
+| member            | Object | 예약 회원                                |
+| member.id         | Number | 예약 회원 ID(고유한 값)                      |
+| member.name       | String | 예약 회원 이름                             |
+| time              | Object | 예약 시간                                |
+| time.id           | Number | 예약 시간 ID(고유한 값)                      |
+| time.startAt      | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00)      |
+| theme             | Object | 예약 테마                                |
+| theme.id          | Number | 예약 테마 ID(고유한 값)                      |
+| theme.name        | String | 예약한 테마 이름                            |
+| theme.description | String | 예약한 테마 설명                            |
+| theme.thumbnail   | String | 예약한 테마 썸네일 이미지 url                   |
+
+``` json
+[
+    {
+        "id": 23,
+        "date": "2024-05-12",
+        "member": {
+            "id": 1,
+            "name": "사용자1"
+        },
+        "time": {
+            "id": 1,
+            "startAt": "10:00"
+        },
+        "theme": {
+            "id": 1,
+            "name": "방탈출1",
+            "description": "1번 방탈출",
             "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         }
     },
@@ -345,6 +478,84 @@ id : 1
 
 ```
 id : 1
+```
+
+### 로그인
+
+| HTTP Method | POST   |
+|-------------|--------|
+| End Point   | /login |
+| Status Code | 200 OK |
+
+#### Request Body
+
+| Name     | Type   | Description |
+|----------|--------|-------------|
+| password | String | 회원 비밀번호     |
+| email    | String | 회원 이메일      |
+
+#### Response Header
+
+```markdown
+Set-Cookie: token={token}; Path=/; HttpOnly
+```
+
+### 회원 확인
+
+| HTTP Method | GET          |
+|-------------|--------------|
+| End Point   | /login/check |
+| Status Code | 200 OK       |
+
+#### Request Body
+
+| Name     | Type   | Description |
+|----------|--------|-------------|
+| password | String | 회원 비밀번호     |
+| email    | String | 회원 이메일      |
+
+#### Request Header
+
+```markdown
+Cookie: JSESSIONID={token}
+```
+
+#### Response Body
+
+| Name | Type   | Description |
+|------|--------|-------------|
+| name | String | 사용자 이름      |
+
+```json
+{
+  "name": "사용자1"
+}
+```
+
+### 전체 회원 조회
+
+| HTTP Method | GET      |
+|-------------|----------|
+| End Point   | /members |
+| Status Code | 200 OK   |
+
+#### Response Body
+
+| Name | Type   | Description  |
+|------|--------|--------------|
+| id   | Number | 회원 ID(고유한 값) |
+| name | String | 회원 이름        |
+
+``` json
+[
+  {
+    "id": 1,
+    "name": "사용자1"
+  },
+  {
+   ...
+  }
+]
 ```
 
 ---
