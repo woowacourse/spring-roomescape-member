@@ -4,20 +4,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.service.AuthService;
+import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.UnauthorizedException;
-import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.util.Arrays;
 
 @Component
 public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
 
-    private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public RoleCheckHandlerInterceptor(AuthService authService) {
-        this.authService = authService;
+    public RoleCheckHandlerInterceptor(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -36,14 +36,14 @@ public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new UnauthorizedException("사용자 인증 정보가 없습니다."))
                 .getValue();
 
-        Member member = authService.findMemberByToken(accessToken);
+        Role role = Role.findByName(jwtTokenProvider.decode(accessToken, "role"));
 
-        checkAdminUser(member);
+        checkAdminRole(role);
         return true;
     }
 
-    private void checkAdminUser(Member member) {
-        if (!member.isAdminUser()) {
+    private void checkAdminRole(Role role) {
+        if (!role.isAdminRole()) {
             throw new ForbiddenException("허용되지 않는 사용자입니다.");
         }
     }

@@ -15,4 +15,8 @@ public enum Role {
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 역할입니다."));
     }
+
+    public boolean isAdminRole() {
+        return this.equals(ADMIN);
+    }
 }

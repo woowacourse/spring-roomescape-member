@@ -24,11 +24,6 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 멤버입니다."));
     }
 
-    public Member findMemberByToken(String accessToken) {
-        String email = jwtTokenProvider.decode(accessToken, "email");
-        return findMemberByEmail(email);
-    }
-
     public LoginResponse login(LoginRequest request) {
         Member member = findMemberByEmail(request.email());
 

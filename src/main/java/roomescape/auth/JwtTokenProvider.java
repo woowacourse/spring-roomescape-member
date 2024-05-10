@@ -18,6 +18,7 @@ public class JwtTokenProvider {
 
     private static final String EMAIL_KEY = "email";
     private static final String ID_KEY = "id";
+    private static final String ROLE_KEY = "role";
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -30,6 +31,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .claim(ID_KEY, member.getId())
                 .claim(EMAIL_KEY, member.getEmail())
+                .claim(ROLE_KEY, member.getRole().name())
                 .setExpiration(new Date(now + expiredPeriod))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
@@ -39,9 +41,9 @@ public class JwtTokenProvider {
         Map<String, String> decodedClaims = new HashMap<>();
 
         Claims claims = parseJwt(token);
-
         decodedClaims.put(EMAIL_KEY, claims.get(EMAIL_KEY).toString());
         decodedClaims.put(ID_KEY, claims.get(ID_KEY).toString());
+        decodedClaims.put(ROLE_KEY, claims.get(ROLE_KEY).toString());
 
         return decodedClaims;
     }
