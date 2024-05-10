@@ -19,18 +19,13 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public boolean checkInvalidLogin(UserLoginRequest request) {
-        return memberDao.findByEmailAndPassword(request.email(), request.password())
-                .isEmpty();
-    }
-
     public Member findMember(UserLoginRequest request) {
-        return memberDao.findByEmailAndPassword(request.email(), request.password())
+        return memberDao.readByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new InvalidRequestException("존재하지 않는 사용자입니다."));
     }
 
     public Member findMember(Long id) {
-        return memberDao.findById(id)
+        return memberDao.readById(id)
                 .orElseThrow(() -> new InvalidRequestException("존재하지 않는 사용자입니다."));
     }
 
@@ -44,5 +39,10 @@ public class AuthService {
             throw new AuthorizationException("이메일과 비밀번호를 확인해 주세요.");
         }
         return jwtTokenProvider.createToken(findMember(request));
+    }
+
+    private boolean checkInvalidLogin(UserLoginRequest request) {
+        return memberDao.readByEmailAndPassword(request.email(), request.password())
+                .isEmpty();
     }
 }
