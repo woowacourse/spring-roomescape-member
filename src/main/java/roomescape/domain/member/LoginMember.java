@@ -1,5 +1,3 @@
 package roomescape.domain.member;
 
-public record LoginMember(Long id, String email, String name) {
-
-}
+public record LoginMember(Long id, String email, String name, Role role) { }

@@ -6,12 +6,14 @@ public class Member {
     private final Name name;
     private final Email email;
     private final Password password;
+    private final Role role;
 
-    public Member(Long id, String rawName, String rawEmail, String rawPassword) {
+    public Member(Long id, String rawName, String rawEmail, String rawPassword, Role role) {
         this.id = id;
         this.name = new Name(rawName);
         this.email = new Email(rawEmail);
         this.password = new Password(rawPassword);
+        this.role = role;
     }
 
     public Long getId() {
@@ -28,5 +30,9 @@ public class Member {
 
     public String getPassword() {
         return password.getValue();
+    }
+
+    public String getRole() {
+        return role.toString();
     }
 }

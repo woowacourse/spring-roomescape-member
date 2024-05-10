@@ -32,22 +32,19 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory) {
 
+        LoginMember defaultMember = new LoginMember(null, null, null, null);
+
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            return new LoginMember(null, null, null);
+            return defaultMember;
         }
 
-        String token = extractTokenFromCookies(cookies);
+        String token = jwtTokenProvider.extractTokenFromCookies(cookies);
+
+        if (token.isEmpty()) {
+            return defaultMember;
+        }
         return jwtTokenProvider.parse(token);
-    }
-
-    private String extractTokenFromCookies(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        throw new RuntimeException("토큰을 찾을 수 없습니다.");
     }
 }

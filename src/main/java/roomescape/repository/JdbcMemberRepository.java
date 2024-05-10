@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -15,7 +16,8 @@ public class JdbcMemberRepository implements MemberRepository {
     private final RowMapper<LoginMember> loginMemberMapper = (rs, rowNum) -> new LoginMember(
         rs.getLong("id"),
         rs.getString("email"),
-        rs.getString("name")
+        rs.getString("name"),
+        rs.getObject("role", Role.class)
     );
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
@@ -29,7 +31,8 @@ public class JdbcMemberRepository implements MemberRepository {
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
-            rs.getString("password")
+            rs.getString("password"),
+            Role.valueOf(rs.getString("role"))
         ), email, password);
 
         return result.stream().findAny();
@@ -37,14 +40,14 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<LoginMember> findById(Long id) {
-        String sql = "SELECT id, name, email FROM member WHERE id = ?";
+        String sql = "SELECT id, name, email, role FROM member WHERE id = ?";
         List<LoginMember> result = jdbcTemplate.query(sql, loginMemberMapper, id);
         return result.stream().findAny();
     }
 
     @Override
     public List<LoginMember> findAll() {
-        String sql = "SELECT id, name, email FROM member";
+        String sql = "SELECT id, name, email, role FROM member";
         return jdbcTemplate.query(sql, loginMemberMapper);
     }
 }
