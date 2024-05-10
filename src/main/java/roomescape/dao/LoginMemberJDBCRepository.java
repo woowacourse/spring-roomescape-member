@@ -19,12 +19,13 @@ public class LoginMemberJDBCRepository implements LoginMemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            resultSet.getString("role")
     );
 
     @Override
     public Optional<LoginMember> findByEmail(String email) {
-        String sql = "SELECT id, name, email, password FROM login_member WHERE email = ?";
+        String sql = "SELECT id, name, email, password, role FROM login_member WHERE email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email));
         } catch (DataAccessException e) {

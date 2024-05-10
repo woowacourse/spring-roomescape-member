@@ -34,6 +34,7 @@ public class LoginMemberService {
     public LoginMemberResponse findByEmail(String email) {
         LoginMember loginMember = loginMemberRepository.findByEmail(email).get();
         return new LoginMemberResponse(
-                loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getPassword());
+                loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getPassword(),
+                loginMember.getRole());
     }
 }

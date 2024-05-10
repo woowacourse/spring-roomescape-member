@@ -40,6 +40,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         LoginMemberResponse loginMemberResponse = loginMemberService.findByEmail(email);
         return new LoginMember(
                 loginMemberResponse.id(), loginMemberResponse.name(),
-                loginMemberResponse.email(), loginMemberResponse.password());
+                loginMemberResponse.email(), loginMemberResponse.password(), loginMemberResponse.role());
     }
 }
