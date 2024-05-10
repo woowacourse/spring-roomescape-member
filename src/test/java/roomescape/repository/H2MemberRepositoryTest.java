@@ -10,7 +10,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
 import roomescape.domain.Member;
-import roomescape.domain.ReservationTime;
 
 @Sql(value = "/setMember.sql")
 class H2MemberRepositoryTest extends BasicAcceptanceTest {
@@ -27,22 +26,10 @@ class H2MemberRepositoryTest extends BasicAcceptanceTest {
         assertThat(memberRepository.findAll()).isEqualTo(expected);
     }
 
-    @DisplayName("해당 email과 password를 가진 멤버가 존재하면 true를 반환한다")
-    @Test
-    void checkExistMember() {
-        assertThat(memberRepository.checkExistMember("email1", "qq1")).isTrue();
-    }
-
-    @DisplayName("해당 email과 password를 가진 멤버가 없으면 false를 반환한다")
-    @Test
-    void checkNotExistMember() {
-        assertThat(memberRepository.checkExistMember("email2", "qq2")).isFalse();
-    }
-
     @DisplayName("해당 email의 멤버를 반환한다")
     @Test
     void findByEmail() {
-        Member member = memberRepository.findByEmail("email1");
+        Member member = memberRepository.findByEmail("email1").orElseThrow();
 
         assertThat(member).isEqualTo(TestFixtures.MEMBER_2);
     }

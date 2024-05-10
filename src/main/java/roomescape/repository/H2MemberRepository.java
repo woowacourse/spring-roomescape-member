@@ -49,22 +49,7 @@ public class H2MemberRepository implements MemberRepository {
                 member.getRole());
     }
 
-    public boolean checkExistMember(String email, String password) {
-        String sql = """
-                SELECT 
-                CASE WHEN EXISTS (
-                        SELECT 1
-                        FROM user_table
-                        WHERE email = ? AND password = ?
-                    )
-                    THEN TRUE
-                    ELSE FALSE
-                END
-                """;
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email, password));
-    }
-
-    public Member findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         String sql = """
                 SELECT
                     id, name, email, password, role
@@ -73,7 +58,8 @@ public class H2MemberRepository implements MemberRepository {
                 WHERE
                     email = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, rowMapper, email);
+        List<Member> members = jdbcTemplate.query(sql, rowMapper, email);
+        return members.stream().findFirst();
     }
 
     public Optional<Member> findById(Long memberId) {
@@ -85,8 +71,8 @@ public class H2MemberRepository implements MemberRepository {
                 WHERE
                     id = ?
                 """;
-        Member member = jdbcTemplate.queryForObject(sql, rowMapper, memberId);
-        return Optional.ofNullable(member);
+        List<Member> members = jdbcTemplate.query(sql, rowMapper, memberId);
+        return members.stream().findFirst();
     }
 
     public List<Member> findAll() {

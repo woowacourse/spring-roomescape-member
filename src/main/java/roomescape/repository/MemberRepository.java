@@ -7,9 +7,7 @@ import roomescape.domain.Member;
 public interface MemberRepository {
     Member save(Member member);
 
-    boolean checkExistMember(String email, String password);
-
-    Member findByEmail(String email);
+    Optional<Member> findByEmail(String email);
 
     Optional<Member> findById(Long memberId);
 

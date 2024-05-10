@@ -28,15 +28,9 @@ public class MemberService {
     }
 
     public TokenResponse createToken(UserLoginRequest userLoginRequest) {
-        if (!checkInvalidLogin(userLoginRequest.email(), userLoginRequest.password())) {
-            throw new IllegalArgumentException("사용자 없음");
-        }
-        Member member = memberRepository.findByEmail(userLoginRequest.email());
+        Member member = memberRepository.findByEmail(userLoginRequest.email())
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
         return new TokenResponse(jwtTokenProvider.createToken(member));
-    }
-
-    private boolean checkInvalidLogin(String email, String password) {
-        return memberRepository.checkExistMember(email, password);
     }
 
     public CheckMemberResponse findById(Long id) {
