@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.request.UserLoginRequest;
-import roomescape.controller.request.UserSignUpRequest;
-import roomescape.controller.response.CheckMemberResponse;
-import roomescape.controller.response.MemberResponse;
-import roomescape.controller.response.TokenResponse;
+import roomescape.dto.request.UserLoginRequest;
+import roomescape.dto.request.UserSignUpRequest;
+import roomescape.dto.response.CheckMemberResponse;
+import roomescape.dto.response.MemberResponse;
+import roomescape.dto.response.TokenResponse;
 import roomescape.service.MemberService;
 import roomescape.ui.MemberIdConverter;
 

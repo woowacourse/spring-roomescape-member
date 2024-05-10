@@ -2,11 +2,11 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.request.UserLoginRequest;
-import roomescape.controller.request.UserSignUpRequest;
-import roomescape.controller.response.CheckMemberResponse;
-import roomescape.controller.response.MemberResponse;
-import roomescape.controller.response.TokenResponse;
+import roomescape.dto.request.UserLoginRequest;
+import roomescape.dto.request.UserSignUpRequest;
+import roomescape.dto.response.CheckMemberResponse;
+import roomescape.dto.response.MemberResponse;
+import roomescape.dto.response.TokenResponse;
 import roomescape.domain.Member;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;

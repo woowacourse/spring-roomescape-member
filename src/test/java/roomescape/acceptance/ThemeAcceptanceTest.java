@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
-import roomescape.controller.response.ThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 
 class ThemeAcceptanceTest extends BasicAcceptanceTest {
 
