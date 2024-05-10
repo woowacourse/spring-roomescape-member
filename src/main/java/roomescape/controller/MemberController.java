@@ -15,7 +15,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/members")
     ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
         memberService.createUser(signupRequest);
         return ResponseEntity.ok().build();

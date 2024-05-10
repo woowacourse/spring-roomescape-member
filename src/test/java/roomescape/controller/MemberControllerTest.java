@@ -34,7 +34,7 @@ class MemberControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/signup")
+                .when().post("/members")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -51,7 +51,7 @@ class MemberControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/signup")
+                .when().post("/members")
                 .then().log().all()
                 .statusCode(400);
     }
