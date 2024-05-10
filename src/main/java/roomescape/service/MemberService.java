@@ -31,8 +31,8 @@ public class MemberService {
 
     public MemberResponse findMember(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
-        Member member = jwtTokenProvider.findMember(token);
-        return MemberResponse.from(member);
+        String name = jwtTokenProvider.findMember(token);
+        return new MemberResponse(name);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

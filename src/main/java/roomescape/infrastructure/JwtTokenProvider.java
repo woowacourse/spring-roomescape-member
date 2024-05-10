@@ -17,25 +17,20 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(member.id().toString())
                 .claim("name", member.name())
-                .claim("email", member.email())
-                .claim("password", member.password())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    public Member findMember(String token) {
-
+    public String findMember(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
 
         Long userId = Long.valueOf(claims.getSubject());
-        String name = (String) claims.get("name");
-        String email = (String) claims.get("email");
-        String password = (String) claims.get("password");
+        String name = claims.get("name", String.class);
 
-        return new Member(userId, name, email, password);
+        return name;
     }
 }
 
