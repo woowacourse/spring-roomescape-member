@@ -5,12 +5,9 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.ReservationResponse;
@@ -25,18 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.acceptance.Fixture.adminToken;
 import static roomescape.acceptance.PreInsertedData.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
-class ReservationAcceptanceTest {
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    private void setUp() {
-        RestAssured.port = port;
-    }
+class ReservationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("관리자가 예약 목록을 조회한다.")
     @Test
@@ -54,20 +40,20 @@ class ReservationAcceptanceTest {
 
     @DisplayName("관리자가 예약을 추가한다.")
     @Nested
-    class addReservation {
+    class addReservation extends NestedAcceptanceTest {
 
         @DisplayName("정상 작동")
         @Test
         void addReservation_success() {
             AdminReservationRequest requestBody = getRequestBody(
-                    LocalDate.parse("2099-12-31")
+                    LocalDate.parse("2099-12-30")
             );
 
-            RestAssured.given().log().ifValidationFails()
+            RestAssured.given().log().all()
                     .cookie("token", adminToken)
                     .contentType(ContentType.JSON)
                     .body(requestBody)
-                    .when().post("/reservations")
+                    .when().post("/admin/reservations")
                     .then().log().all()
                     .statusCode(HttpStatus.CREATED.value())
                     .header("location", containsString("/reservations/"))
@@ -124,18 +110,18 @@ class ReservationAcceptanceTest {
         }
 
         private ValidatableResponse sendPostRequest(AdminReservationRequest requestBody) {
-            return RestAssured.given().log().ifValidationFails()
+            return RestAssured.given().log().all()
                     .cookie("token", adminToken)
                     .contentType(ContentType.JSON)
                     .body(requestBody)
-                    .when().post("/reservations")
+                    .when().post("/admin/reservations")
                     .then().log().all();
         }
     }
 
     @DisplayName("관리자가 예약을 삭제한다.")
     @Nested
-    class deleteReservation {
+    class deleteReservation extends NestedAcceptanceTest {
 
         @DisplayName("정상 작동")
         @Test

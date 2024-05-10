@@ -6,12 +6,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.acceptance.AcceptanceTest;
 import roomescape.dto.AvailableReservationTimeResponse;
 
 import java.time.LocalDate;
@@ -19,10 +16,7 @@ import java.util.List;
 
 import static roomescape.acceptance.PreInsertedData.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
-class ReservationTimeAcceptanceTest {
+class ReservationTimeAcceptanceTest extends AcceptanceTest {
 
     @LocalServerPort
     private int port;

@@ -4,16 +4,12 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
@@ -28,18 +24,7 @@ import static roomescape.acceptance.Fixture.adminToken;
 import static roomescape.acceptance.PreInsertedData.preInsertedReservationTime1;
 import static roomescape.acceptance.PreInsertedData.preInsertedReservationTime2;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
-class ReservationTimeAcceptanceTest {
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    private void setUp() {
-        RestAssured.port = port;
-    }
+class ReservationTimeAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("관리자가 예약 시간 목록을 조회한다.")
     @Test
@@ -73,7 +58,7 @@ class ReservationTimeAcceptanceTest {
 
     @DisplayName("관리자가 예약 시간을 삭제한다.")
     @Nested
-    class deleteReservationTime {
+    class deleteReservationTime extends NestedAcceptanceTest {
 
         @DisplayName("정상 작동")
         @Test
