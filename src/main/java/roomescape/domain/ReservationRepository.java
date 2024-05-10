@@ -18,4 +18,6 @@ public interface ReservationRepository {
     boolean isDuplicated(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
+
+    List<Reservation> findAllMemberIdAndThemeIdInPeriod(Long memberId, Long themeId, String from, String to);
 }

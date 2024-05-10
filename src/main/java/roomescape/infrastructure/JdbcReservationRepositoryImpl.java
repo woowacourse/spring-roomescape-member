@@ -132,6 +132,32 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
             sql, getReservationRowMapper(), date, themeId);
     }
 
+    @Override
+    public List<Reservation> findAllMemberIdAndThemeIdInPeriod(Long memberId, Long themeId, String from, String to) {
+        String sql = """
+            SELECT 
+                r.id AS reservation_id, 
+                m.id AS member_id,
+                m.name AS member_name, 
+                m.email AS member_email,
+                m.password AS member_password,
+                m.role AS member_role,
+                r.date AS reservation_date, 
+                t.id AS time_id, 
+                t.start_at AS time_value,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail            
+            FROM reservation AS r 
+            INNER JOIN reservation_time AS t ON r.time_id = t.id
+            INNER JOIN theme AS th ON r.theme_id = th.id
+            INNER JOIN member AS m ON r.member_id = m.id
+            WHERE m.id = ? AND th.id = ? AND r.date BETWEEN ? AND ?
+            """;
+        return jdbcTemplate.query(sql, getReservationRowMapper(), memberId, themeId, from, to);
+    }
+
     private RowMapper<Reservation> getReservationRowMapper() {
         return (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),

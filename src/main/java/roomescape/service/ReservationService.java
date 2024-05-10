@@ -13,6 +13,7 @@ import roomescape.domain.ThemeRepository;
 import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ReservationTime;
 import roomescape.exception.PastReservationException;
+import roomescape.service.request.AdminSearchedReservationAppRequest;
 import roomescape.service.request.ReservationAppRequest;
 import roomescape.service.response.ReservationAppResponse;
 
@@ -82,6 +83,15 @@ public class ReservationService {
 
     public List<ReservationAppResponse> findAll() {
         return reservationRepository.findAll().stream()
+            .map(ReservationAppResponse::from)
+            .toList();
+    }
+
+    public List<ReservationAppResponse> findAllSearched(AdminSearchedReservationAppRequest request) {
+        List<Reservation> searchedReservations = reservationRepository.findAllMemberIdAndThemeIdInPeriod(
+            request.memberId(), request.themeId(), request.dateFrom(), request.dateTo());
+
+        return searchedReservations.stream()
             .map(ReservationAppResponse::from)
             .toList();
     }
