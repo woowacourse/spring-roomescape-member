@@ -1,31 +1,84 @@
+-- drop table if exists theme CASCADE;
+-- drop table if exists reservation CASCADE;
+-- drop table if exists reservation_time CASCADE;
+--
+-- CREATE TABLE theme
+-- (
+--     id          BIGINT       NOT NULL AUTO_INCREMENT,
+--     name        VARCHAR(255) NOT NULL,
+--     description VARCHAR(255) NOT NULL,
+--     thumbnail VARCHAR(255) NOT NULL,
+--     PRIMARY KEY (id)
+-- );
+--
+-- CREATE TABLE reservation_time
+-- (
+--     id   BIGINT       NOT NULL AUTO_INCREMENT,
+--     start_at VARCHAR(255) NOT NULL,
+--     PRIMARY KEY (id)
+-- );
+--
+-- CREATE TABLE reservation
+-- (
+--     id   BIGINT       NOT NULL AUTO_INCREMENT,
+--     name VARCHAR(255) NOT NULL,
+--     date VARCHAR(255) NOT NULL,
+--     time_id BIGINT,                           -- 컬럼 수정
+--     theme_id BIGINT,                           -- 컬럼 수정
+--     PRIMARY KEY (id),
+--     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+--     FOREIGN KEY (theme_id) REFERENCES theme (id)
+-- );
+
+drop table if exists role CASCADE;
+drop table if exists member CASCADE;
 drop table if exists theme CASCADE;
 drop table if exists reservation CASCADE;
 drop table if exists reservation_time CASCADE;
+
+CREATE TABLE role
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE member
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role_id  BIGINT,
+    FOREIGN KEY (role_id) REFERENCES role (id),
+    PRIMARY KEY (id)
+);
 
 CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
-    thumbnail VARCHAR(255) NOT NULL,
+    thumbnail   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation_time
 (
-    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
     start_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation
 (
-    id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    date VARCHAR(255) NOT NULL,
-    time_id BIGINT,                           -- 컬럼 수정
-    theme_id BIGINT,                           -- 컬럼 수정
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id BIGINT       NOT NULL,
+    date      VARCHAR(255) NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
     PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
