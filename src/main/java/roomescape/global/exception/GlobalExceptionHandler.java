@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NoResourceFoundException.class)
     public ResponseEntity<ExceptionResponse> handle(NoResourceFoundException e) {
         logger.error(e.getMessage());
-        
+
         return new ResponseEntity(new ExceptionResponse("유효하지 않은 API 경로입니다."), HttpStatus.NOT_FOUND);
     }
 
@@ -33,6 +33,12 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity(new ExceptionResponse("유효하지 않은 HTTP 요청 메서드입니다."), HttpStatus.BAD_REQUEST);
     }
+
+    // TODO: 잘못된 사용자 정보로 로그인 시도
+//    @ExceptionHandler
+//    public ResponseEntity<ExceptionResponse> handle() {
+//
+//    }
 
     @ExceptionHandler
     public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException e) {

@@ -121,3 +121,7 @@ VALUES ('예약11', DATEADD('DAY', -3, CURRENT_DATE), 1, 10);
 -- 테마 11 예약 목록
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('예약15', DATEADD('DAY', -3, CURRENT_DATE), 5, 11);
+
+-- 유저 목록 : 1개
+INSERT INTO member (name, email, password)
+VALUES ('user', 'ddang@google.com', 'password');
