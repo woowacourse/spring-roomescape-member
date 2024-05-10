@@ -33,7 +33,7 @@ public class MemberService {
             throw new IllegalArgumentException("사용자 없음");
         }
         Member byEmail = memberRepository.findByEmail(userLoginRequest.email());
-        return TokenResponse.from(jwtTokenProvider.createToken(byEmail));
+        return new TokenResponse(jwtTokenProvider.createToken(byEmail));
     }
 
     private boolean checkInvalidLogin(String email, String password) {
