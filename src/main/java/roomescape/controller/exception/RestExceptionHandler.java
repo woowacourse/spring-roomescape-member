@@ -1,9 +1,11 @@
 package roomescape.controller.exception;
 
 import java.util.NoSuchElementException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import roomescape.service.AuthorizationException;
 
 @ControllerAdvice("roomescape.controller.api")
 public class RestExceptionHandler {
@@ -21,6 +23,14 @@ public class RestExceptionHandler {
         CustomErrorResponse errorResponse = new CustomErrorResponse(e.getMessage());
 
         return ResponseEntity.badRequest()
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<CustomErrorResponse> handleAuthorizationException(AuthorizationException e) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(errorResponse);
     }
 }

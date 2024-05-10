@@ -19,6 +19,9 @@ VALUES ('우테코 수료 대장정',
         '자고 있는 사이에 캠퍼스 문이 닫혀버렸다! 잠실 캠퍼스 탈출기',
         'https://velog.velcdn.com/images/jangws/post/7199f6ba-b3a8-4e2f-b86a-e5406b166bcd/image.jpeg');
 
+INSERT INTO member (name, email, password)
+VALUES ('어드민', 'admin@email.com', 'password');
+
 INSERT INTO reservation (name, date, time_id, theme_id, created_at)
 VALUES ('알알알', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 1, 1, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
        ('산초', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),

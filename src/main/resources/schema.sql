@@ -14,6 +14,14 @@ CREATE TABLE IF NOT EXISTS theme
     PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS member
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS reservation
 (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
