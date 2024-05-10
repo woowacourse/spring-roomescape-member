@@ -70,7 +70,7 @@ public class ReservationRepository {
                 "    m.email AS member_email, " +
                 "    m.password AS member_password, " +
                 "    m.role AS member_role, " +
-                "    r.id AS reservation_id, " +
+                "    r.id, " +
                 "    r.member_id, " +
                 "    r.date, " +
                 "    r.reservation_time_id, " +
@@ -92,6 +92,36 @@ public class ReservationRepository {
         return reservations.isEmpty() ? Optional.empty() : Optional.of(reservations.get(0));
     }
 
+    public List<Reservation> searchReservations(long memberId, long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = "SELECT " +
+                "    m.id AS member_id, " +
+                "    m.name AS member_name, " +
+                "    m.email AS member_email, " +
+                "    m.password AS member_password, " +
+                "    m.role AS member_role, " +
+                "    r.id, " +
+                "    r.member_id, " +
+                "    r.date, " +
+                "    r.reservation_time_id, " +
+                "    r.theme_id, " +
+                "    t.start_at AS time_value, " +
+                "    th.id AS theme_id, " +
+                "    th.name AS theme_name, " +
+                "    th.description AS theme_description, " +
+                "    th.thumbnail AS theme_thumbnail " +
+                "FROM reservation AS r " +
+                "INNER JOIN reservation_time AS t " +
+                "ON r.reservation_time_id = t.id " +
+                "INNER JOIN theme AS th " +
+                "ON r.theme_id = th.id " +
+                "INNER JOIN member AS m " +
+                "ON r.member_id = m.id " +
+                "WHERE r.member_id = ? " +
+                "AND r.theme_id = ? " +
+                "AND r.date BETWEEN ? AND ?";
+        return jdbcTemplate.query(sql, reservationRowMapper,
+                memberId, themeId, Date.valueOf(dateFrom), Date.valueOf(dateTo));
+    }
 
     public List<Reservation> findAll() {
         String sql = "SELECT " +
@@ -100,7 +130,7 @@ public class ReservationRepository {
                 "    m.email AS member_email, " +
                 "    m.password AS member_password, " +
                 "    m.role AS member_role, " +
-                "    r.id AS reservation_id, " +
+                "    r.id, " +
                 "    r.member_id, " +
                 "    r.date, " +
                 "    r.reservation_time_id, " +
