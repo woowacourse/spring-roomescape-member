@@ -60,3 +60,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('박영수', '20
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2024-05-10', 4, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('이정수', '2024-05-10', 3, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최은희', '2024-05-10', 1, 3);
+
+INSERT INTO users (name, email, password) VALUES ('썬', 'sun@email.com', '1234');
+INSERT INTO users (name, email, password) VALUES ('배키', 'dmsgml@email.com', '1111');
