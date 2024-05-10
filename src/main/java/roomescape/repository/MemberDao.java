@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,14 +13,22 @@ import roomescape.domain.dto.SignupRequest;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class MemberDao {
-    private static final RowMapper<Member> rowMapper =
+    private static final RowMapper<Member> memberRowMapper =
             (resultSet, rowNum) -> new Member(
                     resultSet.getLong("id"),
                     resultSet.getString("email"),
                     resultSet.getString("name")
+            ) {
+            };
+
+    private static final RowMapper<Password> passwordRowMapper =
+            (resultSet, rowNum) -> new Password(
+                    resultSet.getString("password"),
+                    resultSet.getString("salt")
             ) {
             };
 
@@ -31,7 +40,7 @@ public class MemberDao {
 
     public List<Member> findAll() {
         String sql = "select id, email, name from member";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 
     public Long create(final SignupRequest signupRequest, final Password password) {
@@ -57,5 +66,14 @@ public class MemberDao {
     public boolean isLoginFail(final LoginRequest loginRequest, Password password) {
         String sql = "select count(*) from member where email = ? and password = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, loginRequest.email(), password.getHashValue()) == 0;
+    }
+
+    public Optional<Password> findPasswordByEmail(final String email) {
+        String sql = "select password, salt from member where email = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, passwordRowMapper, email));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

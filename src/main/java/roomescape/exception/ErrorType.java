@@ -7,7 +7,8 @@ public enum ErrorType {
     INVALID_TIME("올바르지 않는 시간 값 입니다."),
     INVALID_THEME("올바르지 않는 테마 값 입니다."),
     PAST_DATE_NOT_ALLOWED("이미 지난 시간으로 예약할 수 없습니다."),
-    NOT_EXIST_TIME("존재하지 않는 예약 시간입니다.");
+    NOT_EXIST_TIME("존재하지 않는 예약 시간입니다."),
+    NOT_EXIST_EMAIL("회원 정보가 존재하지 않습니다.");
 
     private final String message;
 

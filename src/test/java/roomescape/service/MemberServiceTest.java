@@ -2,21 +2,32 @@ package roomescape.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Password;
+import roomescape.domain.PasswordEncoder;
 import roomescape.domain.dto.LoginRequest;
 import roomescape.domain.dto.SignupRequest;
-import roomescape.exception.AccessNotAllowException;
 import roomescape.exception.SignupFailException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
+    @InjectMocks
     private final MemberService service;
+
+    @MockBean
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public MemberServiceTest(final MemberService service) {
@@ -57,10 +68,11 @@ class MemberServiceTest {
 
     @DisplayName("로그인 정보가 일치하지 않으면 예외를 발생시킨다. ")
     @Test
-    void given_LoginRequest_when_loginFail_then_thrownException() {
+    void given_LoginRequest_when_loginSuccess_then_doesNotAnyException() {
         //given
+        when(passwordEncoder.encode(any(String.class), any(String.class))).thenReturn(new Password("hashedpassword", "salt"));
         LoginRequest loginRequest = new LoginRequest("poke@test.com", "password");
         //when, then
-        assertThatThrownBy(() -> service.login(loginRequest)).isInstanceOf(AccessNotAllowException.class);
+        assertThatCode(() -> service.login(loginRequest)).doesNotThrowAnyException();
     }
 }

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Password;
+import roomescape.domain.PasswordEncoder;
 import roomescape.domain.dto.*;
 import roomescape.exception.AccessNotAllowException;
 import roomescape.exception.SignupFailException;
@@ -12,9 +13,11 @@ import java.util.List;
 @Service
 public class MemberService {
     private final MemberDao memberDao;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(final MemberDao memberDao) {
+    public MemberService(final MemberDao memberDao, final PasswordEncoder passwordEncoder) {
         this.memberDao = memberDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public MemberResponses findEntireMembers() {
@@ -27,7 +30,7 @@ public class MemberService {
 
     public SignupResponse createUser(final SignupRequest signupRequest) {
         validateExist(signupRequest);
-        Password password = new Password(signupRequest.password());
+        Password password = passwordEncoder.encode(signupRequest.password());
         Long id = memberDao.create(signupRequest, password);
         return new SignupResponse(id);
     }
@@ -39,9 +42,10 @@ public class MemberService {
     }
 
     public void login(final LoginRequest loginRequest) {
-        //hash 값 반환
-        Password password = new Password(loginRequest.password());
-        if (memberDao.isLoginFail(loginRequest, password)) {
+        Password password = memberDao.findPasswordByEmail(loginRequest.email())
+                .orElseThrow(() -> new AccessNotAllowException("회원 정보가 일치하지 않습니다."));
+        Password requestPassword = passwordEncoder.encode(loginRequest.password(), password.getSalt());
+        if (!password.check(requestPassword)) {
             throw new AccessNotAllowException("회원 정보가 일치하지 않습니다.");
         }
         // TODO 토큰 반환하기

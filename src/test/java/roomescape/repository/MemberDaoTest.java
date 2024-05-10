@@ -37,7 +37,7 @@ class MemberDaoTest {
         //given
         SignupRequest signupRequest = new SignupRequest("ash@test.com", "123456", "ash");
         //when, then
-        assertThat(memberDao.create(signupRequest, new Password(signupRequest.password()))).isEqualTo(2);
+        assertThat(memberDao.create(signupRequest, new Password("hashvalue", "salt"))).isEqualTo(2);
     }
 
 
