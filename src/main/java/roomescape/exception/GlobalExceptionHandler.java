@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,12 +37,17 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(final NoResourceFoundException e) {
+        logger.error(e.getMessage(), e);
+        return ResponseEntity.notFound()
+                .build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(final Exception e) {
         logger.error(e.getMessage(), e);
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse("예기치 않은 오류가 발생했습니다."));
     }
-    
-    //TODO NoResourceFoundException 낫파운드로 바꾸기
 }
