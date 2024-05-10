@@ -52,10 +52,11 @@ class TimeControllerTest {
     void findAvailableTimes() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00:00");
+        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2023-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1, "2023-08-05", 1, 1);
 
         List<AvailableTimeResponse> expected = List.of(
                 new AvailableTimeResponse(new TimeResponse(1L, LocalTime.of(10, 0)), true),

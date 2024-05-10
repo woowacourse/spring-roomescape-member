@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -27,7 +28,10 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
         this.rowMapper = (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email")),
                 resultSet.getObject("date", LocalDate.class),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -42,10 +46,12 @@ public class ReservationDao {
 
     public List<Reservation> findReservations() {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
+                SELECT reservation.id, reservation.member_id, reservation.date, reservation.time_id, reservation.theme_id,
+                        member.name, member.email,
                         reservation_time.start_at,
                         theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
+                JOIN member ON reservation.member_id = member.id
                 JOIN reservation_time ON reservation.time_id = reservation_time.id
                 JOIN theme ON reservation.theme_id = theme.id;
                 """;
@@ -54,10 +60,12 @@ public class ReservationDao {
 
     private Optional<Reservation> findReservationById(Long id) {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
+                SELECT reservation.id, reservation.member_id, reservation.date, reservation.time_id, reservation.theme_id,
+                        member.name, member.email,
                         reservation_time.start_at,
                         theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
+                JOIN member ON reservation.member_id = member.id
                 JOIN reservation_time ON reservation.time_id = reservation_time.id
                 JOIN theme ON reservation.theme_id = theme.id
                 WHERE reservation.id = ?
@@ -83,9 +91,9 @@ public class ReservationDao {
 
     private PreparedStatement createPreparedStatementForUpdate(Connection connection, Reservation reservation)
             throws SQLException {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-        preparedStatement.setString(1, reservation.getName());
+        preparedStatement.setLong(1, reservation.getMemberId());
         preparedStatement.setObject(2, reservation.getDate());
         preparedStatement.setLong(3, reservation.getTimeId());
         preparedStatement.setLong(4, reservation.getThemeId());

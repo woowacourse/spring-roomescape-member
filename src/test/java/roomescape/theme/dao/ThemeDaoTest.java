@@ -71,6 +71,7 @@ class ThemeDaoTest {
     @DisplayName("특정 기간 내 인기 테마를 예약 횟수 순으로 조회할 수 있다.")
     @Test
     void findThemesSortedByCountOfReservationTest() {
+        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -79,8 +80,8 @@ class ThemeDaoTest {
                 "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
-                "브라운", "2024-08-15", 1, 2);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
+                1, "2024-08-15", 1, 2);
         List<Theme> expected = List.of(new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"));
 
         LocalDate start = LocalDate.of(2024, 8, 14);
@@ -136,10 +137,11 @@ class ThemeDaoTest {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
+        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
-                "브라운", "2024-08-15", 1, 1);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
+                1, "2024-08-15", 1, 1);
 
         assertThatThrownBy(() -> themeDao.deleteTheme(1L))
                 .isInstanceOf(IllegalArgumentException.class)

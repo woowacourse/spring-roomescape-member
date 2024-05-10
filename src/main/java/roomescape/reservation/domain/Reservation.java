@@ -3,28 +3,29 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 public class Reservation {
     private final Long id;
-    private final MemberName name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new MemberName(name), date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this.id = null;
+        this.member = Objects.requireNonNull(member);
+        this.date = Objects.requireNonNull(date);
+        this.time = Objects.requireNonNull(time);
+        this.theme = Objects.requireNonNull(theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(Objects.requireNonNull(id), new MemberName(name), date, time, theme);
-    }
-
-    private Reservation(Long id, MemberName name, LocalDate date, ReservationTime time, Theme theme) {
-        this.id = id;
-        this.name = Objects.requireNonNull(name);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this.id = Objects.requireNonNull(id);
+        this.member = Objects.requireNonNull(member);
         this.date = Objects.requireNonNull(date);
         this.time = Objects.requireNonNull(time);
         this.theme = Objects.requireNonNull(theme);
@@ -41,6 +42,10 @@ public class Reservation {
         return time.isBefore(currentDateTime.toLocalTime());
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public Long getTimeId() {
         return time.getId();
     }
@@ -54,7 +59,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.value();
+        return member.getName();
     }
 
     public LocalDate getDate() {
@@ -79,7 +84,7 @@ public class Reservation {
         }
         Reservation that = (Reservation) o;
         return Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
+                && Objects.equals(member, that.member)
                 && Objects.equals(date, that.date)
                 && Objects.equals(time, that.time)
                 && Objects.equals(theme, that.theme);
@@ -87,6 +92,6 @@ public class Reservation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, time, theme);
+        return Objects.hash(id, member, date, time, theme);
     }
 }

@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
@@ -31,6 +33,8 @@ class ReservationServiceTest {
     @Mock
     private ReservationDao reservationDao;
     @Mock
+    private MemberDao memberDao;
+    @Mock
     private TimeDao timeDao;
     @Mock
     private ThemeDao themeDao;
@@ -42,20 +46,24 @@ class ReservationServiceTest {
     void findReservationsTest() {
         given(reservationDao.findReservations()).willReturn(List.of(
                 new Reservation(
-                        1L, "브라운", LocalDate.of(2024, 8, 15),
+                        1L, new Member(1L, "브라운", "brown@abc.com"),
+                        LocalDate.of(2024, 8, 15),
                         new ReservationTime(1L, LocalTime.of(19, 0)),
                         new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")),
                 new Reservation(
-                        2L, "브리", LocalDate.of(2024, 8, 20),
+                        2L, new Member(2L, "브리", "bri@abc.com"),
+                        LocalDate.of(2024, 8, 20),
                         new ReservationTime(1L, LocalTime.of(19, 0)),
                         new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"))));
         List<ReservationResponse> expected = List.of(
                 new ReservationResponse(
-                        1L, "브라운", LocalDate.of(2024, 8, 15),
+                        1L, "브라운",
+                        LocalDate.of(2024, 8, 15),
                         new TimeResponse(1L, LocalTime.of(19, 0)),
                         new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")),
                 new ReservationResponse(
-                        2L, "브리", LocalDate.of(2024, 8, 20),
+                        2L, "브리",
+                        LocalDate.of(2024, 8, 20),
                         new TimeResponse(1L, LocalTime.of(19, 0)),
                         new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
 
@@ -68,13 +76,16 @@ class ReservationServiceTest {
     @Test
     void createReservationTest() {
         LocalDate date = LocalDate.now().plusDays(7);
-        ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(1L, date, 1L, 1L);
+        given(memberDao.findMemberById(1L))
+                .willReturn(Optional.of(new Member(1L, "브라운", "brown@abc.com")));
         given(timeDao.findTimeById(1L))
                 .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
         given(themeDao.findThemeById(1L))
                 .willReturn(Optional.of(new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
         given(reservationDao.createReservation(any())).willReturn(new Reservation(
-                1L, "브라운", LocalDate.of(2024, 8, 15),
+                1L, new Member(1L, "브라운", "brown@abc.com"),
+                LocalDate.of(2024, 8, 15),
                 new ReservationTime(1L, LocalTime.of(19, 0)),
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
         ReservationResponse expected = new ReservationResponse(
@@ -87,11 +98,25 @@ class ReservationServiceTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @DisplayName("예약 생성 시, memberId에 해당하는 멤버가 없다면 예외를 던진다.")
+    @Test
+    void createReservationTest_whenMemberNotExist() {
+        LocalDate date = LocalDate.now().plusDays(7);
+        ReservationCreateRequest request = new ReservationCreateRequest(1L, date, 1L, 1L);
+        given(memberDao.findMemberById(1L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 멤버가 존재하지 않습니다.");
+    }
+
     @DisplayName("예약 생성 시, timeId에 해당하는 예약 시간이 없다면 예외를 던진다.")
     @Test
     void createReservationTest_whenTimeNotExist() {
         LocalDate date = LocalDate.now().plusDays(7);
-        ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(1L, date, 1L, 1L);
+        given(memberDao.findMemberById(1L))
+                .willReturn(Optional.of(new Member(1L, "브라운", "brown@abc.com")));
         given(timeDao.findTimeById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -103,7 +128,9 @@ class ReservationServiceTest {
     @Test
     void createReservationTest_whenThemeNotExist() {
         LocalDate date = LocalDate.now().plusDays(7);
-        ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(1L, date, 1L, 1L);
+        given(memberDao.findMemberById(1L))
+                .willReturn(Optional.of(new Member(1L, "브라운", "brown@abc.com")));
         given(timeDao.findTimeById(1L))
                 .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
         given(themeDao.findThemeById(1L)).willReturn(Optional.empty());
@@ -117,7 +144,9 @@ class ReservationServiceTest {
     @Test
     void createReservationTest_whenDateTimeIsBefore() {
         LocalDate date = LocalDate.now().minusDays(7);
-        ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(1L, date, 1L, 1L);
+        given(memberDao.findMemberById(1L))
+                .willReturn(Optional.of(new Member(1L, "브라운", "brown@abc.com")));
         given(timeDao.findTimeById(1L))
                 .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
         given(themeDao.findThemeById(1L))

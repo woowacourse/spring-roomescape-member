@@ -49,20 +49,22 @@ class ThemeControllerTest {
     @DisplayName("인기 테마 목록을 읽을 수 있다.")
     @Test
     void findPopularReservations() {
+        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마2", "설명2", "https://image.jpg");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
-                "브라운", -1, 1, 2);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
+                1, -1, 1, 2);
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
-                "브라운", -2, 1, 2);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
+                1, -2, 1, 2);
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
-                "브라운", -2, 1, 1);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, TIMESTAMPADD(DAY, ?, NOW()), ?, ?)",
+                1, -2, 1, 1);
+
         List<ThemeResponse> expected = List.of(
                 new ThemeResponse(2L, "테마2", "설명2", "https://image.jpg"),
                 new ThemeResponse(1L, "테마1", "설명1", "https://image.jpg")

@@ -2,7 +2,10 @@ package roomescape.reservation.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
@@ -15,11 +18,14 @@ import roomescape.time.domain.ReservationTime;
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
+    private final MemberDao memberDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
+
+    public ReservationService(ReservationDao reservationDao, MemberDao memberDao, TimeDao timeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
     }
@@ -32,13 +38,19 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest request) {
+        Member member = findMemberByMemberId(request.memberId());
         ReservationTime time = findTimeByTimeId(request.timeId());
         Theme theme = findThemeByThemeId(request.themeId());
-        Reservation reservation = request.createReservation(time, theme);
+        Reservation reservation = request.createReservation(member, time, theme);
 
         validateIsAvailable(reservation);
         Reservation createdReservation = reservationDao.createReservation(reservation);
         return ReservationResponse.from(createdReservation);
+    }
+
+    private Member findMemberByMemberId(Long memberId) {
+        return memberDao.findMemberById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
     }
 
     private ReservationTime findTimeByTimeId(Long timeId) {

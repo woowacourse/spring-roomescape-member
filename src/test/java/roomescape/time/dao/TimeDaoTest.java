@@ -68,12 +68,13 @@ class TimeDaoTest {
     void findTimesExistsReservationDateAndThemeIdTest() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00:00");
+        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
-                "브라운", "2024-08-15", 2, 1);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
+                1, "2024-08-15", 2, 1);
         List<ReservationTime> expected = List.of(new ReservationTime(2L, LocalTime.of(10, 0)));
 
         List<ReservationTime> actual = timeDao.findTimesExistsReservationDateAndThemeId(LocalDate.of(2024, 8, 15), 1L);
@@ -120,12 +121,13 @@ class TimeDaoTest {
     @Test
     void deleteTimeTest_whenReservationUsingTimeExist() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
+        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
-                "브라운", "2024-08-15", 1, 1);
+                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
+                1, "2024-08-15", 1, 1);
 
         assertThatThrownBy(() -> timeDao.deleteTime(1L))
                 .isInstanceOf(IllegalArgumentException.class)

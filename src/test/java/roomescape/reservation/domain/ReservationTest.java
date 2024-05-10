@@ -8,10 +8,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
+    private final Member member = new Member(1L, "커찬", "kuchn@abc.com");
     private final LocalDate date = LocalDate.of(2050, 10, 10);
     private final ReservationTime time = new ReservationTime(LocalTime.of(9, 0));
     private final Theme theme = new Theme(
@@ -19,7 +21,7 @@ class ReservationTest {
             "오리들과 호랑이들 사이에서 살아남기",
             "https://image.jpg");
 
-    @DisplayName("예약자명 비어있을 때 예외를 던진다.")
+    @DisplayName("예약자가 비어있을 때 예외를 던진다.")
     @Test
     void validateReservationTest_whenNameIsNull() {
         assertThatThrownBy(() ->
@@ -31,7 +33,7 @@ class ReservationTest {
     @Test
     void validateReservationTest_whenDateIsNull() {
         assertThatThrownBy(() ->
-                new Reservation(1L, "커찬", null, time, theme))
+                new Reservation(1L, member, null, time, theme))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -39,7 +41,7 @@ class ReservationTest {
     @Test
     void validateReservationTest_whenTimeIsNull() {
         assertThatThrownBy(() ->
-                new Reservation(1L, "커찬", date, null, theme))
+                new Reservation(1L, member, date, null, theme))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -47,7 +49,7 @@ class ReservationTest {
     @Test
     void validateReservationTest_whenThemeIsNull() {
         assertThatThrownBy(() ->
-                new Reservation(1L, "커찬", date, time, null))
+                new Reservation(1L, member, date, time, null))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -55,7 +57,7 @@ class ReservationTest {
     @Test
     void isAfterTest_whenDateIsBefore() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(9, 0));
-        Reservation reservation = new Reservation(1L, "커찬", LocalDate.of(2024, 4, 30), time, theme);
+        Reservation reservation = new Reservation(1L, member, LocalDate.of(2024, 4, 30), time, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 5, 1, 10, 0);
 
         assertThat(reservation.isBefore(currentDateTime)).isTrue();
@@ -65,7 +67,7 @@ class ReservationTest {
     @Test
     void isAfterTest_whenDateIsAfter() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(9, 0));
-        Reservation reservation = new Reservation(1L, "커찬", LocalDate.of(2024, 4, 30), time, theme);
+        Reservation reservation = new Reservation(1L, member, LocalDate.of(2024, 4, 30), time, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 4, 29, 10, 0);
 
         assertThat(reservation.isBefore(currentDateTime)).isFalse();
@@ -75,7 +77,7 @@ class ReservationTest {
     @Test
     void isAfterTest_whenDateIsEqualTimeIsBefore() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(9, 0));
-        Reservation reservation = new Reservation(1L, "커찬", LocalDate.of(2024, 4, 30), time, theme);
+        Reservation reservation = new Reservation(1L, member, LocalDate.of(2024, 4, 30), time, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 4, 30, 10, 0);
 
         assertThat(reservation.isBefore(currentDateTime)).isTrue();

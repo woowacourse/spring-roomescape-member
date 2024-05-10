@@ -9,6 +9,6 @@ INSERT INTO member(name, email) VALUES ('브리', 'bri@abc.com');
 INSERT INTO member(name, email) VALUES ('브라운', 'brown@abc.com');
 INSERT INTO member(name, email) VALUES ('오리', 'duck@abc.com');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 1, 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브리', CURRENT_DATE - 2, 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('오리', CURRENT_DATE - 2, 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (2, CURRENT_DATE - 1, 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (1, CURRENT_DATE - 2, 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (3, CURRENT_DATE - 2, 2, 2);
