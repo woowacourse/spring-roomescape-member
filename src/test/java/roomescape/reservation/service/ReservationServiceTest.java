@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.auth.config.AuthInfo;
 import roomescape.auth.service.FakeMemberRepository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
@@ -64,7 +65,7 @@ class ReservationServiceTest {
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
             themeRepository.save(ThemeFixture.getOne());
 
-            AuthInfo authInfo = new AuthInfo(1L, "sdf");
+            AuthInfo authInfo = new AuthInfo(1L, "sdf", MemberRole.USER);
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                     LocalDate.of(2024, 10, 10), 1L, 1L);
 
@@ -82,7 +83,7 @@ class ReservationServiceTest {
             // given
             themeRepository.save(ThemeFixture.getOne());
 
-            AuthInfo authInfo = new AuthInfo(1L, "포비");
+            AuthInfo authInfo = new AuthInfo(1L, "포비", MemberRole.USER);
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                     LocalDate.of(10, 10, 10), 1L, 1L);
 
@@ -98,7 +99,7 @@ class ReservationServiceTest {
             // given
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
 
-            AuthInfo authInfo = new AuthInfo(1L, "포비");
+            AuthInfo authInfo = new AuthInfo(1L, "포비", MemberRole.USER);
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                     LocalDate.of(2024, 10, 10), 1L, 1L);
 
@@ -118,7 +119,7 @@ class ReservationServiceTest {
             reservationRepository.save(
                     new Reservation(null, member, LocalDate.parse("2024-10-10"), reservationTime, theme));
 
-            AuthInfo authInfo = new AuthInfo(1L, "포비");
+            AuthInfo authInfo = new AuthInfo(1L, "포비", MemberRole.USER);
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                     LocalDate.parse("2024-10-10"), 1L, 1L);
 
@@ -135,7 +136,7 @@ class ReservationServiceTest {
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
             themeRepository.save(ThemeFixture.getOne());
 
-            AuthInfo authInfo = new AuthInfo(1L, "포비");
+            AuthInfo authInfo = new AuthInfo(1L, "포비", MemberRole.USER);
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                     LocalDate.of(1000, 10, 10), 1L, 1L);
 
@@ -154,7 +155,7 @@ class ReservationServiceTest {
                     new ReservationTime(null, now.toLocalTime()));
             themeRepository.save(ThemeFixture.getOne());
 
-            AuthInfo authInfo = new AuthInfo(1L, "포비");
+            AuthInfo authInfo = new AuthInfo(1L, "포비", MemberRole.USER);
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                     now.toLocalDate(), reservationTime.getId(), 1L);
 

@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
@@ -36,6 +37,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     new Member(
                             resultSet.getLong("member_id"),
                             resultSet.getString("name"),
+                            MemberRole.getMemberRole(resultSet.getString("role")),
                             resultSet.getString("email"),
                             resultSet.getString("password")),
                     resultSet.getDate("date").toLocalDate(),
@@ -73,7 +75,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String sql = """
                 select r.id, 
-                        m.id as member_id, m.name, m.email, m.password,
+                        m.id as member_id, m.name, m.email, m.password, m.role,
                         r.date,
                         rt.id as time_id, rt.start_at, 
                         t.id as theme_id, t.name as theme_name, t.description, t.thumbnail 
@@ -92,7 +94,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(final Long id) {
         String sql = """
                 select r.id, 
-                        m.id as member_id, m.name, m.email, m.password,
+                        m.id as member_id, m.name, m.email, m.password, m.role,
                         r.date,  
                         rt.id as time_id, rt.start_at, 
                         t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
@@ -117,7 +119,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 select r.id, 
-                    m.id as member_id, m.name, m.email, m.password,
+                    m.id as member_id, m.name, m.email, m.password, m.role,
                     r.date, 
                     rt.id as time_id, rt.start_at,
                     t.id as theme_id, t.name as theme_name, t.description, t.thumbnail

@@ -14,4 +14,8 @@ public enum MemberRole {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 권한입니다. 다시 조회해주세요."));
     }
+
+    public boolean isNotAdmin() {
+        return this != ADMIN;
+    }
 }

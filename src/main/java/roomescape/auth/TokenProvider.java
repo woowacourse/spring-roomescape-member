@@ -6,13 +6,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
- import roomescape.auth.config.AuthInfo;
+import roomescape.auth.config.AuthInfo;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRole;
 
 @Component
 public class TokenProvider {
 
     private static final String MEMBER_ID_CLAIM = "memberId";
+    private static final String MEMBER_ROLE_CLAIM = "memberRole";
 
     private final String secretKey;
     private final long validityInMilliseconds;
@@ -31,15 +33,17 @@ public class TokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .claim(MEMBER_ID_CLAIM, member.getName())
+                .claim(MEMBER_ROLE_CLAIM, member.getMemberRole())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
     public AuthInfo extractAuthInfo(final String token) {
         Claims claims = getClaims(token);
-        Long memberId = Long.parseLong(claims.getSubject());
-        String name = claims.get(MEMBER_ID_CLAIM, String.class);
-        return new AuthInfo(memberId, name);
+        return new AuthInfo(
+                Long.parseLong(claims.getSubject()),
+                claims.get(MEMBER_ID_CLAIM, String.class),
+                MemberRole.valueOf(claims.get(MEMBER_ROLE_CLAIM, String.class)));
     }
 
     private Claims getClaims(final String token) {

@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.auth.TokenProvider;
 import roomescape.auth.config.AuthInfo;
+import roomescape.member.domain.MemberRole;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -56,7 +57,7 @@ class ReservationControllerTest {
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 LocalDate.of(3000, 1, 1), 1L, 1L);
         String token = "asdfsadf";
-        AuthInfo authInfo = new AuthInfo(1L, "asdf");
+        AuthInfo authInfo = new AuthInfo(1L, "asdf", MemberRole.USER);
 
         // stub
         Mockito.when(tokenProvider.extractAuthInfo(any())).thenReturn(authInfo);
