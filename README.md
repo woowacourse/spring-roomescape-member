@@ -129,7 +129,7 @@ Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZ
 
 ---
 
-### 인증 정보 조회
+### 로그인 정보 조회
 
 #### Request
 ```http
