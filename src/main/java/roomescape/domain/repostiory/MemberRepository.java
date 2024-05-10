@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface MemberRepository {
     Optional<Member> findByEmail(String email);
 
-    default Member getByEmail(String email){
+    default Member getByEmail(String email) {
         return findByEmail(email).orElseThrow(() -> new InvalidReservationException());
     }
 }

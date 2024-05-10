@@ -35,9 +35,9 @@ public class MemberJdbcRepository implements MemberRepository {
     @Override
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
-        try{
+        try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email));
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
