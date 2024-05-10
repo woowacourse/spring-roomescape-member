@@ -12,12 +12,11 @@ import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberLoginService;
+import roomescape.util.CookieUtils;
 
 @RestController
 public class MemberLoginApiController {
 
-    public static final String COOKIE_TOKEN_KEY = "token";
-    public static final int COOKIE_MAX_AGE = 3600;
     private final MemberLoginService memberLoginService;
 
     public MemberLoginApiController(MemberLoginService memberLoginService) {
@@ -27,11 +26,7 @@ public class MemberLoginApiController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody MemberLoginRequest memberLoginRequest, HttpServletResponse response) {
         String token = memberLoginService.createMemberToken(memberLoginRequest);
-        Cookie cookie = new Cookie(COOKIE_TOKEN_KEY, token);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(COOKIE_MAX_AGE);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        CookieUtils.setCookieByToken(response, token);
 
         return ResponseEntity.ok().build();
     }

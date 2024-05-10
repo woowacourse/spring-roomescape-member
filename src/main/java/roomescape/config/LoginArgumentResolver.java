@@ -2,7 +2,6 @@ package roomescape.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -11,8 +10,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.annotaions.Login;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.member.controller.MemberLoginApiController;
 import roomescape.member.dto.LoginMember;
+import roomescape.util.CookieUtils;
 
 @Component
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
@@ -40,19 +39,11 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
 
-        String token = extractTokenFromCookie(cookies);
+        String token = CookieUtils.extractTokenFromCookie(cookies);
         LoginMember loginMember = jwtTokenProvider.getMember(token);
         if (loginMember == null) {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
         }
         return loginMember;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(MemberLoginApiController.COOKIE_TOKEN_KEY))
-                .findAny()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("인증되지 않은 사용자 입니다."));
     }
 }

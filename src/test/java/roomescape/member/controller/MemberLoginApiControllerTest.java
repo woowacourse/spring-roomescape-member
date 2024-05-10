@@ -12,6 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberSignUpRequest;
+import roomescape.util.CookieUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
@@ -47,7 +48,7 @@ class MemberLoginApiControllerTest {
                 .when().post("/login")
                 .thenReturn();
 
-        String cookie = String.valueOf(response.getDetailedCookie(MemberLoginApiController.COOKIE_TOKEN_KEY));
+        String cookie = String.valueOf(response.getDetailedCookie(CookieUtils.TOKEN_KEY));
         RestAssured.given().log().all()
                 .cookie(cookie)
                 .when().get("/login/check")
