@@ -6,7 +6,6 @@ import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.exception.AuthenticationException;
-import roomescape.exception.AuthorizationException;
 import roomescape.model.Member;
 import roomescape.repository.MemberRepository;
 
@@ -24,9 +23,9 @@ public class AuthService {
     public TokenResponse createToken(final TokenRequest tokenRequest) {
         final String inputPassword = tokenRequest.password();
         final Member member = memberRepository.findByEmail(tokenRequest.email())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+                .orElseThrow(() -> new AuthenticationException("가입되지 않은 이메일입니다."));
         if (!member.getPassword().equals(inputPassword)) {
-            throw new AuthorizationException("비밀번호가 일치하지 않습니다.");
+            throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
         }
         final String accessToken = tokenProvider.createToken(member);
         return new TokenResponse(accessToken);
