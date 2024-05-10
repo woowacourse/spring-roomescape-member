@@ -12,7 +12,7 @@ class MemberTest {
     void create() {
         Name name = new Name("호돌");
 
-        assertThatCode(() -> new Member(name, "email", "password"))
+        assertThatCode(() -> new Member(name, "email", "password", MemberRole.NORMAL))
                 .doesNotThrowAnyException();
     }
 }

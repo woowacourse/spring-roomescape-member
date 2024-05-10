@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -127,7 +128,8 @@ public class ReservationRepository {
                             resultSet.getLong("member_id"),
                             new Name(resultSet.getString("name")),
                             resultSet.getString("email"),
-                            resultSet.getString("password")
+                            resultSet.getString("password"),
+                            MemberRole.NORMAL
                     ),
                     new ReservationTime(resultSet.getLong("time_id"), startAt),
                     new Theme(

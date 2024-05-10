@@ -30,7 +30,7 @@ class ReservationFactoryTest {
     void reserve() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String date = "2024-05-02";
-        Member member = new Member(new Name("아톰"), "email", "password");
+        Member member = new Member(new Name("아톰"), "email", "password", MemberRole.NORMAL);
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
@@ -43,7 +43,7 @@ class ReservationFactoryTest {
     void previousDate() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String previousDate = "2024-04-30";
-        Member member = new Member(new Name("아톰"), "email", "password");
+        Member member = new Member(new Name("아톰"), "email", "password", MemberRole.NORMAL);
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
@@ -57,7 +57,7 @@ class ReservationFactoryTest {
     void previousTime() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String todayDate = "2024-05-01";
-        Member member = new Member(new Name("아톰"), "email", "password");
+        Member member = new Member(new Name("아톰"), "email", "password", MemberRole.NORMAL);
         ReservationTime previousTime = new ReservationTime(LocalTime.parse("00:29"));
         Theme theme = new Theme("name", "description", "thumbnail");
 

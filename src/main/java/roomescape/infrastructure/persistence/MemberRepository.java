@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
 
 @Repository
@@ -61,7 +62,8 @@ public class MemberRepository {
                 resultSet.getLong("id"),
                 new Name(resultSet.getString("name")),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                MemberRole.NORMAL
         );
     }
 }

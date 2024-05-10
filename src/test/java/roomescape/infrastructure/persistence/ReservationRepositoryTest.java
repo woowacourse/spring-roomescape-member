@@ -110,7 +110,7 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
 
     private Reservation createReservation(String dateValue, Long memberId, Long timeId, Long themeId) {
         LocalDate date = LocalDate.parse(dateValue);
-        Member member = new Member(memberId, null, null, null);
+        Member member = new Member(memberId, null, null, null, null);
         ReservationTime reservationTime = new ReservationTime(timeId, null);
         Theme theme = new Theme(themeId, null, null, null);
 
