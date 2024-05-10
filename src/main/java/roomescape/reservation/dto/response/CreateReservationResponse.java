@@ -7,7 +7,7 @@ public record CreateReservationResponse(Long id, String name, LocalDate date, Cr
     public static CreateReservationResponse from(final Reservation reservation) {
         return new CreateReservationResponse(
                 reservation.getId(),
-                reservation.getName().getValue(),
+                reservation.getMember().getName(), // TODO: CreateTimeOfReservationsResponse 처럼 변경
                 reservation.getDate(),
                 CreateTimeOfReservationsResponse.from(reservation.getReservationTime()),
                 CreateThemeOfReservationResponse.from(reservation.getTheme())

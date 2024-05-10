@@ -4,6 +4,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
+import roomescape.member.domain.Member;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
@@ -21,10 +22,10 @@ public record CreateReservationRequest(
         @NotNull(message = "예약 등록 시 테마는 필수입니다.")
         Long themeId) {
 
-    public Reservation toReservation(final String name, final ReservationTime reservationTime, final Theme theme) {
-        return Reservation.of(
+    public Reservation toReservation(final Member member, final ReservationTime reservationTime, final Theme theme) {
+        return new Reservation(
                 null,
-                name,
+                member,
                 this.date,
                 reservationTime,
                 theme);

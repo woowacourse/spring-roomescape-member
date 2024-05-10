@@ -1,55 +1,49 @@
 package roomescape.reservation.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
 
 public class Reservation {
     private final Long id;
-    private final ReservationName name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
     public Reservation(final Long id,
-                       final ReservationName name,
+                       final Member member,
                        final LocalDate date,
                        final ReservationTime reservationTime,
                        final Theme theme) {
+        validateReservationMemberIsNull(member);
         validateReservationDateIsNull(date);
         validateReservationTimeIsNull(reservationTime);
         validateReservationThemeIsNull(theme);
 
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
     public static Reservation of(final Long id,
-                                 final String name,
-                                 final LocalDate date,
-                                 final ReservationTime reservationTime,
-                                 final Theme theme) {
-        return new Reservation(
-                id,
-                new ReservationName(name),
-                date,
-                reservationTime,
-                theme);
-    }
-
-    public static Reservation of(final Long id,
                                  final Reservation reservation) {
         return new Reservation(
                 id,
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme());
+    }
+
+    private void validateReservationMemberIsNull(final Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("예약 생성 시 예약자는 필수입니다.");
+        }
     }
 
     private void validateReservationDateIsNull(final LocalDate date) {
@@ -94,8 +88,8 @@ public class Reservation {
         return id;
     }
 
-    public ReservationName getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
