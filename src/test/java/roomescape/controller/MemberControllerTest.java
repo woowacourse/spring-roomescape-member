@@ -90,6 +90,21 @@ class MemberControllerTest extends IntegrationTestSupport {
                             .then().log().all()
                             .statusCode(200).body("size()", is(memberSize + 1));
                 }),
+                dynamicTest("중복된 이메일로 회원가입할 수 없다.", () -> {
+                    Map<String, String> params = Map.of(
+                            "email", TEST_EMAIL,
+                            "password", TEST_PASSWORD,
+                            "name", TEST_NAME
+                    );
+
+                    RestAssured
+                            .given().log().all()
+                            .body(params)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when().post("/members")
+                            .then().log().all()
+                            .statusCode(400);
+                }),
                 dynamicTest("회원을 삭제한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)

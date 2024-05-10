@@ -84,4 +84,20 @@ public class MemberJdbcRepository implements MemberRepository {
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM member WHERE id = ?", id);
     }
+
+    @Override
+    public boolean existByEmail(String email) {
+        String sql = """
+                SELECT
+                CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM member
+                        WHERE email = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END""";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email));
+    }
 }

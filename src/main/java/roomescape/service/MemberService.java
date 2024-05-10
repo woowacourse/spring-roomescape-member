@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.service.dto.MemberResponse;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
-import roomescape.exception.ReservationBusinessException;
+import roomescape.exception.RoomEscapeBusinessException;
 import roomescape.service.dto.MemberSaveRequest;
 
 @Service
@@ -19,6 +19,10 @@ public class MemberService {
 
     public MemberResponse save(MemberSaveRequest memberRequest) {
         Member member = memberRequest.toMember();
+        if (memberRepository.existByEmail(member.getEmail())) {
+            throw new RoomEscapeBusinessException("중복된 이메일입니다.");
+        }
+
         Member savedMember = memberRepository.save(member);
 
         return MemberResponse.from(savedMember);
@@ -32,7 +36,7 @@ public class MemberService {
 
     public void delete(Long id) {
         if (memberRepository.findById(id).isEmpty()) {
-            throw new ReservationBusinessException("회원이 존재하지 않습니다.");
+            throw new RoomEscapeBusinessException("회원이 존재하지 않습니다.");
         }
 
         memberRepository.deleteById(id);
@@ -40,7 +44,7 @@ public class MemberService {
 
     public MemberResponse findByEmailAndPassword(String email, String password) {
         Member member = memberRepository.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new ReservationBusinessException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new RoomEscapeBusinessException("회원이 존재하지 않습니다."));
 
         return MemberResponse.from(member);
     }
