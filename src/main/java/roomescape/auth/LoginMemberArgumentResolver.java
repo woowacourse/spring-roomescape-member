@@ -8,11 +8,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.AuthenticationException;
 import roomescape.model.LoginMember;
 import roomescape.dto.MemberResponse;
-import roomescape.exception.AuthorizationException;
 import roomescape.model.Role;
 import roomescape.service.AuthService;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -32,18 +35,20 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public LoginMember resolveArgument(final MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        final String token = extractTokenFromRequestCookie(webRequest);
+        final String token = extractTokenFromRequestCookie(webRequest)
+                .orElseThrow(() -> new AuthenticationException("토큰 정보가 존재하지 않습니다."));
         final MemberResponse memberResponse = authService.findMemberByToken(token);
         return new LoginMember(memberResponse.id(), memberResponse.name(), Role.from(memberResponse.role()), memberResponse.email());
     }
 
-    private String extractTokenFromRequestCookie(final NativeWebRequest webRequest) {
+    private Optional<String> extractTokenFromRequestCookie(final NativeWebRequest webRequest) {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        for (Cookie cookie : request.getCookies()) {
-            if (TOKEN_FIELD.equals(cookie.getName())) {
-                return cookie.getValue();
-            }
+        if (request.getCookies() == null) {
+            return Optional.empty();
         }
-        throw new AuthorizationException("토큰 정보가 존재하지 않습니다.");
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> TOKEN_FIELD.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst();
     }
 }
