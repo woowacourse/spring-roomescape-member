@@ -13,6 +13,10 @@ public class Member {
         this.password = password;
     }
 
+    public Member(long id, String name, String email, String password) {
+        this(id, new MemberName(name), new EmailAddress(email), new Password(password));
+    }
+
     public Member(String name, String email, String password) {
         this(null, new MemberName(name), new EmailAddress(email), new Password(password));
     }
