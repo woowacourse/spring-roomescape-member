@@ -39,6 +39,18 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservations.values()
+                .stream()
+                .filter(reservation ->
+                        reservation.getThemeId().equals(themeId) &&
+                                reservation.getMemberId().equals(memberId) &&
+                                (reservation.getDate().isAfter(dateFrom) || reservation.getDate().isEqual(dateFrom)) &&
+                                (reservation.getDate().isBefore(dateTo) || reservation.getDate().isEqual(dateTo)))
+                .toList();
+    }
+
+    @Override
     public Optional<Reservation> findById(Long id) {
         if (reservations.containsKey(id)) {
             return Optional.of(reservations.get(id));

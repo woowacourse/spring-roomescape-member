@@ -2,11 +2,13 @@ package roomescape.domain.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.AFTER_THREE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.BEFORE_ONE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.BEFORE_THREE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.BEFORE_TWO_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.TODAY;
 import static roomescape.fixture.MemberFixture.ADMIN_MEMBER;
 
 import java.time.LocalTime;
@@ -54,6 +56,26 @@ class ReservationRepositoryImplTest extends RepositoryTest {
         int actualSize = reservationRepository.findAll().size();
 
         assertThat(actualSize).isEqualTo(expectedSize);
+    }
+
+    @DisplayName("필터링되어 예약이 존재하는 예약 목록을 불러옵니다.")
+    @Test
+    void should_exist_filtering_reservation_result() {
+        int expectSize = 1;
+
+        int actualSize = reservationRepository.findAllBy(1L, 1L, TODAY, AFTER_TWO_DAYS_DATE).size();
+
+        assertThat(actualSize).isEqualTo(expectSize);
+    }
+
+    @DisplayName("필터링되어 예약이 존재하지않는 예약 목록을 불러옵니다.")
+    @Test
+    void should_not_exist_filtering_reservation_result() {
+        int expectSize = 0;
+
+        int actualSize = reservationRepository.findAllBy(1L, 1L, TODAY, AFTER_ONE_DAYS_DATE).size();
+
+        assertThat(actualSize).isEqualTo(expectSize);
     }
 
 

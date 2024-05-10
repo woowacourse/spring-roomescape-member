@@ -37,6 +37,16 @@ public class ReservationController {
         return ResponseEntity.ok(adminReservationService.findAllReservation());
     }
 
+    @GetMapping("/reservations/search")
+    public ResponseEntity<List<Reservation>> getConditionalReservationList(@RequestParam("themeId") Long themeId,
+                                                                           @RequestParam("memberId") Long memberId,
+                                                                           @RequestParam("dateFrom") LocalDate dateFrom,
+                                                                           @RequestParam("dateTo") LocalDate dateTo) {
+        List<Reservation> reservations = reservationService.findFilteredReservationList(themeId, memberId, dateFrom,
+                dateTo);
+        return ResponseEntity.ok(reservations);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity<Reservation> addReservation(@RequestBody ReservationAddRequest reservationAddRequest,
                                                       @AuthenticationPrincipal Member member) {

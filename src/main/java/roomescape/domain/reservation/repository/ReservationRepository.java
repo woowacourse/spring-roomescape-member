@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.reservation.domain.Reservation;
-import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.reservationTime.domain.ReservationTime;
+import roomescape.domain.theme.domain.Theme;
 
 public interface ReservationRepository {
 
     List<Reservation> findAll();
+
+    List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
 
     Optional<Reservation> findById(Long id);
 
