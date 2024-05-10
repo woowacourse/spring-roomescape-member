@@ -2,13 +2,13 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import roomescape.controller.dto.TokenRequest;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class IntegrationTestSupport {
 
     protected static final String ADMIN_EMAIL = "admin@admin.com";
@@ -19,12 +19,12 @@ public abstract class IntegrationTestSupport {
     protected static String ADMIN_TOKEN;
     protected static String USER_TOKEN;
 
-    @Value("${server.port}")
-    private int SERVER_PORT;
+    @LocalServerPort
+    private int serverPort;
 
     @PostConstruct
     private void initialize() {
-        RestAssured.port = SERVER_PORT;
+        RestAssured.port = serverPort;
 
         ADMIN_TOKEN = RestAssured
                 .given().log().all()
