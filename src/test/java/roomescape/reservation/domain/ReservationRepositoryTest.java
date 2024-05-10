@@ -3,11 +3,11 @@ package roomescape.reservation.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
+import roomescape.reservation.persistence.ReservationDao;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -19,16 +19,16 @@ import static roomescape.TestFixture.*;
 import static roomescape.member.domain.Role.USER;
 
 class ReservationRepositoryTest extends RepositoryTest {
-    @Autowired
     private ReservationRepository reservationRepository;
-
     private SimpleJdbcInsert jdbcInsert;
 
     @BeforeEach
     void setUp() {
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.reservationRepository = new ReservationDao(jdbcTemplate, dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
+
         String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         jdbcTemplate.update(insertTimeSql, Time.valueOf(MIA_RESERVATION_TIME));
         String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?), (?, ?, ?)";

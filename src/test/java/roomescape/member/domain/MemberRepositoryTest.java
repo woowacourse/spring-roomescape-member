@@ -3,11 +3,11 @@ package roomescape.member.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
+import roomescape.member.persistence.MemberDao;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
 
 class MemberRepositoryTest extends RepositoryTest {
-    @Autowired
     private MemberRepository memberRepository;
-
     private SimpleJdbcInsert jdbcInsert;
 
     @BeforeEach
     void setUp() {
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.memberRepository = new MemberDao(jdbcTemplate, dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }

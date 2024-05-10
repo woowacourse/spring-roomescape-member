@@ -14,7 +14,7 @@ import static roomescape.member.domain.Role.ADMIN;
 import static roomescape.member.domain.Role.USER;
 
 @RestController
-@RequestMapping("members")
+@RequestMapping("/members")
 public class MemberController {
     private final MemberService memberService;
 

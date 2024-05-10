@@ -1,17 +1,18 @@
 package roomescape.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
-@Sql("/test-schema.sql")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class RepositoryTest {
-    @LocalServerPort
-    private int port;
+import javax.sql.DataSource;
 
+@JdbcTest
+@Sql("/test-schema.sql")
+public class RepositoryTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    protected DataSource dataSource;
 }
