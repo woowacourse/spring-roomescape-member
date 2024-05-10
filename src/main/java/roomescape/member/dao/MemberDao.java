@@ -1,6 +1,6 @@
 package roomescape.member.dao;
 
-import java.sql.ResultSet;
+import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.MemberResponse;
 
 @Repository
 public class MemberDao implements MemberRepository {
@@ -64,5 +65,11 @@ public class MemberDao implements MemberRepository {
     public Member findById(long memberId) {
         String sql = "SELECT id, name, email, password, role FROM member WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), memberId);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email, password, role FROM member";
+        return jdbcTemplate.query(sql, rowMapper());
     }
 }

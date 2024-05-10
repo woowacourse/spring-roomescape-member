@@ -81,9 +81,9 @@
 
 ### 6단계
 - [x] 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한한다.
-- [ ] 관리자가 조건에 따라 예약 목록에서 검색할 수 있다.
-  - [ ] themeId, memberId, dateFrom, dateTo 값을 사용한다.
-- [ ] 프론트엔드에 따라 추가 요구사항을 구현한다.
+- [x] 관리자가 조건에 따라 예약 목록에서 검색할 수 있다.
+  - [x] themeId, memberId, dateFrom, dateTo 값을 사용한다.
+- [x] 프론트엔드에 따라 추가 요구사항을 구현한다.
 
 
 ## API 명세
@@ -497,6 +497,28 @@ HTTP/1.1 200
                 "description": "설명2",
                 "thumbnail": "https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/12/urbanbrush-20221209202526239031.jpg"
             }
+        }
+      ]
+    ```
+
+### 모든 멤버 조회 API
+- Request
+  ```
+  GET /members HTTP/1.1
+  ```
+
+  - Response
+    ```
+    HTTP/1.1 200
+      Content-Type: application/json
+      [
+        {
+            "id": 1,
+            "name": "관리자"
+        },
+        {
+            "id": 2,
+            "name": "멤버"
         }
       ]
     ```

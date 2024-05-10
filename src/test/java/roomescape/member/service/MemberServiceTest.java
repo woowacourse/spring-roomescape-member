@@ -2,7 +2,9 @@ package roomescape.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.util.FakeTokenProvider;
 import roomescape.reservation.dao.FakeMemberDao;
 
@@ -66,5 +69,27 @@ class MemberServiceTest {
         //then
         assertThat(loginCheckResponse.name()).isEqualTo(name);
     }
+
+    @DisplayName("모든 멤버를 조회할 수 있다.")
+    @Test
+    void findAllMember() {
+        // given
+        String name = "test";
+        String email = "test@email.com";
+        String password = "password";
+        Role role = Role.MEMBER;
+
+        //Member
+        Member member = memberRepository.save(new Member(name, email, password, role));
+        List<Member> memberResponses = memberRepository.findAll();
+
+        //then
+        assertAll(
+                () -> assertThat(memberResponses).hasSize(1),
+                () -> assertThat(memberResponses.get(0)).isEqualTo(member)
+        );
+    }
+
+
 
 }

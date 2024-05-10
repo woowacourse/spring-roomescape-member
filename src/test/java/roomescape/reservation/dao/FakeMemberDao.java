@@ -1,10 +1,12 @@
 package roomescape.reservation.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.MemberResponse;
 
 public class FakeMemberDao implements MemberRepository {
     private final Map<Long, Member> members = new HashMap<>();
@@ -42,5 +44,10 @@ public class FakeMemberDao implements MemberRepository {
             return members.get(memberId);
         }
         return null;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return members.values().stream().toList();
     }
 }

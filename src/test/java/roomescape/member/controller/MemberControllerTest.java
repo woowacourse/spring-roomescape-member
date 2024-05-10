@@ -1,5 +1,6 @@
 package roomescape.member.controller;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
@@ -111,5 +112,14 @@ class MemberControllerTest extends ControllerTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract().as(LoginCheckResponse.class);
+    }
+
+    @DisplayName("멤버의 전체 정보를 조회할 수 있다.")
+    @Test
+    void readMembers() {
+        RestAssured.given().log().all()
+                .when().get("/members")
+                .then().log().all()
+                .statusCode(200);
     }
 }

@@ -1,11 +1,13 @@
 package roomescape.member.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.LoginRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.util.TokenProvider;
 
 @Service
@@ -48,5 +50,11 @@ public class MemberService {
         if (member == null) {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    public List<MemberResponse> findAll() {
+        return memberRepository.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }
