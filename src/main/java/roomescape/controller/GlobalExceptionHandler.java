@@ -22,4 +22,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.internalServerError().body(e.getMessage());
+    }
 }
