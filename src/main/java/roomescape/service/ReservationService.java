@@ -97,4 +97,8 @@ public class ReservationService {
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }
+
+    public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findAllBy(themeId, memberId, dateFrom, dateTo);
+    }
 }
