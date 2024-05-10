@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import roomescape.domain.Member;
 import roomescape.service.ReservationService;
 import roomescape.service.security.JwtUtils;
+import roomescape.web.dto.request.MemberInfo;
 import roomescape.web.dto.request.ReservationRequest;
 import roomescape.web.dto.request.UserReservationRequest;
 import roomescape.web.dto.response.ReservationResponse;
@@ -47,7 +48,7 @@ class ReservationControllerTest {
         // given
         String token = JwtUtils.encode(new Member(1L, "name", "email", "password"));
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
-        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
+        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class), any(MemberInfo.class)))
                 .thenReturn(
                         new ReservationResponse(1L, LocalDate.now(), new ReservationTimeResponse(1L, LocalTime.now()),
                                 new ThemeResponse(1L, "n", "d", "t"))
@@ -68,7 +69,7 @@ class ReservationControllerTest {
     void saveReservation_ShouldRedirect_WhenInsertAllValidateField() throws Exception {
         // given
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
-        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
+        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class), any(MemberInfo.class)))
                 .thenReturn(
                         new ReservationResponse(1L, LocalDate.now(),
                                 new ReservationTimeResponse(1L, LocalTime.now()),

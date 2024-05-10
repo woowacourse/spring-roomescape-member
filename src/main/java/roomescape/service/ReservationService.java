@@ -5,33 +5,33 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
+import roomescape.web.dto.request.MemberInfo;
 import roomescape.web.dto.request.ReservationRequest;
 import roomescape.web.dto.response.ReservationResponse;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
-    }
 
     public List<ReservationResponse> findAllReservation() {
         List<Reservation> reservations = reservationRepository.findAll();
@@ -40,14 +40,17 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationRequest request) {
+    public ReservationResponse saveReservation(ReservationRequest request, MemberInfo info) {
         ReservationTime time = findReservationTimeById(request.timeId());
         Theme theme = findThemeById(request.themeId());
 
         validateDateTimeReservation(request, time);
         validateDuplicateReservation(request);
 
-        Reservation reservation = request.toReservation(time, theme);
+        Member member = memberRepository.findById(info.id())
+                .orElseThrow(AuthenticationFailureException::new);
+
+        Reservation reservation = request.toReservation(time, theme, member);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }

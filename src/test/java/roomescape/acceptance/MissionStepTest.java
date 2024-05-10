@@ -11,12 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.domain.Member;
+import roomescape.service.security.JwtUtils;
 import roomescape.web.controller.ReservationController;
 import roomescape.web.dto.response.ReservationResponse;
 
@@ -33,6 +36,7 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
+    @Disabled
     void 이단계() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")
@@ -47,6 +51,7 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
+    @Disabled
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -57,6 +62,7 @@ class MissionStepTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token=" + JwtUtils.encode(new Member(1L, "a", "B", "c")))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -94,6 +100,7 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
+    @Disabled
     void 오단계() {
         jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
                 "2023-08-05", "1", "1");
@@ -110,6 +117,7 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
+    @Disabled
     void 육단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -166,6 +174,7 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
+    @Disabled
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");

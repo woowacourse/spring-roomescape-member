@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import lombok.Builder;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -18,7 +19,7 @@ public record ReservationRequest(
         @Min(value = 1, message = "타임 아이디는 1이상의 정수만 허용합니다.") Long timeId,
         @Min(value = 1, message = "테마 아이디는 1이상의 정수만 허용합니다.") Long themeId) {
 
-    public Reservation toReservation(ReservationTime time, Theme theme) {
-        return new Reservation(date, time, theme);
+    public Reservation toReservation(ReservationTime time, Theme theme, Member member) {
+        return new Reservation(date, time, theme, member);
     }
 }

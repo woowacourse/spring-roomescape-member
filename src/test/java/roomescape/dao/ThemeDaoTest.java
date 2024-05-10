@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -58,6 +59,7 @@ class ThemeDaoTest {
     @DisplayName("기간 따른 테마 조회가능 하다")
     void findThemesByPeriodWithLimit_ShouldReturnThemes() {
         // given
+        Member member = new Member("name", "email", "password");
         ReservationTime time1 = new ReservationTime(LocalTime.of(1, 0));
         Theme theme1 = new Theme("name1", "description", "thumbnail");
         Theme theme2 = new Theme("name2", "description", "thumbnail");
@@ -69,10 +71,10 @@ class ThemeDaoTest {
         Theme savedTheme2 = themeDao.save(theme2);
         Theme savedTheme3 = themeDao.save(theme3);
         Theme savedTheme4 = themeDao.save(theme4);
-        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme1));
-        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 2), savedTime, savedTheme2));
-        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 3), savedTime, savedTheme3));
-        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 4), savedTime, savedTheme4));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme1, member));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 2), savedTime, savedTheme2, member));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 3), savedTime, savedTheme3, member));
+        reservationDao.save(new Reservation(LocalDate.of(2023, FEBRUARY, 4), savedTime, savedTheme4, member));
 
         // when
         List<Theme> themesByPeriodWithLimit = themeDao.findThemesByPeriodWithLimit("2023-02-02", "2023-02-03", 5);

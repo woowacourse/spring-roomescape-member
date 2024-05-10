@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -25,6 +26,8 @@ class ReservationDaoTest {
     private ReservationTimeDao reservationTimeDao;
     @Autowired
     private ThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     @AfterEach
     void tearDown() {
@@ -34,17 +37,38 @@ class ReservationDaoTest {
     }
 
     @Test
+    @DisplayName("예약 단권을 조회한다")
+    void findById_ShouldGetSinglePersistence() {
+        // given
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+        Theme theme = new Theme("name", "description", "thumbnail");
+        Member member = new Member("memberName", "email", "password");
+        ReservationTime savedTime = reservationTimeDao.save(time);
+        Theme savedTheme = themeDao.save(theme);
+        Member savedMember = memberDao.save(member);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme, savedMember));
+
+        //when &then
+        // then
+        Assertions.assertThat(reservationDao.findById(savedReservation.getId()))
+                .isPresent();
+    }
+
+    @Test
     @DisplayName("예약을 저장한다")
     void save_ShouldSaveReservationPersistence() {
         // given
         ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
         Theme theme = new Theme("name", "description", "thumbnail");
+        Member member = new Member("memberName", "email", "password");
         ReservationTime savedTime = reservationTimeDao.save(time);
         Theme savedTheme = themeDao.save(theme);
+        Member savedMember = memberDao.save(member);
 
         // when
         reservationDao.save(
-                new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme));
+                new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme, savedMember));
 
         // then
         Assertions.assertThat(reservationDao.findAll())
@@ -59,8 +83,9 @@ class ReservationDaoTest {
         Theme theme = new Theme("name", "description", "thumbnail");
         ReservationTime savedTime = reservationTimeDao.save(time);
         Theme savedTheme = themeDao.save(theme);
+        Member member = new Member("a", "b", "c");
         Reservation savedReservation = reservationDao.save(
-                new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme));
+                new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme, member));
 
         // when
         reservationDao.delete(savedReservation);
@@ -78,7 +103,7 @@ class ReservationDaoTest {
         Theme theme = new Theme("name", "description", "thumbnail");
         ReservationTime savedTime = reservationTimeDao.save(time);
         Theme savedTheme = themeDao.save(theme);
-        Reservation reservation = new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme);
+        Reservation reservation = new Reservation(LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme, null);
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationDao.delete(reservation))

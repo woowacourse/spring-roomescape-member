@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -108,6 +109,7 @@ class ThemeServiceTest {
     }
 
     private void creatReservation(int day, ReservationTime reservationTime, Theme theme) {
-        reservationRepository.save(new Reservation(LocalDate.of(2023, FEBRUARY, day), reservationTime, theme));
+        reservationRepository.save(
+                new Reservation(LocalDate.of(2023, FEBRUARY, day), reservationTime, theme, new Member("a", "b", "C")));
     }
 }

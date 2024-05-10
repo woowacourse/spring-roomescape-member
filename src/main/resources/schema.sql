@@ -14,17 +14,6 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation
-(
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     VARCHAR(255) NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
-);
-
 CREATE TABLE member
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
@@ -34,5 +23,16 @@ CREATE TABLE member
     PRIMARY KEY (id)
 );
 
-INSERT INTO member (name, email, password)
-values ('name', 'aa@aa.aa', 'password');
+CREATE TABLE reservation
+(
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    date      VARCHAR(255) NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
+    member_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id)
+);
+
