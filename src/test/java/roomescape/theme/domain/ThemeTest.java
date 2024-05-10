@@ -5,8 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.BadRequestException;
-import roomescape.theme.domain.Theme;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -22,13 +20,13 @@ class ThemeTest {
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThatThrownBy(() -> new Theme(blank, "description", "thumbnail"))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(expectedMessage);
         softAssertions.assertThatThrownBy(() -> new Theme("name", blank, "thumbnail"))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(expectedMessage);
         softAssertions.assertThatThrownBy(() -> new Theme("name", "description", blank))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(expectedMessage);
         softAssertions.assertAll();
     }

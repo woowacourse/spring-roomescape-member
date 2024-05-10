@@ -3,9 +3,8 @@ package roomescape.member.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import roomescape.exception.BadRequestException;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("사용자")
 class MemberTest {
@@ -16,6 +15,6 @@ class MemberTest {
     void validateNullOrEmptyField(String blank) {
         // when & then
         assertThatThrownBy(() -> new Member(blank, "email", "password"))
-                .isInstanceOf(BadRequestException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
