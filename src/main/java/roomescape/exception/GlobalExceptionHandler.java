@@ -43,6 +43,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ExceptionTemplate> handleIllegalArgumentException(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleException(Exception exception) {
         return ResponseEntity.internalServerError().body(new ExceptionTemplate(exception.getMessage()));
     }
