@@ -51,3 +51,4 @@
 - [x] `GET /login` 요청 시 `templates/login.html`을 응답한다.
 - [x] `POST /login` 요청 시 전달된 이메일과 비밀번호로 토큰을 발급하여 응답 쿠키를 설정한다.
 - [x] `GET /login/check` 요청 시 전달된 쿠키를 이용해 로그인된 사용자의 이름을 응답한다.
+- [x] `POST /logout` 요청 시 로그아웃한다.

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.exception.EmptyParameterException;
 import roomescape.service.MemberService;
 import roomescape.service.dto.member.MemberLoginRequest;
 import roomescape.service.dto.member.MemberResponse;
@@ -49,14 +50,34 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        String token = Arrays.stream(request.getCookies())
+        String token = getTokenFromCookie(request.getCookies());
+
+        MemberResponse response = tokenManager.getMemberResponseFromToken(token);
+        return ResponseEntity.ok(response);
+    }
+
+    private String getTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new EmptyParameterException("쿠키가 없습니다.");
+        }
+        return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow();
+    }
 
-        MemberResponse response = tokenManager.getMemberResponseFromToken(token);
-        return ResponseEntity.ok(response);
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
     @GetMapping("/signup")
