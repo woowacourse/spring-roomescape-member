@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AdminControllerTest {
+class UserPageControllerTest {
     @LocalServerPort
     private int port;
 
@@ -17,38 +17,29 @@ class AdminControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("관리자 페이지를 열 수 있다.")
+    @DisplayName("인기 테마 페이지를 열 수 있다.")
     @Test
-    void loadAdminPage() {
+    void loadPopularThemePage() {
         RestAssured.given().log().all()
-                .when().get("/admin")
+                .when().get("/")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @DisplayName("예약 페이지를 열 수 있다.")
+    @DisplayName("사용자 예약 페이지를 열 수 있다.")
     @Test
-    void loadReservationPage() {
+    void loadUserReservationPage() {
         RestAssured.given().log().all()
-                .when().get("/admin/reservation")
+                .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @DisplayName("시간 관리 페이지를 열 수 있다.")
+    @DisplayName("로그인 페이지를 열 수 있다.")
     @Test
-    void loadTimePage() {
+    void loadUserLoginPage() {
         RestAssured.given().log().all()
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @DisplayName("테마 관리 페이지를 열 수 있다.")
-    @Test
-    void loadThemePage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
+                .when().get("/login")
                 .then().log().all()
                 .statusCode(200);
     }
