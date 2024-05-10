@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.RoomescapeException;
+import roomescape.global.exception.RoomescapeException;
 
 class ReservationTest {
 

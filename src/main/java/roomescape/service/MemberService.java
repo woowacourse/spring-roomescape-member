@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.exception.RoomescapeException;
+import roomescape.global.exception.RoomescapeException;
 import roomescape.repository.MemberRepository;
 
 @Service

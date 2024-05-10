@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.global.auth.JwtTokenProvider;
 import roomescape.domain.member.Member;
-import roomescape.exception.AuthorizationException;
+import roomescape.global.exception.AuthorizationException;
 import roomescape.repository.MemberRepository;
 
 @Service

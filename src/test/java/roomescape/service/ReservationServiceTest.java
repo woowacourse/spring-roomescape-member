@@ -20,7 +20,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.RoomescapeException;
+import roomescape.global.exception.RoomescapeException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.SaveReservationDto;
 

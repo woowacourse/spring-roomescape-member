@@ -1,7 +1,7 @@
 package roomescape.domain.member;
 
 import java.util.regex.Pattern;
-import roomescape.exception.RoomescapeException;
+import roomescape.global.exception.RoomescapeException;
 
 public class Password {
 

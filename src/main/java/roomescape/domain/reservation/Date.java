@@ -3,7 +3,7 @@ package roomescape.domain.reservation;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import roomescape.exception.RoomescapeException;
+import roomescape.global.exception.RoomescapeException;
 
 public class Date {
 

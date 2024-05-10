@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.controller.dto.ErrorMessageResponse;
-import roomescape.exception.AuthorizationException;
-import roomescape.exception.RoomescapeException;
+import roomescape.global.exception.AuthorizationException;
+import roomescape.global.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
