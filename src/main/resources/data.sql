@@ -23,7 +23,8 @@ INSERT INTO member(name, email, password, role) VALUES
 ('테드', 'test1@email.com', '1450575459', 'USER'),
 ('종리', 'test2@email.com', '1450575459', 'USER'),
 ('범블비', 'test3@email.com', '1450575459', 'USER'),
-('제이', 'test4@email.com', '1450575459', 'USER');
+('제이', 'test4@email.com', '1450575459', 'USER'),
+('관리자', 'admin@email.com', '1450575459', 'ADMIN');
 
 INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES
 (CURRENT_DATE() - INTERVAL '1' DAY, 1, 1, 1),
