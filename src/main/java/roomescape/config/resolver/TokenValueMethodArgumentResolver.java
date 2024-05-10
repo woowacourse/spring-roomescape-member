@@ -9,19 +9,19 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.service.AuthorizationService;
+import roomescape.service.AuthService;
 import roomescape.service.request.LoginMember;
 import roomescape.web.exception.AuthenticationException;
 
 @Component
 public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final AuthorizationService authorizationService;
+    private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public TokenValueMethodArgumentResolver(AuthorizationService authorizationService,
+    public TokenValueMethodArgumentResolver(AuthService authService,
                                             JwtTokenProvider jwtTokenProvider) {
-        this.authorizationService = authorizationService;
+        this.authService = authService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -37,7 +37,7 @@ public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentRe
         Cookie[] cookies = request.getCookies();
         String tokenValue = getTokenValue(cookies);
 
-        return authorizationService.getLoginMember(tokenValue);
+        return authService.getLoginMember(tokenValue);
     }
 
     private String getTokenValue(Cookie[] cookies) {

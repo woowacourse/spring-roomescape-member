@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 import roomescape.web.exception.AuthenticationException;
-import roomescape.web.exception.AuthorizationException;
 
 @Component
 public class JwtTokenProvider {
@@ -52,7 +51,7 @@ public class JwtTokenProvider {
 
     private void validateEmptyToken(String token) {
         if (token.isBlank()) {
-            throw new AuthorizationException("인증 정보가 없습니다.");
+            throw new AuthenticationException("인증 정보가 없습니다.");
         }
     }
 }

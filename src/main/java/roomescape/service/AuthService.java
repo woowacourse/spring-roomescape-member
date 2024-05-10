@@ -11,12 +11,12 @@ import roomescape.service.response.Token;
 import roomescape.web.exception.AuthenticationException;
 
 @Service
-public class AuthorizationService {
+public class AuthService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthorizationService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }

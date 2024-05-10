@@ -15,10 +15,10 @@ import roomescape.web.exception.AuthenticationException;
 
 @SpringBootTest
 @Sql(scripts = "/member_test_data.sql")
-class AuthorizationServiceTest {
+class AuthServiceTest {
 
     @Autowired
-    private AuthorizationService authorizationService;
+    private AuthService authService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -30,7 +30,7 @@ class AuthorizationServiceTest {
         MemberLoginRequest request = new MemberLoginRequest("user1@gmail.com", "user1");
 
         // when
-        Token token = authorizationService.login(request);
+        Token token = authService.login(request);
 
         // then
         assertThat(token.value()).isNotBlank();
@@ -43,6 +43,6 @@ class AuthorizationServiceTest {
         MemberLoginRequest request = new MemberLoginRequest("user1@gmail.com", "1234");
 
         // when, then
-        assertThatThrownBy(() -> authorizationService.login(request)).isInstanceOf(AuthenticationException.class);
+        assertThatThrownBy(() -> authService.login(request)).isInstanceOf(AuthenticationException.class);
     }
 }

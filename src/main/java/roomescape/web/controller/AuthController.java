@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.service.AuthorizationService;
+import roomescape.service.AuthService;
 import roomescape.service.request.LoginMember;
 import roomescape.service.request.MemberLoginRequest;
 import roomescape.service.response.MemberResponse;
 import roomescape.service.response.Token;
 
 @RestController
-public class AuthorizationController {
+public class AuthController {
 
-    private final AuthorizationService authorizationService;
+    private final AuthService authService;
 
-    public AuthorizationController(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody MemberLoginRequest request, HttpServletResponse response) {
-        Token token = authorizationService.login(request);
+        Token token = authService.login(request);
         Cookie cookie = createCookieWithToken(token);
         response.addCookie(cookie);
 
@@ -34,7 +34,7 @@ public class AuthorizationController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> getMemberInfo(LoginMember loginMember) {
-        MemberResponse response = authorizationService.getLoginMemberInfo(loginMember);
+        MemberResponse response = authService.getLoginMemberInfo(loginMember);
 
         return ResponseEntity.ok(response);
     }
