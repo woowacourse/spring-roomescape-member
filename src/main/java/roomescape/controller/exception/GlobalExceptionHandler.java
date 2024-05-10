@@ -2,27 +2,19 @@ package roomescape.controller.exception;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.domain.exception.InvalidValueException;
-import roomescape.service.exception.AuthorizationException;
-import roomescape.service.exception.InvalidRequestException;
+import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidValueException.class)
-    public ResponseEntity<String> handleInvalidValueException(InvalidValueException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<String> handleInvalidRequestException(InvalidRequestException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<String> handleRoomescapeException(RoomescapeException e) {
+        return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -35,11 +27,6 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return ResponseEntity.badRequest().body(errors);
-    }
-
-    @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<String> handleAuthorizationException(AuthorizationException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
