@@ -89,7 +89,7 @@ class ReservationTimeServiceTest {
         final ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
                 new ReservationTimeInput("10:00"));
         final ThemeOutput themeOutput = themeService.createTheme(ThemeFixture.getInput());
-        final MemberCreateOutput memberOutput = memberService.createMember(MemberFixture.getCreateInput());
+        final MemberCreateOutput memberOutput = memberService.createMember(MemberFixture.getUserCreateInput());
         reservationDao.create(Reservation.from(
                 null,
                 "2024-04-30",
@@ -120,7 +120,7 @@ class ReservationTimeServiceTest {
                 .id();
         long themeId = themeService.createTheme(ThemeFixture.getInput())
                 .id();
-        long memberId = memberService.createMember(MemberFixture.getCreateInput()).id();
+        long memberId = memberService.createMember(MemberFixture.getUserCreateInput()).id();
         reservationService.createReservation(new ReservationInput("2025-01-01", timeId2, themeId,memberId));
 
         List<AvailableReservationTimeOutput> actual = reservationTimeService.getAvailableTimes(

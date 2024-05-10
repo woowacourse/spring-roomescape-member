@@ -55,7 +55,7 @@ class ReservationApiControllerTest {
         jdbcTemplate.update("TRUNCATE TABLE member");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
-        final var output = memberService.createMember(MemberFixture.getCreateInput());
+        final var output = memberService.createMember(MemberFixture.getUserCreateInput());
         token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
     }
 
@@ -121,7 +121,7 @@ class ReservationApiControllerTest {
                 .id();
         long themeId = themeService.createTheme(ThemeFixture.getInput())
                 .id();
-        final long memberId = memberService.createMember(MemberFixture.getCreateInput())
+        final long memberId = memberService.createMember(MemberFixture.getUserCreateInput())
                 .id();
         reservationService.createReservation(new ReservationInput("2024-06-30", timeId, themeId, memberId));
 

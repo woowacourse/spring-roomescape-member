@@ -100,7 +100,7 @@ class ThemeApiControllerTest {
                                             .id();
         final long themeId = themeService.createTheme(ThemeFixture.getInput())
                                    .id();
-        final long memberId = memberService.createMember(MemberFixture.getCreateInput()).id();
+        final long memberId = memberService.createMember(MemberFixture.getUserCreateInput()).id();
         reservationService.createReservation(new ReservationInput("2025-04-30", timeId, themeId,memberId));
 
         RestAssured.given()

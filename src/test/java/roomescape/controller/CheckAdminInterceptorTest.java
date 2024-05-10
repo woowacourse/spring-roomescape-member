@@ -12,24 +12,22 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.domain.user.Role;
-import roomescape.exception.AuthorizationException;
 import roomescape.service.MemberService;
 import roomescape.service.dto.output.TokenLoginOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(SpringExtension.class)
-class CheckLoginInterceptorTest {
+class CheckAdminInterceptorTest {
     @MockBean
     MemberService memberService;
-    CheckLoginInterceptor sut;
+    CheckAdminInterceptor sut;
     MockHttpServletRequest request;
     MockHttpServletResponse response;
 
     @BeforeEach
     void setUp() {
-        sut = new CheckLoginInterceptor(memberService);
+        sut = new CheckAdminInterceptor(memberService);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
 
@@ -57,7 +55,6 @@ class CheckLoginInterceptorTest {
         request.setCookies(new Cookie("token", "not_admin_token"));
 
         final var result = sut.preHandle(request, response, null);
-
         assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
         assertThat(result).isFalse();
     }

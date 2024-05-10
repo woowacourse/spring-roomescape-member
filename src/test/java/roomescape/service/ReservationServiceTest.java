@@ -54,7 +54,7 @@ class ReservationServiceTest {
                 .getId();
         long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
-        long memberId = memberService.createMember(MemberFixture.getCreateInput())
+        long memberId = memberService.createMember(MemberFixture.getUserCreateInput())
                 .id();
         ReservationInput input = new ReservationInput("2023-03-13", timeId, themeId, memberId);
 
@@ -76,7 +76,7 @@ class ReservationServiceTest {
                 .getId();
         final long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
-        final long memberId = memberService.createMember(MemberFixture.getCreateInput())
+        final long memberId = memberService.createMember(MemberFixture.getUserCreateInput())
                 .id();
         reservationService.createReservation(new ReservationInput("2011-11-24", timeId, themeId, memberId));
         final var input = new ReservationInput("2011-11-24", timeId, themeId, memberId);
@@ -93,7 +93,7 @@ class ReservationServiceTest {
                 .getId();
         Long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
-        final var memberId = memberService.createMember(MemberFixture.getCreateInput())
+        final var memberId = memberService.createMember(MemberFixture.getUserCreateInput())
                 .id();
         final var input = new ReservationInput("1300-03-10", timeId, themeId, memberId);
 

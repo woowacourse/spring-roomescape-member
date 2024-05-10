@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.api.dto.request.MemberLoginRequest;
 import roomescape.controller.api.dto.response.TokenLoginResponse;
+import roomescape.domain.user.Role;
 import roomescape.service.MemberService;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.output.MemberLoginOutput;
@@ -20,8 +21,8 @@ public class LoginApiController {
     private final MemberService memberService;
 
     public LoginApiController(final MemberService memberService) {
+        memberService.createMember(new MemberCreateInput("어드민", "admin@email.com", "password", Role.ADMIN));
         this.memberService = memberService;
-        memberService.createMember(new MemberCreateInput("어드민", "admin@email.com", "password"));
     }
 
     @PostMapping
