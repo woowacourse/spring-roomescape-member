@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.reservation.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -45,7 +45,7 @@ public class ReservationControllerTest {
 
         SignUpRequest signUpRequest = new SignUpRequest("lini", "lini@email.com", "lini123");
         RestAssured.given().log().all().contentType(ContentType.JSON).body(signUpRequest)
-                .when().post("/sign-up")
+                .when().post("/signup")
                 .then().log().all();
         memberId = 1;
     }

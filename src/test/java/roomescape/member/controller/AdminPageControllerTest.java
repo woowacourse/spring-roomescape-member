@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.member.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -6,14 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class MemberPageControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+
+public class AdminPageControllerTest {
     @LocalServerPort
     private int port;
 
@@ -22,30 +22,40 @@ class MemberPageControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("사용자 기본 Page 접근 성공 테스트")
+    @DisplayName("Admin Page 홈화면 접근 성공 테스트")
     @Test
-    void responseMemberMainPage() {
+    void responseAdminPage() {
         Response response = RestAssured.given().log().all()
-                .when().get("/")
+                .when().get("/admin")
                 .then().log().all().extract().response();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @DisplayName("사용자 예약 Page 접근 성공 테스트")
+    @DisplayName("Admin Reservation Page 접근 성공 테스트")
     @Test
-    void responseMemberReservationPage() {
+    void responseAdminReservationPage() {
+        Response response = RestAssured.given().log().all()
+                .when().get("/admin/reservation")
+                .then().log().all().extract().response();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("Admin Reservation Time Page 접근 성공 테스트")
+    @Test
+    void responseReservationTimePage() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/admin/time")
                 .then().log().all()
                 .assertThat().statusCode(HttpStatus.OK.value());
     }
 
-    @DisplayName("사용자 로그인 Page 접근 성공 테스트")
+    @DisplayName("Admin Theme Page 접근 성공 테스트")
     @Test
-    void responseMemberLoginPage() {
+    void responseThemePage() {
         RestAssured.given().log().all()
-                .when().get("/login")
+                .when().get("/admin/theme")
                 .then().log().all()
                 .assertThat().statusCode(HttpStatus.OK.value());
     }

@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.reservation.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
