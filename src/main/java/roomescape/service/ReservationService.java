@@ -5,15 +5,18 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
-import roomescape.dto.reservation.ReservationCreateRequest;
+import roomescape.dto.reservation.AdminReservationCreateRequest;
+import roomescape.dto.reservation.MemberReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.exception.InvalidRequestException;
 
@@ -21,12 +24,19 @@ import roomescape.service.exception.InvalidRequestException;
 public class ReservationService {
 
     private final ReservationDao reservationDao;
+    private final MemberDao memberDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final Clock clock;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, Clock clock) {
+    public ReservationService(
+            ReservationDao reservationDao,
+            MemberDao memberDao,
+            ReservationTimeDao reservationTimeDao,
+            ThemeDao themeDao,
+            Clock clock) {
         this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
         this.clock = clock;
@@ -48,9 +58,19 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(ReservationCreateRequest request) {
+    public ReservationResponse add(AdminReservationCreateRequest request) {
         Reservation reservation =
-                request.toDomain(findReservationTime(request.timeId()), findTheme(request.themeId()));
+                request.toDomain(findMember(request.memberId()), findReservationTime(request.timeId()), findTheme(request.themeId()));
+        return add(reservation);
+    }
+
+    public ReservationResponse add(MemberReservationCreateRequest request, Member member) {
+        Reservation reservation =
+                request.toDomain(member, findReservationTime(request.timeId()), findTheme(request.themeId()));
+        return add(reservation);
+    }
+
+    private ReservationResponse add(Reservation reservation) {
         validateDate(reservation, LocalDate.now(clock));
         validateDuplicate(reservation);
         validatePastTimeWhenToday(reservation, LocalDate.now(clock), LocalTime.now(clock));
@@ -60,6 +80,11 @@ public class ReservationService {
     public void delete(Long id) {
         validateNotExistReservation(id);
         reservationDao.delete(id);
+    }
+
+    private Member findMember(Long memberId) {
+        return memberDao.readById(memberId)
+                .orElseThrow(() -> new InvalidRequestException("존재하지 않는 회원입니다."));
     }
 
     private ReservationTime findReservationTime(Long timeId) {

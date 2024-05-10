@@ -9,9 +9,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -24,16 +24,17 @@ public class JdbcReservationDao implements ReservationDao {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            new ReservationName(resultSet.getString("name")),
-            ReservationDate.from(resultSet.getString("date")),
-            new ReservationTime(resultSet.getLong("time_id"),
-                    ReservationStartAt.from(resultSet.getString("time_value"))),
-            new Theme(resultSet.getLong("theme_id"),
-                    ThemeName.from(resultSet.getString("theme_name")),
-                    ThemeDescription.from(resultSet.getString("theme_description")),
-                    ThemeThumbnail.from(resultSet.getString("theme_thumbnail")))
-    );
+                    resultSet.getLong("id"),
+                    ReservationDate.from(resultSet.getString("date")),
+                    new Member(resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"), null, null),
+                    new ReservationTime(resultSet.getLong("time_id"),
+                            ReservationStartAt.from(resultSet.getString("time_value"))),
+                    new Theme(resultSet.getLong("theme_id"),
+                            ThemeName.from(resultSet.getString("theme_name")),
+                            ThemeDescription.from(resultSet.getString("theme_description")),
+                            ThemeThumbnail.from(resultSet.getString("theme_thumbnail")))
+            );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -50,8 +51,9 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.`date`,
+                    m.id AS member_id,
+                    m.name AS member_name,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
@@ -60,6 +62,8 @@ public class JdbcReservationDao implements ReservationDao {
                     th.thumbnail AS theme_thumbnail
                 FROM
                     reservation r
+                INNER JOIN
+                    member m ON r.member_id = m.id
                 INNER JOIN
                     reservation_time t ON r.time_id = t.id
                 INNER JOIN
@@ -102,8 +106,8 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Reservation create(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName().getValue())
                 .addValue("date", reservation.getDate().getValue())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("time_id", reservation.getReservationTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
 

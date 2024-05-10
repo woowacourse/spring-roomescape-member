@@ -1,156 +1,214 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.exception.InvalidValueException;
-import roomescape.dto.reservation.ReservationCreateRequest;
-import roomescape.dto.reservation.ReservationResponse;
-import roomescape.fixture.ReservationFixtures;
-import roomescape.fixture.ReservationTimeFixtures;
-import roomescape.fixture.ThemeFixtures;
-import roomescape.service.ReservationService;
-import roomescape.service.exception.InvalidRequestException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.dto.member.UserLoginRequest;
+import roomescape.dto.reservation.AdminReservationCreateRequest;
+import roomescape.dto.reservation.MemberReservationCreateRequest;
 
-@WebMvcTest(ReservationController.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationControllerTest {
 
     @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
-    private ReservationService reservationService;
+    private JdbcTemplate jdbcTemplate;
 
-    @Test
-    @DisplayName("전체 예약을 조회한다.")
-    void getAllReservationsTest() throws Exception {
-        //given
-        String firstName = "daon";
-        String secondDate = "2022-02-05";
-        String secondStartAt = "23:22";
-        List<ReservationResponse> expectedResponses = getExpectedResponses(firstName, secondDate, secondStartAt);
-        given(reservationService.findAll()).willReturn(expectedResponses);
+    @LocalServerPort
+    private int port;
 
-        //when //then
-        mockMvc.perform(get("/reservations"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].name", is(firstName)))
-                .andExpect(jsonPath("$[1].date", is(secondDate)))
-                .andExpect(jsonPath("$[1].time.startAt", is(secondStartAt)));
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
     }
 
-    @Test
-    @DisplayName("예약을 성공적으로 추가한다.")
-    void addReservationTest() throws Exception {
-        //given
-        String expectedName = "daon";
-        String expectedDate = "2024-11-29";
-        String expectedStartAt = "00:01";
-        ReservationCreateRequest givenRequest =
-                ReservationFixtures.createReservationCreateRequest(expectedName, expectedDate, 1L, 1L);
-        ReservationResponse response = ReservationFixtures.createReservationResponse(
-                1L,
-                expectedName,
-                expectedDate,
-                ReservationTimeFixtures.createReservationTimeResponse(1L, expectedStartAt),
-                ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일1")
-        );
-        given(reservationService.add(givenRequest))
-                .willReturn(response);
-        String givenJsonRequest = objectMapper.writeValueAsString(givenRequest);
+    @TestFactory
+    @DisplayName("예약을 생성하고 조회하고 삭제한다.")
+    Collection<DynamicTest> createAndReadAndDelete() {
+        String date = LocalDate.now().plusDays(1).toString();
 
-        //when //then
-        mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(givenJsonRequest))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is(expectedName)))
-                .andExpect(jsonPath("$.date", is(expectedDate)))
-                .andExpect(jsonPath("$.time.startAt", is(expectedStartAt)));
-    }
+        jdbcTemplate.update(
+                "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '방탈출 1번', '썸네일1')");
 
-    @Test
-    @DisplayName("예약을 성공적으로 삭제한다.")
-    void deleteReservationTest() throws Exception {
-        //when //then
-        mockMvc.perform(delete("/reservations/{id}", 1))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-    }
+        jdbcTemplate.update(
+                "INSERT INTO member (name, email, password) VALUES ('사용자2', 'user2@wooteco.com', 'user2')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:22')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출2', '방탈출 2번', '썸네일2')");
 
-    @Test
-    @DisplayName("InvalidValueException이 발생하면 Bad Request 응답을 반환한다.")
-    void createReservationByInvalidValue() throws Exception {
-        //given
-        ReservationCreateRequest givenRequest
-                = ReservationFixtures.createReservationCreateRequest("InvalidName", "InvalidDate", -1L, -1L);
-        given(reservationService.add(givenRequest))
-                .willThrow(InvalidValueException.class);
-        String requestBody = objectMapper.writeValueAsString(givenRequest);
-
-        //when //then
-        mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("InvalidRequestException이 발생하면 Bad Request 응답을 반환한다.")
-    void createReservationByInvalidRequest() throws Exception {
-        //given
-        ReservationCreateRequest givenRequest
-                = ReservationFixtures.createReservationCreateRequest("InvalidName", "InvalidDate", -1L, -1L);
-        given(reservationService.add(givenRequest))
-                .willThrow(InvalidRequestException.class);
-        String requestBody = objectMapper.writeValueAsString(givenRequest);
-
-        //when //then
-        mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    private List<ReservationResponse> getExpectedResponses(String firstName, String secondDate, String secondStartAt) {
         return List.of(
-                ReservationFixtures.createReservationResponse(
-                        1L,
-                        firstName,
-                        "2022-02-23",
-                        ReservationTimeFixtures.createReservationTimeResponse(1L, "12:12"),
-                        ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일1")
+                dynamicTest("유저가 예약을 생성한다.", () -> {
+                    MemberReservationCreateRequest params =
+                            MemberReservationCreateRequest.of(date, 1L, 1L);
+
+                    String token = RestAssured.given()
+                            .body(UserLoginRequest.of("user1", "user1@wooteco.com"))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when().post("/login")
+                            .getHeader("Set-Cookie");
+
+                    RestAssured.given().log().all()
+                            .header("Cookie", token)
+                            .contentType(ContentType.JSON)
+                            .body(params)
+                            .when().post("/reservations")
+                            .then().log().all()
+                            .statusCode(201)
+                            .header("Location", "/reservations/1")
+                            .body("id", is(1))
+                            .body("member.name", is("사용자1"));
+                }),
+                dynamicTest("관리자가 예약을 생성한다.", () -> {
+                    AdminReservationCreateRequest params =
+                            AdminReservationCreateRequest.of(date, 2L, 1L, 2L);
+
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(params)
+                            .when().post("/reservations/admin")
+                            .then().log().all()
+                            .statusCode(201)
+                            .header("Location", "/reservations/2")
+                            .body("id", is(2))
+                            .body("member.name", is("사용자2"));
+                }),
+                dynamicTest("모든 예약을 조회한다.", () ->
+                        RestAssured.given().log().all()
+                                .when().get("/reservations")
+                                .then().log().all()
+                                .statusCode(200)
+                                .body("size()", is(2))
                 ),
-                ReservationFixtures.createReservationResponse(
-                        2L,
-                        "ikjo",
-                        secondDate,
-                        ReservationTimeFixtures.createReservationTimeResponse(2L, secondStartAt),
-                        ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일1")
-                )
-        );
+                dynamicTest("특정 테마의 예약 가능한 시간을 조회한다.", () ->
+                        RestAssured.given().log().all()
+                                .params("date", date)
+                                .params("themeId", 1)
+                                .when().get("/reservations/available-time")
+                                .then().log().all()
+                                .statusCode(200)
+                                .body("size()", is(2))
+                                .body("[0].alreadyBooked", is(true))
+                                .body("[1].alreadyBooked", is(false))
+                ),
+                dynamicTest("예약을 삭제한다.", () ->
+                        RestAssured.given().log().all()
+                                .when().delete("/reservations/1")
+                                .then().log().all()
+                                .statusCode(204)
+                ),
+                dynamicTest("존재하지 않는 예약을 삭제하려고 시도하면 Bad Request status를 응답한다.", () ->
+                        RestAssured.given().log().all()
+                                .when().delete("reservations/1")
+                                .then().log().all()
+                                .statusCode(400)
+                ));
+    }
+
+    @Nested
+    @DisplayName("유효하지 않은 값으로 예약 생성 시도 테스트")
+    class InvalidRequest {
+
+        @BeforeEach
+        void setUp() {
+            jdbcTemplate.update(
+                    "INSERT INTO member (name, email, password) VALUES ('사용자1', 'user1@wooteco.com', 'user1')");
+            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
+            jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '방탈출 1번', '썸네일1')");
+        }
+
+        @Test
+        @DisplayName("지난 날짜로 예약하면 Bad Request status를 응답한다.")
+        void createByPastDate() {
+            String pastDate = LocalDate.now().minusDays(1).toString();
+            AdminReservationCreateRequest params = AdminReservationCreateRequest.of(pastDate, 1L, 1L, 1L);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations/admin")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("지난 시간으로 예약하면 Bad Request status를 응답한다.")
+        void createByPastTime() {
+            String pastTime = LocalTime.now().minusHours(1).toString();
+            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('" + pastTime + "')");
+            AdminReservationCreateRequest params =
+                    AdminReservationCreateRequest.of(LocalDate.now().toString(), 1L, 2L, 1L);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations/admin")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        @ParameterizedTest
+        @MethodSource("nullRequests")
+        @DisplayName("날짜, 유저 ID, 예약 시간 ID, 테마 ID 중 하나라도 공백이면 Bad Request status를 응답한다.")
+        void createByNullValue(AdminReservationCreateRequest params) {
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations/admin")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        private static Stream<AdminReservationCreateRequest> nullRequests() {
+            return Stream.of(
+                    AdminReservationCreateRequest.of(null, 1L, 1L, 1L),
+                    AdminReservationCreateRequest.of(LocalDate.now().plusDays(1).toString(), null, 1L, 1L),
+                    AdminReservationCreateRequest.of(LocalDate.now().plusDays(1).toString(), 1L, null, 1L),
+                    AdminReservationCreateRequest.of(LocalDate.now().plusDays(1).toString(), 1L, 1L, null)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("notExistRequests")
+        @DisplayName("유저 ID, 시간 ID, 테마 ID 중 하나라도 존재하지 않으면 Bad Request status를 응답한다.")
+        void createByNotExistValue(AdminReservationCreateRequest params) {
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations/admin")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        private static Stream<AdminReservationCreateRequest> notExistRequests() {
+            String date = LocalDate.now().plusDays(1).toString();
+            return Stream.of(
+                    AdminReservationCreateRequest.of(date, -1L, 1L, 1L),
+                    AdminReservationCreateRequest.of(date, 1L, -1L, 1L),
+                    AdminReservationCreateRequest.of(date, 1L, 1L, -1L)
+            );
+        }
     }
 }
