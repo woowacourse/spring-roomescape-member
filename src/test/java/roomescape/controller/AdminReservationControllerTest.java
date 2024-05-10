@@ -111,14 +111,31 @@ class AdminReservationControllerTest {
     @DisplayName("필터링한 데이터를 조회하면 200ok를 응답한다.")
     void getFiltered() throws Exception {
         //given
-        ReservationFilterRequest request = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-05");
-        given(reservationService.findFiltered(request)).willReturn(List.of());
-        String requestBody = objectMapper.writeValueAsString(request);
+        ReservationFilterRequest filterRequest = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-05");
+        List<ReservationResponse> responses = List.of(
+                ReservationResponse.of(
+                        1L,
+                        MemberFixtures.createNameResponse("daon"),
+                        "2024-04-04",
+                        ReservationTimeResponse.of(1L, "12:12"),
+                        ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
+                ),
+                ReservationResponse.of(
+                        2L,
+                        MemberFixtures.createNameResponse("ikjo"),
+                        "2024-04-05",
+                        ReservationTimeResponse.of(2L, "12:32"),
+                        ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
+                )
+        );
+        given(reservationService.findFiltered(filterRequest)).willReturn(responses);
 
         //when //then
         mockMvc.perform(get("/admin/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .param("memberId", String.valueOf(filterRequest.getMemberId()))
+                        .param("themeId", String.valueOf(filterRequest.getThemeId()))
+                        .param("dateFrom", filterRequest.getDateTo())
+                        .param("dateTo", filterRequest.getDateTo()))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -127,14 +144,15 @@ class AdminReservationControllerTest {
     @DisplayName("필터링한 데이터를 조회시 예외가 발생하면 400 Bad Request를 응답한다.")
     void getFilteredWhenIllegalArgumentException() throws Exception {
         //given
-        ReservationFilterRequest request = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-05");
-        given(reservationService.findFiltered(request)).willThrow(IllegalArgumentException.class);
-        String requestBody = objectMapper.writeValueAsString(request);
+        ReservationFilterRequest filterRequest = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-05");
+        given(reservationService.findFiltered(filterRequest)).willThrow(IllegalArgumentException.class);
 
         //when //then
         mockMvc.perform(get("/admin/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .param("memberId", String.valueOf(filterRequest.getMemberId()))
+                        .param("themeId", String.valueOf(filterRequest.getThemeId()))
+                        .param("dateFrom", filterRequest.getDateTo())
+                        .param("dateTo", filterRequest.getDateTo()))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
