@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.integration;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -28,7 +28,7 @@ import roomescape.dto.theme.ThemeCreateRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ThemeControllerTest {
+class ThemeIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.integration;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,11 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.member.MemberLoginRequest;
-import roomescape.service.AuthService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class AdminViewControllerTest {
+class AdminViewIntegrationTest {
 
     @LocalServerPort
     private int port;

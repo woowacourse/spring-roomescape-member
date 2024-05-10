@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +18,7 @@ import roomescape.dto.member.MemberLoginRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class LoginControllerTest {
+class LoginIntegrationTest {
 
     @LocalServerPort
     int port;

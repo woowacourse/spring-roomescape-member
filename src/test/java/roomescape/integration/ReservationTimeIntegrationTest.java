@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.integration;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -25,7 +25,7 @@ import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ReservationTimeControllerTest {
+class ReservationTimeIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
