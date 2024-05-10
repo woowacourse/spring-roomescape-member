@@ -74,4 +74,40 @@ class ReservationServiceTest {
                 .isInstanceOf(IllegalUserRequestException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자 이름에 대한 예약 생성시 예외가 발생한다.")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
+    void checkReservationExistUser_Failure() {
+        ReservationSaveRequest request = new ReservationSaveRequest(
+                "asfjk", LocalDate.now().plusDays(1L), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(IllegalUserRequestException.class)
+                .hasMessage("존재하지 않는 사용자입니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간에 대한 예약 생성시 예외가 발생한다.")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
+    void checkReservationExistTime_Failure() {
+        ReservationSaveRequest request = new ReservationSaveRequest(
+                "naknak", LocalDate.now().plusDays(1L), 100L, 1L);
+
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(IllegalUserRequestException.class)
+                .hasMessage("존재하지 않는 예약 시간 입니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마에 대한 예약 생성시 예외가 발생한다.")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
+    void checkReservationExistTheme_Failure() {
+        ReservationSaveRequest request = new ReservationSaveRequest(
+                "naknak", LocalDate.now().plusDays(1L), 1L, 100L);
+
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(IllegalUserRequestException.class)
+                .hasMessage("존재하지 않는 테마 입니다.");
+    }
 }

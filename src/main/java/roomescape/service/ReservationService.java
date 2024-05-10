@@ -36,7 +36,7 @@ public class ReservationService {
 
     public Reservation createReservation(ReservationSaveRequest request) {
         Member member = memberRepository.findByName(request.name())
-                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 이름입니다."));
+                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 사용자입니다."));
 
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 예약 시간 입니다."));
