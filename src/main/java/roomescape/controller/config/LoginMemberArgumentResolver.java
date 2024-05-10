@@ -6,6 +6,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.AuthorizationException;
 import roomescape.model.LoginMember;
 import roomescape.service.AuthService;
 import roomescape.service.dto.MemberInfo;
@@ -26,10 +27,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        // TODO: 쿠키가 없는 경우?
         String cookie = webRequest.getHeader("cookie");
+        if (cookie == null) {
+            throw new AuthorizationException();
+        }
         String token = cookie.substring(6);
         MemberInfo loginMember = authService.checkToken(token);
         return new LoginMember(loginMember.getId(), loginMember.getName(), loginMember.getEmail());
-    } // TODO: check
+    }
 }
