@@ -22,17 +22,20 @@ public record ReservationResponse(
                 MemberResponse.from(member),
                 reservation.getDate(),
                 TimeResponse.from(reservation.getTime()),
-                ThemeResponse.from(reservation.getTheme()));
+                ThemeResponse.from(reservation.getTheme())
+        );
     }
 
     private record TimeResponse (
         Long id,
-        @JsonFormat(pattern = "HH:mm") LocalTime startAt
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime startAt
     ) {
         public static TimeResponse from(ReservationTime reservationTime) {
             return new TimeResponse(
                     reservationTime.getId(),
-                    reservationTime.getStartAt());
+                    reservationTime.getStartAt()
+            );
         }
     }
 }

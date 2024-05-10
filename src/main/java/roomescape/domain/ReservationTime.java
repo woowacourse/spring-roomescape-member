@@ -37,7 +37,7 @@ public class ReservationTime {
             return false;
         }
         ReservationTime time = (ReservationTime) o;
-        return id == time.id;
+        return Objects.equals(id, time.id);
     }
 
     @Override

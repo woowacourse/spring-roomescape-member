@@ -9,5 +9,6 @@ public record UserReservationRequest(
         @NotNull
         Long themeId,
         @NotNull
-        Long timeId) {
+        Long timeId
+) {
 }

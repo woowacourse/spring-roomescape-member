@@ -6,5 +6,6 @@ public record UserLoginRequest(
         @NotNull
         String email,
         @NotNull
-        String password) {
+        String password
+) {
 }

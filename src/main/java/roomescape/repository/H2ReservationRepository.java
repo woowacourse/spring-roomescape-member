@@ -45,15 +45,16 @@ public class H2ReservationRepository implements ReservationRepository {
                         DATE, reservation.getDate(),
                         MEMBER_ID, reservation.getMember().getId(),
                         TIME_ID, reservation.getTimeId(),
-                        THEME_ID, reservation.getThemeId()))
-                .longValue();
+                        THEME_ID, reservation.getThemeId()
+        )).longValue();
 
         return new Reservation(
                 reservationId,
                 reservation.getDate(),
                 reservation.getMember(),
                 reservation.getTime(),
-                reservation.getTheme());
+                reservation.getTheme()
+        );
     }
 
     public void deleteById(Long id) {
@@ -118,16 +119,19 @@ public class H2ReservationRepository implements ReservationRepository {
                             rs.getString("user_name"),
                             rs.getString("email"),
                             rs.getString("user_password"),
-                            Role.valueOf(rs.getString("user_role"))),
+                            Role.valueOf(rs.getString("user_role"))
+                    ),
                     new ReservationTime(
                             rs.getLong(TIME_ID),
-                            rs.getTime("time_value").toLocalTime()),
+                            rs.getTime("time_value").toLocalTime()
+                    ),
                     new Theme(
                             rs.getLong(THEME_ID),
                             rs.getString("theme_name"),
                             rs.getString("theme_description"),
                             rs.getString("theme_thumbnail")
-                    ));
+                    )
+            );
         }
     }
 }

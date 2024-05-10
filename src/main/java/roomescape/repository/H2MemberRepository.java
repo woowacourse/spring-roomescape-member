@@ -38,15 +38,16 @@ public class H2MemberRepository implements MemberRepository {
                         NAME, member.getName(),
                         EMAIL, member.getEmail(),
                         PASSWORD, member.getPassword(),
-                        ROLE, member.getRole().name()))
-                .longValue();
+                        ROLE, member.getRole().name()
+        )).longValue();
 
         return new Member(
                 memberId,
                 member.getName(),
                 member.getEmail(),
                 member.getPassword(),
-                member.getRole());
+                member.getRole()
+        );
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
@@ -87,7 +88,8 @@ public class H2MemberRepository implements MemberRepository {
                     rs.getString(NAME),
                     rs.getString(EMAIL),
                     rs.getString(PASSWORD),
-                    Role.valueOf(rs.getString(ROLE)));
+                    Role.valueOf(rs.getString(ROLE))
+            );
         }
     }
 }

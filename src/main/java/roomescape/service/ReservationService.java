@@ -80,8 +80,8 @@ public class ReservationService {
     private void rejectPastTimeReservation(Reservation reservation) {
         if (reservation.isBeforeNow()) {
             LocalDateTime reservationDataTime = reservation.getDateTime();
-            throw new IllegalArgumentException("이미 지난 시간입니다. 입력한 시간: " + reservationDataTime.toLocalDate() + " "
-                    + reservationDataTime.toLocalTime());
+            throw new IllegalArgumentException("이미 지난 시간입니다. 입력한 시간: " + reservationDataTime.toLocalDate()
+                    + " " + reservationDataTime.toLocalTime());
         }
     }
 
@@ -100,8 +100,12 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResponse> searchReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        List<Reservation> reservations = reservationRepository.searchReservations(themeId, memberId, dateFrom, dateTo);
+    public List<ReservationResponse> searchReservations(
+            Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationRepository.searchReservations(
+                themeId, memberId, dateFrom, dateTo
+        );
 
         return reservations.stream()
                 .map(ReservationResponse::from)

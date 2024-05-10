@@ -11,5 +11,6 @@ public record AdminReservationRequest(
         @NotNull
         Long timeId,
         @NotNull
-        Long themeId) {
+        Long themeId
+) {
 }

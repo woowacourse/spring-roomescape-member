@@ -32,12 +32,13 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     public ReservationTime save(ReservationTime reservationTime) {
         Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
-                        START_AT, reservationTime.getStartAt()))
-                .longValue();
+                        START_AT, reservationTime.getStartAt()
+        )).longValue();
 
         return new ReservationTime(
                 reservationTimeId,
-                reservationTime.getStartAt());
+                reservationTime.getStartAt()
+        );
     }
 
     public List<ReservationTime> findAll() {
@@ -63,7 +64,8 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new ReservationTime(
                     rs.getLong(ID),
-                    rs.getTime(START_AT).toLocalTime());
+                    rs.getTime(START_AT).toLocalTime()
+            );
         }
     }
 }

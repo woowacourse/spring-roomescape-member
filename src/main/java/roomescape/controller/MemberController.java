@@ -43,7 +43,10 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(HttpServletResponse response, @RequestBody @Valid UserLoginRequest userLoginRequest) {
+    public ResponseEntity<TokenResponse> login(
+            HttpServletResponse response,
+            @RequestBody @Valid UserLoginRequest userLoginRequest
+    ) {
         TokenResponse tokenResponse = memberService.createToken(userLoginRequest);
         Cookie cookie = new Cookie(TOKEN, tokenResponse.token());
         cookie.setHttpOnly(true);

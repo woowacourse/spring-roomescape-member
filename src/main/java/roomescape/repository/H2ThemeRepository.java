@@ -45,14 +45,15 @@ public class H2ThemeRepository implements ThemeRepository {
         Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
                         NAME, theme.getName(),
                         DESCRIPTION, theme.getDescription(),
-                        THUMBNAIL, theme.getThumbnail()))
-                .longValue();
+                        THUMBNAIL, theme.getThumbnail()
+        )).longValue();
 
         return new Theme(
                 reservationTimeId,
                 theme.getName(),
                 theme.getDescription(),
-                theme.getThumbnail());
+                theme.getThumbnail()
+        );
     }
 
     public void deleteById(Long id) {
@@ -66,7 +67,8 @@ public class H2ThemeRepository implements ThemeRepository {
                     rs.getLong(ID),
                     rs.getString(NAME),
                     rs.getString(DESCRIPTION),
-                    rs.getString(THUMBNAIL));
+                    rs.getString(THUMBNAIL)
+            );
         }
     }
 }

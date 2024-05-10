@@ -39,7 +39,8 @@ public class ReservationTimeController {
             @RequestParam("themeId") Long themeId
     ) {
         List<AvailableReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAllWithAvailability(
-                date, themeId);
+                date, themeId
+        );
 
         return ResponseEntity.ok(reservationTimeResponses);
     }

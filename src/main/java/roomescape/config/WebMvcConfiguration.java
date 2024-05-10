@@ -15,9 +15,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     private final CheckLoginInterceptor checkLoginInterceptor;
     private final MemberIdConverterArgumentResolver memberIdConverterArgumentResolver;
 
-    public WebMvcConfiguration(CheckAdminInterceptor checkAdminInterceptor,
-                               CheckLoginInterceptor checkLoginInterceptor,
-                               MemberIdConverterArgumentResolver memberIdConverterArgumentResolver) {
+    public WebMvcConfiguration(
+            CheckAdminInterceptor checkAdminInterceptor,
+            CheckLoginInterceptor checkLoginInterceptor,
+            MemberIdConverterArgumentResolver memberIdConverterArgumentResolver
+    ) {
         this.checkAdminInterceptor = checkAdminInterceptor;
         this.checkLoginInterceptor = checkLoginInterceptor;
         this.memberIdConverterArgumentResolver = memberIdConverterArgumentResolver;

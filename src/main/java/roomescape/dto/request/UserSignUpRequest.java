@@ -10,7 +10,8 @@ public record UserSignUpRequest(
         @NotNull
         String email,
         @NotNull
-        String password) {
+        String password
+) {
     public Member toEntity() {
         return new Member(name, email, password, Role.USER);
     }
