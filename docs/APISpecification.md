@@ -92,6 +92,39 @@ Content-Type: application/json
 }
 ```
 
+### 예약 검색
+
+#### Request
+
+```http request
+GET /reservations/search?themeId=themeId&memberId=memberId&dateFrom=dateFrom&dateTo=dateTo HTTP/1.1
+```
+
+#### Response
+
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2023-01-01",
+        "time": {
+            "id": 1,
+            "startAt": "10:00"
+        },
+        "theme": {
+            "id": 1,
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
+    }
+]
+```
+
 ### 예약 추가 - 사용자
 
 #### Request
