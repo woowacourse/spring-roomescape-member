@@ -35,7 +35,7 @@ class AuthControllerIntegrationTest {
   void login() {
     // Given
     LoginRequest request = new LoginRequest("user@mail.com", "1234");
-    String token = jwtTokenProvider.createToken(request.email());
+    String token = jwtTokenProvider.createToken(request.email(), "어드민");
 
     // Then
     RestAssured.given().log().all()
@@ -53,7 +53,7 @@ class AuthControllerIntegrationTest {
     // Given
     String name = "어드민";
     LoginRequest request = new LoginRequest("user@mail.com", "1234");
-    String token = jwtTokenProvider.createToken(request.email());
+    String token = jwtTokenProvider.createToken(request.email(), name);
 
     // Then
     RestAssured.given().log().all()

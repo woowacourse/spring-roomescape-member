@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.domain.Member;
+import roomescape.globar.config.AuthenticationPrincipal;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.SaveReservationRequest;
@@ -18,31 +20,33 @@ import roomescape.reservation.service.ReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
+  private final ReservationService reservationService;
 
-    @GetMapping
-    public List<ReservationResponse> getReservations() {
-        return reservationService.getReservations()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
-    }
+  public ReservationController(final ReservationService reservationService) {
+    this.reservationService = reservationService;
+  }
 
-    @PostMapping
-    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody final SaveReservationRequest request) {
-        final Reservation savedReservation = reservationService.saveReservation(request);
+  @GetMapping
+  public List<ReservationResponse> getReservations() {
+    return reservationService.getReservations()
+        .stream()
+        .map(ReservationResponse::from)
+        .toList();
+  }
 
-        return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId()))
-                .body(ReservationResponse.from(savedReservation));
-    }
+  @PostMapping
+  public ResponseEntity<ReservationResponse> saveReservation(@AuthenticationPrincipal Member member,
+      @RequestBody final SaveReservationRequest request) {
+    final Reservation savedReservation = reservationService.saveReservation(member, request);
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
-        reservationService.deleteReservation(id);
-        return ResponseEntity.noContent().build();
-    }
+    return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId()))
+        .body(ReservationResponse.from(savedReservation));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
+    reservationService.deleteReservation(id);
+    return ResponseEntity.noContent().build();
+  }
 }

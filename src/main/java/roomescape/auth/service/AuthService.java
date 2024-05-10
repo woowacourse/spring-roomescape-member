@@ -14,10 +14,6 @@ public class AuthService {
   }
 
   public String createUser(LoginRequest request) {
-    return jwtTokenProvider.createToken(request.email());
-  }
-
-  public String checkLogin(String token) {
-    return jwtTokenProvider.getPayload(token).get("name");
+    return jwtTokenProvider.createToken(request.email(), "어드민");
   }
 }

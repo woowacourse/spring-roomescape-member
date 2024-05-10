@@ -15,10 +15,10 @@ import roomescape.globar.infra.JwtTokenProvider;
 @Component
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
-  private final JwtTokenProvider tokenProvider;
+  private final JwtTokenProvider jwtTokenProvider;
 
-  public AuthenticationPrincipalArgumentResolver(JwtTokenProvider tokenProvider) {
-    this.tokenProvider = tokenProvider;
+  public AuthenticationPrincipalArgumentResolver(JwtTokenProvider jwtTokenProvider) {
+    this.jwtTokenProvider = jwtTokenProvider;
   }
 
   @Override
@@ -36,7 +36,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     Cookie[] cookies = request.getCookies();
     String token = extractTokenFromCookie(cookies);
 
-    Map<String, String> payload = tokenProvider.getPayload(token);
+    Map<String, String> payload = jwtTokenProvider.getPayload(token);
 
     return new Member(payload.get("name"), payload.get("email"), null);
   }
