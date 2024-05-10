@@ -29,7 +29,7 @@ public class CheckAdminPermissionInterceptor implements HandlerInterceptor {
             return false;
         }
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        Long memberId = jwtTokenProvider.validateAndGetMemberId(token);
+        Long memberId = jwtTokenProvider.validateAndGetLongSubject(token);
         Member member = memberService.findMemberById(memberId);
         if (member == null || member.getRole() != ADMIN) {
             response.setStatus(401);

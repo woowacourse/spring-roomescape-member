@@ -1,4 +1,4 @@
-package roomescape.domain.reservationTime.service;
+package roomescape.domain.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
 import roomescape.domain.reservation.dto.ReservationTimeAddRequest;
-import roomescape.domain.reservation.service.AdminReservationTimeService;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 class AdminReservationTimeServiceTest {

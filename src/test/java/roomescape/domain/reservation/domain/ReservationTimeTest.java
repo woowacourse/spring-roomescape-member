@@ -1,4 +1,4 @@
-package roomescape.domain.reservationTime.domain;
+package roomescape.domain.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

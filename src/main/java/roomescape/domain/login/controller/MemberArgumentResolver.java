@@ -37,7 +37,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             throw new ClientIllegalArgumentException("쿠키가 존재하지 않습니다.");
         }
         String token = jwtTokenProvider.extractTokenFromCookie(request.getCookies());
-        Long memberId = jwtTokenProvider.validateAndGetMemberId(token);
+        Long memberId = jwtTokenProvider.validateAndGetLongSubject(token);
         return memberService.findMemberById(memberId);
     }
 }

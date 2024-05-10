@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 @Component
 public class JwtTokenProvider {
@@ -37,7 +38,10 @@ public class JwtTokenProvider {
         return "";
     }
 
-    public Long validateAndGetMemberId(String token) {
+    public Long validateAndGetLongSubject(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new ClientIllegalArgumentException("토큰이 비어있습니다.");
+        }
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

@@ -19,7 +19,6 @@ import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
 import roomescape.domain.reservation.dto.BookableTimeResponse;
 import roomescape.domain.reservation.dto.BookableTimesRequest;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
-import roomescape.domain.reservationTime.service.FakeReservationTimeRepository;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.theme.service.FakeThemeRepository;
 import roomescape.global.exception.ClientIllegalArgumentException;
