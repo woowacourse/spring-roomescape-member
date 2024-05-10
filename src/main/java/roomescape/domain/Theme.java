@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.Validator;
+import roomescape.domain.util.Validator;
 
 public record Theme(Long id, String name, String description, String thumbnail) {
     private static final int MAX_STRING_LENGTH = 255;

@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import roomescape.domain.util.Validator;
+
 class ValidatorTest {
     @DisplayName("인자 중 null이 있을 시 예외를 던진다.")
     @Test

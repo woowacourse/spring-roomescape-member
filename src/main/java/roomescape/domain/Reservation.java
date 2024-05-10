@@ -3,7 +3,7 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import roomescape.domain.exception.Validator;
+import roomescape.domain.util.Validator;
 
 public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
 
