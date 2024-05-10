@@ -17,7 +17,7 @@ public class ReservationTime {
 
     private void validateNullField(LocalTime startAt) {
         if (startAt == null) {
-            throw new BadRequestException("예약 시간 필드에는 빈 값이 들어올 수 없습니다.");
+            throw new IllegalArgumentException("예약 시간 필드에는 빈 값이 들어올 수 없습니다.");
         }
     }
 

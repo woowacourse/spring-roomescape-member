@@ -25,19 +25,19 @@ public class Theme {
 
     private void validateNullField(String name, String description, String thumbnail) {
         if (name == null || description == null || thumbnail == null) {
-            throw new BadRequestException("테마 필드에는 빈 값이 들어올 수 없습니다.");
+            throw new IllegalArgumentException("테마 필드에는 빈 값이 들어올 수 없습니다.");
         }
     }
 
     private void validateNotBlank(String name, String description, String thumbnail) {
         if (name.isBlank() || description.isBlank() || thumbnail.isBlank()) {
-            throw new BadRequestException("테마의 정보는 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("테마의 정보는 비어있을 수 없습니다.");
         }
     }
 
     private void validateThumbnailFormat(String thumbnail) {
         if (!thumbnail.matches("(http|https).*")) {
-            throw new BadRequestException("썸네일은 url 링크여야합니다.");
+            throw new IllegalArgumentException("썸네일은 url 링크여야합니다.");
         }
     }
 

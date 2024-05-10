@@ -1,7 +1,5 @@
 package roomescape.member.domain;
 
-import roomescape.exception.ResourceNotFoundException;
-
 import java.util.Arrays;
 
 public enum Role {
@@ -13,7 +11,7 @@ public enum Role {
         return Arrays.stream(Role.values())
                 .filter(role -> role.name().equals(name))
                 .findAny()
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 역할입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역할입니다."));
     }
 
     public boolean isAdminRole() {
