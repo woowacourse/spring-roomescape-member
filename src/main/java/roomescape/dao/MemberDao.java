@@ -12,6 +12,8 @@ public interface MemberDao {
 
     List<Member> readAll();
 
+    Optional<Member> findById(long id);
+
     Optional<Member> findByEmail(MemberEmail email);
 
     Member create(Member member);

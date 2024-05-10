@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -12,6 +13,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
@@ -21,11 +23,16 @@ public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final MemberDao memberDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao,
+                              ReservationTimeDao reservationTimeDao,
+                              MemberDao memberDao,
+                              ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.memberDao = memberDao;
         this.themeDao = themeDao;
     }
 
@@ -43,6 +50,16 @@ public class ReservationService {
         return allTimes.stream()
                 .map(filteredTime -> getAvailableReservationResponse(filteredTime, times))
                 .toList();
+    }
+
+    public ReservationResponse add(AdminReservationCreateRequest request, LocalDateTime now) {
+        ReservationTime reservationTime = findReservationTimeBy(request.getTimeId());
+        Theme theme = findThemeBy(request.getThemeId());
+        Member member = findMemberById(request.getMemberId());
+        Reservation reservation = request.toDomain(member, reservationTime, theme);
+        reservation.validatePast(reservationTime, now);
+        validateDuplicate(reservation);
+        return ReservationResponse.from(reservationDao.create(reservation));
     }
 
     public ReservationResponse add(Member member, ReservationCreateRequest request, LocalDateTime now) {
@@ -88,6 +105,11 @@ public class ReservationService {
     private ReservationTime findReservationTimeBy(Long id) {
         return reservationTimeDao.readById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다."));
+    }
+
+    private Member findMemberById(Long id) {
+        return memberDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("회원 아이디와 일치하는 회원이 존재하지 않습니다."));
     }
 
     private Theme findThemeBy(Long id) {

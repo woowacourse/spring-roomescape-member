@@ -1,6 +1,8 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
@@ -34,14 +36,28 @@ public class JdbcMemberDao implements MemberDao {
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Member(
-                        resultSet.getLong("id"),
-                        new MemberName(resultSet.getString("name")),
-                        new MemberEmail(resultSet.getString("email")),
-                        new MemberPassword(resultSet.getString("password")),
-                        MemberRole.from(resultSet.getString("role"))
-                )
+                (resultSet, rowNum) -> getMember(resultSet)
         );
+    }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        String sql = """
+                SELECT
+                id, name, email, password, role
+                FROM
+                member
+                WHERE id = ?
+                """;
+        List<Member> members = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> getMember(resultSet),
+                id
+        );
+        if (members.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(members.get(0));
     }
 
     @Override
@@ -56,13 +72,7 @@ public class JdbcMemberDao implements MemberDao {
 
         List<Member> members = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Member(
-                        resultSet.getLong("id"),
-                        new MemberName(resultSet.getString("name")),
-                        email,
-                        new MemberPassword(resultSet.getString("password")),
-                        MemberRole.from(resultSet.getString("role"))
-                ),
+                (resultSet, rowNum) -> getMember(resultSet),
                 email.getValue()
         );
 
@@ -126,6 +136,16 @@ public class JdbcMemberDao implements MemberDao {
                 boolean.class,
                 memberEmail.getValue(),
                 memberPassword.getValue()
+        );
+    }
+
+    private Member getMember(ResultSet resultSet) throws SQLException {
+        return new Member(
+                resultSet.getLong("id"),
+                new MemberName(resultSet.getString("name")),
+                new MemberEmail(resultSet.getString("email")),
+                new MemberPassword(resultSet.getString("password")),
+                MemberRole.from(resultSet.getString("role"))
         );
     }
 }

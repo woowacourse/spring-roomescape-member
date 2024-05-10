@@ -13,6 +13,16 @@ public class MemberFixtures {
     private MemberFixtures() {
     }
 
+    public static Member createAdminMember(String name, String email) {
+        return new Member(
+                null,
+                new MemberName(name),
+                new MemberEmail(email),
+                new MemberPassword("default"),
+                MemberRole.ADMIN
+        );
+    }
+
     public static Member createUserMember(long id, String name, String email, String password) {
         return new Member(
                 id,

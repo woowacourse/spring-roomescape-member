@@ -7,9 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.config.LoginUser;
-import roomescape.domain.member.Member;
-import roomescape.dto.reservation.ReservationCreateRequest;
+import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -25,10 +23,9 @@ public class AdminReservationController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> create(@LoginUser Member member,
-                                                      @RequestBody ReservationCreateRequest request) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody AdminReservationCreateRequest request) {
         LocalDateTime now = LocalDateTime.now(KST_ZONE);
         return ResponseEntity.created(URI.create("/admin/reservations"))
-                .body(reservationService.add(member, request, now));
+                .body(reservationService.add(request, now));
     }
 }
