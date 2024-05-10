@@ -5,10 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,7 +21,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
+            new Member(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("member_name"),
+                    resultSet.getString("member_email"),
+                    resultSet.getString("member_password"),
+                    Role.findByName(resultSet.getString("member_role"))
+            ),
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -40,17 +43,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String BASIC_SELECT_QUERY = """
             SELECT 
                 r.id AS reservation_id, 
-                r.name, 
-                r.date, 
+                r.date,
                 t.id AS time_id, 
                 t.start_at AS time_value, 
                 th.id AS theme_id, 
                 th.name AS theme_name, 
                 th.description AS theme_description, 
-                th.thumbnail AS theme_thumbnail 
+                th.thumbnail AS theme_thumbnail,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
+                m.role AS member_role,
+                m.password AS member_password
             FROM reservation AS r 
             INNER JOIN reservation_time AS t ON r.time_id = t.id  
-            INNER JOIN theme AS th ON r.theme_id = th.id 
+            INNER JOIN theme AS th ON r.theme_id = th.id
+            INNER JOIN member AS m ON r.member_id = m.id
             """;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
@@ -82,14 +90,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
-                "name", reservation.getName(),
+                "member_id", reservation.getMember().getId(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
         );
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return new Reservation(id, reservation.getMember(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
 
