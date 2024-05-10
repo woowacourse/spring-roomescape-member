@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderTheme(themes) {
     const themeSlots = document.getElementById('theme-slots');
     themeSlots.innerHTML = '';
-    themes.forEach(theme => {
+    themes.themes.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
         themeSlots.appendChild(createSlot('theme', name, themeId));
@@ -110,7 +110,7 @@ function renderAvailableTimes(times) {
         timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
         return;
     }
-    times.forEach(time => {
+    times.times.forEach(time => {
         /*
         TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
               response 명세에 맞춰 createSlot 함수 호출 시 값 설정
@@ -149,7 +149,7 @@ function onReservationButtonClick() {
     const selectedDate = document.getElementById("datepicker").value;
     const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
     const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-    const name = document.getElementById('user-name').value;
+    // const name = document.getElementById('user-name').value;
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
 
@@ -162,7 +162,7 @@ function onReservationButtonClick() {
             date: selectedDate,
             themeId: selectedThemeId,
             timeId: selectedTimeId,
-            name: name
+            // name: name
         };
 
         fetch('/reservations', {
