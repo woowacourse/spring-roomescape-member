@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.repostiory.MemberRepository;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -30,6 +31,16 @@ public class MemberJdbcRepository implements MemberRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public Member save(Member member) {
+        Map<String, ?> params = Map.of(
+                "name", member.getMemberName(),
+                "email", member.getEmail(),
+                "password", member.getPassword());
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Member(id, member);
     }
 
     @Override

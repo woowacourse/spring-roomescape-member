@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class MemberJdbcRepositoryTest {
@@ -30,6 +31,26 @@ class MemberJdbcRepositoryTest {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(MEMBER_TABLE_NAME)
                 .usingGeneratedKeyColumns("id");
+    }
+
+    @DisplayName("사용자를 저장한다.")
+    @Test
+    void saveMember() {
+        //given
+        String email = "lini@email.com";
+        String name = "lini";
+        String password = "l2n2r2n2";
+
+        //when
+        Member member = memberJdbcRepository.save(new Member(name, email, password));
+
+        //then
+        assertAll(
+                () -> assertThat(member.getId()).isNotZero(),
+                () -> assertThat(member.getMemberName()).isEqualTo(name),
+                () -> assertThat(member.getPassword()).isEqualTo(password),
+                () -> assertThat(member.getEmail()).isEqualTo(email)
+        );
     }
 
     @DisplayName("이메일로 사용자를 찾는다.")
