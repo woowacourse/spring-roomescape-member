@@ -1,10 +1,10 @@
 package roomescape.auth.provider;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.domain.Member;
 
 import java.util.Date;
 
@@ -15,21 +15,34 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(member.getEmail())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    public String getPayload(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    public String getEmail(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public String getRole(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
     }
 }
 
