@@ -14,7 +14,10 @@ INSERT INTO member(name, email, password)
 VALUES ('수달', 'a@a.com', '123a!'),
        ('트레', 'b@b.com', '123b!'),
        ('테니', 'c@c.com', '123c!'),
-       ('우주', 'd@d.com', '123d!');
+       ('우주', 'space@woowahan.com', '123'),
+       ('에버', 'ever@woowahan.com', '123'),
+       ('도도', 'dodo@woowahan.com', '123'),
+       ('제리', 'jerry@woowahan.com', '123');
 
 INSERT INTO reservation(member_id, date, time_id, theme_id)
 VALUES (1, TIMESTAMPADD(DAY, -1, CURRENT_DATE), 1, 1),

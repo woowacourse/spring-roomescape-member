@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
@@ -11,6 +12,11 @@ import roomescape.domain.member.Member;
 public class JdbcMemberRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<LoginMember> loginMemberMapper = (rs, rowNum) -> new LoginMember(
+        rs.getLong("id"),
+        rs.getString("email"),
+        rs.getString("name")
+    );
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -32,11 +38,13 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Optional<LoginMember> findById(Long id) {
         String sql = "SELECT id, name, email FROM member WHERE id = ?";
-        List<LoginMember> result = jdbcTemplate.query(sql, (rs, rowNum) -> new LoginMember(
-            rs.getLong("id"),
-            rs.getString("email"),
-            rs.getString("name")
-        ), id);
+        List<LoginMember> result = jdbcTemplate.query(sql, loginMemberMapper, id);
         return result.stream().findAny();
+    }
+
+    @Override
+    public List<LoginMember> findAll() {
+        String sql = "SELECT id, name, email FROM member";
+        return jdbcTemplate.query(sql, loginMemberMapper);
     }
 }
