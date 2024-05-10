@@ -122,7 +122,7 @@ class ReservationServiceTest {
         ).isInstanceOf(IllegalArgumentException.class).hasMessage("동일한 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
     }
 
-    @DisplayName("예약 목록 조회")
+    @DisplayName("전체 예약 목록 조회")
     @Test
     void getReservations() {
         final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
@@ -134,6 +134,35 @@ class ReservationServiceTest {
         reservationService.saveReservation(new ReservationSaveRequest(LocalDate.now().plusMonths(1), 1L, 1L), loginMember);
         reservationService.saveReservation(new ReservationSaveRequest(LocalDate.now().plusMonths(2), 2L, 2L), loginMember);
         final List<ReservationResponse> reservationResponses = reservationService.getReservations(new ReservationFilterRequest(null, null, null, null));
+
+        assertThat(reservationResponses).hasSize(2)
+                .containsExactly(
+                        new ReservationResponse(reservationRepository.findById(1L).get()),
+                        new ReservationResponse(reservationRepository.findById(2L).get())
+                );
+    }
+
+    @DisplayName("예약 목록 필터링 후 조회")
+    @Test
+    void getReservationsByFilter() {
+        final List<Long> memberIds = List.of(
+                memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234")),
+                memberRepository.save(new Member("고구마", Role.USER, "222@aaa.com", "abc1234")))
+                .stream()
+                .map(Member::getId)
+                .toList();
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
+        themeRepository.save(new Theme("이름2", "설명2", "썸네일2"));
+
+        final LocalDate localDate = LocalDate.now().plusMonths(1);
+        reservationService.saveReservation(new ReservationWithMemberSaveRequest(memberIds.get(0), localDate, 1L, 1L));
+        reservationService.saveReservation(new ReservationWithMemberSaveRequest(memberIds.get(0), localDate, 2L, 1L));
+        reservationService.saveReservation(new ReservationWithMemberSaveRequest(memberIds.get(1), localDate.plusMonths(1), 1L, 2L));
+        reservationService.saveReservation(new ReservationWithMemberSaveRequest(memberIds.get(0), LocalDate.now().plusMonths(2), 2L, 2L));
+        reservationService.saveReservation(new ReservationWithMemberSaveRequest(memberIds.get(0), localDate, 2L, 2L));
+        final List<ReservationResponse> reservationResponses = reservationService.getReservations(new ReservationFilterRequest(1L, memberIds.get(0), localDate, localDate));
 
         assertThat(reservationResponses).hasSize(2)
                 .containsExactly(
