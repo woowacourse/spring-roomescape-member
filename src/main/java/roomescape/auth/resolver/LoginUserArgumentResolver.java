@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
 import roomescape.global.annotation.LoginUser;
 import roomescape.global.util.CookieUtil;
+import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 
 @Component
@@ -27,7 +28,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
+    public Member resolveArgument(MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
