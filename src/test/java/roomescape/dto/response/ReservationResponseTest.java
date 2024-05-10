@@ -14,13 +14,13 @@ class ReservationResponseTest {
     void createReservationResponse() {
         ReservationResponse expected = new ReservationResponse(
                 RESERVATION_1.getId(),
-                RESERVATION_1.getName().name(),
+                RESERVATION_1.getLoginMember().getName().name(),
                 RESERVATION_1.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 new ReservationTimeResponse(RESERVATION_1.getTime()),
                 new ThemeResponse(RESERVATION_1.getTheme())
         );
 
-        ReservationResponse reservationResponse = ReservationResponse.from(RESERVATION_1);
+        ReservationResponse reservationResponse = new ReservationResponse(RESERVATION_1);
 
         assertThat(reservationResponse).isEqualTo(expected);
     }

@@ -11,10 +11,10 @@ public record ReservationResponse(
         ThemeResponse theme
 ) {
 
-    public static ReservationResponse from(Reservation reservation) {
-        return new ReservationResponse(
+    public ReservationResponse(Reservation reservation) {
+        this(
                 reservation.getId(),
-                reservation.getName().name(),
+                reservation.getLoginMember().getName().name(),
                 reservation.getDate(DateTimeFormatter.ISO_DATE),
                 new ReservationTimeResponse(reservation.getTime()),
                 new ThemeResponse(reservation.getTheme())

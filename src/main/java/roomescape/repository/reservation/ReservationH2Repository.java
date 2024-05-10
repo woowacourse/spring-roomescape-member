@@ -13,9 +13,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservatorName;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
+import roomescape.domain.member.Email;
+import roomescape.domain.member.LoginMember;
+import roomescape.domain.member.MemberName;
 
 @Repository
 public class ReservationH2Repository implements ReservationRepository {
@@ -36,14 +38,13 @@ public class ReservationH2Repository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName().name())
                 .addValue("date", reservation.getDate(DateTimeFormatter.ISO_DATE))
                 .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("member_id", reservation.getLoginMember().getId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return new Reservation(id, reservation);
     }
 
     @Override
@@ -54,10 +55,11 @@ public class ReservationH2Repository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-                "SELECT r.id, r.name, r.date, time.id as time_id, time.start_at, theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                "SELECT r.id, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, t.name as theme_name, t.description, t.thumbnail, m.name as member_name, m.email "
                         + "FROM reservation as r "
-                        + "inner join reservation_time as time on r.time_id = time.id "
-                        + "inner join theme on r.theme_id = theme.id ",
+                        + "inner join reservation_time as rt on r.time_id = rt.id "
+                        + "inner join theme as t on r.theme_id = t.id "
+                        + "inner join member as m on r.member_id = m.id ",
                 getReservationRowMapper()
         );
     }
@@ -74,12 +76,17 @@ public class ReservationH2Repository implements ReservationRepository {
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );
+            LoginMember loginMember = new LoginMember(
+                    resultSet.getLong("member_id"),
+                    new MemberName(resultSet.getString("member_name")),
+                    new Email(resultSet.getString("email"))
+            );
             return new Reservation(
                     resultSet.getLong("id"),
-                    new ReservatorName(resultSet.getString("name")),
                     LocalDate.parse(resultSet.getString("date")),
                     reservationTime,
-                    theme
+                    theme,
+                    loginMember
             );
         };
     }

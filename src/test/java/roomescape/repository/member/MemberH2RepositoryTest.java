@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.Member;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Sql(scripts = {"/schema.sql", "/initial_member_data.sql"})
+@Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
 class MemberH2RepositoryTest {
 
     @Autowired

@@ -49,11 +49,11 @@
     - [x] 로그인 실패 시, 인증 예외를 발생시킨다.
 
 ## 5단계 (세부사항까지 구체적으로 포함되어 있는 점 양해 부탁드립니다🙇‍)
-- [ ] `HandlerMethodArgumentResolver`를 활용하여 Cookie 값으로 멤버 정보를 조회하는 로직을 분리한다.
-  - [ ] `LoginMember` 객체를 만든다.
+- [x] `HandlerMethodArgumentResolver`를 활용하여 Cookie 값으로 멤버 정보를 조회하는 로직을 분리한다.
+  - [x] `LoginMember` 객체를 만든다.
 - [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용한다. (아래 1번 API 참고)
-  - [ ] id값으로 `Member`를 조회하는 기능을 추가한다.
-  - [ ] `reservation` 테이블에 name 컬럼을 제거하고 `memberId`를 컬럼으로 갖도록 수정한다.
+  - [x] `Reservation` 객체에서 ReservatorName 필드를 제거하고 `LoginMember` 필드 추가 
+  - [x] `reservation` 테이블에 name 컬럼을 제거하고 `memberId`를 컬럼으로 갖도록 수정한다.
   - [ ] 관리자용 `ReservationRequest`를 만든다.
   - [ ] `ReservationResponse`가 `MemberResponse`를 필드로 갖도록 수정한다.
   - [ ] 변경된 명세에 맞게 클라이언트가 동작하도록 코드를 수정한다.

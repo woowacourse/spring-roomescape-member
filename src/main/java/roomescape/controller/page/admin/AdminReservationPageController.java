@@ -25,7 +25,7 @@ public class AdminReservationPageController {
     public String getReservationPage(Model model) {
         List<ReservationResponse> reservationResponses = reservationRepository.findAll()
                 .stream()
-                .map(ReservationResponse::from)
+                .map(ReservationResponse::new)
                 .toList();
         model.addAttribute("reservationResponses", reservationResponses);
         return "/admin/reservation-new";

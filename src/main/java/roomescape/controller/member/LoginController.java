@@ -1,9 +1,7 @@
 package roomescape.controller.member;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Objects;
 import javax.naming.AuthenticationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -45,19 +43,7 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public MemberResponse getLoginMember(HttpServletRequest request) throws AuthenticationException {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-
-        return memberService.getLoginMember(token);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (Objects.equals(cookie.getName(), TOKEN)) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+    public MemberResponse getLoginMember(MemberResponse memberResponse) {
+        return memberResponse;
     }
 }

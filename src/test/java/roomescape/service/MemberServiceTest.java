@@ -16,7 +16,7 @@ import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Sql(scripts = {"/schema.sql", "/initial_member_data.sql"})
+@Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
 class MemberServiceTest {
 
     @Autowired

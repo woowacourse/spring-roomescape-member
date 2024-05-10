@@ -3,7 +3,8 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservatorName;
+import roomescape.domain.member.LoginMember;
+import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
@@ -28,21 +29,21 @@ public class ReservationService {
         this.themeService = themeService;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(
+            ReservationRequest reservationRequest, LoginMemberRequest loginMemberRequest) {
         ReservationTimeResponse timeResponse = reservationTimeService.getTime(reservationRequest.timeId());
         ThemeResponse themeResponse = themeService.getTheme(reservationRequest.themeId());
 
         Reservation reservation = new Reservation(
-                new ReservatorName(reservationRequest.name()),
                 reservationRequest.date(),
                 timeResponse.toReservationTime(),
-                themeResponse.toTheme()
+                themeResponse.toTheme(),
+                new LoginMember(loginMemberRequest.id(), loginMemberRequest.name(), loginMemberRequest.email())
         );
-
         validateIsBeforeNow(reservation);
         validateIsDuplicated(reservation);
 
-        return ReservationResponse.from(reservationRepository.save(reservation));
+        return new ReservationResponse(reservationRepository.save(reservation));
     }
 
     private void validateIsBeforeNow(Reservation reservation) {
@@ -64,7 +65,7 @@ public class ReservationService {
     public List<ReservationResponse> findReservations() {
         return reservationRepository.findAll()
                 .stream()
-                .map(ReservationResponse::from)
+                .map(ReservationResponse::new)
                 .toList();
     }
 }

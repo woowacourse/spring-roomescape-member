@@ -4,25 +4,30 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import roomescape.domain.member.LoginMember;
 
 public class Reservation {
 
     private final Long id;
-    private final ReservatorName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final LoginMember loginMember;
 
-    public Reservation(Long id, ReservatorName name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, LoginMember loginMember) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.loginMember = loginMember;
     }
 
-    public Reservation(ReservatorName name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Long id, Reservation reservation) {
+        this(id, reservation.date, reservation.time, reservation.theme, reservation.loginMember);
+    }
+
+    public Reservation(LocalDate date, ReservationTime time, Theme theme, LoginMember loginMember) {
+        this(null, date, time, theme, loginMember);
     }
 
     public boolean isBeforeNow() {
@@ -31,10 +36,6 @@ public class Reservation {
 
     public Long getId() {
         return id;
-    }
-
-    public ReservatorName getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -51,6 +52,10 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public LoginMember getLoginMember() {
+        return loginMember;
     }
 
     @Override

@@ -10,6 +10,7 @@ import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
 import static roomescape.InitialDataFixture.RESERVATION_3;
 import static roomescape.InitialDataFixture.THEME_2;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_1;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservatorName;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -34,10 +34,10 @@ class ReservationH2RepositoryTest {
     @DisplayName("Reservation을 저장하면 id가 포함된 Reservation이 반환된다.")
     void save() {
         Reservation reservation = new Reservation(
-                new ReservatorName("네오"),
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime(),
-                THEME_2
+                THEME_2,
+                LOGIN_MEMBER_1
         );
 
         Reservation save = reservationH2Repository.save(reservation);
@@ -49,10 +49,10 @@ class ReservationH2RepositoryTest {
     @DisplayName("시간과 날짜만 같고 테마가 다른 경우 예약에 성공한다.")
     void saveOnlySameGetDateGetTime() {
         Reservation reservation = new Reservation(
-                new ReservatorName("네오"),
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime(),
-                THEME_2
+                THEME_2,
+                LOGIN_MEMBER_1
         );
         assertThatNoException().isThrownBy(() -> reservationH2Repository.save(reservation));
     }
@@ -61,10 +61,10 @@ class ReservationH2RepositoryTest {
     @DisplayName("테마가 같고 날짜가 다른 경우 예약에 성공한다.")
     void saveOnlySameTheme() {
         Reservation reservation = new Reservation(
-                new ReservatorName("네오"),
                 RESERVATION_2.getDate().plusDays(1),
                 RESERVATION_2.getTime(),
-                RESERVATION_2.getTheme()
+                RESERVATION_2.getTheme(),
+                LOGIN_MEMBER_1
         );
         assertThatNoException().isThrownBy(() -> reservationH2Repository.save(reservation));
     }
@@ -114,10 +114,10 @@ class ReservationH2RepositoryTest {
     void isNotBookedDate() {
         Reservation reservation = new Reservation(
                 RESERVATION_1.getId(),
-                RESERVATION_1.getName(),
                 NO_RESERVATION_DATE,
                 RESERVATION_1.getTime(),
-                RESERVATION_1.getTheme()
+                RESERVATION_1.getTheme(),
+                LOGIN_MEMBER_1
         );
         boolean alreadyBooked = reservationH2Repository.isAlreadyBooked(reservation);
 
@@ -129,10 +129,10 @@ class ReservationH2RepositoryTest {
     void isNotBookedTime() {
         Reservation reservation = new Reservation(
                 RESERVATION_1.getId(),
-                RESERVATION_1.getName(),
                 RESERVATION_1.getDate(),
                 NOT_RESERVATION_TIME,
-                RESERVATION_1.getTheme()
+                RESERVATION_1.getTheme(),
+                LOGIN_MEMBER_1
         );
         boolean alreadyBooked = reservationH2Repository.isAlreadyBooked(reservation);
 
@@ -144,10 +144,10 @@ class ReservationH2RepositoryTest {
     void isNotBookedTheme() {
         Reservation reservation = new Reservation(
                 RESERVATION_1.getId(),
-                RESERVATION_1.getName(),
                 RESERVATION_1.getDate(),
                 RESERVATION_1.getTime(),
-                NOT_RESERVATION_THEME
+                NOT_RESERVATION_THEME,
+                LOGIN_MEMBER_1
         );
         boolean alreadyBooked = reservationH2Repository.isAlreadyBooked(reservation);
 

@@ -1,10 +1,13 @@
 package roomescape;
 
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_1;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_2;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_3;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservatorName;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 
@@ -41,44 +44,44 @@ public class InitialDataFixture {
 
     public static final Reservation RESERVATION_1 = new Reservation(
             1L,
-            new ReservatorName("브라운"),
             LocalDate.parse("2024-04-25"),
             RESERVATION_TIME_1,
-            THEME_1
+            THEME_1,
+            LOGIN_MEMBER_2
     );
     public static final Reservation RESERVATION_2 = new Reservation(
             2L,
-            new ReservatorName("솔라"),
             LocalDate.parse("2099-05-01"),
             RESERVATION_TIME_1,
-            THEME_1
+            THEME_1,
+            LOGIN_MEMBER_3
     );
     public static final Reservation RESERVATION_3 = new Reservation(
             3L,
-            new ReservatorName("아무 이름"),
             LocalDate.parse("2024-04-25"),
             RESERVATION_TIME_2,
-            THEME_1
+            THEME_1,
+            LOGIN_MEMBER_1
     );
     public static final Reservation RESERVATION_4 = new Reservation(
             4L,
-            new ReservatorName("아무 이름"),
             LocalDate.parse("2024-04-25"),
             RESERVATION_TIME_2,
-            THEME_2
+            THEME_2,
+            LOGIN_MEMBER_1
     );
     public static final Reservation RESERVATION_5 = new Reservation(
             5L,
-            new ReservatorName("아무 이름"),
             LocalDate.parse("2024-04-27"),
             RESERVATION_TIME_1,
-            THEME_2
+            THEME_2,
+            LOGIN_MEMBER_1
     );
     public static final Reservation RESERVATION_6 = new Reservation(
             6L,
-            new ReservatorName("아무 이름"),
             LocalDate.parse("2024-04-27"),
             RESERVATION_TIME_2,
-            THEME_2
+            THEME_2,
+            LOGIN_MEMBER_1
     );
 }

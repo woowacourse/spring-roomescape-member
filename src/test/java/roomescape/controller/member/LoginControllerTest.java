@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Sql(scripts = {"/schema.sql", "/initial_member_data.sql"})
+@Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
 class LoginControllerTest {
 
     @Test

@@ -3,6 +3,7 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_1;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,10 +16,10 @@ class ReservationTest {
     @DisplayName("입력받은 formatter에 맞게 날짜를 String으로 변환한다.")
     void formatGetDate() {
         Reservation reservation = new Reservation(
-                null,
                 LocalDate.of(2024, 4, 24),
                 null,
-                null
+                null,
+                LOGIN_MEMBER_1
         );
 
         String formatted = reservation.getDate(DateTimeFormatter.ISO_DATE);
@@ -31,10 +32,10 @@ class ReservationTest {
     void testEquals() {
         Reservation reservation = new Reservation(
                 RESERVATION_1.getId(),
-                RESERVATION_2.getName(),
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime(),
-                RESERVATION_2.getTheme()
+                RESERVATION_2.getTheme(),
+                LOGIN_MEMBER_1
         );
 
         assertThat(RESERVATION_1).isEqualTo(reservation);
