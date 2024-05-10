@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
+import static roomescape.fixture.ThemeBuilder.DEFAULT_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,11 +10,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Sha256Encryptor;
-import roomescape.domain.Theme;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
@@ -40,21 +39,19 @@ class AvailableTimeServiceTest {
     @Test
     void findAvailableTimeTest() {
         //given
-        Theme DEFUALT_THEME = new Theme(1L, "name", "description", "http://thumbnail");
-        themeRepository.save(DEFUALT_THEME);
+        themeRepository.save(DEFAULT_THEME);
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
         ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));
         ReservationTime reservationTime4 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
 
         LocalDate selectedDate = LocalDate.of(2024, 1, 1);
-        Member member = new Member(1L, "name", "email@email.com", new Sha256Encryptor().encrypt("1234"));
-        reservationRepository.save(new Reservation(member, selectedDate, reservationTime1, DEFUALT_THEME));
-        reservationRepository.save(new Reservation(member, selectedDate, reservationTime3, DEFUALT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, selectedDate, reservationTime1, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, selectedDate, reservationTime3, DEFAULT_THEME));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = availableTimeService.findByThemeAndDate(selectedDate,
-                DEFUALT_THEME.getId());
+                DEFAULT_THEME.getId());
 
         //then
         assertThat(availableTimeResponses).containsExactlyInAnyOrder(

@@ -1,5 +1,8 @@
 package roomescape.repository;
 
+import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
+import static roomescape.fixture.ThemeBuilder.DEFAULT_THEME;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -11,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
+import roomescape.fixture.ReservationBuilder;
+import roomescape.fixture.ThemeBuilder;
 
 @SpringBootTest
 class JdbcTemplateThemeRepositoryTest {
@@ -41,8 +44,7 @@ class JdbcTemplateThemeRepositoryTest {
     @Test
     @DisplayName("전체 테마 조회를 잘 하는지 확인")
     void findAll() {
-        Theme theme = new Theme("name", "description", "http://example.com");
-        theme = themeRepository.save(theme);
+        Theme theme = themeRepository.save(DEFAULT_THEME);
         List<Theme> allTheme = themeRepository.findAll();
 
         Assertions.assertThat(allTheme)
@@ -50,26 +52,26 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("인기 순으로 테마를 잘 조회하는지 확인")
     void findAndOrderByPopularity() {
-        Theme theme1 = themeRepository.save(new Theme("name1", "description1", "http://thumbnail1"));
-        Theme theme2 = themeRepository.save(new Theme("name2", "description2", "http://thumbnail2"));
-        Theme theme3 = themeRepository.save(new Theme("name3", "description3", "http://thumbnail3"));
+        Theme theme1 = themeRepository.save(ThemeBuilder.from("name1"));
+        Theme theme2 = themeRepository.save(ThemeBuilder.from("name2"));
+        Theme theme3 = themeRepository.save(ThemeBuilder.from("name3"));
 
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 30)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(2, 30)));
         ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(3, 30)));
 
         LocalDate date = LocalDate.now().plusDays(1);
-        Sha256Encryptor encryptor = new Sha256Encryptor();
-        Member member = new Member(1L, "name", "email@email.com", encryptor.encrypt("1234"));
-        reservationRepository.save(new Reservation(member, date, reservationTime2, theme2));
-        reservationRepository.save(new Reservation(member, date, reservationTime1, theme2));
-        reservationRepository.save(new Reservation(member, date, reservationTime3, theme2));
+        Member member = DEFAULT_MEMBER;
+        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime2, theme2));
+        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime1, theme2));
+        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime3, theme2));
 
-        reservationRepository.save(new Reservation(member, date, reservationTime1, theme1));
-        reservationRepository.save(new Reservation(member, date, reservationTime2, theme1));
+        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime1, theme1));
+        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime2, theme1));
 
-        reservationRepository.save(new Reservation(member, date, reservationTime1, theme3));
+        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime1, theme3));
 
         List<Theme> result = themeRepository.findAndOrderByPopularity(date, date.plusDays(1), 10);
         Assertions.assertThat(result)
@@ -79,7 +81,7 @@ class JdbcTemplateThemeRepositoryTest {
     @Test
     @DisplayName("테마가 잘 지워지는지 확인")
     void delete() {
-        Theme theme = themeRepository.save(new Theme("name1", "description1", "http://thumbnail"));
+        Theme theme = themeRepository.save(DEFAULT_THEME);
 
         themeRepository.delete(theme.getId());
 

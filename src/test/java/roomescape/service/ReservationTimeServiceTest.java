@@ -5,19 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.exception.ExceptionType.DELETE_USED_TIME;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
+import static roomescape.fixture.ReservationBuilder.DEFAULT_RESERVATION_WITHOUT_ID;
+import static roomescape.fixture.ReservationTimeBuilder.DEFAULT_TIME;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Sha256Encryptor;
-import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.RoomescapeException;
@@ -41,10 +37,10 @@ class ReservationTimeServiceTest {
     @Test
     void findAllTest() {
         //given
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));
+        reservationTimeRepository.save(DEFAULT_TIME);
+        reservationTimeRepository.save(DEFAULT_TIME);
+        reservationTimeRepository.save(DEFAULT_TIME);
+        reservationTimeRepository.save(DEFAULT_TIME);
 
         //when
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
@@ -57,7 +53,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간이 하나 존재할 때")
     @Nested
     class OneReservationTimeExists {
-        private static final LocalTime SAVED_TIME = LocalTime.of(10, 0);
+        private static final LocalTime SAVED_TIME = DEFAULT_TIME.getStartAt();
 
         @BeforeEach
         void addDefaultTime() {
@@ -85,7 +81,7 @@ class ReservationTimeServiceTest {
         @Test
         void deleteByIdTest() {
             //when
-            reservationTimeService.delete(1L);
+            reservationTimeService.delete(DEFAULT_TIME.getId());
 
             //then
             assertThat(reservationTimeRepository.findAll())
@@ -96,16 +92,10 @@ class ReservationTimeServiceTest {
         @Test
         void usedReservationTimeDeleteTest() {
             //given
-            reservationRepository.save(new Reservation(
-                    new Member(1L, "name", "email@email.com",
-                            new Sha256Encryptor().encrypt("1234")),
-                    LocalDate.now(),
-                    new ReservationTime(1L, SAVED_TIME),
-                    new Theme(1L, "name", "description", "http://thumbnail")
-            ));
+            reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
 
             //when & then
-            assertThatCode(() -> reservationTimeService.delete(1L))
+            assertThatCode(() -> reservationTimeService.delete(DEFAULT_TIME.getId()))
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(DELETE_USED_TIME.getMessage());
         }

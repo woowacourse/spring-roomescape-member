@@ -1,6 +1,9 @@
 package roomescape.repository;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
+import static roomescape.fixture.ReservationTimeBuilder.DEFAULT_TIME;
+import static roomescape.fixture.ThemeBuilder.DEFAULT_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -42,7 +44,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @DisplayName("ReservationTime 을 잘 저장하는지 확인한다.")
     void save() {
         var beforeSave = reservationTimeRepository.findAll().stream().map(ReservationTime::getId).toList();
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime saved = reservationTimeRepository.save(DEFAULT_TIME);
         var afterSave = reservationTimeRepository.findAll().stream().map(ReservationTime::getId).toList();
 
         Assertions.assertThat(afterSave)
@@ -54,20 +56,19 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @DisplayName("ReservationTime 을 잘 조회하는지 확인한다.")
     void findAll() {
         List<ReservationTime> beforeSave = reservationTimeRepository.findAll();
-        reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        reservationTimeRepository.save(DEFAULT_TIME);
 
         List<ReservationTime> afterSave = reservationTimeRepository.findAll();
 
         Assertions.assertThat(afterSave.size())
-                .isEqualTo(beforeSave.size() + 2);
+                .isEqualTo(beforeSave.size() + 1);
     }
 
     @Test
     @DisplayName("ReservationTime 을 잘 지우하는지 확인한다.")
     void delete() {
         List<ReservationTime> beforeSaveAndDelete = reservationTimeRepository.findAll();
-        reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        reservationTimeRepository.save(DEFAULT_TIME);
 
         reservationTimeRepository.delete(1L);
 
@@ -80,8 +81,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Test
     @DisplayName("특정 시작 시간을 가지는 예약 시간이 있는지 여부를 잘 반환하는지 확인한다.")
     void existsByStartAt() {
-        LocalTime time = LocalTime.of(11, 20);
-        reservationTimeRepository.save(new ReservationTime(time));
+        LocalTime time = DEFAULT_TIME.getStartAt();
+        reservationTimeRepository.save(DEFAULT_TIME);
 
         assertAll(
                 () -> Assertions.assertThat(reservationTimeRepository.existsByStartAt(time))
@@ -95,12 +96,9 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @DisplayName("특정 날짜와 테마에 예약이 있는 예약 시간의 목록을 잘 반환하는지 확인한다.")
     void findUsedTimeByDateAndTheme() {
         LocalDate date = LocalDate.of(2024, 12, 30);
-        Theme theme = new Theme("name", "description", "http://example.com");
-        theme = themeRepository.save(theme);
-        ReservationTime time = new ReservationTime(LocalTime.of(12, 30));
-        time = reservationTimeRepository.save(time);
-        Member member = memberRepository.findById(1L).orElseThrow();
-        reservationRepository.save(new Reservation(member, date, time, theme));
+        Theme theme = themeRepository.save(DEFAULT_THEME);
+        ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
+        reservationRepository.save(new Reservation(DEFAULT_MEMBER, date, time, theme));
 
         List<ReservationTime> response = reservationTimeRepository.findUsedTimeByDateAndTheme(date, theme);
 

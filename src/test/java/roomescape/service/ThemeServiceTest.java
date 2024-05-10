@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
+import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
+import static roomescape.fixture.ReservationBuilder.DEFAULT_RESERVATION_WITHOUT_ID;
+import static roomescape.fixture.ReservationTimeBuilder.DEFAULT_TIME;
+import static roomescape.fixture.ThemeBuilder.DEFAULT_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,16 +18,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Sha256Encryptor;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
-import roomescape.repository.CollectionMemberRepository;
+import roomescape.fixture.ReservationBuilder;
+import roomescape.fixture.ThemeBuilder;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
@@ -48,10 +49,10 @@ class ThemeServiceTest {
     @Test
     void findAllTest() {
         //given
-        themeRepository.save(new Theme("name1", "description1", "http://thumbnail1"));
-        themeRepository.save(new Theme("name2", "description2", "http://thumbnail2"));
-        themeRepository.save(new Theme("name3", "description3", "http://thumbnail3"));
-        themeRepository.save(new Theme("name4", "description4", "http://thumbnail4"));
+        themeRepository.save(ThemeBuilder.from("name1"));
+        themeRepository.save(ThemeBuilder.from("name2"));
+        themeRepository.save(ThemeBuilder.from("name3"));
+        themeRepository.save(ThemeBuilder.from("name4"));
 
         //when
         List<ThemeResponse> themeResponses = themeService.findAll();
@@ -79,31 +80,28 @@ class ThemeServiceTest {
     }
 
     private void addReservations(LocalDate date) {
-        Theme theme1 = themeRepository.save(new Theme("name1", "description1", "http://thumbnail1"));
-        Theme theme2 = themeRepository.save(new Theme("name2", "description2", "http://thumbnail2"));
-        Theme theme3 = themeRepository.save(new Theme("name3", "description3", "http://thumbnail3"));
+        Theme theme1 = themeRepository.save(ThemeBuilder.from("name1"));
+        Theme theme2 = themeRepository.save(ThemeBuilder.from("name2"));
+        Theme theme3 = themeRepository.save(ThemeBuilder.from("name3"));
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 30)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(2, 30)));
         ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(3, 30)));
-        Member member = new Member(1L, "name", "email@email.com", new Sha256Encryptor().encrypt("1234"));
 
-        ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
-                themeRepository, new CollectionMemberRepository(List.of(member)));
-        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime2.getId(), theme2.getId()));
-        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime1.getId(), theme2.getId()));
-        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime3.getId(), theme2.getId()));
+        reservationRepository.save(ReservationBuilder.withOutId(DEFAULT_MEMBER, date, reservationTime2, theme2));
+        reservationRepository.save(ReservationBuilder.withOutId(DEFAULT_MEMBER, date, reservationTime1, theme2));
+        reservationRepository.save(ReservationBuilder.withOutId(DEFAULT_MEMBER, date, reservationTime3, theme2));
 
-        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime1.getId(), theme1.getId()));
-        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime2.getId(), theme1.getId()));
+        reservationRepository.save(ReservationBuilder.withOutId(DEFAULT_MEMBER, date, reservationTime1, theme1));
+        reservationRepository.save(ReservationBuilder.withOutId(DEFAULT_MEMBER, date, reservationTime2, theme1));
 
-        reservationService.save(new ReservationRequest(date, member.getId(), reservationTime1.getId(), theme3.getId()));
+        reservationRepository.save(ReservationBuilder.withOutId(DEFAULT_MEMBER, date, reservationTime1, theme3));
     }
 
     @DisplayName("테마, 시간이 하나 존재할 때")
     @Nested
     class OneThemeTest {
-        private ReservationTime defaultTime = new ReservationTime(LocalTime.now().plusMinutes(5));
-        private Theme defaultTheme = new Theme("name", "description", "http://thumbnail");
+        private ReservationTime defaultTime = DEFAULT_TIME;
+        private Theme defaultTheme = DEFAULT_THEME;
 
         @BeforeEach
         void addDefaultData() {
@@ -114,16 +112,17 @@ class ThemeServiceTest {
         @DisplayName("동일한 이름의 테마를 예약할 수 없다.")
         @Test
         void duplicatedThemeSaveFailTest() {
-            assertThatThrownBy(() -> themeService.save(new ThemeRequest(
-                    defaultTheme.getName(), "description", "http://thumbnail"
-            ))).isInstanceOf(RoomescapeException.class)
+            ThemeRequest themeRequest = new ThemeRequest(defaultTheme.getName(), "d", "http://thumbnail");
+            assertThatThrownBy(() -> themeService.save(themeRequest))
+                    .isInstanceOf(RoomescapeException.class)
                     .hasMessage(DUPLICATE_THEME.getMessage());
         }
 
         @DisplayName("다른 이름의 테마를 예약할 수 있다.")
         @Test
         void notDuplicatedThemeNameSaveTest() {
-            themeService.save(new ThemeRequest("otherName", "description", "http://thumbnail"));
+            ThemeRequest otherThemeRequest = new ThemeRequest("otherName", "description", "http://thumbnail");
+            themeService.save(otherThemeRequest);
 
             assertThat(themeRepository.findAll())
                     .hasSize(2);
@@ -132,21 +131,18 @@ class ThemeServiceTest {
         @DisplayName("테마에 예약이 없다면 테마를 삭제할 수 있다.")
         @Test
         void removeSuccessTest() {
-
-            themeService.delete(1L);
-            assertThat(themeRepository.findById(1L)).isEmpty();
+            themeService.delete(defaultTheme.getId());
+            assertThat(themeRepository.findById(defaultTheme.getId())).isEmpty();
         }
 
         @DisplayName("테마에 예약이 있다면 테마를 삭제할 수 없다.")
         @Test
         void removeFailTest() {
             //given
-            Member member = new Member(1L, "name", "email@email.com", new Sha256Encryptor().encrypt("1234"));
-            reservationRepository.save(new Reservation(
-                    member, LocalDate.now().plusDays(1), defaultTime, defaultTheme));
+            reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
 
             //when & then
-            assertThatThrownBy(() -> themeService.delete(1L))
+            assertThatThrownBy(() -> themeService.delete(defaultTheme.getId()))
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(DELETE_USED_THEME.getMessage());
         }

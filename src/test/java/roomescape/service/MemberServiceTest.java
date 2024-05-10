@@ -1,13 +1,12 @@
 package roomescape.service;
 
 import static roomescape.exception.ExceptionType.LOGIN_FAIL;
+import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
 
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Member;
-import roomescape.domain.Role;
 import roomescape.domain.Sha256Encryptor;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.UserInfo;
@@ -32,13 +31,12 @@ class MemberServiceTest {
     @Test
     @DisplayName("사용자 아이디로 사용자 정보를 잘 조회하는지 확인")
     void findByUserId() {
-        String encrypted = SHA_256_ENCRYPTOR.encrypt("1234");
-        Member member = new Member(1L, "a", "email@emai.com", encrypted);
-        MemberRepository memberRepository = new CollectionMemberRepository(List.of(member));
+        MemberRepository memberRepository = new CollectionMemberRepository(List.of(DEFAULT_MEMBER));
         MemberService memberService = new MemberService(memberRepository, SHA_256_ENCRYPTOR);
 
-        UserInfo userInfo = memberService.findByUserId(1L);
+        Long memberId = DEFAULT_MEMBER.getId();
+        UserInfo userInfo = memberService.findByUserId(memberId);
         Assertions.assertThat(userInfo)
-                .isEqualTo(new UserInfo(1L, "a", Role.MEMBER.name()));
+                .isEqualTo(new UserInfo(memberId, DEFAULT_MEMBER.getName(), DEFAULT_MEMBER.getRole().name()));
     }
 }
