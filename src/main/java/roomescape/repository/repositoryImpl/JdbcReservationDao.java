@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.repositoryImpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationDao;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {

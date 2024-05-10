@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.repositoryImpl;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.repository.ThemeDao;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
