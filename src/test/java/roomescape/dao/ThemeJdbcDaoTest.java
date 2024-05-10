@@ -113,7 +113,7 @@ class ThemeJdbcDaoTest extends DaoTest {
         reservationDao.save(new Reservation(member, "2034-05-08", reservationTime1, theme1));
         reservationDao.save(new Reservation(member, "2034-05-08", reservationTime2, theme1));
         reservationDao.save(new Reservation(member, "2034-05-08", reservationTime1, theme2));
-        final LocalDate period = AggregationPeriod.getAggregationPeriod(LocalDate.parse("2034-05-08"));
+        final LocalDate period = AggregationPeriod.calculateAggregationPeriod(LocalDate.parse("2034-05-08"));
         final int limit = AggregationLimit.getAggregationLimit();
 
         // when

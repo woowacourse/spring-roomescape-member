@@ -131,7 +131,7 @@ class ThemeServiceTest {
     void findAllPopular() {
         // given
         final List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
-        final LocalDate period = AggregationPeriod.getAggregationPeriod(LocalDate.now());
+        final LocalDate period = AggregationPeriod.calculateAggregationPeriod(LocalDate.now());
         final int limit = AggregationLimit.getAggregationLimit();
 
         given(themeDao.findTopThemesByReservationCountDuringPeriod(period, limit))

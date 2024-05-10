@@ -50,7 +50,7 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public List<ThemeResponse> findPopularThemes() {
 
-        final LocalDate period = AggregationPeriod.getAggregationPeriod(LocalDate.now());
+        final LocalDate period = AggregationPeriod.calculateAggregationPeriod(LocalDate.now());
         final int limit = AggregationLimit.getAggregationLimit();
 
         final List<Theme> allOrderByReservationCountInLastWeek

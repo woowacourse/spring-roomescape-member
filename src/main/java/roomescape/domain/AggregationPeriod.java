@@ -12,7 +12,7 @@ public class AggregationPeriod {
         this.period = period;
     }
 
-    public static LocalDate getAggregationPeriod(final LocalDate date) {
+    public static LocalDate calculateAggregationPeriod(final LocalDate date) {
         return new AggregationPeriod(date.minusDays(POPULARITY_AGGREGATION_PERIOD)).period;
     }
 }
