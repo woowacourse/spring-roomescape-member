@@ -14,4 +14,9 @@ public class MemberLoadController {
     public String loadLoginPage() {
         return "/login";
     }
+
+    @GetMapping("signup")
+    public String loadSignUpPage() {
+        return "/signup";
+    }
 }

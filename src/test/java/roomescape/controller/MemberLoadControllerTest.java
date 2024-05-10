@@ -44,4 +44,13 @@ class MemberLoadControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("사용자 회원가입 페이지를 열 수 있다.")
+    @Test
+    void loadSignUpPage() {
+        RestAssured.given().log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

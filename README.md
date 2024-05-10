@@ -74,7 +74,7 @@
 ## 4단계 기능 요구 사항
 
 - [x] GET /login 요청 시 로그인 폼이 있는 페이지 응답
-- [ ] GET  /signup 요청 시 회원가입 페이지 응답
+- [x] GET  /signup 요청 시 회원가입 페이지 응답
 
 - [x] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
   - [x] 응답 쿠키에 "token"값으로 토큰이 포함
