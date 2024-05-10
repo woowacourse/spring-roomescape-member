@@ -37,7 +37,7 @@ class ReservationTimeTest {
     @NullSource
     @ValueSource(strings = {"", "13-00"})
     @DisplayName("예약 시간 입력 값이 유효하지 않으면 예외가 발생한다.")
-    void throwExceptionWhenCannotConvertToLocalTime(String invalidTime) {
+    void throwExceptionWhenCannotConvertToLocalTime(final String invalidTime) {
         // when & then
         assertThatThrownBy(() -> new ReservationTime(invalidTime))
                 .isInstanceOf(IllegalArgumentException.class);

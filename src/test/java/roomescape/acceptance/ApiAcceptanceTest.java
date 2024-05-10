@@ -2,17 +2,16 @@ package roomescape.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.TestFixture.*;
+import roomescape.dto.MemberReservationSaveRequest;
+import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.dto.ThemeSaveRequest;
+import roomescape.dto.TokenRequest;
+import roomescape.dto.TokenResponse;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,57 +25,61 @@ abstract class ApiAcceptanceTest {
         RestAssured.port = port;
     }
 
-    protected Long saveTheme(final String name, final String description) {
-        final ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/themes")
-                .then().extract()
-                .as(ThemeResponse.class)
-                .id();
-    }
+    protected Long saveReservationTime() {
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("18:00");
 
-    protected Long saveReservationTime(final String time) {
-        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(time);
-        return RestAssured.given().log().all()
+        Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/times")
-                .then().extract()
-                .as(ReservationTimeResponse.class)
-                .id();
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .jsonPath().get("id");
+
+        return Long.valueOf(id);
+    }
+
+    protected Long saveTheme() {
+        final ThemeSaveRequest request = new ThemeSaveRequest("호러", "매우 무섭습니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        Integer id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .jsonPath().get("id");
+
+        return Long.valueOf(id);
     }
 
     protected Long saveReservation(final Long timeId, final Long themeId) {
-        final ReservationSaveRequest request = new ReservationSaveRequest(1L, MIA_RESERVATION_DATE, timeId, themeId);
-        return RestAssured.given().log().all()
+        final String accessToken = getAccessToken("nyangin@email.com");
+        final MemberReservationSaveRequest request = new MemberReservationSaveRequest("2034-05-08", timeId, themeId);
+
+        Integer id = RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
+                .statusCode(201)
                 .extract()
-                .as(ReservationResponse.class)
-                .id();
+                .jsonPath().get("id");
+
+        return Long.valueOf(id);
     }
 
-    protected void checkHttpStatusOk(final ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    protected void checkHttpStatusCreated(final ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    protected void checkHttpStatusNoContent(final ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    protected void checkHttpStatusBadRequest(final ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    protected void checkHttpStatusNotFound(final ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    protected String getAccessToken(final String email) {
+        return RestAssured.given().log().all()
+                .body(new TokenRequest(email, "1234"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all()
+                .extract().as(TokenResponse.class).accessToken();
     }
 }
