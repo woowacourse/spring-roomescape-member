@@ -27,6 +27,7 @@ class AdminPageControllerTest extends BaseControllerTest {
         doReturn(ADMIN_ID).when(jwtTokenProvider).getMemberId(any());
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie("token", "mock-token")
                 .when().get(path)
                 .then().log().all()
                 .extract();
