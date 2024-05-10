@@ -1,13 +1,16 @@
 package roomescape.service;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.util.Optional;
+import javax.naming.AuthenticationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Password;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.MemberResponse;
+import roomescape.exceptions.NotFoundException;
 import roomescape.exceptions.ValidationException;
 import roomescape.repository.member.MemberRepository;
 
@@ -22,21 +25,42 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public String login(LoginRequest loginRequest) {
-        Optional<Member> optionalMember = memberRepository.findByEmailAndPassword(
-                new Email(loginRequest.email()),
-                new Password(loginRequest.password())
-        );
-        if (optionalMember.isPresent()) {
-            Member member = optionalMember.get();
-            String accessToken = Jwts.builder()
-                    .setSubject(member.getId().toString())
-                    .claim("name", member.getName())
-                    .claim("role", member.getRole().getValue())
-                    .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                    .compact();
-            return accessToken;
+    public String getLoginToken(LoginRequest loginRequest) throws AuthenticationException {
+        return memberRepository.findByEmailAndPassword(
+                        new Email(loginRequest.email()),
+                        new Password(loginRequest.password()))
+                .map(member -> createToken(member))
+                .orElseThrow(() -> new AuthenticationException("이메일 또는 비밀번호가 틀립니다."));
+    }
+
+    private String createToken(Member member) {
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole().getValue())
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
+    }
+
+    public MemberResponse getLoginMember(String token) throws AuthenticationException {
+        Long memberId = parseTokenToMemberId(token);
+
+        return memberRepository.findById(memberId)
+                .map(member -> new MemberResponse(member.getName().name()))
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
+    }
+
+    private Long parseTokenToMemberId(String token) throws AuthenticationException {
+        try {
+            return Long.valueOf(Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject()
+            );
+        } catch (JwtException e) {
+            throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
-        throw new ValidationException("이메일 또는 비밀번호가 틀립니다.");
     }
 }

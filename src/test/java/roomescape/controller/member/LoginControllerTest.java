@@ -1,5 +1,9 @@
 package roomescape.controller.member;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static roomescape.InitialMemberFixture.MEMBER_4;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -16,18 +20,43 @@ import org.springframework.test.context.jdbc.Sql;
 class LoginControllerTest {
 
     @Test
-    @DisplayName("")
+    @DisplayName("저장된 회원 정보로 로그인을 시도하면 응답 쿠키에 토큰 값이 반환된다")
     void login() {
-        Map<String, String> reservationParams = new HashMap<>();
-        reservationParams.put("password", "password");
-        reservationParams.put("email", "admin@email.com");
+        Map<String, String> memberParam = new HashMap<>();
+        memberParam.put("password", "password");
+        memberParam.put("email", "admin@email.com");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationParams)
+                .body(memberParam)
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .cookie("token");
+                .cookie("token", notNullValue());
+    }
+
+    @Test
+    @DisplayName("요청 쿠키에 올바른 토큰 값을 담아서 대응하는 회원 정보를 요청하면 회원 정보를 응답한다.")
+    void getLoginMember() {
+        //given
+        Map<String, String> memberParam = new HashMap<>();
+        memberParam.put("password", "password");
+        memberParam.put("email", "admin@email.com");
+
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberParam)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
+
+        //when & then
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", equalTo(MEMBER_4.getName().name()));
     }
 }
