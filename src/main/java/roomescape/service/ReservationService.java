@@ -16,6 +16,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
+import roomescape.dto.reservation.ReservationFilterRequest;
 import roomescape.dto.reservation.ReservationResponse;
 
 @Service
@@ -38,6 +39,25 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         List<Reservation> reservations = reservationDao.readAll();
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findFiltered(ReservationFilterRequest request) {
+        ReservationDate from = ReservationDate.from(request.getDateFrom());
+        ReservationDate to = ReservationDate.from(request.getDateTo());
+
+        Member member = findMemberById(request.getMemberId());
+        Theme theme = findThemeBy(request.getThemeId());
+        validateFromDateIsNotAfterToDate(from, to);
+
+        List<Reservation> reservations = reservationDao.readAllByMemberAndThemeAndDateBetweenFromAndTo(
+                member,
+                theme,
+                from,
+                to
+        );
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -75,6 +95,12 @@ public class ReservationService {
         validateNull(id);
         Reservation reservation = findReservationBy(id);
         reservationDao.delete(reservation);
+    }
+
+    private void validateFromDateIsNotAfterToDate(ReservationDate from, ReservationDate to) {
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
+        }
     }
 
     private void validateDuplicate(Reservation reservation) {
