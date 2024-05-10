@@ -11,23 +11,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.auth.dto.request.LoginRequest;
 import roomescape.auth.dto.response.GetAuthInfoResponse;
 import roomescape.auth.dto.response.LoginResponse;
 import roomescape.auth.service.AuthService;
-import roomescape.common.DateTimeFormatConfiguration;
+import roomescape.testutil.ControllerTest;
 
-@ActiveProfiles("test")
-@WebMvcTest({
-        AuthController.class,
-        DateTimeFormatConfiguration.class
-})
+@ControllerTest
+@Import(AuthController.class)
 class AuthControllerTest {
 
     @Autowired

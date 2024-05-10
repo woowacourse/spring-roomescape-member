@@ -11,25 +11,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import roomescape.common.DateTimeFormatConfiguration;
 import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.reservationtime.dto.response.FindReservationTimeResponse;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.testutil.ControllerTest;
 import roomescape.util.ReservationTimeFixture;
 
-@ActiveProfiles("test")
-@WebMvcTest({
-        ReservationTimeController.class,
-        DateTimeFormatConfiguration.class
-})
+@ControllerTest
+@Import(ReservationTimeController.class)
 class ReservationTimeControllerTest {
 
     @Autowired
@@ -45,7 +41,8 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간 생성 요청 시 201 상태와 Location 헤더에 생성된 리소스의 위치를 반환한다.")
     void createReservationTime() throws Exception {
         // given
-        CreateReservationTimeRequest createReservationTimeRequest = new CreateReservationTimeRequest(LocalTime.parse("11:00"));
+        CreateReservationTimeRequest createReservationTimeRequest = new CreateReservationTimeRequest(
+                LocalTime.parse("11:00"));
         ReservationTime time = createReservationTimeRequest.toReservationTime();
 
         // stub

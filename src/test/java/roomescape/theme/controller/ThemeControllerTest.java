@@ -13,11 +13,14 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import roomescape.auth.TokenProvider;
 import roomescape.common.DateTimeFormatConfiguration;
+import roomescape.testutil.ControllerTest;
 import roomescape.theme.dto.request.CreateThemeRequest;
 import roomescape.theme.dto.response.CreateThemeResponse;
 import roomescape.theme.dto.response.FindPopularThemesResponse;
@@ -26,11 +29,8 @@ import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.util.ThemeFixture;
 
-@ActiveProfiles("test")
-@WebMvcTest({
-        ThemeController.class,
-        DateTimeFormatConfiguration.class
-})
+@ControllerTest
+@Import(ThemeController.class)
 class ThemeControllerTest {
 
     @Autowired

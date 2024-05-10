@@ -1,24 +1,25 @@
 package roomescape.reservation.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import roomescape.auth.TokenProvider;
 import roomescape.auth.config.AuthInfo;
-import roomescape.common.DateTimeFormatConfiguration;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -26,15 +27,13 @@ import roomescape.reservation.dto.response.FindReservationResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.model.ReservationTime;
+import roomescape.testutil.ControllerTest;
 import roomescape.theme.model.Theme;
 import roomescape.util.ReservationFixture;
 import roomescape.util.ReservationTimeFixture;
 
-@ActiveProfiles("test")
-@WebMvcTest({
-        ReservationController.class,
-        DateTimeFormatConfiguration.class
-})
+@ControllerTest
+@Import(ReservationController.class)
 class ReservationControllerTest {
 
     @Autowired
@@ -46,6 +45,9 @@ class ReservationControllerTest {
     @MockBean
     private ReservationService reservationService;
 
+    @MockBean
+    private TokenProvider tokenProvider;
+
     @Test
     @DisplayName("예약 생성 요청 시 201 상태와 Location 헤더에 생성된 리소스의 위치를 반환한다.")
     void createReservation() throws Exception {
@@ -53,21 +55,24 @@ class ReservationControllerTest {
         Reservation reservation = ReservationFixture.getOne();
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 LocalDate.of(3000, 1, 1), 1L, 1L);
+        String token = "asdfsadf";
         AuthInfo authInfo = new AuthInfo(1L, "asdf");
 
         // stub
+        Mockito.when(tokenProvider.extractAuthInfo(any())).thenReturn(authInfo);
         Mockito.when(reservationService.createReservation(authInfo, createReservationRequest))
                 .thenReturn(CreateReservationResponse.from(reservation));
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
                         .content(objectMapper.writeValueAsString(createReservationRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .cookie(new Cookie("token", token)))
                 .andExpectAll(
                         status().isCreated(),
                         header().stringValues("Location", "/reservations/" + reservation.getId()),
                         jsonPath("$.id").value(reservation.getId()),
-                        jsonPath("$.name").value(reservation.getName().getValue()),
+                        jsonPath("$.name").value(reservation.getMember().getName()),
                         jsonPath("$.date").value(reservation.getDate().toString()),
                         jsonPath("$.time.id").value(reservation.getReservationTime().getId()),
                         jsonPath("$.time.startAt").value(reservation.getReservationTime().getTime().toString()),
@@ -95,13 +100,13 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpectAll(
                         jsonPath("$.[0].id").value(reservation1.getId()),
-                        jsonPath("$.[0].name").value(reservation1.getName().getValue()),
+                        jsonPath("$.[0].member.name").value(reservation1.getMember().getName()),
                         jsonPath("$.[0].date").value(reservation1.getDate().toString()),
                         jsonPath("$.[0].time.id").value(reservation1.getReservationTime().getId()),
                         jsonPath("$.[0].time.startAt").value(reservation1.getReservationTime().getTime().toString()),
 
                         jsonPath("$.[1].id").value(reservation2.getId()),
-                        jsonPath("$.[1].name").value(reservation2.getName().getValue()),
+                        jsonPath("$.[1].member.name").value(reservation2.getMember().getName()),
                         jsonPath("$.[1].date").value(reservation2.getDate().toString()),
                         jsonPath("$.[1].time.id").value(reservation2.getReservationTime().getId()),
                         jsonPath("$.[1].time.startAt").value(reservation2.getReservationTime().getTime().toString()),
@@ -127,7 +132,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpectAll(
                         jsonPath("$.id").value(reservation.getId()),
-                        jsonPath("$.name").value(reservation.getName().getValue()),
+                        jsonPath("$.member.name").value(reservation.getMember().getName()),
                         jsonPath("$.date").value(reservation.getDate().toString()),
                         jsonPath("$.time.id").value(time.getId()),
                         jsonPath("$.time.startAt").value(time.getTime().toString()),
