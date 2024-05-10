@@ -1,8 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +15,11 @@ import roomescape.exception.PastTimeReservationException;
 import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
+import roomescape.service.dto.input.ReservationSearchInput;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 class ReservationServiceTest {
@@ -100,5 +102,27 @@ class ReservationServiceTest {
         assertThatThrownBy(
                 () -> reservationService.createReservation(input))
                 .isInstanceOf(PastTimeReservationException.class);
+    }
+
+    @Test
+    @DisplayName("테마,멤버,날짜 범위에 인정하는 예약을 검색한다.")
+    void search_reservation_with_theme_member_and_date() {
+        final Long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
+                .getId();
+        final Long themeId = themeDao.create(ThemeFixture.getDomain())
+                .getId();
+        final var memberId = memberService.createMember(MemberFixture.getUserCreateInput())
+                .id();
+        final var input1 = new ReservationInput("2024-05-10", timeId, themeId, memberId);
+        final var input2 = new ReservationInput("2024-05-30", timeId, themeId, memberId);
+        final var input3 = new ReservationInput("2024-05-15", timeId, themeDao.create(ThemeFixture.getDomain())
+                .getId(), memberId);
+        reservationService.createReservation(input1);
+        reservationService.createReservation(input2);
+        reservationService.createReservation(input3);
+
+        assertThat(reservationService.searchReservation(new ReservationSearchInput(themeId, memberId,
+                LocalDate.parse("2024-05-01"), LocalDate.parse("2024-05-20"))))
+                .hasSize(1);
     }
 }
