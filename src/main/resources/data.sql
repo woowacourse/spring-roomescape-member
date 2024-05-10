@@ -24,50 +24,52 @@ VALUES ('테마11', '설명', 'https://i.pinimg.com/474x/b3/aa/d7/b3aad752a5fbda
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00');
 
-INSERT INTO member (name, email, password)
-VALUES ('테니', 'tenny@wooteco.com', 'secret');
+INSERT INTO member (name, email, password, role)
+VALUES ('관리자', 'admin@wooteco.com', '1234', 'ADMIN');
+INSERT INTO member (name, email, password, role)
+VALUES ('테니', 'tenny@wooteco.com', '1234', 'MEMBER');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-04-27', 1, 1);
+VALUES (2, '2024-04-27', 1, 1);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-04-28', 1, 1);
+VALUES (2, '2024-04-28', 1, 1);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-04-29', 1, 2);
+VALUES (2, '2024-04-29', 1, 2);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-04-30', 1, 2);
+VALUES (2, '2024-04-30', 1, 2);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-01', 1, 3);
+VALUES (2, '2024-05-01', 1, 3);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 3);
+VALUES (2, '2024-05-02', 1, 3);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 4);
+VALUES (2, '2024-05-03', 1, 4);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 4);
+VALUES (2, '2024-05-02', 1, 4);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 5);
+VALUES (2, '2024-05-03', 1, 5);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 5);
+VALUES (2, '2024-05-02', 1, 5);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 6);
+VALUES (2, '2024-05-03', 1, 6);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 6);
+VALUES (2, '2024-05-02', 1, 6);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 7);
+VALUES (2, '2024-05-03', 1, 7);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 7);
+VALUES (2, '2024-05-02', 1, 7);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 8);
+VALUES (2, '2024-05-03', 1, 8);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 8);
+VALUES (2, '2024-05-02', 1, 8);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 9);
+VALUES (2, '2024-05-03', 1, 9);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 9);
+VALUES (2, '2024-05-02', 1, 9);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 10);
+VALUES (2, '2024-05-03', 1, 10);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-02', 1, 10);
+VALUES (2, '2024-05-02', 1, 10);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-03', 1, 11);
+VALUES (2, '2024-05-03', 1, 11);
 INSERT INTO reservation (member_id, date, time_id, theme_id)
-VALUES (1, '2024-05-04', 1, 11);
+VALUES (2, '2024-05-04', 1, 11);

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.domain.ReservationMember;
+import roomescape.domain.member.domain.Role;
 import roomescape.global.auth.AuthUser;
 
 import java.util.List;
@@ -17,7 +18,8 @@ public class MemberDao {
     private final RowMapper<AuthUser> authRowMapper = (resultSet, rowNum) ->
             new AuthUser(
                     resultSet.getLong("id"),
-                    resultSet.getString("name")
+                    resultSet.getString("name"),
+                    Role.valueOf(resultSet.getString("role"))
             );
 
     private final RowMapper<ReservationMember> memberRowMapper = (resultSet, rowNum) ->
@@ -31,7 +33,7 @@ public class MemberDao {
     }
 
     public Optional<AuthUser> findIdByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id, name FROM member WHERE email = ? AND password = ?";
+        String sql = "SELECT id, name, role FROM member WHERE email = ? AND password = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, authRowMapper, email, password));
         } catch (EmptyResultDataAccessException e) {

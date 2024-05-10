@@ -34,8 +34,17 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             //todo 응답코드 변경
             throw new RoomEscapeException("[ERROR] 잘못된 요청입니다.");
         }
-        String token = extractTokenFromCookie(request.getCookies());
+        Cookie[] cookies = getCookies(request);
+        String token = extractTokenFromCookie(cookies);
         return jwtProvider.parse(token);
+    }
+
+    private Cookie[] getCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            throw new RoomEscapeException("[ERROR] 권한 정보가 없습니다");
+        }
+        return cookies;
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.domain.member.dao.MemberDao;
+import roomescape.domain.member.domain.Role;
 import roomescape.global.auth.AuthUser;
 
 import java.util.Optional;
@@ -22,7 +23,7 @@ class MemberDaoTest {
     void findIdByEmailAndPassword() {
         AuthUser authUser = memberDao.findIdByEmailAndPassword("tenny@wooteco.com", "1234").get();
 
-        assertThat(authUser).isEqualTo(new AuthUser(1L, "테니"));
+        assertThat(authUser).isEqualTo(new AuthUser(1L, "테니", Role.MEMBER));
     }
 
     @ParameterizedTest

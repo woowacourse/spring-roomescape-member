@@ -17,6 +17,7 @@ public class ReservationFixture {
     public static final String TOKEN = Jwts.builder()
             .subject("1")
             .claim("name", "테니")
+            .claim("role", "MEMBER")
             .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
             .compact();
 }
