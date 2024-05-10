@@ -8,11 +8,11 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.service.MemberService;
 
-public class CheckLoginInterceptor implements HandlerInterceptor {
+public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
 
-    public CheckLoginInterceptor(final MemberService memberService) {
+    public CheckAdminInterceptor(final MemberService memberService) {
         this.memberService = memberService;
     }
 

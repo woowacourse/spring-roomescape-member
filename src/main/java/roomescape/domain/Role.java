@@ -7,7 +7,7 @@ public enum Role {
     ADMIN,
     USER;
 
-    public static Role findByName(String target) {
+    public static Role findByName(final String target) {
         if ("ADMIN".equals(target)) {
             return Role.ADMIN;
         }

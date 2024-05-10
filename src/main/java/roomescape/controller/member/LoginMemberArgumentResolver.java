@@ -33,7 +33,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
         if (cookies == null || cookies.length == 0 || token == null || token.isBlank()) {
-//            throw new UnauthorizedException("잘못된 접근입니다."); // TODO 엥 이거 맞음?
             return null;
         }
 
