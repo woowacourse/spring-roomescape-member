@@ -1,4 +1,4 @@
-package roomescape.controller.argumentresolver;
+package roomescape.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -6,9 +6,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.controller.annotation.Login;
 import roomescape.service.AuthService;
-import roomescape.controller.infrastructure.AuthenticationExtractor;
 import roomescape.service.dto.LoginMember;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {

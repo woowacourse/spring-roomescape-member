@@ -1,4 +1,4 @@
-package roomescape.controller.advice;
+package roomescape.controller;
 
 import java.util.stream.Collectors;
 import org.slf4j.Logger;

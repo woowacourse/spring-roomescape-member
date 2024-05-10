@@ -1,4 +1,4 @@
-package roomescape.controller.infrastructure;
+package roomescape.infrastructure;
 
 import io.jsonwebtoken.*;
 import java.util.Date;
