@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.presentation.AdminAuthorityInterceptor;
+import roomescape.auth.presentation.AdminAuthorizationInterceptor;
 import roomescape.auth.presentation.LoginMemberArgumentResolver;
 
 import java.util.List;
@@ -12,12 +12,12 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
-    private final AdminAuthorityInterceptor adminAuthorityInterceptor;
+    private final AdminAuthorizationInterceptor adminAuthorizationInterceptor;
 
     public WebMvcConfiguration(LoginMemberArgumentResolver loginMemberArgumentResolver,
-                               AdminAuthorityInterceptor adminAuthorityInterceptor) {
+                               AdminAuthorizationInterceptor adminAuthorizationInterceptor) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
-        this.adminAuthorityInterceptor = adminAuthorityInterceptor;
+        this.adminAuthorizationInterceptor = adminAuthorizationInterceptor;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminAuthorityInterceptor)
+        registry.addInterceptor(adminAuthorizationInterceptor)
                 .addPathPatterns("/members")
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/admin");

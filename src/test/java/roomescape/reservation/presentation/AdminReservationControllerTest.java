@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import roomescape.global.config.WebMvcConfiguration;
-import roomescape.auth.presentation.AdminAuthorityInterceptor;
+import roomescape.auth.presentation.AdminAuthorizationInterceptor;
 import roomescape.auth.presentation.LoginMemberArgumentResolver;
 import roomescape.common.ControllerTest;
 import roomescape.member.application.MemberService;
@@ -32,7 +32,7 @@ import static roomescape.TestFixture.*;
 @WebMvcTest(
         value = AdminReservationController.class,
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                classes = {WebMvcConfiguration.class, LoginMemberArgumentResolver.class, AdminAuthorityInterceptor.class})
+                classes = {WebMvcConfiguration.class, LoginMemberArgumentResolver.class, AdminAuthorizationInterceptor.class})
 )
 class AdminReservationControllerTest extends ControllerTest {
     @MockBean

@@ -9,10 +9,10 @@ import roomescape.auth.exception.AuthorizationException;
 import roomescape.member.domain.Member;
 
 @Component
-public class AdminAuthorityInterceptor implements HandlerInterceptor {
+public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     private final AuthService authService;
 
-    public AdminAuthorityInterceptor(AuthService authService) {
+    public AdminAuthorizationInterceptor(AuthService authService) {
         this.authService = authService;
     }
 
