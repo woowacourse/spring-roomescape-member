@@ -57,7 +57,7 @@ class ReservationApiControllerTest {
     @Test
     @DisplayName("회원이 예약을 성공적으로 추가하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     void createMemberReservationRequestTest() throws Exception {
-        LoginMember loginMember = new LoginMember(1L, "카키", "kaki@email.com", Role.MEMBER.name());
+        LoginMember loginMember = new LoginMember(1L, Role.MEMBER, "카키", "kaki@email.com");
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(loginMember.id(), LocalDate.now(), 1L, 1L);
 
         MemberResponse memberResponse = new MemberResponse(loginMember.id(), loginMember.name());
@@ -91,7 +91,7 @@ class ReservationApiControllerTest {
     @Test
     @DisplayName("관리자가 예약을 성공적으로 추가하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     void createAdminReservationRequestTest() throws Exception {
-        LoginMember loginMember = new LoginMember(1L, "카키", "kaki@email.com", Role.ADMIN.name());
+        LoginMember loginMember = new LoginMember(1L, Role.ADMIN,"카키", "kaki@email.com");
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(1L, LocalDate.now(), 1L, 1L);
 
         MemberResponse memberResponse = new MemberResponse(loginMember.id(), loginMember.name());

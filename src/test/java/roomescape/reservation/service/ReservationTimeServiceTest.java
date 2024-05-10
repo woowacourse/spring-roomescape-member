@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import roomescape.common.Role;
 import roomescape.config.DatabaseCleaner;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
@@ -78,7 +78,7 @@ class ReservationTimeServiceTest {
         );
         Theme theme = themeRepository.findById(themeId).get();
 
-        Long memberId = memberRepository.save(new Member(1L, new MemberName("카키"), "kaki@email.com", "1234"));
+        Long memberId = memberRepository.save(new Member(1L, Role.MEMBER, new MemberName("카키"), "kaki@email.com", "1234"));
         Member member = memberRepository.findById(memberId).get();
 
         Reservation reservation = new Reservation(
@@ -108,7 +108,7 @@ class ReservationTimeServiceTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Long memberId = memberRepository.save(new Member(1L, new MemberName("카키"), "kaki@email.com", "1234"));
+        Long memberId = memberRepository.save(new Member(1L, Role.MEMBER, new MemberName("카키"), "kaki@email.com", "1234"));
         Member member = memberRepository.findById(memberId).get();
 
         Reservation reservation = new Reservation(

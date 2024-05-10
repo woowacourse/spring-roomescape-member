@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import roomescape.common.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
 import roomescape.member.dto.LoginMember;
@@ -23,7 +24,7 @@ class JwtTokenProviderTest {
 
     @BeforeEach
     void init() {
-        member = new Member(1L, new MemberName("카키"), "kaki@email.com", "1234");
+        member = new Member(1L, Role.MEMBER, new MemberName("카키"), "kaki@email.com", "1234");
     }
 
     @DisplayName("JWT 토큰을 생성한다.")

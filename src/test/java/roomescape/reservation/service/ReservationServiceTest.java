@@ -53,7 +53,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(new ThemeName("공포"), new Description("호러 방탈출"), "http://asdf.jpg");
         Long themeId = themeRepository.save(theme);
 
-        LoginMember loginMember = new LoginMember(1L, "카키", "kaki@email.com", Role.MEMBER.name());
+        LoginMember loginMember = new LoginMember(1L, Role.MEMBER,"카키", "kaki@email.com");
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(LocalDate.now(), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.save(reservationSaveRequest, loginMember))
@@ -70,12 +70,12 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(localTime);
         Long timeId = reservationTimeRepository.save(reservationTime);
 
-        Member member = new Member(1L, new MemberName("카키"), "kaki@email.com", "1234");
+        Member member = new Member(1L, Role.MEMBER, new MemberName("카키"), "kaki@email.com", "1234");
         memberRepository.save(member);
 
         LocalDate localDate = LocalDate.now();
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(localDate, themeId, timeId);
-        LoginMember loginMember = new LoginMember(1L, member.getName(), member.getEmail(), member.getRole().name());
+        LoginMember loginMember = new LoginMember(1L, member.getRole(), member.getName(), member.getEmail());
         reservationService.save(reservationSaveRequest, loginMember);
 
         ReservationSaveRequest duplicateRequest = new ReservationSaveRequest(localDate, themeId, timeId);

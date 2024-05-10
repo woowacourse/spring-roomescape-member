@@ -52,6 +52,7 @@ public class ReservationRepository {
                 select
                 r.id,
                 m.id as member_id,
+                m.role,
                 m.name as member_name,
                 m.email as member_email,
                 m.password as member_password,
@@ -93,6 +94,7 @@ public class ReservationRepository {
                 select
                 r.id,
                 m.id as member_id,
+                m.role,
                 m.name as member_name,
                 m.email as member_email,
                 m.password as member_password,
