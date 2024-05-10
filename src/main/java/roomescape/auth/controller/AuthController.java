@@ -37,7 +37,6 @@ public class AuthController {
         CookieUtil.addCookie(response, cookieName, authenticationToken.getValue(), cookieMaxAge);
     }
 
-    // TODO : 인증 토큰 검증 추가
     @GetMapping("/login/check")
     public LoginCheckResponse checkLogin(@Authenticated AuthenticatedMember authenticatedMember) {
         return new LoginCheckResponse(authenticatedMember.name());
