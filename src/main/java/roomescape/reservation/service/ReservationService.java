@@ -7,6 +7,7 @@ import roomescape.global.exception.DuplicateSaveException;
 import roomescape.global.exception.IllegalReservationDateException;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.dto.MemberReservationAddRequest;
@@ -19,12 +20,16 @@ import roomescape.time.domain.ReservationTimeRepository;
 @Service
 public class ReservationService {
 
+    private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(MemberRepository memberRepository,
+                              ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
+        this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -34,6 +39,13 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
                 .map(ReservationResponse::new)
                 .toList();
+    }
+
+    public ReservationResponse saveMemberReservation(Long memberId, MemberReservationAddRequest request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NoSuchRecordException("ID: " + memberId + " 해당하는 회원을 찾을 수 없습니다"));
+
+        return saveMemberReservation(member, request);
     }
 
     public ReservationResponse saveMemberReservation(Member member, MemberReservationAddRequest request) {
