@@ -37,9 +37,12 @@ public class MemberService {
         }
         return new MemberLoginOutput(tokenProvider.generateToken(member));
     }
-    public TokenLoginOutput loginToken(final String token){
-        final long id = tokenProvider.decodeToken(token).getId();
+
+    public TokenLoginOutput loginToken(final String token) {
+        final long id = tokenProvider.decodeToken(token)
+                .getId();
         final Member member = memberDao.findById(id)
-                .orElseThrow(() -> new NotExistException(MEMBER,id));
-        return TokenLoginOutput.toOutput(member);    }
+                .orElseThrow(() -> new NotExistException(MEMBER, id));
+        return TokenLoginOutput.toOutput(member);
+    }
 }

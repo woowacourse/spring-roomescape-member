@@ -49,7 +49,5 @@ public class LoginApiController {
                 .orElseThrow(() -> new IllegalArgumentException("토큰이 없습니다"));
         final TokenLoginOutput output = memberService.loginToken(token);
         return ResponseEntity.ok(TokenLoginResponse.toResponse(output));
-
     }
-
 }

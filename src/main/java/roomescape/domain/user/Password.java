@@ -1,7 +1,7 @@
 package roomescape.domain.user;
 
 public record Password(String value) {
-    private static final int MIN_LENGTH = 6;
+    private static final int MIN_LENGTH = 8;
     private static final String ERROR_MESSAGE = String.format("비밀번호는 %d 글자 이상 이여야 합니다.", MIN_LENGTH);
 
     public Password {

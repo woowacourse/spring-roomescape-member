@@ -17,14 +17,17 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
+import roomescape.domain.user.Member;
 import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.NotExistException;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.AvailableReservationTimeInput;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.AvailableReservationTimeOutput;
+import roomescape.service.dto.output.MemberCreateOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
@@ -41,14 +44,18 @@ class ReservationTimeServiceTest {
 
     @Autowired
     ThemeService themeService;
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("TRUNCATE TABLE member");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
@@ -79,15 +86,16 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("특정 시간에 대한 예약이 존재하면 그 시간을 삭제하려 할 때 예외를 발생한다.")
     void throw_exception_when_delete_id_that_exist_reservation() {
-        ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
+        final ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
                 new ReservationTimeInput("10:00"));
-        ThemeOutput themeOutput = themeService.createTheme(ThemeFixture.getInput());
+        final ThemeOutput themeOutput = themeService.createTheme(ThemeFixture.getInput());
+        final MemberCreateOutput memberOutput = memberService.createMember(MemberFixture.getCreateInput());
         reservationDao.create(Reservation.from(
                 null,
-                "제리",
                 "2024-04-30",
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
+                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail()),
+                Member.from(memberOutput.id(), memberOutput.name(), memberOutput.email(), memberOutput.password())
         ));
         final var timeId = timeOutput.id();
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
@@ -112,7 +120,8 @@ class ReservationTimeServiceTest {
                 .id();
         long themeId = themeService.createTheme(ThemeFixture.getInput())
                 .id();
-        reservationService.createReservation(new ReservationInput("조이썬", "2025-01-01", timeId2, themeId));
+        long memberId = memberService.createMember(MemberFixture.getCreateInput()).id();
+        reservationService.createReservation(new ReservationInput("2025-01-01", timeId2, themeId,memberId));
 
         List<AvailableReservationTimeOutput> actual = reservationTimeService.getAvailableTimes(
                 new AvailableReservationTimeInput(themeId, LocalDate.parse("2025-01-01")));

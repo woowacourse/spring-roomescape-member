@@ -16,7 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ThemeFixture;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
@@ -32,6 +34,8 @@ class ThemeApiControllerTest {
     ReservationTimeService reservationTimeService;
     @Autowired
     ReservationService reservationService;
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     ThemeService themeService;
@@ -45,10 +49,11 @@ class ThemeApiControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("TRUNCATE TABLE member");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -91,11 +96,12 @@ class ThemeApiControllerTest {
     @Test
     @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 409를 반환한다.")
     void return_409_when_delete_id_that_exist_reservation() {
-        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("09:00"))
+        final long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("09:00"))
                                             .id();
-        long themeId = themeService.createTheme(ThemeFixture.getInput())
+        final long themeId = themeService.createTheme(ThemeFixture.getInput())
                                    .id();
-        reservationService.createReservation(new ReservationInput("제리", "2025-04-30", timeId, themeId));
+        final long memberId = memberService.createMember(MemberFixture.getCreateInput()).id();
+        reservationService.createReservation(new ReservationInput("2025-04-30", timeId, themeId,memberId));
 
         RestAssured.given()
                    .when().delete("/themes/" + themeId)

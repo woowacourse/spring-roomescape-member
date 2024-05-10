@@ -17,8 +17,10 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
+import roomescape.domain.user.Member;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.NotExistException;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.input.ThemeInput;
@@ -40,9 +42,10 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("TRUNCATE TABLE member");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
@@ -103,10 +106,10 @@ class ThemeServiceTest {
 
         reservationDao.create(Reservation.from(
                 null,
-                "제리",
                 "2024-04-30",
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
+                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail()),
+                MemberFixture.getDomain()
         ));
         final var themeId = themeOutput.id();
 
@@ -128,24 +131,24 @@ class ThemeServiceTest {
 
         reservationDao.create(Reservation.from(
                 null,
-                "제리",
                 "2024-06-01",
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail())
+                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail()),
+                MemberFixture.getDomain()
         ));
         reservationDao.create(Reservation.from(
                 null,
-                "조이썬",
                 "2024-06-02",
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail())
+                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail()),
+                MemberFixture.getDomain()
         ));
         reservationDao.create(Reservation.from(
                 null,
-                "제리",
                 "2024-06-03",
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail())
+                Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail()),
+                MemberFixture.getDomain()
         ));
 
         final List<ThemeOutput> popularThemes = themeService.getPopularThemes(LocalDate.parse("2024-06-04"));

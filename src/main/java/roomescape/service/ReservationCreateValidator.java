@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Component;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -8,6 +9,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
+import roomescape.domain.user.Member;
 import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.NotExistException;
 import roomescape.exception.PastTimeReservationException;
@@ -21,21 +23,24 @@ public class ReservationCreateValidator {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
     private final DateTimeFormatter dateTimeFormatter;
 
 
-    public ReservationCreateValidator(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao, final ThemeDao themeDao, final DateTimeFormatter dateTimeFormatter) {
+    public ReservationCreateValidator(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao, final ThemeDao themeDao, final MemberDao memberDao, final DateTimeFormatter dateTimeFormatter) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
         this.dateTimeFormatter = dateTimeFormatter;
     }
 
     public Reservation validateReservationInput(final ReservationInput input) {
         final ReservationTime reservationTime = validateExistReservationTime(input.timeId());
         final Theme theme = validateExistTheme(input.themeId());
+        final Member member = validateExistMember(input.memberId());
 
-        final Reservation reservation = input.toReservation(reservationTime, theme);
+        final Reservation reservation = input.toReservation(reservationTime, theme,member);
         if (reservationDao.isExistByReservationAndTime(ReservationDate.from(input.date()), input.timeId())) {
             throw new AlreadyExistsException(RESERVATION, reservation.getLocalDateTimeFormat());
         }
@@ -53,5 +58,10 @@ public class ReservationCreateValidator {
     private Theme validateExistTheme(final long themeId) {
         return themeDao.find(themeId)
                 .orElseThrow(() -> new NotExistException(THEME, themeId));
+    }
+
+    private Member validateExistMember(final long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new NotExistException(MEMBER, memberId));
     }
 }

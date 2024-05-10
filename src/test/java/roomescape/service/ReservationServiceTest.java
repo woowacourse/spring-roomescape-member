@@ -15,6 +15,7 @@ import roomescape.domain.reservation.ReservationTime;
 import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.NotExistException;
 import roomescape.exception.PastTimeReservationException;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 
@@ -33,10 +34,15 @@ class ReservationServiceTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private MemberService memberService;
+
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("TRUNCATE TABLE member");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
@@ -46,9 +52,11 @@ class ReservationServiceTest {
     void create_reservation() {
         long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
                 .getId();
-        Long themeId = themeDao.create(ThemeFixture.getDomain())
+        long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
-        ReservationInput input = new ReservationInput("jerry", "2023-03-13", timeId, themeId);
+        long memberId = memberService.createMember(MemberFixture.getCreateInput())
+                .id();
+        ReservationInput input = new ReservationInput("2023-03-13", timeId, themeId, memberId);
 
         assertThatCode(() -> reservationService.createReservation(input))
                 .doesNotThrowAnyException();
@@ -64,12 +72,14 @@ class ReservationServiceTest {
     @Test
     @DisplayName("중복 예약 이면 예외를 발생한다.")
     void throw_exception_when_duplicate_reservationTime() {
-        long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
+        final long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
                 .getId();
-        Long themeId = themeDao.create(ThemeFixture.getDomain())
+        final long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
-        reservationService.createReservation(new ReservationInput("제리", "2011-11-24", timeId, themeId));
-        final var input = new ReservationInput("제리", "2011-11-24", timeId, themeId);
+        final long memberId = memberService.createMember(MemberFixture.getCreateInput())
+                .id();
+        reservationService.createReservation(new ReservationInput("2011-11-24", timeId, themeId, memberId));
+        final var input = new ReservationInput("2011-11-24", timeId, themeId, memberId);
 
         assertThatThrownBy(
                 () -> reservationService.createReservation(input))
@@ -83,7 +93,9 @@ class ReservationServiceTest {
                 .getId();
         Long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
-        final var input = new ReservationInput("제리", "1300-03-10", timeId, themeId);
+        final var memberId = memberService.createMember(MemberFixture.getCreateInput())
+                .id();
+        final var input = new ReservationInput("1300-03-10", timeId, themeId, memberId);
 
         assertThatThrownBy(
                 () -> reservationService.createReservation(input))
