@@ -38,7 +38,7 @@ public class MemberRepository {
     }
 
     public Optional<Member> findById(Long id) {
-        String sql = "select id, name, email, password from member where id = ?";
+        String sql = "select * from member where id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, createMemberRowMapper(), id));
         } catch (DataAccessException exception) {
@@ -47,7 +47,7 @@ public class MemberRepository {
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "select id, name, email, password from member where email = ? and password = ?";
+        String sql = "select * from member where email = ? and password = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, createMemberRowMapper(), email, password));
         } catch (DataAccessException exception) {
@@ -55,8 +55,14 @@ public class MemberRepository {
         }
     }
 
+    public List<Member> findAll() {
+        String sql = "select * from member";
+
+        return jdbcTemplate.query(sql, createMemberRowMapper());
+    }
+
     public boolean existNameOrEmail(Member member) {
-        String sql = " select exists (select 1 from member where name = ? or email = ?)";
+        String sql = " select exists (select 1 from member where name = ? and email = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, member.getName(), member.getEmail());
     }

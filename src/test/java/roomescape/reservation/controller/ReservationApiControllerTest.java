@@ -60,7 +60,7 @@ class ReservationApiControllerTest {
         LoginMember loginMember = new LoginMember(1L, "카키", "kaki@email.com", Role.MEMBER.name());
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(loginMember.id(), LocalDate.now(), 1L, 1L);
 
-        MemberResponse memberResponse = new MemberResponse(loginMember.name());
+        MemberResponse memberResponse = new MemberResponse(loginMember.id(), loginMember.name());
         ThemeResponse themeResponse = new ThemeResponse(1L, "공포", "무서운 테마", "https://i.pinimg.com/236x.jpg");
         TimeResponse timeResponse = new TimeResponse(1L, LocalTime.now());
 
@@ -94,7 +94,7 @@ class ReservationApiControllerTest {
         LoginMember loginMember = new LoginMember(1L, "카키", "kaki@email.com", Role.ADMIN.name());
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(1L, LocalDate.now(), 1L, 1L);
 
-        MemberResponse memberResponse = new MemberResponse(loginMember.name());
+        MemberResponse memberResponse = new MemberResponse(loginMember.id(), loginMember.name());
         ThemeResponse themeResponse = new ThemeResponse(1L, "공포", "무서운 테마", "https://i.pinimg.com/236x.jpg");
         TimeResponse timeResponse = new TimeResponse(1L, LocalTime.now());
         ReservationResponse reservationResponse = new ReservationResponse(

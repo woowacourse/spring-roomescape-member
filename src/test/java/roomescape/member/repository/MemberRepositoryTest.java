@@ -35,9 +35,9 @@ class MemberRepositoryTest {
         assertThat(findMember.getId()).isEqualTo(memberId);
     }
 
-    @DisplayName("테이블에 존재하는 이름 또는 이메일인지 확인한다.")
+    @DisplayName("테이블에서 동일한 이름에 동일한 이메일이 있는지 확인한다.")
     @ParameterizedTest
-    @CsvSource({"'카키', 'test@email.com', true", "'테스트', 'kaki@email.com', true", "'테스트', 'test@email.com', false"})
+    @CsvSource({"'카키', 'test@email.com', false", "'카키', 'kaki@email.com', true"})
     void existNameOrEmail(String name, String email, boolean exist) {
         memberRepository.save(member);
 

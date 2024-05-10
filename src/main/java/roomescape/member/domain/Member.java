@@ -4,21 +4,21 @@ import roomescape.common.Role;
 
 public class Member {
     private Long id;
-    private final MemberName memberName;
+    private final MemberName name;
     private final String email;
     private final String password;
     private final Role role;
 
-    public Member(MemberName memberName, String email, String password) {
-        this.memberName = memberName;
+    public Member(MemberName name, String email, String password) {
+        this.name = name;
         this.email = email;
         this.password = password;
         this.role = Role.MEMBER;
     }
 
-    public Member(Long id, MemberName memberName, String email, String password) {
+    public Member(Long id, MemberName name, String email, String password) {
         this.id = id;
-        this.memberName = memberName;
+        this.name = name;
         this.email = email;
         this.password = password;
         this.role = Role.MEMBER;
@@ -29,7 +29,7 @@ public class Member {
     }
 
     public String getName() {
-        return memberName.getName();
+        return name.getName();
     }
 
     public String getEmail() {
