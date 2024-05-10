@@ -31,3 +31,7 @@ values ('피케이', '2024-04-29', 1, 1),
        ('망쵸', '2024-04-30', 2, 1),
        ('비토', '2024-04-28', 4, 2),
        ('호돌', '2024-04-29', 1, 1);
+
+insert into member (id, name, email, password, role)
+values (1, '피케이', 'pkpkpkpk@woowa.net', 'anything', 'ADMIN'),
+       (2, '망쵸', 'mangcho@woowa.net', 'nothing', 'MEMBER');
