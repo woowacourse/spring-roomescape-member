@@ -57,6 +57,14 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getAvailableTimes(date, themeId));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<FindReservationResponse>> searchBy(@RequestParam(required = false) Long themeId,
+                                                                  @RequestParam(required = false) Long memberId,
+                                                                  @RequestParam(required = false) LocalDate dateFrom,
+                                                                  @RequestParam(required = false) LocalDate dateTo) {
+        return ResponseEntity.ok(reservationService.searchBy(themeId, memberId, dateFrom, dateTo));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
