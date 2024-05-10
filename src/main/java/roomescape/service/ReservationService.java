@@ -49,6 +49,16 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findFiltered(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo) {
+        return reservationDao.readFilteredReservation(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId) {
         ReservationDate reservationDate = ReservationDate.from(date);
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();

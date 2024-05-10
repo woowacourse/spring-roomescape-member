@@ -23,7 +23,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.exception.InvalidValueException;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.Role;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.MemberReservationCreateRequest;
@@ -62,6 +61,19 @@ class ReservationServiceTest {
             List<ReservationResponse> reservations = reservationService.findAll();
 
             assertThat(reservations).hasSize(2);
+        }
+
+        @Test
+        @Sql(value = {"classpath:clean_data.sql", "classpath:test_data.sql"})
+        @DisplayName("테마 아이디, 멤버 아이디, 날짜 범위로 필터링된 예약 정보를 조회한다.")
+        void findFiltered() {
+            List<ReservationResponse> filtered = reservationService.findFiltered(
+                    1L,
+                    1L,
+                    LocalDate.of(2024, 5, 3),
+                    LocalDate.of(2024, 5, 9));
+
+            assertThat(filtered).hasSize(1);
         }
 
         @Test

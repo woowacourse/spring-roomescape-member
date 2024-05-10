@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
@@ -156,10 +157,12 @@ class ReservationControllerTest {
         @Test
         @DisplayName("지난 시간으로 예약하면 Bad Request status를 응답한다.")
         void createByPastTime() {
-            String pastTime = LocalTime.now().minusHours(1).toString();
+            LocalDateTime dateTime = LocalDateTime.now().minusHours(1);
+            String date = dateTime.toLocalDate().toString();
+            String pastTime = dateTime.toLocalTime().toString();
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('" + pastTime + "')");
             AdminReservationCreateRequest params =
-                    AdminReservationCreateRequest.of(LocalDate.now().toString(), 1L, 2L, 1L);
+                    AdminReservationCreateRequest.of(date, 1L, 2L, 1L);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)

@@ -1,7 +1,9 @@
 package roomescape.controller;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,8 +32,15 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readAll() {
-        return ResponseEntity.ok(reservationService.findAll());
+    public ResponseEntity<List<ReservationResponse>> readAll(
+            @RequestParam @Nullable Long themeId,
+            @RequestParam @Nullable Long memberId,
+            @RequestParam @Nullable LocalDate dateFrom,
+            @RequestParam @Nullable LocalDate dateTo) {
+        if (themeId == null || memberId == null || dateFrom == null || dateTo == null) {
+            return ResponseEntity.ok(reservationService.findAll());
+        }
+        return ResponseEntity.ok(reservationService.findFiltered(themeId, memberId, dateFrom, dateTo));
     }
 
     @GetMapping("/available-time")

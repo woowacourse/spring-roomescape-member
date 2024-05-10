@@ -1,7 +1,5 @@
 package roomescape.dao;
 
-import static roomescape.domain.member.Role.USER;
-
 import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
@@ -12,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationStartAt;
@@ -73,6 +70,40 @@ public class JdbcReservationDao implements ReservationDao {
                     theme th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> readFilteredReservation(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.`date`,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation r
+                INNER JOIN
+                    member m ON r.member_id = m.id
+                INNER JOIN
+                    reservation_time t ON r.time_id = t.id
+                INNER JOIN
+                    theme th ON r.theme_id = th.id
+                WHERE
+                    r.theme_id = ?
+                    AND r.member_id = ?
+                    AND r.`date` BETWEEN ? AND ?;
+                """;
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, themeId, memberId, dateFrom, dateTo);
     }
 
     @Override
