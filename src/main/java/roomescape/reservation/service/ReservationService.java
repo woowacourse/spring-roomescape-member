@@ -7,8 +7,10 @@ import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationSearch;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationSearchRequest;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.time.dao.TimeDao;
@@ -31,6 +33,14 @@ public class ReservationService {
 
     public List<ReservationResponse> findReservations() {
         return reservationDao.findReservations()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findReservations(ReservationSearchRequest searchRequest) {
+        ReservationSearch reservationSearch = searchRequest.createReservationSearch();
+        return reservationDao.findReservations(reservationSearch)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
