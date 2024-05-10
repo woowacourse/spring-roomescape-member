@@ -54,6 +54,7 @@ public class TokenProvider {
         }
         return Long.parseLong(authenticationInfo);
     }
+
     private Claims parsePayload(String token) {
         return Jwts.parser()
                 .verifyWith(SECRET_KEY)

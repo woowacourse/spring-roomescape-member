@@ -13,6 +13,7 @@ import roomescape.service.dto.response.TokenResponse;
 
 @Service
 public class LoginService {
+
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
 

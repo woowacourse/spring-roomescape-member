@@ -11,7 +11,7 @@ import roomescape.service.MemberService;
 import roomescape.service.dto.request.MemberRequest;
 import roomescape.service.dto.response.MemberResponse;
 
-@RestController()
+@RestController
 @RequestMapping("/members")
 public class MemberController {
 

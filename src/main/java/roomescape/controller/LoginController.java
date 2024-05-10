@@ -16,6 +16,7 @@ import roomescape.service.dto.response.TokenResponse;
 
 @RestController
 public class LoginController {
+
     private static final String TOKEN_COOKIE_NAME = "token";
     private static final int COOKIE_AGE_SECONDS = 60;
 

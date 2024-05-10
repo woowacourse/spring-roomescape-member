@@ -18,6 +18,7 @@ import roomescape.handler.exception.ExceptionCode;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
+
     private static final RowMapper<Theme> THEME_MAPPER = (resultSet, row) ->
             new Theme(
                     resultSet.getLong("id"),

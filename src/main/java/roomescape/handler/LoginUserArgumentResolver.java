@@ -16,6 +16,7 @@ import roomescape.service.dto.request.LoginUser;
 
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
 
@@ -30,10 +31,8 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
-                                  ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
             throw new CustomException(ExceptionCode.BAD_REQUEST);

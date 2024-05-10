@@ -13,7 +13,6 @@ import roomescape.service.dto.response.ThemeResponse;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
-
     private final Clock clock;
 
     public ThemeService(ThemeRepository themeRepository, Clock clock) {

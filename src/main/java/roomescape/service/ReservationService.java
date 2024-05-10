@@ -35,6 +35,9 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationRequest reservationRequest, LoginUser loginUser) {
+        Member member = memberRepository.findById(loginUser.id())
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
+
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
 
@@ -45,9 +48,6 @@ public class ReservationService {
             throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
         }
         validateIsPastTime(reservationRequest.date(), reservationTime);
-
-        Member member = memberRepository.findById(loginUser.id())
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
 
         Reservation reservation = reservationRequest.toEntity(member, reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
