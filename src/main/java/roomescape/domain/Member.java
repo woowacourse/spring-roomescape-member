@@ -8,8 +8,8 @@ public class Member {
     private final String password;
     private final Role role;
 
-    public Member(String name, String email, String password) {
-        this(null, name, email, password, Role.USER);
+    public static Member createUser(String name, String email, String password) {
+        return new Member(null, name, email, password, Role.USER);
     }
 
     public Member(Long id, String name, String email, String password, Role role) {
