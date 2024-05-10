@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.LoginMemberRepository;
 import roomescape.domain.LoginMember;
@@ -13,6 +14,12 @@ public class LoginMemberService {
 
     public LoginMemberService(LoginMemberRepository loginMemberRepository) {
         this.loginMemberRepository = loginMemberRepository;
+    }
+
+    public List<LoginMemberResponse> findAll() {
+        return loginMemberRepository.findAll().stream()
+                .map(LoginMemberResponse::new)
+                .toList();
     }
 
     public void validateLogin(TokenRequest tokenRequest) {
