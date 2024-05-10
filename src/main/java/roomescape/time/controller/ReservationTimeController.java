@@ -17,60 +17,60 @@ import java.util.List;
 public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        final List<ReservationTime> reservationTimes = reservationTimeService.readAll();
+        List<ReservationTime> reservationTimes = reservationTimeService.readAll();
 
-        final List<ReservationTimeResponse> reservationTimeResponses = changeToReservationTimeResponses(reservationTimes);
+        List<ReservationTimeResponse> reservationTimeResponses = changeToReservationTimeResponses(reservationTimes);
 
         return ResponseEntity.ok(reservationTimeResponses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> save(@RequestBody final ReservationTimeRequest reservationTimeRequest) {
-        final ReservationTime reservationTime = reservationTimeService.create(reservationTimeRequest.toReservationTime());
+    public ResponseEntity<ReservationTimeResponse> save(@RequestBody ReservationTimeRequest reservationTimeRequest) {
+        ReservationTime reservationTime = reservationTimeService.create(reservationTimeRequest.toReservationTime());
 
-        final ReservationTimeResponse reservationTimeResponse = changeToReservationTimeResponse(reservationTime);
-        final String url = "/times/" + reservationTimeResponse.id();
+        ReservationTimeResponse reservationTimeResponse = changeToReservationTimeResponse(reservationTime);
+        String url = "/times/" + reservationTimeResponse.id();
 
         return ResponseEntity.created(URI.create(url)).body(reservationTimeResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         reservationTimeService.delete(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<ReservationTimeStatusResponse>> findAvailableTime(@RequestParam("date") final String date, @RequestParam("themeId") final long themeId) {
-        final List<ReservationTimeStatus> reservationTimeStatuses = reservationTimeService.findAvailableTime(date, themeId);
+    public ResponseEntity<List<ReservationTimeStatusResponse>> findAvailableTime(@RequestParam("date") String date, @RequestParam("themeId") long themeId) {
+        List<ReservationTimeStatus> reservationTimeStatuses = reservationTimeService.findAvailableTime(date, themeId);
 
-        final List<ReservationTimeStatusResponse> reservationTimeStatusResponses = changeToReservationTimeStatusResponses(reservationTimeStatuses);
+        List<ReservationTimeStatusResponse> reservationTimeStatusResponses = changeToReservationTimeStatusResponses(reservationTimeStatuses);
 
         return ResponseEntity.ok(reservationTimeStatusResponses);
     }
 
-    private ReservationTimeResponse changeToReservationTimeResponse(final ReservationTime reservationTime) {
+    private ReservationTimeResponse changeToReservationTimeResponse(ReservationTime reservationTime) {
         return new ReservationTimeResponse(reservationTime);
     }
 
-    private List<ReservationTimeResponse> changeToReservationTimeResponses(final List<ReservationTime> reservationTimes) {
+    private List<ReservationTimeResponse> changeToReservationTimeResponses(List<ReservationTime> reservationTimes) {
         return reservationTimes.stream()
                 .map(this::changeToReservationTimeResponse)
                 .toList();
     }
 
-    private ReservationTimeStatusResponse changeToReservationTimeStatusResponse(final ReservationTimeStatus reservationTimeStatus) {
+    private ReservationTimeStatusResponse changeToReservationTimeStatusResponse(ReservationTimeStatus reservationTimeStatus) {
         return new ReservationTimeStatusResponse(reservationTimeStatus);
     }
 
-    private List<ReservationTimeStatusResponse> changeToReservationTimeStatusResponses(final List<ReservationTimeStatus> reservationTimeStatuses) {
+    private List<ReservationTimeStatusResponse> changeToReservationTimeStatusResponses(List<ReservationTimeStatus> reservationTimeStatuses) {
         return reservationTimeStatuses.stream()
                 .map(this::changeToReservationTimeStatusResponse)
                 .toList();

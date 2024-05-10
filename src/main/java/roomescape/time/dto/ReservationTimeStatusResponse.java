@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 public record ReservationTimeStatusResponse(Long timeId, LocalTime startAt, Boolean alreadyBooked) {
 
-    public ReservationTimeStatusResponse(final ReservationTimeStatus reservationTimeStatus) {
+    public ReservationTimeStatusResponse(ReservationTimeStatus reservationTimeStatus) {
         this(reservationTimeStatus.id(), reservationTimeStatus.startAt(), reservationTimeStatus.alreadyBooked());
     }
 

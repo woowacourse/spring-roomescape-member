@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 public class ThemeService {
     private final ThemeRepository themeRepository;
 
-    public ThemeService(final ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
 
@@ -20,20 +20,20 @@ public class ThemeService {
         return themeRepository.readAll();
     }
 
-    public Theme create(final Theme theme) {
-        final long themeId = themeRepository.create(theme);
+    public Theme create(Theme theme) {
+        long themeId = themeRepository.create(theme);
 
         return themeRepository.read(themeId);
     }
 
-    public void delete(final long id) {
-        final int deleteCount = themeRepository.delete(id);
+    public void delete(long id) {
+        int deleteCount = themeRepository.delete(id);
 
         validateDeletionOccurred(deleteCount);
     }
 
     public List<Theme> findPopular() {
-        final LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now();
 
         return themeRepository.findPopular(today.minusWeeks(1).toString(), today.minusDays(1).toString());
     }

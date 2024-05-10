@@ -21,7 +21,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository, final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -34,26 +34,26 @@ public class ReservationService {
         return reservationRepository.readBySearchInfo(searchInfo);
     }
 
-    public Reservation create(final Reservation reservation) {
+    public Reservation create(Reservation reservation) {
         validateFutureReservation(reservation);
 
         boolean isExist = reservationRepository.checkExists(reservation);
         validateUniqueReservation(isExist);
 
-        final long reservationId = reservationRepository.create(reservation);
+        long reservationId = reservationRepository.create(reservation);
 
         return reservationRepository.readByReservationId(reservationId);
     }
 
-    public void delete(final long id) {
-        final Integer deleteCount = reservationRepository.delete(id);
+    public void delete(long id) {
+        Integer deleteCount = reservationRepository.delete(id);
 
         validateDeletionOccurred(deleteCount);
     }
 
     private void validateFutureReservation(Reservation reservation) {
-        final Long timeId = reservation.getTime().getId();
-        final ReservationTime reservationTime = reservationTimeRepository.find(timeId);
+        Long timeId = reservation.getTime().getId();
+        ReservationTime reservationTime = reservationTimeRepository.find(timeId);
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = currentDateTime.toLocalDate();
@@ -67,13 +67,13 @@ public class ReservationService {
         }
     }
 
-    private void validateUniqueReservation(final boolean isExist) {
+    private void validateUniqueReservation(boolean isExist) {
         if (isExist) {
             throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 있습니다.");
         }
     }
 
-    private void validateDeletionOccurred(final Integer deleteCount) {
+    private void validateDeletionOccurred(Integer deleteCount) {
         if (deleteCount.equals(0)) {
             throw new NoSuchElementException("해당하는 예약이 없습니다.");
         }

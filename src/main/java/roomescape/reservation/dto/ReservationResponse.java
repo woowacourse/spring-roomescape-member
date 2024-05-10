@@ -7,11 +7,11 @@ import roomescape.time.dto.ReservationTimeResponse;
 
 import java.time.LocalDate;
 
-public record ReservationResponse(long id, MemberResponse member, LocalDate date,
+public record ReservationResponse(Long id, MemberResponse member, LocalDate date,
                                   ReservationTimeResponse time,
                                   ThemeResponse theme) {
 
-    public ReservationResponse(final Reservation reservation) {
+    public ReservationResponse(Reservation reservation) {
         this(reservation.getId(),
                 new MemberResponse(reservation.getMember()),
                 reservation.getDate(),

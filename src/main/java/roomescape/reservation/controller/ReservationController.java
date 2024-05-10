@@ -17,15 +17,15 @@ import java.util.List;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
-        final List<Reservation> reservations = reservationService.readAll();
+        List<Reservation> reservations = reservationService.readAll();
 
-        final List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
+        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
 
         return ResponseEntity.ok(reservationResponses);
     }
@@ -34,33 +34,33 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> findBySearchInfo(@RequestBody SearchRequest searchRequest) {
         List<Reservation> reservations = reservationService.readBySearchInfo(searchRequest.toSearchInfo());
 
-        final List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
+        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
 
         return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> save(@RequestBody final ReservationRequest reservationRequest, Member member) {
-        final Reservation reservation = reservationService.create(reservationRequest.toReservation(member));
+    public ResponseEntity<ReservationResponse> save(@RequestBody ReservationRequest reservationRequest, Member member) {
+        Reservation reservation = reservationService.create(reservationRequest.toReservation(member));
 
-        final ReservationResponse reservationResponse = changeToReservationResponse(reservation);
-        final String url = "/reservations/" + reservationResponse.id();
+        ReservationResponse reservationResponse = changeToReservationResponse(reservation);
+        String url = "/reservations/" + reservationResponse.id();
 
         return ResponseEntity.created(URI.create(url)).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         reservationService.delete(id);
 
         return ResponseEntity.noContent().build();
     }
 
-    private ReservationResponse changeToReservationResponse(final Reservation reservation) {
+    private ReservationResponse changeToReservationResponse(Reservation reservation) {
         return new ReservationResponse(reservation);
     }
 
-    private List<ReservationResponse> changeToReservationResponses(final List<Reservation> reservations) {
+    private List<ReservationResponse> changeToReservationResponses(List<Reservation> reservations) {
         return reservations.stream()
                 .map(this::changeToReservationResponse)
                 .toList();

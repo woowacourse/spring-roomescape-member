@@ -29,7 +29,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
-    private ReservationResponse changeToReservationResponse(final Reservation reservation) {
+    private ReservationResponse changeToReservationResponse(Reservation reservation) {
         return new ReservationResponse(reservation);
     }
 }

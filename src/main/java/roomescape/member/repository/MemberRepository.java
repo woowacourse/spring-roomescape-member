@@ -24,7 +24,7 @@ public class MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public MemberRepository(JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public MemberRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("MEMBER")
@@ -32,29 +32,33 @@ public class MemberRepository {
     }
 
     public List<Member> readAll() {
-        final String sql = """
+        String sql = """
                 SELECT * FROM member""";
+
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Member read(long memberId) {
-        final String sql = """
+        String sql = """
                 SELECT * FROM member WHERE id = ?""";
+
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, memberId);
     }
 
     public Member read(String email) {
-        final String sql = """
+        String sql = """
                 SELECT * FROM member WHERE email = ?""";
+
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);
     }
 
     public Long create(Member member) {
-        final SqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
                 .addValue("role", member.getRole());
+        
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 }

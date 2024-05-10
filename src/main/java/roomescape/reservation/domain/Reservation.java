@@ -15,7 +15,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         validateDateExist(date);
         this.id = id;
         this.member = member;
@@ -32,7 +32,7 @@ public class Reservation {
         return date.equals(currentDate);
     }
 
-    private void validateDateExist(final LocalDate date) {
+    private void validateDateExist(LocalDate date) {
         if (Objects.isNull(date)) {
             throw new InvalidDateException("날짜가 비어있습니다.");
         }

@@ -27,7 +27,7 @@ public class ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationTimeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public ReservationTimeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION_TIME")
@@ -35,35 +35,40 @@ public class ReservationTimeRepository {
     }
 
     public List<ReservationTime> readAll() {
-        final String sql = """
+        String sql = """
                 SELECT * FROM reservation_time""";
+
         return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
-    public ReservationTime find(final long id) {
-        final String sql = """
+    public ReservationTime find(long id) {
+        String sql = """
                 SELECT * FROM reservation_time WHERE id = ?""";
+
         return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
     }
 
-    public long create(final ReservationTime reservationTime) {
-        final SqlParameterSource params = new MapSqlParameterSource()
+    public long create(ReservationTime reservationTime) {
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt().toString());
+
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public int delete(final long id) {
-        final String sql = """
+    public int delete(long id) {
+        String sql = """
                 DELETE FROM reservation_time WHERE id = ?""";
+
         return jdbcTemplate.update(sql, id);
     }
 
-    public List<ReservationTimeStatus> findAvailableTime(final String date, final long themeId) {
-        final String sql = """
+    public List<ReservationTimeStatus> findAvailableTime(String date, long themeId) {
+        String sql = """
                 SELECT t.id, t.start_at,\s
                 EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?)\s
                 AS already_booked\s
                 FROM reservation_time t""";
+        
         return jdbcTemplate.query(sql, USER_TIME_ROW_MAPPER, date, themeId);
     }
 }

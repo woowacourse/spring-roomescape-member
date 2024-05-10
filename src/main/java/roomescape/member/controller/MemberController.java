@@ -21,18 +21,18 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<List<MemberResponse>> findAll() {
-        final List<Member> members = memberService.readAll();
+        List<Member> members = memberService.readAll();
 
-        final List<MemberResponse> memberResponse = changeToMemberResponses(members);
+        List<MemberResponse> memberResponse = changeToMemberResponses(members);
 
         return ResponseEntity.ok(memberResponse);
     }
 
-    private MemberResponse changeToMemberResponse(final Member member) {
+    private MemberResponse changeToMemberResponse(Member member) {
         return new MemberResponse(member);
     }
 
-    private List<MemberResponse> changeToMemberResponses(final List<Member> members) {
+    private List<MemberResponse> changeToMemberResponses(List<Member> members) {
         return members.stream()
                 .map(this::changeToMemberResponse)
                 .toList();

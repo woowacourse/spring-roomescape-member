@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
@@ -20,19 +20,19 @@ public class ReservationTimeService {
         return reservationTimeRepository.readAll();
     }
 
-    public ReservationTime create(final ReservationTime reservationTime) {
-        final long timeId = reservationTimeRepository.create(reservationTime);
+    public ReservationTime create(ReservationTime reservationTime) {
+        long timeId = reservationTimeRepository.create(reservationTime);
 
         return reservationTimeRepository.find(timeId);
     }
 
-    public void delete(final long id) {
-        final int deleteCount = reservationTimeRepository.delete(id);
+    public void delete(long id) {
+        int deleteCount = reservationTimeRepository.delete(id);
 
         validateDeletionOccurred(deleteCount);
     }
 
-    public List<ReservationTimeStatus> findAvailableTime(final String date, final long themeId) {
+    public List<ReservationTimeStatus> findAvailableTime(String date, long themeId) {
         return reservationTimeRepository.findAvailableTime(date, themeId);
     }
 

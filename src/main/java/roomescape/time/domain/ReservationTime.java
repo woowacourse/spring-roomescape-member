@@ -9,13 +9,13 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(final Long id, final LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         validateTimeIsNotNull(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
-    private void validateTimeIsNotNull(final LocalTime time) {
+    private void validateTimeIsNotNull(LocalTime time) {
         if (Objects.isNull(time)) {
             throw new InvalidTimeException("시간이 비어있습니다.");
         }

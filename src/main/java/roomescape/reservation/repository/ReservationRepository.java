@@ -43,7 +43,7 @@ public class ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public ReservationRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION")
@@ -51,7 +51,7 @@ public class ReservationRepository {
     }
 
     public List<Reservation> readAll() {
-        final String sql = """
+        String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,\s
                 r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
                 FROM reservation r\s
@@ -62,8 +62,8 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation readByReservationId(final long reservationId) {
-        final String sql = """
+    public Reservation readByReservationId(long reservationId) {
+        String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,\s
                 r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
                 FROM reservation r\s
@@ -98,7 +98,7 @@ public class ReservationRepository {
             whereClause = " WHERE " + whereClause;
         }
 
-        final String sql = """
+        String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
                 r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
                 FROM reservation r
@@ -110,8 +110,8 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, params.toArray());
     }
 
-    public Long create(final Reservation reservation) {
-        final SqlParameterSource params = new MapSqlParameterSource()
+    public Long create(Reservation reservation) {
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getMember().getName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
@@ -121,15 +121,15 @@ public class ReservationRepository {
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public Integer delete(final long id) {
-        final String sql = """
+    public Integer delete(long id) {
+        String sql = """
                 DELETE FROM reservation WHERE id = ?""";
 
         return jdbcTemplate.update(sql, id);
     }
 
     public Boolean checkExists(Reservation reservation) {
-        final String sql = """
+        String sql = """
                 SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END\s
                 FROM reservation AS r\s
                 INNER JOIN reservation_time AS rt ON r.time_id = rt.id\s

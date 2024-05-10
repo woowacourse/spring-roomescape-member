@@ -6,9 +6,9 @@ import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalTime;
 
-public record ReservationTimeResponse(long id, LocalTime startAt) {
+public record ReservationTimeResponse(Long id, LocalTime startAt) {
 
-    public ReservationTimeResponse(final ReservationTime reservationTime) {
+    public ReservationTimeResponse(ReservationTime reservationTime) {
         this(reservationTime.getId(), reservationTime.getStartAt());
     }
 

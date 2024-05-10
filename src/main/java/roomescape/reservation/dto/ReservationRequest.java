@@ -8,7 +8,7 @@ import roomescape.time.domain.ReservationTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record ReservationRequest(LocalDate date, long timeId, long themeId) {
+public record ReservationRequest(LocalDate date, Long timeId, Long themeId) {
 
     public Reservation toReservation(Member member) {
         return new Reservation(null, member, date,
