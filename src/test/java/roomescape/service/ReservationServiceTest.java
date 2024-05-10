@@ -14,6 +14,7 @@ import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.repository.H2MemberRepository;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
@@ -38,7 +39,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-@Import({ReservationService.class, H2ReservationRepository.class, H2ReservationTimeRepository.class, H2ThemeRepository.class})
+@Import({ReservationService.class,
+        H2ReservationRepository.class,
+        H2ReservationTimeRepository.class,
+        H2ThemeRepository.class,
+        H2MemberRepository.class})
 class ReservationServiceTest {
 
     final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);

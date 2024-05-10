@@ -12,6 +12,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.repository.H2MemberRepository;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
@@ -34,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         TimeService.class,
         H2ReservationRepository.class,
         H2ReservationTimeRepository.class,
-        H2ThemeRepository.class
-})
+        H2ThemeRepository.class,
+        H2MemberRepository.class})
 @JdbcTest
 class TimeServiceTest {
 

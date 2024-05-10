@@ -16,6 +16,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.repository.H2MemberRepository;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
@@ -42,8 +43,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         ThemeService.class,
         H2ReservationRepository.class,
         H2ReservationTimeRepository.class,
-        H2ThemeRepository.class
-})
+        H2ThemeRepository.class,
+        H2MemberRepository.class})
 class ThemeServiceTest {
 
     final List<CreateThemeRequest> sampleThemes = IntStream.range(1, 9)
@@ -146,7 +147,9 @@ class ThemeServiceTest {
     void getPopularThemes(final int days, final int limit) {
         // given
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
-        final Member member = new Member(null, "User", "a@b.c", "pw", Role.USER);
+        final Member member = memberRepository.save(
+                new Member(null, "User", "a@b.c", "pw", Role.USER)
+        );
         final List<ThemeResponse> themes = sampleThemes.stream()
                 .map(themeService::addTheme)
                 .toList();
