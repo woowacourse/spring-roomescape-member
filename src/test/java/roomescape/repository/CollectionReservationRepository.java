@@ -48,6 +48,17 @@ public class CollectionReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Reservations searchBy(Long themeId, Long memberId, LocalDate dateFrom,
+                                 LocalDate dateTo) {
+        List<Reservation> findReservations = reservations.stream()
+                .filter(reservation -> themeId != null && reservation.isThemeOf(themeId))
+                .filter(reservation -> memberId != null && reservation.getMember().getId() == memberId)
+                .filter(reservation -> reservation.isBetween(new Duration(dateFrom, dateTo)))
+                .toList();
+        return new Reservations(findReservations);
+    }
+
+    @Override
     public Themes findAndOrderByPopularity(Duration duration, int count) {
         Map<Theme, Long> collect = reservations.stream()
                 .filter(reservation -> reservation.isBetween(duration))

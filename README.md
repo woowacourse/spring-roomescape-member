@@ -27,7 +27,7 @@
   - [x] 로그인 기능 추가
   - [x] 로그아웃 기능 추가
   - [x] 인증 정보 확인 기능 추가
-- [ ] 테마 검색 기능 추가
+- [x] 테마 검색 기능 추가
 
 # API 명세
 
@@ -36,6 +36,38 @@
 ### Request
 
 > GET /reservations HTTP/1.1
+
+### Response
+
+> HTTP/1.1 200
+>
+> Content-Type: application/json
+
+``` JSON 
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2023-08-05",
+        "time": {
+            "id": 1,
+            "startAt": "10:00"
+        }
+        "theme" : {
+            "id": 1,
+            "name": "이름",
+            "description": "설명",
+            "thumbnail": "썸네일"
+        }
+    }
+]
+```
+
+## 예약 검색 API
+
+### Request
+
+> GET /reservations/search?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo} HTTP/1.1
 
 ### Response
 

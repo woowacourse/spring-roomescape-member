@@ -14,6 +14,8 @@ public interface ReservationRepository {
 
     Reservations findByThemeAndDate(Theme theme, LocalDate date);
 
+    Reservations searchBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
+
     Themes findAndOrderByPopularity(Duration duration, int count);
 
     boolean existByTimeId(long timeId);

@@ -110,6 +110,33 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
+    public Reservations searchBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String searchQuery = FIND_RESERVATION_QUERY + " WHERE ";
+        boolean hasQuery = false;
+        if (themeId != null) {
+            searchQuery += "T2.id = " + themeId + " ";
+            hasQuery = true;
+        }
+        if (memberId != null) {
+            if (hasQuery) {
+                searchQuery += "AND ";
+            }
+            searchQuery += "M.id = " + memberId + " ";
+        }
+        if (hasQuery) {
+            searchQuery += "AND ";
+        }
+        String finalSearchQuery = searchQuery;
+        List<Reservation> findReservations = jdbcTemplate.query(
+                finalSearchQuery + "R.date >= ? AND R.date <= ?",
+                RESERVATION_ROW_MAPPER,
+                dateFrom, dateTo
+        );
+
+        return new Reservations(findReservations);
+    }
+
+    @Override
     public Themes findAndOrderByPopularity(Duration duration, int count) {
         List<Theme> findThemes = jdbcTemplate.query(
                 """
