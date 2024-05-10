@@ -14,6 +14,8 @@ import roomescape.dto.TokenResponse;
 import roomescape.exception.AuthenticationException;
 import roomescape.service.AuthService;
 
+import java.util.Optional;
+
 @RestController
 public class LoginController {
 
@@ -36,17 +38,21 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(final HttpServletRequest request) {
-        final String token = extractTokenFromRequestCookie(request);
+        final String token = extractTokenFromRequestCookie(request)
+                .orElseThrow(() -> new AuthenticationException("토큰 정보가 존재하지 않습니다."));
         final MemberResponse memberResponse = authService.findMemberByToken(token);
         return ResponseEntity.ok(memberResponse);
     }
 
-    private String extractTokenFromRequestCookie(final HttpServletRequest request) {
+    private Optional<String> extractTokenFromRequestCookie(final HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return Optional.empty();
+        }
         for (Cookie cookie : request.getCookies()) {
             if (TOKEN_FIELD.equals(cookie.getName())) {
-                return cookie.getValue();
+                return Optional.of(cookie.getValue());
             }
         }
-        throw new AuthenticationException("토큰 정보가 존재하지 않습니다.");
+        return Optional.empty();
     }
 }
