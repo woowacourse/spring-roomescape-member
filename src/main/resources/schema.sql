@@ -54,12 +54,12 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('브리', '드라마', 
 INSERT INTO theme (name, description, thumbnail) VALUES ('솔라', '공포', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('왼손', '판타지', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('김철수', '2030-08-05', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('김영희', '2024-05-10', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('박영수', '2024-05-10', 4, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2024-05-10', 4, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('이정수', '2024-05-10', 3, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최은희', '2024-05-10', 1, 3);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('김철수', '2024-05-09', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('김영희', '2024-05-07', 2, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('박영수', '2024-05-08', 4, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2024-05-09', 4, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('이정수', '2024-05-09', 3, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('최은희', '2024-05-09', 1, 3);
 
 INSERT INTO users (name, email, password) VALUES ('썬', 'sun@email.com', '1234');
 INSERT INTO users (name, email, password) VALUES ('배키', 'dmsgml@email.com', '1111');
