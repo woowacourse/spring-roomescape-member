@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthorizationException;
-import roomescape.model.Member;
 import roomescape.service.AuthService;
+import roomescape.service.dto.MemberInfo;
 
 import java.util.Arrays;
 
@@ -23,15 +23,21 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // TODO: refactoring code
-        if (request.getServletPath().startsWith("/admin")) {
-            Cookie token = Arrays.stream(request.getCookies())
-                    .filter(cookie -> cookie.getName().equals("token"))
-                    .findFirst()
-                    .orElseThrow(AuthorizationException::new);
-            Member loginMember = authService.checkToken(token.getValue());
-            if (loginMember.isNotAdmin()) {
-                throw new AuthorizationException();
-            }
+        if (!request.getServletPath().startsWith("/admin")) {
+            return true;
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new AuthorizationException();
+        }
+        Cookie token = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .filter(cookie -> !cookie.getValue().isBlank())
+                .findFirst()
+                .orElseThrow(AuthorizationException::new);
+        MemberInfo loginMember = authService.checkToken(token.getValue());
+        if (loginMember.isNotAdmin()) {
+            throw new AuthorizationException();
         }
         return true;
     }

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.config;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -7,8 +7,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.model.LoginMember;
-import roomescape.model.Member;
 import roomescape.service.AuthService;
+import roomescape.service.dto.MemberInfo;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -26,9 +26,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        // TODO: 쿠키가 없는 경우?
         String cookie = webRequest.getHeader("cookie");
         String token = cookie.substring(6);
-        Member loginMember = authService.checkToken(token);
+        MemberInfo loginMember = authService.checkToken(token);
         return new LoginMember(loginMember.getId(), loginMember.getName(), loginMember.getEmail());
     } // TODO: check
 }

@@ -1,7 +1,5 @@
 package roomescape.controller;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import roomescape.model.Member;
-import roomescape.model.Role;
+import roomescape.service.AuthService;
+import roomescape.service.dto.AuthDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,14 +17,14 @@ import java.util.Map;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AdminPageControllerTest {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-
     private final JdbcTemplate jdbcTemplate;
+    private final AuthService authService;
     private final SimpleJdbcInsert memberInsertActor;
 
     @Autowired
-    public AdminPageControllerTest(JdbcTemplate jdbcTemplate) {
+    public AdminPageControllerTest(JdbcTemplate jdbcTemplate, AuthService authService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.authService = authService;
         this.memberInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
@@ -36,7 +34,7 @@ public class AdminPageControllerTest {
     void setUp() {
         initDatabase();
         insertMember("에버", "treeboss@gmail.com", "treeboss123!", "USER");
-        insertMember("우테코", "wtc@gmail.com", "wtc123!", "ADMIN");
+        insertMember("관리자", "admin@gmail.com", "admin123!", "ADMIN");
     }
 
     private void initDatabase() {
@@ -56,12 +54,8 @@ public class AdminPageControllerTest {
     @DisplayName("관리자가 어드민 페이지에 접속할 경우 예외를 반환하지 않는다.")
     @Test
     void should_throw_exception_when_admin_contact() {
-        Member member = new Member(2L, "우테코", "wtc@gmail.com", "wtc123!", Role.ADMIN);
-        String token = Jwts.builder()
-                .subject(String.valueOf(member.getId()))
-                .claim("name", member.getName())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .compact();
+        AuthDto authDto = new AuthDto("admin@gmail.com");
+        String token = authService.createToken(authDto);
         RestAssured
                 .given().log().all()
                 .cookie("token", token)
@@ -73,12 +67,8 @@ public class AdminPageControllerTest {
     @DisplayName("일반 유저가 어드민 페이지에 접속할 경우 예외를 반환한다.")
     @Test
     void should_not_throw_exception_when_user_contact() {
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
-        String token = Jwts.builder()
-                .subject(String.valueOf(member.getId()))
-                .claim("name", member.getName())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .compact();
+        AuthDto authDto = new AuthDto("treeboss@gmail.com");
+        String token = authService.createToken(authDto);
         RestAssured
                 .given().log().all()
                 .cookie("token", token)

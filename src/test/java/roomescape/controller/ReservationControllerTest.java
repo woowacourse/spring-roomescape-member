@@ -1,7 +1,5 @@
 package roomescape.controller;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +12,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.controller.response.ReservationResponse;
-import roomescape.model.Member;
-import roomescape.model.Role;
+import roomescape.service.AuthService;
+import roomescape.service.dto.AuthDto;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -32,14 +30,16 @@ class ReservationControllerTest {
     private static final int INITIAL_RESERVATION_COUNT = 15;
 
     private final JdbcTemplate jdbcTemplate;
+    private final AuthService authService;
     private final SimpleJdbcInsert themeInsertActor;
     private final SimpleJdbcInsert timeInsertActor;
     private final SimpleJdbcInsert memberInsertActor;
     private final SimpleJdbcInsert reservationInsertActor;
 
     @Autowired
-    public ReservationControllerTest(JdbcTemplate jdbcTemplate) {
+    public ReservationControllerTest(JdbcTemplate jdbcTemplate, AuthService authService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.authService = authService;
         this.themeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
@@ -124,13 +124,8 @@ class ReservationControllerTest {
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void should_insert_reservation() {
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
-        String token = Jwts.builder()
-                .subject(String.valueOf(member.getId()))
-                .claim("name", member.getName())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+        AuthDto authDto = new AuthDto("treeboss@gmail.com");
+        String token = authService.createToken(authDto);
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
 
         RestAssured.given().log().all()

@@ -1,21 +1,25 @@
-package roomescape.model;
+package roomescape.service.dto;
+
+import roomescape.model.Role;
 
 import java.util.Objects;
 
-public class Member {
+public class MemberInfo {
 
     private final long id;
     private final String name;
     private final String email;
-    private final String password;
     private final Role role;
 
-    public Member(long id, String name, String email, String password, Role role) {
+    public MemberInfo(long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
         this.role = role;
+    }
+
+    public boolean isNotAdmin() {
+        return role.isNotAdmin();
     }
 
     public long getId() {
@@ -30,10 +34,6 @@ public class Member {
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -42,12 +42,12 @@ public class Member {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Member member = (Member) o;
-        return id == member.id && Objects.equals(name, member.name) && Objects.equals(email, member.email) && Objects.equals(password, member.password) && Objects.equals(role, member.role);
+        MemberInfo that = (MemberInfo) o;
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(email, that.email) && role == that.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password, role);
+        return Objects.hash(id, name, email, role);
     }
 }

@@ -1,14 +1,16 @@
 package roomescape.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.model.Member;
+import roomescape.model.Role;
 import roomescape.repository.MemberRepository;
 import roomescape.service.dto.AuthDto;
+import roomescape.service.dto.MemberInfo;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -27,18 +29,22 @@ public class AuthService {
         return Jwts.builder()
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
+                .claim("email", member.getEmail())
+                .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
 
-    public Member checkToken(String token) {
-        long memberId = Long.parseLong(Jwts.parser()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+    public MemberInfo checkToken(String token) { // TODO: 비밀번호 체크
+        Claims claims = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
-                .parseClaimsJws(token)
-                .getPayload()
-                .getSubject());
-        Optional<Member> member = memberRepository.findMemberById(memberId);
-        return member.orElseThrow(() -> new NoSuchElementException("[ERROR] 토큰에 해당하는 사용자가 없습니다."));
+                .parseSignedClaims(token)
+                .getPayload();
+        long memberId = Long.parseLong(claims.getSubject());
+        String memberName = claims.get("name").toString();
+        String memberEmail = claims.get("email").toString();
+        Role memberRole = Role.asRole(claims.get("role").toString());
+        return new MemberInfo(memberId, memberName, memberEmail, memberRole);
     }
 }
