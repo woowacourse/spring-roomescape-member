@@ -3,6 +3,7 @@ package roomescape.config;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Role;
@@ -21,15 +22,14 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         this.authorizationExtractor = new AuthorizationExtractor();
     }
 
-        @Override
+    @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
         final Cookie[] cookies = request.getCookies();
         final String accessToken = authorizationExtractor.extractTokenFromCookie(cookies);
         final MemberLoginResponse memberLoginResponse = memberService.findMemberByToken(accessToken);
 
         if (!memberLoginResponse.role().equals(Role.ADMIN)) {
-            response.setStatus(403);
-
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             return false;
         }
         return true;
