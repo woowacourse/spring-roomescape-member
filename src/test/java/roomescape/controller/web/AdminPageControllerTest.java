@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.BaseControllerTest;
 import roomescape.controller.exception.ErrorResponse;
 
-@Sql("/integration-data.sql")
+@Sql("/member.sql")
 class AdminPageControllerTest extends BaseControllerTest {
 
     @ParameterizedTest(name = "{0} 페이지를 조회한다.")

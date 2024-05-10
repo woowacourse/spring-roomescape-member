@@ -22,7 +22,7 @@ class AuthControllerTest extends BaseControllerTest {
 
     @TestFactory
     @DisplayName("로그인, 로그인 상태 확인, 로그아웃을 한다.")
-    @Sql("/integration-data.sql")
+    @Sql("/member.sql")
     Stream<DynamicTest> authControllerTests() {
         return Stream.of(
                 DynamicTest.dynamicTest("로그인한다.", this::login),

@@ -1,13 +1,18 @@
 package roomescape.controller.api;
 
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import roomescape.controller.BaseControllerTest;
 import roomescape.domain.member.Role;
@@ -16,8 +21,15 @@ import roomescape.dto.response.MemberResponse;
 
 class MemberControllerTest extends BaseControllerTest {
 
-    @Test
-    @DisplayName("회원가입을 한다.")
+    @TestFactory
+    @DisplayName("회원 가입, 회원 조회를 한다.")
+    Stream<DynamicTest> memberControllerTests() {
+        return Stream.of(
+                dynamicTest("회원 가입을 한다.", this::signup),
+                dynamicTest("모든 회원을 조회한다.", this::getAllMembers)
+        );
+    }
+
     void signup() {
         SignupRequest request = new SignupRequest("new@gmail.com", "password", "new");
 
@@ -53,7 +65,7 @@ class MemberControllerTest extends BaseControllerTest {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             softly.assertThat(memberResponses).hasSize(1);
             softly.assertThat(memberResponses.get(0))
-                    .isSameAs(new MemberResponse(1L, "new@gmail.com", "new", Role.USER));
+                    .isEqualTo(new MemberResponse(1L, "new@gmail.com", "new", Role.USER));
         });
     }
 }
