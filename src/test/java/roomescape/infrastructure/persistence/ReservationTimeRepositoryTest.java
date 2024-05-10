@@ -13,12 +13,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.service.response.AvailableReservationTimeResponse;
 import roomescape.support.IntegrationTestSupport;
 
-/*
- * 테스트 데이터베이스 시간 초기 데이터
- * {ID=1, START_AT=10:00}
- * {ID=2, START_AT=11:00}
- * {ID=3, START_AT=13:00}
- */
 class ReservationTimeRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
@@ -106,12 +100,6 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
         assertThat(result).isFalse();
     }
 
-    /*
-     * 테스트 데이터베이스 예약 초기 데이터
-     * {ID=1, NAME=브라운, DATE=2023-05-04, TIME={ID=1, START_AT="10:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     * {ID=2, NAME=엘라, DATE=2023-05-04, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     */
     @Test
     @DisplayName("주어진 날짜와 테마에 대한 사용 가능 시간을 조회할 수 있다.")
     void findAvailableTimes() {

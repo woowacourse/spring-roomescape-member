@@ -12,12 +12,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.service.request.ReservationTimeRequest;
 import roomescape.support.IntegrationTestSupport;
 
-/*
- * 테스트 데이터베이스 시간 초기 데이터
- * {ID=1, START_AT=10:00}
- * {ID=2, START_AT=11:00}
- * {ID=3, START_AT=13:00}
- */
 class ReservationTimeControllerTest extends IntegrationTestSupport {
 
     @Test
@@ -30,12 +24,6 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                 .body("size()", is(3));
     }
 
-    /*
-     * 테스트 데이터베이스 예약 초기 데이터
-     * {ID=1, NAME=브라운, DATE=2023-05-04, TIME={ID=1, START_AT="10:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     * {ID=2, NAME=엘라, DATE=2023-05-04, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     */
     @Test
     @DisplayName("예약 가능 시간 목록을 조회한다.")
     void availableTimes() {

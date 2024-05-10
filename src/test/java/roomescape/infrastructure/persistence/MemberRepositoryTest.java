@@ -10,10 +10,6 @@ import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.support.IntegrationTestSupport;
 
-/*
- * 테스트 데이터베이스 멤버 초기 데이터
- * {ID=1, NAME="어드민", EMAIL="admin@test.com"}
- */
 class MemberRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
@@ -33,9 +29,17 @@ class MemberRepositoryTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("이메일로 사용자를 조회할 수 있다.")
-    void notFound() {
-        Optional<Member> findMember = target.findByEmail("admin@test.com");
+    @DisplayName("존재하지 않는 이메일로 사용자를 조회한다.")
+    void notFoundByEmail() {
+        Optional<Member> findMember = target.findByEmail("unknown@email.com");
+
+        assertThat(findMember).isEmpty();
+    }
+
+    @Test
+    @DisplayName("특정 멤버 id의 데이터를 조회한다.")
+    void findById() {
+        Optional<Member> findMember = target.findById(1L);
 
         assertThat(findMember)
                 .map(Member::getName)
@@ -43,5 +47,13 @@ class MemberRepositoryTest extends IntegrationTestSupport {
                 .isNotEmpty()
                 .get()
                 .isEqualTo("어드민");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 멤버 id로 데이터를 조회한다.")
+    void notFoundById() {
+        Optional<Member> findMember = target.findById(3L);
+
+        assertThat(findMember).isEmpty();
     }
 }

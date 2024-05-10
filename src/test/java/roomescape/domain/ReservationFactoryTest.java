@@ -29,12 +29,12 @@ class ReservationFactoryTest {
     @DisplayName("신규 예약을 생성할 수 있다.")
     void reserve() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
-        String name = "아톰";
         String date = "2024-05-02";
+        Member member = new Member(new Name("아톰"), "email", "password");
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
-        assertThatCode(() -> reservationFactory.create(name, date, time, theme))
+        assertThatCode(() -> reservationFactory.create(date, member, time, theme))
                 .doesNotThrowAnyException();
     }
 
@@ -42,12 +42,12 @@ class ReservationFactoryTest {
     @DisplayName("예약 날짜가 과거라면 신규 예약을 생성할 수 없다.")
     void previousDate() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
-        String name = "아톰";
         String previousDate = "2024-04-30";
+        Member member = new Member(new Name("아톰"), "email", "password");
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
-        assertThatThrownBy(() -> reservationFactory.create(name, previousDate, time, theme))
+        assertThatThrownBy(() -> reservationFactory.create(previousDate, member, time, theme))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("이미 지나간 시간에 대한 예약을 할 수 없습니다.");
     }
@@ -56,12 +56,12 @@ class ReservationFactoryTest {
     @DisplayName("같은 날짜이지만, 예약 시간이 현재 시간보다 이전인 경우, 예약을 생성할 수 없다.")
     void previousTime() {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
-        String name = "아톰";
         String todayDate = "2024-05-01";
+        Member member = new Member(new Name("아톰"), "email", "password");
         ReservationTime previousTime = new ReservationTime(LocalTime.parse("00:29"));
         Theme theme = new Theme("name", "description", "thumbnail");
 
-        assertThatThrownBy(() -> reservationFactory.create(name, todayDate, previousTime, theme))
+        assertThatThrownBy(() -> reservationFactory.create(todayDate, member, previousTime, theme))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("이미 지나간 시간에 대한 예약을 할 수 없습니다.");
     }

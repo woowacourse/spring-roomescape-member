@@ -3,10 +3,12 @@ package roomescape.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationFactory;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.infrastructure.persistence.ReservationRepository;
 import roomescape.infrastructure.persistence.ReservationTimeRepository;
 import roomescape.infrastructure.persistence.ThemeRepository;
@@ -19,22 +21,25 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
     private final ReservationFactory reservationFactory;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
             ThemeRepository themeRepository,
+            MemberRepository memberRepository,
             ReservationFactory reservationFactory
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
         this.reservationFactory = reservationFactory;
     }
 
-    public ReservationResponse createReservation(ReservationRequest request) {
-        Reservation reservation = toDomain(request);
+    public ReservationResponse createReservation(ReservationRequest request, Long memberId) {
+        Reservation reservation = toDomain(request, memberId);
         if (reservationRepository.hasDuplicateReservation(reservation)) {
             throw new IllegalStateException("중복된 예약이 존재합니다.");
         }
@@ -43,13 +48,18 @@ public class ReservationService {
         return ReservationResponse.from(createdReservation);
     }
 
-    private Reservation toDomain(ReservationRequest request) {
+    private Reservation toDomain(ReservationRequest request, Long memberId) {
         return reservationFactory.create(
-                request.name(),
                 request.date(),
+                getMember(memberId),
                 getReservationTime(request.timeId()),
                 getTheme(request.themeId())
         );
+    }
+
+    private Member getMember(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당되는 사용자가 없습니다."));
     }
 
     private ReservationTime getReservationTime(Long id) {

@@ -13,11 +13,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.request.ThemeRequest;
 import roomescape.support.IntegrationTestSupport;
 
-/*
- * 테스트 데이터베이스 테마 초기 데이터
- * {ID=1, NAME="레벨1 탈출"}
- * {ID=2, NAME="레벨2 탈출"}
- */
 class ThemeControllerTest extends IntegrationTestSupport {
 
     @Test

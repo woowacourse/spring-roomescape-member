@@ -34,6 +34,23 @@ public class MemberRepository {
         }
     }
 
+    public Optional<Member> findById(Long id) {
+        String sql = """
+                SELECT 
+                    id,
+                    name,
+                    email,
+                    password
+                FROM member
+                WHERE id = ?
+                """;
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     private RowMapper<Member> memberRowMapper() {
         return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
