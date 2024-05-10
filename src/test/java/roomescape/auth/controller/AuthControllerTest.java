@@ -129,7 +129,7 @@ class AuthControllerTest {
                 .cookie("invalid-cookie", "그냥 좀 해주면 안되요?ㅋ")
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(401)
                 .body("message", is("요청에 인증 쿠키가 존재하지 않습니다."));
     }
 
@@ -140,7 +140,36 @@ class AuthControllerTest {
         RestAssured.given().log().all()
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(401)
                 .body("message", is("요청에 인증 쿠키가 존재하지 않습니다."));
+    }
+
+    @DisplayName("유효하지 않은 값의 인증 토큰으로 요청하면 에러 코드가 반환된다.")
+    @Test
+    void loginCheckWithInvalidTokenTest() {
+        // When & Then
+        RestAssured.given().log().all()
+                .cookie("token", "invalid-token")
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(401)
+                .body("message", is("유효하지 않은 인증 토큰입니다."));
+    }
+
+    @DisplayName("만료된 인증 토큰으로 요청하면 에러 코드가 반환된다.")
+    @Test
+    void loginCheckWithExpiredTokenTest() {
+        // Given
+        final String expiredToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0I" +
+                "joxNzE1MzY1ODI2LCJleHAiOjE3MTUzNjU4MjYsInJvbGUiOiJVU0VSIn0." +
+                "mLgs2dqD9oCOUtleHtpcmf4tTw39bC9pmqFaUBPQZy9ADPsgRXEu3qhLS8qqs3UiV6MPmP_03FaZHX8UrieK4A";
+
+        // When & Then
+        RestAssured.given().log().all()
+                .cookie("token", expiredToken)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(401)
+                .body("message", is("만료된 인증 토큰입니다."));
     }
 }

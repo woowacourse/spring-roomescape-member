@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
 @RestControllerAdvice
@@ -28,6 +29,13 @@ public class CustomExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleNoSuchElementException(final NoSuchElementException e) {
         log.error(e.getMessage());
         return ResponseEntity.status(BAD_REQUEST)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<ErrorResponse> handleAccessUnauthorizedException(final UnauthorizedException e) {
+        log.error(e.getMessage());
+        return ResponseEntity.status(UNAUTHORIZED)
                 .body(new ErrorResponse(e.getMessage()));
     }
 
@@ -51,6 +59,4 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("예기치 못한 에러가 발생하였습니다."));
     }
-
-    // TODO : JWT 관련 예외 핸들링 추가
 }
