@@ -55,10 +55,6 @@ public class Reservation {
         return member.getId();
     }
 
-    public String getMemberName() {
-        return member.getName();
-    }
-
     public LocalDate getDate() {
         return date;
     }

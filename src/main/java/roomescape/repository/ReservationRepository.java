@@ -72,34 +72,6 @@ public class ReservationRepository {
         );
     }
 
-    public List<Reservation> findAll() {
-        final String selectQuery = """
-            SELECT
-                r.id as reservation_id,
-                r.date,
-                rt.id as time_id,
-                rt.start_at,
-                t.id as theme_id,
-                t.name as theme_name,
-                t.description,
-                t.thumbnail,
-                m.id as member_id,
-                m.name as member_name,
-                m.role,
-                m.email
-            FROM reservation as r
-            INNER JOIN reservation_time as rt
-            ON r.time_id = rt.id
-            INNER JOIN theme as t
-            ON r.theme_id = t.id
-            INNER JOIN member as m 
-            ON r.member_id = m.id
-        """;
-        return jdbcTemplate.query(selectQuery, ROW_MAPPER)
-                .stream()
-                .toList();
-    }
-
     public List<Reservation> findByFilter(final ReservationFilterRequest filterRequest) {
         final List<Object> filters = new ArrayList<>();
         final StringBuilder selectQuery = new StringBuilder("""
