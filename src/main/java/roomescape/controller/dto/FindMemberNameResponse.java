@@ -1,3 +1,3 @@
 package roomescape.controller.dto;
 
-public record FindMemberNameResponse(String name) { }
+public record FindMemberNameResponse(Long id, String name) { }
