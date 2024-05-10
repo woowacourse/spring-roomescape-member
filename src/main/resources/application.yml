@@ -8,4 +8,4 @@ spring:
     username: sa
 
 jwt:
-  secret: 1dskfjweoijgkldsjfjoifejerg
+  secret: "rkGU45258GGhiolLO2465TFY5345kGU45258GGhiolLO2465TFY5345"
