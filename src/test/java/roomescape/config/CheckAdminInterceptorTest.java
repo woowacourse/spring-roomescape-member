@@ -21,6 +21,12 @@ import roomescape.service.MemberService;
 @ExtendWith(MockitoExtension.class)
 class CheckAdminInterceptorTest {
 
+    @Mock
+    private MemberService memberService;
+
+    @Mock
+    private AuthService authService;
+
     @Test
     @DisplayName("URI가 admin으로 시작하는데 회원 역할이 관리자이면 true와 200ok를 반환한다.")
     void preHandle() {
@@ -46,14 +52,8 @@ class CheckAdminInterceptorTest {
         );
     }
 
-    @Mock
-    private MemberService memberService;
-
-    @Mock
-    private AuthService authService;
-
     @Test
-    @DisplayName("쿠키가 없는 경우  false와 401을 반환한다.")
+    @DisplayName("쿠키가 없는 경우 false와 401을 반환한다.")
     void preHandleWhenCookiesNull() {
         //given
         CheckAdminInterceptor checkAdminInterceptor = new CheckAdminInterceptor(memberService, authService);
@@ -61,7 +61,7 @@ class CheckAdminInterceptorTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         //when
-        boolean actual = checkAdminInterceptor.preHandle(request, response, any());
+        boolean actual = checkAdminInterceptor.preHandle(request, response, new Object());
         int status = response.getStatus();
 
         //then
@@ -82,7 +82,7 @@ class CheckAdminInterceptorTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         //when
-        boolean actual = checkAdminInterceptor.preHandle(request, response, any());
+        boolean actual = checkAdminInterceptor.preHandle(request, response, new Object());
         int status = response.getStatus();
 
         //then
@@ -107,7 +107,7 @@ class CheckAdminInterceptorTest {
         given(memberService.findAuthInfo(payload)).willReturn(MemberFixtures.createUserMember("daon", payload));
 
         //when
-        boolean actual = checkAdminInterceptor.preHandle(request, response, any());
+        boolean actual = checkAdminInterceptor.preHandle(request, response, new Object());
         int status = response.getStatus();
 
         //then
