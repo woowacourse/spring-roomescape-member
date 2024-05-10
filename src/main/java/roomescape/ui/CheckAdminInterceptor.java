@@ -9,8 +9,6 @@ import roomescape.infrastructure.JwtTokenProvider;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
-    private static final String ADMIN = "ADMIN";
-
     private final JwtTokenProvider jwtTokenProvider;
 
     public CheckAdminInterceptor(JwtTokenProvider jwtTokenProvider) {
@@ -20,12 +18,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
-        String role = jwtTokenProvider.getRoleByCookie(cookies);
-        if (role == null || !role.equals(ADMIN)) {
-            response.setStatus(401);
-            return false;
-        }
-
-        return true;
+        return jwtTokenProvider.checkRoleByCookie(cookies, response);
     }
 }
