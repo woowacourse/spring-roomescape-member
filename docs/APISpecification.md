@@ -474,3 +474,30 @@ Transfer-Encoding: chunked
     "name": "어드민"
 }
 ```
+
+### 회원 목록 조회
+
+#### Request
+
+```http request
+GET /members HTTP/1.1
+host: localhost:8080
+```
+
+#### Response
+
+```http request
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+[
+    {
+        "id": "1",
+        "name": "어드민"
+    }
+]
+```

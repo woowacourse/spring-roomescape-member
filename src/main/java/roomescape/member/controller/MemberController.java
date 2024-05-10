@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.dto.response.FindMembersResponse;
 
-@RestController // TODO: API 명세
+@RestController
 @RequestMapping("/members")
 public class MemberController {
 
