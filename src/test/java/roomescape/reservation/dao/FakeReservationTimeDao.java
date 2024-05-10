@@ -62,8 +62,8 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
         Set<ReservationTime> reservedTimes = new HashSet<>();
 
         reservationRepository.findAll().stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId() == themeId)
-                .forEach(reservation -> reservedTimes.add(reservationTimes.get(reservation.getTime().getId())));
+                .filter(reservation -> reservation.date().equals(date) && reservation.theme().getId() == themeId)
+                .forEach(reservation -> reservedTimes.add(reservationTimes.get(reservation.time().getId())));
 
         return reservedTimes;
     }

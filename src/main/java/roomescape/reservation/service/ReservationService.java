@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
@@ -35,12 +36,13 @@ public class ReservationService {
 
     public List<ReservationResponse> findAllReservations() {
         return reservationRepository.findAll().stream()
-                .map(reservation ->
-                        ReservationResponse.from(
-                        reservation,
-                        memberRepository.findById(
-                                reservationRepository.findMemberIdByReservationId(reservation.getId()))
-                        ))
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findReservationsBy(Long themeId, Long memberId, Date dateFrom, Date dateTo) {
+        return reservationRepository.findBy(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
                 .toList();
     }
 
@@ -79,7 +81,7 @@ public class ReservationService {
                 new Reservation(date, reservationTime, theme));
         reservationRepository.saveReservationList(memberId, reservation.getId());
         Member member = memberRepository.findById(memberId);
-        return ReservationResponse.from(reservation, member);
+        return ReservationResponse.of(reservation, member);
     }
 
     private void validateTimeExist(ReservationTime reservationTime, long timeId) {

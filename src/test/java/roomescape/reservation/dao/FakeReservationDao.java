@@ -1,24 +1,29 @@
 package roomescape.reservation.dao;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.CompletedReservation;
+import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservation.domain.repository.ReservationTimeRepository;
-import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationTimeResponse;
+import roomescape.reservation.dto.ThemeResponse;
 
 public class FakeReservationDao implements ReservationRepository {
     private final Map<Long, Reservation> reservations = new HashMap<>();
     private final Map<Long, Long> reservationList = new HashMap<>();
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
-    public FakeReservationDao(ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+    public FakeReservationDao(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
+
 
     @Override
     public Reservation save(final Reservation reservation) {
@@ -34,10 +39,19 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        return reservations.values()
-                .stream()
+    public List<CompletedReservation> findAll() {
+        System.out.println(reservationList);
+        List<Reservation> reservationValues = reservations.values().stream().toList();
+        return reservationValues.stream()
+                .map(reservation -> new CompletedReservation(reservation.getId(), reservation.getDate(),
+                                reservation.getTime(), reservation.getTheme(),
+                                memberRepository.findById(reservationList.get(reservation.getId()))))
                 .toList();
+    }
+
+    @Override
+    public List<CompletedReservation> findBy(Long themeId, Long memberId, Date dateFrom, Date dateTo) {
+        return null;
     }
 
     @Override

@@ -10,6 +10,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.LoginMember;
+import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
@@ -19,6 +24,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
 
@@ -27,14 +33,18 @@ class ThemeServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
+    MemberRepository memberRepository;
     ThemeService themeService;
+    ReservationService reservationService;
 
     @BeforeEach
     void setData() {
-        reservationRepository = new FakeReservationDao(reservationTimeRepository, themeRepository);
+        memberRepository = new FakeMemberDao();
+        reservationRepository = new FakeReservationDao(memberRepository);
         reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
         themeRepository = new FakeThemeDao(reservationRepository);
 
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository, memberRepository);
         themeService = new ThemeService(themeRepository);
     }
 
@@ -119,10 +129,12 @@ class ThemeServiceTest {
         String description2 = "description2";
         String thumbnail2 = "thumbnail2";
         themeService.create(new ThemeRequest(name2, description2, thumbnail2));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.NOON));
 
-        reservationRepository.save(new Reservation(1L, LocalDate.of(2100, 5, 5),
-                new ReservationTime(1L, LocalTime.now()),
-                new Theme(1L, name1, description1, thumbnail1)));
+        Member member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1, 1);
+        reservationService.create(reservationRequest,
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
         List<ThemeResponse> themeResponses = themeService.findPopularThemes();

@@ -10,6 +10,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.LoginMember;
+import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
@@ -20,6 +26,7 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.AvailableTimeResponse;
+import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
 
@@ -28,16 +35,20 @@ class ReservationTimeServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
+    MemberRepository memberRepository;
 
     ReservationTimeService reservationTimeService;
+    ReservationService reservationService;
 
     @BeforeEach
     void setData() {
+        memberRepository = new FakeMemberDao();
         themeRepository = new FakeThemeDao(reservationRepository);
-        reservationRepository = new FakeReservationDao(reservationTimeRepository, themeRepository);
+        reservationRepository = new FakeReservationDao(new FakeMemberDao());
         reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
 
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository, memberRepository);
     }
 
     @DisplayName("예약 시간 생성에 성공한다.")
@@ -136,9 +147,13 @@ class ReservationTimeServiceTest {
         ReservationTime saveTime2 = reservationTimeRepository.save(new ReservationTime(id2, localTime2));
 
         LocalDate date = LocalDate.now().plusYears(1);
-        Reservation reservation = new Reservation(1L, date, saveTime1,
-                new Theme(1L, "name", "description", "thumbnail"));
-        reservationRepository.save(reservation);
+
+
+        Member member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
+        themeRepository.save(new Theme("test", "test", "test"));
+        ReservationRequest reservationRequest = new ReservationRequest(date.toString(), 1, 1);
+        reservationService.create(reservationRequest,
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findAvailableTimes(date, 1L);

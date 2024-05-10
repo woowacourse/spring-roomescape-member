@@ -2,6 +2,7 @@ package roomescape.reservation.dao;
 
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +11,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.dto.CompletedReservation;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -20,8 +24,8 @@ public class ReservationDao implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<Reservation> rowMapper = (ResultSet resultSet, int rowNum) -> {
-        return new Reservation(
+    private final RowMapper<CompletedReservation> rowMapper = (ResultSet resultSet, int rowNum) -> {
+        return new CompletedReservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(resultSet.getLong("time_id"),
@@ -30,7 +34,15 @@ public class ReservationDao implements ReservationRepository {
                 new Theme(resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),
                         resultSet.getString("description"),
-                        resultSet.getString("thumbnail"))
+                        resultSet.getString("thumbnail")
+                ),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("member_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        Role.valueOf(resultSet.getString("role"))
+                )
         );
     };
 
@@ -57,16 +69,28 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<CompletedReservation> findAll() {
         String sql = """
-                SELECT r.id as reservation_id, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail 
-                FROM reservation as r 
-                INNER JOIN reservation_time as t on r.time_id = t.id 
-                INNER JOIN theme as th on r.theme_id = th.id
-                """;
+            SELECT r.id as reservation_id, r.date,
+            t.id as time_id, t.start_at as time_value,
+            th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
+            m.id as member_id, m.name as member_name, m.email, m.password, m.role
+            FROM reservation as r 
+            INNER JOIN reservation_time as t on r.time_id = t.id 
+            INNER JOIN theme as th on r.theme_id = th.id
+            INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
+            INNER JOIN member AS m ON m.id = mr.member_id
+            """;
+
 
         return jdbcTemplate.query(sql, rowMapper);
     }
+
+    @Override
+    public List<CompletedReservation> findBy(Long themeId, Long memberId, Date dateFrom, Date dateTo) {
+        return null;
+    }
+
 
     @Override
     public boolean deleteById(long reservationId) {
