@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.service.dto.ReservationRequest;
-import roomescape.service.dto.ReservationTimeCreateRequest;
-import roomescape.service.dto.ThemeRequest;
+import roomescape.reservation.service.dto.ReservationRequest;
+import roomescape.reservation.service.dto.ReservationTimeCreateRequest;
+import roomescape.reservation.service.dto.ThemeRequest;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;

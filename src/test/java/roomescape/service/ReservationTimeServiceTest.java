@@ -6,17 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.repostiory.ReservationRepository;
-import roomescape.domain.repostiory.ReservationTimeRepository;
-import roomescape.domain.repostiory.ThemeRepository;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repostiory.ReservationRepository;
+import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
+import roomescape.reservation.domain.repostiory.ThemeRepository;
 import roomescape.exception.InvalidReservationException;
-import roomescape.service.dto.AvailableReservationTimeResponse;
-import roomescape.service.dto.ReservationTimeCreateRequest;
-import roomescape.service.dto.ReservationTimeReadRequest;
-import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.reservation.service.ReservationTimeService;
+import roomescape.reservation.service.dto.AvailableReservationTimeResponse;
+import roomescape.reservation.service.dto.ReservationTimeCreateRequest;
+import roomescape.reservation.service.dto.ReservationTimeReadRequest;
+import roomescape.reservation.service.dto.ReservationTimeResponse;
 
 import java.util.List;
 

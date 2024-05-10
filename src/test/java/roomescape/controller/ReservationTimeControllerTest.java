@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
-import roomescape.service.dto.ReservationTimeCreateRequest;
+import roomescape.reservation.service.dto.ReservationTimeCreateRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

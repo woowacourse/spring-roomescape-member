@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import roomescape.domain.Member;
+import roomescape.member.domain.Member;
+import roomescape.member.infrastructure.MemberJdbcRepository;
 
 import java.util.Map;
 import java.util.Optional;
