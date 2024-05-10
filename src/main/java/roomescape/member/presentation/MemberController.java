@@ -1,5 +1,6 @@
 package roomescape.member.presentation;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,13 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<MemberResponse> join(@RequestBody MemberJoinRequest request) {
+    public ResponseEntity<MemberResponse> join(@RequestBody @Valid MemberJoinRequest request) {
         Member member = memberService.create(request.toModel(USER));
         return ResponseEntity.status(HttpStatus.CREATED).body(MemberResponse.from(member));
     }
 
     @PostMapping("/join/admin")
-    public ResponseEntity<MemberResponse> joinAdmin(@RequestBody MemberJoinRequest request) {
+    public ResponseEntity<MemberResponse> joinAdmin(@RequestBody @Valid MemberJoinRequest request) {
         Member member = memberService.create(request.toModel(ADMIN));
         return ResponseEntity.status(HttpStatus.CREATED).body(MemberResponse.from(member));
     }

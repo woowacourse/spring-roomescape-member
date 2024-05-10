@@ -50,7 +50,7 @@ class AuthControllerTest extends ControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource(value = "invalidRequest")
+    @MethodSource(value = "invalidRequests")
     @DisplayName("로그인 요청 시 아이디나 비밀번호가 비어있다면 상태코드 400을 반환한다.")
     void loginWithInvalidRequest(LoginRequest request) throws Exception {
         // when & then
@@ -62,7 +62,7 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.message").exists());
     }
 
-    private static Stream<LoginRequest> invalidRequest() {
+    private static Stream<LoginRequest> invalidRequests() {
         return Stream.of(
                 new LoginRequest(MIA_EMAIL, null),
                 new LoginRequest(MIA_EMAIL, " "),

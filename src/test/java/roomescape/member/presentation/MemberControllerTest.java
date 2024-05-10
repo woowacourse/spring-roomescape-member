@@ -2,6 +2,8 @@ package roomescape.member.presentation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,6 +18,7 @@ import roomescape.member.application.MemberService;
 import roomescape.member.dto.request.MemberJoinRequest;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,6 +54,30 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(MIA_NAME))
                 .andExpect(jsonPath("$.email").value(MIA_EMAIL));
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "invalidRequests")
+    @DisplayName("사용자 가입 POST 요청 시 비어있는 필드가 있다면 상태코드 400을 반환한다.")
+    void joinWithInvalidRequest(MemberJoinRequest request) throws Exception {
+        BDDMockito.given(memberService.create(any()))
+                .willReturn(USER_MIA());
+
+        // when & then
+        mockMvc.perform(post("/members/join")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    private static Stream<MemberJoinRequest> invalidRequests() {
+        return Stream.of(
+                new MemberJoinRequest(null, TEST_PASSWORD, MIA_NAME),
+                new MemberJoinRequest(MIA_EMAIL, "", MIA_NAME),
+                new MemberJoinRequest(MIA_EMAIL, TEST_PASSWORD, " ")
+        );
     }
 
     @Test
