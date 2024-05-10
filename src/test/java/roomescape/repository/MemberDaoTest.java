@@ -34,9 +34,7 @@ class MemberDaoTest {
     void given_reservation_when_create_then_returnNoting() {
         //given
         SignupRequest signupRequest = new SignupRequest("ash@test.com", "123456", "ash");
-        //when
-        memberDao.create(signupRequest);
-        //then
-        assertThat(getItemSize()).isEqualTo(2);
+        //when, then
+        assertThat(memberDao.create(signupRequest)).isEqualTo(2);
     }
 }

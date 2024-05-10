@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.dto.MemberResponse;
 import roomescape.domain.dto.MemberResponses;
 import roomescape.domain.dto.SignupRequest;
+import roomescape.domain.dto.SignupResponse;
 import roomescape.exception.SignupFailException;
 import roomescape.repository.MemberDao;
 
@@ -25,9 +26,10 @@ public class MemberService {
         return new MemberResponses(memberResponses);
     }
 
-    public void createUser(final SignupRequest signupRequest) {
+    public SignupResponse createUser(final SignupRequest signupRequest) {
         validateExist(signupRequest);
-        memberDao.create(signupRequest);
+        Long id = memberDao.create(signupRequest);
+        return new SignupResponse(id);
     }
 
     private void validateExist(final SignupRequest signupRequest) {

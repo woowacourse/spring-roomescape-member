@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.dto.SignupRequest;
+import roomescape.domain.dto.SignupResponse;
 import roomescape.service.MemberService;
 
 @RestController
@@ -16,8 +17,8 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
-        memberService.createUser(signupRequest);
-        return ResponseEntity.ok().build();
+    ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
+        final SignupResponse response = memberService.createUser(signupRequest);
+        return ResponseEntity.ok(response);
     }
 }
