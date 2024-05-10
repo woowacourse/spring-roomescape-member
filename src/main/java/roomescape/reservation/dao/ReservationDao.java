@@ -5,28 +5,45 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRole;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationSearch;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
 public class ReservationDao {
+    private final String FIND_SQL = """
+            SELECT reservation.id, reservation.member_id, reservation.date, reservation.time_id, reservation.theme_id,
+                    member.name, member.email, member.role,
+                    reservation_time.start_at,
+                    theme.name AS theme_name, theme.description, theme.thumbnail
+            FROM reservation
+            JOIN member ON reservation.member_id = member.id
+            JOIN reservation_time ON reservation.time_id = reservation_time.id
+            JOIN theme ON reservation.theme_id = theme.id 
+            """;
+
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RowMapper<Reservation> rowMapper;
 
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public ReservationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.rowMapper = (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("id"),
                 new Member(
@@ -47,33 +64,45 @@ public class ReservationDao {
     }
 
     public List<Reservation> findReservations() {
-        String sql = """
-                SELECT reservation.id, reservation.member_id, reservation.date, reservation.time_id, reservation.theme_id,
-                        member.name, member.email, member.role,
-                        reservation_time.start_at,
-                        theme.name AS theme_name, theme.description, theme.thumbnail
-                FROM reservation
-                JOIN member ON reservation.member_id = member.id
-                JOIN reservation_time ON reservation.time_id = reservation_time.id
-                JOIN theme ON reservation.theme_id = theme.id;
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(FIND_SQL, rowMapper);
+    }
+
+    public List<Reservation> findReservations(ReservationSearch condition) {
+        String filterSql = makeFilterSql(condition);
+        Map<String, Object> parameterMap = makeParameterMap(condition);
+        return namedParameterJdbcTemplate.query(FIND_SQL + filterSql, parameterMap, rowMapper);
+    }
+
+    private String makeFilterSql(ReservationSearch searchCondition) {
+        StringJoiner joiner = new StringJoiner(" AND ", " WHERE ", ";");
+        if (searchCondition.getThemeId() != null) {
+            joiner.add("reservation.theme_id = :theme_id");
+        }
+        if (searchCondition.getMemberId() != null) {
+            joiner.add("reservation.member_id = :member_id");
+        }
+        if (searchCondition.getStartDate() != null) {
+            joiner.add("reservation.date >= :start_date");
+        }
+        if (searchCondition.getEndDate() != null) {
+            joiner.add("reservation.date <= :end_date");
+        }
+        return joiner.toString();
+    }
+
+    private Map<String, Object> makeParameterMap(ReservationSearch searchCondition) {
+        Map<String, Object> parameterMap = new HashMap<>();
+        parameterMap.put("theme_id", searchCondition.getThemeId());
+        parameterMap.put("member_id", searchCondition.getMemberId());
+        parameterMap.put("start_date", searchCondition.getStartDate());
+        parameterMap.put("end_date", searchCondition.getEndDate());
+        return parameterMap;
     }
 
     private Optional<Reservation> findReservationById(Long id) {
-        String sql = """
-                SELECT reservation.id, reservation.member_id, reservation.date, reservation.time_id, reservation.theme_id,
-                        member.name, member.email, member.role,
-                        reservation_time.start_at,
-                        theme.name AS theme_name, theme.description, theme.thumbnail
-                FROM reservation
-                JOIN member ON reservation.member_id = member.id
-                JOIN reservation_time ON reservation.time_id = reservation_time.id
-                JOIN theme ON reservation.theme_id = theme.id
-                WHERE reservation.id = ?
-                """;
+        String filterSql = " WHERE reservation.id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_SQL + filterSql, rowMapper, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

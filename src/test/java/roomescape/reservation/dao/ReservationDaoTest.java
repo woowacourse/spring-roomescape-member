@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationSearch;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -30,11 +32,13 @@ class ReservationDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private ReservationDao reservationDao;
 
     @BeforeEach
     void setUp() {
-        reservationDao = new ReservationDao(jdbcTemplate);
+        reservationDao = new ReservationDao(jdbcTemplate, namedParameterJdbcTemplate);
     }
 
     @DisplayName("모든 예약을 읽을 수 있다.")
@@ -43,6 +47,28 @@ class ReservationDaoTest {
         List<Reservation> reservations = reservationDao.findReservations();
 
         assertThat(reservations).hasSize(COUNT_OF_RESERVATION);
+    }
+
+    @DisplayName("조건에 따라 예약을 읽을 수 있다.")
+    @Test
+    void findReservationsTest_whenUsingSearchCondition() {
+        ReservationSearch searchCondition = new ReservationSearch(
+                1L, 2L, LocalDate.of(2022, 5, 4), LocalDate.of(2022, 5, 6));
+
+        List<Reservation> actual = reservationDao.findReservations(searchCondition);
+
+        assertThat(actual).hasSize(1);
+    }
+
+    @DisplayName("일부 조건에 따라 예약을 읽을 수 있다.")
+    @Test
+    void findReservationsTest_whenUsingSearchSomeCondition() {
+        ReservationSearch searchCondition = new ReservationSearch(
+                null, 2L, null, LocalDate.now());
+
+        List<Reservation> actual = reservationDao.findReservations(searchCondition);
+
+        assertThat(actual).hasSize(2);
     }
 
     @DisplayName("예약을 생성할 수 있다.")
