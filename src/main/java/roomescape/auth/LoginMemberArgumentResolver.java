@@ -1,6 +1,5 @@
-package roomescape.config;
+package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -8,7 +7,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.MemberLoginResponse;
-import roomescape.infrastructure.AuthorizationExtractor;
 import roomescape.service.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -32,8 +30,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   final NativeWebRequest webRequest,
                                   final WebDataBinderFactory binderFactory) throws Exception {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        final Cookie[] cookies = request.getCookies();
-        final String accessToken = authorizationExtractor.extractTokenFromCookie(cookies);
+        final String accessToken = authorizationExtractor.extractToken(request);
         return memberService.findMemberByToken(accessToken);
     }
 }

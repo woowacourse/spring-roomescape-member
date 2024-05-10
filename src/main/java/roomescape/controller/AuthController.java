@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.MemberLoginResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
-import roomescape.infrastructure.AuthorizationExtractor;
+import roomescape.auth.AuthorizationExtractor;
 import roomescape.service.MemberService;
 
 @RestController
 public class AuthController {
+
+    private static final String TOKEN_KEY = "token";
 
     private final MemberService memberService;
     private final AuthorizationExtractor authorizationExtractor;
@@ -28,7 +30,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody final TokenRequest request, final HttpServletResponse response) {
         final TokenResponse tokenResponse = memberService.createToken(request);
-        final Cookie cookie = new Cookie("token", tokenResponse.accessToken());
+        final Cookie cookie = new Cookie(TOKEN_KEY, tokenResponse.accessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -37,15 +39,15 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberLoginResponse> findMemberInfo(final HttpServletRequest request) {
-        final Cookie[] cookies = request.getCookies();
-        final String accessToken = authorizationExtractor.extractTokenFromCookie(cookies);
+        final String accessToken = authorizationExtractor.extractToken(request);
+
         final MemberLoginResponse memberLoginResponse = memberService.findMemberByToken(accessToken);
         return ResponseEntity.ok(memberLoginResponse);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(final HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(TOKEN_KEY, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);

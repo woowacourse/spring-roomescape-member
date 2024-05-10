@@ -1,6 +1,5 @@
-package roomescape.config;
+package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Role;
 import roomescape.dto.MemberLoginResponse;
-import roomescape.infrastructure.AuthorizationExtractor;
 import roomescape.service.MemberService;
 
 @Component
@@ -24,8 +22,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
-        final Cookie[] cookies = request.getCookies();
-        final String accessToken = authorizationExtractor.extractTokenFromCookie(cookies);
+        final String accessToken = authorizationExtractor.extractToken(request);
         final MemberLoginResponse memberLoginResponse = memberService.findMemberByToken(accessToken);
 
         if (!memberLoginResponse.role().equals(Role.ADMIN)) {

@@ -7,7 +7,7 @@ import roomescape.dto.MemberLoginResponse;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.auth.JwtTokenProvider;
 
 import java.util.List;
 import java.util.Objects;
