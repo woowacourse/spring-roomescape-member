@@ -1,4 +1,4 @@
-package roomescape.controller.web;
+package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,8 +10,8 @@ import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.infrastructure.CookieManager;
 import roomescape.infrastructure.auth.Token;
-import roomescape.service.serviceimpl.LoginService;
-import roomescape.service.serviceimpl.MemberService;
+import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 
 @RestController
 @RequestMapping

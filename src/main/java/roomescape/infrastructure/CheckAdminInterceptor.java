@@ -7,8 +7,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.infrastructure.auth.Token;
-import roomescape.service.serviceimpl.LoginService;
-import roomescape.service.serviceimpl.MemberService;
+import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 
 import static roomescape.domain.member.Role.ADMIN;
 
