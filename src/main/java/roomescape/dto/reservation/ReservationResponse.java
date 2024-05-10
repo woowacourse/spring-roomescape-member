@@ -51,7 +51,9 @@ public record ReservationResponse(
     private static MemberResponse getMemberResponse(Member member) {
         return new MemberResponse(
                 member.getId(),
-                member.getName()
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
         );
     }
 }
