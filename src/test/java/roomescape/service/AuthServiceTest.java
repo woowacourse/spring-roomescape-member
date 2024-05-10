@@ -17,6 +17,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthServiceTest {
@@ -66,5 +67,19 @@ class AuthServiceTest {
         Long id = authService.findMemberId(cookies);
         // then
         assertThat(foundMember.getId()).isEqualTo(id);
+    }
+
+    @DisplayName("쿠키를 이용한 사용자 권한 조회 테스트")
+    @Test
+    void findMemberRoleByCookie() {
+        // given
+        createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
+        Member foundMember = memberDao.find(MEMBER_FIXTURE);
+        Cookie cookie = authService.generateCookie(foundMember);
+        Cookie[] cookies = new Cookie[]{cookie};
+        // when
+        Long id = authService.findMemberId(cookies);
+        // then
+        assertThat(foundMember.getRoleName()).isEqualTo(Role.NORMAL.name());
     }
 }

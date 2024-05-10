@@ -38,7 +38,7 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeWithBookStatusResponse>>
     findReservationTimesWithBookStatus(
             @RequestParam("date") LocalDate date,
-            @RequestParam("themeId") Long themeId) {
+            @RequestParam("theme-id") Long themeId) {
         ReservationTimeWithBookStatusRequest timeRequest
                 = new ReservationTimeWithBookStatusRequest(date, themeId);
         return ResponseEntity.ok(

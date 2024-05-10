@@ -41,9 +41,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exceptionDtos);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ExceptionDto> handleException() {
-//        return ResponseEntity.internalServerError()
-//                .body(new ExceptionDto("서버에서 요청을 처리할 수 없습니다."));
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionDto> handleException() {
+        return ResponseEntity.internalServerError()
+                .body(new ExceptionDto("서버에서 요청을 처리할 수 없습니다."));
+    }
 }

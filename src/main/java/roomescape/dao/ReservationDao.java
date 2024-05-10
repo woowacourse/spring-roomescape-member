@@ -16,6 +16,27 @@ import roomescape.domain.RoomTheme;
 
 @Repository
 public class ReservationDao {
+    private static final String SELECT_SQL = """
+            SELECT
+                r.id AS reservation_id,
+                r.date AS reservation_date,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
+                t.id AS time_id,
+                t.start_at AS time_value,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail
+            FROM reservation AS r
+            INNER JOIN member AS m
+            ON m.id = r.member_id
+            INNER JOIN reservation_time AS t
+            ON r.time_id = t.id
+            INNER JOIN theme AS th
+            ON r.theme_id = th.id
+            """;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
@@ -39,28 +60,15 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.date AS reservation_date,
-                    m.id AS member_id,
-                    m.name AS member_name,
-                    m.email AS member_email,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                INNER JOIN member AS m
-                ON m.id = r.member_id
-                INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(SELECT_SQL, rowMapper);
+    }
+
+    public List<Reservation> findAllMatching(Long themeId, Long memberId,
+                                             LocalDate dateFrom, LocalDate dateTo) {
+        return jdbcTemplate.query(SELECT_SQL + """
+                WHERE theme_id = ? AND member_id = ?
+                AND date BETWEEN ? AND ?
+                """, rowMapper, themeId, memberId, dateFrom, dateTo);
     }
 
     public boolean exists(LocalDate date, Long timeId, Long themeId) {

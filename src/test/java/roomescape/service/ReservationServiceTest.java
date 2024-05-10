@@ -15,6 +15,7 @@ import static roomescape.TestFixture.createTheme;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,27 @@ class ReservationServiceTest {
     @Test
     void findAll() {
         assertThat(reservationService.findAll()).isEmpty();
+    }
+
+    @DisplayName("특정 예약 검색")
+    @Test
+    void findAllMatching() {
+        // given
+        Member member = createAndGetMember();
+        MemberReservationRequest request = createReservationRequest(LocalDate.of(4000, 12, 12));
+        MemberReservationRequest outOfFilterRequest = createReservationRequest(
+                LocalDate.of(4000, 12, 12));
+        ReservationResponse response = reservationService.save(request, member);
+        reservationService.save(outOfFilterRequest, member);
+        // when
+        List<ReservationResponse> filtered = reservationService.findAllMatching(
+                request.themeId(),
+                member.getId(),
+                LocalDate.of(3000, 12, 12),
+                LocalDate.of(5000, 12, 12));
+        // then
+        assertThat(filtered).hasSize(1);
+        assertThat(filtered.get(0).id()).isEqualTo(response.id());
     }
 
     @DisplayName("예약 저장")

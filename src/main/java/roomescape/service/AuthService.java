@@ -34,7 +34,7 @@ public class AuthService {
 
     private String getTokenFromCookies(Cookie[] cookies) {
         if (cookies == null) {
-            throw new InvalidInputException("쿠키가 존재하지 않습니다.");
+            throw new InvalidInputException("로그인 해주세요.");
         }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {

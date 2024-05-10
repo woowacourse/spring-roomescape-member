@@ -43,6 +43,15 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findAllMatching(
+            Long themeId, Long memberId,
+            LocalDate dateFrom, LocalDate dateTo) {
+        return reservationDao.findAllMatching(themeId, memberId, dateFrom, dateTo)
+                .stream()
+                .map(ReservationResponse::fromReservation)
+                .toList();
+    }
+
     public ReservationResponse save(MemberReservationRequest memberReservationRequest,
                                     Member member) {
         Reservation reservation = getValidatedReservation(memberReservationRequest, member);
