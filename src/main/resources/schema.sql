@@ -26,6 +26,15 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)            -- 외래키 추가
 );
 
+CREATE TABLE users
+(
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
 INSERT INTO reservation_time (start_at) VALUES ('11:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00');
