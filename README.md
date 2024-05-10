@@ -47,3 +47,48 @@
     - [x] 사용자 정보에 대해 GET 요청시 cookie에 담긴 token을 확인한다.
     - [x] 로그인 성공 시, 응답 Body에 사용자 이름을 반환한다.
     - [x] 로그인 실패 시, 인증 예외를 발생시킨다.
+
+## 5단계 (세부사항까지 구체적으로 포함되어 있는 점 양해 부탁드립니다🙇‍)
+- [ ] `HandlerMethodArgumentResolver`를 활용하여 Cookie 값으로 멤버 정보를 조회하는 로직을 분리한다.
+  - [ ] `LoginMember` 객체를 만든다.
+- [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용한다. (아래 1번 API 참고)
+  - [ ] id값으로 `Member`를 조회하는 기능을 추가한다.
+  - [ ] `reservation` 테이블에 name 컬럼을 제거하고 `memberId`를 컬럼으로 갖도록 수정한다.
+  - [ ] `ReservationResponse`가 `MemberResponse`를 필드로 갖도록 수정한다.
+  - [ ] 변경된 명세에 맞게 클라이언트가 동작하도록 코드를 수정한다.
+    - [ ] `reservation.html`
+    - [ ] `user-reservation.js`
+- [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 한다. (아래 2번 API 참고)
+  - [ ] 변경된 API에 맞게 기존 코드 수정
+  - [ ] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경한다.
+  - `js/reservation-new.js` -> `/js/reservation-with-member.js`
+  
+### 5단계에서 변경된 명세
+1. 사용자 예약 생성 요청: 요청 body에 name이 제거 + 쿠키가 추가됨. 
+  ```http request
+  POST /reservations HTTP/1.1
+  content-type: application/json
+  cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+  host: localhost:8080
+  
+  {
+      "date": "2024-03-01",
+      "themeId": 1,
+      "timeId": 1
+  }
+  ```
+
+2. 관리자 예약 생성 요청: 요청 body에 name이 제거되고 memberId가 추가됨 + 쿠키가 추가됨 
+```http request
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+}
+```
