@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.user.Role;
 import roomescape.domain.user.User;
 
 @Repository
@@ -13,7 +14,8 @@ public class JdbcUserRepository implements UserRepository {
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
-            rs.getString("password")
+            rs.getString("password"),
+            rs.getObject("role", Role.class)
     );
 
     private final JdbcTemplate jdbcTemplate;
