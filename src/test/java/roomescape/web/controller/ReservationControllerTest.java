@@ -9,8 +9,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.service.request.ReservationRequest;
 import roomescape.support.IntegrationTestSupport;
+import roomescape.web.controller.request.CreateReservationWebRequest;
 
 class ReservationControllerTest extends IntegrationTestSupport {
 
@@ -25,10 +25,10 @@ class ReservationControllerTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("예약을 생성한다.")
+    @DisplayName("사용자가 예약을 생성한다.")
     void create() {
         LocalDate date = nextDate();
-        ReservationRequest request = new ReservationRequest(date.toString(), 1L, 1L);
+        CreateReservationWebRequest request = new CreateReservationWebRequest(date.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -57,7 +57,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 날짜는 올바른 형식이어야 한다.")
     void validateDateFormat() {
         String invalidDate = "date";
-        ReservationRequest invalidRequest = new ReservationRequest(invalidDate, 1L, 1L);
+        CreateReservationWebRequest invalidRequest = new CreateReservationWebRequest(invalidDate, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -85,7 +85,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonPositiveTimeId() {
         Long invalidTimeId = 0L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest(date, invalidTimeId, 1L);
+        CreateReservationWebRequest invalidRequest = new CreateReservationWebRequest(date, invalidTimeId, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -101,7 +101,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonExistTimeId() {
         Long nonExistTimeId = 4L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest(date, nonExistTimeId, 1L);
+        CreateReservationWebRequest invalidRequest = new CreateReservationWebRequest(date, nonExistTimeId, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -129,7 +129,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonPositiveThemeId() {
         Long invalidThemeId = 0L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest(date, 1L, invalidThemeId);
+        CreateReservationWebRequest invalidRequest = new CreateReservationWebRequest(date, 1L, invalidThemeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -145,7 +145,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonExistThemeId() {
         Long nonExistThemeId = 3L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest(date, 1L, nonExistThemeId);
+        CreateReservationWebRequest invalidRequest = new CreateReservationWebRequest(date, 1L, nonExistThemeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -160,7 +160,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("중복 예약을 생성할 수 없다.")
     void duplicated() {
         String date = nextDate().toString();
-        ReservationRequest request = new ReservationRequest(date, 1L, 1L);
+        CreateReservationWebRequest request = new CreateReservationWebRequest(date, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -182,7 +182,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("지나간 시간에 대한 예약을 할 수 없다.")
     void previousDateTime() {
         String previousDate = previousDate().toString();
-        ReservationRequest request = new ReservationRequest(previousDate, 1L, 1L);
+        CreateReservationWebRequest request = new CreateReservationWebRequest(previousDate, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

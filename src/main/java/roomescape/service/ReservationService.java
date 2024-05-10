@@ -12,7 +12,7 @@ import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.infrastructure.persistence.ReservationRepository;
 import roomescape.infrastructure.persistence.ReservationTimeRepository;
 import roomescape.infrastructure.persistence.ThemeRepository;
-import roomescape.service.request.ReservationRequest;
+import roomescape.service.request.CreateReservationRequest;
 import roomescape.service.response.ReservationResponse;
 
 @Service
@@ -38,8 +38,8 @@ public class ReservationService {
         this.reservationFactory = reservationFactory;
     }
 
-    public ReservationResponse createReservation(ReservationRequest request, Long memberId) {
-        Reservation reservation = toDomain(request, memberId);
+    public ReservationResponse createReservation(CreateReservationRequest request) {
+        Reservation reservation = toDomain(request);
         if (reservationRepository.hasDuplicateReservation(reservation)) {
             throw new IllegalStateException("중복된 예약이 존재합니다.");
         }
@@ -48,10 +48,10 @@ public class ReservationService {
         return ReservationResponse.from(createdReservation);
     }
 
-    private Reservation toDomain(ReservationRequest request, Long memberId) {
+    private Reservation toDomain(CreateReservationRequest request) {
         return reservationFactory.create(
                 request.date(),
-                getMember(memberId),
+                getMember(request.memberId()),
                 getReservationTime(request.timeId()),
                 getTheme(request.themeId())
         );
