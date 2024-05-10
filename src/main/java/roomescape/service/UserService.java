@@ -27,4 +27,9 @@ public class UserService {
         return userDao.findUserNameByUserId(id)
                 .orElseThrow(() -> new NotFoundException("id가 %s인 사용자가 존재하지 않습니다."));
     }
+
+    public User findUserById(Long id) {
+        return userDao.findUserById(id)
+                .orElseThrow(() -> new NotFoundException("id가 %s인 사용자가 존재하지 않습니다."));
+    }
 }

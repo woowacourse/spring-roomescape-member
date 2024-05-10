@@ -30,6 +30,13 @@ public class FakeUserDao implements UserDao {
                 .findAny();
     }
 
+    @Override
+    public Optional<User> findUserById(Long userId) {
+        return users.stream()
+                .filter(user -> Objects.equals(user.getId(), userId))
+                .findAny();
+    }
+
     public void addUser(User user) {
         users.add(user);
     }

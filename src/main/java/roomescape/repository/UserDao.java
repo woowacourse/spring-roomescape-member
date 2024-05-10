@@ -8,4 +8,6 @@ public interface UserDao {
     Optional<User> findUserByEmailAndPassword(String email, String password);
 
     Optional<String> findUserNameByUserId(Long userId);
+
+    Optional<User> findUserById(Long userId);
 }

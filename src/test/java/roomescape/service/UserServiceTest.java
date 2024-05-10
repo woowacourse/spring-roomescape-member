@@ -48,7 +48,7 @@ class UserServiceTest {
 
     @DisplayName("아이디를 통해 사용자 이름을 조회한다.")
     @Test
-    void should_find_user_when_give_id() {
+    void should_find_username_when_give_id() {
         User user = new User(1L, "배키", "hello@email.com", "1234");
         userDao.addUser(user);
 
@@ -61,6 +61,24 @@ class UserServiceTest {
     @Test
     void should_throw_exception_when_user_id_not_exist() {
         assertThatThrownBy(() -> userService.findUserNameById(1L))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("아이디를 통해 사용자 이름을 조회한다.")
+    @Test
+    void should_find_user_when_give_id() {
+        User user = new User(1L, "배키", "hello@email.com", "1234");
+        userDao.addUser(user);
+
+        User userById = userService.findUserById(1L);
+
+        assertThat(userById).isEqualTo(user);
+    }
+
+    @DisplayName("주어진 아이디에 해당하는 사용자가 없으면 예외가 발생한다.")
+    @Test
+    void should_not_find_user_and_throw_exception_when_user_id_not_exist() {
+        assertThatThrownBy(() -> userService.findUserById(1L))
                 .isInstanceOf(NotFoundException.class);
     }
 }

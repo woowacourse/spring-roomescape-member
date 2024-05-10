@@ -43,4 +43,10 @@ public class JdbcUserDao implements UserDao {
         String sql = "SELECT name FROM users WHERE id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, userId));
     }
+
+    @Override
+    public Optional<User> findUserById(Long userId) {
+        String sql = "SELECT id, name, email, password FROM users WHERE id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, userId));
+    }
 }
