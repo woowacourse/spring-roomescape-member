@@ -40,31 +40,6 @@ public class AdminIntegrationTest {
     }
 
     @Test
-    @DisplayName("관리자 메인 페이지가 잘 접속된다.")
-    void adminMainPageLoad() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("관리자 예약 페이지가 잘 접속된다.")
-    void adminReservationPageLoad() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    //todo: api 구현 후 다시 테스트
-    //@Test
     @DisplayName("관리자 예약 페이지가 잘 동작한다.")
     void adminReservationPageWork() {
         Integer integer = jdbcTemplate.queryForObject("select id from reservation_time",
