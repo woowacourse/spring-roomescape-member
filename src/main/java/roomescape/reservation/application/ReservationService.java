@@ -50,7 +50,8 @@ public class ReservationService {
 
     public List<ReservationResponse> findAllByMemberIdAndThemeIdAndDateBetween(Long memberId, Long themeId,
                                                                                LocalDate fromDate, LocalDate toDate) {
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAllByMemberIdAndThemeIdAndDateBetween(
+                memberId, themeId, fromDate, toDate);
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
