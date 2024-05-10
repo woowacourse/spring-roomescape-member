@@ -10,12 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver;
-    private final CheckRoleInterceptor checkRoleInterceptor;
+    private final CheckAdminInterceptor checkAdminInterceptor;
 
     public WebMvcConfiguration(AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver,
-                               CheckRoleInterceptor checkRoleInterceptor) {
+                               CheckAdminInterceptor checkAdminInterceptor) {
         this.authenticationPrincipalArgumentResolver = authenticationPrincipalArgumentResolver;
-        this.checkRoleInterceptor = checkRoleInterceptor;
+        this.checkAdminInterceptor = checkAdminInterceptor;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(checkRoleInterceptor)
-                .excludePathPatterns("/", "/login", "/signup", "/image/**", "/css/**", "/js/**");
+        registry.addInterceptor(checkAdminInterceptor)
+                .addPathPatterns("/admin/**");
     }
 }

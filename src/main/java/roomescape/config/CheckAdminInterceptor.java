@@ -14,21 +14,20 @@ import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
 @Component
-public class CheckRoleInterceptor implements HandlerInterceptor {
+public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private static final String TOKEN_KEY = "token";
 
     private final MemberService memberService;
     private final AuthService authService;
 
-    public CheckRoleInterceptor(MemberService memberService, AuthService authService) {
+    public CheckAdminInterceptor(MemberService memberService, AuthService authService) {
         this.memberService = memberService;
         this.authService = authService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String requestURI = request.getRequestURI();
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -46,7 +45,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         String payload = authService.findPayload(tokenCookies.get(0).getValue());
         Member member = memberService.findAuthInfo(payload);
 
-        if (requestURI.startsWith("/admin") && member.getMemberRole() != MemberRole.ADMIN) {
+        if (member.getMemberRole() != MemberRole.ADMIN) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
