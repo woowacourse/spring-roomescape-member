@@ -5,6 +5,7 @@ import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidTimeException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.SearchInfo;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -29,6 +30,10 @@ public class ReservationService {
         return reservationRepository.readAll();
     }
 
+    public List<Reservation> readBySearchInfo(SearchInfo searchInfo) {
+        return reservationRepository.readBySearchInfo(searchInfo);
+    }
+
     public Reservation create(final Reservation reservation) {
         validateFutureReservation(reservation);
 
@@ -37,7 +42,7 @@ public class ReservationService {
 
         final long reservationId = reservationRepository.create(reservation);
 
-        return reservationRepository.read(reservationId);
+        return reservationRepository.readByReservationId(reservationId);
     }
 
     public void delete(final long id) {

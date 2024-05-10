@@ -8,10 +8,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.SearchInfo;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -60,7 +62,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation read(final long id) {
+    public Reservation readByReservationId(final long reservationId) {
         final String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,\s
                 r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
@@ -70,7 +72,42 @@ public class ReservationRepository {
                 INNER JOIN member m ON r.member_id = m.id\s
                 WHERE r.id = ?""";
 
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationId);
+    }
+
+    public List<Reservation> readBySearchInfo(SearchInfo searchInfo) {
+        List<Object> params = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
+
+        if (searchInfo.getMemberId() != null) {
+            conditions.add("m.id = ?");
+            params.add(searchInfo.getMemberId());
+        }
+        if (searchInfo.getThemeId() != null) {
+            conditions.add("t.id = ?");
+            params.add(searchInfo.getThemeId());
+        }
+        if (searchInfo.getDateFrom() != null && searchInfo.getDateTo() != null) {
+            conditions.add("r.date BETWEEN ? AND ?");
+            params.add(searchInfo.getDateFrom());
+            params.add(searchInfo.getDateTo());
+        }
+
+        String whereClause = String.join(" AND ", conditions);
+        if (!whereClause.isEmpty()) {
+            whereClause = " WHERE " + whereClause;
+        }
+
+        final String sql = """
+                SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
+                r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                INNER JOIN member m ON r.member_id = m.id
+                """ + whereClause;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER, params.toArray());
     }
 
     public Long create(final Reservation reservation) {

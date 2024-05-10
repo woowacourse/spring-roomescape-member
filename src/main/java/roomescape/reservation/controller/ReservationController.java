@@ -6,6 +6,7 @@ import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.SearchRequest;
 import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
@@ -23,6 +24,15 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
         final List<Reservation> reservations = reservationService.readAll();
+
+        final List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
+
+        return ResponseEntity.ok(reservationResponses);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<ReservationResponse>> findBySearchInfo(@RequestBody SearchRequest searchRequest) {
+        List<Reservation> reservations = reservationService.readBySearchInfo(searchRequest.toSearchInfo());
 
         final List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
 
