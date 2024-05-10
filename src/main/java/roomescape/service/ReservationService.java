@@ -15,6 +15,7 @@ import roomescape.domain.ThemeRepository;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
 import roomescape.service.dto.request.LoginUser;
+import roomescape.service.dto.request.ReservationConditionRequest;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
@@ -26,8 +27,11 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
-                              MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -92,9 +96,8 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
-    public List<ReservationResponse> findAllReservationsOf(Long themeId, Long memberId,
-                                                           LocalDate dateFrom, LocalDate dateTo) {
-        List<Reservation> reservations = reservationRepository.findAllReservationsOf(themeId, memberId, dateFrom, dateTo);
+    public List<ReservationResponse> findAllReservationsByCondition(ReservationConditionRequest condition) {
+        List<Reservation> reservations = reservationRepository.findAllReservationsByCondition(condition.themeId(), condition.memberId(), condition.dateFrom(), condition.dateTo());
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();

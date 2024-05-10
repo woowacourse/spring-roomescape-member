@@ -89,7 +89,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllReservationsOf(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<Reservation> findAllReservationsByCondition(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
                 SELECT
                     r.id as reservation_id,
