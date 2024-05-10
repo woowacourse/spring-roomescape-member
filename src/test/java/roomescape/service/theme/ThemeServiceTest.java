@@ -36,7 +36,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("예약 중이 아닌 테마를 삭제할 시 성공한다.")
-    @Sql("/theme-time-data.sql")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void deleteNotReservedTime_Success() {
         assertThatCode(() -> themeService.deleteTheme(1L))
                 .doesNotThrowAnyException();
@@ -44,7 +44,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("이미 예약 중인 테마를 삭제할 시 예외가 발생한다.")
-    @Sql(scripts = {"/theme-time-data.sql", "/reservation-data.sql"})
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql", "/reservation-data.sql"})
     void deleteReservedTime_Failure() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isInstanceOf(IllegalUserRequestException.class)
@@ -53,7 +53,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("최근 7일간 가장 예약이 많이된 테마 10개를 조회한다.")
-    @Sql("/theme-rank-test-data.sql")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-rank-test-data.sql"})
     void test() {
         List<Long> themeIds = themeService.findTop10Recent7Days().stream()
                 .map(Theme::getId)

@@ -49,7 +49,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("이미 존재하는 예약 시간을 생성하는 경우 예외가 발생한다.")
-    @Sql("/theme-time-data.sql")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void checkDuplicateTime_Failure() {
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(10, 0));
 
@@ -60,7 +60,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("날짜와 테마가 주어지면 각 시간의 예약 여부를 구한다.")
-    @Sql(scripts = {"/theme-time-data.sql", "/reservation-data.sql"})
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql", "/reservation-data.sql"})
     void findAvailabilityByDateAndTheme() {
         LocalDate date = LocalDate.of(2100, 12, 31);
 
@@ -73,7 +73,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("예약 중이 아닌 시간을 삭제할 시 성공한다.")
-    @Sql("/theme-time-data.sql")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void deleteNotReservedTime_Success() {
         assertThatCode(() -> reservationTimeService.deleteReservationTime(2L))
                 .doesNotThrowAnyException();
@@ -81,7 +81,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("이미 예약 중인 시간을 삭제할 시 예외가 발생한다.")
-    @Sql(scripts = {"/theme-time-data.sql", "/reservation-data.sql"})
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql", "/reservation-data.sql"})
     void deleteReservedTime_Failure() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
                 .isInstanceOf(IllegalUserRequestException.class)

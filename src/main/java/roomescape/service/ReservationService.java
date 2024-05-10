@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
 import roomescape.exception.IllegalUserRequestException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -18,18 +20,24 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
+                              MemberRepository memberRepository,
                               ReservationTimeRepository reservationTimeRepository,
                               ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
     }
 
     public Reservation createReservation(ReservationSaveRequest request) {
+        Member member = memberRepository.findByName(request.name())
+                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 이름입니다."));
+
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 예약 시간 입니다."));
 
@@ -42,7 +50,7 @@ public class ReservationService {
             throw new IllegalUserRequestException("해당 시간에 이미 예약된 테마입니다.");
         }
 
-        Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme);
+        Reservation reservation = ReservationSaveRequest.toEntity(request, member, reservationTime, theme);
         return reservationRepository.save(reservation);
     }
 

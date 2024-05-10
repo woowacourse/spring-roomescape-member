@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.exception.IllegalUserRequestException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-@Sql(scripts = {"/truncate-data.sql", "/theme-time-data.sql"})
+@Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
 class ReservationServiceTest {
 
     private JdbcTemplate jdbcTemplate;
@@ -31,6 +32,7 @@ class ReservationServiceTest {
         System.out.println("jdbcTemplate = " + jdbcTemplate);
         reservationService = new ReservationService(
                 new ReservationRepository(jdbcTemplate),
+                new MemberRepository(jdbcTemplate),
                 new ReservationTimeRepository(jdbcTemplate),
                 new ThemeRepository(jdbcTemplate)
         );
@@ -41,7 +43,7 @@ class ReservationServiceTest {
     void checkDuplicateReservationTime_Success() {
         // given
         ReservationSaveRequest request = new ReservationSaveRequest(
-                "capy", LocalDate.now().plusDays(1L), 1L, 1L);
+                "naknak", LocalDate.now().plusDays(1L), 1L, 1L);
 
         // when & then
         assertThatCode(() -> reservationService.createReservation(request))
@@ -53,7 +55,7 @@ class ReservationServiceTest {
     void checkDuplicateReservationTime_Failure() {
         // given
         ReservationSaveRequest request = new ReservationSaveRequest(
-                "capy", LocalDate.now().plusDays(1L), 1L, 1L);
+                "naknak", LocalDate.now().plusDays(1L), 1L, 1L);
         reservationService.createReservation(request);
 
         // when & then
@@ -66,7 +68,7 @@ class ReservationServiceTest {
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성시 예외가 발생한다.")
     void checkReservationDateTimeIsFuture_Failure() {
         ReservationSaveRequest request = new ReservationSaveRequest(
-                "capy", LocalDate.now().minusDays(1L), 1L, 1L);
+                "naknak", LocalDate.now().minusDays(1L), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalUserRequestException.class)

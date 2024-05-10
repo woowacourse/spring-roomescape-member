@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
 
 import java.time.LocalDate;
 
@@ -14,8 +15,12 @@ public record ReservationSaveRequest(
         @NotNull(message = "시간 Id는 널일 수 없습니다.") Long timeId,
         @NotNull(message = "테마 id는 널일 수 없습니다.") Long themeId) {
 
-    public static Reservation toEntity(ReservationSaveRequest request, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(request.name(), request.date(), reservationTime, theme);
+    public static Reservation toEntity(
+            ReservationSaveRequest request,
+            Member member,
+            ReservationTime reservationTime,
+            Theme theme) {
+        return new Reservation(member, request.date(), reservationTime, theme);
     }
 
 

@@ -9,7 +9,7 @@ public record ReservationResponse(Long id, String name, LocalDate date,
                                   ThemeResponse theme) {
 
     public static ReservationResponse of(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(),
+        return new ReservationResponse(reservation.getId(), reservation.getMember().getName(),
                 reservation.getDate(), ReservationTimeResponse.of(reservation.getReservationTime()),
                 ThemeResponse.of(reservation.getTheme()));
     }

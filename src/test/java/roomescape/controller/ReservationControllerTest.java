@@ -57,6 +57,7 @@ public class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 추가, 조회를 정상적으로 수행한다.")
+    @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void ReservationTime_CREATE_READ_Success() {
         Map<String, String> time = Map.of(
                 "startAt", "10:00"
@@ -88,7 +89,7 @@ public class ReservationControllerTest {
         Long themeId = Long.parseLong(themeLocation.substring(themeLocation.lastIndexOf("/") + 1));
 
         Map<String, Object> reservation = Map.of(
-                "name", "브라운",
+                "name", "naknak",
                 "date", LocalDate.now().plusDays(1L).toString(),
                 "timeId", timeId,
                 "themeId", themeId
@@ -111,6 +112,7 @@ public class ReservationControllerTest {
 
     @Test
     @DisplayName("DB에 저장된 예약을 정상적으로 삭제한다.")
+    @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void deleteReservation_InDatabase_Success() {
         Map<String, String> time = Map.of(
                 "startAt", "10:00"
@@ -142,7 +144,7 @@ public class ReservationControllerTest {
         Long themeId = Long.parseLong(themeLocation.substring(themeLocation.lastIndexOf("/") + 1));
 
         Map<String, Object> reservation = Map.of(
-                "name", "브라운",
+                "name", "naknak",
                 "date", LocalDate.now().plusDays(1L).toString(),
                 "timeId", timeId,
                 "themeId", themeId

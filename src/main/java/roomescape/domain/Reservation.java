@@ -1,26 +1,28 @@
 package roomescape.domain;
 
+import roomescape.domain.member.Member;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Reservation {
 
     private Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        this(null, name, date, reservationTime, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this(null, member, date, reservationTime, theme);
     }
 
     public boolean isSameReservation(Long id) {
@@ -46,8 +48,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

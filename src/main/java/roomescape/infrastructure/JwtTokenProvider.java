@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.domain.user.User;
+import roomescape.domain.member.Member;
 import roomescape.exception.AuthorizationException;
 
 import java.util.Date;
@@ -23,20 +23,20 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String createToken(User user) {
+    public String createToken(Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(user.getId().toString())
-                .claim("name", user.getName())
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    public User getUser(String token) {
+    public Member getMember(String token) {
         try {
             Long id = Long.parseLong(Jwts.parser()
                     .setSigningKey(secretKey)
@@ -49,7 +49,7 @@ public class JwtTokenProvider {
                     .getBody()
                     .get("name", String.class);
 
-            return new User(id, name);
+            return new Member(id, name);
         } catch (ExpiredJwtException exception) {
             throw new AuthorizationException("인증이 만료되었습니다.");
         } catch (JwtException | IllegalArgumentException exception) {
