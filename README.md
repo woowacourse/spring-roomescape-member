@@ -82,7 +82,7 @@
 ### 6단계
 - [x] 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한한다.
 - [ ] 관리자가 조건에 따라 예약 목록에서 검색할 수 있다.
-  - [ ] themeId, memberId, dateForm, dateTo 값을 사용한다.
+  - [ ] themeId, memberId, dateFrom, dateTo 값을 사용한다.
 - [ ] 프론트엔드에 따라 추가 요구사항을 구현한다.
 
 
@@ -422,3 +422,81 @@ HTTP/1.1 200
       }
     }
   ```
+
+### 관리자 예약 필터 조회 기능
+- Request
+  ```
+  POST /admin/reservations HTTP/1.1
+  content-type: application/json
+  cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+  host: localhost:8080
+  
+  {
+    "themeId": 1,
+    "memberId": 1,
+    "dateForm": "2025-05-21",
+    "dateTo": "2025-05-30"
+  }
+  ```
+
+  - Response
+    ```
+    HTTP/1.1 200
+      Content-Type: application/json
+      [
+        {
+            "id": 1,
+            "date": "2024-05-21",
+            "member": {
+                "id": 2,
+                "name": "멤버"
+            },
+            "time": {
+                "id": 1,
+                "startAt": "11:59:00"
+            },
+            "theme": {
+                "id": 1,
+                "name": "테마1",
+                "description": "설명1",
+                "thumbnail": "https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/08/urbanbrush-20220801083851022216.jpg"
+            }
+        },
+        {
+            "id": 2,
+            "date": "2025-05-25",
+            "member": {
+                "id": 2,
+                "name": "멤버"
+            },
+            "time": {
+                "id": 2,
+                "startAt": "17:12:00"
+            },
+            "theme": {
+                "id": 2,
+                "name": "테마2",
+                "description": "설명2",
+                "thumbnail": "https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/12/urbanbrush-20221209202526239031.jpg"
+            }
+        },
+        {
+            "id": 3,
+            "date": "2024-05-29",
+            "member": {
+                "id": 2,
+                "name": "멤버"
+            },
+            "time": {
+                "id": 3,
+                "startAt": "11:11:00"
+            },
+            "theme": {
+                "id": 2,
+                "name": "테마2",
+                "description": "설명2",
+                "thumbnail": "https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/12/urbanbrush-20221209202526239031.jpg"
+            }
+        }
+      ]
+    ```
