@@ -76,7 +76,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findSearchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<Reservation> searchReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String conditionQuery = " where tm.id = ? and u.id = ? and r.date between ? and ?";
         String sql = getBasicSelectQuery() + conditionQuery;
         return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);

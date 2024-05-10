@@ -99,8 +99,8 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResponse> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        List<Reservation> reservations = reservationRepository.findSearchReservation(themeId, memberId, dateFrom, dateTo);
+    public List<ReservationResponse> searchReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.searchReservations(themeId, memberId, dateFrom, dateTo);
 
         return reservations.stream()
                 .map(ReservationResponse::from)
