@@ -54,7 +54,7 @@ public class ReservationController {
                 .body(ReservationResponse.from(savedReservation));
     }
 
-    @DeleteMapping("/reservations/{reservation-id}")
+    @DeleteMapping("/admin/reservations/{reservation-id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("reservation-id") final Long reservationId) {
         reservationService.deleteReservation(reservationId);
         return ResponseEntity.noContent().build();
