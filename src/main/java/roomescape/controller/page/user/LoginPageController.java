@@ -1,15 +1,15 @@
-package roomescape.controller.admin;
+package roomescape.controller.page.user;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/admin/theme")
-public class AdminThemePageController {
+@RequestMapping("/login")
+public class LoginPageController {
 
     @GetMapping
-    public String getThemePage() {
-        return "/admin/theme";
+    public String getLoginPage() {
+        return "login";
     }
 }

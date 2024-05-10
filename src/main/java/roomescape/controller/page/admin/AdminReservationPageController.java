@@ -1,4 +1,4 @@
-package roomescape.controller.admin;
+package roomescape.controller.page.admin;
 
 import java.util.List;
 import org.springframework.stereotype.Controller;
