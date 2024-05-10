@@ -19,12 +19,19 @@ public class Member {
     public Member(Long id, String name, String email, String password, Role role) {
         validateName(name);
         validateEmail(email);
-        validatePassword(password); //TODO 역할 검증로직 추가
+        validatePassword(password);
+        validateRole(role);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    private void validateRole(Role role) {
+        if (role == null) {
+            throw new BadRequestException("역할에 빈값을 입력할 수 없습니다.");
+        }
     }
 
     private void validateName(String name) {
