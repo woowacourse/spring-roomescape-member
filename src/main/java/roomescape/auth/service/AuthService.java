@@ -1,8 +1,7 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.TokenProvider;
-import roomescape.auth.config.AuthInfo;
+import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.dto.response.GetAuthInfoResponse;
 import roomescape.auth.dto.response.LoginResponse;
 import roomescape.member.domain.Member;

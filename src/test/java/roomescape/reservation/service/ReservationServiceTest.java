@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.config.AuthInfo;
+import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.FakeMemberRepository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;

@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.file.AccessDeniedException;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.TokenProvider;
-import roomescape.auth.config.AuthInfo;
+import roomescape.auth.service.TokenProvider;
+import roomescape.auth.domain.AuthInfo;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
     private final TokenProvider tokenProvider;
