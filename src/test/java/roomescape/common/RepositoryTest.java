@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 @JdbcTest
 @Sql("/test-schema.sql")
-public class RepositoryTest {
+public abstract class RepositoryTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 

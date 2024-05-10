@@ -10,7 +10,7 @@ import roomescape.reservation.domain.*;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ServiceTest {
+public abstract class ServiceTest {
     @LocalServerPort
     private int port;
 
