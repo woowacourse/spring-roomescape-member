@@ -1,5 +1,7 @@
 package roomescape.service.roomescape.admin;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.request.AdminReservationSaveRequest;
 import roomescape.controller.dto.response.AdminReservationResponse;
@@ -53,5 +55,18 @@ public class AdminReservationService {
     private Member findMemberById(final AdminReservationSaveRequest reservationSaveRequest) {
         return memberDao.findById(reservationSaveRequest.memberId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 회원 번호를 입력하였습니다."));
+    }
+
+    public List<AdminReservationResponse> getByFilter(
+            final Long memberId, final Long themeId,
+            final LocalDate dateFrom, final LocalDate dateTo
+    ) {
+        List<Reservation> reservations =
+                reservationDao.findByMemberIdAndThemeIdAndDateFromAndDateTo(
+                        memberId, themeId, dateFrom, dateTo
+                );
+        return reservations.stream()
+                .map(AdminReservationResponse::from)
+                .toList();
     }
 }

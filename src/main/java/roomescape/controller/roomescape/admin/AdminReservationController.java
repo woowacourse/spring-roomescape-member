@@ -1,10 +1,14 @@
 package roomescape.controller.roomescape.admin;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.AdminReservationSaveRequest;
 import roomescape.controller.dto.response.AdminReservationResponse;
@@ -24,9 +28,20 @@ public class AdminReservationController {
     public ResponseEntity<AdminReservationResponse> save(
             @RequestBody AdminReservationSaveRequest reservationSaveRequest
     ) {
-        System.out.println("reservationSaveRequest = " + reservationSaveRequest);
         AdminReservationResponse reservationResponse = adminReservationService.save(reservationSaveRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AdminReservationResponse>> getByFilter(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo
+    ) {
+        return ResponseEntity.ok(
+                adminReservationService.getByFilter(memberId, themeId, dateFrom, dateTo)
+        );
     }
 }
