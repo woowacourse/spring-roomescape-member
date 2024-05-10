@@ -51,7 +51,7 @@ class JdbcReservationRepositoryTest {
     void findAll() {
         createReservation();
 
-        List<Reservation> reservations = reservationRepository.findAll(
+        List<Reservation> reservations = reservationRepository.findAllByConditions(
                 1L,
                 1L,
                 LocalDate.of(2024, 5, 4),

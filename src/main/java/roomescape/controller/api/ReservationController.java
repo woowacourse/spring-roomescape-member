@@ -30,14 +30,14 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations(
+    public ResponseEntity<List<ReservationResponse>> getReservationsByConditions(
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) Long themeId,
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo
     ) {
         List<ReservationResponse> reservationResponses = reservationService
-                .getReservations(memberId, themeId, dateFrom, dateTo);
+                .getReservationsByConditions(memberId, themeId, dateFrom, dateTo);
 
         return ResponseEntity.ok(reservationResponses);
     }

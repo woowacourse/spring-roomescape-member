@@ -59,7 +59,7 @@ class ReservationServiceTest extends BaseServiceTest {
         );
         reservationRepository.save(reservation);
 
-        List<ReservationResponse> responses = reservationService.getReservations(
+        List<ReservationResponse> responses = reservationService.getReservationsByConditions(
                 member.getId(),
                 theme.getId(),
                 LocalDate.of(2024, 4, 9),

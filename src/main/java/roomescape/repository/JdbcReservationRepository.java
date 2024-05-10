@@ -75,7 +75,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<Reservation> findAllByConditions(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
                     SELECT
                         r.id,

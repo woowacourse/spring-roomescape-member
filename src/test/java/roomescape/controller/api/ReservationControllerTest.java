@@ -56,7 +56,7 @@ class ReservationControllerTest extends BaseControllerTest {
     Stream<DynamicTest> reservationControllerTests() {
         return Stream.of(
                 DynamicTest.dynamicTest("예약을 생성한다.", this::addReservation),
-                DynamicTest.dynamicTest("예약을 모두 조회한다.", this::getAllReservations),
+                DynamicTest.dynamicTest("예약을 모두 조회한다.", this::getReservationsByConditions),
                 DynamicTest.dynamicTest("예약을 삭제한다.", this::deleteReservationById)
         );
     }
@@ -135,7 +135,7 @@ class ReservationControllerTest extends BaseControllerTest {
         });
     }
 
-    private void getAllReservations() {
+    private void getReservationsByConditions() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()

@@ -44,14 +44,14 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public List<ReservationResponse> getReservations(
+    public List<ReservationResponse> getReservationsByConditions(
             Long memberId,
             Long themeId,
             LocalDate dateFrom,
             LocalDate dateTo
     ) {
         List<Reservation> reservations = reservationRepository
-                .findAll(memberId, themeId, dateFrom, dateTo);
+                .findAllByConditions(memberId, themeId, dateFrom, dateTo);
 
         return reservations.stream()
                 .map(ReservationResponse::from)
