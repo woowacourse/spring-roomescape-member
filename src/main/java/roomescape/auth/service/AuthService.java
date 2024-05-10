@@ -33,10 +33,9 @@ public class AuthService {
         }
     }
 
-    public GetAuthInfoResponse getMemberAuthInfo(final String token) {
-        AuthInfo authInfo = tokenProvider.extractAuthInfo(token);
+    public GetAuthInfoResponse getMemberAuthInfo(final AuthInfo authInfo) {
         Member member =  memberRepository.findById(authInfo.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("로그인하려는 계정이 존재하지 않습니다. 회원가입 후 로그인해주세요."));
+                .orElseThrow(() -> new SecurityException("회원 정보가 올바르지 않습니다. 회원가입 후 로그인해주세요."));
         return GetAuthInfoResponse.from(member);
     }
 }

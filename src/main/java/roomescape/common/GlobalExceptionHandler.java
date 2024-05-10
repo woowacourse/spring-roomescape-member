@@ -1,6 +1,7 @@
 package roomescape.common;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -45,12 +46,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            // TODO: exceptionMessage 처리
-            MissingRequestCookieException.class,
-            ExpiredJwtException.class
+            SecurityException.class,
+            JwtException.class
     })
-    public ResponseEntity<String> catchUnauthorized(Exception ex) {
-        String exceptionMessage = "쿠키에 저장된 인증 토큰 값이 비어있습니다. 로그인 후 다시 시도해주세요.";
+    public ResponseEntity<String> catchUnauthorizedException(Exception ex) {
         System.out.println(EXCEPTION_PREFIX + ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(EXCEPTION_PREFIX + ex.getMessage());
     }
