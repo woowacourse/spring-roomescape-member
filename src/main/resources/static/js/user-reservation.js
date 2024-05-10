@@ -159,7 +159,7 @@ function onReservationButtonClick() {
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.ok) response.text().then(data => alert(data));
+          if (!response.ok) response.text().then(data => alert(data.detail));
           return response.json();
         })
         .then(data => {
@@ -179,6 +179,9 @@ function requestRead(endpoint) {
   return fetch(endpoint)
       .then(response => {
         if (response.status === 200) return response.json();
-        throw new Error('Read failed');
+        else {
+          response.text().then(data => alert(data.detail));
+          throw new Error('Read failed');
+        }
       });
 }

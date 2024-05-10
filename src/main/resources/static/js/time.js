@@ -110,7 +110,10 @@ function requestCreate(data) {
   return fetch(API_ENDPOINT, requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+        else {
+          response.text().then(data => alert(data.detail));
+          throw new Error('Create failed');
+        }
       });
 }
 
@@ -118,7 +121,10 @@ function requestRead() {
   return fetch(API_ENDPOINT)
       .then(response => {
         if (response.status === 200) return response.json();
-        throw new Error('Read failed');
+        else {
+          response.text().then(data => alert(data.detail));
+          throw new Error('Read failed');
+        }
       });
 }
 
@@ -129,6 +135,9 @@ function requestDelete(id) {
 
   return fetch(`${API_ENDPOINT}/${id}`, requestOptions)
       .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
+        if (response.status !== 204) {
+          response.text().then(data => alert(data.detail));
+          throw new Error('Delete failed');
+        }
       });
 }
