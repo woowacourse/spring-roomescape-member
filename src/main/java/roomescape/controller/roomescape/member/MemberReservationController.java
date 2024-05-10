@@ -18,7 +18,7 @@ import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.controller.dto.response.SelectableTimeResponse;
 import roomescape.domain.member.Member;
 import roomescape.service.roomescape.member.ReservationService;
-import roomescape.util.configuration.AuthenticationPrincipal;
+import roomescape.util.infrastructure.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/reservations")

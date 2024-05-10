@@ -12,7 +12,7 @@ import roomescape.controller.dto.request.LoginRequest;
 import roomescape.controller.dto.response.MemberNameResponse;
 import roomescape.domain.member.Member;
 import roomescape.service.auth.AuthService;
-import roomescape.util.configuration.AuthenticationPrincipal;
+import roomescape.util.infrastructure.AuthenticationPrincipal;
 
 @RestController
 public class TokenAuthController {
@@ -25,6 +25,8 @@ public class TokenAuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, final HttpServletResponse response) {
         Cookie cookie = new Cookie("token", authService.createToken(loginRequest));
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }

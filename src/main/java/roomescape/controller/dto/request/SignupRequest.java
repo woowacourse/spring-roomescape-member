@@ -16,6 +16,6 @@ public record SignupRequest(
         String password
 ) {
     public Member toEntity() {
-        return Member.of(name, email, password);
+        return Member.of(name, email, password, "member");
     }
 }

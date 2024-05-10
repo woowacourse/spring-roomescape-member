@@ -1,8 +1,6 @@
-package roomescape.util.configuration;
+package roomescape.util.infrastructure;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -28,19 +26,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = extractTokenFromCookies(request.getCookies());
+        String token = JwtTokenExtractor.extractTokenFromCookies(request.getCookies());
         return authService.findMemberByToken(token);
-    }
-
-    private String extractTokenFromCookies(final Cookie[] cookies) {
-        if (cookies == null || cookies.length == 0) {
-            return "";
-        }
-        return Arrays.asList(cookies)
-                .stream()
-                .filter(cookie -> cookie.getName().equals("token"))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 쿠키에 토큰 정보를 입력해주세요."))
-                .getValue();
     }
 }

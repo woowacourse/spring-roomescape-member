@@ -19,6 +19,7 @@ CREATE TABLE member
     id BIGINT NOT NULL AUTO_INCREMENT,
     member_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
+    member_role  VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
