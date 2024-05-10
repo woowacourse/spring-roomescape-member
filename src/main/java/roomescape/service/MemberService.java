@@ -7,10 +7,10 @@ import roomescape.exception.NotExistEmailException;
 import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
-import roomescape.service.dto.output.MemberCreateOutput;
-import roomescape.service.dto.output.MemberLoginOutput;
-import roomescape.service.dto.output.TokenLoginOutput;
+import roomescape.service.dto.output.*;
 import roomescape.service.util.TokenProvider;
+
+import java.util.List;
 
 import static roomescape.exception.ExceptionDomainType.MEMBER;
 
@@ -27,6 +27,11 @@ public class MemberService {
     public MemberCreateOutput createMember(final MemberCreateInput memberCreateInput) {
         final Member member = memberDao.create(memberCreateInput.toMember());
         return MemberCreateOutput.toOutput(member);
+    }
+
+    public List<MemberOutput> getAllMembers() {
+        final List<Member> members = memberDao.getAllMembers();
+        return MemberOutput.toOutputs(members);
     }
 
     public MemberLoginOutput loginMember(final MemberLoginInput memberLoginInput) {

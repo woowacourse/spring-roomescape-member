@@ -10,6 +10,7 @@ import roomescape.dao.mapper.MemberMapper;
 import roomescape.domain.user.Member;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -53,6 +54,10 @@ public class MemberDao {
         } catch (final EmptyResultDataAccessException | NullPointerException exception) {
             return Optional.empty();
         }
+    }
+    public List<Member> getAllMembers() {
+        final String sql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
 
