@@ -30,9 +30,9 @@ public class Reservation {
         }
     }
 
-    public boolean isBeforeNow() {
+    public boolean isBefore(final LocalDateTime dateTime) {
         final LocalDateTime reservationDateTime = getDateTime();
-        return reservationDateTime.isBefore(LocalDateTime.now());
+        return reservationDateTime.isBefore(dateTime);
     }
 
     private LocalDateTime getDateTime() {

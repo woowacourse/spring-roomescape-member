@@ -11,6 +11,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -72,7 +73,7 @@ public class ReservationService {
     }
 
     private void validateDateTime(final Reservation reservation) {
-        final boolean isBeforeNow = reservation.isBeforeNow();
+        final boolean isBeforeNow = reservation.isBefore(LocalDateTime.now());
         if (isBeforeNow) {
             throw new IllegalArgumentException("지나간 시간에 대한 예약은 생성할 수 없습니다.");
         }

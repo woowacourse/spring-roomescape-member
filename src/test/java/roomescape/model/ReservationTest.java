@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ class ReservationTest {
         final Theme theme = new Theme("테마 이름", "테마 설명", "테마 썸네일");
         final ReservationTime time = new ReservationTime(LocalTime.of(14, 0));
         final Reservation reservation = new Reservation(null, LocalDate.now().minusDays(1), time, theme);
-        assertTrue(reservation.isBeforeNow());
+        assertTrue(reservation.isBefore(LocalDateTime.now()));
     }
 
     @Test
@@ -35,6 +36,6 @@ class ReservationTest {
         final Theme theme = new Theme("테마 이름", "테마 설명", "테마 썸네일");
         final ReservationTime time = new ReservationTime(LocalTime.of(14, 0));
         final Reservation reservation = new Reservation(null, LocalDate.now().plusDays(1), time, theme);
-        assertFalse(reservation.isBeforeNow());
+        assertFalse(reservation.isBefore(LocalDateTime.now()));
     }
 }
