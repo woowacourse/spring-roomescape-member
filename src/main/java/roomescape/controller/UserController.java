@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import roomescape.controller.member.dto.LoginMember;
 
 @Controller
 public class UserController {
@@ -19,12 +20,14 @@ public class UserController {
         return "/reservation";
     }
 
-    @GetMapping("/login") //TODO redirect를 쿠키로만 확인하면 안될듯
-    public String showLoginPage() {
+    @GetMapping("/login")
+    public String showLoginPage(final LoginMember loginMember) {
+        if (loginMember != null) {
+            return showPopularTheme();
+        }
         return "/login";
     }
 
-    //TODO 여기에 있는게 맞을 지 고민해보자.
     @PostMapping("/logout")
     public String logout(final HttpServletResponse response) {
         // todo 세션도 만료시키기.
