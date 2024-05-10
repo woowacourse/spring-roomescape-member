@@ -58,7 +58,7 @@ public class AuthService {
     }
 
     private void validatePassword(LoginRequest request, Member memberToLogin) {
-        if (!passwordEncoder.matches(request.password(), memberToLogin.getEncodedPassword())) {
+        if (!passwordEncoder.matches(request.password(), memberToLogin.getPassword())) {
             throw new ClientErrorExceptionWithLog("[ERROR] 잘못된 비밀번호 입니다.");
         }
     }

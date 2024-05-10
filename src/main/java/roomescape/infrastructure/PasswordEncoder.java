@@ -17,7 +17,7 @@ public class PasswordEncoder {
 
     private void validateEmpty(String password) {
         if (password == null) {
-            throw new ClientErrorExceptionWithLog("[ERROR] 비밀번호를 입력해주세요.");
+            throw new ClientErrorExceptionWithLog("[ERROR] 비밀번호가 없습니다.");
         }
     }
 }
