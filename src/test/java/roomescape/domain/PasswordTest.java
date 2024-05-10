@@ -14,6 +14,6 @@ class PasswordTest {
         Password password1 = new Password("hashvalue", "salt");
         Password password2 = new Password("hashvalue", "salt");
         //when, then
-        assertThat(password1).isEqualTo(password2);
+        assertThat(password1.check(password2)).isTrue();
     }
 }
