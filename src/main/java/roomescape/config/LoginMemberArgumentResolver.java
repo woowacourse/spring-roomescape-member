@@ -9,17 +9,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
 import roomescape.exception.BadRequestException;
-import roomescape.service.MemberService;
+import roomescape.service.AuthService;
 import roomescape.service.dto.LoginMember;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String TOKEN_NAME = "token";
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         String token = extractTokenFromCookie(request.getCookies());
 
-        Member member = memberService.findLoginMember(token);
+        Member member = authService.findLoginMember(token);
         return new LoginMember(member.getId(), member.getName());
     }
 

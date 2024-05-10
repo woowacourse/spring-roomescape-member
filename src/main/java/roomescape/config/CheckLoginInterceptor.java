@@ -1,6 +1,6 @@
 package roomescape.config;
 
-import static roomescape.controller.MemberController.TOKEN_NAME;
+import static roomescape.controller.AuthController.TOKEN_NAME;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,14 +10,14 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.BadRequestException;
-import roomescape.service.MemberService;
+import roomescape.service.AuthService;
 
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public CheckLoginInterceptor(MemberService memberService) {
-        this.memberService = memberService;
+    public CheckLoginInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
 
         String token = extractTokenFromCookie(request.getCookies());
 
-        Member member = memberService.findLoginMember(token);
+        Member member = authService.findLoginMember(token);
         if (member == null) {
             throw new BadRequestException("사용자를 찾을 수 없습니다.");
         }

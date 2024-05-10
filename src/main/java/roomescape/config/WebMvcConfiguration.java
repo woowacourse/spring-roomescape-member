@@ -5,24 +5,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.service.MemberService;
+import roomescape.service.AuthService;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final MemberService memberService;
+    private AuthService authService;
 
-    public WebMvcConfiguration(MemberService memberService) {
-        this.memberService = memberService;
+    public WebMvcConfiguration(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckLoginInterceptor(memberService)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new CheckLoginInterceptor(authService)).addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberService));
+        resolvers.add(new LoginMemberArgumentResolver(authService));
     }
 }
