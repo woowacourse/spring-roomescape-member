@@ -20,8 +20,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        String role = jwtTokenProvider.getRoleByToken(token);
+        String role = jwtTokenProvider.getRoleByCookie(cookies);
         if (role == null || !role.equals(ADMIN)) {
             response.setStatus(401);
             return false;

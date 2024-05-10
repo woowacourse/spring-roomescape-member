@@ -28,7 +28,6 @@ public class MemberIdConverterArgumentResolver implements HandlerMethodArgumentR
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        return jwtTokenProvider.getMemberIdByToken(token);
+        return jwtTokenProvider.getMemberIdByCookie(cookies);
     }
 }

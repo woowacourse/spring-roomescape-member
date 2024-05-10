@@ -26,7 +26,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String extractTokenFromCookie(Cookie[] cookies) {
+    public Long getMemberIdByCookie(Cookie[] cookies) {
+        String memberId = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(extractTokenFromCookie(cookies))
+                .getBody().getSubject();
+        return Long.parseLong(memberId);
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(TOKEN)) {
                 return cookie.getValue();
@@ -35,26 +43,18 @@ public class JwtTokenProvider {
         return "";
     }
 
-    public Long getMemberIdByToken(String token) {
-        String memberId = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody().getSubject();
-        return Long.parseLong(memberId);
-    }
-
-    public String getEmailByToken(String token) {
+    public String getEmailByCookie(Cookie[] cookies) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
-                .parseClaimsJws(token)
+                .parseClaimsJws(extractTokenFromCookie(cookies))
                 .getBody();
         return String.valueOf(claims.get(EMAIL));
     }
 
-    public String getRoleByToken(String token) {
+    public String getRoleByCookie(Cookie[] cookies) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
-                .parseClaimsJws(token)
+                .parseClaimsJws(extractTokenFromCookie(cookies))
                 .getBody();
         return String.valueOf(claims.get(ROLE));
     }

@@ -54,8 +54,7 @@ public class MemberService {
     }
 
     public CheckMemberResponse findByCookies(Cookie[] cookies) {
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        String email = jwtTokenProvider.getEmailByToken(token);
+        String email = jwtTokenProvider.getEmailByCookie(cookies);
         return findByEmail(email);
     }
 }
