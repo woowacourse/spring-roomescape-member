@@ -32,7 +32,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readAll(
+    public ResponseEntity<List<ReservationResponse>> readReservations(
             @RequestParam @Nullable Long themeId,
             @RequestParam @Nullable Long memberId,
             @RequestParam @Nullable LocalDate dateFrom,
