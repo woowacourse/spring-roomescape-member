@@ -17,7 +17,7 @@ public class JdbcMemberRepository implements MemberRepository {
         rs.getLong("id"),
         rs.getString("email"),
         rs.getString("name"),
-        rs.getObject("role", Role.class)
+        Role.valueOf(rs.getString("role"))
     );
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {

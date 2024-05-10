@@ -34,7 +34,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getLong("member_id"),
                 rs.getString("member_email"),
                 rs.getString("member_name"),
-                rs.getObject("member_role", Role.class)
+                Role.valueOf(rs.getString("member_role"))
             ),
             rs.getString("reservation_date"),
             new ReservationTime(
