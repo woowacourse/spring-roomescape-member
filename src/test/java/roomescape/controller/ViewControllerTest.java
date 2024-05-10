@@ -1,38 +1,48 @@
 package roomescape.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-@WebMvcTest(ViewController.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ViewControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     @DisplayName("루트 화면을 요청하면 200 OK를 응답한다.")
     void popularThemePageTest() throws Exception {
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk());
+        RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @Test
     @DisplayName("예약 페이지를 요청하면 200 OK를 응답한다.")
     void reservationPageTest() throws Exception {
-        mockMvc.perform(get("/reservation"))
-                .andExpect(status().isOk());
+        RestAssured.given().log().all()
+                .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @Test
     @DisplayName("로그인 페이지를 요청하면 200 OK를 응답한다.")
     void loginPageTest() throws Exception {
-        mockMvc.perform(get("/login"))
-                .andExpect(status().isOk());
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
     }
 }
