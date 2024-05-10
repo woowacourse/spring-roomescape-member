@@ -90,7 +90,7 @@ class ThemeControllerTest {
         private Clock clock;
 
         @Test
-        @Sql(value = "classpath:popular_data.sql")
+        @Sql(value = "classpath:test_data.sql")
         @DisplayName("인기 테마를 조회한다.")
         void readPopularThemes() {
             given(clock.instant()).willReturn(Instant.parse("2024-05-10T00:00:00Z"));
