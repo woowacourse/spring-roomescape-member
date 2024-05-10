@@ -10,8 +10,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.member.Member;
 import roomescape.dto.request.MemberRequest;
 import roomescape.infrastructure.auth.Token;
-import roomescape.service.serviceimpl.LoginService;
-import roomescape.service.serviceimpl.MemberService;
+import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
