@@ -37,7 +37,7 @@ function renderTheme(themes) {
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
     const name = theme.name;
-    const themeId = theme.themeId;
+    const themeId = theme.id;
     themeSlots.appendChild(createSlot('theme', name, themeId));
   });
 }
