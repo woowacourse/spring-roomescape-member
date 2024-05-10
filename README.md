@@ -84,4 +84,4 @@
 | DELETE      | `/themes/{id}`                                    | 테마 삭제            |
 | POST        | `/login`                                          | 로그인              |
 | GET         | `/login/check`                                    | 로그인 인증 정보 조회     |
-
+| POST        | `/logout`                                         | 로그아웃             |
