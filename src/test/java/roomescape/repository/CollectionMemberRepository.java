@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Member;
+import roomescape.domain.Members;
 
 public class CollectionMemberRepository implements MemberRepository {
 
@@ -14,6 +15,11 @@ public class CollectionMemberRepository implements MemberRepository {
     public CollectionMemberRepository() {
         this.members = new ArrayList<>();
         this.index = new AtomicLong(0);
+    }
+
+    @Override
+    public Members findAll() {
+        return new Members(members);
     }
 
     @Override

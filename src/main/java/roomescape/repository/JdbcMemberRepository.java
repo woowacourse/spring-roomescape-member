@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Members;
 import roomescape.domain.Role;
 
 @Repository
@@ -24,6 +26,14 @@ public class JdbcMemberRepository implements MemberRepository {
     );
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Override
+    public Members findAll() {
+        List<Member> members = jdbcTemplate.query(
+                "SELECT id, name, role, email, password FROM MEMBER",
+                MEMBER_ROW_MAPPER);
+        return new Members(members);
+    }
 
     public Optional<Member> findById(long id) {
         try {

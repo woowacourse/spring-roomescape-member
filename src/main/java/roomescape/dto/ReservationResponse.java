@@ -7,7 +7,7 @@ public record ReservationResponse(long id,
                                   LocalDate date,
                                   ReservationTimeResponse time,
                                   ThemeResponse theme,
-                                  LoginMemberResponse user) {
+                                  LoginMemberResponse member) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),

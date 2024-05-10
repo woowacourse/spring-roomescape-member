@@ -136,7 +136,7 @@ public class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(201)
                     .body("id", is(11),
-                            "user.name", is(defaultMember.getName()),
+                            "member.name", is(defaultMember.getName()),
                             "date", is(reservationParam.get("date")),
                             "time.startAt", is(defaultTime.getStartAt().toString()),
                             "theme.name", is(defaultTheme.getName()));
