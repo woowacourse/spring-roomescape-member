@@ -1,14 +1,20 @@
 package roomescape.reservation.repository;
 
+import com.fasterxml.jackson.databind.util.ArrayBuilders.BooleanBuilder;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SimplePropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -133,6 +139,47 @@ public class JdbcReservationRepository implements ReservationRepository {
                 where r.date = ? and r.theme_id = ?
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
+    }
+
+    @Override
+    public List<Reservation> searchBy(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                      final LocalDate dateTo) {
+        String sql = """
+                select r.id,
+                    m.id as member_id, m.name, m.email, m.password, m.role,
+                    r.date,
+                    rt.id as time_id, rt.start_at,
+                    t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
+                inner join member as m
+                on r.member_id = m.id
+                where 1 = 1                           
+                """;
+
+        List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            sql += " AND theme_id = ?";
+            params.add(themeId);
+        }
+        if (memberId != null) {
+            sql += " AND member_id = ?";
+            params.add(memberId);
+        }
+        if (dateFrom != null) {
+            sql += " AND date >= ?";
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sql += " AND date <= ?";
+            params.add(dateTo);
+        }
+
+        return jdbcTemplate.query(sql, params.toArray(), reservationRowMapper);
     }
 
     @Override
