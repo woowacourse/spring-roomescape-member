@@ -1,11 +1,11 @@
 package roomescape.domain.member;
 
 public class Member {
-    private Long id;
-    private MemberName name;
-    private String email;
-    private String password;
-    private Role role;
+    private final Long id;
+    private final MemberName name;
+    private final String email;
+    private final String password;
+    private final Role role;
 
     public Member(
             final Long id, final MemberName name, final String email,
@@ -15,6 +15,7 @@ public class Member {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public static Member of(
