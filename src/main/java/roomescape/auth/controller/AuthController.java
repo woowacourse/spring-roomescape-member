@@ -1,8 +1,10 @@
 package roomescape.auth.controller;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,10 +33,25 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<LoginCheckResponse> signUp(@RequestBody SignUpRequest signUpRequest, HttpServletResponse httpServletResponse) {
+    @PostMapping("/signup")
+    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
         authService.signUp(signUpRequest);
         return ResponseEntity.created(URI.create("/login")).build();
     }
 
+    @GetMapping("/login/check")
+    public LoginCheckResponse check(HttpServletRequest httpServletRequest){
+        Cookie[] cookies = httpServletRequest.getCookies();
+        String token = extractTokenFromCookie(cookies);
+        return authService.check(token);
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
+    }
 }

@@ -14,4 +14,9 @@ public class MemberPageController {
     public String findLoginPage() {
         return "login";
     }
+
+    @GetMapping("/signup")
+    public String findSignUpPage() {
+        return "signup";
+    }
 }
