@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import roomescape.controller.request.UserLoginRequest;
 import roomescape.exception.AuthorizationException;
+import roomescape.exception.NotFoundException;
 import roomescape.model.User;
 import roomescape.service.fake.FakeUserDao;
 
@@ -36,7 +37,7 @@ class UserServiceTest {
 
     @DisplayName("아이디와 비밀번호 같은 유저가 없으면 예외가 발생한다.")
     @Test
-    void should_not_find_user_when_user_not_exist() {
+    void should_throw_exception_when_user_not_exist() {
         User user = new User(1L, "배키", "hello@email.com", "1234");
         userDao.addUser(user);
         UserLoginRequest request = new UserLoginRequest("1111", "sun@email.com");
@@ -45,4 +46,21 @@ class UserServiceTest {
                 .isInstanceOf(AuthorizationException.class);
     }
 
+    @DisplayName("아이디를 통해 사용자 이름을 조회한다.")
+    @Test
+    void should_find_user_when_give_id() {
+        User user = new User(1L, "배키", "hello@email.com", "1234");
+        userDao.addUser(user);
+
+        String userNameById = userService.findUserNameById(1L);
+
+        assertThat(userNameById).isEqualTo("배키");
+    }
+
+    @DisplayName("주어진 아이디에 해당하는 사용자가 없으면 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_user_id_not_exist() {
+        assertThatThrownBy(() -> userService.findUserNameById(1L))
+                .isInstanceOf(NotFoundException.class);
+    }
 }
