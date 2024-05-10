@@ -10,16 +10,20 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.request.LoginMemberInformation;
+import roomescape.service.JwtProvider;
 import roomescape.service.MemberAuthService;
 import roomescape.service.response.MemberAppResponse;
 
 @Component
 public class MemberHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private MemberAuthService memberAuthService;
+    private final MemberAuthService memberAuthService;
 
-    public MemberHandlerMethodArgumentResolver(MemberAuthService memberAuthService) {
+    private final JwtProvider jwtProvider;
+
+    public MemberHandlerMethodArgumentResolver(MemberAuthService memberAuthService, JwtProvider jwtProvider) {
         this.memberAuthService = memberAuthService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -39,7 +43,8 @@ public class MemberHandlerMethodArgumentResolver implements HandlerMethodArgumen
             throw new IllegalArgumentException("쿠키가 없습니다. 다시 로그인 해주세요.");
         }
         String token = extractTokenFromCookie(request.getCookies());
-        MemberAppResponse appResponse = memberAuthService.findMemberByToken(token);
+        String email = jwtProvider.getPayload(token);
+        MemberAppResponse appResponse = memberAuthService.findMemberByEmail(email);
 
         return new LoginMemberInformation(appResponse.id(), appResponse.name(), appResponse.role());
     }

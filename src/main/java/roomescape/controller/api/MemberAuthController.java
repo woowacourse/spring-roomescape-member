@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.MemberSignUpRequest;
 import roomescape.controller.request.TokenWebRequest;
 import roomescape.controller.response.MemberWebResponse;
+import roomescape.service.JwtProvider;
 import roomescape.service.MemberAuthService;
 import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.request.TokenAppRequest;
@@ -25,15 +26,17 @@ import roomescape.service.response.MemberAppResponse;
 public class MemberAuthController {
 
     private final MemberAuthService memberAuthService;
+    private final JwtProvider jwtProvider;
 
-    public MemberAuthController(MemberAuthService memberAuthService) {
+    public MemberAuthController(MemberAuthService memberAuthService, JwtProvider jwtProvider) {
         this.memberAuthService = memberAuthService;
+        this.jwtProvider = jwtProvider;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody TokenWebRequest request,
                                       HttpServletResponse response) {
-        String token = memberAuthService.createToken(new TokenAppRequest(request.email(), request.password()));
+        String token = jwtProvider.createToken(new TokenAppRequest(request.email(), request.password()));
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -47,7 +50,8 @@ public class MemberAuthController {
             throw new IllegalArgumentException("쿠키가 없습니다. 다시 로그인 해주세요.");
         }
         String token = extractTokenFromCookie(request.getCookies());
-        MemberAppResponse appResponse = memberAuthService.findMemberByToken(token);
+        String email = jwtProvider.getPayload(token);
+        MemberAppResponse appResponse = memberAuthService.findMemberByEmail(email);
         MemberWebResponse response = new MemberWebResponse(appResponse.id(), appResponse.name(), appResponse.role());
 
         return ResponseEntity.ok().body(response);
@@ -65,7 +69,7 @@ public class MemberAuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         String token = extractTokenFromCookie(request.getCookies());
-        String expiredToken = memberAuthService.createExpireToken(token);
+        String expiredToken = jwtProvider.createExpiredToken(token);
         Cookie cookie = new Cookie("token", expiredToken);
         cookie.setPath("/");
         cookie.setHttpOnly(true);

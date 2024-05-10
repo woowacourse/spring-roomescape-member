@@ -8,7 +8,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.MemberRepository;
 import roomescape.exception.AuthorizationException;
+import roomescape.service.request.TokenAppRequest;
 
 @Component
 public class JwtProvider {
@@ -18,28 +20,29 @@ public class JwtProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+    private final MemberRepository memberRepository;
 
-        return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(validity)
-            .signWith(SignatureAlgorithm.HS256, secretKey)
-            .compact();
+    public JwtProvider(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    public String getPayload(String token) {
-        if (validateToken(token)) {
-            return getClaims(token)
-                .getSubject();
+    public String createToken(TokenAppRequest request) {
+        if (isExistsMember(request.email(), request.password())) {
+            Claims claims = Jwts.claims().setSubject(request.email());
+            Date now = new Date();
+            Date validity = new Date(now.getTime() + validityInMilliseconds);
+
+            return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
         }
-        throw new AuthorizationException("토큰이 만료되었습니다. 다시 로그인해주세요.");
+        throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
     }
 
-    public String getExpiredToken(String token) {
+    public String createExpiredToken(String token) {
         if (validateToken(token)) {
             Claims claims = getClaims(token);
 
@@ -53,11 +56,16 @@ public class JwtProvider {
         throw new AuthorizationException("토큰이 만료되었습니다. 다시 로그인해주세요.");
     }
 
-    private Claims getClaims(final String token) {
-        return Jwts.parser()
-            .setSigningKey(secretKey)
-            .parseClaimsJws(token)
-            .getBody();
+    public String getPayload(String token) {
+        if (validateToken(token)) {
+            return getClaims(token)
+                .getSubject();
+        }
+        throw new AuthorizationException("토큰이 만료되었습니다. 다시 로그인해주세요.");
+    }
+
+    private boolean isExistsMember(String email, String password) {
+        return memberRepository.isExistsByEmailAndPassword(email, password);
     }
 
     private boolean validateToken(String token) {
@@ -70,5 +78,12 @@ public class JwtProvider {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private Claims getClaims(final String token) {
+        return Jwts.parser()
+            .setSigningKey(secretKey)
+            .parseClaimsJws(token)
+            .getBody();
     }
 }

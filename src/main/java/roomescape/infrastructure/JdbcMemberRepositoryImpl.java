@@ -56,6 +56,18 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public boolean isExistsByEmail(String email) {
+        String sql = "SELECT EXISTS(SELECT id FROM member WHERE email = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    @Override
+    public boolean isExistsByEmailAndPassword(String email, String password) {
+        String sql = "SELECT EXISTS(SELECT id FROM member WHERE email = ? AND password = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email, password);
+    }
+
+    @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         try {

@@ -11,7 +11,6 @@ import roomescape.domain.vo.MemberPassword;
 import roomescape.domain.vo.MemberRole;
 import roomescape.exception.AuthorizationException;
 import roomescape.service.request.MemberSignUpAppRequest;
-import roomescape.service.request.TokenAppRequest;
 import roomescape.service.response.MemberAppResponse;
 
 @Service
@@ -19,16 +18,14 @@ public class MemberAuthService {
 
     public static final MemberRole USER_ROLE = new MemberRole("USER");
 
-    private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
 
-    public MemberAuthService(JwtProvider jwtProvider, MemberRepository memberRepository) {
-        this.jwtProvider = jwtProvider;
+    public MemberAuthService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
     public MemberAppResponse signUp(MemberSignUpAppRequest request) {
-        if (isExistsMember(request.email(), request.password())) {
+        if (memberRepository.isExistsByEmail(request.email())) {
             throw new AuthorizationException("해당 이메일의 회원이 이미 존재합니다.");
         }
 
@@ -43,32 +40,11 @@ public class MemberAuthService {
             savedMember.getRole().getValue());
     }
 
-    public String createExpireToken(String token) {
-        return jwtProvider.getExpiredToken(token);
-    }
-
-    public String createToken(TokenAppRequest request) {
-        if (isExistsMember(request.email(), request.password())) {
-            return jwtProvider.createToken(request.email());
-        }
-
-        throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
-    }
-
-    public MemberAppResponse findMemberByToken(String token) {
-        String payload = jwtProvider.getPayload(token);
-
-        return memberRepository.findByEmail(payload)
+    public MemberAppResponse findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
             .map(member -> new MemberAppResponse(member.getId(), member.getName().getValue(),
                 member.getRole().getValue()))
             .orElseThrow(() -> new NoSuchElementException("회원 정보를 찾지 못했습니다. 다시 로그인 해주세요."));
-    }
-
-    public MemberAppResponse findMemberById(Long id) {
-        return memberRepository.findById(id)
-            .map(member -> new MemberAppResponse(member.getId(), member.getName().getValue(),
-                member.getRole().getValue()))
-            .orElseThrow(() -> new NoSuchElementException("회원 정보를 찾지 못했습니다."));
     }
 
     public List<MemberAppResponse> findAll() {
@@ -76,9 +52,5 @@ public class MemberAuthService {
             .map(member -> new MemberAppResponse(member.getId(), member.getName().getValue(),
                 member.getRole().getValue()))
             .toList();
-    }
-
-    private boolean isExistsMember(String email, String password) {
-        return memberRepository.findByEmailAndPassword(email, password).isPresent();
     }
 }
