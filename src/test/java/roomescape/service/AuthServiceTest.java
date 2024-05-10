@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.Member;
-import roomescape.dto.member.UserLoginRequest;
+import roomescape.dto.member.MemberLoginRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -28,25 +28,9 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("이메일과 비밀번호로 사용자를 찾는다.")
-    void findMemberByEmailAndPassword() {
-        Member result = authService.findMember(UserLoginRequest.of("user1", "user1@wooteco.com"));
-
-        assertThat(result.getName()).isEqualTo("user1");
-    }
-
-    @Test
-    @DisplayName("아이디로 사용자를 찾는다.")
-    void findMemberById() {
-        Member result = authService.findMember(1L);
-
-        assertThat(result.getName()).isEqualTo("user1");
-    }
-
-    @Test
     @DisplayName("토큰으로 사용자를 찾는다.")
     void findMemberByToken() {
-        String token = authService.createToken(UserLoginRequest.of("user1", "user1@wooteco.com"));
+        String token = authService.createToken(MemberLoginRequest.of("user1", "user1@wooteco.com"));
         Member result = authService.findMemberByToken(token);
 
         assertThat(result.getName()).isEqualTo("user1");
