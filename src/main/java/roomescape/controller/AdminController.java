@@ -1,30 +1,35 @@
 package roomescape.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.request.AdminReservationRequest;
+import roomescape.controller.response.ReservationResponse;
+import roomescape.model.Reservation;
+import roomescape.service.ReservationService;
+import roomescape.service.dto.ReservationDto;
 
-@Controller
+import java.net.URI;
+
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
 
-    @GetMapping
-    public String getHome() {
-        return "admin/index";
+    private final ReservationService reservationService;
+
+    public AdminController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservation")
-    public String getReservation() {
-        return "admin/reservation-new";
-    }
-
-    @GetMapping("/time")
-    public String getReservationTime() {
-        return "admin/time";
-    }
-
-    @GetMapping("/theme")
-    public String getTheme() {
-        return "admin/theme";
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody AdminReservationRequest request) {
+        ReservationDto reservationDto = ReservationDto.from(request);
+        Reservation reservation = reservationService.saveReservation(reservationDto);
+        ReservationResponse response = ReservationResponse.from(reservation);
+        return ResponseEntity
+                .created(URI.create("/admin/reservations/" + response.getId()))
+                .body(response);
     }
 }

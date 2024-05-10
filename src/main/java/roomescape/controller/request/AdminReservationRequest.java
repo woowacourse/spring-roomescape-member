@@ -4,23 +4,26 @@ import roomescape.exception.BadRequestException;
 
 import java.time.LocalDate;
 
-public class ReservationRequest {
+public class AdminReservationRequest {
 
     private final LocalDate date;
     private final long timeId;
     private final long themeId;
+    private final long memberId;
 
-    public ReservationRequest(LocalDate date, Long timeId, Long themeId) {
-        validate(date, timeId, themeId);
+    public AdminReservationRequest(LocalDate date, Long timeId, Long themeId, Long memberId) {
+        validate(date, timeId, themeId, memberId);
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
+        this.memberId = memberId;
     }
 
-    private void validate(LocalDate date, Long timeId, Long themeId) {
+    private void validate(LocalDate date, Long timeId, Long themeId, Long memberId) {
         validateNull(date);
         validateNull(timeId);
         validateNull(themeId);
+        validateNull(memberId);
     }
 
     private void validateNull(Object value) {
@@ -39,5 +42,9 @@ public class ReservationRequest {
 
     public long getThemeId() {
         return themeId;
+    }
+
+    public long getMemberId() {
+        return memberId;
     }
 }

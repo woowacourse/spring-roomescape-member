@@ -1,5 +1,6 @@
 package roomescape.service.dto;
 
+import roomescape.controller.request.AdminReservationRequest;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.model.LoginMember;
 
@@ -19,14 +20,20 @@ public class ReservationDto {
         this.memberId = memberId;
     }
 
-    public static ReservationDto from(ReservationRequest reservationRequest, LoginMember member) {
-        LocalDate date = reservationRequest.getDate();
-        long timeId = reservationRequest.getTimeId();
-        long themeId = reservationRequest.getThemeId();
-        if (member == null) {
-            return new ReservationDto(date, timeId, themeId, reservationRequest.getMemberId());
-        }
-        return new ReservationDto(date, timeId, themeId, member.getId());
+    public static ReservationDto from(ReservationRequest request, LoginMember member) {
+        LocalDate date = request.getDate();
+        long timeId = request.getTimeId();
+        long themeId = request.getThemeId();
+        long memberId = member.getId();
+        return new ReservationDto(date, timeId, themeId, memberId);
+    }
+
+    public static ReservationDto from(AdminReservationRequest request) {
+        LocalDate date = request.getDate();
+        long timeId = request.getTimeId();
+        long themeId = request.getThemeId();
+        long memberId = request.getMemberId();
+        return new ReservationDto(date, timeId, themeId, memberId);
     }
 
     public LocalDate getDate() {

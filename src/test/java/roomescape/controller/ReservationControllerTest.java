@@ -131,7 +131,7 @@ class ReservationControllerTest {
                 .claim("name", member.getName())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
-        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
