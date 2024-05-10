@@ -19,8 +19,11 @@
 
 ### 기능 요구사항
 
-[ ] - 사용자의 정보를 조회하는 로직을 리팩터링 한다.
 [ ] - 예약 생성 API 및 기능을 리팩터링 한다.
+    [ ] - 예약 도메인 '이름' 필드 삭제
+    [ ] - 예약 생성 API 페이로드 수정
+[ ] - 사용자의 정보를 조회하는 로직을 리팩터링 한다.
+    [ ] - resolveArgument 등록
 
 ### 사용자 도메인 명세
 
@@ -104,7 +107,9 @@ POST /signup HTTP/1.1
 Content-Type: application/json
 
 { 
-
+    "name": "hello",
+    "email": "admin@email.com",
+    "password": "password"
 }
 ```
 
@@ -118,4 +123,85 @@ HTTP/1.1 200 OK
     "name": "어드민"
 }
 
+```
+
+### 사용자 예약 추가 API
+
+**Request**
+
+```http request
+POST /reservations HTTP/1.1
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+content-type: application/json
+host: localhost:8080
+
+{
+    "date": "2023-08-05",
+    "memberId": 1,
+    "timeId": 1,
+    "themeId": 1
+}
+```
+
+**Response**
+
+```http request
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-05",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+}
+```
+
+### 관리자 예약 추가 API
+
+**Request**
+
+```http request
+POST /admin/reservations HTTP/1.1
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+content-type: application/json
+host: localhost:8080
+
+{
+    "date": "2023-08-05",
+    "timeId": 1,
+    "themeId": 1
+}
+```
+
+**Response**
+
+```http request
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-05",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+}
 ```
