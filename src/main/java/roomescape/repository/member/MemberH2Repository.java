@@ -14,7 +14,6 @@ import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.Password;
-import roomescape.domain.member.Role;
 
 @Repository
 public class MemberH2Repository implements MemberRepository {
@@ -63,7 +62,6 @@ public class MemberH2Repository implements MemberRepository {
     private RowMapper<Member> getMemberRowMapper() {
         return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
-                Role.find(resultSet.getString("role")),
                 new MemberName(resultSet.getString("name")),
                 new Email(resultSet.getString("email")),
                 new Password(resultSet.getString("password"))

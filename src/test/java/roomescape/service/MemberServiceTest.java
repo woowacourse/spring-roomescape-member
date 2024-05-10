@@ -2,12 +2,8 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.InitialMemberFixture.MEMBER_1;
 import static roomescape.InitialMemberFixture.MEMBER_4;
-import static roomescape.InitialMemberFixture.NOT_SAVED_MEMBER;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import javax.naming.AuthenticationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
-import roomescape.exceptions.NotFoundException;
-import roomescape.exceptions.ValidationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_member_data.sql"})

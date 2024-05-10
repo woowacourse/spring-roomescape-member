@@ -11,7 +11,6 @@ import roomescape.domain.member.Password;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.exceptions.NotFoundException;
-import roomescape.exceptions.ValidationException;
 import roomescape.repository.member.MemberRepository;
 
 
@@ -37,7 +36,6 @@ public class MemberService {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
-                .claim("role", member.getRole().getValue())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
