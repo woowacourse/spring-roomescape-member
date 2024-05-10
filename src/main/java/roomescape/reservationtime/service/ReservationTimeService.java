@@ -34,7 +34,7 @@ public class ReservationTimeService {
 
     private void validateAlreadyExistsTime(final LocalTime time) {
         if (reservationTimeRepository.existsByStartAt(time)) {
-            throw new IllegalArgumentException("생성하려는 시간이 이미 존재합니다.");
+            throw new IllegalArgumentException("생성하려는 시간이 이미 존재합니다. 시간을 생성할 수 없습니다.");
         }
     }
 
@@ -45,13 +45,9 @@ public class ReservationTimeService {
     }
 
     public FindReservationTimeResponse getReservationTime(final Long id) {
-        ReservationTime reservationTime = findReservationTime(id);
-        return FindReservationTimeResponse.from(reservationTime);
-    }
-
-    private ReservationTime findReservationTime(final Long id) {
-        return reservationTimeRepository.findById(id)
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("조회하려는 예약 시간이 존재하지 않습니다."));
+        return FindReservationTimeResponse.from(reservationTime);
     }
 
     public void deleteById(final Long id) {
@@ -63,13 +59,13 @@ public class ReservationTimeService {
 
     private void validateExistReservationTime(final Long id) {
         if (!reservationTimeRepository.existsById(id)) {
-            throw new NoSuchElementException("삭제하려는 예약 시간이 존재하지 않습니다.");
+            throw new NoSuchElementException("삭제하려는 예약 시간이 존재하지 않습니다. 삭제가 불가능합니다");
         }
     }
 
     private void validateReservationTimeUsage(final Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalStateException("삭제하려는 시간을 사용 중인 예약이 존재합니다.");
+            throw new IllegalStateException("삭제하려는 시간을 사용 중인 예약이 존재합니다. 삭제가 불가능합니다.");
         }
     }
 }
