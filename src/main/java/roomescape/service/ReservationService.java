@@ -35,17 +35,6 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest) {
-        final ReservationTime time = getTimeById(reservationSaveRequest.timeId());
-        final Theme theme = getThemeId(reservationSaveRequest.themeId());
-
-        final Reservation reservation = new Reservation(null, reservationSaveRequest.date(), time, theme);
-        validateReservation(reservation);
-
-        final Reservation savedReservation = reservationRepository.save(reservation);
-        return new ReservationResponse(savedReservation);
-    }
-
     public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest, final LoginMember loginMember) {
         final ReservationTime time = getTimeById(reservationSaveRequest.timeId());
         final Theme theme = getThemeId(reservationSaveRequest.themeId());

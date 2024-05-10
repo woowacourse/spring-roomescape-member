@@ -17,8 +17,4 @@ public record ReservationSaveRequest(
         @NotNull(message = "예약 테마 아이디가 비어 있습니다.")
         Long themeId
 ) {
-
-    public ReservationSaveRequest(final String name, final LocalDate date, final Long timeId, final Long themeId) {
-        this(date, timeId, themeId);
-    }
 }
