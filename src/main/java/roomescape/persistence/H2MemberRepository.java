@@ -39,7 +39,8 @@ public class H2MemberRepository implements MemberRepository {
                 Map.of(
                         "name", member.getName(),
                         "email", member.getEmail(),
-                        "password", member.getPassword()
+                        "password", member.getPassword(),
+                        "role", member.getRole()
                 )
         ).longValue();
 
@@ -47,7 +48,8 @@ public class H2MemberRepository implements MemberRepository {
                 memberId,
                 member.getName(),
                 member.getEmail(),
-                member.getPassword()
+                member.getPassword(),
+                member.getRole()
         );
     }
 
@@ -76,7 +78,8 @@ public class H2MemberRepository implements MemberRepository {
                     rs.getLong("id"),
                     new MemberName(rs.getString("name")),
                     new Email(rs.getString("email")),
-                    new Password(rs.getString("password"))
+                    new Password(rs.getString("password")),
+                    rs.getString("role")
             );
         }
     }
