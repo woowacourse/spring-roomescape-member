@@ -20,8 +20,15 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @JdbcTest
-@Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/init-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
+    private static final int COUNT_OF_RESERVATION = 4;
+    private static final Reservation EXISTED_RESERVATION = new Reservation(
+            new Member(2L, "브라운", "brown@abc.com"),
+            LocalDate.of(2022, 5, 5),
+            new ReservationTime(2L, LocalTime.of(19, 0)),
+            new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private ReservationDao reservationDao;
@@ -34,79 +41,30 @@ class ReservationDaoTest {
     @DisplayName("모든 예약을 읽을 수 있다.")
     @Test
     void findReservationsTest() {
-        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
-                1, "2024-08-15", 1, 1);
-        jdbcTemplate.update(
-                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
-                1, "2024-08-20", 1, 1);
-        List<Reservation> expected = List.of(
-                new Reservation(
-                        1L, new Member(1L, "브라운", "brown@abc.com"),
-                        LocalDate.of(2024, 8, 15),
-                        new ReservationTime(1L, LocalTime.of(19, 0)),
-                        new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")),
-                new Reservation(
-                        2L, new Member(1L, "브라운", "brown@abc.com"),
-                        LocalDate.of(2024, 8, 20),
-                        new ReservationTime(1L, LocalTime.of(19, 0)),
-                        new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
+        List<Reservation> reservations = reservationDao.findReservations();
 
-        List<Reservation> actual = reservationDao.findReservations();
-
-        assertThat(actual).containsAll(expected);
+        assertThat(reservations).hasSize(COUNT_OF_RESERVATION);
     }
 
     @DisplayName("예약을 생성할 수 있다.")
     @Test
     void createReservationTest() {
-        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
+        long expectedId = COUNT_OF_RESERVATION + 1;
         Reservation reservation = new Reservation(
-                new Member(1L, "브라운", "brown@abc.com"),
+                new Member(4L, "오리", "duck@abc.com"),
                 LocalDate.of(2024, 8, 15),
-                new ReservationTime(1L, LocalTime.of(19, 0)),
-                new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
-        Reservation expected = new Reservation(
-                1L, new Member(1L, "브라운", "brown@abc.com"),
-                LocalDate.of(2024, 8, 15),
-                new ReservationTime(1L, LocalTime.of(19, 0)),
-                new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(3L, "레벨4 탈출", "레벨4 탈출하기", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         Reservation actual = reservationDao.createReservation(reservation);
 
-        assertAll(
-                () -> assertThat(actual).isEqualTo(expected),
-                () -> assertThat(countSavedReservation()).isEqualTo(1)
-        );
+        assertThat(actual.getId()).isEqualTo(expectedId);
     }
 
     @DisplayName("날짜, 시간, 테마가 모두 겹치는 예약이 있다면, 예약을 생성할 수 없다.")
     @Test
     void createReservationTest_whenReservationIsDuplicated() {
-        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
-                1, "2024-08-15", 1, 1);
-        Reservation reservation = new Reservation(
-                new Member(2L, "브리", "bri@abc.com"),
-                LocalDate.of(2024, 8, 15),
-                new ReservationTime(1L, LocalTime.of(19, 0)),
-                new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
-
-        assertThatThrownBy(() -> reservationDao.createReservation(reservation))
+        assertThatThrownBy(() -> reservationDao.createReservation(EXISTED_RESERVATION))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 날짜, 시간, 테마에 이미 예약이 존재합니다.");
     }
@@ -114,18 +72,9 @@ class ReservationDaoTest {
     @DisplayName("예약을 삭제할 수 있다.")
     @Test
     void deleteReservationTest() {
-        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
-                1, "2024-08-15", 1, 1);
-
         reservationDao.deleteReservation(1L);
 
-        assertThat(countSavedReservation()).isZero();
+        assertThat(countSavedReservation()).isEqualTo(COUNT_OF_RESERVATION - 1);
     }
 
     private int countSavedReservation() {

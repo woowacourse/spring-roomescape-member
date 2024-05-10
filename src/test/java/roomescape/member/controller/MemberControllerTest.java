@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/init-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class MemberControllerTest {
     @LocalServerPort
     private int port;
@@ -28,17 +28,18 @@ class MemberControllerTest {
     @DisplayName("멤버 목록을 읽을 수 있다.")
     @Test
     void findMembersTest() {
-        jdbcTemplate.update("INSERT INTO member (email, name) VALUES (?, ?)", "bri@abc.com", "브리");
-        jdbcTemplate.update("INSERT INTO member (email, name) VALUES (?, ?)", "brown@abc.com", "브라운");
-
         int size = RestAssured.given().log().all()
                 .when().get("/members")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getInt("size()");
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from member", Integer.class);
+        Integer count = getCountOfMember();
 
         assertThat(size).isEqualTo(count);
+    }
+
+    private Integer getCountOfMember() {
+        return jdbcTemplate.queryForObject("SELECT count(1) from member", Integer.class);
     }
 }

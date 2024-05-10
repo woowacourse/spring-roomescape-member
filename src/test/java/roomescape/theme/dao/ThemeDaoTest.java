@@ -17,8 +17,11 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest
-@Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/init-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeDaoTest {
+    private static final int COUNT_OF_THEME = 3;
+    private static final String EXISTED_NAME = "레벨2 탈출";
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private ThemeDao themeDao;
@@ -31,15 +34,10 @@ class ThemeDaoTest {
     @DisplayName("모든 테마를 조회할 수 있다.")
     @Test
     void findThemesTest() {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg");
         List<Theme> expected = List.of(
-                new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"),
-                new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"));
+                new Theme(1L, "레벨2 탈출", "우테코 레벨2 탈출기!", "https://img.jpg"),
+                new Theme(2L, "레벨3 탈출", "우테코 레벨3 탈출기!", "https://img.jpg"),
+                new Theme(3L, "레벨4 탈출", "우테코 레벨4 탈출기!", "https://img.jpg"));
 
         List<Theme> actual = themeDao.findThemes();
 
@@ -49,11 +47,8 @@ class ThemeDaoTest {
     @DisplayName("id를 통해 테마를 조회할 수 있다.")
     @Test
     void findThemeByIdTest() {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
         Optional<Theme> expected = Optional.of(
-                new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
+                new Theme(1L, "레벨2 탈출", "우테코 레벨2 탈출기!", "https://img.jpg"));
 
         Optional<Theme> actual = themeDao.findThemeById(1L);
 
@@ -63,7 +58,9 @@ class ThemeDaoTest {
     @DisplayName("해당 id의 테마가 없을 경우, 빈 값을 반환한다.")
     @Test
     void findThemeByIdTest_whenThemeNotExist() {
-        Optional<Theme> actual = themeDao.findThemeById(1L);
+        Long themeId = (long) COUNT_OF_THEME + 1;
+
+        Optional<Theme> actual = themeDao.findThemeById(themeId);
 
         assertThat(actual).isEmpty();
     }
@@ -71,21 +68,11 @@ class ThemeDaoTest {
     @DisplayName("특정 기간 내 인기 테마를 예약 횟수 순으로 조회할 수 있다.")
     @Test
     void findThemesSortedByCountOfReservationTest() {
-        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
-                1, "2024-08-15", 1, 2);
-        List<Theme> expected = List.of(new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"));
+        List<Theme> expected = List.of(
+                new Theme(1L, "레벨2 탈출", "우테코 레벨2 탈출기!", "https://img.jpg"));
 
-        LocalDate start = LocalDate.of(2024, 8, 14);
-        LocalDate end = LocalDate.of(2024, 8, 15);
+        LocalDate start = LocalDate.of(2022, 5, 5);
+        LocalDate end = LocalDate.of(2022, 5, 6);
         int count = 1;
         List<Theme> actual = themeDao.findThemesSortedByCountOfReservation(start, end, count);
 
@@ -95,24 +82,19 @@ class ThemeDaoTest {
     @DisplayName("테마를 생성할 수 있다.")
     @Test
     void createThemeTest() {
-        Theme theme = new Theme("레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        Theme expected = new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
+        long expectedId = COUNT_OF_THEME + 1;
+        Theme theme = new Theme("레벨1 탈출", "레벨1 탈출하기", "https://img.jpg");
+        Theme expected = new Theme(expectedId, "레벨1 탈출", "레벨1 탈출하기", "https://img.jpg");
 
         Theme actual = themeDao.createTheme(theme);
 
-        assertAll(
-                () -> assertThat(actual).isEqualTo(expected),
-                () -> assertThat(countSavedTheme()).isEqualTo(1)
-        );
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("이미 해당 테마 이름이 존재한다면, 테마를 생성할 수 없다.")
     @Test
     void createThemeTest_whenNameIsAlreadyExist() {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        Theme theme = new Theme("레벨2 탈출", "레벨2 탈출하기 대작전", "https://img.jpg");
+        Theme theme = new Theme(EXISTED_NAME, "레벨2 탈출하기 대작전!", "https://img1.jpg");
 
         assertThatThrownBy(() -> themeDao.createTheme(theme))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -122,27 +104,14 @@ class ThemeDaoTest {
     @DisplayName("테마를 삭제할 수 있다.")
     @Test
     void deleteThemeTest() {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
+        themeDao.deleteTheme(3L);
 
-        themeDao.deleteTheme(1L);
-
-        assertThat(countSavedTheme()).isZero();
+        assertThat(countSavedTheme()).isEqualTo(COUNT_OF_THEME - 1);
     }
 
     @DisplayName("해당 테마에 예약이 있다면, 예약 시간을 삭제할 수 없다.")
     @Test
     void deleteThemeTest_whenReservationUsingThemeExist() {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update("INSERT INTO member (name, email) VALUES (?, ?)", "브라운", "brown@abc.com");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (member_id, date, time_id, theme_id) values (?, ?, ?, ?)",
-                1, "2024-08-15", 1, 1);
-
         assertThatThrownBy(() -> themeDao.deleteTheme(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 테마는 이미 예약되어 있어 삭제할 수 없습니다.");

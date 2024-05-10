@@ -17,7 +17,7 @@ import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.LoginResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/init-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class LoginControllerTest {
     @LocalServerPort
     private int port;
@@ -32,9 +32,8 @@ public class LoginControllerTest {
     @DisplayName("로그인을 하고, 해당 정보를 받아올 수 있다.")
     @Test
     void loginTest() {
-        jdbcTemplate.update("INSERT INTO member(name, email) VALUES ('커찬', 'abc@abc.com')");
-        LoginRequest request = new LoginRequest("abc@abc.com", "1234");
-        LoginResponse expectedResponse = new LoginResponse("커찬");
+        LoginRequest request = new LoginRequest("brown@abc.com", "1234");
+        LoginResponse expectedResponse = new LoginResponse("브라운");
 
         Cookies cookies = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
