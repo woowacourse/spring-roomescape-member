@@ -27,7 +27,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         String query = """
-                SELECT id, name, email, password FROM users
+                SELECT id, name, email, password, role FROM users
                 WHERE email = ?
                 """;
         try {
