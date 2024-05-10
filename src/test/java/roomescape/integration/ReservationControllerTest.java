@@ -60,7 +60,8 @@ public class ReservationControllerTest {
         token = JWT_GENERATOR.generateWith(
                 Map.of(
                         "id", defaultMember.getId(),
-                        "name", defaultMember.getName()
+                        "name", defaultMember.getName(),
+                        "role", defaultMember.getLoginMember().getRole().name()
                 )
         );
 

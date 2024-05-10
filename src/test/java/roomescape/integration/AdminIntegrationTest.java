@@ -36,8 +36,10 @@ public class AdminIntegrationTest {
         jdbcTemplate.update("delete from THEME");
         jdbcTemplate.update("ALTER TABLE THEME alter column id restart with 1");
         jdbcTemplate.update("insert into THEME values ( 1,'a','a','a')");
+        jdbcTemplate.update("delete from MEMBER");
+        jdbcTemplate.update("ALTER TABLE MEMBER alter column id restart with 1");
         jdbcTemplate.update(
-                "INSERT INTO MEMBER (NAME, EMAIL, PASSWORD) VALUES ( 'name', 'email@email.com', 'password' )");
+                "INSERT INTO MEMBER (NAME, ROLE, EMAIL, PASSWORD) VALUES ( 'name', 'ADMIN', 'email@email.com', 'password' )");
         RestAssured.port = port;
     }
 

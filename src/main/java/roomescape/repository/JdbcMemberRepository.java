@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -17,6 +18,7 @@ public class JdbcMemberRepository implements MemberRepository {
     private static final RowMapper<Member> MEMBER_ROW_MAPPER = (rs, rowNum) -> new Member(
             rs.getLong("id"),
             rs.getString("name"),
+            Role.valueOf(rs.getString("role")),
             rs.getString("email"),
             rs.getString("password")
     );
@@ -26,7 +28,7 @@ public class JdbcMemberRepository implements MemberRepository {
     public Optional<Member> findById(long id) {
         try {
             Member findMember = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password FROM MEMBER WHERE id = ?",
+                    "SELECT id, name, role, email, password FROM MEMBER WHERE id = ?",
                     MEMBER_ROW_MAPPER,
                     id
             );
@@ -40,7 +42,7 @@ public class JdbcMemberRepository implements MemberRepository {
     public Optional<Member> findByEmail(String email) {
         try {
             Member findMember = jdbcTemplate.queryForObject(
-                    "SELECT id, name, email, password FROM MEMBER WHERE email = ?",
+                    "SELECT id, name, role, email, password FROM MEMBER WHERE email = ?",
                     MEMBER_ROW_MAPPER,
                     email
             );
@@ -55,16 +57,18 @@ public class JdbcMemberRepository implements MemberRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update((con -> {
             PreparedStatement preparedStatement = con.prepareStatement(
-                    "INSERT INTO MEMBER (NAME, EMAIL, PASSWORD) VALUES (?,?,?)",
+                    "INSERT INTO MEMBER (NAME, ROLE, EMAIL, PASSWORD) VALUES (?,?,?,?)",
                     new String[]{"id"}
             );
             preparedStatement.setString(1, member.getName());
-            preparedStatement.setString(2, member.getEmail());
-            preparedStatement.setString(3, member.getPassword());
+            preparedStatement.setString(2, member.getLoginMember().getRole().name());
+            preparedStatement.setString(3, member.getEmail());
+            preparedStatement.setString(4, member.getPassword());
             return preparedStatement;
         }), keyHolder);
 
         long savedId = keyHolder.getKey().longValue();
-        return findById(savedId).get();
+        Optional<Member> byId = findById(savedId);
+        return byId.get();
     }
 }

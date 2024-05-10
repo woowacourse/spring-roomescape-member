@@ -5,16 +5,16 @@ public class Member {
     private final String email;
     private final String password;
 
-    public Member(String name, String email, String password) {
-        this(null, name, email, password);
+    public Member(String name, Role role, String email, String password) {
+        this(null, name, role, email, password);
     }
 
     public Member(long id, Member member) {
-        this(id, member.loginMember.getName(), member.email, member.password);
+        this(id, member.loginMember.getName(), member.getLoginMember().getRole(), member.email, member.password);
     }
 
-    public Member(Long id, String name, String email, String password) {
-        this(new LoginMember(id, name), email, password);
+    public Member(Long id, String name, Role role, String email, String password) {
+        this(new LoginMember(id, name, role), email, password);
     }
 
     public Member(LoginMember loginMember, String email, String password) {

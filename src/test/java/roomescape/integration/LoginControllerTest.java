@@ -36,6 +36,7 @@ class LoginControllerTest {
     void init() {
         RestAssured.port = port;
         defaultUser = memberRepository.save(defaultUser);
+        System.out.println(defaultUser);
     }
 
     @DisplayName("올바른 로그인 요청에 대해 토큰 값을 가진 쿠키가 생성된다.")

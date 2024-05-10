@@ -14,6 +14,7 @@ import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.Themes;
 
@@ -31,6 +32,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 T2.thumbnail AS thumbnail, 
                 M.id AS member_id, 
                 M.name AS member_name, 
+                M.role AS member_role, 
                 M.email AS member_email 
             FROM RESERVATION AS R
                 INNER JOIN RESERVATION_TIME T ON R.time_id = T.id
@@ -51,7 +53,8 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
             ),
             new LoginMember(
                     rs.getLong("member_id"),
-                    rs.getString("member_name")
+                    rs.getString("member_name"),
+                    Role.valueOf(rs.getString("member_role"))
             )
     );
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
