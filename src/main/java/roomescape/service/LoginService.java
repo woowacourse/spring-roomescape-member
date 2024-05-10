@@ -34,8 +34,7 @@ public class LoginService {
     }
 
     public AuthenticationInfoResponse loginCheck(HttpServletRequest request) {
-        String token = tokenProvider.extractTokenFromCookie(request.getCookies());
-        String authenticationInfo = tokenProvider.parseAuthenticationInfo(token);
+        String authenticationInfo = tokenProvider.parseAuthenticationInfoFromCookies(request.getCookies());
         return AuthenticationInfoResponse.from(authenticationInfo);
     }
 }

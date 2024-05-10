@@ -7,26 +7,22 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.Member;
-import roomescape.domain.MemberRepository;
+import roomescape.domain.LoginMemberId;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
-import roomescape.service.dto.request.LoginUser;
 
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final TokenProvider tokenProvider;
-    private final MemberRepository memberRepository;
 
-    public LoginUserArgumentResolver(TokenProvider tokenProvider, MemberRepository memberRepository) {
+    public LoginUserArgumentResolver(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
-        this.memberRepository = memberRepository;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(LoginUser.class);
+        return parameter.hasParameterAnnotation(LoginMemberId.class);
     }
 
     @Override
@@ -36,11 +32,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         if (request == null) {
             throw new CustomException(ExceptionCode.BAD_REQUEST);
         }
-        String token = tokenProvider.extractTokenFromCookie(request.getCookies());
-        Long userId = tokenProvider.parseSubject(token);
-
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
-        return LoginUser.from(member);
+        return tokenProvider.parseSubjectFromCookies(request.getCookies());
     }
 }

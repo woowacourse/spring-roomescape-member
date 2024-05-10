@@ -14,7 +14,6 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
-import roomescape.service.dto.request.LoginUser;
 import roomescape.service.dto.request.ReservationConditionRequest;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
@@ -38,8 +37,8 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest, LoginUser loginUser) {
-        Member member = memberRepository.findById(loginUser.id())
+    public ReservationResponse createReservation(ReservationRequest reservationRequest, Long loginMemberId) {
+        Member member = memberRepository.findById(loginMemberId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
 
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())

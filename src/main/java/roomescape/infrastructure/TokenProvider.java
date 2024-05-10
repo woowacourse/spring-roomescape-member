@@ -30,7 +30,12 @@ public class TokenProvider {
                 .compact();
     }
 
-    public String parseAuthenticationInfo(String token) {
+    public String parseAuthenticationInfoFromCookies(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        return parseAuthenticationInfo(token);
+    }
+
+    private String parseAuthenticationInfo(String token) {
         String authenticationInfo = parsePayload(token).get(AUTHENTICATION_PAYLOAD, String.class);
         if (authenticationInfo == null) {
             throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
@@ -38,12 +43,30 @@ public class TokenProvider {
         return authenticationInfo;
     }
 
-    public Role parseAuthenticationRole(String token) {
+    public Role parseAuthenticationRoleFromCookies(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        return parseAuthenticationRole(token);
+    }
+
+    private Role parseAuthenticationRole(String token) {
         String authenticationInfo = parsePayload(token).get(AUTHENTICATION_ROLE, String.class);
         if (authenticationInfo == null) {
             throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
         }
         return Role.of(authenticationInfo);
+    }
+
+    public long parseSubjectFromCookies(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        return parseSubject(token);
+    }
+
+    public long parseSubject(String token) {
+        String authenticationInfo = parsePayload(token).getSubject();
+        if (authenticationInfo == null) {
+            throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
+        }
+        return Long.parseLong(authenticationInfo);
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
@@ -55,14 +78,6 @@ public class TokenProvider {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("쿠키를 찾을 수 없습니다."))
                 .getValue();
-    }
-
-    public Long parseSubject(String token) {
-        String authenticationInfo = parsePayload(token).getSubject();
-        if (authenticationInfo == null) {
-            throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
-        }
-        return Long.parseLong(authenticationInfo);
     }
 
     private Claims parsePayload(String token) {

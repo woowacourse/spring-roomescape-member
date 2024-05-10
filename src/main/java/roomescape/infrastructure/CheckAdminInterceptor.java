@@ -17,8 +17,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = tokenProvider.extractTokenFromCookie(request.getCookies());
-        Role role = tokenProvider.parseAuthenticationRole(token);
+        Role role = tokenProvider.parseAuthenticationRoleFromCookies(request.getCookies());
         return role == Role.ADMIN;
     }
 }
