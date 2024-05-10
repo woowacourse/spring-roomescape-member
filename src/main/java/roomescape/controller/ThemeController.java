@@ -36,14 +36,14 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.findAll());
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> findAllPopular() {
+        return ResponseEntity.ok(themeService.findPopularThemes());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable final Long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> findAllPopular() {
-        return ResponseEntity.ok(themeService.findPopularThemes());
     }
 }

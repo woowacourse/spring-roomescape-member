@@ -14,16 +14,15 @@ import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
-@RequestMapping("/admin")
 @RestController
-public class AdminController {
+public class AdminReservationController {
 
     private final MemberService memberService;
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
-    public AdminController(
+    public AdminReservationController(
             final MemberService memberService,
             final ReservationService reservationService,
             final ReservationTimeService reservationTimeService,
@@ -35,7 +34,7 @@ public class AdminController {
         this.themeService = themeService;
     }
 
-    @PostMapping("/reservations")
+    @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final AdminReservationSaveRequest request) {
         final MemberResponse memberResponse = memberService.findById(request.memberId());
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
