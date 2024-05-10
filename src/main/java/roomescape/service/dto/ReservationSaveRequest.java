@@ -1,6 +1,5 @@
 package roomescape.service.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -10,18 +9,15 @@ import roomescape.domain.member.Member;
 import java.time.LocalDate;
 
 public record ReservationSaveRequest(
-        @NotBlank(message = "예약자 이름은 빈칸일 수 없습니다.") String name,
         @NotNull(message = "예약 날짜는 널일 수 없습니다.") LocalDate date,
         @NotNull(message = "시간 Id는 널일 수 없습니다.") Long timeId,
-        @NotNull(message = "테마 id는 널일 수 없습니다.") Long themeId) {
+        @NotNull(message = "테마 id는 널일 수 없습니다.") Long themeId
+) {
 
-    public static Reservation toEntity(
-            ReservationSaveRequest request,
+    public Reservation toEntity(
             Member member,
             ReservationTime reservationTime,
             Theme theme) {
-        return new Reservation(member, request.date(), reservationTime, theme);
+        return new Reservation(member, date, reservationTime, theme);
     }
-
-
 }

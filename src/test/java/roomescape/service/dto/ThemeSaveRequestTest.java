@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,19 +24,6 @@ public class ThemeSaveRequestTest {
     public static void init() {
         factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    @Test
-    @DisplayName("이름이 정상 입력될 경우 성공한다.")
-    void checkNameBlank_Success() {
-        // given
-        ReservationSaveRequest request = new ReservationSaveRequest("naknak", LocalDate.now(), 1L, 1L);
-
-        // when
-        Set<ConstraintViolation<ReservationSaveRequest>> violations = validator.validate(request);
-
-        // then
-        assertThat(violations).isEmpty();
     }
 
     @Test

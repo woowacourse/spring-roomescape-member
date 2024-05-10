@@ -22,12 +22,12 @@ public class MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<Member> findByName(String name) {
+    public Optional<Member> findById(Long id) {
         String sql = "SELECT id, name " +
                 "FROM member " +
-                "WHERE name = ?";
+                "WHERE id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, USER_ROW_MAPPER, name));
+            return Optional.of(jdbcTemplate.queryForObject(sql, USER_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

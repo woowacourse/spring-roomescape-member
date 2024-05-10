@@ -12,7 +12,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.ReservationSaveRequest;
+import roomescape.service.dto.AdminReservationSaveRequest;
 
 import java.time.LocalDate;
 
@@ -42,8 +42,8 @@ class ReservationServiceTest {
     @DisplayName("예약 가능한 시간인 경우 성공한다.")
     void checkDuplicateReservationTime_Success() {
         // given
-        ReservationSaveRequest request = new ReservationSaveRequest(
-                "naknak", LocalDate.now().plusDays(1L), 1L, 1L);
+        AdminReservationSaveRequest request = new AdminReservationSaveRequest(
+                LocalDate.now().plusDays(1L), 1L, 1L, 1L);
 
         // when & then
         assertThatCode(() -> reservationService.createReservation(request))
@@ -54,8 +54,8 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 시간인 경우 예외가 발생한다.")
     void checkDuplicateReservationTime_Failure() {
         // given
-        ReservationSaveRequest request = new ReservationSaveRequest(
-                "naknak", LocalDate.now().plusDays(1L), 1L, 1L);
+        AdminReservationSaveRequest request = new AdminReservationSaveRequest(
+                LocalDate.now().plusDays(1L), 1L, 1L, 1L);
         reservationService.createReservation(request);
 
         // when & then
@@ -67,8 +67,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성시 예외가 발생한다.")
     void checkReservationDateTimeIsFuture_Failure() {
-        ReservationSaveRequest request = new ReservationSaveRequest(
-                "naknak", LocalDate.now().minusDays(1L), 1L, 1L);
+        AdminReservationSaveRequest request = new AdminReservationSaveRequest(
+                LocalDate.now().minusDays(1L), 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalUserRequestException.class)
@@ -79,8 +79,8 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 사용자 이름에 대한 예약 생성시 예외가 발생한다.")
     @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void checkReservationExistUser_Failure() {
-        ReservationSaveRequest request = new ReservationSaveRequest(
-                "asfjk", LocalDate.now().plusDays(1L), 1L, 1L);
+        AdminReservationSaveRequest request = new AdminReservationSaveRequest(
+                LocalDate.now().plusDays(1L), 100L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalUserRequestException.class)
@@ -91,8 +91,8 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간에 대한 예약 생성시 예외가 발생한다.")
     @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void checkReservationExistTime_Failure() {
-        ReservationSaveRequest request = new ReservationSaveRequest(
-                "naknak", LocalDate.now().plusDays(1L), 100L, 1L);
+        AdminReservationSaveRequest request = new AdminReservationSaveRequest(
+                LocalDate.now().plusDays(1L), 1L, 100L, 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalUserRequestException.class)
@@ -103,8 +103,8 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 테마에 대한 예약 생성시 예외가 발생한다.")
     @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void checkReservationExistTheme_Failure() {
-        ReservationSaveRequest request = new ReservationSaveRequest(
-                "naknak", LocalDate.now().plusDays(1L), 1L, 100L);
+        AdminReservationSaveRequest request = new AdminReservationSaveRequest(
+                LocalDate.now().plusDays(1L), 1L, 1L, 100L);
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalUserRequestException.class)
