@@ -3,6 +3,7 @@ package roomescape.service.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import roomescape.exception.AuthenticationException;
 
 @Component
 public class TokenProvider {
@@ -17,6 +18,9 @@ public class TokenProvider {
     }
 
     public Long parseToken(String token) {
+        if(token == "") {
+            throw new AuthenticationException("잘못된 토큰 정보입니다.");
+        }
         return Long.valueOf(Jwts.parser()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
