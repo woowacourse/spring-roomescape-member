@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.service.auth.AuthService;
 
 public class RoleCheckInterceptor implements HandlerInterceptor {
@@ -17,7 +18,7 @@ public class RoleCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = JwtTokenExtractor.extractTokenFromCookies(request.getCookies());
         Member member = authService.findMemberByToken(token);
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        if (member == null || !member.getRole().equals(Role.ADMIN)) {
             response.setStatus(401);
             return false;
         }
