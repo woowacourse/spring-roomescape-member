@@ -18,7 +18,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@WebMvcTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class MemberTest {
 
@@ -61,8 +60,8 @@ public class MemberTest {
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie")
-                .substring("token=".length());
+                .then().log().all().extract().header("Set-Cookie");
+        token = token.substring("token=".length(), token.indexOf(';'));
 
         String name = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

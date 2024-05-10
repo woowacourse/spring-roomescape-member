@@ -54,20 +54,20 @@ public class AuthService {
         }
     }
 
-    public MemberInfo getLoginInfo(HttpServletRequest request) {
-        String tokenValue = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals("token"))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION));
-
-        String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(tokenValue).getBody().get("email", String.class);
-        Member member = findByEmail(email);
-        return new MemberInfo(member.getName());
-    }
-
-    private Member findByEmail(String email) {
+    public Member findByEmail(String email) {
         return memberDao.findMemberByEmail(email)
                 .orElseThrow(() -> new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION));
+    }
+
+    public String parseEmail(Cookie cookie) {
+        if (cookie.getName().equals("token")) {
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(cookie.getValue())
+                    .getBody()
+                    .get("email", String.class);
+        }
+        //TODO
+        throw new IllegalArgumentException();
     }
 }
