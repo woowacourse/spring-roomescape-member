@@ -15,4 +15,9 @@ public class ClientController {
     public String readReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String readLoginPage() {
+        return "login";
+    }
 }
