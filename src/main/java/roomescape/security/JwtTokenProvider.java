@@ -52,11 +52,11 @@ public class JwtTokenProvider {
 
             return claimsJws.getPayload();
         } catch (ExpiredJwtException e) {
-            throw new IllegalArgumentException("Expired token");
+            throw new IllegalArgumentException("만료된 토큰입니다.");
         } catch (UnsupportedJwtException e) {
-            throw new IllegalArgumentException("Unsupported token");
+            throw new IllegalArgumentException("지원하지 않는 토큰입니다.");
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid token");
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
     }
 
