@@ -20,8 +20,8 @@ public record ReservationCreateRequest(
         Long themeId
 ) {
 
-    public static Reservation toReservation(final String memberName, final LocalDate date, final ReservationTime time, final Theme theme,
+    public static Reservation toReservation(final LocalDate date, final ReservationTime time, final Theme theme,
                                             final Member member) {
-        return new Reservation(null, memberName, date, time, theme, member);
+        return new Reservation(null, date, time, theme, member);
     }
 }

@@ -154,6 +154,7 @@ Content-Type: application/json
 
 
 ## 리팩토링 할 것
+- [x] member name으로 되어있는 곳 member 객체로 바꾸기
 - [ ] configuration 의존성 memberService -> authService로 바꿔보기
 - [ ] 4,5 단계 테스트 추가하기
 - [ ] ReservationRequte에 @DateTimeFormat 적용

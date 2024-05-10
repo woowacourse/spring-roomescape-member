@@ -22,7 +22,6 @@ public class JdbcReservationDao implements ReservationDao {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"), // TODO: 이거 멤버랑 중복됨, 테이블부터 뜯어고쳐야할듯
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(resultSet.getLong("time_id"), resultSet.getTime("time_value").toLocalTime()),
             new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
@@ -43,7 +42,6 @@ public class JdbcReservationDao implements ReservationDao {
         List<Reservation> reservations = jdbcTemplate.query("""
                 SELECT
                 r.id as reservation_id,
-                r.name,
                 r.date,
                 t.id as time_id,
                 t.start_at as time_value,
@@ -69,7 +67,6 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT
                 r.id as reservation_id,
-                r.name,
                 r.date,
                 t.id as time_id,
                 t.start_at as time_value,
@@ -99,7 +96,6 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT
                 r.id as reservation_id,
-                r.name,
                 r.date,
                 t.id as time_id,
                 t.start_at as time_value,

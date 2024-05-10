@@ -41,7 +41,9 @@ public class ReservationService {
     public List<ReservationResponse> findByMemberIdAndThemeIdAndDateFromTo(final Long memberId, final Long themeId,
                                                                            final LocalDate dateFrom,
                                                                            final LocalDate dateTo) {
-       return ReservationResponse.fromReservations(reservationDao.findByMemberIdAndThemeIdAndDateFromTo(memberId, themeId, dateFrom, dateTo));
+        List<Reservation> reservations = reservationDao.findByMemberIdAndThemeIdAndDateFromTo(memberId, themeId,
+                dateFrom, dateTo);
+        return ReservationResponse.fromReservations(reservations);
     }
 
     public ReservationResponse save(final AdminReservationCreateRequest request) {
@@ -56,7 +58,7 @@ public class ReservationService {
 
         Theme theme = themeDao.findById(request.themeId());
         Member member = memberDao.findById(request.memberId());
-        Reservation reservation = ReservationCreateRequest.toReservation(member.getName(), request.date(), time, theme, member);
+        Reservation reservation = ReservationCreateRequest.toReservation(request.date(), time, theme, member);
 
         if (reservationDao.existByDateAndTimeAndTheme(reservation.getDate(), reservation.getTimeId(),
                 reservation.getThemeId())) {
@@ -67,8 +69,6 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationCreateRequest request, final Member member) { // TODO: 중복제거
-        String memberName = member.getName();
-
         if (request.date().isBefore(LocalDate.now())) {
             throw new IllegalReservationException("[ERROR] 과거 날짜는 예약할 수 없습니다.");
         }
@@ -79,8 +79,7 @@ public class ReservationService {
         }
 
         Theme theme = themeDao.findById(request.themeId());
-        Reservation reservation = ReservationCreateRequest.toReservation(memberName, request.date(), time, theme,
-                member);
+        Reservation reservation = ReservationCreateRequest.toReservation(request.date(), time, theme, member);
 
         if (reservationDao.existByDateAndTimeAndTheme(reservation.getDate(), reservation.getTimeId(),
                 reservation.getThemeId())) {
