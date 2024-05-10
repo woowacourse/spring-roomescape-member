@@ -90,7 +90,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()
-                    .addValue("name", reservation.getName().getUserName())
+                    .addValue("name", reservation.getName().getValue())
                     .addValue("date", reservation.getDate())
                     .addValue("time_id", reservation.getReservationTime().getId())
                     .addValue("theme_id", reservation.getTheme().getId());

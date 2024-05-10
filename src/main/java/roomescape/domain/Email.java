@@ -22,7 +22,7 @@ public class Email {
         }
     }
 
-    public String getEmail() {
+    public String getValue() {
         return email;
     }
 }
