@@ -6,21 +6,21 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.service.AuthService;
-import roomescape.controller.infrastructure.AuthorizationExtractor;
-import roomescape.controller.interceptor.CheckAdminInterceptor;
 import roomescape.controller.argumentresolver.AuthenticationPrincipalArgumentResolver;
+import roomescape.controller.infrastructure.AuthenticationExtractor;
+import roomescape.controller.interceptor.CheckAdminInterceptor;
 import roomescape.controller.interceptor.CheckLoginInterceptor;
+import roomescape.service.AuthService;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final AuthService authService;
-    private final AuthorizationExtractor authorizationExtractor;
+    private final AuthenticationExtractor authenticationExtractor;
 
-    public WebMvcConfiguration(AuthService authService, AuthorizationExtractor authorizationExtractor) {
+    public WebMvcConfiguration(AuthService authService, AuthenticationExtractor authenticationExtractor) {
         this.authService = authService;
-        this.authorizationExtractor = authorizationExtractor;
+        this.authenticationExtractor = authenticationExtractor;
     }
 
     @Override
@@ -31,20 +31,20 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckLoginInterceptor(authService, authorizationExtractor))
+        registry.addInterceptor(new CheckLoginInterceptor(authService, authenticationExtractor))
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/error", "/login/**", "/signup",
                         "/members", "/themes/popular",
                         "/css/**", "/*.ico", "/js/**", "/image/**");
 
-        registry.addInterceptor(new CheckAdminInterceptor(authService, authorizationExtractor))
+        registry.addInterceptor(new CheckAdminInterceptor(authService, authenticationExtractor))
                 .order(2)
                 .addPathPatterns("/admin/**", "/reservations/**", "/times/**", "/themes/**", "/members/**");
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationPrincipalArgumentResolver(authService, authorizationExtractor));
+        resolvers.add(new AuthenticationPrincipalArgumentResolver(authService, authenticationExtractor));
     }
 }

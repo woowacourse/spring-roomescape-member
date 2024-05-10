@@ -8,7 +8,7 @@ import roomescape.exception.AuthenticationException;
 import roomescape.exception.AuthorizationException;
 
 @Component
-public class AuthorizationExtractor {
+public class AuthenticationExtractor {
 
     public String extract(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();

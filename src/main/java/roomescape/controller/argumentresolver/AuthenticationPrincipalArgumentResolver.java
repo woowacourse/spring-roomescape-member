@@ -8,17 +8,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.annotation.Login;
 import roomescape.service.AuthService;
-import roomescape.controller.infrastructure.AuthorizationExtractor;
+import roomescape.controller.infrastructure.AuthenticationExtractor;
 import roomescape.service.dto.LoginMember;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
-    private final AuthorizationExtractor authorizationExtractor;
+    private final AuthenticationExtractor authenticationExtractor;
 
-    public AuthenticationPrincipalArgumentResolver(AuthService authService, AuthorizationExtractor authorizationExtractor) {
+    public AuthenticationPrincipalArgumentResolver(AuthService authService, AuthenticationExtractor authenticationExtractor) {
         this.authService = authService;
-        this.authorizationExtractor = authorizationExtractor;
+        this.authenticationExtractor = authenticationExtractor;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public LoginMember resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = authorizationExtractor.extract(request);
+        String token = authenticationExtractor.extract(request);
         return authService.findMemberByToken(token);
     }
 }
