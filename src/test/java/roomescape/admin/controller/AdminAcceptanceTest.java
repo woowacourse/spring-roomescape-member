@@ -1,6 +1,4 @@
-package roomescape.reservation;
-
-import static org.hamcrest.Matchers.is;
+package roomescape.admin.controller;
 
 import java.time.LocalDate;
 
@@ -14,17 +12,16 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.admin.dto.AdminReservationRequestDto;
 import roomescape.auth.dto.LoginRequestDto;
 import roomescape.member.dto.MemberRequestDto;
-import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dto.ThemeRequestDto;
 import roomescape.time.dto.ReservationTimeRequestDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/schema.sql"})
-public class ReservationAcceptanceTest {
-
+class AdminAcceptanceTest {
     @LocalServerPort
     private int port;
 
@@ -33,8 +30,9 @@ public class ReservationAcceptanceTest {
         RestAssured.port = port;
     }
 
+
     @Test
-    void save() {
+    void registerReservation() {
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto("10:00");
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -67,53 +65,12 @@ public class ReservationAcceptanceTest {
                 .when().post("/login")
                 .then().statusCode(200).extract().cookie("token");
 
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto(LocalDate.MAX.toString(), 1, 1);
+        AdminReservationRequestDto requestDto = new AdminReservationRequestDto(LocalDate.MAX.toString(), 1, 1, 1);
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .header("Cookie", "token=" + token)
-                .body(reservationRequestDto)
-                .when().post("/reservations")
+                .body(requestDto)
+                .when().post("/admin/reservations")
                 .then().statusCode(201);
-
-        RestAssured.given()
-                .when().get("/reservations")
-                .then().statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
-    void findAll() {
-        RestAssured.given()
-                .when().get("/reservations")
-                .then().statusCode(200)
-                .body("size()", is(0));
-
-        save();
-
-        RestAssured.given()
-                .when().get("/reservations")
-                .then().statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
-    void duplicateSave() {
-        save();
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto(LocalDate.MAX.toString(), 1, 1);
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(reservationRequestDto)
-                .when().post("/reservations")
-                .then().statusCode(400);
-    }
-
-    @Test
-    void delete() {
-        save();
-
-        RestAssured.given()
-                .when().delete("/reservations/1")
-                .then().statusCode(200);
     }
 }

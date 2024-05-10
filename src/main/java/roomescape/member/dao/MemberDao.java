@@ -1,5 +1,7 @@
 package roomescape.member.dao;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -56,5 +58,10 @@ public class MemberDao {
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    public List<Member> findAll() {
+        final String sql = "select * from member";
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 }
