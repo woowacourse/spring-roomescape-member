@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.token.TokenProvider;
+import roomescape.exception.AccessDeniedException;
 import roomescape.member.model.MemberRole;
 import roomescape.util.CookieUtil;
 
@@ -24,8 +25,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
         final MemberRole memberRole = parseMemberRole(request);
 
         if (memberRole != MemberRole.ADMIN) {
-            response.sendRedirect("/");
-            return false;
+            throw new AccessDeniedException("유효하지 않은 권한 요청입니다.");
         }
 
         return true;
