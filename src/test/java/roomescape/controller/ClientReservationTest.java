@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -38,5 +42,33 @@ class ClientReservationTest {
                 .when().get("/books/%s/%s".formatted(invalidDate, invalidThemeId))
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("사용자 예약이 정상적으로 성공한다.")
+    @Test
+    void given_reservationRequest_when_create_statusCodeIsOk() {
+        //given
+        Map<String, Object> login = new HashMap<>();
+        login.put("email", "wedge@test.com");
+        login.put("password", "test1234");
+        var cookies = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(login)
+                .when().post("/login")
+                .then().log().all()
+                .extract().response().getDetailedCookies();
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2099-01-01");
+        params.put("themeId", "1");
+        params.put("timeId", "2");
+        //when, then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .cookies(cookies)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
     }
 }

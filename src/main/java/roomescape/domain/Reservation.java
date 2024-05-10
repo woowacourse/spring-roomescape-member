@@ -1,38 +1,28 @@
 package roomescape.domain;
 
-import roomescape.exception.ErrorType;
-import roomescape.exception.InvalidClientRequestException;
-
 import java.time.LocalDate;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final TimeSlot time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot time, final Theme theme) {
-        validateNameEmpty(name);
+    public Reservation(final Long id, final Member member, final LocalDate date, final TimeSlot time, final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(final String name, final LocalDate date, final TimeSlot time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(final Member member, final LocalDate date, final TimeSlot time, final Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    private void validateNameEmpty(final String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "name", "");
-        }
-    }
-
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -52,6 +42,6 @@ public class Reservation {
     }
 
     public Reservation with(final Long id) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 }

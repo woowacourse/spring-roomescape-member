@@ -23,6 +23,12 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @GetMapping("/members")
+    ResponseEntity<MemberResponses> read() {
+        final MemberResponses memberResponses = memberService.findEntireMembers();
+        return ResponseEntity.ok(memberResponses);
+    }
+
     @PostMapping("/members")
     ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
         final SignupResponse response = memberService.createUser(signupRequest);

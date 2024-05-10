@@ -41,15 +41,15 @@ class AdminReservationTest {
     @Test
     void given_reservationRequest_when_saveSuccessful_then_statusCodeIsCreate() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2999-12-31");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
     }
@@ -67,37 +67,17 @@ class AdminReservationTest {
     @Test
     void given_when_saveNotExistTimeId_then_statusCodeIsBadRequest() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2099-01-01");
         reservation.put("timeId", 500);
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @DisplayName("비어있는 이름으로 예약하는 경우 400 오류를 반환한다.")
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {" ", ""})
-    void given_when_saveInvalidName_then_statusCodeIsBadRequest(String invalidName) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", invalidName);
-        reservation.put("date", "2099-01-01");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body(containsString("name"));
     }
 
     @DisplayName("부적절한 날짜로 예약하는 경우 400 오류를 반환한다.")
@@ -106,15 +86,15 @@ class AdminReservationTest {
     @ValueSource(strings = {" ", "", "2011-02-09"})
     void given_when_saveInvalidDate_then_statusCodeIsBadRequest(String invalidDate) {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", invalidDate);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400);
     }
@@ -125,16 +105,16 @@ class AdminReservationTest {
     @ValueSource(strings = {" ", "", "0", "-1"})
     void given_when_saveInvalidTimeId_then_statusCodeIsBadRequest(String invalidTimeId) {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2999-12-31");
         reservation.put("timeId", invalidTimeId);
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
 
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body(containsString("timeId"));
@@ -144,15 +124,16 @@ class AdminReservationTest {
     @Test
     void given_when_saveWithPastReservation_then_statusCodeIsBadRequest() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "1999-01-01");
         reservation.put("timeId", 1); // 10:00
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
+
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body(containsString("지나간 날짜와 시간으로 예약할 수 없습니다"));
@@ -162,15 +143,16 @@ class AdminReservationTest {
     @Test
     void given_when_saveDuplicatedReservation_then_statusCodeIsBadRequest() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "포케");
         reservation.put("date", "2099-04-30");
         reservation.put("timeId", 1); // 10:00
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
+
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body(containsString("이미 예약이 등록되어 있습니다."));
@@ -182,15 +164,15 @@ class AdminReservationTest {
     @ValueSource(strings = {" ", ""})
     void given_when_saveInvalidThemeId_then_statusCodeIsBadRequest(String invalidThemeId) {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2999-04-01");
         reservation.put("timeId", 1);
         reservation.put("themeId", invalidThemeId);
+        reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body(containsString("themeId"));
@@ -208,7 +190,24 @@ class AdminReservationTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("등록되지 않은 회원으로 예약하는 경우 400 오류를 반환한다.")
+    @Test
+    void given_when_saveNotExistMemberId_then_statusCodeIsBadRequest() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", "2099-01-01");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+        reservation.put("memberId", 99);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400);
     }
@@ -217,15 +216,15 @@ class AdminReservationTest {
     @Test
     void given_when_saveDuplicatedReservationDateAndTimeAndDifferentThemeId_then_statusCodeIsCreated() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "포케");
         reservation.put("date", "2099-12-30");
         reservation.put("timeId", 1); // 10:00
         reservation.put("themeId", 3);
+        reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
     }

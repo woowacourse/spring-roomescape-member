@@ -5,17 +5,17 @@ import roomescape.exception.InvalidClientRequestException;
 
 import java.time.LocalDate;
 
-public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
+public record ReservationRequest(LocalDate date, Long timeId, Long themeId, Long memberId) {
 
     public ReservationRequest {
-        isValid(name, date, timeId, themeId);
+        isValid(date, timeId, themeId, memberId);
     }
 
-    private void isValid(final String name, final LocalDate date, final Long timeId, final Long themeId) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "name", name);
-        }
+    public ReservationRequest with(Long memberId) {
+        return new ReservationRequest(date, timeId, themeId, memberId);
+    }
 
+    private void isValid(final LocalDate date, final Long timeId, final Long themeId, final Long memberId) {
         if (date == null) {
             throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "date", "");
         }

@@ -14,18 +14,6 @@ CREATE TABLE reservation_time
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation
-(
-    id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    date date NOT NULL,
-    time_id BIGINT,
-    theme_id BIGINT,                                        -- 컬럼 추가
-    PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)            -- 외래키 추가
-);
-
 CREATE TABLE member
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
@@ -36,3 +24,15 @@ CREATE TABLE member
     PRIMARY KEY (id)
 );
 
+CREATE TABLE reservation
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    date date NOT NULL,
+    time_id BIGINT,
+    theme_id BIGINT,
+    member_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
+);

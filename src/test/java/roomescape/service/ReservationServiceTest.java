@@ -41,7 +41,7 @@ class ReservationServiceTest {
     void given_reservationRequestWithInitialSize_when_createReservation_then_returnReservationResponseAndSaveDb() {
         //given
         long initialSize = getReservationSize();
-        final ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.parse("2999-01-01"), 1L, 1L);
+        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("2999-01-01"), 1L, 1L, 1L);
         //when
         final ReservationResponse reservationResponse = service.create(reservationRequest);
         long afterCreateSize = getReservationSize();
@@ -67,7 +67,7 @@ class ReservationServiceTest {
     void given_reservationRequestWithInitialSize_when_createWithPastDate_then_throwException() {
         //given
         long initialSize = getReservationSize();
-        final ReservationRequest reservationRequest = new ReservationRequest("name", LocalDate.parse("1999-01-01"), 1L, 1L);
+        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("1999-01-01"), 1L, 1L, 1L);
         //when, then
         assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(ReservationFailException.class);
         assertThat(getReservationSize()).isEqualTo(initialSize);
@@ -78,7 +78,7 @@ class ReservationServiceTest {
     void given_reservationRequestWithInitialSize_when_createWithNotExistThemeId_then_throwException() {
         //given
         long initialSize = getReservationSize();
-        final ReservationRequest reservationRequest = new ReservationRequest("name", LocalDate.parse("2099-01-01"), 1L, 99L);
+        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("2099-01-01"), 1L, 99L, 1L);
         //when, then
         assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientRequestException.class);
         assertThat(getReservationSize()).isEqualTo(initialSize);
@@ -89,7 +89,18 @@ class ReservationServiceTest {
     void given_reservationRequestWithInitialSize_when_createWithNotExistTimeId_then_throwException() {
         //given
         long initialSize = getReservationSize();
-        final ReservationRequest reservationRequest = new ReservationRequest("name", LocalDate.parse("2099-01-01"), 99L, 1L);
+        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("2099-01-01"), 99L, 1L, 1L);
+        //when, then
+        assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientRequestException.class);
+        assertThat(getReservationSize()).isEqualTo(initialSize);
+    }
+
+    @Test
+    @DisplayName("memberId 존재하지 않을 경우 예외를 발생하고, Db에 저장하지 않는다.")
+    void given_reservationRequestWithInitialSize_when_createWithNotExistMemberId_then_throwException() {
+        //given
+        long initialSize = getReservationSize();
+        final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("2099-01-01"), 1L, 1L, 99L);
         //when, then
         assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientRequestException.class);
         assertThat(getReservationSize()).isEqualTo(initialSize);

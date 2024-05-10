@@ -26,6 +26,15 @@ class MemberControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("회원 정보들을 반환한다.")
+    @Test
+    void given_when_getMembers_then_statusCodeIsOk() {
+        RestAssured.given().log().all()
+                .when().get("/members")
+                .then().log().all()
+                .statusCode(200);
+    }
+
     @DisplayName("회원 가입 요청 성공 시 200을 응답한다.")
     @Test
     void given_when_signupSuccess_then_statusCodeIsOk() {

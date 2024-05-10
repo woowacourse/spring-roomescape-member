@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
@@ -18,7 +19,9 @@ public class ReservationDao {
     private static final RowMapper<Reservation> rowMapper =
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    new Member(resultSet.getLong("member_id"),
+                            resultSet.getString("email"),
+                            resultSet.getString("name")),
                     LocalDate.parse(resultSet.getString("date")),
                     new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
                     new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
@@ -31,15 +34,17 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingColumns("name", "date", "time_id", "theme_id")
+                .usingColumns("date", "time_id", "theme_id", "member_id")
                 .usingGeneratedKeyColumns("id");
     }
 
     public List<Reservation> findAll() {
         String sql = """
-                SELECT
+                    SELECT
                     r.id as reservation_id,
-                    r.name,
+                    m.id as member_id,
+                    m.email as email,
+                    m.name as name,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
@@ -49,17 +54,18 @@ public class ReservationDao {
                     th.thumbnail as theme_thumbnail
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id;
+                INNER JOIN theme as th ON r.theme_id = th.id
+                INNER JOIN member as m ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Long create(final Reservation reservation) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("member_id", reservation.getMember().getId());
         return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 

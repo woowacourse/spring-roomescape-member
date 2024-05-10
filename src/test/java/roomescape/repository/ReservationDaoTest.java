@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
@@ -38,8 +39,11 @@ class ReservationDaoTest {
     @Test
     void given_reservation_when_create_then_returnCreatedReservationId() {
         //given
-        Reservation reservation = new Reservation("name", LocalDate.parse("2099-01-11"),
-                new TimeSlot(1L, LocalTime.parse("10:00")), new Theme(1L, "name", "description", "thumbnail"));
+        Reservation reservation = new Reservation(
+                new Member(1L, "poke@test.com", "poke"),
+                LocalDate.parse("2099-01-11"),
+                new TimeSlot(1L, LocalTime.parse("10:00")),
+                new Theme(1L, "name", "description", "thumbnail"));
         //when, then
         assertThat(reservationDao.create(reservation)).isEqualTo(8);
     }
