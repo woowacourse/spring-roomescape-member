@@ -53,7 +53,7 @@ public class JwtService {
         }
     }
 
-    public Claims parseClaims(String token) {
+    private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()

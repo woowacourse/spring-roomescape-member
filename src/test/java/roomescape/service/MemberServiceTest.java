@@ -104,14 +104,13 @@ class MemberServiceTest {
         assertThat(actualToken).isEqualTo(expectedToken);
     }
 
-    @DisplayName("토큰에 담긴 회원 정보가 회원 테이블에 없으면 에러를 발생시킨다.")
+    @DisplayName("존재하지 않는 멤버 아이디로 조회할 시 에러를 발생시킨다..")
     @Test
-    void throw_exception_when_token_member_not_found() {
+    void throw_exception_when_not_found_member_by_id() {
         memberRepository.insertMember(member1);
         Member invalidMember = new Member(2L, "t4@t4.com", "121", "히히", "MEMBER");
-        String token = jwtService.generateToken(invalidMember);
 
-        assertThatThrownBy(() -> memberService.findMember(token))
+        assertThatThrownBy(() -> memberService.findMemberById(3L))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessage("회원 정보가 존재하지 않습니다.");
     }

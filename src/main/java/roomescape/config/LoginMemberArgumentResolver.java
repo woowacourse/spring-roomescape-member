@@ -1,5 +1,6 @@
 package roomescape.config;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = jwtService.extractToken(request);
-        Member member = memberService.findMember(token);
+        Claims claims = jwtService.verifyToken(token);
+        long memberId = Long.parseLong(claims.getSubject());
+        Member member = memberService.findMemberById(memberId);
         return new LoginMember(member.getId(), member.getEmail(), member.getName(), member.getRole());
     }
 }

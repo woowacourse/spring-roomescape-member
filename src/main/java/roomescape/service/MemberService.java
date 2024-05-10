@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import io.jsonwebtoken.Claims;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
@@ -38,9 +37,7 @@ public class MemberService {
         return jwtService.generateToken(member);
     }
 
-    public Member findMember(String token) {
-        Claims claims = jwtService.verifyToken(token);
-        long memberId = Long.parseLong(claims.getSubject());
+    public Member findMemberById(long memberId) {
         return memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
     }
