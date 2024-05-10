@@ -137,7 +137,7 @@ public class ReservationResponseControllerTest {
 
         String accessToken = RestAssured
                 .given().log().all()
-                .body(new LoginRequestDto("email@email.com", "password"))
+                .body(new LoginRequestDto("admin@email.com", "admin"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
@@ -149,5 +149,32 @@ public class ReservationResponseControllerTest {
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @DisplayName("어드민 Role 이 없을 때에 어드민 예약 추가 요청 시 401으로 응답한다.")
+    @Test
+    void insertAdminWithNoAdminRoleTest() {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("date", LocalDate.now(kst).plusDays(2).toString());
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("memberId", 1);
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequestDto("email@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().statusCode(200)
+                .extract().header("Set-Cookie").split("=")[1];
+
+        RestAssured.given().contentType("application/json").body(params).log().all()
+                .cookie("token", accessToken)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(401);
     }
 }
