@@ -23,9 +23,8 @@ public class AuthService {
     }
 
     public String authenticate(AuthenticationRequest request) {
-        String email = request.email();
         Member member = memberRepository
-                .findByEmail(email)
+                .findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("올바른 인증 정보를 입력해주세요."));
 
         return Jwts.builder()
@@ -35,7 +34,7 @@ public class AuthService {
                 .compact();
     }
 
-    public AuthenticatedProfile authorize(String token) {
+    public AuthenticatedMemberProfile authorize(String token) {
         JwtParser parser = Jwts.parser()
                 .verifyWith(KEY)
                 .build();
@@ -43,7 +42,7 @@ public class AuthService {
             Claims payload = parser.parseSignedClaims(token)
                     .getPayload();
             String name = payload.get("name", String.class);
-            return new AuthenticatedProfile(name);
+            return new AuthenticatedMemberProfile(name);
         } catch (JwtException e) {
             throw new UnauthorizedException();
         }

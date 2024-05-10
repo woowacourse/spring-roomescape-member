@@ -1,6 +1,5 @@
 package roomescape.web.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -23,18 +22,14 @@ class AuthControllerTest extends IntegrationTestSupport {
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
 
-        // TODO: 타입 개선
-        AuthenticationRequest response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
                 .header("Set-Cookie", startsWith("token="))
-                .header("Set-Cookie", endsWith("; Path=/; HttpOnly"))
-                .extract().as(AuthenticationRequest.class);
-
-        assertThat(response).isEqualTo(request);
+                .header("Set-Cookie", endsWith("; Path=/; HttpOnly"));
     }
 
     @Test

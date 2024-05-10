@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.infrastructure.authentication.AuthService;
-import roomescape.infrastructure.authentication.AuthenticatedProfile;
+import roomescape.infrastructure.authentication.AuthenticatedMemberProfile;
 import roomescape.infrastructure.authentication.AuthenticationRequest;
 import roomescape.infrastructure.authentication.UnauthorizedException;
 
@@ -25,7 +25,7 @@ class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationRequest> login(
+    public ResponseEntity<Void> login(
             @Valid @RequestBody AuthenticationRequest request,
             HttpServletResponse response
     ) {
@@ -35,12 +35,12 @@ class AuthController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        return ResponseEntity.ok(request);
+        return ResponseEntity.ok().build();
     }
 
     //TODO: 예외 타입 개선, 컨트롤러 코드 개선
     @GetMapping("/login/check")
-    public ResponseEntity<AuthenticatedProfile> check(
+    public ResponseEntity<AuthenticatedMemberProfile> check(
             HttpServletRequest request
     ) {
         Cookie[] cookies = request.getCookies();
