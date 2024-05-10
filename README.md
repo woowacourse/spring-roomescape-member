@@ -32,7 +32,7 @@
 - [x] / 요청 시 인기 테마 페이지를 응답한다.
     - 페이지는 templates/index.html
 
-- [ ] `GET - /login` 요청 시 로그인 폼이 있는 페이지를 응답한다.
+- [x] `GET - /login` 요청 시 로그인 폼이 있는 페이지를 응답한다.
   - templates/login.html
 - [ ] `POST - /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
   - [ ] 응답 Cookie에 "token"값으로 토큰이 포함한다.
