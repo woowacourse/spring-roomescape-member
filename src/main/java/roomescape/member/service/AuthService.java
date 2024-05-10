@@ -40,6 +40,12 @@ public class AuthService {
         return new AccessToken(id, email, name);
     }
 
+    public Member findMember(String token) {
+        Long id = getPayload(token).get("id", Long.class);
+        return memberDao.findMemberById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+    }
+
     private Claims getPayload(String token) {
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))

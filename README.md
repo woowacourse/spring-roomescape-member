@@ -101,8 +101,8 @@
 - 멤버 권한 추가
   - [x] 멤버 테이블에 역할 추가
 - 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한
-  - [ ] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근
-  - [ ] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답
+  - [x] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근
+  - [x] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답
 - 관리자가 조건에 따라 예약을 검색하는 기능
   - [ ] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가
     - themeId, memberId, dateFrom, dateTo 값을 사용 

@@ -23,6 +23,10 @@ public class Member {
         this.role = Objects.requireNonNull(role);
     }
 
+    public boolean isAdmin() {
+        return role.isAdmin();
+    }
+
     public Long getId() {
         return id;
     }
