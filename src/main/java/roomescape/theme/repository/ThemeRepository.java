@@ -31,15 +31,13 @@ public class ThemeRepository {
     }
 
     public List<Theme> readAll() {
-        String sql = """
-                SELECT * FROM theme""";
+        String sql = "SELECT * FROM theme";
 
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Theme read(long themeId) {
-        String sql = """
-                SELECT * FROM theme WHERE id = ?""";
+        String sql = "SELECT * FROM theme WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, themeId);
     }
@@ -54,22 +52,21 @@ public class ThemeRepository {
     }
 
     public Integer delete(long id) {
-        String sql = """
-                DELETE FROM theme WHERE id = ?""";
+        String sql = "DELETE FROM theme WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);
     }
 
     public List<Theme> findPopular(String startDate, String lastDate) {
         String sql = """
-                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count\s
-                FROM theme t\s
-                JOIN reservation r ON t.id = r.theme_id\s
-                WHERE r.date BETWEEN ? AND ?\s
-                GROUP BY t.id, t.name, t.description, t.thumbnail\s
-                ORDER BY reservation_count DESC\s
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count
+                FROM theme t
+                JOIN reservation r ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY reservation_count DESC
                 LIMIT 10""";
-        
+
         return jdbcTemplate.query(sql, ROW_MAPPER, startDate, lastDate);
     }
 }

@@ -31,34 +31,25 @@ public class MemberRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Member> readAll() {
-        String sql = """
-                SELECT * FROM member""";
-
-        return jdbcTemplate.query(sql, ROW_MAPPER);
-    }
-
-    public Member read(long memberId) {
-        String sql = """
-                SELECT * FROM member WHERE id = ?""";
-
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, memberId);
-    }
-
-    public Member read(String email) {
-        String sql = """
-                SELECT * FROM member WHERE email = ?""";
-
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);
-    }
-
     public Long create(Member member) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
                 .addValue("role", member.getRole());
-        
+
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    public List<Member> readAll() {
+        String sql = "SELECT * FROM member";
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    public Member read(String email) {
+        String sql = "SELECT * FROM member WHERE email = ?";
+
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);
     }
 }

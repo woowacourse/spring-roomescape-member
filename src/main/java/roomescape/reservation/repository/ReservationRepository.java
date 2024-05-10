@@ -52,11 +52,11 @@ public class ReservationRepository {
 
     public List<Reservation> readAll() {
         String sql = """
-                SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,\s
-                r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
-                FROM reservation r\s
-                INNER JOIN reservation_time rt ON r.time_id = rt.id\s
-                INNER JOIN theme t ON r.theme_id = t.id\s
+                SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
+                r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
                 INNER JOIN member m ON r.member_id = m.id""";
 
         return jdbcTemplate.query(sql, ROW_MAPPER);
@@ -64,12 +64,12 @@ public class ReservationRepository {
 
     public Reservation readByReservationId(long reservationId) {
         String sql = """
-                SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,\s
-                r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
-                FROM reservation r\s
-                INNER JOIN reservation_time rt ON r.time_id = rt.id\s
-                INNER JOIN theme t ON r.theme_id = t.id\s
-                INNER JOIN member m ON r.member_id = m.id\s
+                SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
+                r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                INNER JOIN member m ON r.member_id = m.id
                 WHERE r.id = ?""";
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationId);
@@ -122,18 +122,17 @@ public class ReservationRepository {
     }
 
     public Integer delete(long id) {
-        String sql = """
-                DELETE FROM reservation WHERE id = ?""";
+        String sql = "DELETE FROM reservation WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);
     }
 
     public Boolean checkExists(Reservation reservation) {
         String sql = """
-                SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END\s
-                FROM reservation AS r\s
-                INNER JOIN reservation_time AS rt ON r.time_id = rt.id\s
-                INNER JOIN theme AS t ON r.theme_id = t.id\s
+                SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
                 WHERE r.date = ? AND rt.id = ? AND t.id = ?""";
 
         String date = reservation.getDate().toString();
