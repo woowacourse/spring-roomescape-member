@@ -89,7 +89,7 @@ class ReservationControllerTest {
                 .cookies("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(timeRequest)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
