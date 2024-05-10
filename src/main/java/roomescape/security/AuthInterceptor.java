@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.controller.exception.AccessDeniedException;
+import roomescape.controller.exception.UnauthorizedException;
 import roomescape.domain.member.Role;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
@@ -27,18 +28,19 @@ public class AuthInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        try {
-            String token = CookieUtil.extractTokenFromCookie(request);
-            Long memberId = jwtTokenProvider.getMemberId(token);
-            MemberResponse memberResponse = memberService.getById(memberId);
+        String token = CookieUtil.extractTokenFromCookie(request);
 
-            if (memberResponse.role() != Role.ADMIN) {
-                throw new AccessDeniedException("어드민 권한이 필요합니다.");
-            }
-
-            return true;
-        } catch (Exception e) {
-            throw new AccessDeniedException(e);
+        if (token == null) {
+            throw new UnauthorizedException();
         }
+
+        Long memberId = jwtTokenProvider.getMemberId(token);
+        MemberResponse memberResponse = memberService.getById(memberId);
+
+        if (memberResponse.role() != Role.ADMIN) {
+            throw new AccessDeniedException("어드민 권한이 필요합니다.");
+        }
+
+        return true;
     }
 }

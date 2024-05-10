@@ -35,7 +35,7 @@ public class AuthService {
         return jwtTokenProvider.createToken(member.getId().toString());
     }
 
-    public Long getMemberId(String token) {
+    public Long getMemberIdByToken(String token) {
         return jwtTokenProvider.getMemberId(token);
     }
 }

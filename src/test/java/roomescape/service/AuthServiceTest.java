@@ -73,7 +73,7 @@ class AuthServiceTest extends BaseServiceTest {
     void getMemberId() {
         doReturn(1L).when(jwtTokenProvider).getMemberId(any());
 
-        Long memberId = authService.getMemberId("token");
+        Long memberId = authService.getMemberIdByToken("token");
 
         assertThat(memberId).isEqualTo(1L);
     }

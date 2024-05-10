@@ -6,6 +6,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.controller.exception.UnauthorizedException;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
 import roomescape.util.CookieUtil;
@@ -35,8 +36,12 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory
     ) {
         String token = CookieUtil.extractTokenFromCookie(webRequest);
-        Long id = jwtTokenProvider.getMemberId(token);
 
+        if (token == null) {
+            throw new UnauthorizedException();
+        }
+
+        Long id = jwtTokenProvider.getMemberId(token);
         MemberResponse memberResponse = memberService.getById(id);
 
         return new Accessor(
