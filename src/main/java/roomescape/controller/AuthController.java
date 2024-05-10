@@ -37,4 +37,11 @@ public class AuthController {
         LoginCheckResponse response = authService.loginCheck(token);
         return ResponseEntity.ok().body(response);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String token = cookieExtractor.getToken(request.getCookies());
+        authService.loginCheck(token);
+        return ResponseEntity.ok().build();
+    }
 }
