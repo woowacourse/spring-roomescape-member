@@ -8,6 +8,7 @@ import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
 
@@ -18,12 +19,13 @@ public class TokenProvider {
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RANDOM_VALUE.getBytes());
     private static final String AUTHENTICATION_PAYLOAD = "name";
     private static final String TOKEN_COOKIE_NAME = "token";
+    public static final String AUTHENCATION_ROLE = "role";
 
     public String generateTokenOf(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim(AUTHENTICATION_PAYLOAD, member.getName())
-                .claim("role", member.getRole())
+                .claim(AUTHENCATION_ROLE, member.getRole())
                 .signWith(SECRET_KEY)
                 .compact();
     }
@@ -34,6 +36,14 @@ public class TokenProvider {
             throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
         }
         return authenticationInfo;
+    }
+
+    public Role parseAuthenticationRole(String token) {
+        String authenticationInfo = parsePayload(token).get(AUTHENCATION_ROLE, String.class);
+        if (authenticationInfo == null) {
+            throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
+        }
+        return Role.of(authenticationInfo);
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
