@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import roomescape.BasicAcceptanceTest;
 
-public class MemberAcceptanceTest extends BasicAcceptanceTest {
+class MemberAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
     @DisplayName("3명의 멤버를 추가한다")
     Stream<DynamicTest> reservationPostTest() {
