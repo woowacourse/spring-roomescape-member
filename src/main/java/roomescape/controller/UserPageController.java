@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import roomescape.controller.member.dto.LoginMember;
 
 @Controller
-public class UserController {
+public class UserPageController {
 
     @GetMapping
     public String showPopularTheme() {
@@ -30,8 +30,7 @@ public class UserController {
 
     @PostMapping("/logout")
     public String logout(final HttpServletResponse response) {
-        // todo 세션도 만료시키기.
-        Cookie cookie = new Cookie("token", null);
+        final Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return "/index";

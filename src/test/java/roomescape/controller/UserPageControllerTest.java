@@ -13,7 +13,7 @@ import roomescape.controller.member.dto.MemberLoginRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserControllerTest {
+class UserPageControllerTest {
 
     static final MemberLoginRequest request = new MemberLoginRequest("jinwuo0925@gmail.com", "1111");
 
