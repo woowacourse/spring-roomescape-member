@@ -40,7 +40,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> userLogin(HttpServletResponse response, @RequestBody @Valid UserLoginRequest userLoginRequest) {
+    public ResponseEntity<TokenResponse> login(HttpServletResponse response, @RequestBody @Valid UserLoginRequest userLoginRequest) {
         TokenResponse tokenResponse = memberService.createToken(userLoginRequest);
         Cookie cookie = new Cookie("token", tokenResponse.token());
         cookie.setHttpOnly(true);
@@ -57,7 +57,7 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> userLogout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
