@@ -1,9 +1,11 @@
 package roomescape.advice;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.advice.dto.ErrorResponse;
+import roomescape.exception.AuthenticationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,6 +22,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException e) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(NULL_POINTER_EXCEPTION_ERROR_MESSAGE));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)

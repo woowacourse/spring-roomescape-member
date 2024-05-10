@@ -7,11 +7,11 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.dto.AccessToken;
 import roomescape.member.service.AuthService;
 
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
-
     private static final String ACCESS_TOKEN_KEY = "token";
 
     private final AuthService authService;
@@ -42,6 +42,6 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
                 return cookie.getValue();
             }
         }
-        throw new IllegalArgumentException("로그인이 되지 않았습니다."); // TODO CustomException 도입
+        throw new MemberAuthenticationException();
     }
 }
