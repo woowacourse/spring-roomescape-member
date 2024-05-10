@@ -1,5 +1,6 @@
 package roomescape.common;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -28,7 +29,13 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("\n"));
 
         System.out.println(exceptionMessages);
-        return ResponseEntity.badRequest().body(exceptionMessages);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessages);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> catchIllegalAccessException(IllegalAccessException ex) {
+        System.out.println(EXCEPTION_PREFIX + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
     @ExceptionHandler
@@ -37,11 +44,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler(MissingRequestCookieException.class)
-    public ResponseEntity<String> catchUnauthorized() {
+    @ExceptionHandler({
+            // TODO: exceptionMessage 처리
+            MissingRequestCookieException.class,
+            ExpiredJwtException.class
+    })
+    public ResponseEntity<String> catchUnauthorized(Exception ex) {
         String exceptionMessage = "쿠키에 저장된 인증 토큰 값이 비어있습니다. 로그인 후 다시 시도해주세요.";
-        System.out.println(EXCEPTION_PREFIX + exceptionMessage);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionMessage);
+        System.out.println(EXCEPTION_PREFIX + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(EXCEPTION_PREFIX + ex.getMessage());
     }
 
     @ExceptionHandler
