@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -31,5 +32,11 @@ public class MemberRepository {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    public List<Member> findAll() {
+        String sql = "SELECT id, name " +
+                "FROM member";
+        return jdbcTemplate.query(sql, USER_ROW_MAPPER);
     }
 }

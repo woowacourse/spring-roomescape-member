@@ -15,7 +15,7 @@ import roomescape.domain.member.Member;
 import roomescape.infrastructure.TokenExtractor;
 import roomescape.service.AuthService;
 import roomescape.service.dto.login.LoginRequest;
-import roomescape.service.dto.login.MemberResponse;
+import roomescape.service.dto.login.MemberNameResponse;
 
 import java.util.Date;
 
@@ -43,12 +43,12 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<MemberNameResponse> checkLogin(HttpServletRequest request) {
         String token = TokenExtractor.extract(request);
         Member member = authService.findMemberByToken(token);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.DATE, new Date().toString())
-                .body(MemberResponse.of(member));
+                .body(MemberNameResponse.of(member));
     }
 }
