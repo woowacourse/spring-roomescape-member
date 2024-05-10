@@ -15,6 +15,7 @@ import roomescape.theme.domain.Theme;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.StringJoiner;
 
 @Repository
 public class ReservationDao {
@@ -104,5 +105,46 @@ public class ReservationDao {
     public int deleteById(final Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public List<Reservation> findByThemeIdAndMemberIdBetweenDate(
+            final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        String sql = generateSearchSql(themeId, memberId, dateFrom, dateTo);
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    private String generateSearchSql(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        String sql = """
+                SELECT * FROM reservation r 
+                JOIN reservation_time rt ON r.time_id = rt.id
+                JOIN theme t ON r.theme_id = t.id
+                JOIN member m ON r.member_id = m.id
+                """;
+
+        boolean themeIdIsNull = (themeId == null);
+        boolean memberIdIsIsNull = (memberId == null);
+        boolean dateFromIsNull = (dateFrom == null);
+        boolean dateToIsNull = (dateTo == null);
+
+        if (themeIdIsNull && memberIdIsIsNull && dateFromIsNull && dateToIsNull) {
+            return sql;
+        }
+
+        sql += " WHERE";
+        StringJoiner sqlCondition = new StringJoiner(" AND");
+        if (!themeIdIsNull) {
+            sqlCondition.add(" t.id = " + themeId);
+        }
+        if (!memberIdIsIsNull) {
+            sqlCondition.add(" m.id = " + memberId);
+        }
+        if (!dateFromIsNull) {
+            sqlCondition.add(" r.date >= '" + dateFrom + "'");
+        }
+        if (!dateToIsNull) {
+            sqlCondition.add(" r.date <= '" + dateTo + "'");
+        }
+        return sql + sqlCondition;
     }
 }

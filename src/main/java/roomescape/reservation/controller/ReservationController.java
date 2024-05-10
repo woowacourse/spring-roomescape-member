@@ -44,6 +44,18 @@ public class ReservationController {
         return ApiResponse.success(reservationService.findReservationsByDateAndThemeId(date, themeId));
     }
 
+    @GetMapping("/reservations/search")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<ReservationsResponse> getReservationBySearching(
+            @RequestParam(required = false) final Long themeId,
+            @RequestParam(required = false) final Long memberId,
+            @RequestParam(required = false) final LocalDate dateFrom,
+            @RequestParam(required = false) final LocalDate dateTo
+    ) {
+        return ApiResponse.success(
+                reservationService.findReservationsByThemeIdAndMemberIdBetweenDate(themeId, memberId, dateFrom, dateTo));
+    }
+
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ReservationResponse> saveReservation(

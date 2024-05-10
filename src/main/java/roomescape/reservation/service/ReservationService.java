@@ -106,4 +106,13 @@ public class ReservationService {
                     String.format("이미 해당 날짜/시간/테마에 예약이 존재합니다. [values: %s]", reservationRequest));
         }
     }
+
+    public ReservationsResponse findReservationsByThemeIdAndMemberIdBetweenDate(
+            final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        
+        List<ReservationResponse> response = reservationDao.findByThemeIdAndMemberIdBetweenDate(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return new ReservationsResponse(response);
+    }
 }
