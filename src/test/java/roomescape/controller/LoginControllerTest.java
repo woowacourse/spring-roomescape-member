@@ -74,4 +74,12 @@ public class LoginControllerTest {
                 .extract().header("Set-Cookie");
         assertThat(accessToken).contains("token=");
     }
+
+    @DisplayName("정상적인 로그아웃 요청 시 200을 응답한다.")
+    @Test
+    void logoutTest() {
+        RestAssured.given().log().all()
+                .when().post("/logout")
+                .then().log().all().statusCode(200);
+    }
 }

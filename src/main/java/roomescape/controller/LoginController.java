@@ -36,12 +36,19 @@ public class LoginController {
         response.addCookie(cookie);
     }
 
-    @GetMapping("login/check")
+    @GetMapping("/login/check")
     public ResponseEntity<LoginResponseDto> checkLogin(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok().body(new LoginResponseDto(member.getName()));
     }
 
-    //TODO: logout, register 구현
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
