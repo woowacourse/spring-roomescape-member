@@ -25,7 +25,7 @@ public class JwtTokenProvider {
 
     public String generate(Member member) {
         long now = new Date().getTime();
-        
+
         return Jwts.builder()
                 .claim(ID_KEY, member.getId())
                 .claim(EMAIL_KEY, member.getEmail())
@@ -35,31 +35,28 @@ public class JwtTokenProvider {
     }
 
     public Map<String, String> decode(String token) {
-        try {
-            Map<String, String> decodedClaims = new HashMap<>();
+        Map<String, String> decodedClaims = new HashMap<>();
 
-            Claims claims = Jwts.parser()
-                    .setSigningKey(jwtSecret)
-                    .parseClaimsJws(token)
-                    .getBody();
+        Claims claims = parseJwt(token);
 
-            decodedClaims.put(EMAIL_KEY, claims.get(EMAIL_KEY).toString());
-            decodedClaims.put(ID_KEY, claims.get(ID_KEY).toString());
+        decodedClaims.put(EMAIL_KEY, claims.get(EMAIL_KEY).toString());
+        decodedClaims.put(ID_KEY, claims.get(ID_KEY).toString());
 
-            return decodedClaims;
-        } catch (SignatureException exception) {
-            throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
-        }
+        return decodedClaims;
     }
 
     public String decode(String token, String key) {
+        return parseJwt(token)
+                .get(key)
+                .toString();
+    }
+
+    private Claims parseJwt(String token) {
         try {
             return Jwts.parser()
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(token)
-                    .getBody()
-                    .get(key)
-                    .toString();
+                    .getBody();
         } catch (SignatureException exception) {
             throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
         }
