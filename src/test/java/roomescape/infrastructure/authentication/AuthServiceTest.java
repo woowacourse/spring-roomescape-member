@@ -9,13 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import roomescape.infrastructure.persistence.MemberRepository;
-import roomescape.service.auth.AuthenticationRequest;
-import roomescape.service.auth.UnauthorizedException;
 
-class JwtAuthServiceTest {
+class AuthServiceTest {
 
     private final MemberRepository repository = Mockito.mock(MemberRepository.class);
-    private final JwtAuthService authService = new JwtAuthService(repository);
+    private final AuthService authService = new AuthService(repository);
 
     @Test
     @DisplayName("존재하지 않는 사용자에게 토큰을 발급할 수 없다.")

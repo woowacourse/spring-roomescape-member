@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.service.auth.AuthService;
-import roomescape.service.auth.AuthenticatedProfile;
-import roomescape.service.auth.AuthenticationRequest;
-import roomescape.service.auth.UnauthorizedException;
+import roomescape.infrastructure.authentication.AuthService;
+import roomescape.infrastructure.authentication.AuthenticatedProfile;
+import roomescape.infrastructure.authentication.AuthenticationRequest;
+import roomescape.infrastructure.authentication.UnauthorizedException;
 
 @RestController
 class AuthController {

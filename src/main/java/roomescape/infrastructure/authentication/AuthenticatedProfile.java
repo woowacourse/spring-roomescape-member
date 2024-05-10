@@ -1,4 +1,4 @@
-package roomescape.service.auth;
+package roomescape.infrastructure.authentication;
 
 public record AuthenticatedProfile(String name) {
 }

@@ -6,29 +6,22 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 import roomescape.infrastructure.persistence.MemberRepository;
-import roomescape.service.auth.AuthService;
-import roomescape.service.auth.AuthenticatedProfile;
-import roomescape.service.auth.AuthenticationRequest;
-import roomescape.service.auth.UnauthorizedException;
 
-@Primary
 @Component
-class JwtAuthService implements AuthService {
+public class AuthService {
 
     private static final String SECRET_KEY_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_KEY_VALUE.getBytes());
 
     private final MemberRepository memberRepository;
 
-    public JwtAuthService(MemberRepository memberRepository) {
+    public AuthService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
-    @Override
     public String authenticate(AuthenticationRequest request) {
         String email = request.email();
         Member member = memberRepository
@@ -42,7 +35,6 @@ class JwtAuthService implements AuthService {
                 .compact();
     }
 
-    @Override
     public AuthenticatedProfile authorize(String token) {
         JwtParser parser = Jwts.parser()
                 .verifyWith(KEY)
