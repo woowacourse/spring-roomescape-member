@@ -40,7 +40,7 @@ class MemberApiControllerTest {
         member.put("email", "i894@naver.com");
         member.put("password", "password");
         RestAssured.given().contentType(ContentType.JSON).body(member)
-                   .when().post("/member")
+                   .when().post("/members")
                    .then().statusCode(201);
     }
 
