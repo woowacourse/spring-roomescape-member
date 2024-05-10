@@ -1,7 +1,6 @@
 package roomescape.controller.reservation;
 
 import jakarta.validation.Valid;
-import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.member.dto.LoginMember;
-import roomescape.controller.reservation.dto.FilterReservationRequest;
 import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
+import roomescape.controller.reservation.dto.ReservationSearch;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
@@ -53,10 +52,8 @@ public class ReservationController {
 
     @GetMapping(value = "/filter", params = {"themeId", "memberId", "dateFrom", "dateTo"})
     public List<ReservationResponse> findFilter(
-            final FilterReservationRequest request) {
-        final List<Reservation> filter = reservationService.getFilter(request.themeId(), request.memberId(),
-                request.dateFrom(),
-                request.dateTo());
+            final ReservationSearch request) {
+        final List<Reservation> filter = reservationService.findFilter(request);
         return filter.stream()
                 .map(ReservationResponse::from)
                 .toList();

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.member.dto.CreateReservationRequest;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationRequest;
+import roomescape.controller.reservation.dto.ReservationSearch;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -13,9 +14,9 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.DuplicateReservationException;
+import roomescape.service.exception.InvalidSearchDateException;
 import roomescape.service.exception.PreviousTimeException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,11 +44,9 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<Reservation> getFilter(final long themeId,
-                                       final long memberId,
-                                       final LocalDate dateFrom,
-                                       final LocalDate dateTo) {
-        return reservationRepository.findFilter(themeId, memberId, dateFrom, dateTo)
+    public List<Reservation> findFilter(final ReservationSearch request) {
+        validateDateRange(request);
+        return reservationRepository.findFilter(request)
                 .stream()
                 .toList();
     }
@@ -97,6 +96,15 @@ public class ReservationService {
                         parsedReservation.getDate());
         if (isExistsReservation) {
             throw new DuplicateReservationException("중복된 시간으로 예약이 불가합니다.");
+        }
+    }
+
+    private void validateDateRange(final ReservationSearch request) {
+        if (request.dateFrom() == null || request.dateTo() == null) {
+            throw new InvalidSearchDateException("유효하지 않는 데이터 반환입니다.");
+        }
+        if (request.dateFrom().isAfter(request.dateTo())) {
+            throw new InvalidSearchDateException("from은 to보다 이전 날짜여야 합니다.");
         }
     }
 }
