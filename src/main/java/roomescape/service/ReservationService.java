@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
-import roomescape.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -54,7 +53,7 @@ public class ReservationService {
     public void delete(final Long id) {
         final boolean isExist = reservationDao.existById(id);
         if (!isExist) {
-            throw new NotFoundException("해당 ID의 예약이 없습니다.");
+            throw new IllegalArgumentException("해당 ID의 예약이 없습니다.");
         }
         reservationDao.deleteById(id);
     }

@@ -6,7 +6,6 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.exception.NotFoundException;
 import roomescape.dao.ReservationTimeDao;
 
 import java.time.LocalDate;
@@ -50,7 +49,7 @@ public class ReservationTimeService {
 
     public void delete(final Long id) {
         final ReservationTime reservationTime = reservationTimeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 없습니다."));
         validateHasReservation(reservationTime);
         reservationTimeDao.deleteById(reservationTime.getId());
     }

@@ -19,7 +19,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.exception.NotFoundException;
+
 import java.time.LocalDate;
 import java.util.List;
 

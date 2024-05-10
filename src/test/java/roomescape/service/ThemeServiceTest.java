@@ -21,7 +21,6 @@ import roomescape.domain.AggregationLimit;
 import roomescape.domain.AggregationPeriod;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;

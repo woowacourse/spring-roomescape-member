@@ -7,7 +7,6 @@ import roomescape.domain.AggregationLimit;
 import roomescape.domain.AggregationPeriod;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,13 +42,12 @@ public class ThemeService {
 
     public void deleteById(final Long id) {
         final Theme theme = themeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(id + "에 해당하는 테마가 없습니다."));
         themeDao.deleteById(theme.getId());
     }
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> findPopularThemes() {
-
         final LocalDate period = AggregationPeriod.calculateAggregationPeriod(LocalDate.now());
         final int limit = AggregationLimit.getAggregationLimit();
 

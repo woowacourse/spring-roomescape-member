@@ -25,7 +25,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
-import roomescape.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
-import roomescape.exception.NotFoundException;
+
 import java.util.List;
 
 
