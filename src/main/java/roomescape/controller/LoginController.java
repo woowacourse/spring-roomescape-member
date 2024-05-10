@@ -30,7 +30,9 @@ public class LoginController {
     public void login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         memberService.login(loginRequestDto.email(), loginRequestDto.password());
         String token = authenticationService.createToken(loginRequestDto.email());
-        Cookie cookie = authenticationService.createCookie(token);
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 
