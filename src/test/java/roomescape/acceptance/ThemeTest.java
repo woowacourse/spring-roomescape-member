@@ -82,7 +82,7 @@ class ThemeTest extends AcceptanceTest{
     }
 
     @DisplayName("주간 상위 10개 예약 테마 조회 API 테스트")
-    @Sql("/reservationData.sql")
+    @Sql("/init_data/reservationData.sql")
     @Test
     void weeklyTop10Theme() {
         RestAssured.given().log().all()
