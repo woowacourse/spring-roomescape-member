@@ -28,10 +28,10 @@
 
 ```http
 POST /reservations HTTP/1.1
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
 content-type: application/json
 
 {
-    "name": "브라운",
     "date": "2023-08-05",
     "timeId": 1,
     "themeId": 1
@@ -46,7 +46,13 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "name": "브라운",
+    "member" : {
+        "id" : 1,
+        "email" : "wjdgotjd9908@gmail.com",
+        "name" : "로키",
+        "role" : "NOMAL"
+       
+    },
     "date": "2023-08-05",
     "time" : {
         "id": 1,
@@ -79,18 +85,24 @@ Content-Type: application/json
 
 [
   {
-    "id": 1,
-    "name": "브라운",
-    "date": "2023-08-05",
-    "time" : {
-        "id": 1,
-        "startAt" : "10:00"
-    },
-    "theme" : {
-        "id": 1,
-        "name": "테마1",
-        "thumbnail": "https://example.com/thumbnail.jpg"
-    }
+      "id": 1,
+      "member" : {
+          "id" : 1,
+          "email" : "wjdgotjd9908@gmail.com",
+          "name" : "로키",
+          "role" : "NOMAL"
+         
+      },
+      "date": "2023-08-05",
+      "time" : {
+          "id": 1,
+          "startAt" : "10:00"
+      },
+      "theme" : {
+          "id": 1,
+          "name": "테마1",
+          "thumbnail": "https://example.com/thumbnail.jpg"
+      }
   }
 ]
 ```
@@ -397,6 +409,97 @@ Transfer-Encoding: chunked
 {
     "name": "어드민"
 }
+```
+
+</details>
+
+### 어드민
+
+<details>
+<summary>POST <code>/admin/reservations</code> 어드민 예약 API</summary>
+
+#### Request
+
+```http
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+}
+```
+
+#### Response
+
+```http
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+    "id": 1,
+    "member" : {
+        "id" : 1,
+        "email" : "wjdgotjd9908@gmail.com",
+        "name" : "로키",
+        "role" : "NOMAL"
+       
+    },
+    "date": "2023-08-05",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    },
+    "theme" : {
+        "id": 1,
+        "name": "테마1",
+        "thumbnail": "https://example.com/thumbnail.jpg"
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>GET <code>/admin/reservations/search</code> 어드민 예약 목록 검색 API</summary>
+
+#### Request
+
+```http
+GET /admin/reservations/search?memberId=1&themeId=1?dateFrom=2023-04-01&dateFrom=2023-04-07 HTTP/1.1
+```
+
+#### Response
+
+```http
+HTTP/1.1 200
+Content-Type: application/json
+[
+  {
+      "id": 1,
+      "member" : {
+          "id" : 1,
+          "email" : "wjdgotjd9908@gmail.com",
+          "name" : "로키",
+          "role" : "NOMAL"
+         
+      },
+      "date": "2024-04-05",
+      "time" : {
+          "id": 1,
+          "startAt" : "10:00"
+      },
+      "theme" : {
+          "id": 1,
+          "name": "테마1",
+          "thumbnail": "https://example.com/thumbnail.jpg"
+      }
+  }
+]
 ```
 
 </details>
