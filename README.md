@@ -151,22 +151,28 @@ Content-Type: application/json
 - [x] 어드민 > 예약 관리 페이지에서 검색 조건을 선택하고 적용을 누르면, reservation-with-member.js의 applyFilter() 함수가 실행 됩니다.
 - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가하세요.
   - [x] 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성하세요.
+  - [ ] 선택하지 않은 필터 옵션은 적용하지 않습니다.
 
 
 ## 리팩토링 할 것
 - [x] member name으로 되어있는 곳 member 객체로 바꾸기
-- [ ] configuration 의존성 memberService -> authService로 바꿔보기
+- [x] ReservationRequte에 @DateTimeFormat 적용
+- [x] 구현체에 대한 infrastructure 패키지 분리
+- [x] 테스트용 db 분리하기
+- [ ] 주석 삭제
+
+## 추가로 고민할 부분
 - [ ] 4,5 단계 테스트 추가하기
-- [ ] ReservationRequte에 @DateTimeFormat 적용
-- [ ] 구현체에 대한 infrastructure 패키지 분리
 - [ ] dao 테스트 제거
 - [ ] 테스트 mock 적용
+- [ ] URLSearchParams 적용
+- [ ] 필터 옵션 없는 경우 적용
+- [ ] data.sql
+- configuration 의존성 memberService -> authService로 바꿔보기
 - [ ] 테스트 httpStatus 통일
 - [ ] /times/member -> /times/available
 - [ ] exception 핸들러 컨트롤러 어드바이스 이해하기
-- [ ] 날짜 7일 상수화
-- [ ] data.sql
+- [ ] 상수화
 - [ ] class IllegalReservationException extends IllegalArgumentException {
 - [ ] findIds sql문 in으로 수정
 - [ ] flatpkr url로 수정
-- [ ] 주석 삭제
