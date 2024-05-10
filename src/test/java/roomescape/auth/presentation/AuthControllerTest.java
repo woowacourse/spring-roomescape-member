@@ -3,6 +3,8 @@ package roomescape.auth.presentation;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -10,9 +12,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.request.LoginRequest;
-import roomescape.common.ControllerTest;
-import roomescape.auth.exception.IllegalTokenException;
 import roomescape.auth.exception.AuthorizationException;
+import roomescape.auth.exception.IllegalTokenException;
+import roomescape.common.ControllerTest;
+
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,6 +47,30 @@ class AuthControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.SET_COOKIE, "token=" + expectedToken));
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "invalidRequest")
+    @DisplayName("로그인 요청 시 아이디나 비밀번호가 비어있다면 상태코드 400을 반환한다.")
+    void loginWithInvalidRequest(LoginRequest request) throws Exception {
+        // when & then
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    private static Stream<LoginRequest> invalidRequest() {
+        return Stream.of(
+                new LoginRequest(MIA_EMAIL, null),
+                new LoginRequest(MIA_EMAIL, " "),
+                new LoginRequest(MIA_EMAIL, ""),
+                new LoginRequest(null, TEST_PASSWORD),
+                new LoginRequest(" ", TEST_PASSWORD),
+                new LoginRequest("", TEST_PASSWORD)
+        );
     }
 
     @Test
