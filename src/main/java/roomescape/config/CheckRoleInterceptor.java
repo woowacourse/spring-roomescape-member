@@ -28,7 +28,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         final MemberLoginResponse memberLoginResponse = memberService.findMemberByToken(accessToken);
 
         if (!memberLoginResponse.role().equals(Role.ADMIN)) {
-            response.setStatus(401);
+            response.setStatus(403);
 
             return false;
         }
