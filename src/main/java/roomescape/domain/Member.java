@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import static roomescape.domain.Role.ADMIN;
 import static roomescape.domain.Role.MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.INVALID_EMAIL_FORMAT;
@@ -10,10 +9,10 @@ import java.util.regex.Pattern;
 import roomescape.exception.RoomescapeException;
 
 public class Member {
-    private static Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" +
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@" +
             "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
     //Todo 비밀 번호 형태인지 검증하는 역할을 별도의 도메인으로 분리 : Password 클래스 생성?
-    private static Pattern SHA_256_PATTERN = Pattern.compile("[a-fA-F0-9]{64}");
+    private static final Pattern SHA_256_PATTERN = Pattern.compile("[a-fA-F0-9]{64}");
     private final Long id;
     private final String name;
     private final String email;
@@ -65,10 +64,6 @@ public class Member {
 
     public Member(Long id, String name, String email, String encryptedPassword) {
         this(id, name, email, encryptedPassword, MEMBER);
-    }
-
-    public static Member asAdmin(String name, String email, String encryptedPassword) {
-        return new Member(null, name, email, encryptedPassword, ADMIN);
     }
 
     public Long getId() {
