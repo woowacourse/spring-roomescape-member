@@ -18,10 +18,10 @@ import roomescape.dto.response.TokenResponse;
 import roomescape.service.MemberService;
 
 @RestController
-public class MemberController {
+public class AuthController {
     private final MemberService service;
 
-    public MemberController(MemberService service) {
+    public AuthController(MemberService service) {
         this.service = service;
     }
 

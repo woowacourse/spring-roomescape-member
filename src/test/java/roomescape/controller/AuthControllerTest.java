@@ -21,7 +21,7 @@ import io.restassured.response.Response;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class MemberControllerTest {
+class AuthControllerTest {
     @LocalServerPort
     private int port;
     @Autowired
