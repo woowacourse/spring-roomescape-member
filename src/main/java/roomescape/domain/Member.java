@@ -20,19 +20,15 @@ public class Member {
         this.role = role;
     }
 
+    public boolean isValidPassword(String password) {
+        return this.password.equals(password);
+    }
+
     public Long getId() {
         return id;
     }
 
     public Name getName() {
         return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }

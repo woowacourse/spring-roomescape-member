@@ -8,6 +8,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
+import roomescape.domain.Name;
 import roomescape.infrastructure.persistence.MemberRepository;
 
 class AuthServiceTest {
@@ -21,6 +24,24 @@ class AuthServiceTest {
         when(repository.findByEmail(any()))
                 .thenReturn(Optional.empty());
         AuthenticationRequest request = new AuthenticationRequest("email", "password");
+
+        assertThatThrownBy(() -> authService.authenticate(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("올바른 인증 정보를 입력해주세요.");
+    }
+
+    @Test
+    @DisplayName("비밀번호가 틀리다면 사용자에게 토큰을 발급할 수 없다.")
+    void cantAuthenticationWithWrongPassword() {
+        Member member = new Member(
+                new Name("아톰"),
+                "email@test.com",
+                "password",
+                MemberRole.NORMAL
+        );
+        when(repository.findByEmail("email@test.com"))
+                .thenReturn(Optional.of(member));
+        AuthenticationRequest request = new AuthenticationRequest("email@test.com", "wrongPassword");
 
         assertThatThrownBy(() -> authService.authenticate(request))
                 .isInstanceOf(IllegalArgumentException.class)

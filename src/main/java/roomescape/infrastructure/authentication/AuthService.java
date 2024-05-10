@@ -13,6 +13,7 @@ import roomescape.infrastructure.persistence.MemberRepository;
 @Component
 public class AuthService {
 
+    private static final String AUTHENTICATION_FAIL_MESSAGE = "올바른 인증 정보를 입력해주세요.";
     private static final String SECRET_KEY_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_KEY_VALUE.getBytes());
 
@@ -23,10 +24,24 @@ public class AuthService {
     }
 
     public String authenticate(AuthenticationRequest request) {
-        Member member = memberRepository
-                .findByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("올바른 인증 정보를 입력해주세요."));
+        Member member = findMember(request);
+        checkPassword(request, member);
+        return generateToken(member);
+    }
 
+    private Member findMember(AuthenticationRequest request) {
+        return memberRepository
+                .findByEmail(request.email())
+                .orElseThrow(() -> new IllegalArgumentException(AUTHENTICATION_FAIL_MESSAGE));
+    }
+
+    private void checkPassword(AuthenticationRequest request, Member member) {
+        if (!member.isValidPassword(request.password())) {
+            throw new IllegalArgumentException(AUTHENTICATION_FAIL_MESSAGE);
+        }
+    }
+
+    private String generateToken(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName().value())
