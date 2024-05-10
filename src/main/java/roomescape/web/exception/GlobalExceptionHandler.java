@@ -2,7 +2,6 @@ package roomescape.web.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -50,19 +49,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(IllegalArgumentException exception) {
-        logWarn(exception);
-        return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(IllegalStateException exception) {
-        logWarn(exception);
-        return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(NoSuchElementException exception) {
+    public ResponseEntity<ErrorResponse> handle(RuntimeException exception) {
         logWarn(exception);
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
