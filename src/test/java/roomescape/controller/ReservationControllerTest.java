@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.response.ReservationResponse;
 
 
@@ -35,15 +36,23 @@ class ReservationControllerTest {
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void should_insert_reservation() {
+        UserLoginRequest loginRequest = new UserLoginRequest("1234", "sun@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
         ReservationRequest request = new ReservationRequest(
-                LocalDate.of(2030, 8, 5),
-                6L,
-                10L,
-                1L);
+                LocalDate.of(2030, 8, 5), 6L, 10L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
+                .cookie(cookie)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)

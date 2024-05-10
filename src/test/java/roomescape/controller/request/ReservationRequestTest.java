@@ -15,8 +15,8 @@ class ReservationRequestTest {
     @DisplayName("아이디가 0이하인 경우 예외를 발생시킨다.")
     @Test
     void should_throw_exception_when_id() {
-            assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2030, 8, 9), 1L, 1L, 0L))
+            assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2030, 8, 9), 0L, 1L))
                     .isInstanceOf(BadRequestException.class)
-                    .hasMessage("[ERROR] userId의 값이 \"0\"일 수 없습니다.");
+                    .hasMessage("[ERROR] timeId의 값이 \"0\"일 수 없습니다.");
     }
 }

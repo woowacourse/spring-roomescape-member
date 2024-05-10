@@ -19,7 +19,6 @@ import roomescape.model.User;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
-import roomescape.repository.UserDao;
 
 @Service
 public class ReservationService {
@@ -27,28 +26,23 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
-    private final UserDao userDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
-                              UserDao userDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
-        this.userDao = userDao;
     }
 
     public List<Reservation> findAllReservations() {
         return reservationDao.getAllReservations();
     }
 
-    public Reservation addReservation(ReservationRequest request) {
+    public Reservation addReservation(ReservationRequest request, User user) {
         ReservationTime reservationTime = reservationTimeDao.findReservationById(request.getTimeId());
         validateReservationDateTimeBeforeNow(request.getDate(), reservationTime.getStartAt());
         validateDuplicatedReservation(request.getDate(), request.getThemeId(), request.getTimeId());
 
         Theme theme = themeDao.findThemeById(request.getThemeId());
-        User user = userDao.findUserById(request.getUserId())
-                .orElseThrow(() -> new NotFoundException("아이디가 %s인 사용자는 존재하지 않습니다.".formatted(request.getUserId())));
 
         Reservation reservation = new Reservation(request.getDate(), reservationTime, theme, user);
         return reservationDao.addReservation(reservation);

@@ -32,10 +32,8 @@ class ReservationServiceTest {
     private final FakeThemeDao fakeThemeDao = new FakeThemeDao();
     private final FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
     private final FakeReservationDao fakeReservationDao = new FakeReservationDao();
-
-    private final FakeUserDao fakeUserDao = new FakeUserDao();
     private final ReservationService reservationService =
-            new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao, fakeUserDao);
+            new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
 
     @BeforeEach
     void setUp() {//todo 기본값 수정
@@ -47,8 +45,6 @@ class ReservationServiceTest {
         fakeThemeDao.addTheme(new Theme(2L, "name2", "description2", "thumbnail2"));
         fakeReservationTimeDao.add(new ReservationTime(1L, LocalTime.of(10, 0)));
         fakeReservationTimeDao.add(new ReservationTime(2L, LocalTime.of(12, 0)));
-        fakeUserDao.addUser(new User(1L, "썬", "sun@email.com", "1111"));
-        fakeUserDao.addUser(new User(2L, "배키", "dmsgml@email.com", "2222"));
     }
 
     @DisplayName("모든 예약 시간을 반환한다")
@@ -69,9 +65,9 @@ class ReservationServiceTest {
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_times() {
-        ReservationRequest request = new ReservationRequest(now().plusDays(2), 1L, 1L, 1L);
-
-        reservationService.addReservation(request);
+        ReservationRequest request = new ReservationRequest(now().plusDays(2), 1L, 1L);
+        User user = new User(2L, "배키", "dmsgml@email.com", "2222");
+        reservationService.addReservation(request, user);
 
         List<Reservation> allReservations = fakeReservationDao.getAllReservations();
         assertThat(allReservations).hasSize(1);
@@ -119,9 +115,10 @@ class ReservationServiceTest {
     @Test
     void should_throw_exception_when_previous_date() {
         ReservationRequest request =
-                new ReservationRequest(LocalDate.now().minusDays(1), 1L, 1L, 1L);
+                new ReservationRequest(LocalDate.now().minusDays(1), 1L, 1L);
+        User user = new User(1L, "썬", "sun@email.com", "1111");
 
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.addReservation(request, user))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("[ERROR] 현재(", ") 이전 시간으로 예약할 수 없습니다.");
     }
@@ -130,9 +127,10 @@ class ReservationServiceTest {
     @Test
     void should_not_throw_exception_when_current_date() {
         fakeReservationTimeDao.add(new ReservationTime(3L, LocalTime.now()));
-        ReservationRequest request = new ReservationRequest(LocalDate.now(), 3L, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.now(), 3L, 1L);
+        User user = new User(1L, "썬", "sun@email.com", "1111");
 
-        assertThatCode(() -> reservationService.addReservation(request))
+        assertThatCode(() -> reservationService.addReservation(request, user))
                 .doesNotThrowAnyException();
     }
 
@@ -140,9 +138,10 @@ class ReservationServiceTest {
     @Test
     void should_not_throw_exception_when_later_date() {
         ReservationRequest request =
-                new ReservationRequest(LocalDate.now().plusDays(2), 1L, 1L, 1L);
+                new ReservationRequest(LocalDate.now().plusDays(2), 1L, 1L);
+        User user = new User(1L, "썬", "sun@email.com", "1111");
 
-        assertThatCode(() -> reservationService.addReservation(request))
+        assertThatCode(() -> reservationService.addReservation(request, user))
                 .doesNotThrowAnyException();
     }
 
@@ -155,24 +154,9 @@ class ReservationServiceTest {
         User user = new User(2L, "배키", "dmsgml@email.com", "2222");
         fakeReservationDao.addReservation(new Reservation(1L, date, reservationTime, theme, user));
 
-        ReservationRequest request = new ReservationRequest(date, 1L, 1L, 2L);
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        ReservationRequest request = new ReservationRequest(date, 1L, 1L);
+        assertThatThrownBy(() -> reservationService.addReservation(request, user))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 이미 해당 시간에 예약이 존재합니다.");
-    }
-
-    @DisplayName("사용자 아이디 값이 존재하지 않는다면 예외가 발생한다.")
-    @Test
-    void should_throw_exception_when_add_not_exist_user() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(2L, "name2", "description2", "thumbnail2");
-        LocalDate date = now().plusDays(2);
-        User user = new User(2L, "배키", "dmsgml@email.com", "2222");
-        fakeReservationDao.addReservation(new Reservation(1L, date, reservationTime, theme, user));
-
-        ReservationRequest request = new ReservationRequest(date, 1L, 1L, 3L);
-        assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("[ERROR] 아이디가 3인 사용자는 존재하지 않습니다.");
     }
 }

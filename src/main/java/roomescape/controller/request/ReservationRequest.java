@@ -8,16 +8,13 @@ public class ReservationRequest {
     private final LocalDate date;
     private final long timeId;
     private final long themeId;
-    private final long userId;
 
-    public ReservationRequest(LocalDate date, long timeId, long themeId, long userId) {
+    public ReservationRequest(LocalDate date, long timeId, long themeId) {
         validateId(timeId, "timeId");
         validateId(themeId, "themeId");
-        validateId(userId, "userId");
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
-        this.userId = userId;
     }
 
     private void validateId(Long id, String fieldName) {
@@ -36,9 +33,5 @@ public class ReservationRequest {
 
     public long getThemeId() {
         return themeId;
-    }
-
-    public long getUserId() {
-        return userId;
     }
 }

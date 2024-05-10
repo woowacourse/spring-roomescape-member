@@ -16,5 +16,4 @@ class StaticUserPageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
-
 }
