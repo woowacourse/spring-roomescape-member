@@ -58,7 +58,7 @@ class AdminApiControllerTest {
                 .id();
         final long themeId = themeService.createTheme(ThemeFixture.getInput())
                 .id();
-        final var output = memberService.createMember(MemberFixture.getCreateInput());
+        final var output = memberService.createMember(MemberFixture.getUserCreateInput());
         token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
 
 
