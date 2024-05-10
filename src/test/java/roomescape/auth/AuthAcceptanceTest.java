@@ -10,8 +10,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
-import roomescape.auth.dto.MemberLoginRequestDto;
-import roomescape.auth.dto.MemberSignUpRequestDto;
+import roomescape.auth.dto.LoginRequestDto;
+import roomescape.auth.dto.SignUpRequestDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,7 +30,7 @@ public class AuthAcceptanceTest {
     void tokenLogin() {
         RestAssured.given()
                 .log().all()
-                .body(new MemberSignUpRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .body(new SignUpRequestDto("hotea@hotea.com", "1234", "hotea"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()
@@ -39,7 +39,7 @@ public class AuthAcceptanceTest {
 
         RestAssured.given()
                 .log().all()
-                .body(new MemberLoginRequestDto("1234", "hotea@hotea.com"))
+                .body(new LoginRequestDto("1234", "hotea@hotea.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()
@@ -52,7 +52,7 @@ public class AuthAcceptanceTest {
     void tokenValidate() {
         RestAssured.given()
                 .log().all()
-                .body(new MemberSignUpRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .body(new SignUpRequestDto("hotea@hotea.com", "1234", "hotea"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()
@@ -61,7 +61,7 @@ public class AuthAcceptanceTest {
 
         String token = RestAssured.given()
                 .log().all()
-                .body(new MemberLoginRequestDto("1234", "hotea@hotea.com"))
+                .body(new LoginRequestDto("1234", "hotea@hotea.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()

@@ -1,4 +1,4 @@
-package roomescape.configuration;
+package roomescape.auth.controller;
 
 import java.util.Arrays;
 
@@ -9,14 +9,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import roomescape.auth.domain.Member;
+import roomescape.auth.annotation.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
 import roomescape.exception.RoomEscapeException;
+import roomescape.member.domain.Member;
 
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthService authService;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
+    public LoginArgumentResolver(AuthService authService) {
         this.authService = authService;
     }
 

@@ -14,8 +14,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.auth.dto.MemberLoginRequestDto;
-import roomescape.auth.dto.MemberSignUpRequestDto;
+import roomescape.auth.dto.LoginRequestDto;
+import roomescape.auth.dto.SignUpRequestDto;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dto.ThemeRequestDto;
 import roomescape.time.dto.ReservationTimeRequestDto;
@@ -51,7 +51,7 @@ public class ReservationAcceptanceTest {
 
         RestAssured.given()
                 .log().all()
-                .body(new MemberSignUpRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .body(new SignUpRequestDto("hotea@hotea.com", "1234", "hotea"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()
@@ -60,7 +60,7 @@ public class ReservationAcceptanceTest {
 
         String token = RestAssured.given()
                 .log().all()
-                .body(new MemberLoginRequestDto("1234", "hotea@hotea.com"))
+                .body(new LoginRequestDto("1234", "hotea@hotea.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()

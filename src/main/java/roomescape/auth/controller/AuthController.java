@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import roomescape.auth.domain.Member;
-import roomescape.auth.dto.MemberLoginRequestDto;
-import roomescape.auth.dto.MemberResponseDto;
-import roomescape.auth.dto.MemberSignUpRequestDto;
+import roomescape.auth.annotation.AuthenticatedMember;
+import roomescape.auth.dto.LoginRequestDto;
+import roomescape.auth.dto.LoginResponseDto;
+import roomescape.auth.dto.SignUpRequestDto;
 import roomescape.auth.service.AuthService;
-import roomescape.configuration.AuthenticatedMember;
+import roomescape.member.domain.Member;
 
 @RestController
 public class AuthController {
@@ -29,8 +29,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid MemberLoginRequestDto memberLoginRequestDto) {
-        String token = authService.login(memberLoginRequestDto);
+    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        String token = authService.login(loginRequestDto);
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .path("/")
@@ -41,15 +41,15 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@RequestBody @Valid MemberSignUpRequestDto memberSignUpRequestDto) {
-        long id = authService.signUp(memberSignUpRequestDto);
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequestDto signUpRequestDto) {
+        long id = authService.signUp(signUpRequestDto);
         return ResponseEntity.created(URI.create("/signup/" + id)).build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponseDto> loginCheck(@AuthenticatedMember Member member) {
+    public ResponseEntity<LoginResponseDto> loginCheck(@AuthenticatedMember Member member) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.DATE, new Date().toString());
-        return ResponseEntity.ok().headers(headers).body(new MemberResponseDto(member.getName()));
+        return ResponseEntity.ok().headers(headers).body(new LoginResponseDto(member.getName()));
     }
 }

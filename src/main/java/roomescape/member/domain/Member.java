@@ -1,4 +1,4 @@
-package roomescape.auth.domain;
+package roomescape.member.domain;
 
 import java.util.Objects;
 import java.util.regex.Pattern;

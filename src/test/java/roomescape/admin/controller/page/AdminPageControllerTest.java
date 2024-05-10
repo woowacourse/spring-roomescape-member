@@ -1,4 +1,4 @@
-package roomescape.admin;
+package roomescape.admin.controller.page;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -9,12 +9,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import roomescape.admin.controller.AdminController;
 import roomescape.auth.service.AuthService;
 
 
-@WebMvcTest(AdminController.class)
-public class AdminControllerTest {
+@WebMvcTest(AdminPageController.class)
+public class AdminPageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

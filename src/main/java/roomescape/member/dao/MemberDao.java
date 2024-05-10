@@ -1,4 +1,4 @@
-package roomescape.auth.dao;
+package roomescape.member.dao;
 
 import javax.sql.DataSource;
 
@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import roomescape.auth.domain.Member;
 import roomescape.exception.RoomEscapeException;
+import roomescape.member.domain.Member;
 
 @Repository
 public class MemberDao {

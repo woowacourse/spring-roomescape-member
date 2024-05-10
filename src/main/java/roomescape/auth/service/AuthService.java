@@ -2,12 +2,12 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.auth.dao.MemberDao;
-import roomescape.auth.domain.Member;
-import roomescape.auth.dto.MemberLoginRequestDto;
-import roomescape.auth.dto.MemberSignUpRequestDto;
-import roomescape.configuration.JwtTokenProvider;
+import roomescape.auth.dto.LoginRequestDto;
+import roomescape.auth.dto.SignUpRequestDto;
+import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.exception.RoomEscapeException;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 
 @Service
 public class AuthService {
@@ -20,14 +20,14 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String login(final MemberLoginRequestDto memberLoginRequestDto) {
-        final Member member = memberDao.getByEmailAndPassword(memberLoginRequestDto.email(), memberLoginRequestDto.password());
+    public String login(final LoginRequestDto loginRequestDto) {
+        final Member member = memberDao.getByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password());
         final String token = jwtTokenProvider.createToken(member);
         return token;
     }
 
-    public long signUp(final MemberSignUpRequestDto memberSignUpRequestDto) {
-        return memberDao.save(memberSignUpRequestDto.toMember());
+    public long signUp(final SignUpRequestDto signUpRequestDto) {
+        return memberDao.save(signUpRequestDto.toMember());
     }
 
     public Member loginCheck(final String token) {
