@@ -7,6 +7,8 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import roomescape.auth.config.AuthInfo;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -24,13 +26,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(@Qualifier("jdbcReservationRepository") final ReservationRepository reservationRepository,
                               @Qualifier("jdbcReservationTimeRepository") final ReservationTimeRepository reservationTimeRepository,
-                              @Qualifier("jdbcThemeRepository") final ThemeRepository themeRepository) {
+                              @Qualifier("jdbcThemeRepository") final ThemeRepository themeRepository,
+                              @Qualifier("jdbcMemberRepository")final MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public CreateReservationResponse createReservation(final AuthInfo authInfo,
@@ -39,8 +44,8 @@ public class ReservationService {
         checkDateTimeToCreateIsPast(createReservationRequest.date(), reservationTime);
 
         Theme theme = findTheme(createReservationRequest.themeId());
-
-        Reservation reservation = createReservationRequest.toReservation(authInfo.getName(), reservationTime, theme);
+        Member member = findMember(authInfo.getMemberId());
+        Reservation reservation = createReservationRequest.toReservation(member, reservationTime, theme);
         // TODO: 얘가 42줄이여도 될듯
         validateAlreadyExistReservation(reservationTime, theme, reservation);
 
@@ -55,6 +60,11 @@ public class ReservationService {
     private Theme findTheme(final Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("생성하려는 테마가 존재하지 않습니다."));
+    }
+
+    private Member findMember(final Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(""));
     }
 
     private void checkDateTimeToCreateIsPast(final LocalDate dateToCreate, final ReservationTime reservationTime) {
