@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.exception;
 
 import roomescape.exception.RoomescapeException;
 

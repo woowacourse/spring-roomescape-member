@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.controller.dto.TokenResponse;
 import roomescape.controller.member.dto.MemberLoginRequest;
 import roomescape.domain.Member;
 import roomescape.domain.exception.InvalidRequestException;

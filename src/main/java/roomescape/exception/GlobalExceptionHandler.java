@@ -9,8 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.controller.AuthenticationException;
-import roomescape.controller.AuthorizationException;
+import roomescape.controller.exception.AuthenticationException;
+import roomescape.controller.exception.AuthorizationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

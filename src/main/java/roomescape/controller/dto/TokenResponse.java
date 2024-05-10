@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.controller.dto;
 
 public record TokenResponse(String assessToken) {
 }

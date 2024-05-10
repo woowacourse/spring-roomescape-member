@@ -116,7 +116,6 @@ public class H2ReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    //TODO 이걸 코드라고 짠건가.
     @Override
     public List<Reservation> findFilter(final ReservationSearch search) {
         String sql = """

@@ -13,7 +13,7 @@ import roomescape.controller.member.dto.CookieMemberResponse;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.member.dto.MemberLoginRequest;
 import roomescape.service.MemberService;
-import roomescape.service.TokenResponse;
+import roomescape.controller.dto.TokenResponse;
 
 @RestController
 @RequestMapping("/login")

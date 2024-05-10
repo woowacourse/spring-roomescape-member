@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import roomescape.controller.AuthenticationException;
+import roomescape.controller.exception.AuthenticationException;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.controller.reservation.dto.ReservationSearch;
