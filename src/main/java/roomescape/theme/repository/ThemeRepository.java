@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -57,7 +58,7 @@ public class ThemeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public List<Theme> findPopular(String startDate, String lastDate) {
+    public List<Theme> findPopular(LocalDate startDate, LocalDate lastDate) {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count
                 FROM theme t

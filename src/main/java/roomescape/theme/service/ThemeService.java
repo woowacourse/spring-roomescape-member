@@ -35,7 +35,7 @@ public class ThemeService {
     public List<Theme> findPopular() {
         LocalDate today = LocalDate.now();
 
-        return themeRepository.findPopular(today.minusWeeks(1).toString(), today.minusDays(1).toString());
+        return themeRepository.findPopular(today.minusWeeks(1), today.minusDays(1));
     }
 
     private void validateDeletionOccurred(int deleteCount) {
