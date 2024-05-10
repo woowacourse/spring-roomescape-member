@@ -108,6 +108,13 @@ class ReservationTimeServiceTest {
         }
 
         @Test
+        @DisplayName("예약 시간 삭제시 아이디가 null이면 예외가 발생한다.")
+        void deleteByNullOrEmptyId() {
+            assertThatThrownBy(() -> reservationTimeService.delete(null))
+                    .isInstanceOf(InvalidRequestException.class);
+        }
+
+        @Test
         @DisplayName("특정 시간에 대한 예약이 존재할 때, 해당 시간을 삭제하면 예외가 발생한다.")
         void deleteWhenReservationExist() {
             jdbcTemplate.update(

@@ -272,6 +272,13 @@ class ReservationServiceTest {
         }
 
         @Test
+        @DisplayName("예약 삭제시 아이디가 null이면 예외가 발생한다.")
+        void deleteByNullOrEmptyId() {
+            assertThatThrownBy(() -> reservationService.delete(null))
+                    .isInstanceOf(InvalidRequestException.class);
+        }
+
+        @Test
         @DisplayName("예약 삭제시 아이디가 존재하지 않으면 예외가 발생한다.")
         void deleteByNotExistId() {
             assertThatThrownBy(() -> reservationService.delete(-1L))

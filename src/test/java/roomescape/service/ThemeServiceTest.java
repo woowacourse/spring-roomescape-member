@@ -146,6 +146,13 @@ class ThemeServiceTest {
         }
 
         @Test
+        @DisplayName("테마 삭제시 아이디가 null이면 예외가 발생한다.")
+        void deleteByNullOrEmptyId() {
+            assertThatThrownBy(() -> themeService.delete(null))
+                    .isInstanceOf(InvalidRequestException.class);
+        }
+
+        @Test
         @DisplayName("테마 삭제시 아이디가 존재하지 않으면 예외가 발생한다.")
         void deleteByNotExistId() {
             assertThatThrownBy(() -> themeService.delete(-1L))
