@@ -32,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = authorizationExtractor.extract(request);
+        String token = authorizationExtractor.extractToken(request);
         return authService.checkLogin(new TokenDto(token));
     }
 }
