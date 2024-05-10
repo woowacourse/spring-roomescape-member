@@ -99,6 +99,9 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        if (dateFrom.isAfter(dateTo)) {
+            throw new RoomescapeException("날짜 조회 범위가 올바르지 않습니다.");
+        }
         return reservationRepository.findAllBy(themeId, memberId, dateFrom, dateTo);
     }
 }
