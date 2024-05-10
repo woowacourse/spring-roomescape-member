@@ -19,15 +19,6 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public Member findMemberByToken(String token) {
-        Long payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
-    }
-
-    public boolean isAdminByToken(String token) {
-        return findMemberByToken(token).isAdmin();
-    }
-
     public String createToken(MemberLoginRequest request) {
         if (checkInvalidLogin(request)) {
             throw new AuthorizationException("이메일과 비밀번호를 확인해 주세요.");
@@ -43,6 +34,15 @@ public class AuthService {
     private Member findMember(Long id) {
         return memberDao.readById(id)
                 .orElseThrow(() -> new InvalidRequestException("존재하지 않는 사용자입니다."));
+    }
+
+    public Member findMemberByToken(String token) {
+        Long payload = jwtTokenProvider.getPayload(token);
+        return findMember(payload);
+    }
+
+    public boolean isAdminByToken(String token) {
+        return findMemberByToken(token).isAdmin();
     }
 
     private boolean checkInvalidLogin(MemberLoginRequest request) {
