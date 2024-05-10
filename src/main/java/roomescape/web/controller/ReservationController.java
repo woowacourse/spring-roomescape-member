@@ -53,10 +53,8 @@ public class ReservationController {
 
     @GetMapping(params = {"memberId", "themeId", "dateFrom", "dateTo"})
     public ResponseEntity<List<ReservationResponse>> findReservationsWithMemberThemePeriod(
-            @RequestParam final Long memberId,
-            @RequestParam final Long themeId,
-            @RequestParam final LocalDate dateFrom,
-            @RequestParam final LocalDate dateTo
+            @RequestParam Long memberId, @RequestParam Long themeId,
+            @RequestParam LocalDate dateFrom, @RequestParam LocalDate dateTo
     ) {
         List<ReservationResponse> responses =
                 reservationService.findReservationsWithMemberThemePeriod(memberId, themeId, dateFrom, dateTo);
