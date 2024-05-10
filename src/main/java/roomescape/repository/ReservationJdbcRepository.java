@@ -90,34 +90,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String selectQuery = """
-            SELECT
-                r.id as reservation_id,
-                r.member_id,
-                m.name as member_name,
-                m.email,
-                m.password,
-                m.role,
-                r.date,
-                rt.id as time_id,
-                rt.start_at,
-                t.id as theme_id,
-                t.name as theme_name,
-                t.description,
-                t.thumbnail
-            FROM reservation as r
-            LEFT JOIN reservation_time as rt
-            ON r.time_id = rt.id
-            LEFT JOIN theme as t
-            ON r.theme_id = t.id
-            LEFT JOIN member as m
-            ON r.member_id = m.id
-        """;
-        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER);
-    }
-
-    @Override
     public Optional<Reservation> findById(Long id) {
         String selectQuery = """
             SELECT
@@ -269,7 +241,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             ON r.time_id = rt.id
             LEFT JOIN theme as t
             ON r.theme_id = t.id
-            RIGHT JOIN member as m
+            LEFT JOIN member as m
             ON r.member_id = m.id
         """;
 

@@ -35,13 +35,6 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(ReservationResponse::new)
-                .toList();
-    }
-
     public ReservationResponse saveReservation(ReservationSaveRequest reservationSaveRequest) {
         ReservationTime time = reservationTimeRepository.findById(reservationSaveRequest.timeId())
                 .orElseThrow(() -> new RoomEscapeBusinessException("존재하지 않는 예약 시간입니다."));

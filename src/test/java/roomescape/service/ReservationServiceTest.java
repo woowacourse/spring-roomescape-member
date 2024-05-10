@@ -18,6 +18,7 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.RoomEscapeBusinessException;
+import roomescape.service.dto.ReservationConditionRequest;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
 
@@ -74,7 +75,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void deleteReservation() {
         reservationService.deleteReservation(1L);
-        assertThat(reservationService.getReservations()).hasSize(12);
+        assertThat(reservationService.findReservationsByCondition(new ReservationConditionRequest(null, null, null, null))).hasSize(12);
     }
 
     @DisplayName("존재하지 않는 예약 삭제")

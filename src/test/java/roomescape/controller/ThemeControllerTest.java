@@ -62,7 +62,7 @@ class ThemeControllerTest extends IntegrationTestSupport {
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
                             .body(param)
-                            .when().post("/themes")
+                            .when().post("/admin/themes")
                             .then().log().all()
                             .statusCode(201).extract().header("location").split("/")[2];
                 }),
@@ -83,7 +83,7 @@ class ThemeControllerTest extends IntegrationTestSupport {
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
                             .body(param)
-                            .when().post("/themes")
+                            .when().post("/admin/themes")
                             .then().log().all()
                             .statusCode(400);
                 }),
@@ -91,7 +91,7 @@ class ThemeControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().delete("/themes/" + createdId)
+                            .when().delete("/admin/themes/" + createdId)
                             .then().log().all()
                             .statusCode(204);
                 }),

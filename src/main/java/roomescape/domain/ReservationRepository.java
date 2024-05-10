@@ -8,8 +8,6 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    List<Reservation> findAll();
-
     Optional<Reservation> findById(Long id);
 
     List<ReservationTime> findTimeByDateAndThemeId(LocalDate date, Long aLong);

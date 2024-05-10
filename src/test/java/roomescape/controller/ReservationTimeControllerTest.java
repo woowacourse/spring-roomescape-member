@@ -55,7 +55,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
                             .body(param)
-                            .when().post("/times")
+                            .when().post("/admin/times")
                             .then().log().all()
                             .statusCode(201).extract().header("location").split("/")[2];
                 }),
@@ -74,7 +74,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
                             .body(param)
-                            .when().post("/times")
+                            .when().post("/admin/times")
                             .then().log().all()
                             .statusCode(400);
                 }),
@@ -82,7 +82,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().delete("/times/" + createdId)
+                            .when().delete("/admin/times/" + createdId)
                             .then().log().all()
                             .statusCode(204);
                 }),

@@ -47,7 +47,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                     reservationSize = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().get("/reservations")
+                            .when().get("/admin/reservations")
                             .then().log().all()
                             .statusCode(200).extract()
                             .response().jsonPath().getList("$").size();
@@ -116,7 +116,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().get("/reservations")
+                            .when().get("/admin/reservations")
                             .then().log().all()
                             .statusCode(200).body("size()", is(reservationSize + 1));
                 }),
@@ -124,7 +124,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().delete("/reservations/" + createdId)
+                            .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(204);
                 }),
@@ -132,7 +132,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().delete("/reservations/" + createdId)
+                            .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(400);
                 })
@@ -199,7 +199,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().delete("/reservations/" + createdId)
+                            .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(404);
                 }),
@@ -216,7 +216,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().delete("/reservations/" + createdId)
+                            .when().delete("/admin/reservations/" + createdId)
                             .then().log().all()
                             .statusCode(204);
                 })

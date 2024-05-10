@@ -40,7 +40,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
         registry.addInterceptor(new CheckAdminInterceptor(authService, authenticationExtractor))
                 .order(2)
-                .addPathPatterns("/admin/**", "/reservations/**", "/times/**", "/themes/**", "/members/**");
+                .addPathPatterns("/admin/**");
     }
 
     @Override

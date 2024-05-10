@@ -47,7 +47,7 @@ class MemberControllerTest extends IntegrationTestSupport {
                     memberSize = RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().get("/members")
+                            .when().get("/admin/members")
                             .then().log().all()
                             .statusCode(200).extract()
                             .response().jsonPath().getList("$").size();
@@ -86,7 +86,7 @@ class MemberControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().get("/members")
+                            .when().get("/admin/members")
                             .then().log().all()
                             .statusCode(200).body("size()", is(memberSize + 1));
                 }),
@@ -109,7 +109,7 @@ class MemberControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().delete("/members/" + createdId)
+                            .when().delete("/admin/members/" + createdId)
                             .then().log().all()
                             .statusCode(204);
                 }),
@@ -117,7 +117,7 @@ class MemberControllerTest extends IntegrationTestSupport {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
-                            .when().get("/members")
+                            .when().get("/admin/members")
                             .then().log().all()
                             .statusCode(200).body("size()", is(memberSize));
                 })

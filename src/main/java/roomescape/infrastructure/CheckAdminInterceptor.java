@@ -26,18 +26,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         logger.trace("request = {}", request.getRequestURI());
 
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
-
-        if (method.equals("POST")
-                && (uri.startsWith("/reservations") || uri.startsWith("/members"))) {
-            return true;
-        }
-        if (method.equals("GET")
-                && (uri.startsWith("/times") || uri.startsWith("/themes"))) {
-            return true;
-        }
-
         String token = authenticationExtractor.extract(request);
         LoginMember member = authService.findMemberByToken(token);
         if (Role.ADMIN != member.role()) {

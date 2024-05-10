@@ -22,10 +22,8 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       });
 });
 
-document.getElementById('register-btn').addEventListener('click', register);
-
-// const registerBtn = document.getElementById('register-btn');
-// if (registerBtn !== null) registerBtn.addEventListener('click', register);
+const registerBtn = document.getElementById('register-btn');
+if (registerBtn !== null) registerBtn.addEventListener('click', register);
 
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
