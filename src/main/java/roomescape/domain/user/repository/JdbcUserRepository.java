@@ -1,11 +1,9 @@
 package roomescape.domain.user.repository;
 
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.user.User;
 
@@ -19,22 +17,21 @@ public class JdbcUserRepository implements UserRepository {
     );
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsertOperations jdbcInsert;
 
     public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("users")
-                .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public User save(User user) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", user.getName())
-                .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword());
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new User(id, user);
+    public Optional<User> findByEmail(String email) {
+        String query = """
+                SELECT id, name, email, password FROM users
+                WHERE email = ?
+                """;
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }
