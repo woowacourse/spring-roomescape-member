@@ -9,9 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.*;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -41,6 +40,9 @@ class ReservationTimeControllerTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @BeforeEach
     void initPort() {
         RestAssured.port = port;
@@ -62,10 +64,11 @@ class ReservationTimeControllerTest {
     @DisplayName("시간 목록 예약 여부 조회")
     @Test
     void getReservationTimesWithBooked() {
+        final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
         final LocalDate localDate = LocalDate.now().plusMonths(2);
-        reservationRepository.save(new Reservation("이름1", localDate, reservationTime, theme));
+        reservationRepository.save(new Reservation(member, localDate, reservationTime, theme));
 
         RestAssured.given().log().all()
                 .when().get("/times?date=" + localDate + "&themeId=1")
