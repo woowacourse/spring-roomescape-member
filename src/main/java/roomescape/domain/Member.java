@@ -4,12 +4,14 @@ public class Member {
 
     private final Long id;
     private final String name;
+    private final String role;
     private final String email;
     private final String password;
 
-    public Member(Long id, String name, String email, String password) {
+    public Member(Long id, String name, String role, String email, String password) {
         this.id = id;
         this.name = name;
+        this.role = role;
         this.email = email;
         this.password = password;
     }
@@ -22,11 +24,15 @@ public class Member {
         return this.password.equals(password);
     }
 
-    public String getName() {
-        return name;
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getName() {
+        return name;
     }
 }

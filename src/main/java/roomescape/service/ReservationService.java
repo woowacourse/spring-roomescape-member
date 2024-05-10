@@ -39,17 +39,19 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation insertReservation(String name, ReservationRequestDto reservationRequestDto) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequestDto.timeId())
+    public Reservation insertReservation(AdminReservationRequestDto adminReservationRequestDto) {
+        ReservationTime reservationTime = reservationTimeDao.findById(adminReservationRequestDto.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        LocalDate date = reservationRequestDto.date();
+        LocalDate date = adminReservationRequestDto.date();
         validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
-        validateDuplicated(date, reservationRequestDto.timeId(), reservationRequestDto.themeId());
-        Long id = reservationDao.insert(
-                name, reservationRequestDto.date().toString(), reservationRequestDto.timeId(), reservationRequestDto.themeId());
-        ReservationTheme reservationTheme = reservationThemeDao.findById(reservationRequestDto.themeId())
+        validateDuplicated(date, adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId());
+        Member member = memberDao.findById(adminReservationRequestDto.memberId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        return new Reservation(id, name, reservationRequestDto.date().toString(), reservationTime, reservationTheme);
+        Long id = reservationDao.insert(
+                adminReservationRequestDto.date().toString(), adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId(), member.getId());
+        ReservationTheme reservationTheme = reservationThemeDao.findById(adminReservationRequestDto.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+        return new Reservation(id, adminReservationRequestDto.date().toString(), reservationTime, reservationTheme, member);
     }
 
     private void validatePast(LocalDate localDate, LocalTime localTime) {
@@ -68,21 +70,5 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationDao.deleteById(id);
-    }
-
-    @Transactional
-    public Reservation insertAdminReservation(AdminReservationRequestDto adminReservationRequestDto) {
-        ReservationTime reservationTime = reservationTimeDao.findById(adminReservationRequestDto.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        LocalDate date = adminReservationRequestDto.date();
-        validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
-        validateDuplicated(date, adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId());
-        Member member = memberDao.findById(adminReservationRequestDto.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        Long id = reservationDao.insert(
-                member.getName(), adminReservationRequestDto.date().toString(), adminReservationRequestDto.timeId(), adminReservationRequestDto.themeId());
-        ReservationTheme reservationTheme = reservationThemeDao.findById(adminReservationRequestDto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        return new Reservation(id, member.getName(), adminReservationRequestDto.date().toString(), reservationTime, reservationTheme);
     }
 }

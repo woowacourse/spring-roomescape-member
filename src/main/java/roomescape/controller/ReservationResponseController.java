@@ -30,7 +30,8 @@ public class ReservationResponseController {
 
     @PostMapping("/reservations")
     public ResponseEntity<Reservation> createReservation(@AuthenticationPrincipal Member member, @RequestBody ReservationRequestDto reservationRequestDto) {
-        Reservation reservation = reservationService.insertReservation(member.getName(), reservationRequestDto);
+        AdminReservationRequestDto adminReservationRequestDto = new AdminReservationRequestDto(reservationRequestDto.date(), reservationRequestDto.timeId(), reservationRequestDto.themeId(), member.getId());
+        Reservation reservation = reservationService.insertReservation(adminReservationRequestDto);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
@@ -42,7 +43,7 @@ public class ReservationResponseController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<Reservation> createAdminReservation(@RequestBody AdminReservationRequestDto adminReservationRequestDto) {
-        Reservation reservation = reservationService.insertAdminReservation(adminReservationRequestDto);
+        Reservation reservation = reservationService.insertReservation(adminReservationRequestDto);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 }

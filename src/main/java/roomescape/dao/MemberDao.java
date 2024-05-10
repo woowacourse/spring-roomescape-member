@@ -20,16 +20,17 @@ public class MemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long insert(String name, String email, String password) {
-        String insertSql = "INSERT INTO member(name, email, password) VALUES (?, ?, ?)";
+    public Long insert(String name, String role, String email, String password) {
+        String insertSql = "INSERT INTO member(name, role, email, password) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     insertSql,
                     new String[]{"id"});
             ps.setString(1, name);
-            ps.setString(2, email);
-            ps.setString(3, password);
+            ps.setString(2, role);
+            ps.setString(3, email);
+            ps.setString(4, password);
             return ps;
         }, keyHolder);
 
@@ -37,11 +38,12 @@ public class MemberDao {
     }
 
     public Optional<Member> findByEmail(String email) {
-        String findByEmailSql = "SELECT id, name, email, password FROM member WHERE email = ?";
+        String findByEmailSql = "SELECT id, name, role, email, password FROM member WHERE email = ?";
         List<Member> members = jdbcTemplate.query(findByEmailSql,
                 (resultSet, numRow) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
+                        resultSet.getString("role"),
                         resultSet.getString("email"),
                         resultSet.getString("password"))
                 , email);
@@ -49,21 +51,23 @@ public class MemberDao {
     }
 
     public List<Member> findAll() {
-        String findAllSql = "SELECT id, name, email, password FROM member";
+        String findAllSql = "SELECT id, name, role, email, password FROM member";
         return jdbcTemplate.query(findAllSql,
                 (resultSet, numRow) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
+                        resultSet.getString("role"),
                         resultSet.getString("email"),
                         resultSet.getString("password")));
     }
 
     public Optional<Member> findById(Long id) {
-        String findByEmailSql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        String findByEmailSql = "SELECT id, name, role, email, password FROM member WHERE id = ?";
         List<Member> members = jdbcTemplate.query(findByEmailSql,
                 (resultSet, numRow) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
+                        resultSet.getString("role"),
                         resultSet.getString("email"),
                         resultSet.getString("password"))
                 , id);
