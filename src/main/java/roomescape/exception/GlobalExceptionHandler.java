@@ -19,6 +19,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exception.getBody());
     }
 
+    @ExceptionHandler(value = AuthorizationException.class)
+    public ResponseEntity<ProblemDetail> handleAuthorizationException(AuthorizationException exception) {
+        System.err.println(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getBody());
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         System.err.println(exception.getMessage());
@@ -59,13 +65,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(problemDetail);
     }
 
-    @ExceptionHandler(value = RuntimeException.class)
+    @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ProblemDetail> handleRuntimeException(RuntimeException exception) {
         System.err.println(exception.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "서버 에러입니다.");
         problemDetail.setTitle("서버 에러입니다.");
-        return ResponseEntity.badRequest().body(problemDetail);
+        return ResponseEntity.internalServerError().body(problemDetail);
     }
 }

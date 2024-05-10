@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -29,7 +30,7 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest) {
         ResponseCookie cookie = ResponseCookie.from("token", authService.createToken(loginRequest))
                 .httpOnly(true)
                 .path("/")
@@ -52,6 +53,10 @@ public class LoginController {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            return "";
+        }
+        
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
