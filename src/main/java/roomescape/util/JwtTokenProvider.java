@@ -36,7 +36,7 @@ public class JwtTokenProvider {
     public String getPayload(String token, String claimName) {
         if (validateToken(token)) {
             throw new AuthorizationException("토큰이 유효하지 않습니다.");
-        };
+        }
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(claimName, String.class);
     }
 

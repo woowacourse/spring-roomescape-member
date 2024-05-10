@@ -21,7 +21,7 @@ public class JdbcMemberRepository {
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password")
-    );;
+    );
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate, DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
