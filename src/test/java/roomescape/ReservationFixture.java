@@ -16,10 +16,16 @@ public class ReservationFixture {
     public static final Theme THEME2 = new Theme(2L, "테마2", "설명", "썸네일");
     public static final ReservationMember RESERVATION_MEMBER = new ReservationMember(1L, "테니");
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    public static final String TOKEN = Jwts.builder()
+    public static final String MEMBER_TOKEN = Jwts.builder()
             .subject("1")
             .claim("name", "테니")
             .claim("role", "MEMBER")
+            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+            .compact();
+    public static final String ADMIN_TOKEN = Jwts.builder()
+            .subject("1")
+            .claim("name", "관리자")
+            .claim("role", "ADMIN")
             .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
             .compact();
 }

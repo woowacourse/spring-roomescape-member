@@ -13,7 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Map;
 
-import static roomescape.ReservationFixture.TOKEN;
+import static roomescape.ReservationFixture.MEMBER_TOKEN;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -62,7 +62,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", TOKEN)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -82,7 +82,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", TOKEN)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -103,7 +103,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", TOKEN)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()

@@ -23,7 +23,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
-import static roomescape.ReservationFixture.TOKEN;
+import static roomescape.ReservationFixture.ADMIN_TOKEN;
+import static roomescape.ReservationFixture.MEMBER_TOKEN;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MissionStepTest {
@@ -77,6 +78,7 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
+                .cookie("token", ADMIN_TOKEN)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(HttpStatus.SC_OK);
@@ -85,6 +87,7 @@ public class MissionStepTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
+                .cookie("token", ADMIN_TOKEN)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(HttpStatus.SC_OK);
@@ -110,7 +113,7 @@ public class MissionStepTest {
 
         String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", TOKEN)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -186,7 +189,7 @@ public class MissionStepTest {
 
         String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", TOKEN)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -247,7 +250,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", TOKEN)
+                .cookie("token", MEMBER_TOKEN)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
