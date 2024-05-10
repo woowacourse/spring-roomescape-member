@@ -4,13 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
 import roomescape.reservation.persistence.ReservationDao;
 
-import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,10 +46,7 @@ class ReservationRepositoryTest extends RepositoryTest {
     void save() {
         // given
         Reservation reservation = MIA_RESERVATION(
-                new ReservationTime(1L, MIA_RESERVATION_TIME),
-                WOOTECO_THEME(1L),
-                USER_MIA(1L)
-        );
+                new ReservationTime(1L, MIA_RESERVATION_TIME), WOOTECO_THEME(1L), USER_MIA(1L));
 
         // when
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -65,12 +61,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("member_id", 1L)
-                .addValue("date", MIA_RESERVATION_DATE)
-                .addValue("time_id", timeId)
-                .addValue("theme_id", themeId);
-        jdbcInsert.executeAndReturnKey(params);
+        insertReservation(1L, MIA_RESERVATION_DATE, timeId, themeId);
 
         // when
         boolean existByDateAndTimeIdAndThemeId = reservationRepository.existByDateAndTimeIdAndThemeId(
@@ -84,12 +75,7 @@ class ReservationRepositoryTest extends RepositoryTest {
     @DisplayName("모든 예약 목록을 조회한다.")
     void findAll() {
         // given
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("member_id", 1L)
-                .addValue("date", MIA_RESERVATION_DATE)
-                .addValue("time_id", 1L)
-                .addValue("theme_id", 1L);
-        jdbcInsert.execute(params);
+        insertReservation(1L, MIA_RESERVATION_DATE, 1L, 1L);
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -111,29 +97,10 @@ class ReservationRepositoryTest extends RepositoryTest {
     @DisplayName("예약자, 테마, 날짜로 예약 목록을 조회한다.")
     void findAllByMemberIdAndThemeIdAndDateBetween() {
         // given
-        jdbcInsert.execute(new MapSqlParameterSource()
-                .addValue("member_id", 1L)
-                .addValue("date", MIA_RESERVATION_DATE)
-                .addValue("time_id", 1L)
-                .addValue("theme_id", 1L));
-
-        jdbcInsert.execute(new MapSqlParameterSource()
-                .addValue("member_id", 1L)
-                .addValue("date", MIA_RESERVATION_DATE.plusDays(2))
-                .addValue("time_id", 1L)
-                .addValue("theme_id", 1L));
-
-        jdbcInsert.execute(new MapSqlParameterSource()
-                .addValue("member_id", 2L)
-                .addValue("date", MIA_RESERVATION_DATE)
-                .addValue("time_id", 1L)
-                .addValue("theme_id", 1L));
-
-        jdbcInsert.execute(new MapSqlParameterSource()
-                .addValue("member_id", 1L)
-                .addValue("date", MIA_RESERVATION_DATE)
-                .addValue("time_id", 1L)
-                .addValue("theme_id", 2L));
+        insertReservation(1L, MIA_RESERVATION_DATE, 1L, 1L);
+        insertReservation(1L, MIA_RESERVATION_DATE.plusDays(2), 1L, 1L);
+        insertReservation(2L, MIA_RESERVATION_DATE, 1L, 1L);
+        insertReservation(1L, MIA_RESERVATION_DATE, 1L, 2L);
 
         // when
         List<Reservation> reservations = reservationRepository.findAllByMemberIdAndThemeIdAndDateBetween(
@@ -152,12 +119,7 @@ class ReservationRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 예약을 삭제한다.")
     void deleteById() {
         // given
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("member_id", 1L)
-                .addValue("date", MIA_RESERVATION_DATE)
-                .addValue("time_id", 1L)
-                .addValue("theme_id", 1L);
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        Long id = insertReservationWithKey(1L, MIA_RESERVATION_DATE, 1L, 1L);
 
         // when
         reservationRepository.deleteById(id);
@@ -186,17 +148,30 @@ class ReservationRepositoryTest extends RepositoryTest {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
-        jdbcTemplate.update(
-                insertSql,
-                1L, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
-                1L, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
-        );
+        insertReservation(1L, MIA_RESERVATION_DATE, timeId, themeId);
+        insertReservation(1L, MIA_RESERVATION_DATE, timeId, themeId);
 
         // when
         List<Long> reservationsByDateAndThemeId = reservationRepository.findAllTimeIdsByDateAndThemeId(MIA_RESERVATION_DATE, themeId);
 
         // then
         assertThat(reservationsByDateAndThemeId).hasSize(2);
+    }
+
+    private void insertReservation(Long memberId, LocalDate date, Long timeId, Long themeId) {
+        jdbcInsert.execute(new MapSqlParameterSource()
+                .addValue("member_id", memberId)
+                .addValue("date", date)
+                .addValue("time_id", timeId)
+                .addValue("theme_id", themeId));
+    }
+
+    private Long insertReservationWithKey(Long memberId, LocalDate date, Long timeId, Long themeId) {
+        return jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
+                        .addValue("member_id", memberId)
+                        .addValue("date", date)
+                        .addValue("time_id", timeId)
+                        .addValue("theme_id", themeId))
+                .longValue();
     }
 }

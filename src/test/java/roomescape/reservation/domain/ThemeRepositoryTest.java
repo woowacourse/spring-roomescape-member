@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
+import static roomescape.TestFixture.WOOTECO_THEME;
 import static roomescape.member.domain.Role.USER;
 
 class ThemeRepositoryTest extends RepositoryTest {
@@ -47,8 +48,8 @@ class ThemeRepositoryTest extends RepositoryTest {
     @DisplayName("테마 목록을 조회한다.")
     void findAll() {
         // given
-        String insertSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(WOOTECO_THEME());
+        jdbcInsert.execute(params);
 
         // when
         List<Theme> themes = themeRepository.findAll();
@@ -61,8 +62,7 @@ class ThemeRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 테마를 조회한다.")
     void findById() {
         // given
-        Theme theme = WOOTECO_THEME();
-        SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(WOOTECO_THEME());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         // when
@@ -89,8 +89,7 @@ class ThemeRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 테마를 삭제한다.")
     void deleteById() {
         // given
-        Theme theme = WOOTECO_THEME();
-        SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(WOOTECO_THEME());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         // when
