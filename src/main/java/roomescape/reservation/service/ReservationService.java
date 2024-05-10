@@ -43,6 +43,19 @@ public class ReservationService {
         Theme theme = findThemeByThemeId(request.themeId());
         Reservation reservation = request.createReservation(member, time, theme);
 
+        return createReservation(reservation);
+    }
+
+    public ReservationResponse createReservation(ReservationCreateRequest request, Long memberId) {
+        Member member = findMemberByMemberId(memberId);
+        ReservationTime time = findTimeByTimeId(request.timeId());
+        Theme theme = findThemeByThemeId(request.themeId());
+        Reservation reservation = request.createReservation(member, time, theme);
+
+        return createReservation(reservation);
+    }
+
+    private ReservationResponse createReservation(Reservation reservation) {
         validateIsAvailable(reservation);
         Reservation createdReservation = reservationDao.createReservation(reservation);
         return ReservationResponse.from(createdReservation);

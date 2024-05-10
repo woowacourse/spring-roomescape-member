@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
@@ -57,12 +58,12 @@ class ReservationServiceTest {
                         new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"))));
         List<ReservationResponse> expected = List.of(
                 new ReservationResponse(
-                        1L, "브라운",
+                        1L,  new MemberResponse(1L, "브라운"),
                         LocalDate.of(2024, 8, 15),
                         new TimeResponse(1L, LocalTime.of(19, 0)),
                         new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")),
                 new ReservationResponse(
-                        2L, "브리",
+                        2L, new MemberResponse(2L, "브리"),
                         LocalDate.of(2024, 8, 20),
                         new TimeResponse(1L, LocalTime.of(19, 0)),
                         new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
@@ -89,7 +90,7 @@ class ReservationServiceTest {
                 new ReservationTime(1L, LocalTime.of(19, 0)),
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
         ReservationResponse expected = new ReservationResponse(
-                1L, "브라운", LocalDate.of(2024, 8, 15),
+                1L, new MemberResponse(1L, "브라운"), LocalDate.of(2024, 8, 15),
                 new TimeResponse(1L, LocalTime.of(19, 0)),
                 new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
 

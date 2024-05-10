@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberName;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -58,8 +57,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return member.getName();
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

@@ -89,10 +89,10 @@
   - [x] 비밀번호와 상관없이 이메일이 저장되어 있다면, 로그인이 되도록 수정
 - 예약 테이블 변경
   - [x] 예약 테이블에서 유저 id를 사용하도록 변경
-- 예약 생성 기능 변경 - 사용자
-  - [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
+- 예약 생성 기능 변경 - 사용자 [POST /reservations]
+  - [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
   - [ ] `reservation.html`, `user-reservation.js` 변경된 명세에 맞게 클라이언트가 동작하도록 변경
-- 예약 생성 기능 변경 - 관리자
-  - [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
+- 예약 생성 기능 변경 - 관리자 [POST /admin/reservations]
+  - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
   - [ ] `admin/reservation-new.html` 파일에서 로딩하는 js 파일을 변경 
     - `/js/reservation-new.js` -> `/js/reservation-with-member.js`
