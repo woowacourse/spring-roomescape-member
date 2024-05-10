@@ -1,4 +1,4 @@
-package roomescape.domain.exception;
+package roomescape.domain.util;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import roomescape.domain.util.Validator;
+import roomescape.domain.exception.IllegalNullArgumentException;
 
 class ValidatorTest {
     @DisplayName("인자 중 null이 있을 시 예외를 던진다.")
