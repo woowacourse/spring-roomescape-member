@@ -7,12 +7,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.exception.TimeNotFoundException;
@@ -49,6 +52,8 @@ class TimeServiceTest {
     ReservationRepository reservationRepository;
     @Autowired
     ThemeRepository themeRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     @DisplayName("예약 시간 목록을 조회한다.")
@@ -71,17 +76,21 @@ class TimeServiceTest {
         // given
         final TimeResponse timeResponse = timeService.addTime(sampleTimes.get(0));
         final Theme theme = new Theme(null, "Theme 1", "Description 1", "Thumbnail 1");
+        final Member member = new Member(null, "a@b.c", "pw", "User", Role.USER);
         final LocalDate tomorrow = LocalDate.now().plusDays(1);
         final Reservation reservation = new Reservation(
                 null,
-                new ReserveName("User 1"),
                 tomorrow,
                 new ReservationTime(timeResponse.id()),
+                null,
                 null
         );
 
         final Theme savedTheme = themeRepository.save(theme);
-        final Reservation assignedReservation = reservation.assignTheme(savedTheme);
+        final Member savedMember = memberRepository.save(member);
+        final Reservation assignedReservation = reservation
+                .assignTheme(savedTheme)
+                .assignMember(savedMember);
         reservationRepository.save(assignedReservation);
 
 
@@ -148,16 +157,20 @@ class TimeServiceTest {
         final TimeResponse timeResponse = timeService.addTime(sampleTimes.get(0));
         final Long timeId = timeResponse.id();
         final Theme theme = new Theme(null, "Theme 1", "Description 1", "Thumbnail 1");
+        final Member member = new Member(null, "a@b.c", "pw", "User", Role.USER);
         final Reservation reservation = new Reservation(
                 null,
-                new ReserveName("User 1"),
                 LocalDate.now().plusDays(1),
                 new ReservationTime(timeId),
+                null,
                 null
         );
 
         final Theme savedTheme = themeRepository.save(theme);
-        final Reservation assignedReservation = reservation.assignTheme(savedTheme);
+        final Member savedMember = memberRepository.save(member);
+        final Reservation assignedReservation = reservation
+                .assignTheme(savedTheme)
+                .assignMember(savedMember);
         reservationRepository.save(assignedReservation);
 
         // when & then

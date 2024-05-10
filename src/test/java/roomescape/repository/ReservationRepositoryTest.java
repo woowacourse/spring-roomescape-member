@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
@@ -24,25 +26,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class ReservationRepositoryTest {
 
     List<Reservation> sampleReservations = List.of(
-            new Reservation(null,
-                    new ReserveName("User 1"),
-                    LocalDate.now().minusDays(1),
-                    null,
-                    null
-            ),
-            new Reservation(null,
-                    new ReserveName("User 1"),
-                    LocalDate.now(),
-                    null,
-                    null
-            ),
-            new Reservation(
-                    null,
-                    new ReserveName("User 2"),
-                    LocalDate.now().plusDays(1),
-                    null,
-                    null
-            )
+            new Reservation(null, LocalDate.now().minusDays(1), null, null, null),
+            new Reservation(null, LocalDate.now(), null, null, null),
+            new Reservation(null, LocalDate.now().plusDays(1), null, null, null)
     );
     List<ReservationTime> sampleTimes = List.of(
             new ReservationTime(null, "08:00"),
@@ -52,6 +38,10 @@ class ReservationRepositoryTest {
             new Theme(null, "Theme 1", "Description 1", "Thumbnail 1"),
             new Theme(null, "Theme 2", "Description 2", "Thumbnail 2")
     );
+    List<Member> sampleMembers = List.of(
+            new Member(null, "a@b.c", "pw", "user", Role.USER),
+            new Member(null, "admin@b.c", "pw", "admin", Role.ADMIN)
+    );
 
     @Autowired
     ReservationRepository reservationRepository;
@@ -59,6 +49,8 @@ class ReservationRepositoryTest {
     ReservationTimeRepository reservationTimeRepository;
     @Autowired
     ThemeRepository themeRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -68,10 +60,14 @@ class ReservationRepositoryTest {
         sampleThemes = sampleThemes.stream()
                 .map(themeRepository::save)
                 .toList();
+        sampleMembers = sampleMembers.stream()
+                .map(memberRepository::save)
+                .toList();
         sampleReservations = IntStream.range(0, sampleReservations.size())
                 .mapToObj(i -> sampleReservations.get(i)
                         .assignTime(sampleTimes.get(i % sampleTimes.size()))
                         .assignTheme(sampleThemes.get(i % sampleThemes.size()))
+                        .assignMember(sampleMembers.get(i % sampleMembers.size()))
                 ).toList();
     }
 

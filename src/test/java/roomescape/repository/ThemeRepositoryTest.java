@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
@@ -36,6 +38,8 @@ class ThemeRepositoryTest {
     ReservationTimeRepository reservationTimeRepository;
     @Autowired
     ThemeRepository themeRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     @DisplayName("모든 테마 목록을 조회한다.")
@@ -87,6 +91,7 @@ class ThemeRepositoryTest {
     void findPopularThemes() {
         // given
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
+        final Member member = memberRepository.save(new Member(null, "a@b.c", "pw", "User", Role.USER));
         final List<Theme> themes = sampleThemes.stream()
                 .map(themeRepository::save)
                 .toList();
@@ -100,10 +105,10 @@ class ThemeRepositoryTest {
                 if (random.nextBoolean()) {
                     Reservation reservation = new Reservation(
                             null,
-                            new ReserveName("Person"),
                             date,
                             time,
-                            theme
+                            theme,
+                            member
                     );
                     reservations.add(reservationRepository.save(reservation));
                 }

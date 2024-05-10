@@ -26,6 +26,10 @@ public class Member {
         this.role = role;
     }
 
+    public Member assignId(final Long id) {
+        return new Member(id, email, password, name, role);
+    }
+
     public Long getId() {
         return id;
     }

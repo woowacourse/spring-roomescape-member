@@ -11,12 +11,15 @@ import roomescape.controller.theme.CreateThemeRequest;
 import roomescape.controller.theme.PopularThemeRequest;
 import roomescape.controller.theme.PopularThemeResponse;
 import roomescape.controller.theme.ThemeResponse;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.exception.ThemeNotFoundException;
@@ -56,6 +59,8 @@ class ThemeServiceTest {
     ReservationRepository reservationRepository;
     @Autowired
     ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     @DisplayName("테마 목록을 조회한다.")
@@ -113,17 +118,21 @@ class ThemeServiceTest {
     void exceptionOnDeletingThemeAlreadyReserved() {
         final ThemeResponse themeResponse = themeService.addTheme(sampleThemes.get(0));
         final Long themeId = themeResponse.id();
+        final Member member = new Member(null, "a@b.c", "pw", "User", Role.USER);
         final ReservationTime time = new ReservationTime(null, "08:00");
         final Reservation reservation = new Reservation(
                 null,
-                new ReserveName("User 1"),
                 LocalDate.now().plusDays(1),
                 null,
-                new Theme(themeId)
+                new Theme(themeId),
+                null
         );
 
         final ReservationTime saveTime = reservationTimeRepository.save(time);
-        final Reservation assignedReservation = reservation.assignTime(saveTime);
+        final Member savedMember = memberRepository.save(member);
+        final Reservation assignedReservation = reservation
+                .assignTime(saveTime)
+                .assignMember(savedMember);
         reservationRepository.save(assignedReservation);
 
         // when & then
@@ -137,12 +146,13 @@ class ThemeServiceTest {
     void getPopularThemes(final int days, final int limit) {
         // given
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
+        final Member member = new Member(null, "a@b.c", "pw", "User", Role.USER);
         final List<ThemeResponse> themes = sampleThemes.stream()
                 .map(themeService::addTheme)
                 .toList();
 
         final List<Reservation> reservations = new ArrayList<>();
-        createRandomReservations(days, themes, time, reservations);
+        createRandomReservations(days, themes, time, member, reservations);
 
         final LocalDate from = LocalDate.now().minusDays(days);
         final PopularThemeRequest request = new PopularThemeRequest(days, limit);
@@ -180,6 +190,7 @@ class ThemeServiceTest {
             final int days,
             final List<ThemeResponse> themes,
             final ReservationTime time,
+            final Member member,
             final List<Reservation> reservations) {
         final Random random = new Random();
         for (int day = 1; day < days * 2; day++) {
@@ -188,10 +199,10 @@ class ThemeServiceTest {
                 if (random.nextBoolean()) {
                     final Reservation reservation = new Reservation(
                             null,
-                            new ReserveName("Person"),
                             date,
                             time,
-                            new Theme(theme.id(), theme.name(), theme.description(), theme.thumbnail())
+                            new Theme(theme.id(), theme.name(), theme.description(), theme.thumbnail()),
+                            member
                     );
                     reservations.add(reservationRepository.save(reservation));
                 }

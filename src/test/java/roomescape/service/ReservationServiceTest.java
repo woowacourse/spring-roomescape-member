@@ -10,11 +10,14 @@ import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.theme.ReservationThemeResponse;
 import roomescape.controller.time.TimeResponse;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.exception.ThemeNotFoundException;
@@ -38,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import({ReservationService.class, H2ReservationRepository.class, H2ReservationTimeRepository.class, H2ThemeRepository.class})
 class ReservationServiceTest {
 
+    final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
     List<ReservationTime> sampleTimes = List.of(
             new ReservationTime(null, "08:00"),
             new ReservationTime(null, "09:10")
@@ -46,19 +50,13 @@ class ReservationServiceTest {
             new Theme(null, "Theme 1", "Description 1", "Thumbnail 1"),
             new Theme(null, "Theme 2", "Description 2", "Thumbnail 2")
     );
+    List<Member> sampleMembers = List.of(
+            new Member(null, "a@b.c", "pw", "User", Role.USER),
+            new Member(null, "admin@b.c", "pw", "Admin", Role.ADMIN)
+    );
     List<ReservationRequest> sampleReservations = List.of(
-            new ReservationRequest(
-                    "Name 1",
-                    LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE),
-                    null,
-                    null
-            ),
-            new ReservationRequest(
-                    "Name 1",
-                    LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE),
-                    null,
-                    null
-            )
+            new ReservationRequest(tomorrow, null, null, null),
+            new ReservationRequest(tomorrow, null, null, null)
     );
 
     @Autowired
@@ -67,6 +65,8 @@ class ReservationServiceTest {
     ReservationTimeRepository reservationTimeRepository;
     @Autowired
     ThemeRepository themeRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -76,12 +76,15 @@ class ReservationServiceTest {
         sampleThemes = sampleThemes.stream()
                 .map(themeRepository::save)
                 .toList();
+        sampleMembers = sampleMembers.stream()
+                .map(memberRepository::save)
+                .toList();
         sampleReservations = IntStream.range(0, sampleReservations.size())
                 .mapToObj(i -> new ReservationRequest(
-                        sampleReservations.get(i).name(),
                         sampleReservations.get(i).date(),
                         sampleTimes.get(i % sampleTimes.size()).getId(),
-                        sampleThemes.get(i % sampleThemes.size()).getId()
+                        sampleThemes.get(i % sampleThemes.size()).getId(),
+                        sampleMembers.get(i % sampleMembers.size()).getId()
                 )).toList();
     }
 
@@ -111,12 +114,14 @@ class ReservationServiceTest {
 
         final Optional<ReservationTime> timeOptional = sampleTimes.stream().filter(time -> time.getId().equals(reservationRequest.timeId())).findAny();
         final Optional<Theme> themeOptional = sampleThemes.stream().filter(theme -> theme.getId().equals(reservationRequest.themeId())).findAny();
+        final Optional<Member> memberOptional = sampleMembers.stream().filter(member -> member.getId().equals(reservationRequest.memberId())).findAny();
         assertThat(timeOptional).isPresent();
         assertThat(themeOptional).isPresent();
+        assertThat(memberOptional).isPresent();
 
         final ReservationResponse expected = new ReservationResponse(
                 actual.id(),
-                reservationRequest.name(),
+                memberOptional.get().getName(),
                 reservationRequest.date(),
                 TimeResponse.from(timeOptional.get(), false),
                 ReservationThemeResponse.from(themeOptional.get())
@@ -152,7 +157,8 @@ class ReservationServiceTest {
                 .findAny()
                 .orElseThrow() + 1;
         final Long themeId = sampleThemes.get(0).getId();
-        final ReservationRequest request = new ReservationRequest("PK", tomorrow, notExistTimeId, themeId);
+        final Long memberId = sampleMembers.get(0).getId();
+        final ReservationRequest request = new ReservationRequest(tomorrow, notExistTimeId, themeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
@@ -170,7 +176,8 @@ class ReservationServiceTest {
                 .max(Long::compare).stream()
                 .findAny()
                 .orElseThrow() + 1;
-        final ReservationRequest request = new ReservationRequest("PK", tomorrow, timeId, notExistThemeId);
+        final Long memberId = sampleMembers.get(0).getId();
+        final ReservationRequest request = new ReservationRequest(tomorrow, timeId, notExistThemeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
@@ -186,7 +193,8 @@ class ReservationServiceTest {
 
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, oneMinAgo));
         final Long themeId = sampleThemes.get(0).getId();
-        final ReservationRequest reservationRequest = new ReservationRequest("PK", today, time.getId(), themeId);
+        final Long memberId = sampleMembers.get(0).getId();
+        final ReservationRequest reservationRequest = new ReservationRequest(today, time.getId(), themeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(reservationRequest))
