@@ -6,6 +6,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +33,13 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  public String getPayload(String token) {
+  public Map<String, String> getPayload(String token) {
+    HashMap<String, String> payloads = new HashMap<>();
     Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-    return (String) claims.get("name");
+
+    payloads.put("name", (String) claims.get("name"));
+    payloads.put("email", claims.getSubject());
+    return payloads;
   }
 
   public boolean validateToken(String token) {

@@ -27,6 +27,6 @@ class AuthServiceIntegrationTest {
     // When
     String token = authService.createUser(loginRequest);
     // Then
-    Assertions.assertThat(email).isEqualTo(jwtTokenProvider.getPayload(token));
+    Assertions.assertThat(email).isEqualTo(jwtTokenProvider.getPayload(token).get("email"));
   }
 }

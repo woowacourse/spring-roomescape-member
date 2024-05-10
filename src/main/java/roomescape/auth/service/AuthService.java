@@ -18,6 +18,6 @@ public class AuthService {
   }
 
   public String checkLogin(String token) {
-    return jwtTokenProvider.getPayload(token);
+    return jwtTokenProvider.getPayload(token).get("name");
   }
 }
