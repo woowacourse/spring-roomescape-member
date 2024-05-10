@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthenticatedMember;
 import roomescape.domain.Member;
@@ -21,6 +22,7 @@ import roomescape.service.reservation.ReservationDeleteService;
 import roomescape.service.reservation.ReservationFindService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @Validated
@@ -49,9 +51,23 @@ public class ReservationApiController {
         );
     }
 
+    @GetMapping("/admin/reservations/search")
+    public ResponseEntity<List<ReservationResponse>> getSearchingReservations(@RequestParam long memberId,
+                                                                              @RequestParam long themeId,
+                                                                              @RequestParam LocalDate dateFrom,
+                                                                              @RequestParam LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationFindService.searchReservations(memberId, themeId, dateFrom, dateTo);
+        return ResponseEntity.ok(
+                reservations.stream()
+                        .map(ReservationResponse::new)
+                        .toList()
+        );
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> addReservationByUser(@RequestBody @Valid ReservationSaveRequest request,
-                                                              @AuthenticatedMember Member member) {
+                                                                    @AuthenticatedMember Member member) {
         Reservation newReservation = reservationCreateService.createReservationByUser(request, member);
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId()))
                 .body(new ReservationResponse(newReservation));
