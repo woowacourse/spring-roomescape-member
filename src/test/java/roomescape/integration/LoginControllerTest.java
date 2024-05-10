@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.Fixture;
 import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
 
@@ -27,7 +28,7 @@ class LoginControllerTest {
 
     @LocalServerPort
     int port;
-    private Member defaultUser = new Member("name", "email@email.com", "password");
+    private Member defaultUser = Fixture.defaultMember;
     @Autowired
     private MemberRepository memberRepository;
 

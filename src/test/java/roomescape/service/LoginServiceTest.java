@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.Fixture;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
@@ -34,7 +35,7 @@ class LoginServiceTest {
     @DisplayName("유저 데이터가 존재할 때")
     @Nested
     class MemberExistsTest {
-        private Member defaultUser = new Member("name", "email@email.com", "password");
+        private Member defaultUser = Fixture.defaultMember;
 
         @BeforeEach
         void addDefaultUser() {
