@@ -17,11 +17,11 @@ import roomescape.service.TokenResponse;
 
 @RestController
 @RequestMapping("/login")
-public class LoginController {
+public class AuthController {
 
     private final MemberService memberService;
 
-    public LoginController(final MemberService memberService) {
+    public AuthController(final MemberService memberService) {
         this.memberService = memberService;
     }
 
