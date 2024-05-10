@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Member;
 import roomescape.dto.LogInRequest;
-import roomescape.dto.MemberNameResponse;
+import roomescape.dto.MemberPreviewResponse;
 import roomescape.service.MemberService;
 
 @RestController
@@ -28,8 +28,8 @@ public class AuthController {
     }
 
     @GetMapping("/check") //todo: URI 레스트풀하게 변경
-    public ResponseEntity<MemberNameResponse> loginCheck(Member member) {
-        MemberNameResponse name = new MemberNameResponse(member.getName());
+    public ResponseEntity<MemberPreviewResponse> loginCheck(Member member) {
+        MemberPreviewResponse name = new MemberPreviewResponse(member);
 
         return ResponseEntity.ok()
                 .body(name);

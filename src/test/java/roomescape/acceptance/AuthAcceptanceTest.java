@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import roomescape.dto.LogInRequest;
-import roomescape.dto.MemberNameResponse;
+import roomescape.dto.MemberPreviewResponse;
 
 import java.util.stream.Stream;
 
@@ -51,9 +51,9 @@ class AuthAcceptanceTest extends AcceptanceTest {
                 dynamicTest("고객이 로그인 후 이름을 확인한다.", () -> {
                     String token = login(customerRequest);
 
-                    MemberNameResponse memberNameResponse = checkName(token);
+                    MemberPreviewResponse memberPreviewResponse = checkName(token);
 
-                    assertThat(memberNameResponse.name())
+                    assertThat(memberPreviewResponse.name())
                             .isEqualTo(preInsertedCustomer.getName());
                 }),
 
@@ -72,9 +72,9 @@ class AuthAcceptanceTest extends AcceptanceTest {
                 dynamicTest("관리자가 로그인 후 보여지는 이름을 확인한다.", () -> {
                     String token = login(adminRequest);
 
-                    MemberNameResponse memberNameResponse = checkName(token);
+                    MemberPreviewResponse memberPreviewResponse = checkName(token);
 
-                    assertThat(memberNameResponse.name())
+                    assertThat(memberPreviewResponse.name())
                             .isEqualTo(preInsertedAdmin.getName());
                 })
         );
@@ -90,13 +90,13 @@ class AuthAcceptanceTest extends AcceptanceTest {
                 .extract().cookie("token");
     }
 
-    private MemberNameResponse checkName(String token) {
+    private MemberPreviewResponse checkName(String token) {
         return RestAssured.given().log().all()
                 .cookie("token", token)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .extract().as(MemberNameResponse.class);
+                .extract().as(MemberPreviewResponse.class);
     }
 
     private Claims parseToken(String token) {
