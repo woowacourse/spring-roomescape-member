@@ -95,9 +95,7 @@ public class ReservationService {
     }
 
     public List<FindReservationResponse> getReservations() {
-        return reservationRepository.findAll().stream()
-                .map(FindReservationResponse::from)
-                .toList();
+        return mapToFindReservationResponse(reservationRepository.findAll());
     }
 
     public FindReservationResponse getReservation(final Long id) {
@@ -124,6 +122,17 @@ public class ReservationService {
                 reservationTime,
                 reservations.stream()
                         .anyMatch(reservation -> reservation.isSameTime(reservationTime)));
+    }
+
+    public List<FindReservationResponse> searchBy(final Long themeId, final Long memberId,
+                                                     final LocalDate dateFrom, final LocalDate dateTo) {
+        return mapToFindReservationResponse(reservationRepository.searchBy(themeId, memberId, dateFrom, dateTo));
+    }
+
+    private List<FindReservationResponse> mapToFindReservationResponse(final List<Reservation> reservations) {
+        return reservations.stream()
+                .map(FindReservationResponse::from)
+                .toList();
     }
 
     public void deleteReservation(final Long id) {
