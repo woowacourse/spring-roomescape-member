@@ -10,7 +10,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 
 public record AdminReservationCreateRequest(
-        @NotBlank
+        @NotBlank(message = "예약 날짜를 입력해주세요.")
         @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "yyyy-MM-dd 형식이 아닙니다.")
         String date,
 
