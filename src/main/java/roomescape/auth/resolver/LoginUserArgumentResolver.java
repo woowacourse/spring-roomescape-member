@@ -1,6 +1,5 @@
 package roomescape.auth.resolver;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -11,13 +10,12 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
 import roomescape.global.annotation.LoginUser;
+import roomescape.global.util.CookieUtil;
 import roomescape.member.service.MemberService;
 
 @Component
 @RequiredArgsConstructor
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
-
-    private static final String SESSION_KEY = "token";
 
     private final MemberService memberService;
 
@@ -35,16 +33,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
                                   WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = CookieUtil.extractTokenFromCookie(request.getCookies());
         return memberService.findById(authService.fetchByToken(token).getId());
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(SESSION_KEY)) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
