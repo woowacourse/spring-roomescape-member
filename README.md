@@ -458,7 +458,7 @@ id : 1
 ## 5단계 요구사항
 
 - [x] Member DB 테이블 생성
-  - [x] JdbcMemberDao 생성
+    - [x] JdbcMemberDao 생성
 - [x] Cookie를 통해 멤버 정보를 조회하는 로직
     - [x] `HandlerMethodArgumentResolver` 컨트롤러에 진입하기 전에 처리
     - [x] `HandlerMethodArgumentResolver` 에서 만든 멤버 정보 객체를 컨트롤러 메서드에서 주입 받아 사용
@@ -477,7 +477,7 @@ id : 1
       }
       ```
 - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
-    - [x] 유저 정보를 모두 조회할 수 있는 API 생성 
+    - [x] 유저 정보를 모두 조회할 수 있는 API 생성
     - Request
       ```markdown
       POST /admin/reservations HTTP/1.1
@@ -493,3 +493,12 @@ id : 1
       }
       ```
 - [x] 존재하지 않는 멤버 아이디로 예약 생성시 예외 발생
+
+## 6단계 요구사항
+- [ ] Member에 Role 추가
+- [ ] 접근 권한 제어
+    - [ ] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근 가능
+    - [ ] `HandlerInterceptor`를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답
+        - [ ] 컨트롤러에 진입하기 전에 Cookie 값을 확인하여 role 확인
+- [ ] 예약 목록 검색
+    - [ ] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색
