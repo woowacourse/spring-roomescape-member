@@ -1,63 +1,68 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import roomescape.service.dto.TokenRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AdminControllerTest {
     @LocalServerPort
     private int port;
 
+    private String token;
+
     @BeforeEach
     void init() {
         RestAssured.port = port;
+        token = RestAssured.given().log().all()
+                .body(new TokenRequest("password", "admin@email.com"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
     }
 
     @DisplayName("Admin Page 홈화면 접근 성공 테스트")
     @Test
     void responseAdminPage() {
-        Response response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin")
-                .then().log().all().extract().response();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("Admin Reservation Page 접근 성공 테스트")
     @Test
     void responseAdminReservationPage() {
-        Response response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/reservation")
-                .then().log().all().extract().response();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("Admin Reservation Time Page 접근 성공 테스트")
     @Test
     void responseReservationTimePage() {
-        Response response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/time")
-                .then().log().all().extract().response();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("Admin Theme Page 접근 성공 테스트")
     @Test
     void responseThemePage() {
-        Response response = RestAssured.given().log().all()
+        RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/admin/theme")
-                .then().log().all().extract().response();
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+                .then().log().all()
+                .statusCode(200);
     }
 }

@@ -73,39 +73,27 @@ class ThemeControllerTest {
     }
 
     @DisplayName("테마 조회 성공 테스트")
+    @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     void findAll() {
-        //given
-        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
-                .when().post("/themes");
-
-        //when&then
         RestAssured.given().log().all()
                 .when().get("/themes")
-                .then().log().all().statusCode(200).body("size()", is(1));
+                .then().log().all().statusCode(200)
+                .body("size()", is(2));
     }
 
     @DisplayName("테마 삭제 성공 테스트")
+    @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     void deleteTheme() {
-        //given
-        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        long id = ((Number) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
-                .when().post("/themes")
-                .then().extract().body().jsonPath().get("id")).longValue();
-
-        //when&then
         RestAssured.given().log().all()
-                .when().delete("/themes/" + id)
+                .when().delete("/themes/" + 2)
                 .then().log().all().statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
-                .assertThat().body("size()", is(0));
+                .assertThat().body("size()", is(1));
     }
 
     @DisplayName("인기 테마 조회 성공 테스트")

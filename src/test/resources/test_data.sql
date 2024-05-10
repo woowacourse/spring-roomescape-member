@@ -13,6 +13,11 @@ FROM theme;
 ALTER TABLE theme
     ALTER COLUMN id RESTART;
 
+DELETE
+FROM login_member;
+ALTER TABLE login_member
+    ALTER COLUMN id RESTART;
+
 INSERT INTO reservation_time (start_at)
 VALUES ('12:00'),
        ('11:00');
@@ -26,5 +31,11 @@ VALUES ('레벨1 탈출',
         'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg')
 ;
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('릴리', '2222-05-04', 1, 1);
+INSERT INTO login_member (name, email, password, role)
+VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN');
+
+INSERT INTO login_member (name, email, password, role)
+VALUES ('릴리', 'lily@email.com', 'password', '');
+
+INSERT INTO reservation (name, date, time_id, theme_id, member_id)
+VALUES ('릴리', '2024-06-04', 1, 1, 2);

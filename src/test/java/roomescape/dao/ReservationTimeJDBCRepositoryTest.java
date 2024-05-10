@@ -83,6 +83,6 @@ class ReservationTimeJDBCRepositoryTest {
         List<ReservationTime> result = reservationTimeRepository.getReferenceByDateAndTheme("2222-05-04", 1);
 
         //then
-        assertThat(result).hasSize(1);
+        assertThat(result).hasSize(2);
     }
 }

@@ -5,96 +5,58 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.service.dto.AdminReservationRequest;
-import roomescape.service.dto.ReservationTimeCreateRequest;
-import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.TokenRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationsControllerTest {
     @LocalServerPort
     private int port;
 
-    private String date;
-    private long timeId;
-    private long themeId;
+    private String token;
 
     @BeforeEach
     void init() {
         RestAssured.port = port;
-
-        date = "2222-05-01";
-        String startAt = "17:46";
-        timeId = ((Number) RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(new ReservationTimeCreateRequest(startAt))
-                .when().post("/times")
-                .then().extract().response().jsonPath().get("id")).longValue();
-        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        themeId = ((Number) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
-                .when().post("/themes")
-                .then().extract().response().jsonPath().get("id")).longValue();
-    }
-
-    @AfterEach
-    void initData() {
-        RestAssured.get("/reservations")
-                .then().extract().body().jsonPath().getList("id")
-                .forEach(id -> RestAssured.delete("/reservations/" + id));
-
-        RestAssured.get("/times")
-                .then().extract().body().jsonPath().getList("id")
-                .forEach(id -> RestAssured.delete("/times/" + id));
-
-        RestAssured.get("/themes")
-                .then().extract().response().body().jsonPath().getList("id")
-                .forEach(id -> RestAssured.delete("/themes/" + id));
+        token = RestAssured.given().log().all()
+                .body(new TokenRequest("password", "admin@email.com"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
     }
 
     @DisplayName("예약 추가 성공 테스트")
     @Test
     void createReservation() {
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
-                .body(new AdminReservationRequest(date, timeId, themeId, 1))
+                .body(new ReservationRequest("2025-01-01", 1, 1))
                 .when().post("/reservations")
                 .then().log().all()
-                .assertThat().statusCode(201).body("id", is(greaterThan(0)));
+                .assertThat().statusCode(201)
+                .body("id", is(greaterThan(0)));
     }
 
     @DisplayName("예약 추가 실패 테스트 - 중복 일정 오류")
     @Test
     void createDuplicatedReservation() {
-        //given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new AdminReservationRequest(date, timeId, themeId, 1))
-                .when().post("/reservations");
-
-        //when&then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new AdminReservationRequest(date, timeId, themeId, 1))
+                .body(new ReservationRequest("2222-05-04", 1, 1))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400);
-    }
-
-    @DisplayName("예약 추가 실패 테스트 - 이름 길이 오류") //수정 필요
-    @Test
-    void createInvalidNameReservation() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new AdminReservationRequest(date, timeId, themeId, 1))
-                .when().post("/reservations")
-                .then().log().all()
-                .assertThat().statusCode(400).body("message", is("이름은 빈칸(공백)일 수 없습니다."));
     }
 
     @DisplayName("예약 추가 실패 테스트 - 일정 오류")
@@ -105,11 +67,13 @@ public class ReservationsControllerTest {
 
         //when&then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
-                .body(new AdminReservationRequest(invalidDate, timeId, themeId, 1))
+                .body(new ReservationRequest(invalidDate, 1, 1))
                 .when().post("/reservations")
                 .then().log().all()
-                .assertThat().statusCode(400).body("message", is("현재보다 이전으로 일정을 설정할 수 없습니다."));
+                .assertThat().statusCode(400)
+                .body("message", is("현재보다 이전으로 일정을 설정할 수 없습니다."));
     }
 
     @DisplayName("예약 추가 실패 테스트 - 일정 날짜 오류")
@@ -121,38 +85,29 @@ public class ReservationsControllerTest {
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new AdminReservationRequest(invalidDate, timeId, themeId, 1))
+                .body(new AdminReservationRequest(invalidDate, 1, 1, 1))
                 .when().post("/reservations")
                 .then().log().all()
-                .assertThat().statusCode(400).body("message", is("올바르지 않은 날짜입니다."));
+                .assertThat().statusCode(400)
+                .body("message", is("올바르지 않은 날짜입니다."));
     }
 
     @DisplayName("모든 예약 내역 조회 테스트")
     @Test
     void findAllReservations() {
-        //given
-        RestAssured.given().contentType(ContentType.JSON).body(new AdminReservationRequest(date, timeId, themeId, 1))
-                .when().post("/reservations");
-
-        //when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
-                .assertThat().statusCode(200).body("size()", is(1));
+                .assertThat().statusCode(200)
+                .body("size()", is(1));
     }
 
     @DisplayName("예약 취소 성공 테스트")
     @Test
     void deleteReservationSuccess() {
-        //given
-        var id = RestAssured.given().contentType(ContentType.JSON)
-                .body(new AdminReservationRequest(date, timeId, themeId, 1))
-                .when().post("/reservations")
-                .then().extract().body().jsonPath().get("id");
-
-        //when
         RestAssured.given().log().all()
-                .when().delete("/reservations/" + id)
+                .when().delete("/reservations/" + 1)
                 .then().log().all()
                 .assertThat().statusCode(204);
 
