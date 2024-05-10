@@ -9,10 +9,7 @@ import roomescape.domain.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -129,5 +126,39 @@ public class JdbcReservationRepository implements ReservationRepository {
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);
 
         return !reservations.isEmpty();
+    }
+
+    @Override
+    public List<Reservation> filter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = makeQueryForFilter(themeId, memberId, dateFrom, dateTo);
+
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    private String makeQueryForFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = BASIC_SELECT_QUERY;
+        List<String> wherePhrase = new LinkedList<>();
+
+        if(themeId != null) {
+            wherePhrase.add(" th.id = " + themeId);
+        }
+        if(memberId != null) {
+            wherePhrase.add(" m.id = " + memberId);
+        }
+        if(dateFrom != null) {
+            wherePhrase.add(" r.date >= '" + dateFrom + "'");
+        }
+        if(dateTo != null) {
+            wherePhrase.add(" r.date <= '" + dateTo + "'");
+        }
+
+        if(wherePhrase.isEmpty()) {
+            return sql;
+        }
+
+        String hi = sql + " WHERE "+ String.join(" AND ", wherePhrase);
+        System.out.println("무야호" + hi);
+
+        return hi;
     }
 }

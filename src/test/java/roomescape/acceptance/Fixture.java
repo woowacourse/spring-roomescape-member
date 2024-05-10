@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import static roomescape.acceptance.PreInsertedData.preInsertedAdmin;
-import static roomescape.acceptance.PreInsertedData.preInsertedCustomer;
+import static roomescape.acceptance.PreInsertedData.preInsertedCustomer1;
 
 public class Fixture {
 
@@ -16,7 +16,7 @@ public class Fixture {
             .compact();
 
     public static final String customerToken = Jwts.builder()
-            .subject(preInsertedCustomer.getId().toString())
+            .subject(preInsertedCustomer1.getId().toString())
             .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
             .compact();
 }

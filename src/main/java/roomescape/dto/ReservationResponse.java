@@ -10,7 +10,7 @@ public record ReservationResponse(Long id, MemberPreviewResponse member, LocalDa
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                new MemberPreviewResponse(reservation.getMember()),
+                MemberPreviewResponse.from(reservation.getMember()),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme())

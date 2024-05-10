@@ -51,7 +51,6 @@ public class ReservationService {
     }
 
     public ReservationResponse addAdminReservation(AdminReservationRequest request) {
-        System.out.println("무아호 여기 왔나?");
         ReservationTime reservationTime = findValidatedReservationTime(request.timeId());
         Theme theme = findValidatedTheme(request.themeId());
         Member customer = findValidatedMember(request.memberId());
@@ -100,5 +99,13 @@ public class ReservationService {
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new OperationNotAllowedException("지나간 시간에 대한 예약은 할 수 없습니다.");
         }
+    }
+
+    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.filter(themeId, memberId, dateFrom, dateTo);
+
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }

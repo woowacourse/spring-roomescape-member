@@ -27,9 +27,9 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/check") //todo: URI 레스트풀하게 변경
+    @GetMapping("/check")
     public ResponseEntity<MemberPreviewResponse> loginCheck(Member member) {
-        MemberPreviewResponse name = new MemberPreviewResponse(member);
+        MemberPreviewResponse name = MemberPreviewResponse.from(member);
 
         return ResponseEntity.ok()
                 .body(name);

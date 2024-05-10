@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.acceptance.Fixture.secretKey;
 import static roomescape.acceptance.PreInsertedData.preInsertedAdmin;
-import static roomescape.acceptance.PreInsertedData.preInsertedCustomer;
+import static roomescape.acceptance.PreInsertedData.preInsertedCustomer1;
 
 class AuthAcceptanceTest extends AcceptanceTest {
 
@@ -27,8 +27,8 @@ class AuthAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> login_and_loginCheck_success() {
         LogInRequest customerRequest = new LogInRequest(
-                preInsertedCustomer.getEmail(),
-                preInsertedCustomer.getPassword()
+                preInsertedCustomer1.getEmail(),
+                preInsertedCustomer1.getPassword()
         );
         LogInRequest adminRequest = new LogInRequest(
                 preInsertedAdmin.getEmail(),
@@ -42,9 +42,9 @@ class AuthAcceptanceTest extends AcceptanceTest {
                     Claims claims = parseToken(token);
                     assertAll("토큰에 고객의 식별자와 권한이 포함되어있는지 검증한다.",
                             () -> assertThat(claims.getSubject())
-                                    .isEqualTo(preInsertedCustomer.getId().toString()),
+                                    .isEqualTo(preInsertedCustomer1.getId().toString()),
                             () -> assertThat(claims.get("role", String.class))
-                                    .isEqualTo(preInsertedCustomer.getRole().name())
+                                    .isEqualTo(preInsertedCustomer1.getRole().name())
                     );
                 }),
 
@@ -54,7 +54,7 @@ class AuthAcceptanceTest extends AcceptanceTest {
                     MemberPreviewResponse memberPreviewResponse = checkName(token);
 
                     assertThat(memberPreviewResponse.name())
-                            .isEqualTo(preInsertedCustomer.getName());
+                            .isEqualTo(preInsertedCustomer1.getName());
                 }),
 
                 dynamicTest("관리자가 로그인한다.", () -> {
