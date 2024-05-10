@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import org.springframework.web.bind.annotation.*;
+import roomescape.config.LoggedIn;
+import roomescape.domain.AuthenticatedMember;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -28,8 +30,12 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ReservationResponse createReservation(@RequestBody ReservationCreateRequest request) {
-        return reservationService.createReservation(request);
+    public ReservationResponse createReservation(
+            @RequestBody ReservationCreateRequest request,
+            @LoggedIn AuthenticatedMember member
+    ) {
+        ReservationCreateRequest requestOfMember = request.withMemberId(member.getId());
+        return reservationService.createReservation(requestOfMember);
     }
 
     @DeleteMapping("/{id}")

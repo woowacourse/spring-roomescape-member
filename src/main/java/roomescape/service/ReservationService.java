@@ -1,10 +1,12 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.IllegalTimeException;
+import roomescape.repository.member.MemberRepository;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
 import roomescape.exception.ResourceNotFoundException;
@@ -21,27 +23,35 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
-    ) {
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest request) {
+        Member member = findMemberById(request.memberId());
         ReservationTime reservationTime = findReservationTimeById(request.timeId());
         Theme theme = findThemeById(request.themeId());
-        Reservation reservation = request.toReservation(reservationTime, theme);
+        Reservation reservation = request.toReservation(member, reservationTime, theme);
 
         validateDuplicated(reservation);
         validateRequestedTime(reservation, reservationTime);
 
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    private Member findMemberById(long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다."));
     }
 
     private ReservationTime findReservationTimeById(Long id) {
