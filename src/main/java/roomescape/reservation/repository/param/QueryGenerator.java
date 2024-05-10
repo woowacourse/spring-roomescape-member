@@ -5,7 +5,7 @@ import roomescape.reservation.dto.SearchReservationsParams;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqlGenerator {
+public class QueryGenerator {
     public static String generateQueryWithSearchReservationsParams(final SearchReservationsParams params, final String baseQuery) {
         boolean isFirst = true;
         List<SearchParam> searchParams = new ArrayList<>();

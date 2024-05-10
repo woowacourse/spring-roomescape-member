@@ -12,7 +12,7 @@ import roomescape.reservation.dto.SearchReservationsParams;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
-import roomescape.reservation.repository.param.SqlGenerator;
+import roomescape.reservation.repository.param.QueryGenerator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -64,7 +64,7 @@ public class InMemoryReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> searchReservations(final SearchReservationsParams searchReservationsParams) {
-        final String sql = SqlGenerator.generateQueryWithSearchReservationsParams(
+        final String sql = QueryGenerator.generateQueryWithSearchReservationsParams(
                 searchReservationsParams,
                 """
                     SELECT

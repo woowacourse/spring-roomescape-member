@@ -7,7 +7,7 @@ import roomescape.reservation.dto.SearchReservationsParams;
 
 import java.time.LocalDate;
 
-class SqlGeneratorTest {
+class QueryGeneratorTest {
 
     @DisplayName("회원 id, 테마 id, 시작일, 종료일을 모두 검색하는 쿼리를 생성한다.")
     @Test
@@ -27,7 +27,7 @@ class SqlGeneratorTest {
                 "AND \'" + to + "\'";
 
         // When
-        final String generateSql = SqlGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
+        final String generateSql = QueryGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
 
         // Then
         Assertions.assertThat(generateSql).isEqualTo(expect);
@@ -49,7 +49,7 @@ class SqlGeneratorTest {
                 "AND \'" + to + "\'";
 
         // When
-        final String generateSql = SqlGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
+        final String generateSql = QueryGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
 
         // Then
         Assertions.assertThat(generateSql).isEqualTo(expect);
@@ -69,7 +69,7 @@ class SqlGeneratorTest {
                 "AND \'" + to + "\'";
 
         // When
-        final String generateSql = SqlGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
+        final String generateSql = QueryGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
 
         // Then
         Assertions.assertThat(generateSql).isEqualTo(expect);
@@ -87,7 +87,7 @@ class SqlGeneratorTest {
                 "WHERE date >= \'" + from + "\'";
 
         // When
-        final String generateSql = SqlGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
+        final String generateSql = QueryGenerator.generateQueryWithSearchReservationsParams(searchReservationsParams, baseQuery);
 
         // Then
         Assertions.assertThat(generateSql).isEqualTo(expect);
