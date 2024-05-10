@@ -24,23 +24,19 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    // 관리자 예약 등록
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> addReservationByAdmin(
             @RequestBody ReservationRequest reservationRequest,
-            LoginMember loginMember
-    ) {
+            LoginMember loginMember) {
         Long savedId = reservationService.addReservation(reservationRequest);
         ReservationResponse reservationResponse = reservationService.getReservation(savedId);
         return ResponseEntity.created(URI.create("/reservations/" + savedId)).body(reservationResponse);
     }
 
-    // 사용자 예약 등록
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> addReservationByUser(
             @RequestBody UserReservationRequest userReservationRequest,
-            LoginMember loginMember
-    ) {
+            LoginMember loginMember) {
         ReservationRequest reservationRequest = ReservationRequest.from(userReservationRequest, loginMember.id());
         Long savedId = reservationService.addReservation(reservationRequest);
         ReservationResponse reservationResponse = reservationService.getReservation(savedId);
