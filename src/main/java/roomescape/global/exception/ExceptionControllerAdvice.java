@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,6 +13,7 @@ import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.AssociatedDataExistsException;
 import roomescape.global.exception.model.CustomException;
 import roomescape.global.exception.model.DataDuplicateException;
+import roomescape.global.exception.model.ForbiddenException;
 import roomescape.global.exception.model.NotFoundException;
 import roomescape.global.exception.model.UnauthorizedException;
 import roomescape.global.exception.model.ValidateException;
@@ -40,6 +42,20 @@ public class ExceptionControllerAdvice {
     public ApiResponse<Object> handleUnauthorizedException(final UnauthorizedException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(e.getErrorType());
+    }
+
+    @ExceptionHandler(value = ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiResponse<Object> handleForbiddenException(final ForbiddenException e) {
+        logger.error(e.getMessage(), e);
+        return ApiResponse.fail(e.getErrorType());
+    }
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ApiResponse<Object> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
+        logger.error(e.getMessage(), e);
+        return ApiResponse.fail(ErrorType.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(value = {

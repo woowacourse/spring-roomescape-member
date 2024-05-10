@@ -11,6 +11,7 @@ import roomescape.global.exception.model.AssociatedDataExistsException;
 import roomescape.global.exception.model.DataDuplicateException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.Reservation;
@@ -57,7 +58,7 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.now()));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
 
         // when
         reservationDao.insert(new Reservation(LocalDate.now().plusDays(1L), reservationTime, theme, member));

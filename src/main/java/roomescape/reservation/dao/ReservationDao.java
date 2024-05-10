@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -35,7 +36,8 @@ public class ReservationDao {
                     resultSet.getLong("member.id"),
                     resultSet.getString("member.name"),
                     resultSet.getString("member.email"),
-                    resultSet.getString("member.password")
+                    resultSet.getString("member.password"),
+                    Role.valueOf(resultSet.getString("role"))
             )
     );
 

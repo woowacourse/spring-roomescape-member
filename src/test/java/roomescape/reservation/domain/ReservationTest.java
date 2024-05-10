@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.global.exception.model.ValidateException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
@@ -30,17 +31,17 @@ public class ReservationTest {
                 Arguments.of(null,
                         new ReservationTime(LocalTime.now().plusHours(1)),
                         new Theme("테마명", "설명", "썸네일URI"),
-                        new Member("name", "email@email.com", "password")),
+                        new Member("name", "email@email.com", "password", Role.MEMBER)),
                 Arguments.of(
                         LocalDate.now(),
                         null,
                         new Theme("테마명", "설명", "썸네일URI"),
-                        new Member("name", "email@email.com", "password")),
+                        new Member("name", "email@email.com", "password", Role.MEMBER)),
                 Arguments.of(
                         LocalDate.now(),
                         new ReservationTime(LocalTime.now().plusHours(1)),
                         null,
-                        new Member("name", "email@email.com", "password")),
+                        new Member("name", "email@email.com", "password", Role.MEMBER)),
                 Arguments.of(
                         LocalDate.now(),
                         new ReservationTime(LocalTime.now().plusHours(1)),

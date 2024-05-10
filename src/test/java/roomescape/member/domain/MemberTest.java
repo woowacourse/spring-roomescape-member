@@ -22,7 +22,7 @@ class MemberTest {
     void createMemberWithBlank(final String name, final String email, final String password) {
 
         // when & then
-        Assertions.assertThatThrownBy(() -> new Member(name, email, password))
+        Assertions.assertThatThrownBy(() -> new Member(name, email, password, Role.MEMBER))
                 .isInstanceOf(ValidateException.class);
     }
 
@@ -44,7 +44,7 @@ class MemberTest {
         String email = "test@test.com";
 
         // when & then
-        Assertions.assertThatThrownBy(() -> new Member(name, email, invalidPassword))
+        Assertions.assertThatThrownBy(() -> new Member(name, email, invalidPassword, Role.MEMBER))
                 .isInstanceOf(ValidateException.class);
     }
 
@@ -57,7 +57,7 @@ class MemberTest {
         String password = "12341234";
 
         // when & then
-        Assertions.assertThatThrownBy(() -> new Member(invalidName, email, password))
+        Assertions.assertThatThrownBy(() -> new Member(invalidName, email, password, Role.MEMBER))
                 .isInstanceOf(ValidateException.class);
     }
 }

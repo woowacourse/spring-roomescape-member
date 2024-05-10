@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.service.AuthService;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class AuthControllerTest {
         // given
         String email = "test@email.com";
         String password = "12341234";
-        memberDao.insert(new Member("이름", email, password));
+        memberDao.insert(new Member("이름", email, password, Role.MEMBER));
 
         Map<String, String> loginParams = Map.of(
                 "email", email,
@@ -63,7 +64,7 @@ public class AuthControllerTest {
         String name = "이름";
         String email = "test@email.com";
         String password = "12341234";
-        memberDao.insert(new Member(name, email, password));
+        memberDao.insert(new Member(name, email, password, Role.MEMBER));
 
         Map<String, String> loginParams = Map.of(
                 "email", email,

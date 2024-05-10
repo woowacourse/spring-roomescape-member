@@ -18,8 +18,14 @@ public enum ErrorType {
     ILLEGAL_TOKEN("JWT 토큰의 Claim 이 비어있습니다."),
     INVALID_TOKEN("JWT 토큰이 존재하지 않거나 유효하지 않습니다."),
 
+    // 403 Forbidden
+    PERMISSION_DOES_NOT_EXIST("접근 권한이 존재하지 않습니다."),
+
     // 404 Not Found
     MEMBER_NOT_FOUND("회원(Member) 정보가 존재하지 않습니다."),
+
+    // 405 Method Not Allowed
+    METHOD_NOT_ALLOWED("지원하지 않는 HTTP Method 입니다."),
 
     // 409 Conflict
     TIME_IS_USED_CONFLICT("삭제할 수 없는 시간대입니다."),

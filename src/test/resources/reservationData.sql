@@ -1,5 +1,8 @@
-INSERT INTO member (name, password, email)
-VALUES ('이름', '12341234', 'test@test.com');
+INSERT INTO member (name, password, email, role)
+VALUES ('이름', '12341234', 'test@test.com', 'MEMBER');
+INSERT INTO member (name, password, email, role)
+VALUES ('관리자', '12341234', 'admin@admin.com', 'ADMIN');
+
 
 -- 테마 목록 : 11개
 INSERT INTO theme (name, description, thumbnail)

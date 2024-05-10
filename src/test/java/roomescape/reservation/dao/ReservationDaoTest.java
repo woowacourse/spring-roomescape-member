@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.dao.ThemeDao;
@@ -41,7 +42,7 @@ public class ReservationDaoTest {
         // given
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
 
 
         reservationDao.insert(new Reservation(
@@ -64,7 +65,7 @@ public class ReservationDaoTest {
         // given
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
 
         // when
         Reservation savedReservation = reservationDao.insert(new Reservation(

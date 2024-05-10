@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.Reservation;
@@ -51,7 +52,7 @@ public class ReservationControllerTest {
     void init() {
         String email = "test@email.com";
         String password = "12341234";
-        memberDao.insert(new Member("이름", email, password));
+        memberDao.insert(new Member("이름", email, password, Role.MEMBER));
 
         Map<String, String> loginParams = Map.of(
                 "email", email,
@@ -97,7 +98,7 @@ public class ReservationControllerTest {
         // given
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
 
         // when
         reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme, member));
@@ -119,7 +120,7 @@ public class ReservationControllerTest {
         // given
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
 
         Reservation reservation = reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme, member));
 
@@ -143,7 +144,7 @@ public class ReservationControllerTest {
         ReservationTime reservationTime2 = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         ReservationTime reservationTime3 = reservationTimeDao.insert(new ReservationTime(LocalTime.of(18, 30)));
         Theme theme = themeDao.insert(new Theme("테마명1", "설명", "썸네일URL"));
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password"));
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
 
         reservationDao.insert(new Reservation(today.plusDays(1), reservationTime1, theme, member));
         reservationDao.insert(new Reservation(today.plusDays(1), reservationTime2, theme, member));
@@ -190,7 +191,7 @@ public class ReservationControllerTest {
                 Map.of("date", LocalDate.now().plusDays(1L).toString(),
                         "timeId", " ",
                         "themeId", "1"),
-                
+
                 Map.of("date", LocalDate.now().plusDays(1L).toString(),
                         "timeId", "1",
                         "themeId", " ")

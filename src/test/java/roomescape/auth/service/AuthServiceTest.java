@@ -12,6 +12,7 @@ import roomescape.global.auth.jwt.JwtHandler;
 import roomescape.global.exception.model.NotFoundException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -30,7 +31,7 @@ class AuthServiceTest {
     @DisplayName("존재하는 회원의 email, password로 로그인하면 memberId, accessToken을 Response 한다.")
     void loginSuccess() {
         // given
-        Member member = memberDao.insert(new Member("이름", "test@test.com", "12341234"));
+        Member member = memberDao.insert(new Member("이름", "test@test.com", "12341234", Role.MEMBER));
 
         // when
         LoginResponse response = authService.login(new LoginRequest(member.getEmail(), member.getPassword()));
