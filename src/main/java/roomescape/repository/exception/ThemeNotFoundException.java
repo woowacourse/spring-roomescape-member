@@ -1,4 +1,4 @@
-package roomescape.service.theme.exception;
+package roomescape.repository.exception;
 
 import roomescape.exception.NotFoundException;
 

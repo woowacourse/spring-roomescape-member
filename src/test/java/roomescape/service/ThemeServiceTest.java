@@ -19,10 +19,10 @@ import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.exception.ThemeNotFoundException;
 import roomescape.service.theme.ThemeService;
 import roomescape.service.theme.exception.DaysLimitException;
 import roomescape.service.theme.exception.RowsLimitException;
-import roomescape.service.theme.exception.ThemeNotFoundException;
 import roomescape.service.theme.exception.ThemeUsedException;
 
 import java.time.LocalDate;

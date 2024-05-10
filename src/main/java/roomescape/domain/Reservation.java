@@ -21,15 +21,12 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(final Long id, final String date, final long timeId, final long themeId, final long memberId) {
-        this(
-                id,
-                validateDateFormatAndReturn(date),
-                new ReservationTime(timeId),
-                new Theme(themeId),
-                new Member(memberId)
-        );
+    public Reservation(final Long id, final String date, final ReservationTime time, final Theme theme, final Member member) {
+        this(id, validateDateFormatAndReturn(date), time, theme, member);
+    }
 
+    public Reservation(final Long id, final String date, final long timeId, long themeId, long memberId) {
+        this(id, date, new ReservationTime(timeId), new Theme(themeId), new Member(memberId));
     }
 
     private static LocalDate validateDateFormatAndReturn(final String date) {
@@ -52,12 +49,12 @@ public class Reservation {
         return new Reservation(id, date, time, theme, member);
     }
 
-    public Long getId() {
-        return id;
+    public Reservation assignMember(final Member member) {
+        return new Reservation(id, date, time, theme, member);
     }
 
-    public String getName() {
-        return name.value();
+    public Long getId() {
+        return id;
     }
 
     public LocalDate getDate() {
@@ -72,26 +69,26 @@ public class Reservation {
         return theme;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         final Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(date, that.date) &&
-                Objects.equals(time, that.time) &&
-                Objects.equals(theme, that.theme);
+        return Objects.equals(id, that.id) && Objects.equals(date, that.date) && Objects.equals(time, that.time) && Objects.equals(theme, that.theme) && Objects.equals(member, that.member);
     }
 
     @Override
     public int hashCode() {
         int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(name);
         result = 31 * result + Objects.hashCode(date);
         result = 31 * result + Objects.hashCode(time);
         result = 31 * result + Objects.hashCode(theme);
+        result = 31 * result + Objects.hashCode(member);
         return result;
     }
 
@@ -99,10 +96,10 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name=" + name +
                 ", date=" + date +
                 ", time=" + time +
                 ", theme=" + theme +
+                ", member=" + member +
                 '}';
     }
 }

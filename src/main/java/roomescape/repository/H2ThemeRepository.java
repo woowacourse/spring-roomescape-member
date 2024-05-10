@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.repository.exception.ThemeNotFoundException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -61,6 +62,11 @@ public class H2ThemeRepository implements ThemeRepository {
         return jdbcTemplate.query(sql, this::mapRowTheme, id)
                 .stream()
                 .findAny();
+    }
+
+    @Override
+    public void fetchById(final long id) {
+        findById(id).orElseThrow(() -> new ThemeNotFoundException("존재 하지 않는 테마 입니다."));
     }
 
     @Override

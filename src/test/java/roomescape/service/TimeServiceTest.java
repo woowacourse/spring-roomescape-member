@@ -15,9 +15,9 @@ import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.exception.TimeNotFoundException;
 import roomescape.service.time.TimeService;
 import roomescape.service.time.exception.TimeDuplicatedException;
-import roomescape.service.time.exception.TimeNotFoundException;
 import roomescape.service.time.exception.TimeUsedException;
 
 import java.time.LocalDate;

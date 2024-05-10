@@ -5,8 +5,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
@@ -33,17 +35,16 @@ public class H2ReservationRepository implements ReservationRepository {
     private Reservation mapRowLazy(final ResultSet rs, final int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("ID"),
-                rs.getString("NAME"),
                 rs.getString("DATE"),
-                new ReservationTime(rs.getLong("TIME_ID")),
-                new Theme(rs.getLong("THEME_ID"))
+                rs.getLong("TIME_ID"),
+                rs.getLong("THEME_ID"),
+                rs.getLong("MEMBER_ID")
         );
     }
 
     private Reservation mapRowFull(final ResultSet rs, final int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("RESERVATION.ID"),
-                rs.getString("RESERVATION.NAME"),
                 rs.getString("RESERVATION.DATE"),
                 new ReservationTime(
                         rs.getLong("RESERVATION_TIME.ID"),
@@ -52,7 +53,14 @@ public class H2ReservationRepository implements ReservationRepository {
                         rs.getLong("THEME.ID"),
                         rs.getString("THEME.NAME"),
                         rs.getString("THEME.DESCRIPTION"),
-                        rs.getString("THEME.THUMBNAIL"))
+                        rs.getString("THEME.THUMBNAIL")),
+                new Member(
+                        rs.getLong("MEMBER.ID"),
+                        rs.getString("MEMBER.EMAIL"),
+                        rs.getString("MEMBER.PASSWORD"),
+                        rs.getString("MEMBER.NAME"),
+                        Role.valueOf(rs.getString("MEMBER.ROLE"))
+                )
         );
     }
 
@@ -119,10 +127,10 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("NAME", reservation.getName())
                 .addValue("DATE", reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .addValue("TIME_ID", reservation.getTime().getId())
-                .addValue("THEME_ID", reservation.getTheme().getId());
+                .addValue("THEME_ID", reservation.getTheme().getId())
+                .addValue("MEMBER_ID", reservation.getMember().getId());
 
         final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.assignId(id);

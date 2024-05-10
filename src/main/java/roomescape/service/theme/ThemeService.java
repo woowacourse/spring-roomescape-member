@@ -8,9 +8,9 @@ import roomescape.controller.theme.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.exception.ThemeNotFoundException;
 import roomescape.service.theme.exception.DaysLimitException;
 import roomescape.service.theme.exception.RowsLimitException;
-import roomescape.service.theme.exception.ThemeNotFoundException;
 import roomescape.service.theme.exception.ThemeUsedException;
 
 import java.time.LocalDate;

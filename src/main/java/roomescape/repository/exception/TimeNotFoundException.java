@@ -1,4 +1,4 @@
-package roomescape.service.time.exception;
+package roomescape.repository.exception;
 
 import roomescape.exception.NotFoundException;
 

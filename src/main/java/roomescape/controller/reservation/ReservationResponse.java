@@ -12,7 +12,7 @@ public record ReservationResponse(Long id, String name, String date, TimeRespons
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getMember().getName(),
                 reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
                 TimeResponse.from(reservation.getTime(), false),
                 ReservationThemeResponse.from(reservation.getTheme())

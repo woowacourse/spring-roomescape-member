@@ -1,11 +1,14 @@
 package roomescape.controller.reservation;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
-public record ReservationRequest(String name, String date, Long timeId, Long themeId) {
-    public Reservation toDomain(final ReservationTime time, final Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+public record ReservationRequest(String date, Long timeId, Long themeId, Long memberId) {
+
+    public Reservation toDomain() {
+        return new Reservation(null, date, timeId, themeId, memberId);
+    }
+
+    public ReservationRequest assignMemberId(Long memberId) {
+        return new ReservationRequest(date, timeId, themeId, memberId);
     }
 }

@@ -8,8 +8,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.exception.InvalidDateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.exception.TimeNotFoundException;
 import roomescape.service.time.exception.TimeDuplicatedException;
-import roomescape.service.time.exception.TimeNotFoundException;
 import roomescape.service.time.exception.TimeUsedException;
 
 import java.time.LocalDate;
