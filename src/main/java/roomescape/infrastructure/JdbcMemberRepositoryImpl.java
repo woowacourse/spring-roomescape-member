@@ -1,5 +1,6 @@
 package roomescape.infrastructure;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.MemberEmail;
+import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
 
@@ -29,7 +31,7 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
     @Override
     public Member save(Member member) {
         Map<String, Object> saveSource = Map.ofEntries(
-            Map.entry("name", member.getName()),
+            Map.entry("name", member.getName().getValue()),
             Map.entry("email", member.getEmail().getValue()),
             Map.entry("password", member.getPassword().getValue())
         );
@@ -39,6 +41,16 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
             .longValue();
 
         return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getMemberRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -61,11 +73,18 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
         }
     }
 
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+
+        return jdbcTemplate.query(sql, getMemberRowMapper());
+    }
+
 
     private RowMapper<Member> getMemberRowMapper() {
         return (rs, rowNum) -> new Member(
             rs.getLong("id"),
-            rs.getString("name"),
+            new MemberName(rs.getString("name")),
             new MemberEmail(rs.getString("email")),
             new MemberPassword(rs.getString("password")));
     }
