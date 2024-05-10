@@ -1,14 +1,14 @@
 package roomescape.config.Interceptor;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.config.util.CookieExtractor;
-import roomescape.domain.member.Member;
 import roomescape.service.AuthService;
 import roomescape.service.exception.AuthorizationException;
 
+@Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
