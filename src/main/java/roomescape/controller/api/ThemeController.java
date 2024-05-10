@@ -1,8 +1,7 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
@@ -11,7 +10,7 @@ import roomescape.service.ThemeService;
 import java.net.URI;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/themes")
 public class ThemeController {
     private final ThemeService themeService;
