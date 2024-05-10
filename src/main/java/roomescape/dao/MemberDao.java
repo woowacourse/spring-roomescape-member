@@ -31,15 +31,16 @@ public class MemberDao {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("password", member.getPassword())
-                .addValue("email", member.getEmail());
+                .addValue("email", member.getEmail())
+                .addValue("role", member.getRole().getValue());
 
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();
-        return Member.from(id, member.getName(), member.getEmail(), member.getPassword());
+        return Member.fromMember(id, member.getName(), member.getEmail(), member.getPassword());
     }
 
     public Optional<Member> findByEmail(final String email) {
-        final String sql = "SELECT id, name, email, password FROM member WHERE email = ?";
+        final String sql = "SELECT id, name, email, password,role FROM member WHERE email = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email));
         } catch (final EmptyResultDataAccessException | NullPointerException exception) {
@@ -48,7 +49,7 @@ public class MemberDao {
     }
 
     public Optional<Member> findById(final long id) {
-        final String sql = "SELECT id, name, email, password FROM member WHERE id=?";
+        final String sql = "SELECT id, name, email, password,role FROM member WHERE id=?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (final EmptyResultDataAccessException | NullPointerException exception) {
@@ -56,7 +57,7 @@ public class MemberDao {
         }
     }
     public List<Member> getAllMembers() {
-        final String sql = "SELECT id, name, email, password FROM member";
+        final String sql = "SELECT id, name, email, password,role FROM member";
         return jdbcTemplate.query(sql, rowMapper);
     }
 

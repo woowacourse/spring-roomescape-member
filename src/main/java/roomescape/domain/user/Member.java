@@ -7,16 +7,21 @@ public class Member {
     private final Name name;
     private final Email email;
     private final Password password;
+    private final Role role;
 
-    public Member(final Long id, final Name name, final Email email, final Password password) {
+    public Member(final Long id, final Name name, final Email email, final Password password, final Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
+    }
+    public static Member fromMember(final Long id, final String name, final String email, final String password) {
+        return new Member(id, new Name(name), new Email(email), new Password(password),Role.USER);
     }
 
-    public static Member from(final Long id, final String name, final String email, final String password) {
-        return new Member(id, new Name(name), new Email(email), new Password(password));
+    public static Member from(final Long id, final String name, final String email, final String password, final String role) {
+        return new Member(id, new Name(name), new Email(email), new Password(password),Role.from(role));
     }
 
     public boolean isNotEqualPassword(final String password) {
@@ -49,5 +54,9 @@ public class Member {
 
     public Long getId() {
         return id;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

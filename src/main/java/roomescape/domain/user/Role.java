@@ -1,7 +1,7 @@
 package roomescape.domain.user;
 
 public enum Role {
-    ADMIN("admin"), USER("user");
+    ADMIN("ADMIN"), USER("USER");
     private final String value;
 
     Role(final String value) {

@@ -95,7 +95,7 @@ class ReservationTimeServiceTest {
                 "2024-04-30",
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
                 Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail()),
-                Member.from(memberOutput.id(), memberOutput.name(), memberOutput.email(), memberOutput.password())
+                Member.fromMember(memberOutput.id(), memberOutput.name(), memberOutput.email(), memberOutput.password())
         ));
         final var timeId = timeOutput.id();
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))

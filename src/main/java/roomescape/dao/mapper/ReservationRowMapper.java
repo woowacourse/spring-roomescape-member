@@ -31,13 +31,14 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         final String memberName = rs.getString("member_name");
         final String email = rs.getString("member_email");
         final String password = rs.getString("member_password");
+        final String role = rs.getString("member_role");
 
         return new Reservation(
                 reservationId,
                 ReservationDate.from(date),
                 ReservationTime.from(timeId, startAt),
                 Theme.of(themeId, themeName, description, thumbnail),
-                Member.from(memberId, memberName, email, password)
+                Member.from(memberId, memberName, email, password,role)
         );
     }
 }

@@ -11,7 +11,7 @@ public class MemberFixture {
     }
 
     public static Member getDomain() {
-        return Member.from(
+        return Member.fromMember(
                 null,
                 "조이썬",
                 "joyson5582@gmail.com",

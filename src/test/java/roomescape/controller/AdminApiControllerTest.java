@@ -59,7 +59,7 @@ class AdminApiControllerTest {
         final long themeId = themeService.createTheme(ThemeFixture.getInput())
                 .id();
         final var output = memberService.createMember(MemberFixture.getCreateInput());
-        token = tokenProvider.generateToken(Member.from(output.id(), output.name(), output.email(), output.password()));
+        token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
 
 
         final Map<String, Object> reservation = new HashMap<>();

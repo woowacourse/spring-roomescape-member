@@ -56,7 +56,7 @@ class ReservationApiControllerTest {
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
         final var output = memberService.createMember(MemberFixture.getCreateInput());
-        token = tokenProvider.generateToken(Member.from(output.id(), output.name(), output.email(), output.password()));
+        token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
     }
 
     @Test

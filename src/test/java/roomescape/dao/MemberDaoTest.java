@@ -31,7 +31,7 @@ class MemberDaoTest {
     @Test
     void create_member() {
         final var member = memberDao.create(
-                Member.from(null, "조이썬", "i894@naver.com", "password1234"));
+                Member.fromMember(null, "조이썬", "i894@naver.com", "password1234"));
 
         final var result = memberDao.findById(member.getId())
                 .orElseThrow();
@@ -43,7 +43,7 @@ class MemberDaoTest {
     @DisplayName("이메일을 통해 사용자를 찾는다.")
     void find_member_with_email_and_password() {
         final var member = memberDao.create(
-                Member.from(null, "조이썬", "i894@naver.com", "password1234"));
+                Member.fromMember(null, "조이썬", "i894@naver.com", "password1234"));
 
         final var result = memberDao.findByEmail("i894@naver.com")
                 .orElseThrow();

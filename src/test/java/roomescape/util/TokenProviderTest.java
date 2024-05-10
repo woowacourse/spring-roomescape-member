@@ -1,6 +1,5 @@
 package roomescape.util;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ class TokenProviderTest {
     @DisplayName("토큰을 생성하고,추출한다")
     void some() {
         final var token = tokenProvider.generateToken(
-                Member.from(3L, "조이썬", "joyson5582@gmail.com", "password1234"));
+                Member.fromMember(3L, "조이썬", "joyson5582@gmail.com", "password1234"));
         final var decodeInfo = tokenProvider.decodeToken(token);
         assertThat(decodeInfo.getId()).isEqualTo(3);
     }
