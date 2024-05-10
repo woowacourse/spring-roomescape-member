@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +18,7 @@ import roomescape.auth.dto.MemberLoginRequestDto;
 import roomescape.auth.dto.MemberResponseDto;
 import roomescape.auth.dto.MemberSignUpRequestDto;
 import roomescape.auth.service.AuthService;
+import roomescape.configuration.AuthenticatedMember;
 
 @RestController
 public class AuthController {
@@ -47,8 +47,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponseDto> loginCheck(@CookieValue("token") String token) {
-        Member member = authService.loginCheck(token);
+    public ResponseEntity<MemberResponseDto> loginCheck(@AuthenticatedMember Member member) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.DATE, new Date().toString());
         return ResponseEntity.ok().headers(headers).body(new MemberResponseDto(member.getName()));

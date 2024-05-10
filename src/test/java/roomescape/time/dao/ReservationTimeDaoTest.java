@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
+import roomescape.auth.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -72,7 +73,8 @@ class ReservationTimeDaoTest {
     void findAvailableTime() {
         Theme theme = new Theme(1L, "테마 이름", "테마 설명", "테마 썸네일");
         ReservationTime bookedReservationTime = new ReservationTime(2L, "11:00");
-        Reservation reservation = new Reservation("test", new ReservationDate("2024-04-01"), bookedReservationTime, theme);
+        Member member = new Member(1L, "hotea", "hotea@hotea.com");
+        Reservation reservation = new Reservation(member, new ReservationDate("2024-04-01"), bookedReservationTime, theme);
         reservationTimeDao.save(reservationTime);
         reservationTimeDao.save(bookedReservationTime);
         themeDao.save(theme);

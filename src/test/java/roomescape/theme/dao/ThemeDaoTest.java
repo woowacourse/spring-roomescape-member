@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
+import roomescape.auth.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -31,9 +32,12 @@ class ThemeDaoTest {
     @Autowired
     private ReservationDao reservationDao;
 
+    private final Member memberOne = new Member(1L, "hotea", "hotea@hotea.com");
+    private final Member memberTwo = new Member(2L, "zeus", "zues@zeus.com");
+    private final Member memberThree = new Member(3L, "zh", "zh@zh.com");
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-    private final Reservation reservation = new Reservation("hotea", new ReservationDate("2024-04-27"), reservationTime, theme);
+    private final Reservation reservation = new Reservation(memberOne, new ReservationDate("2024-04-27"), reservationTime, theme);
 
 
     @DisplayName("인기 테마를 조회할 수 있다.")
@@ -41,9 +45,9 @@ class ThemeDaoTest {
     void findPopularThemes() {
         Theme secondTheme = new Theme(2L, "정글 모험2", "열대 정글의 심연을 탐험하세요.", "2");
         Theme thirdTheme = new Theme(3L, "정글 모험3", "열대 정글의 심연을 탐험하세요.", "3");
-        Reservation secondReservation = new Reservation("zeus", new ReservationDate("2024-04-26"), reservationTime, theme);
-        Reservation thirdReservation = new Reservation("ho", new ReservationDate("2024-04-29"), reservationTime, secondTheme);
-        Reservation fourthReservation = new Reservation("hero", new ReservationDate("2024-04-30"), reservationTime, secondTheme);
+        Reservation secondReservation = new Reservation(memberOne, new ReservationDate("2024-04-26"), reservationTime, theme);
+        Reservation thirdReservation = new Reservation(memberTwo, new ReservationDate("2024-04-29"), reservationTime, secondTheme);
+        Reservation fourthReservation = new Reservation(memberThree, new ReservationDate("2024-04-30"), reservationTime, secondTheme);
 
         themeDao.save(theme);
         themeDao.save(secondTheme);

@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.auth.service.AuthService;
 import roomescape.time.dto.ReservationTimeRequestDto;
 import roomescape.time.service.ReservationTimeService;
 
@@ -35,6 +36,8 @@ class ReservationTimeControllerTest {
 
     @MockBean
     private ReservationTimeService reservationTimeService;
+    @MockBean
+    private AuthService authService;
 
     @DisplayName("invalid한 save 요청이 들어오면 예외가 발생한다.")
     @ParameterizedTest

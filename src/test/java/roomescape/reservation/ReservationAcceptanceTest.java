@@ -8,11 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.auth.dto.MemberLoginRequestDto;
+import roomescape.auth.dto.MemberSignUpRequestDto;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dto.ThemeRequestDto;
 import roomescape.time.dto.ReservationTimeRequestDto;
@@ -46,10 +49,28 @@ public class ReservationAcceptanceTest {
                 .when().post("/themes")
                 .then().statusCode(201);
 
+        RestAssured.given()
+                .log().all()
+                .body(new MemberSignUpRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .log().all()
+                .when().post("/signup")
+                .then().statusCode(201);
 
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("hi", LocalDate.MAX.toString(), 1, 1);
+        String token = RestAssured.given()
+                .log().all()
+                .body(new MemberLoginRequestDto("1234", "hotea@hotea.com"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .log().all()
+                .when().post("/login")
+                .then().statusCode(200).extract().cookie("token");
+
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto(LocalDate.MAX.toString(), 1, 1);
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header("Cookie", "token=" + token)
                 .body(reservationRequestDto)
                 .when().post("/reservations")
                 .then().statusCode(201);
@@ -78,7 +99,7 @@ public class ReservationAcceptanceTest {
     @Test
     void duplicateSave() {
         save();
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("브라운", LocalDate.MAX.toString(), 1, 1);
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto(LocalDate.MAX.toString(), 1, 1);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)

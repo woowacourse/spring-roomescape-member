@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.auth.domain.Member;
 import roomescape.exception.RoomEscapeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
@@ -33,10 +34,10 @@ public class ReservationService {
         return reservationDao.findAll();
     }
 
-    public Reservation save(final ReservationRequestDto requestDto) {
+    public Reservation save(final Member member, final ReservationRequestDto requestDto) {
         final ReservationTime reservationTime = reservationTimeDao.getById(requestDto.timeId());
         final Theme theme = themeDao.getById(requestDto.themeId());
-        final Reservation reservation = requestDto.toReservation(reservationTime, theme);
+        final Reservation reservation = requestDto.toReservation(member, reservationTime, theme);
 
         validateReservationAvailable(reservation);
 

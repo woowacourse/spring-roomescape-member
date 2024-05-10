@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
+import roomescape.auth.dao.MemberDao;
+import roomescape.auth.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.dao.ThemeDao;
@@ -32,10 +34,13 @@ class ReservationDaoTest {
     private ReservationTimeDao reservationTimeDao;
     @Autowired
     private ThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
+    private final Member member = new Member(1L, "hotea", "hotea@hotea.com");
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-    private final Reservation reservation = new Reservation(1L, "hotea", new ReservationDate(LocalDate.MAX.toString()), reservationTime, theme);
+    private final Reservation reservation = new Reservation(1L, member, new ReservationDate(LocalDate.MAX.toString()), reservationTime, theme);
 
     @DisplayName("특정 예약을 생성할 수 있다.")
     @Test
@@ -49,8 +54,10 @@ class ReservationDaoTest {
     @DisplayName("예약을 모두 조회할 수 있다.")
     @Test
     void findAll() {
+        Member memberWithPassword = new Member(1L, "hotea", "hotea@hotea.com", "password");
         reservationTimeDao.save(reservationTime);
         themeDao.save(theme);
+        memberDao.save(memberWithPassword);
         reservationDao.save(reservation);
 
         List<Reservation> reservationList = reservationDao.findAll();

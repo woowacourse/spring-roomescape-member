@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import roomescape.auth.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
@@ -32,7 +33,11 @@ public class ReservationDao {
 
     private final RowMapper<Reservation> rowMapper = ((resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("reservation_name"),
+            new Member(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("email")
+            ),
             new ReservationDate(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -48,12 +53,14 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         final String sql = """ 
-                SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, 
+                SELECT r.id AS reservation_id, r.date, 
                        rt.id AS time_id, rt.start_at AS time_value, 
-                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail 
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail, 
+                       m.id AS member_id, m.name, m.email 
                 FROM reservation r 
                 INNER JOIN reservation_time rt ON r.time_id = rt.id 
                 INNER JOIN theme t ON r.theme_id = t.id 
+                INNER JOIN member m ON r.member_id = m.id 
                 ORDER BY  r.date ASC, rt.start_at ASC;
                 """;
         return jdbcTemplate.query(sql, rowMapper);
@@ -61,7 +68,7 @@ public class ReservationDao {
 
     public long save(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", reservation.getReservationDate().getDate().toString())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
