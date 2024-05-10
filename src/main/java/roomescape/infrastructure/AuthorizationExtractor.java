@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthorizationExtractor {
 
-    public String extract(HttpServletRequest request) {
+    public String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
