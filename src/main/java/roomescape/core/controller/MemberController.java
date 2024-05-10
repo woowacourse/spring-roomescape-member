@@ -20,11 +20,10 @@ import roomescape.core.service.MemberService;
 @Controller
 public class MemberController {
     private final MemberService memberService;
-    private final CookieService cookieService;
+    private final CookieService cookieService = new CookieService();
 
-    public MemberController(final MemberService memberService, final CookieService cookieService) {
+    public MemberController(final MemberService memberService) {
         this.memberService = memberService;
-        this.cookieService = cookieService;
     }
 
     @GetMapping("/reservation")
