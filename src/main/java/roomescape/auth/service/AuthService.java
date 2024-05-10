@@ -6,6 +6,8 @@ import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.LoginResponse;
 import roomescape.auth.service.dto.SignUpRequest;
+import roomescape.exception.InvalidMemberException;
+import roomescape.exception.InvalidReservationException;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -36,8 +38,14 @@ public class AuthService {
     }
 
     public void signUp(SignUpRequest signUpRequest) {
-        //TODO: email 중복 검사
+        validateEmail(signUpRequest.email());
         memberRepository.save(new Member(signUpRequest.name(), signUpRequest.email(), signUpRequest.password(), Role.GUEST));
+    }
+
+    private void validateEmail(String email) {
+        if(memberRepository.existsByEmail(email)){
+            throw new InvalidMemberException("이미 가입된 이메일입니다.");
+        }
     }
 
     public LoginCheckResponse check(String token) {
