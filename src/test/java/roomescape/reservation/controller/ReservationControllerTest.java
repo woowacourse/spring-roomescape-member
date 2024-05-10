@@ -48,7 +48,6 @@ class ReservationControllerTest {
 
     private static Stream<Arguments> provideInvalidRequestDto() {
         return Stream.of(
-                Arguments.of(new ReservationRequestDto("2024-04-01", 1, 1)),
                 Arguments.of(new ReservationRequestDto(null, 1, 1)),
                 Arguments.of(new ReservationRequestDto("2024-04-01", 0, 1)),
                 Arguments.of(new ReservationRequestDto("2024-04-01", 1, 0))

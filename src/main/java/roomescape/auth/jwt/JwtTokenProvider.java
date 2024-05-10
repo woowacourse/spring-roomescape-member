@@ -9,7 +9,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import roomescape.exception.RoomEscapeException;
+import roomescape.exception.AuthorizationException;
 import roomescape.member.domain.Member;
 
 @Component
@@ -48,7 +48,7 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token).getPayload();
             return claims.getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new RoomEscapeException("적합하지 않은 토큰입니다.");
+            throw new AuthorizationException("토큰을 파싱하는 과정에서 실패하였습니다.");
         }
     }
 }

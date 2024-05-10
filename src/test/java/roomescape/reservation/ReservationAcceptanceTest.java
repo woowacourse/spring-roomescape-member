@@ -98,11 +98,49 @@ public class ReservationAcceptanceTest {
 
     @Test
     void duplicateSave() {
-        save();
+        ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto("10:00");
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservationTimeRequestDto)
+                .when().post("/times")
+                .then().statusCode(201);
+
+        ThemeRequestDto themeRequestDto = new ThemeRequestDto("정글모험", "정글모험 설명", "정글모험 이미지");
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(themeRequestDto)
+                .when().post("/themes")
+                .then().statusCode(201);
+
+        RestAssured.given()
+                .log().all()
+                .body(new MemberRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .log().all()
+                .when().post("/signup")
+                .then().statusCode(201);
+
+        String token = RestAssured.given()
+                .log().all()
+                .body(new LoginRequestDto("1234", "hotea@hotea.com"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .log().all()
+                .when().post("/login")
+                .then().statusCode(200).extract().cookie("token");
+
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(LocalDate.MAX.toString(), 1, 1);
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header("Cookie", "token=" + token)
+                .body(reservationRequestDto)
+                .when().post("/reservations")
+                .then().statusCode(201);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header("Cookie", "token=" + token)
                 .body(reservationRequestDto)
                 .when().post("/reservations")
                 .then().statusCode(400);
