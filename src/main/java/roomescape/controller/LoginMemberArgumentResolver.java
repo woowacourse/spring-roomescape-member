@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private static final AuthorizationException AUTHORIZATION_EXCEPTION = new AuthorizationException();
+    private static final AuthorizationException AUTHORIZATION_EXCEPTION = AuthorizationException.getInstance();
     private final MemberService memberService;
 
     public LoginMemberArgumentResolver(final MemberService memberService) {
