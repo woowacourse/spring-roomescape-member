@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.controller.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
+import roomescape.infrastructure.CookieManager;
 import roomescape.infrastructure.auth.Token;
 import roomescape.service.LoginService;
 import roomescape.service.MemberService;
