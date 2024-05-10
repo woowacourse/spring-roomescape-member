@@ -12,8 +12,8 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberToken;
 import roomescape.member.dto.LogInRequest;
 import roomescape.member.dto.MemberInfo;
-import roomescape.reservation.handler.exception.CustomBadRequest;
-import roomescape.reservation.handler.exception.CustomException;
+import roomescape.handler.exception.CustomBadRequest;
+import roomescape.handler.exception.CustomException;
 import java.util.Arrays;
 import java.util.Date;
 

@@ -1,7 +1,7 @@
 package roomescape.member.domain;
 
-import roomescape.reservation.handler.exception.CustomBadRequest;
-import roomescape.reservation.handler.exception.CustomException;
+import roomescape.handler.exception.CustomBadRequest;
+import roomescape.handler.exception.CustomException;
 import java.util.regex.Pattern;
 
 public class Member {

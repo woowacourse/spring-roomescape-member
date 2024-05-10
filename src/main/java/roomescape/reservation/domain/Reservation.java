@@ -3,8 +3,8 @@ package roomescape.reservation.domain;
 import java.util.Objects;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import roomescape.reservation.handler.exception.CustomException;
-import roomescape.reservation.handler.exception.CustomBadRequest;
+import roomescape.handler.exception.CustomException;
+import roomescape.handler.exception.CustomBadRequest;
 
 public class Reservation {
 

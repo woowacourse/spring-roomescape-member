@@ -11,9 +11,9 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.AvailableTimeResponse;
-import roomescape.reservation.handler.exception.CustomBadRequest;
-import roomescape.reservation.handler.exception.CustomException;
-import roomescape.reservation.handler.exception.CustomInternalServerError;
+import roomescape.handler.exception.CustomBadRequest;
+import roomescape.handler.exception.CustomException;
+import roomescape.handler.exception.CustomInternalServerError;
 
 @Service
 public class ReservationService {

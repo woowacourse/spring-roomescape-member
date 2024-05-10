@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationRequest;
-import roomescape.reservation.handler.exception.CustomException;
+import roomescape.handler.exception.CustomException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
