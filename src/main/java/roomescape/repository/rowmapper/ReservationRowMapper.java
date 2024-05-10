@@ -13,7 +13,11 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
     public Reservation mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                resultSet.getLong("member_id"),
+                resultSet.getString("member_email"),
+                resultSet.getString("member_password"),
+                resultSet.getString("member_name"),
+                resultSet.getString("member_role"),
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
                 resultSet.getString("theme_description"),

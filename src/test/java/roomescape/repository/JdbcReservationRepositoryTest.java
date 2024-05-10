@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
+import roomescape.repository.rowmapper.MemberRowMapper;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 import roomescape.repository.rowmapper.ThemeRowMapper;
@@ -35,6 +36,7 @@ class JdbcReservationRepositoryTest {
     private JdbcReservationRepository reservationRepository;
     private JdbcReservationTimeRepository reservationTimeRepository;
     private JdbcThemeRepository themeRepository;
+    private JdbcMemberRepository memberRepository;
 
     private final String startAt1 = "13:00";
     private final String startAt2 = "15:00";
@@ -45,14 +47,17 @@ class JdbcReservationRepositoryTest {
     private final Theme theme1 = new Theme(null, "공포", "난이도 1", "hi.jpg");
     private final Theme theme2 = new Theme(null, "우테코", "난이도 2", "hi.jpg");
 
+    private final Member member1 = new Member(null, "t1@t1.com", "123", "러너덕", "MEMBER");
+    private final Member member2 = new Member(null, "t2@t2.com", "124", "재즈", "MEMBER");
+
     private final Reservation reservation1 = new Reservation(
-            null, new ReservationName("안돌"),
+            null, new Member(1L, "t1@t1.com", "1234", "러너덕", "MEMBER"),
             new Theme(1L, (ThemeName) null, null, null),
             new ReservationDate("2023-09-08"),
             new ReservationTime(1L, (LocalTime) null)
     );
     private final Reservation reservation2 = new Reservation(
-            null, new ReservationName("재즈"),
+            null, new Member(2L, "t2@t2.com", "12345", "재즈", "MEMBER"),
             new Theme(2L, (ThemeName) null, null, null),
             new ReservationDate("2024-04-22"),
             new ReservationTime(2L, (LocalTime) null)
@@ -60,17 +65,20 @@ class JdbcReservationRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        memberRepository = new JdbcMemberRepository(dataSource, new MemberRowMapper());
         reservationRepository = new JdbcReservationRepository(dataSource, new ReservationRowMapper());
         reservationTimeRepository = new JdbcReservationTimeRepository(dataSource, new ReservationTimeRowMapper());
         themeRepository = new JdbcThemeRepository(dataSource, new ThemeRowMapper());
-        initializeTimesAndThemeData();
+        initializeTimesAndThemeAndMemberData();
     }
 
-    private void initializeTimesAndThemeData() {
+    private void initializeTimesAndThemeAndMemberData() {
         reservationTimeRepository.insertReservationTime(time1);
         reservationTimeRepository.insertReservationTime(time2);
         themeRepository.insertTheme(theme1);
         themeRepository.insertTheme(theme2);
+        memberRepository.insertMember(member1);
+        memberRepository.insertMember(member2);
     }
 
     @Test
@@ -90,7 +98,7 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = reservationRepository.insertReservation(reservation2);
 
         assertAll(
-                () -> assertThat(reservation.getName()).isEqualTo("재즈"),
+                () -> assertThat(reservation.getMemberName()).isEqualTo("재즈"),
                 () -> assertThat(reservation.getTheme().getId()).isEqualTo(2),
                 () -> assertThat(reservation.getTheme().getName()).isEqualTo("우테코"),
                 () -> assertThat(reservation.getTheme().getDescription()).isEqualTo("난이도 2"),
@@ -163,7 +171,7 @@ class JdbcReservationRepositoryTest {
     void is_reservation_exists_by_date_and_time_id_and_theme_id() {
         Reservation inputReservation = new Reservation(
                 3L,
-                new ReservationName("재즈덕"),
+                new Member(3L, "t3@t3.com", "12", "재즈덕", "MEMBER"),
                 new Theme(1L, (ThemeName) null, null, null),
                 new ReservationDate("2023-09-08"),
                 new ReservationTime(1L, (LocalTime) null)

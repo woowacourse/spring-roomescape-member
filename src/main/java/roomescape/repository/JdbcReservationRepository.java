@@ -29,7 +29,11 @@ public class JdbcReservationRepository {
         String sql = """
                 SELECT 
                 r.id AS reservation_id, 
-                r.name, 
+                m.id AS member_id,
+                m.email AS member_email,
+                m.password AS member_password,
+                m.name AS member_name,
+                m.role AS member_role,
                 th.id AS theme_id,
                 th.name AS theme_name,
                 th.description AS theme_description,
@@ -38,6 +42,7 @@ public class JdbcReservationRepository {
                 t.id AS time_id, 
                 t.start_at AS time_value 
                 FROM reservation AS r 
+                INNER JOIN member AS m ON m.id = r.member_id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id;
                 """;
@@ -46,7 +51,7 @@ public class JdbcReservationRepository {
 
     public Reservation insertReservation(Reservation reservation) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("theme_id", reservation.getThemeId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTimeId());
@@ -99,7 +104,11 @@ public class JdbcReservationRepository {
         String sql = """
                 SELECT 
                 r.id AS reservation_id, 
-                r.name, 
+                m.id AS member_id,
+                m.email AS member_email,
+                m.password AS member_password,
+                m.name AS member_name,
+                m.role AS member_role,
                 th.id AS theme_id,
                 th.name AS theme_name,
                 th.description AS theme_description,
@@ -108,6 +117,7 @@ public class JdbcReservationRepository {
                 t.id AS time_id, 
                 t.start_at AS time_value 
                 FROM reservation AS r 
+                INNER JOIN member AS m ON m.id = r.member_id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id 
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.id = :savedId;

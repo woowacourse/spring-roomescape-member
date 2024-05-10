@@ -15,7 +15,8 @@ public class MemberRowMapper implements RowMapper<Member> {
                 resultSet.getLong("id"),
                 resultSet.getString("email"),
                 resultSet.getString("password"),
-                resultSet.getString("name")
+                resultSet.getString("name"),
+                resultSet.getString("role")
         );
     }
 }

@@ -10,14 +10,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.rowmapper.MemberRowMapper;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 import roomescape.repository.rowmapper.ThemeRowMapper;
@@ -34,6 +34,7 @@ class JdbcReservationTimeRepositoryTest {
     private JdbcReservationTimeRepository reservationTimeRepository;
     private JdbcThemeRepository themeRepository;
     private JdbcReservationRepository reservationRepository;
+    private JdbcMemberRepository memberRepository;
 
     private final String startAt1 = "13:00";
     private final String startAt2 = "15:00";
@@ -46,12 +47,16 @@ class JdbcReservationTimeRepositoryTest {
     private final Theme theme1 = new Theme(null, "공포", "난이도 1", "hi.jpg");
     private final Theme theme2 = new Theme(null, "우테코", "난이도 2", "hi.jpg");
 
+    private final Member member1 = new Member(null, "t1@t1.com", "123", "러너덕", "MEMBER");
+    private final Member member2 = new Member(null, "t2@t2.com", "124", "재즈", "MEMBER");
+    private final Member member3 = new Member(null, "t3@t3.com", "125", "재즈덕", "MEMBER");
+
     @BeforeEach
     void setUp() {
-        RowMapper<ReservationTime> rowMapper = new ReservationTimeRowMapper();
         reservationTimeRepository = new JdbcReservationTimeRepository(dataSource, new ReservationTimeRowMapper());
         themeRepository = new JdbcThemeRepository(dataSource, new ThemeRowMapper());
         reservationRepository = new JdbcReservationRepository(dataSource, new ReservationRowMapper());
+        memberRepository = new JdbcMemberRepository(dataSource, new MemberRowMapper());
     }
 
     @DisplayName("저장된 모든 예약 시간 정보를 가져온다.")
@@ -146,13 +151,16 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime savedTime3 = reservationTimeRepository.insertReservationTime(time3);
         Theme savedTheme1 = themeRepository.insertTheme(theme1);
         Theme savedTheme2 = themeRepository.insertTheme(theme2);
+        Member savedMember1 = memberRepository.insertMember(member1);
+        Member savedMember2 = memberRepository.insertMember(member2);
+        Member savedMember3 = memberRepository.insertMember(member3);
 
         Reservation reservation1 = new Reservation(
-                null, new ReservationName("재즈"), savedTheme1, new ReservationDate("2024-05-01"), savedTime1);
+                null, savedMember1, savedTheme1, new ReservationDate("2024-05-01"), savedTime1);
         Reservation reservation2 = new Reservation(
-                null, new ReservationName("러너덕"), savedTheme1, new ReservationDate("2024-05-01"), savedTime2);
+                null, savedMember2, savedTheme1, new ReservationDate("2024-05-01"), savedTime2);
         Reservation reservation3 = new Reservation(
-                null, new ReservationName("재즈덕"), savedTheme2, new ReservationDate("2024-05-02"), savedTime3);
+                null, savedMember3, savedTheme2, new ReservationDate("2024-05-02"), savedTime3);
         reservationRepository.insertReservation(reservation1);
         reservationRepository.insertReservation(reservation2);
         reservationRepository.insertReservation(reservation3);
