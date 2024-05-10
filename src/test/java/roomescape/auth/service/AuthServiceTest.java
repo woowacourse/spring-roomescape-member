@@ -18,12 +18,12 @@ import roomescape.util.MemberFixture;
 @ExtendWith(SpringExtension.class)
 class AuthServiceTest {
 
-    private TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
     private final AuthService authService;
     private final MemberRepository memberRepository;
 
     AuthServiceTest() {
-        this.tokenProvider = new TokenProvider();
+        this.tokenProvider = new TokenProvider("secretKey", 360000);
         this.memberRepository = new FakeMemberRepository();
         this.authService = new AuthService(memberRepository, tokenProvider);
     }
@@ -83,12 +83,11 @@ class AuthServiceTest {
     @DisplayName("토큰으로부터 얻은 회원 정보가 존재하지 않는 경우, 예외를 반환한다.")
     void getMemberAuthInfo_WhenMemberNotExists() {
         // given
-        Member member = MemberFixture.getOne();
-        String token = tokenProvider.createToken(member);
+        String token = tokenProvider.createToken(MemberFixture.getOneWithId(1L));
 
         // when & then
         assertThatThrownBy(() -> authService.getMemberAuthInfo(token))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
+                .hasMessage("로그인하려는 계정이 존재하지 않습니다. 회원가입 후 로그인해주세요.");
     }
 }

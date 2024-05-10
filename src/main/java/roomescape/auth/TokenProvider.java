@@ -14,10 +14,14 @@ public class TokenProvider {
 
     private static final String MEMBER_ID_CLAIM = "memberId";
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final String secretKey;
+    private final long validityInMilliseconds;
+
+    public TokenProvider(@Value("${security.jwt.token.secret-key}") final String secretKey,
+                         @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     public String createToken(final Member member) {
         Date now = new Date();
