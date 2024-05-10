@@ -270,9 +270,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
             ON r.theme_id = t.id
             LEFT JOIN member as m
             ON r.member_id = m.id
-            WHERE m.id = ? AND t.id = ? AND r.date BETWEEN ? AND ?
+            WHERE r.date BETWEEN ? AND ?
         """;
-        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER, memberId, themeId, dateFrom, dateTo);
 
+        if (memberId != null) {
+            selectQuery += " AND m.id = " + memberId;
+        }
+        if (themeId != null) {
+            selectQuery += " AND t.id = " + themeId;
+        }
+        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER, dateFrom, dateTo);
     }
 }
