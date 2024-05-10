@@ -1,7 +1,5 @@
 package roomescape.web.security;
 
-import java.util.Arrays;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,9 +13,11 @@ import roomescape.infrastructure.authentication.UnauthorizedException;
 public class MemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
+    private final CookieTokenExtractor extractor;
 
-    public MemberIdArgumentResolver(AuthService authService) {
+    public MemberIdArgumentResolver(AuthService authService, CookieTokenExtractor extractor) {
         this.authService = authService;
+        this.extractor = extractor;
     }
 
     @Override
@@ -33,17 +33,12 @@ public class MemberIdArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
+        String cookieToken = extractor.extract(request);
+        if (cookieToken == null) {
             throw new UnauthorizedException();
         }
 
-        Cookie tokenCookie = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
-                .findFirst()
-                .orElseThrow(UnauthorizedException::new);
-
-        AuthenticatedMemberProfile profile = authService.authorize(tokenCookie.getValue());
+        AuthenticatedMemberProfile profile = authService.authorize(cookieToken);
 
         return profile.id();
     }

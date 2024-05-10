@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.infrastructure.authentication.AuthService;
+import roomescape.web.security.CookieTokenExtractor;
 
 @WebMvcTest(GlobalExceptionHandlingTest.TestHandler.class)
 class GlobalExceptionHandlingTest {
@@ -35,6 +36,9 @@ class GlobalExceptionHandlingTest {
 
     @MockBean
     AuthService authService;
+
+    @MockBean
+    CookieTokenExtractor extractor;
 
     @Autowired
     MockMvc mockMvc;
