@@ -198,7 +198,6 @@ public class ReservationRepository {
         final String selectQuery = """
             SELECT
                 r.id as reservation_id,
-                r.name,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,
