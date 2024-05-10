@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MemberAcceptanceTest extends BasicAcceptanceTest {
     @DisplayName("모든 사용자를 조회한다")
-    @Sql("/test-data/save-members.sql")
+    @Sql("/test-data/members.sql")
     @Test
     void when_findAllMembers_then_returnMembers() {
         // when
