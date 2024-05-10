@@ -3,6 +3,7 @@ package roomescape.util.exception;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
+import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<Void> handle(final AccessDeniedException exception) {
+        logger.error(exception.getMessage(), exception);
+        return ResponseEntity.notFound().build();
+    }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handle(final HttpMessageNotReadableException exception) {
