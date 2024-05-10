@@ -33,8 +33,8 @@
 ## 4단계 - 사용자 로그인
 - [ ] 로그인 기능을 구현한다.
   - [x] GET /login 요청 시 로그인 폼 페이지를 응답한다.
-  - [ ] POST /login 요청시, 폼에 입력한 email, password 값을 body에 포함한다.
-  - [ ] 로그인 시 응답 Cookie의 "token"에 토큰이 포함되도록 한다.
+  - [x] POST /login 요청시, 폼에 입력한 email, password 값을 body에 포함한다.
+  - [x] 로그인 시 응답 Cookie의 "token"에 토큰이 포함되도록 한다.
   
 - [ ] 사용자 도메인을 추가한다.
   - [ ] 사용자는 name, email, password 정보를 가진다.
