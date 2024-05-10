@@ -1,6 +1,8 @@
 package roomescape.config.util;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
+import roomescape.service.exception.AuthorizationException;
 
 public class CookieExtractor {
 
@@ -8,11 +10,10 @@ public class CookieExtractor {
     }
 
     public static String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new AuthorizationException("토큰이 없습니다."));
     }
 }
