@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private String secretKey; // TODO: Base64로 인코딩 하기
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
@@ -25,5 +25,13 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public String getPayload(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject(); // TODO: 예외 터지는 에지 케이스 있는지 확인하기
     }
 }

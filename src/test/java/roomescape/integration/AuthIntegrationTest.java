@@ -1,11 +1,15 @@
 package roomescape.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import roomescape.service.dto.LoginCheckResponse;
 import roomescape.service.dto.LoginRequest;
 
 class AuthIntegrationTest extends IntegrationTest {
@@ -37,7 +41,7 @@ class AuthIntegrationTest extends IntegrationTest {
     @DisplayName("인증 정보 조회 API")
     class LoginCheck {
         @Test
-        void 로그인한_사용자_정보를_조회할_수_있다() {
+        void 토큰으로_로그인한_사용자_정보를_조회할_수_있다() {
             String cookie = RestAssured.given().log().all()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(new LoginRequest("admin@email.com", "password"))
@@ -55,4 +59,25 @@ class AuthIntegrationTest extends IntegrationTest {
             assertThat(response.getName()).isEqualTo("어드민");
         }
     }
+
+    @Test
+    void 토큰이_존재하지_않으면_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void 토큰이_유효하지_않으면_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .header("Cookie", new Cookie("token", "wrongtoken"))
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // TODO: 만료된 토큰 테스트하기
 }
