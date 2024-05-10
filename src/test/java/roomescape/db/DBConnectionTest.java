@@ -19,15 +19,15 @@ public class DBConnectionTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    @DisplayName("데이터베이스 연결 확인")
+    @DisplayName("데이터베이스 연결을 확인한다.")
     void db_connection() {
         try (Connection connection = jdbcTemplate.getDataSource()
-                                                 .getConnection()) {
+                .getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
             assertThat(connection.getMetaData()
-                                 .getTables(null, null, "RESERVATION", null)
-                                 .next()).isTrue();
+                    .getTables(null, null, "RESERVATION", null)
+                    .next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
