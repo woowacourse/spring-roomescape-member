@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -19,6 +20,7 @@ import roomescape.controller.response.ReservationResponse;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
     @Autowired
@@ -83,7 +85,7 @@ class ReservationControllerTest {
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/reservations/9");
+                .header("Location", "/reservations/7");
     }
 
     @DisplayName("예약을 추가할 수 있다.")
@@ -109,7 +111,7 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/reservations/8");
+                .header("Location", "/reservations/7");
     }
 
     @DisplayName("존재하는 예약이라면 예약을 삭제할 수 있다.")
