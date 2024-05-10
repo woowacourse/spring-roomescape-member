@@ -23,8 +23,8 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
 
     @BeforeEach
     void SetUp() {
-        userToken = LoginUtil.login("email1", "qq1");
-        adminToken = LoginUtil.login("admin", "admin");
+        userToken = LoginUtil.login("email1", "qq1", 200);
+        adminToken = LoginUtil.login("admin", "admin", 200);
     }
 
     @TestFactory
