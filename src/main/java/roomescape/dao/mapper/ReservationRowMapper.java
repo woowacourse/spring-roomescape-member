@@ -17,9 +17,11 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
     @Override
     public Reservation mapRow(final ResultSet rs, final int rowNum) throws SQLException {
         final long reservationId = rs.getLong("reservation_id");
-        final String date = rs.getString("date");
+        final String date = rs.getString("reservation_date");
+
         final long timeId = rs.getLong("time_id");
         final String startAt = rs.getString("time_value");
+
         final long themeId = rs.getLong("theme_id");
         final String themeName = rs.getString("theme_name");
         final String description = rs.getString("theme_description");

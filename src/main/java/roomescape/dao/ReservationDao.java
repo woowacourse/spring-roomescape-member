@@ -34,6 +34,8 @@ public class ReservationDao {
                 .addValue("time_id", reservation.getTime()
                         .getId())
                 .addValue("theme_id", reservation.getTheme()
+                        .getId())
+                .addValue("member_id", reservation.getMember()
                         .getId());
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();
@@ -54,10 +56,6 @@ public class ReservationDao {
         return isExistByCondition("theme_id", themeId);
     }
 
-    public boolean isExistById(final long id) {
-        return isExistByCondition("id", id);
-    }
-
     private boolean isExistByCondition(final String conditionColumn, final Object conditionValue) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE " + conditionColumn + " = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, conditionValue));
@@ -65,21 +63,26 @@ public class ReservationDao {
 
     public List<Reservation> getAll() {
         final String sql = """
+
                 SELECT
-                r.id AS reservation_id,
-                r.name,
-                r.date,
-                t.id AS time_id,
-                t.start_at AS time_value,
-                th.id AS theme_id,
-                th.name AS theme_name,
-                th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                INNER JOIN theme AS th 
-                ON r.theme_id = th.id 
+                     r.id AS reservation_id,
+                     r.date AS reservation_date,
+                     t.id AS time_id,
+                     t.start_at AS time_value,
+                     th.id AS theme_id,
+                     th.name AS theme_name,
+                     th.description AS theme_description,
+                     th.thumbnail AS theme_thumbnail,
+                     m.id AS member_id,
+                     m.name AS member_name,
+                     m.email AS member_email,
+                     m.password AS member_password
+                FROM
+                     reservation AS r
+                     INNER JOIN reservation_time AS t ON r.time_id = t.id
+                     INNER JOIN theme AS th ON r.theme_id = th.id
+                     INNER JOIN member AS m ON r.member_id = m.id;
+                 
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
