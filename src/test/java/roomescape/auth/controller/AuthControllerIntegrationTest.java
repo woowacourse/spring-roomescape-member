@@ -51,8 +51,8 @@ class AuthControllerIntegrationTest {
   @Test
   void checkLogin() {
     // Given
-    String name = "어드민";
-    LoginRequest request = new LoginRequest("user@mail.com", "1234");
+    String name = "켈리";
+    LoginRequest request = new LoginRequest("kelly@example.com", name);
     String token = jwtTokenProvider.createToken(request.email(), name);
 
     // Then

@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.domain.Member;
+import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -28,12 +30,13 @@ class SaveReservationRequestTest {
     );
 
     // When
-    final Reservation reservation = request.toReservation("켈리", reservationTime, theme);
+    final Reservation reservation = request.toReservation(Member.of(new Name("켈리")),
+        reservationTime, theme);
 
     // Then
     assertAll(
         () -> assertThat(reservation.getDate().getValue()).isEqualTo(request.date()),
-        () -> assertThat(reservation.getClientName().getValue()).isEqualTo(clientName),
+        () -> assertThat(reservation.getMember().getName().getValue()).isEqualTo(clientName),
         () -> assertThat(reservation.getTime().getId()).isEqualTo(reservationTime.getId()),
         () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(reservationTime.getStartAt())
     );

@@ -42,7 +42,7 @@ public class ReservationService {
     validateReservationDuplication(request);
 
     return reservationRepository.save(
-        request.toReservation(member.getName(), reservationTime, theme));
+        request.toReservation(member, reservationTime, theme));
   }
 
   private void validateReservationDuplication(final SaveReservationRequest request) {

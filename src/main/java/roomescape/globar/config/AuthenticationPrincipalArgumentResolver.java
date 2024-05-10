@@ -2,23 +2,21 @@ package roomescape.globar.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Map;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.domain.Member;
-import roomescape.globar.infra.JwtTokenProvider;
+import roomescape.auth.service.AuthService;
 
 @Component
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
-  private final JwtTokenProvider jwtTokenProvider;
+  private final AuthService authService;
 
-  public AuthenticationPrincipalArgumentResolver(JwtTokenProvider jwtTokenProvider) {
-    this.jwtTokenProvider = jwtTokenProvider;
+  public AuthenticationPrincipalArgumentResolver(AuthService authService) {
+    this.authService = authService;
   }
 
   @Override
@@ -36,9 +34,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     Cookie[] cookies = request.getCookies();
     String token = extractTokenFromCookie(cookies);
 
-    Map<String, String> payload = jwtTokenProvider.getPayload(token);
-
-    return new Member(payload.get("name"), payload.get("email"), null);
+    return authService.findMember(token);
   }
 
   private String extractTokenFromCookie(Cookie[] cookies) {

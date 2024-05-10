@@ -47,14 +47,15 @@ class ReservationServiceIntegrationTest {
 
     // When
     final Reservation reservation = reservationService.saveReservation(
-        new Member("켈리", "brown@mail.com", "1234"), saveReservationRequest);
+        Member.createInstance(1L, "켈리", "kelly@example.com", "password123"),
+        saveReservationRequest);
 
     // Then
     final List<Reservation> reservations = reservationService.getReservations();
     assertAll(
         () -> assertThat(reservations).hasSize(17),
         () -> assertThat(reservation.getId()).isEqualTo(17L),
-        () -> assertThat(reservation.getClientName().getValue()).isEqualTo("켈리"),
+        () -> assertThat(reservation.getMember().getName().getValue()).isEqualTo("켈리"),
         () -> assertThat(reservation.getDate().getValue()).isEqualTo(date),
         () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(9, 30))
     );
@@ -69,7 +70,7 @@ class ReservationServiceIntegrationTest {
 
     // When & Then
     assertThatThrownBy(
-        () -> reservationService.saveReservation(new Member("브라운", "brown@mail.com", "1234"),
+        () -> reservationService.saveReservation(Member.of("브라운", "brown@mail.com", "1234"),
             saveReservationRequest))
         .isInstanceOf(NoSuchElementException.class)
         .hasMessage("해당 id의 예약 시간이 존재하지 않습니다.");
@@ -107,7 +108,7 @@ class ReservationServiceIntegrationTest {
 
     // When & Then
     assertThatThrownBy(
-        () -> reservationService.saveReservation(new Member("브라운", "brown@mail.com", "1234"),
+        () -> reservationService.saveReservation(Member.of("브라운", "brown@mail.com", "1234"),
             saveReservationRequest))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("이미 해당 날짜/시간의 테마 예약이 있습니다.");

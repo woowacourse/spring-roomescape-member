@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.auth.domain.Member;
+import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.SaveReservationRequest;
 import roomescape.reservation.repositoy.ReservationRepository;
@@ -78,12 +79,13 @@ class ReservationServiceTest {
     given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(savedReservationTime));
     given(themeRepository.findById(1L)).willReturn(Optional.of(savedTheme));
     given(reservationRepository.save(
-        saveReservationRequest.toReservation("켈리", savedReservationTime, savedTheme))).willReturn(
+        saveReservationRequest.toReservation(Member.of(new Name("켈리")), savedReservationTime,
+            savedTheme))).willReturn(
         savedReservation);
 
     // When
     final Reservation reservation = reservationService.saveReservation(
-        new Member("켈리", "kelly@mail.com", "1234"), saveReservationRequest);
+        Member.of("켈리", "kelly@mail.com", "1234"), saveReservationRequest);
 
     // Then
     assertThat(reservation).isEqualTo(savedReservation);
@@ -100,7 +102,7 @@ class ReservationServiceTest {
 
     // When & Then
     assertThatThrownBy(
-        () -> reservationService.saveReservation(new Member("브라운", "brown@mail.com", "1234"),
+        () -> reservationService.saveReservation(Member.of("브라운", "brown@mail.com", "1234"),
             saveReservationRequest))
         .isInstanceOf(NoSuchElementException.class)
         .hasMessage("해당 id의 예약 시간이 존재하지 않습니다.");
@@ -160,7 +162,7 @@ class ReservationServiceTest {
 
     // When & Then
     assertThatThrownBy(
-        () -> reservationService.saveReservation(new Member("브라운", "brown@mail.com", "1234"),
+        () -> reservationService.saveReservation(Member.of("브라운", "brown@mail.com", "1234"),
             saveReservationRequest))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("이미 해당 날짜/시간의 테마 예약이 있습니다.");
