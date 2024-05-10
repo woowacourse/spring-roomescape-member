@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.*;
+import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.MemberReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.exception.OperationNotAllowedException;
@@ -18,13 +19,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -36,11 +40,25 @@ public class ReservationService {
 
     public ReservationResponse addMemberReservation(MemberReservationRequest request, Member member) {
         ReservationTime reservationTime = findValidatedReservationTime(request.timeId());
-        validateNotPast(request.date(), reservationTime.getStartAt());
-        validateNotDuplicatedTime(request.date(), request.timeId(), request.themeId());
         Theme theme = findValidatedTheme(request.themeId());
+        validateNotPast(request.date(), reservationTime.getStartAt());
+        validateNotDuplicatedReservation(request.date(), request.timeId(), request.themeId());
 
         Reservation reservation = new Reservation(member, request.date(), reservationTime, theme);
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        return ReservationResponse.from(savedReservation);
+    }
+
+    public ReservationResponse addAdminReservation(AdminReservationRequest request) {
+        System.out.println("무아호 여기 왔나?");
+        ReservationTime reservationTime = findValidatedReservationTime(request.timeId());
+        Theme theme = findValidatedTheme(request.themeId());
+        Member customer = findValidatedMember(request.memberId());
+        validateNotPast(request.date(), reservationTime.getStartAt());
+        validateNotDuplicatedReservation(request.date(), request.timeId(), request.themeId());
+
+        Reservation reservation = new Reservation(customer, request.date(), reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
@@ -66,7 +84,12 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("아이디에 해당하는 테마를 찾을 수 없습니다."));
     }
 
-    private void validateNotDuplicatedTime(LocalDate date, Long timeId, Long themeId) {
+    private Member findValidatedMember(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("아이디에 해당하는 회원을 찾을 수 없습니다."));
+    }
+
+    private void validateNotDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new OperationNotAllowedException("예약이 이미 존재합니다.");
         }
