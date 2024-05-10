@@ -26,7 +26,10 @@ public class MemberDao {
     }
 
     public List<Member> getAll() {
-        return jdbcTemplate.query("SELECT * FROM member", memberRowMapper);
+        return jdbcTemplate.query(
+                "SELECT member.id AS member_id, member_name, email, password, member_role FROM member",
+                memberRowMapper
+        );
     }
 
     public Optional<Member> findById(final long id) {
