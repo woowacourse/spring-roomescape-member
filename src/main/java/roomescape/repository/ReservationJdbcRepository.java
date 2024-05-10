@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -248,7 +249,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             LocalDate dateFrom,
             LocalDate dateTo
     ) {
-        String selectQuery = """
+        String sql = """
             SELECT
                 r.id as reservation_id,
                 r.member_id,
@@ -268,17 +269,36 @@ public class ReservationJdbcRepository implements ReservationRepository {
             ON r.time_id = rt.id
             LEFT JOIN theme as t
             ON r.theme_id = t.id
-            LEFT JOIN member as m
+            RIGHT JOIN member as m
             ON r.member_id = m.id
-            WHERE r.date BETWEEN ? AND ?
         """;
 
-        if (memberId != null) {
-            selectQuery += " AND m.id = " + memberId;
+        List<Object> param = new ArrayList<>();
+
+        if (dateFrom != null || dateTo != null || themeId != null || memberId != null) {
+            sql += "WHERE";
+        }
+
+        if (dateFrom != null) {
+            sql += " r.date >= ? AND";
+            param.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sql += " r.date <= ? AND";
+            param.add(dateTo);
         }
         if (themeId != null) {
-            selectQuery += " AND t.id = " + themeId;
+            sql += " t.id = ? AND";
+            param.add(themeId);
         }
-        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER, dateFrom, dateTo);
+        if (memberId != null) {
+            sql += " m.id = ? AND";
+            param.add(memberId);
+        }
+        if (dateFrom != null || dateTo != null || themeId != null || memberId != null) {
+            sql = sql.substring(0, sql.length() - 4);
+        }
+
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, param.toArray());
     }
 }
