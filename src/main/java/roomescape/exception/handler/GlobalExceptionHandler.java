@@ -1,6 +1,7 @@
 package roomescape.exception.handler;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -56,4 +57,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidPassword(InvalidPasswordException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<String> handleInvalidPassword(EmptyResultDataAccessException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
 }
