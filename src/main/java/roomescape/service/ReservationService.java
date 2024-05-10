@@ -14,7 +14,6 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
-import roomescape.service.dto.request.AdminReservationRequest;
 import roomescape.service.dto.request.LoginUser;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
@@ -55,22 +54,22 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    public ReservationResponse createReservation(AdminReservationRequest adminReservationRequest, LoginUser loginUser) {
-        Member member = memberRepository.findById(adminReservationRequest.memberId())
+    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
+        Member member = memberRepository.findById(reservationRequest.memberId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
 
-        ReservationTime reservationTime = reservationTimeRepository.findById(adminReservationRequest.timeId())
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
 
-        Theme theme = themeRepository.findById(adminReservationRequest.themeId())
+        Theme theme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_THEME));
 
-        if (reservationRepository.existByTimeIdAndDate(adminReservationRequest.themeId(), adminReservationRequest.date())) {
+        if (reservationRepository.existByTimeIdAndDate(reservationRequest.themeId(), reservationRequest.date())) {
             throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
         }
-        validateIsPastTime(adminReservationRequest.date(), reservationTime);
+        validateIsPastTime(reservationRequest.date(), reservationTime);
 
-        Reservation reservation = adminReservationRequest.toEntity(member, reservationTime, theme);
+        Reservation reservation = reservationRequest.toEntity(member, reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }

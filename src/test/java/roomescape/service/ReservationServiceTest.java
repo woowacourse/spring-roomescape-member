@@ -13,11 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
+import roomescape.service.dto.request.MemberRequest;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.request.ThemeRequest;
+import roomescape.service.dto.response.MemberResponse;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
 import roomescape.service.dto.response.ThemeResponse;
@@ -38,6 +42,9 @@ class ReservationServiceTest {
     @Autowired
     private ThemeService themeService;
 
+    @Autowired
+    private MemberService memberService;
+
     @DisplayName("예약 생성 테스트")
     @Test
     void createReservation() {
@@ -47,12 +54,16 @@ class ReservationServiceTest {
         ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
         ThemeResponse theme = themeService.createTheme(themeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), reservationTime.id(), theme.id());
+        MemberRequest memberRequest = new MemberRequest("sudal", "sudal@email.com", "sudal123", Role.ADMIN);
+        MemberResponse member = memberService.createMember(memberRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2030, 12, 12), reservationTime.id(),
+                theme.id(), member.id());
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
 
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo("브라운"),
-                () -> assertThat(reservationResponse.date()).isEqualTo(LocalDate.of(2999, 8, 5))
+                () -> assertThat(reservationResponse.member()).isEqualTo(member),
+                () -> assertThat(reservationResponse.time()).isEqualTo(reservationTime)
         );
     }
 
@@ -62,7 +73,7 @@ class ReservationServiceTest {
         ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
         ThemeResponse theme = themeService.createTheme(themeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, theme.id());
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2030, 12, 12), 1L, theme.id(), 1L);
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ExceptionCode.NOT_FOUND_RESERVATION_TIME.getErrorMessage());
@@ -77,7 +88,7 @@ class ReservationServiceTest {
         ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
         ThemeResponse theme = themeService.createTheme(themeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(1999, 8, 5), reservationTime.id(), theme.id());
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(1999, 12, 12), reservationTime.id(), theme.id(), 1L);
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ExceptionCode.PAST_TIME_SLOT_RESERVATION.getErrorMessage());
@@ -93,15 +104,19 @@ class ReservationServiceTest {
         ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
         ThemeResponse theme = themeService.createTheme(themeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), reservationTime.id(), theme.id());
+        MemberRequest memberRequest = new MemberRequest("sudal", "sudal@email.com", "sudal123", Role.ADMIN);
+        MemberResponse member = memberService.createMember(memberRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2999, 12, 12), reservationTime.id(), theme.id(), member.id());
         reservationService.createReservation(reservationRequest);
+
 
         List<ReservationResponse> reservations = reservationService.findAllReservations();
 
         assertAll(
                 () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(reservations.get(0).name()).isEqualTo("브라운"),
-                () -> assertThat(reservations.get(0).date()).isEqualTo(LocalDate.of(2999, 8, 5))
+                () -> assertThat(reservations.get(0).name()).isEqualTo(member.name()),
+                () -> assertThat(reservations.get(0).date()).isEqualTo(LocalDate.of(2999, 12, 12))
         );
     }
 
@@ -114,7 +129,10 @@ class ReservationServiceTest {
         ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
         ThemeResponse theme = themeService.createTheme(themeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), reservationTime.id(), theme.id());
+        MemberRequest memberRequest = new MemberRequest("sudal", "sudal@email.com", "sudal123", Role.ADMIN);
+        MemberResponse member = memberService.createMember(memberRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2030, 12, 12), reservationTime.id(), theme.id(), member.id());
         ReservationResponse savedReservation = reservationService.createReservation(reservationRequest);
 
         reservationService.deleteReservation(savedReservation.id());

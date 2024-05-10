@@ -17,8 +17,17 @@ public class Member {
         this.password = password;
         this.role = role;
     }
+
     public Member(Long id, String name, String email, String password, Role role) {
         this(id, new MemberName(name), email, password, role);
+    }
+
+    public Member(String name, String email, String password, Role role) {
+        this(null, new MemberName(name), email, password, role);
+    }
+
+    public Member(String name, String email, String password, String role) {
+        this(null, new MemberName(name), email, password, Role.of(role));
     }
 
     public Long getId() {

@@ -93,17 +93,22 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.reservation_date,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
+                    m.role as member_role,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
                     h.name as theme_name,
                     h.description as theme_description,
-                    h.thumbnail as theme_thumbnail 
+                    h.thumbnail as theme_thumbnail
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as h on r.theme_id = h.id
+                inner join member as m on r.member_id = m.id
                 WHERE r.reservation_date = ? and r.theme_id = ?
                 """;
 
