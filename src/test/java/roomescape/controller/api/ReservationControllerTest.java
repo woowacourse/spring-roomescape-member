@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.BaseControllerTest;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
@@ -33,10 +34,8 @@ import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
 
+@Sql("/member.sql")
 class ReservationControllerTest extends BaseControllerTest {
-
-    @Autowired
-    private MemberRepository memberRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -46,9 +45,10 @@ class ReservationControllerTest extends BaseControllerTest {
 
     @BeforeEach
     void setUp() {
-        memberRepository.save(new Member("new@gmail.com", "password", "new", Role.USER));
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
+
+        userLogin();
     }
 
     @TestFactory
@@ -73,12 +73,10 @@ class ReservationControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("지나간 날짜/시간에 대한 예약은 실패한다.")
     void failWhenDateTimePassed() {
-        doReturn(1L).when(jwtTokenProvider).getMemberId(any());
-
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 7), 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .cookie("token", "mock-cookie")
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
@@ -107,12 +105,10 @@ class ReservationControllerTest extends BaseControllerTest {
 
 
     private void addReservation() {
-        doReturn(1L).when(jwtTokenProvider).getMemberId(any());
-
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 9), 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .cookie("token", "mock-cookie")
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
@@ -129,7 +125,7 @@ class ReservationControllerTest extends BaseControllerTest {
             softly.assertThat(response.header("Location")).isEqualTo("/reservations/1");
 
             softly.assertThat(reservationResponse.date()).isEqualTo(LocalDate.of(2024, 4, 9));
-            softly.assertThat(memberResponse).isEqualTo(new MemberResponse(1L, "new@gmail.com", "new", Role.USER));
+            softly.assertThat(memberResponse).isEqualTo(new MemberResponse(2L, "user@gmail.com", "유저", Role.USER));
             softly.assertThat(reservationTimeResponse).isEqualTo(new ReservationTimeResponse(1L, LocalTime.of(11, 0)));
             softly.assertThat(themeResponse).isEqualTo(new ThemeResponse(1L, "테마 이름", "테마 설명", "https://example.com"));
         });
@@ -155,7 +151,7 @@ class ReservationControllerTest extends BaseControllerTest {
             softly.assertThat(reservationResponses).hasSize(1);
 
             softly.assertThat(reservationResponse.date()).isEqualTo(LocalDate.of(2024, 4, 9));
-            softly.assertThat(memberResponse).isEqualTo(new MemberResponse(1L, "new@gmail.com", "new", Role.USER));
+            softly.assertThat(memberResponse).isEqualTo(new MemberResponse(2L, "user@gmail.com", "유저", Role.USER));
             softly.assertThat(reservationTimeResponse).isEqualTo(new ReservationTimeResponse(1L, LocalTime.of(11, 0)));
             softly.assertThat(themeResponse).isEqualTo(new ThemeResponse(1L, "테마 이름", "테마 설명", "https://example.com"));
         });
@@ -176,7 +172,7 @@ class ReservationControllerTest extends BaseControllerTest {
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 9), 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .cookie("token", "mock-cookie")
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")

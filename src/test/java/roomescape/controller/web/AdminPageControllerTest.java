@@ -27,10 +27,10 @@ class AdminPageControllerTest extends BaseControllerTest {
             "/admin/theme"
     })
     void pageTest(String path) {
-        doReturn(ADMIN_ID).when(jwtTokenProvider).getMemberId(any());
+        adminLogin();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .cookie("token", "mock-token")
+                .cookie("token", token)
                 .when().get(path)
                 .then().log().all()
                 .extract();
@@ -55,11 +55,10 @@ class AdminPageControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("로그인을 했지만 어드민이 아니면 403 에러가 발생한다.")
     void notAdmin() {
-        Long userId = 2L;
-        doReturn(userId).when(jwtTokenProvider).getMemberId(any());
+        userLogin();
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .cookie("token", "mock-token")
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
                 .extract();
