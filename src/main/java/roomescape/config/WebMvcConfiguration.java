@@ -10,7 +10,7 @@ import roomescape.service.AuthService;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private AuthService authService;
+    private final AuthService authService;
 
     public WebMvcConfiguration(AuthService authService) {
         this.authService = authService;
