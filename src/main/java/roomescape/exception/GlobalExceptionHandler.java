@@ -13,7 +13,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class GlobalExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
+//TODO 인증 인가 오류 처리
     @ExceptionHandler(RoomescapeException.class)
     public ResponseEntity<ErrorResponse> handleRoomescapeException(final RoomescapeException e) {
         logger.error(e.getMessage(), e);

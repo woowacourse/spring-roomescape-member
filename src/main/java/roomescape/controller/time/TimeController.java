@@ -37,7 +37,7 @@ public class TimeController {
     @GetMapping(value = "/availability", params = {"date", "themeId"})
     public List<AvailabilityTimeResponse> getAvailableTimes(
             @Valid final AvailabilityTimeRequest availabilityTimeRequest) {
-        return timeService.getTimeAvailable(availabilityTimeRequest);
+        return timeService.getAvailableTimes(availabilityTimeRequest);
     }
 
     @PostMapping
