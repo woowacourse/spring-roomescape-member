@@ -20,7 +20,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.ReservationBusinessException;
+import roomescape.exception.RoomEscapeBusinessException;
 import roomescape.service.dto.PopularThemeRequest;
 import roomescape.service.dto.ThemeResponse;
 import roomescape.service.dto.ThemeSaveRequest;
@@ -85,7 +85,7 @@ class ThemeServiceTest extends IntegrationTestSupport {
     @Test
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("예약이 있는 테마 삭제")
@@ -99,7 +99,7 @@ class ThemeServiceTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("인기 테마 조회")

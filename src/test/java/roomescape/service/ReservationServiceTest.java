@@ -17,7 +17,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.ReservationBusinessException;
+import roomescape.exception.RoomEscapeBusinessException;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
 
@@ -67,7 +67,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"), 100L, 1L);
         assertThatThrownBy(() -> {
             reservationService.saveReservation(reservationSaveRequest);
-        }).isInstanceOf(ReservationBusinessException.class);
+        }).isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("예약 삭제")
@@ -82,7 +82,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
     void deleteReservationNotFound() {
         assertThatThrownBy(() -> {
             reservationService.deleteReservation(100L);
-        }).isInstanceOf(ReservationBusinessException.class);
+        }).isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("중복된 예약 저장")
@@ -91,6 +91,6 @@ class ReservationServiceTest extends IntegrationTestSupport {
         ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(1L, LocalDate.parse("2024-05-04"),
                 1L, 1L);
         assertThatThrownBy(() -> reservationService.saveReservation(reservationSaveRequest))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 }

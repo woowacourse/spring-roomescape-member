@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.IntegrationTestSupport;
-import roomescape.exception.ReservationBusinessException;
+import roomescape.exception.RoomEscapeBusinessException;
 import roomescape.service.dto.ReservationTimeBookedRequest;
 import roomescape.service.dto.ReservationTimeBookedResponse;
 import roomescape.service.dto.ReservationTimeResponse;
@@ -54,14 +54,14 @@ class ReservationTimeServiceTest extends IntegrationTestSupport {
     @Test
     void deleteTimeNotFound() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(3L))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("예약이 존재하는 시간 삭제")
     @Test
     void deleteTimeExistReservation() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(2L))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("중복된 시간 저장")
@@ -72,7 +72,7 @@ class ReservationTimeServiceTest extends IntegrationTestSupport {
 
         assertThatThrownBy(
                 () -> reservationTimeService.saveTime(reservationTimeSaveRequest))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("시간의 예약 여부 조회")

@@ -11,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.AuthorizationException;
-import roomescape.exception.ReservationBusinessException;
+import roomescape.exception.RoomEscapeBusinessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -53,8 +53,8 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(ReservationBusinessException.class)
-    public ResponseEntity<ProblemDetail> handleIllegalArgument(ReservationBusinessException e) {
+    @ExceptionHandler(RoomEscapeBusinessException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalArgument(RoomEscapeBusinessException e) {
         logger.error(e.getMessage(), e);
         return ResponseEntity.badRequest()
                 .body(ProblemDetail.forStatusAndDetail(

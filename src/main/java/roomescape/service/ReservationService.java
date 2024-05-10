@@ -10,7 +10,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.ReservationBusinessException;
+import roomescape.exception.RoomEscapeBusinessException;
 import roomescape.service.dto.ReservationConditionRequest;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
@@ -43,13 +43,13 @@ public class ReservationService {
 
     public ReservationResponse saveReservation(ReservationSaveRequest reservationSaveRequest) {
         ReservationTime time = reservationTimeRepository.findById(reservationSaveRequest.timeId())
-                .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new RoomEscapeBusinessException("존재하지 않는 예약 시간입니다."));
 
         Theme theme = themeRepository.findById(reservationSaveRequest.themeId())
-                .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new RoomEscapeBusinessException("존재하지 않는 테마입니다."));
 
         Member member = memberRepository.findById(reservationSaveRequest.memberId())
-                .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new RoomEscapeBusinessException("존재하지 않는 회원입니다."));
 
         Reservation reservation = new Reservation(member, reservationSaveRequest.date(), time, theme);
         validateUnique(reservation);
@@ -63,13 +63,13 @@ public class ReservationService {
                 reservation.getTimeId(), reservation.getThemeId());
 
         if (isReservationExist) {
-            throw new ReservationBusinessException("이미 존재하는 예약입니다.");
+            throw new RoomEscapeBusinessException("이미 존재하는 예약입니다.");
         }
     }
 
     public void deleteReservation(Long id) {
         if (reservationRepository.findById(id).isEmpty()) {
-            throw new ReservationBusinessException("존재하지 않는 예약입니다.");
+            throw new RoomEscapeBusinessException("존재하지 않는 예약입니다.");
         }
 
         reservationRepository.deleteById(id);
