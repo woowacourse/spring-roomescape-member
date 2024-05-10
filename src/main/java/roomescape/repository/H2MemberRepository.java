@@ -49,16 +49,16 @@ public class H2MemberRepository implements MemberRepository {
                 member.getRole());
     }
 
-    public Optional<Member> findByEmail(String email) {
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = """
                 SELECT
                     id, name, email, password, role
                 FROM
                     user_table
                 WHERE
-                    email = ?
+                    email = ? AND password = ?
                 """;
-        List<Member> members = jdbcTemplate.query(sql, rowMapper, email);
+        List<Member> members = jdbcTemplate.query(sql, rowMapper, email, password);
         return members.stream().findFirst();
     }
 

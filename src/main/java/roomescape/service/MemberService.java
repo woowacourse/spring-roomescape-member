@@ -28,7 +28,7 @@ public class MemberService {
     }
 
     public TokenResponse createToken(UserLoginRequest userLoginRequest) {
-        Member member = memberRepository.findByEmail(userLoginRequest.email())
+        Member member = memberRepository.findByEmailAndPassword(userLoginRequest.email(), userLoginRequest.password())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
         return new TokenResponse(jwtTokenProvider.createToken(member));
     }

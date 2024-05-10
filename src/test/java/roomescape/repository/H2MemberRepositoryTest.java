@@ -29,7 +29,7 @@ class H2MemberRepositoryTest extends BasicAcceptanceTest {
     @DisplayName("해당 email의 멤버를 반환한다")
     @Test
     void findByEmail() {
-        Member member = memberRepository.findByEmail("email1").orElseThrow();
+        Member member = memberRepository.findByEmailAndPassword("email1", "qq1").orElseThrow();
 
         assertThat(member).isEqualTo(TestFixtures.MEMBER_2);
     }

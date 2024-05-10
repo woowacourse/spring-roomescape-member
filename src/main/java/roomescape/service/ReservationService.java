@@ -63,7 +63,8 @@ public class ReservationService {
     }
 
     private Reservation save(LocalDate date, Long memberId, Long timeId, Long themeId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("가입되어 있지 않은 유저입니다. memberId: " + memberId));
         ReservationTime requestedReservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + timeId));
         Theme requestedTheme = themeRepository.findById(themeId)
