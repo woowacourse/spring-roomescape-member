@@ -1,7 +1,6 @@
 package roomescape.controller.api;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
-import roomescape.exception.AuthenticationException;
+import roomescape.model.LoginMember;
 import roomescape.service.AuthService;
-
-import java.util.Optional;
 
 @RestController
 public class LoginController {
@@ -37,22 +34,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(final HttpServletRequest request) {
-        final String token = extractTokenFromRequestCookie(request)
-                .orElseThrow(() -> new AuthenticationException("토큰 정보가 존재하지 않습니다."));
-        final MemberResponse memberResponse = authService.findMemberByToken(token);
+    public ResponseEntity<MemberResponse> checkLogin(final LoginMember loginMember) {
+        final MemberResponse memberResponse = new MemberResponse(loginMember.getId(), loginMember.getName(), loginMember.getRole().name(), loginMember.getEmail());
         return ResponseEntity.ok(memberResponse);
-    }
-
-    private Optional<String> extractTokenFromRequestCookie(final HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            return Optional.empty();
-        }
-        for (Cookie cookie : request.getCookies()) {
-            if (TOKEN_FIELD.equals(cookie.getName())) {
-                return Optional.of(cookie.getValue());
-            }
-        }
-        return Optional.empty();
     }
 }
