@@ -24,6 +24,10 @@ public class AuthService {
         return findMember(payload);
     }
 
+    public boolean isAdminByToken(String token) {
+        return findMemberByToken(token).isAdmin();
+    }
+
     public String createToken(MemberLoginRequest request) {
         if (checkInvalidLogin(request)) {
             throw new AuthorizationException("이메일과 비밀번호를 확인해 주세요.");

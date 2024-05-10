@@ -24,11 +24,9 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             throw new AuthorizationException("사용자 정보를 조회할 수 없습니다.");
         }
         String token = CookieExtractor.extractTokenFromCookie(request.getCookies());
-        Member member = authService.findMemberByToken(token);
-
-        if (member.isNotAdmin()) {
-            throw new AuthorizationException("접근할 수 없습니다.");
+        if (authService.isAdminByToken(token)) {
+            return true;
         }
-        return true;
+        throw new AuthorizationException("접근할 수 없습니다.");
     }
 }
