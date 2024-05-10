@@ -11,12 +11,15 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -101,6 +104,31 @@ class ThemeIntegrationTest {
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(10));
+        }
+    }
+
+    @Nested
+    @DisplayName("유효하지 않은 값으로 테마 생성 시도 테스트")
+    class InvalidRequest {
+
+        @ParameterizedTest
+        @MethodSource("nullRequests")
+        @DisplayName("테마 이름, 설명, 썸네일 중 하나라도 공백이면 Bad Request status를 응답한다.")
+        void createByNullValue(ThemeCreateRequest params) {
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/themes")
+                    .then().log().all()
+                    .statusCode(400);
+        }
+
+        private static Stream<ThemeCreateRequest> nullRequests() {
+            return Stream.of(
+                    ThemeCreateRequest.of(null, "1번 방탈출", "썸네일1"),
+                    ThemeCreateRequest.of("방탈출1", null, "썸네일1"),
+                    ThemeCreateRequest.of("방탈출1", "1번 방탈출", null)
+            );
         }
     }
 }
