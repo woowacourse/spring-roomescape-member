@@ -1,8 +1,10 @@
 package roomescape.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import roomescape.service.dto.ReservationTimeDto;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 public class MemberReservationTimeResponse {
 
@@ -14,6 +16,13 @@ public class MemberReservationTimeResponse {
         this.timeId = timeId;
         this.startAt = startAt;
         this.isBooked = isBooked;
+    }
+
+    public static MemberReservationTimeResponse from(ReservationTimeDto time, boolean isBooked) {
+        return new MemberReservationTimeResponse(
+                time.getId(),
+                time.getStartAt().truncatedTo(ChronoUnit.SECONDS),
+                isBooked);
     }
 
     public long getTimeId() {

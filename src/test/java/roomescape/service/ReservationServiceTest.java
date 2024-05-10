@@ -3,7 +3,6 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
@@ -15,6 +14,8 @@ import roomescape.repository.dao.ReservationTimeDao;
 import roomescape.repository.dao.ThemeDao;
 import roomescape.repository.dto.ReservationSavedDto;
 import roomescape.service.dto.ReservationDto;
+import roomescape.service.dto.ReservationTimeDto;
+import roomescape.service.dto.ReservationTimeInfoDto;
 import roomescape.service.fakedao.FakeMemberDao;
 import roomescape.service.fakedao.FakeReservationDao;
 import roomescape.service.fakedao.FakeReservationTimeDao;
@@ -129,10 +130,10 @@ class ReservationServiceTest {
     @Test
     void should_return_times_with_book_state() {
         LocalDate date = LocalDate.of(9999, 9, 9);
-        List<MemberReservationTimeResponse> times = reservationService.findReservationTimesInformation(date, 1L);
+        ReservationTimeInfoDto timesInfo = reservationService.findReservationTimesInformation(date, 1L);
 
-        assertThat(times).hasSize(INITIAL_TIME_COUNT);
-        assertThat(times.get(0).getIsBooked()).isTrue();
-        assertThat(times.get(1).getIsBooked()).isFalse();
+        List<ReservationTimeDto> bookedTimes = timesInfo.getBookedTimes();
+        List<ReservationTimeDto> notBookedTimes = timesInfo.getNotBookedTimes();
+        assertThat(bookedTimes.size() + notBookedTimes.size()).isEqualTo(INITIAL_TIME_COUNT);
     }
 }

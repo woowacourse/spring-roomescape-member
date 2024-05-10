@@ -10,10 +10,13 @@ import roomescape.model.LoginMember;
 import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationDto;
+import roomescape.service.dto.ReservationTimeDto;
+import roomescape.service.dto.ReservationTimeInfoDto;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/reservations")
@@ -56,12 +59,29 @@ public class ReservationController {
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") Long themeId) {
         validateNull(themeId);
-        List<MemberReservationTimeResponse> response = reservationService.findReservationTimesInformation(date, themeId);
-        // TODO: 여기서 response 객체로 반환하도록 수정
+        ReservationTimeInfoDto timesInfo = reservationService.findReservationTimesInformation(date, themeId);
+        List<MemberReservationTimeResponse> response = makeResponse(timesInfo);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/filter")
+    private List<MemberReservationTimeResponse> makeResponse(ReservationTimeInfoDto timesInfo) {
+        return concat(
+                formatToResponse(timesInfo.getBookedTimes(), true),
+                formatToResponse(timesInfo.getNotBookedTimes(), false));
+    }
+
+    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> first,
+                                                       List<MemberReservationTimeResponse> second) {
+        return Stream.concat(first.stream(), second.stream()).toList();
+    }
+
+    private List<MemberReservationTimeResponse> formatToResponse(List<ReservationTimeDto> times, boolean isBooked) {
+        return times.stream()
+                .map(time -> MemberReservationTimeResponse.from(time, isBooked))
+                .toList();
+    }
+
+    @GetMapping("/filter") // TODO: 각 조건이 없는 경우?
     public ResponseEntity<List<ReservationResponse>> searchReservations(@RequestParam(name = "member_id") Long memberId,
                                                                         @RequestParam(name = "theme_id") Long themeId,
                                                                         @RequestParam(name = "from") LocalDate from,

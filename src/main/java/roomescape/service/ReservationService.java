@@ -11,6 +11,8 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.service.dto.ReservationDto;
+import roomescape.service.dto.ReservationTimeDto;
+import roomescape.service.dto.ReservationTimeInfoDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -69,25 +71,19 @@ public class ReservationService {
         reservationRepository.deleteReservationById(id);
     }
 
-    public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, long themeId) {
+    public ReservationTimeInfoDto findReservationTimesInformation(LocalDate date, long themeId) {
         // TODO: themeId <= 0 예외 처리
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeBooked(date, themeId);
         List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
-        // TODO: map to response 로직 컨트롤러로
-        List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
-        List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
-        return concat(bookedResponse, notBookedResponse);
+        List<ReservationTimeDto> bookedTimesDto = mapToDto(bookedTimes);
+        List<ReservationTimeDto> notBookedTimesDto = mapToDto(notBookedTimes);
+        return new ReservationTimeInfoDto(bookedTimesDto, notBookedTimesDto);
     }
 
-    private List<MemberReservationTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {
+    private List<ReservationTimeDto> mapToDto(List<ReservationTime> times) {
         return times.stream()
-                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt().truncatedTo(ChronoUnit.SECONDS), isBooked))
+                .map(ReservationTimeDto::from)
                 .toList();
-    }
-
-    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> first,
-                                                       List<MemberReservationTimeResponse> second) {
-        return Stream.concat(first.stream(), second.stream()).toList();
     }
 
     public List<Reservation> findReservationsByConditions(long memberId, long themeId, LocalDate from, LocalDate to) {
