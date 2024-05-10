@@ -32,10 +32,6 @@ public class ThemeFixture {
         );
     }
 
-    public static ThemeInput getInput() {
-        return getInput("");
-    }
-
     public static Theme getDomain(final String name) {
         return Theme.of(
                 null,

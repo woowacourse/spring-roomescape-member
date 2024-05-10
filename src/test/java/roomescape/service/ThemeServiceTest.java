@@ -12,15 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.ExistsException;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotExistsException;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
@@ -39,6 +43,8 @@ class ThemeServiceTest {
     @Autowired
     ThemeDao themeDao;
     @Autowired
+    MemberDao memberDao;
+    @Autowired
     JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -47,13 +53,14 @@ class ThemeServiceTest {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.update("TRUNCATE TABLE theme");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("TRUNCATE TABLE member");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @DisplayName("예약 시간을 생성한다.")
     @Test
     void create_reservationTime() {
-        assertThatCode(() -> themeService.createTheme(ThemeFixture.getInput()))
+        assertThatCode(() -> themeService.createTheme(ThemeFixture.getInput("테마 1")))
                 .doesNotThrowAnyException();
     }
 
@@ -85,26 +92,29 @@ class ThemeServiceTest {
     @DisplayName("특정 테마에 대한 예약이 존재하면 예외를 발생한다.")
     @Test
     void throw_exception_when_delete_id_that_exist_reservation() {
-        final Theme theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
-        final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        reservationDao.create(ReservationFixture.getDomain(time, theme));
+        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
+        final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        reservationDao.create(ReservationFixture.getDomain(member, time, theme));
 
-        assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
+        assertThatThrownBy(() -> themeService.deleteTheme(theme.id()))
                 .isInstanceOf(ExistsException.class);
     }
 
     @DisplayName("예약이 많은 테마 순으로 조회한다.")
     @Test
     void get_popular_themes() {
+        final var member = memberDao.create(MemberFixture.getDomain("제리"));
         final Theme theme1 = themeDao.create(ThemeFixture.getDomain("테마 1"));
         final Theme theme2 = themeDao.create(ThemeFixture.getDomain("테마 2"));
 
-        final ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        final ReservationTime time2 = reservationTimeDao.create(ReservationTimeFixture.getDomain("11:00"));
+        final var time1 = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        final var time2 = reservationTimeDao.create(ReservationTimeFixture.getDomain("11:00"));
+        final var time3 = reservationTimeDao.create(ReservationTimeFixture.getDomain("12:00"));
 
-        reservationDao.create(ReservationFixture.getDomain(time1, theme1));
-        reservationDao.create(ReservationFixture.getDomain(time2, theme1));
-        reservationDao.create(ReservationFixture.getDomain(time1, theme2));
+        reservationDao.create(ReservationFixture.getDomain(member, time1, theme1));
+        reservationDao.create(ReservationFixture.getDomain(member, time2, theme1));
+        reservationDao.create(ReservationFixture.getDomain(member, time3, theme2));
 
         final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-02", 10);
 
@@ -114,25 +124,31 @@ class ThemeServiceTest {
     @DisplayName("지정된 개수만큼 인기 테마를 조회한다.")
     @Test
     void get_popular_themes_up_to_limit() {
-        final Theme theme1 = themeDao.create(ThemeFixture.getDomain("테마 1"));
-        final Theme theme2 = themeDao.create(ThemeFixture.getDomain("테마 2"));
-        final Theme theme3 = themeDao.create(ThemeFixture.getDomain("테마 3"));
+        final var theme1 = themeDao.create(ThemeFixture.getDomain("테마 1"));
+        final var theme2 = themeDao.create(ThemeFixture.getDomain("테마 2"));
+        final var theme3 = themeDao.create(ThemeFixture.getDomain("테마 3"));
 
-        final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
 
-        createReservations(time, theme1, 1, 1);
-        createReservations(time, theme2, 2, 2);
-        createReservations(time, theme3, 4, 3);
+        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+
+        createReservations(member, time, theme1, 1, 1);
+        createReservations(member, time, theme2, 2, 2);
+        createReservations(member, time, theme3, 4, 3);
 
         final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-07", 2);
 
         assertThat(popularThemes).containsExactly(ThemeOutput.from(theme3), ThemeOutput.from(theme2));
     }
 
-    private void createReservations(final ReservationTime time, final Theme theme, final int startDate, final int count) {
+    private void createReservations(final Member member,
+                                    final ReservationTime time,
+                                    final Theme theme,
+                                    final int startDate,
+                                    final int count) {
         for (int i = startDate; i < startDate + count; i++) {
-            final String date = String.format("2024-06-%02d", i);
-            final Reservation reservation = Reservation.from(null, "제리", date, time, theme);
+            final var date = ReservationDate.from(String.format("2024-06-%02d", i));
+            final Reservation reservation = new Reservation(member, date, time, theme);
             reservationDao.create(reservation);
         }
     }

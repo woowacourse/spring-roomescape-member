@@ -6,11 +6,9 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.exception.ExistsException;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.CustomException2;
 import roomescape.exception.NotExistsException;
+import roomescape.repository.ReservationRepository;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.output.ReservationOutput;
 import roomescape.service.util.DateTimeFormatter;
@@ -18,15 +16,18 @@ import roomescape.service.util.DateTimeFormatter;
 @Service
 public class ReservationService {
 
+    private final ReservationRepository reservationRepository;
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final DateTimeFormatter dateTimeFormatter;
 
-    public ReservationService(final ReservationDao reservationDao,
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ReservationDao reservationDao,
                               final ReservationTimeDao reservationTimeDao,
                               final ThemeDao themeDao,
                               final DateTimeFormatter dateTimeFormatter) {
+        this.reservationRepository = reservationRepository;
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
@@ -34,24 +35,22 @@ public class ReservationService {
     }
 
     public ReservationOutput createReservation(final ReservationInput input) {
-        final ReservationTime time = reservationTimeDao.find(input.timeId())
-                .orElseThrow(() -> NotExistsException.of("timeId", input.timeId()));
-        final Theme theme = themeDao.find(input.themeId())
-                .orElseThrow(() -> NotExistsException.of("themeId", input.themeId()));
+        final var member = reservationRepository.getMemberById(input.memberId());
+        final var time = reservationRepository.getReservationTimeById(input.timeId());
+        final var theme = reservationRepository.getThemeById(input.themeId());
 
-        final Reservation reservation = input.toReservation(time, theme);
-        if (reservationDao.isExistByReservationAndTime(reservation.getDate(), time.getId())) {
-            throw ExistsException.of(String.format("date 가 %s 이고 reservationTimeId 가 %d인 reservation", reservation.getDate(), reservation.getId()));
-        }
-        if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
-            throw InvalidInputException.of(
-                    String.format("date 와 time (%s %s 이후만 가능)", dateTimeFormatter.getDate(), dateTimeFormatter.getTime().format(
-                            java.time.format.DateTimeFormatter.ofPattern("hh:mm"))),
-                    String.format("%s", reservation.getDateAndTimeFormat())
-            );
-        }
-        final Reservation savedReservation = reservationDao.create(reservation);
+        final var reservation = new Reservation(member, input.date(), time, theme);
+
+        validatePastDateAndTime(reservation);
+
+        final var savedReservation = reservationDao.create(reservation);
         return ReservationOutput.from(savedReservation);
+    }
+
+    private void validatePastDateAndTime(final Reservation reservation) {
+        if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
+            throw new CustomException2("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+        }
     }
 
     public List<ReservationOutput> getAllReservations() {

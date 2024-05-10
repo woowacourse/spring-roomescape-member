@@ -38,6 +38,7 @@ class ReservationApiControllerTest {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("TRUNCATE TABLE member");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 

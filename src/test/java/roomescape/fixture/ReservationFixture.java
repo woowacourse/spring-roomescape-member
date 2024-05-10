@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -27,11 +28,13 @@ public class ReservationFixture {
         return Long.parseLong(response.then().extract().jsonPath().getString("id"));
     }
 
-    public static ReservationInput getInput(final long timeId, final long themeId) {
-        return new ReservationInput("조이썬", "2024-06-01", timeId, themeId);
+    public static ReservationInput getInput(final long timeId, final long themeId, final long memberId) {
+        return ReservationInput.of("2024-06-01", timeId, themeId, memberId);
     }
 
-    public static Reservation getDomain(final ReservationTime time, final Theme theme) {
-        return Reservation.from(null, "제리", "2024-06-01", time, theme);
+    public static Reservation getDomain(final Member member,
+                                        final ReservationTime time,
+                                        final Theme theme) {
+        return Reservation.of(null, member, "2024-06-01", time, theme);
     }
 }

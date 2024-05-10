@@ -27,8 +27,9 @@ public class ReservationApiController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationCreateRequest request) {
-        final ReservationOutput output = reservationService.createReservation(request.toInput());
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationCreateRequest request,
+                                                                 @MemberId final long memberId) {
+        final ReservationOutput output = reservationService.createReservation(request.toInput(memberId));
         return ResponseEntity.created(URI.create("/reservations/" + output.id()))
                 .body(ReservationResponse.from(output));
     }

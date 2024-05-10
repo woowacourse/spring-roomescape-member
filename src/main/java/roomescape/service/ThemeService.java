@@ -39,7 +39,7 @@ public class ThemeService {
     }
 
     public void deleteTheme(final long id) {
-        themeDao.find(id)
+        themeDao.findById(id)
                 .orElseThrow(() -> NotExistsException.of("themeId", id));
         if (reservationDao.isExistByThemeId(id)) {
             throw ExistsException.of(String.format("themeId 가 %d 인 reservation", id));

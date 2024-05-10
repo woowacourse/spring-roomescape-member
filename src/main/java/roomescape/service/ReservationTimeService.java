@@ -44,13 +44,13 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(final long id) {
-        final ReservationTime reservationTime = reservationTimeDao.find(id)
+        final ReservationTime reservationTime = reservationTimeDao.findById(id)
                 .orElseThrow(() -> NotExistsException.of("reservationTimeId", id));
 
         if (reservationDao.isExistByTimeId(id)) {
             throw ExistsException.of(String.format("reservationTimeId 가 %d 인 reservation", id));
         }
 
-        reservationTimeDao.delete(reservationTime.getId());
+        reservationTimeDao.delete(reservationTime.id());
     }
 }

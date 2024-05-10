@@ -5,15 +5,7 @@ import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.exception.InvalidInputException;
 
-public class ReservationTime {
-
-    private final Long id;
-    private final LocalTime startAt;
-
-    public ReservationTime(final Long id, final LocalTime startAt) {
-        this.id = id;
-        this.startAt = startAt;
-    }
+public record ReservationTime(Long id, LocalTime startAt) {
 
     public static ReservationTime of(final Long id, final String startAt) {
         try {
@@ -25,10 +17,6 @@ public class ReservationTime {
 
     public boolean isBefore(final LocalTime other) {
         return this.startAt.isBefore(other);
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getStartAtAsString() {

@@ -18,8 +18,8 @@ public class MemberDao {
     private final MemberRowMapper rowMapper;
 
     public MemberDao(final JdbcTemplate jdbcTemplate,
-                              final DataSource dataSource,
-                              final MemberRowMapper memberRowMapper) {
+                     final DataSource dataSource,
+                     final MemberRowMapper memberRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("member")
@@ -46,6 +46,15 @@ public class MemberDao {
     }
 
     public Optional<Member> findById(final String id) {
+        final var sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (final EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Member> findById(final Long id) {
         final var sql = "SELECT * FROM member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));

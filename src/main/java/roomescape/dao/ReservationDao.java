@@ -2,14 +2,15 @@ package roomescape.dao;
 
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.mapper.ReservationRowMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
+import roomescape.exception.CustomException2;
 
 @Repository
 public class ReservationDao {
@@ -18,7 +19,9 @@ public class ReservationDao {
     private final SimpleJdbcInsert jdbcInsert;
     private final ReservationRowMapper rowMapper;
 
-    public ReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final ReservationRowMapper rowMapper) {
+    public ReservationDao(final JdbcTemplate jdbcTemplate,
+                          final DataSource dataSource,
+                          final ReservationRowMapper rowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
@@ -27,14 +30,17 @@ public class ReservationDao {
     }
 
     public Reservation create(final Reservation reservation) {
-        final SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getNameAsString())
-                .addValue("date", reservation.getDate().asString())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        final var params = new MapSqlParameterSource()
+                .addValue("date", reservation.getDateAsString())
+                .addValue("time_id", reservation.getTime().id())
+                .addValue("theme_id", reservation.getTheme().id())
+                .addValue("member_id", reservation.getMember().id());
+        try {
+            final var id = jdbcInsert.executeAndReturnKey(params).longValue();
+            return Reservation.of(id, reservation);
+        } catch (final DuplicateKeyException error) {
+            throw new CustomException2("중복 예약은 불가능합니다.");
+        }
     }
 
     public boolean isExistByReservationAndTime(final ReservationDate date, final long timeId) {
@@ -63,19 +69,22 @@ public class ReservationDao {
         final String sql = """
                 SELECT
                 r.id AS reservation_id,
-                r.name,
                 r.date,
                 t.id AS time_id,
-                t.start_at AS time_value,
+                t.start_at,
                 th.id AS theme_id,
                 th.name AS theme_name,
                 th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail
+                th.thumbnail AS theme_thumbnail,
+                m.id AS member_id,
+                m.name AS member_name
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t 
                 ON r.time_id = t.id 
                 INNER JOIN theme AS th 
                 ON r.theme_id = th.id 
+                INNER JOIN member AS m
+                ON r.member_id = m.id;
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }

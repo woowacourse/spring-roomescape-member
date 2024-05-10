@@ -3,19 +3,10 @@ package roomescape.domain;
 import java.util.Objects;
 import roomescape.exception.InvalidInputException;
 
-public class Theme {
+public record Theme(Long id, String name, String description, Thumbnail thumbnail) {
 
-    private final Long id;
-    private final String name;
-    private final String description;
-    private final Thumbnail thumbnail;
-
-    public Theme(final Long id, final String name, final String description, final Thumbnail thumbnail) {
+    public Theme {
         validate(name, description);
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
     }
 
     public static Theme of(final Long id, final String name, final String description, final String thumbnail) {
@@ -33,19 +24,6 @@ public class Theme {
         if (description.isBlank()) {
             throw InvalidInputException.of("description", description);
         }
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public String getThumbnailAsString() {

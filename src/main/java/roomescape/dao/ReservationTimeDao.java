@@ -47,8 +47,8 @@ public class ReservationTimeDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
-    public Optional<ReservationTime> find(final Long id) {
-        final String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+    public Optional<ReservationTime> findById(final Long id) {
+        final var sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
         } catch (final EmptyResultDataAccessException exception) {
