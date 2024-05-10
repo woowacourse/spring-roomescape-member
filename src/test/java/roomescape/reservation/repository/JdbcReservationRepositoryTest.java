@@ -171,7 +171,7 @@ class JdbcReservationRepositoryTest {
         Reservation saveReservation = jdbcReservationRepository.save(
                 ReservationFixture.getOneWithDateTimeTheme(LocalDate.parse("2024-01-01"), savedTime, savedTheme));
 
-        assertTrue(jdbcReservationRepository.existsByDateAndTimeAndTheme(
+        assertTrue(jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(
                 saveReservation.getDate(),
                 savedTime.getId(),
                 savedTheme.getId()));
@@ -180,7 +180,7 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("날짜 또는 시간 중 하나라도 다를 경우 거짓을 반환한다.")
     void existsByDateAndTime_isFalse() {
-        assertFalse(jdbcReservationRepository.existsByDateAndTimeAndTheme(
+        assertFalse(jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(
                 ReservationFixture.getOne().getDate(),
                 ReservationTimeFixture.getOne().getId(),
                 ThemeFixture.getOne().getId()));

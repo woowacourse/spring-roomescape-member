@@ -39,31 +39,40 @@ public class ReservationService {
 
     public CreateReservationResponse createReservation(final AuthInfo authInfo,
                                                        final CreateReservationRequest createReservationRequest) {
+        validateAlreadyExistReservation(createReservationRequest);
+
         ReservationTime reservationTime = findReservationTime(createReservationRequest.timeId());
         checkDateTimeToCreateIsPast(createReservationRequest.date(), reservationTime);
 
         Theme theme = findTheme(createReservationRequest.themeId());
         Member member = findMember(authInfo.getMemberId());
-        Reservation reservation = createReservationRequest.toReservation(member, reservationTime, theme);
-        // TODO: 얘가 42줄이여도 될듯
-        validateAlreadyExistReservation(reservationTime, theme, reservation);
 
+        Reservation reservation = createReservationRequest.toReservation(member, reservationTime, theme);
         return CreateReservationResponse.from(reservationRepository.save(reservation));
+    }
+
+    private void validateAlreadyExistReservation(final CreateReservationRequest createReservationRequest) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                createReservationRequest.date(),
+                createReservationRequest.timeId(),
+                createReservationRequest.themeId())) {
+            throw new IllegalArgumentException("이미 해당 테마에 같은 시간의 예약이 존재합니다. 다른 예약을 시도해주세요.");
+        }
     }
 
     private ReservationTime findReservationTime(final Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("생성하려는 예약의 예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("해당하는 시간이 존재하지 않아 예약을 생성할 수 없습니다."));
     }
 
     private Theme findTheme(final Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("생성하려는 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않아 예약을 생성할 수 없습니다."));
     }
 
     private Member findMember(final Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(""));
+                .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않아 예약을 생성할 수 없습니다."));
     }
 
     private void checkDateTimeToCreateIsPast(final LocalDate dateToCreate, final ReservationTime reservationTime) {
@@ -74,7 +83,7 @@ public class ReservationService {
 
     private void checkDateToCreateIsPast(final LocalDate dateToCreate, final LocalDate now) {
         if (dateToCreate.isBefore(now)) {
-            throw new IllegalArgumentException("지나간 날짜에 대한 예약 생성은 불가능합니다.");
+            throw new IllegalArgumentException("지나간 날짜에 대한 예약 생성은 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
         }
     }
 
@@ -82,15 +91,7 @@ public class ReservationService {
                                                      final LocalDate now,
                                                      final ReservationTime timeToCreate) {
         if (dateToCreate.isEqual(now) && timeToCreate.isNotAfter(LocalTime.now())) {
-            throw new IllegalArgumentException("지나간 시간 또는 현재 시간에 대한 예약 생성은 불가능합니다.");
-        }
-    }
-
-    private void validateAlreadyExistReservation(final ReservationTime reservationTime, final Theme theme,
-                                                 final Reservation reservation) {
-        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(),
-                theme.getId())) {
-            throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
+            throw new IllegalArgumentException("지나간 시간 또는 현재 시간에 대한 예약 생성은 불가능합니다. 현재 이후 날짜로 재예약해주세요");
         }
     }
 
@@ -105,7 +106,7 @@ public class ReservationService {
 
     private Reservation findReservation(final Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("조회하려는 예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("현재 저장된 예약이 존재하지 않아 예약을 조회할 수 없습니다."));
     }
 
     public List<FindAvailableTimesResponse> getAvailableTimes(final LocalDate date, final Long themeId) {
@@ -125,7 +126,7 @@ public class ReservationService {
     }
 
     public List<FindReservationResponse> searchBy(final Long themeId, final Long memberId,
-                                                     final LocalDate dateFrom, final LocalDate dateTo) {
+                                                  final LocalDate dateFrom, final LocalDate dateTo) {
         return mapToFindReservationResponse(reservationRepository.searchBy(themeId, memberId, dateFrom, dateTo));
     }
 
