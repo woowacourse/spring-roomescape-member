@@ -1,7 +1,7 @@
 CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255) UNIQUE NOT NULL,
+    theme_name        VARCHAR(255) UNIQUE NOT NULL,
     description VARCHAR(255) UNIQUE NOT NULL,
     thumbnail VARCHAR(255) UNIQUE NOT NULL,
     PRIMARY KEY (id)
@@ -17,12 +17,11 @@ CREATE TABLE reservation_time
 CREATE TABLE reservation
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
     date VARCHAR(255) NOT NULL,
     time_id BIGINT NOT NULL,
     theme_id BIGINT NOT NULL,
     member_id BIGINT NOT NULL,
-    PRIMARY KEY (id, name, member_id, time_id, theme_id),
+    PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     FOREIGN KEY (member_id) REFERENCES theme (id)
@@ -31,7 +30,7 @@ CREATE TABLE reservation
 CREATE TABLE member
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
+    member_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('USER', 'ADMIN') NOT NULL,

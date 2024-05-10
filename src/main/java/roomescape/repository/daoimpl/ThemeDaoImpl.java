@@ -77,7 +77,7 @@ class ThemeDaoImpl implements ThemeDao {
 
     private MapSqlParameterSource makeInsertParams(Theme theme) {
         return new MapSqlParameterSource()
-                .addValue("name", theme.getName())
+                .addValue("theme_name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
     }
