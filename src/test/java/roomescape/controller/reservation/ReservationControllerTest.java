@@ -46,25 +46,25 @@ class ReservationControllerTest {
         for (final ReservationResponse reservation : reservations) {
             System.out.println(reservation);
         }
-        final LocalDate CURRENT_DATE = LocalDate.now();
+        final LocalDate today = LocalDate.now();
 
         final List<ReservationResponse> expected = List.of(
-                new ReservationResponse(1L, new MemberResponse("레디"), CURRENT_DATE.minusDays(3).toString(),
+                new ReservationResponse(1L, new MemberResponse("레디"), today.minusDays(3).toString(),
                         new AvailabilityTimeResponse(1L,
                                 "15:00", false), new ReservationThemeResponse("봄")),
-                new ReservationResponse(2L, new MemberResponse("재즈"), CURRENT_DATE.minusDays(2).toString(),
+                new ReservationResponse(2L, new MemberResponse("재즈"), today.minusDays(2).toString(),
                         new AvailabilityTimeResponse(2L,
                                 "17:00", false), new ReservationThemeResponse("여름")),
-                new ReservationResponse(3L, new MemberResponse("레디"), CURRENT_DATE.minusDays(1).toString(),
+                new ReservationResponse(3L, new MemberResponse("레디"), today.minusDays(1).toString(),
                         new AvailabilityTimeResponse(3L,
                                 "16:00", false), new ReservationThemeResponse("여름")),
-                new ReservationResponse(4L, new MemberResponse("재즈"), CURRENT_DATE.minusDays(1).toString(),
+                new ReservationResponse(4L, new MemberResponse("재즈"), today.minusDays(1).toString(),
                         new AvailabilityTimeResponse(4L,
                                 "15:00", false), new ReservationThemeResponse("여름")),
-                new ReservationResponse(5L, new MemberResponse("제제"), CURRENT_DATE.minusDays(7).toString(),
+                new ReservationResponse(5L, new MemberResponse("제제"), today.minusDays(7).toString(),
                         new AvailabilityTimeResponse(5L,
                                 "15:00", false), new ReservationThemeResponse("가을")),
-                new ReservationResponse(6L, new MemberResponse("제제"), CURRENT_DATE.plusDays(3).toString(),
+                new ReservationResponse(6L, new MemberResponse("제제"), today.plusDays(3).toString(),
                         new AvailabilityTimeResponse(6L,
                                 "18:00", false), new ReservationThemeResponse("가을"))
         );
