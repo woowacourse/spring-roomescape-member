@@ -23,6 +23,7 @@ import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.User;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeReservationTimeDao;
 
@@ -106,9 +107,10 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         reservationTimeDao.addReservationTime(reservationTime);
         reservationDao.addReservation(
-                new Reservation(1L, "배키", now().plusDays(2),
+                new Reservation(now().plusDays(2),
                         reservationTime,
-                        new Theme("name", "공포", "미스터리")));
+                        new Theme("name", "공포", "미스터리"),
+                        new User(1L, "배키", "dmsgml@email.com", "1234")));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isInstanceOf(BadRequestException.class)
@@ -137,7 +139,7 @@ class ReservationTimeServiceTest {
         reservationTimeDao.add(notReservedTime);
         Theme theme = new Theme(1L, "배키", "드라마", "hello.jpg");
         LocalDate reservedDate = now().plusDays(2);
-        reservationDao.addReservation(new Reservation(1L, "리사", reservedDate, reservedTime, theme));
+//        reservationDao.addReservation(new Reservation(1L, "리사", reservedDate, reservedTime, theme));
 
         List<IsReservedTimeResponse> times = reservationTimeService.getIsReservedTime(reservedDate, 1L);
 

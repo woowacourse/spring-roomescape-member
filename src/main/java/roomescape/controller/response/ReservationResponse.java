@@ -13,9 +13,12 @@ public class ReservationResponse {
     private ReservationTimeResponse time;
     private Theme theme;
 
+    private ReservationResponse() {
+    }
+
     public ReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
-        this.name = reservation.getName();
+        this.name = reservation.getUser().getName();
         this.date = reservation.getDate();
         this.time = ReservationTimeResponse.of(reservation.getTime());
         this.theme = reservation.getTheme();

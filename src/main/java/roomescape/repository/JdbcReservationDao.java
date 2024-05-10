@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.User;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -26,7 +27,6 @@ public class JdbcReservationDao implements ReservationDao {
     private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -37,6 +37,10 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getString("theme_name"),
                             resultSet.getString("description"),
                             resultSet.getString("thumbnail")
+                    ),
+                    new User(
+                            resultSet.getLong("user_id"),
+                            resultSet.getString("user_name")
                     )
             );
 
@@ -58,17 +62,19 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT 
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description,
-                    th.thumbnail
+                    th.thumbnail,
+                    u.id AS user_id,
+                    u.name AS user_name
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN users AS u ON r.user_id = u.id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
@@ -77,8 +83,8 @@ public class JdbcReservationDao implements ReservationDao {
     public Reservation addReservation(Reservation reservation) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(reservation);
         Number newId = insertActor.executeAndReturnKey(parameters);
-        return new Reservation(newId.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return new Reservation(newId.longValue(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme(), reservation.getUser());
     }
 
     @Override

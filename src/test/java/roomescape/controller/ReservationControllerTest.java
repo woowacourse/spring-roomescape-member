@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.response.ReservationResponse;
 import roomescape.model.Reservation;
 
 
@@ -26,21 +27,21 @@ class ReservationControllerTest {
     @DisplayName("예약을 조회한다.")
     @Test
     void should_get_reservations() {
-        List<Reservation> reservations = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".", ReservationResponse.class);
     }
 
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void should_insert_reservation() {
         ReservationRequest request = new ReservationRequest(
-                "브라운",
                 LocalDate.of(2030, 8, 5),
                 6L,
-                10L);
+                10L,
+                1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,11 @@ import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.User;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
+import roomescape.repository.UserDao;
 
 @Service
 public class ReservationService {
@@ -25,11 +28,14 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final UserDao userDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
+                              UserDao userDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.userDao = userDao;
     }
 
     public List<Reservation> findAllReservations() {
@@ -42,8 +48,10 @@ public class ReservationService {
         validateDuplicatedReservation(request.getDate(), request.getThemeId(), request.getTimeId());
 
         Theme theme = themeDao.findThemeById(request.getThemeId());
+        User user = userDao.findUserById(request.getUserId())
+                .orElseThrow(() -> new NotFoundException("아이디가 %s인 사용자는 존재하지 않습니다.".formatted(request.getUserId())));
 
-        Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
+        Reservation reservation = new Reservation(request.getDate(), reservationTime, theme, user);
         return reservationDao.addReservation(reservation);
     }
 

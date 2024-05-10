@@ -2,6 +2,8 @@ package roomescape.model;
 
 import java.util.Objects;
 
+import roomescape.exception.BadRequestException;
+
 public class User {
 
     private Long id;
@@ -13,10 +15,21 @@ public class User {
     }
 
     public User(Long id, String name, String email, String password) {
+        validateNullOrBlank(name, "name");
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public User(Long id, String name) {
+        this(id, name, null, null);
+    }
+
+    private void validateNullOrBlank(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new BadRequestException(value, fieldName);
+        }
     }
 
     public Long getId() {

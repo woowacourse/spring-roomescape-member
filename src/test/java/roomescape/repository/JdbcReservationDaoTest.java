@@ -23,6 +23,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.User;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -40,6 +41,7 @@ class JdbcReservationDaoTest {
     private SimpleJdbcInsert reservationTimeInsertActor;
     private SimpleJdbcInsert reservationInsertActor;
     private SimpleJdbcInsert themeInsertActor;
+    private SimpleJdbcInsert userInsertActor;
 
     @BeforeEach
     void setUp() {
@@ -58,6 +60,9 @@ class JdbcReservationDaoTest {
         themeInsertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
+        userInsertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("users")
+                .usingGeneratedKeyColumns("id");
 
         insertReservationTime("10:00");
         insertReservationTime("11:00");
@@ -65,8 +70,11 @@ class JdbcReservationDaoTest {
         insertTheme("에버", "공포", "공포.jpg");
         insertTheme("배키", "스릴러", "스릴러.jpg");
 
-        insertReservation("브라운", "2023-08-05", "1", "1");
-        insertReservation("리사", "2023-08-01", "2", "2");
+        insertUser("브라운", "brown@email.com", "1111");
+        insertUser("리사", "lisa@email.com", "2222");
+
+        insertReservation( "2023-08-05", "1", "1", "1");
+        insertReservation("2023-08-01", "2", "2", "2");
     }
 
     private void insertReservationTime(String startAt) {
@@ -75,21 +83,29 @@ class JdbcReservationDaoTest {
         reservationTimeInsertActor.execute(parameters);
     }
 
-    private void insertReservation(String name, String date, String timeId, String themeId) {
-        Map<String, Object> parameters = new HashMap<>(3);
-        parameters.put("name", name);
-        parameters.put("date", date);
-        parameters.put("time_id", timeId);
-        parameters.put("theme_id", themeId);
-        reservationInsertActor.execute(parameters);
-    }
-
     private void insertTheme(String name, String description, String thumbnail) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", name);
         parameters.put("description", description);
         parameters.put("thumbnail", thumbnail);
         themeInsertActor.execute(parameters);
+    }
+
+    private void insertUser(String name, String email, String password) {
+        Map<String, Object> parameters = new HashMap<>(3);
+        parameters.put("name", name);
+        parameters.put("email", email);
+        parameters.put("password", password);
+        userInsertActor.execute(parameters);
+    }
+
+    private void insertReservation(String date, String timeId, String themeId, String userId) {
+        Map<String, Object> parameters = new HashMap<>(4);
+        parameters.put("date", date);
+        parameters.put("time_id", timeId);
+        parameters.put("theme_id", themeId);
+        parameters.put("user_id", userId);
+        reservationInsertActor.execute(parameters);
     }
 
     @DisplayName("모든 예약을 조회한다")
@@ -111,7 +127,9 @@ class JdbcReservationDaoTest {
     void should_add_reservation() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "에버", "공포", "공포.jpg");
-        Reservation reservation = new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime, theme);
+        User user = new User(1L, "썬", "sun@email.com", "1234");
+        Reservation reservation =
+                new Reservation(LocalDate.of(2024, 9, 1), reservationTime, theme, user);
 
         reservationDao.addReservation(reservation);
 
@@ -134,7 +152,7 @@ class JdbcReservationDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
-    @DisplayName("아이디가 존재하면 거짓을 반환한다.")
+    @DisplayName("아이디가 존재하지 않으면 거짓을 반환한다.")
     @Test
     void should_return_false_when_id_not_exist() {
         long count = reservationDao.countReservationById(100000000);
