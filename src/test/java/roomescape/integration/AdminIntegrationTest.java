@@ -36,25 +36,24 @@ public class AdminIntegrationTest {
         jdbcTemplate.update("delete from THEME");
         jdbcTemplate.update("ALTER TABLE THEME alter column id restart with 1");
         jdbcTemplate.update("insert into THEME values ( 1,'a','a','a')");
+        jdbcTemplate.update(
+                "INSERT INTO MEMBER (NAME, EMAIL, PASSWORD) VALUES ( 'name', 'email@email.com', 'password' )");
         RestAssured.port = port;
     }
 
     @Test
     @DisplayName("관리자 예약 페이지가 잘 동작한다.")
     void adminReservationPageWork() {
-        Integer integer = jdbcTemplate.queryForObject("select id from reservation_time",
-                Integer.class);
-        System.out.println(integer);
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
@@ -77,20 +76,19 @@ public class AdminIntegrationTest {
                 .body("size()", is(0));
     }
 
-    //todo: api 구현 후 다시 테스트
-    //@Test
+    @Test
     @DisplayName("관리자 예약 페이지가 DB와 함께 잘 동작한다.")
     void adminReservationPageWorkWithDB() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 

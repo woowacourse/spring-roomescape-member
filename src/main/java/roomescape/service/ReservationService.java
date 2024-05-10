@@ -62,7 +62,7 @@ public class ReservationService {
         return ReservationResponse.from(reservationRepository.save(beforeSaveReservation));
     }
 
-    public ReservationResponse saveByAdmin(LoginMember admin, AdminReservationRequest reservationRequest) {
+    public ReservationResponse saveByAdmin(AdminReservationRequest reservationRequest) {
         ReservationTime requestedTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_RESERVATION_TIME));
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
