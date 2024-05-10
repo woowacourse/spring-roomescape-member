@@ -23,11 +23,17 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws IOException {
         logger.trace("request = {}", request.getRequestURI());
 
-        String token = authenticationExtractor.extract(request);
-        authService.validateToken(token);
+        try {
+            String token = authenticationExtractor.extract(request, LoginController.TOKEN_NAME);
+            authService.validateToken(token);
+        } catch (AuthenticationException e) {
+            response.sendRedirect("/login");
+            return false;
+        }
         return true;
     }
 }
