@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Member;
-import roomescape.dto.MemberDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,13 +20,6 @@ public class MemberServiceTest {
     @Autowired
     public MemberServiceTest(MemberService memberService) {
         this.memberService = memberService;
-    }
-
-    @Test
-    void registerTest() {
-        Long memberId = memberService.register(new MemberDto("name1", "email1@email.com", "password"));
-
-        assertThat(memberId).isNotNull();
     }
 
     @Test

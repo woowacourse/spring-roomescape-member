@@ -28,10 +28,11 @@ public class MemberDaoTest {
     @Test
     void insertTest() {
         String name = "name";
+        String role = null;
         String email = "email@email.com";
         String password = "password";
 
-        Member member = new Member(memberDao.insert(name, email, password), name, email, password);
+        Member member = new Member(memberDao.insert(name, role, email, password), "USER", name, email, password);
 
         assertThat(member).isNotNull();
     }

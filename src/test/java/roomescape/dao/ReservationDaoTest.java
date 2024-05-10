@@ -45,7 +45,7 @@ public class ReservationDaoTest {
     @Test
     void insertTest() {
         Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM reservation", Long.class);
-        Long id = reservationDao.insert("토미", "2024-01-02", 1L, 1L);
+        Long id = reservationDao.insert("2024-01-02", 1L, 1L, 1L);
 
         assertThat(id).isEqualTo(index + 1);
     }
@@ -53,13 +53,13 @@ public class ReservationDaoTest {
     @DisplayName("요청 파라미터의 값이 올바르지 않으면 예외를 발생한다.")
     @Test
     void wrongInsertTest() {
-        assertThatThrownBy(() -> reservationDao.insert("토미".repeat(130), "2024-01-01", 1L, 1L))
+        assertThatThrownBy(() -> reservationDao.insert( "2024-01-01", -1L, 1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", "2024-01-01", -1L, 1L))
+        assertThatThrownBy(() -> reservationDao.insert(null, 1L, 1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", null, 1L, 1L))
+        assertThatThrownBy(() -> reservationDao.insert("2024-01-01", 1L, -1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", "2024-01-01", 1L, -1L))
+        assertThatThrownBy(() -> reservationDao.insert("2024-01-01", 1L, 1L, -1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -68,10 +68,10 @@ public class ReservationDaoTest {
     void deleteByIdTest() {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(name, date, time_Id, theme_id) VALUES (?, ?, ?, ?)",
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, time_Id, theme_id, member_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"});
-            ps.setString(1, "네오");
-            ps.setString(2, "2024-01-03");
+            ps.setString(1, "2024-01-03");
+            ps.setLong(2, 1L);
             ps.setLong(3, 1L);
             ps.setLong(4, 1L);
             return ps;

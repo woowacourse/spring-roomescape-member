@@ -3,7 +3,6 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
-import roomescape.dto.MemberDto;
 
 import java.util.List;
 
@@ -15,10 +14,6 @@ public class MemberService {
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
-
-//    public Long register(MemberDto memberDto) {
-//        return memberDao.insert(memberDto.name(), memberDto.email(), memberDto.password());
-//    }
 
     public Member login(String email, String password) {
         Member member = memberDao.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
