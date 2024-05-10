@@ -8,7 +8,7 @@ import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.util.Date;
+import roomescape.util.DateUtil;
 
 @Service
 public class ThemeService {
@@ -41,7 +41,7 @@ public class ThemeService {
 
     public List<ThemeResponse> getPopularThemes() {
         List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForDate(
-                Date.A_WEEK_AGO, Date.YESTERDAY);
+                DateUtil.A_WEEK_AGO, DateUtil.YESTERDAY);
         return popularThemeIds.stream()
                 .map(this::findThemeById)
                 .map(ThemeResponse::from)

@@ -2,8 +2,10 @@ package roomescape.util;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 
-public class Date {
+public class DateUtil {
 
     public static final LocalDate TODAY = LocalDate.now();
     public static final LocalDate YESTERDAY = LocalDate.now().minusDays(1);
@@ -14,5 +16,15 @@ public class Date {
         boolean isPastDate = date.isBefore(TODAY);
         boolean isPastTime = date.isEqual(TODAY) && time.isBefore(CURRENT_TIME);
         return isPastDate || isPastTime;
+    }
+
+    public static Date getCurrentTime() {
+        return new Date();
+    }
+    public static Date getAfterTenMinutes() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, 10);
+        return calendar.getTime();
     }
 }

@@ -15,7 +15,7 @@ import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.util.Date;
+import roomescape.util.DateUtil;
 
 @Service
 public class ReservationService {
@@ -118,7 +118,7 @@ public class ReservationService {
     }
 
     private void validateUnPassedDate(LocalDate date, LocalTime time) {
-        if (Date.isPastDateTime(date, time)) {
+        if (DateUtil.isPastDateTime(date, time)) {
             throw new ClientErrorExceptionWithLog(
                     "[ERROR] 지나간 날짜와 시간은 예약이 불가능합니다.",
                     "생성 예약 시간 : " + date + " " + time
