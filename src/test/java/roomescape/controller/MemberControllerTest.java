@@ -89,4 +89,24 @@ class MemberControllerTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.header("Set-Cookie").split(";")[0]).isNotEmpty();
     }
+
+    @DisplayName("토큰과 함께 로그인 확인 요청 시 200를 응답한다.")
+    @Test
+    void given_when_loginCheckSuccess_then_statusCodeOk() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", "wedge@test.com");
+        params.put("password", "test1234");
+        var cookies = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .extract().response().getDetailedCookies();
+
+        RestAssured.given().log().all().cookies(cookies)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

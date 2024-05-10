@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.domain.Member;
 import roomescape.domain.Password;
 import roomescape.domain.PasswordEncoder;
 import roomescape.domain.dto.*;
@@ -53,5 +54,15 @@ public class MemberService {
         }
         final String accessToken = jwtTokenProvider.createToken(loginRequest.email());
         return new TokenResponse(accessToken);
+    }
+
+    public LoginResponse loginCheck(final String accessToken) {
+        if (!jwtTokenProvider.validateToken(accessToken)) {
+            throw new AccessNotAllowException("로그인 정보가 일치하지 않습니다.");
+        }
+        final String payload = jwtTokenProvider.getPayload(accessToken);
+        final Member member = memberDao.findByEmail(payload)
+                .orElseThrow(() -> new AccessNotAllowException("로그인 정보가 부적절 합니다."));
+        return LoginResponse.from(member);
     }
 }

@@ -43,6 +43,15 @@ public class MemberDao {
         return jdbcTemplate.query(sql, memberRowMapper);
     }
 
+    public Optional<Member> findByEmail(final String email) {
+        String sql = "select id, email, name from member where email = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberRowMapper, email));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public Long create(final SignupRequest signupRequest, final Password password) {
         String sql = "insert into member(email, password, salt, name) values(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

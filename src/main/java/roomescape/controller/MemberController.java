@@ -1,22 +1,25 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.dto.LoginRequest;
-import roomescape.domain.dto.SignupRequest;
-import roomescape.domain.dto.SignupResponse;
-import roomescape.domain.dto.TokenResponse;
+import roomescape.auth.AuthorizationExtractor;
+import roomescape.auth.CookieAuthorizationExtractor;
+import roomescape.domain.dto.*;
 import roomescape.service.MemberService;
 
 @RestController
 public class MemberController {
-    private static final String SESSION_NAME = "token";
+    private final AuthorizationExtractor<String> authorizationExtractor;
     private final MemberService memberService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(final MemberService memberService) {
+        this.authorizationExtractor = new CookieAuthorizationExtractor();
         this.memberService = memberService;
     }
 
@@ -27,9 +30,19 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest, HttpSession httpSession) {
+    ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
         final TokenResponse tokenResponse = memberService.login(loginRequest);
-        httpSession.setAttribute(SESSION_NAME, tokenResponse.accessToken());
-        return ResponseEntity.ok().build();
+        ResponseCookie responseCookie = ResponseCookie.from(authorizationExtractor.TOKEN_NAME, tokenResponse.accessToken())
+                .httpOnly(true)
+                .path("/")
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
+    }
+
+    @GetMapping("/login/check")
+    ResponseEntity<LoginResponse> loginCheck(HttpServletRequest request) {
+        String accessToken = authorizationExtractor.extract(request);
+        final LoginResponse loginResponse = memberService.loginCheck(accessToken);
+        return ResponseEntity.ok(loginResponse);
     }
 }
