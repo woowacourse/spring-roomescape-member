@@ -28,4 +28,20 @@ class MemberTest {
                 () -> assertThat(member.isValidPassword("wrong")).isFalse()
         );
     }
+
+    @Test
+    @DisplayName("어드민 계정인지 확인할 수 있다.")
+    void isAdmin() {
+        Member member = new Member(new Name("아톰"), "email", "password", MemberRole.ADMIN);
+
+        assertThat(member.isAdmin()).isTrue();
+    }
+
+    @Test
+    @DisplayName("어드민 계정이 아닌지 확인할 수 있다.")
+    void isNotAdmin() {
+        Member member = new Member(new Name("아톰"), "email", "password", MemberRole.NORMAL);
+
+        assertThat(member.isAdmin()).isFalse();
+    }
 }
