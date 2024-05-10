@@ -8,9 +8,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.model.Member;
 import roomescape.member.model.MemberRole;
+import roomescape.reservation.dto.SearchReservationsParams;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
+import roomescape.reservation.repository.param.SqlGenerator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -58,6 +60,26 @@ public class InMemoryReservationRepository implements ReservationRepository {
                         rs.getString("member_email")
                 )
         ));
+    }
+
+    @Override
+    public List<Reservation> searchReservations(final SearchReservationsParams searchReservationsParams) {
+        final String sql = SqlGenerator.generateQueryWithSearchReservationsParams(
+                searchReservationsParams,
+                """
+                    SELECT
+                        r.id AS reservation_id, r.date AS reservation_date, 
+                        rt.id AS time_id, rt.start_at AS reservation_time, 
+                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
+                        m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
+                    FROM reservation AS r 
+                    INNER JOIN reservation_time AS rt on r.time_id = rt.id 
+                    INNER JOIN theme AS th ON r.theme_id = th.id
+                    INNER JOIN member AS m ON r.member_id = m.id
+                """
+        );
+
+        return template.query(sql, itemRowMapper());
     }
 
     @Override

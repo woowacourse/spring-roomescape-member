@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import roomescape.reservation.dto.SearchReservationsParams;
 import roomescape.reservation.model.Reservation;
 
 import java.time.LocalDate;
@@ -7,6 +8,8 @@ import java.util.List;
 
 public interface ReservationRepository {
     List<Reservation> findAll();
+
+    List<Reservation> searchReservations(SearchReservationsParams searchReservationsParams);
 
     Reservation save(Reservation reservation);
 

@@ -3,6 +3,7 @@ package roomescape.reservation.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.SaveReservationRequest;
+import roomescape.reservation.dto.SearchReservationsRequest;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.service.ReservationService;
 import roomescape.resolver.Authenticated;
@@ -29,6 +31,14 @@ public class ReservationController {
     @GetMapping("/reservations")
     public List<ReservationResponse> getReservations() {
         return reservationService.getReservations()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/admin/reservations")
+    public List<ReservationResponse> searchReservations(@ModelAttribute SearchReservationsRequest request) {
+        return reservationService.searchReservations(request)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

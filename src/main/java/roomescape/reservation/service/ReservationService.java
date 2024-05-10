@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import roomescape.member.model.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.SaveReservationRequest;
+import roomescape.reservation.dto.SearchReservationsParams;
+import roomescape.reservation.dto.SearchReservationsRequest;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationDate;
 import roomescape.reservation.model.ReservationTime;
@@ -38,6 +40,17 @@ public class ReservationService {
 
     public List<Reservation> getReservations() {
         return reservationRepository.findAll();
+    }
+
+    public List<Reservation> searchReservations(final SearchReservationsRequest request) {
+        final SearchReservationsParams searchReservationsParams = new SearchReservationsParams(
+                request.memberId(),
+                request.themeId(),
+                request.from(),
+                request.to()
+        );
+
+        return reservationRepository.searchReservations(searchReservationsParams);
     }
 
     public Reservation saveReservation(final SaveReservationRequest request) {

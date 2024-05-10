@@ -187,8 +187,8 @@ function deleteRow(event) {
 function applyFilter(event) {
   event.preventDefault();
 
-  const themeId = document.getElementById('theme').value;
   const memberId = document.getElementById('member').value;
+  const themeId = document.getElementById('theme').value;
   const dateFrom = document.getElementById('date-from').value;
   const dateTo = document.getElementById('date-to').value;
 
@@ -196,7 +196,7 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+  fetch(`/admin/reservations?memberId=${memberId}&themeId=${themeId}&from=${dateFrom}&to=${dateTo}`, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
