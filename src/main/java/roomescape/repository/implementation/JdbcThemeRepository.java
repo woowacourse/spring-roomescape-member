@@ -37,9 +37,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Long save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName().getName())
-                .addValue("description", theme.getDescription().getDescription())
-                .addValue("thumbnail", theme.getThumbnail().getThumbnail());
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 

@@ -22,15 +22,15 @@ public class Theme {
         return id;
     }
 
-    public ThemeName getName() {
-        return name;
+    public String getName() {
+        return name.getName();
     }
 
-    public Description getDescription() {
-        return description;
+    public String getDescription() {
+        return description.getDescription();
     }
 
-    public Thumbnail getThumbnail() {
-        return thumbnail;
+    public String getThumbnail() {
+        return thumbnail.getThumbnail();
     }
 }

@@ -60,9 +60,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Long save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId())
-                .addValue("member_id", reservation.getMember().getId());
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getThemeId())
+                .addValue("member_id", reservation.getMemberId());
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 

@@ -33,6 +33,10 @@ public class Reservation {
         return theme.getId();
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public Long getId() {
         return id;
     }
