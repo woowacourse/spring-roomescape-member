@@ -17,7 +17,8 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
+    public boolean preHandle(final HttpServletRequest request,
+                             final HttpServletResponse response, final Object handler) {
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
         if (token.isEmpty()) {

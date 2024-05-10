@@ -41,8 +41,8 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<AvailabilityTimeResponse> addTime(@RequestBody
-                                                            @Valid final CreateTimeRequest createTimeRequest) {
+    public ResponseEntity<AvailabilityTimeResponse> addTime(
+            @RequestBody @Valid final CreateTimeRequest createTimeRequest) {
         final AvailabilityTimeResponse time = timeService.addTime(createTimeRequest);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(time.id())

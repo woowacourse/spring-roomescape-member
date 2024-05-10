@@ -36,7 +36,8 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL, M.EMAIL, M.PASSWORD, M.NAME, M.ROLE
+                SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME,
+                        T.DESCRIPTION, T.THUMBNAIL, M.EMAIL, M.PASSWORD, M.NAME, M.ROLE
                 FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
@@ -119,7 +120,8 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findFilter(final ReservationSearch search) {
         String sql = """
-                SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, M.NAME FROM RESERVATION AS R
+                SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, M.NAME
+                FROM RESERVATION AS R
                 JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 JOIN THEME T ON T.ID = R.THEME_ID
                 JOIN MEMBER M ON M.ID = R.MEMBER_ID
