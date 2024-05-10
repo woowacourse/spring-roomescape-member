@@ -23,13 +23,13 @@ public class ThemeService {
 
     public ThemeResponse save(final ThemeRequest themeRequest) {
         Theme theme = themeRequest.toEntity();
-        return ThemeResponse.from(themeDao.save(theme));
+        return new ThemeResponse(themeDao.save(theme));
     }
 
     public List<ThemeResponse> getAll() {
         return themeDao.getAll()
                 .stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
@@ -40,7 +40,7 @@ public class ThemeService {
                 10
         );
         return themeRankingIds.stream()
-                .map(id -> ThemeResponse.from(themeDao.findById(id).get()))
+                .map(id -> new ThemeResponse(themeDao.findById(id).get()))
                 .toList();
     }
 
