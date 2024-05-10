@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public enum ExceptionType {
     NOT_FOUND_MEMBER(BAD_REQUEST, "존재하지 않는 유저입니다."),
     WRONG_PASSWORD(BAD_REQUEST, "잘못된 비밀번호입니다."),
     REQUIRED_LOGIN(UNAUTHORIZED, "로그인이 필요합니다."),
-    ;
+    PERMISSION_DENIED(FORBIDDEN, "접근 권한이 없습니다.");
 
     private final HttpStatus status;
     private final String message;
