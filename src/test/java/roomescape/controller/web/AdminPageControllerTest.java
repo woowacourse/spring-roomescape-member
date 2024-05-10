@@ -7,11 +7,14 @@ import static org.mockito.Mockito.doReturn;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.BaseControllerTest;
+import roomescape.controller.exception.ErrorResponse;
 
 @Sql("/integration-data.sql")
 class AdminPageControllerTest extends BaseControllerTest {
@@ -33,5 +36,37 @@ class AdminPageControllerTest extends BaseControllerTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("로그인하지 않으면 401 에러가 발생한다.")
+    void notLoggedIn() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/admin")
+                .then().log().all()
+                .extract();
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(errorResponse.message()).isEqualTo("로그인이 필요합니다.");
+    }
+
+    @Test
+    @DisplayName("로그인을 했지만 어드민이 아니면 403 에러가 발생한다.")
+    void notAdmin() {
+        Long userId = 2L;
+        doReturn(userId).when(jwtTokenProvider).getMemberId(any());
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie("token", "mock-token")
+                .when().get("/admin")
+                .then().log().all()
+                .extract();
+
+        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(errorResponse.message()).isEqualTo("어드민 권한이 필요합니다.");
     }
 }
