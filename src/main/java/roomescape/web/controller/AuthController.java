@@ -13,6 +13,7 @@ import roomescape.core.domain.Member;
 import roomescape.core.dto.LoginCheckResponseDto;
 import roomescape.core.dto.LoginRequestDto;
 import roomescape.core.service.AuthService;
+import roomescape.web.exception.AuthorizationException;
 import roomescape.web.infrastructure.CookieManager;
 
 @RestController
@@ -39,8 +40,18 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponseDto> checkLogin(final HttpServletRequest request) {
         final String token = cookieManager.extractToken(request.getCookies());
+        if (token == null) {
+            throw new AuthorizationException("토큰이 존재하지 않습니다.");
+        }
         final Member member = authService.findMemberByToken(token);
         final LoginCheckResponseDto response = new LoginCheckResponseDto(member);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(final HttpServletResponse response) {
+        final Cookie cookie = cookieManager.createExpiredCookie();
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 }

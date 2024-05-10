@@ -118,4 +118,31 @@ class AuthControllerTest {
                 .then().log().all()
                 .statusCode(401);
     }
+
+    @Test
+    @DisplayName("로그아웃 시, 쿠키를 삭제한다.")
+    void logout() {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("email", "hong@gmail.com");
+        params.put("password", "1234");
+
+        final String cookie = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        final String logoutCookie = RestAssured.given().log().all()
+                .header("Cookie", cookie)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        assertThat(logoutCookie).isEqualTo("token=");
+    }
 }
