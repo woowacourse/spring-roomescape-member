@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +49,7 @@ public class MemberAuthController {
         String token = extractTokenFromCookie(request.getCookies());
         MemberAppResponse appResponse = memberAuthService.findMemberByToken(token);
         MemberWebResponse response = new MemberWebResponse(appResponse.name());
-        
+
         return ResponseEntity.ok().body(response);
     }
 
@@ -70,6 +71,17 @@ public class MemberAuthController {
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberWebResponse>> getMembers() {
+        List<MemberAppResponse> appResponses = memberAuthService.findAll();
+
+        List<MemberWebResponse> responses = appResponses.stream()
+            .map(memberAppResponse -> new MemberWebResponse(memberAppResponse.name()))
+            .toList();
+
+        return ResponseEntity.ok().body(responses);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
