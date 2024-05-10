@@ -19,7 +19,7 @@ public class MemberController {
     }
 
     @GetMapping
-    public List<MemberResponse> findAll() { // TODO 테스트추가
+    public List<MemberResponse> findAll() {
         return memberService.findAll();
     }
 }
