@@ -1,7 +1,5 @@
 package roomescape.service.security;
 
-import java.util.Map;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import roomescape.domain.Member;
@@ -17,7 +15,6 @@ public class JwtUtils {
     public static String encode(Member user) {
         return Jwts.builder()
                 .subject(user.getId().toString())
-                .claims(Map.of("name", user.getName(), "email", user.getEmail()))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }

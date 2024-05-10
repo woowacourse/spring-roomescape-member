@@ -26,8 +26,8 @@ import roomescape.web.dto.request.LoginRequest;
 import roomescape.web.dto.response.MemberResponse;
 
 
-@WebMvcTest(controllers = MemberController.class)
-class MemberControllerTest {
+@WebMvcTest(controllers = LoginController.class)
+class LoginControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired

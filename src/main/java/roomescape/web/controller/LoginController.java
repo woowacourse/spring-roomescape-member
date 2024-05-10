@@ -20,7 +20,7 @@ import roomescape.web.dto.response.MemberResponse;
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
-public class MemberController {
+public class LoginController {
     private final MemberService memberService;
 
     @PostMapping

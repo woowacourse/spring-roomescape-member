@@ -1,7 +1,9 @@
 package roomescape.web.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -21,8 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.domain.Member;
 import roomescape.service.ReservationService;
+import roomescape.service.security.JwtUtils;
 import roomescape.web.dto.request.ReservationRequest;
+import roomescape.web.dto.request.UserReservationRequest;
 import roomescape.web.dto.response.ReservationResponse;
 import roomescape.web.dto.response.ReservationTimeResponse;
 import roomescape.web.dto.response.ThemeResponse;
@@ -40,11 +45,11 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 201Created를 반환한다.")
     void saveReservation_ShouldReturn201StatusCode_WhenInsertAllValidateField() throws Exception {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1, 1);
-        Mockito.when(reservationService.saveReservation(request))
+        String token = JwtUtils.encode(new Member(1L, "name", "email", "password"));
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
+        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
-                        new ReservationResponse(1L, LocalDate.now(),
-                                new ReservationTimeResponse(1L, LocalTime.now()),
+                        new ReservationResponse(1L, LocalDate.now(), new ReservationTimeResponse(1L, LocalTime.now()),
                                 new ThemeResponse(1L, "n", "d", "t"))
                 );
 
@@ -52,6 +57,7 @@ class ReservationControllerTest {
         mockMvc.perform(
                         post("/reservations")
                                 .content(objectMapper.writeValueAsString(request))
+                                .header(SET_COOKIE, "token=" + token)
                                 .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated());
@@ -61,8 +67,8 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 location 헤더가 추가된다.")
     void saveReservation_ShouldRedirect_WhenInsertAllValidateField() throws Exception {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1, 1);
-        Mockito.when(reservationService.saveReservation(request))
+        ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
+        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
                         new ReservationResponse(1L, LocalDate.now(),
                                 new ReservationTimeResponse(1L, LocalTime.now()),
@@ -82,7 +88,7 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 날짜에 빈값이면 400 BadRequest를 반환한다.")
     void saveReservation_ShouldReturn400StatusCode_WhenInsertNullDate() throws Exception {
         // given
-        ReservationRequest request = new ReservationRequest(null, 1, 1);
+        UserReservationRequest request = new UserReservationRequest(null, 1L, 1L);
 
         // when & then
         mockMvc.perform(
@@ -90,14 +96,14 @@ class ReservationControllerTest {
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(APPLICATION_JSON)
                 )
-                .andExpect(content().string(containsString("날짜는 빈값을 허용하지 않습니다.")));
+                .andExpect(content().string(containsString("날짜에 빈값은 허용하지 않습니다.")));
     }
 
     @Test
     @DisplayName("예약 저장 시 타임아이디가 0이하의 값이면 400 BadRequest를 반환한다.")
     void saveReservation_ShouldReturn400StatusCode_WhenInsertLessThen0TimeId() throws Exception {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(), 0, 1);
+        UserReservationRequest request = new UserReservationRequest(LocalDate.now().plusDays(1), 0L, 1L);
 
         // when & then
         mockMvc.perform(
@@ -112,7 +118,7 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 테마아이디가 0이하의 값이면 400 BadRequest를 반환한다.")
     void saveReservation_ShouldReturn400StatusCode_WhenInsertLessThen0ThemeId() throws Exception {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.now(), 1, 0);
+        UserReservationRequest request = new UserReservationRequest(LocalDate.now().plusDays(1), 1L, 0L);
 
         // when & then
         mockMvc.perform(
@@ -122,4 +128,5 @@ class ReservationControllerTest {
                 )
                 .andExpect(content().string(containsString("테마 아이디는 1이상의 정수만 허용합니다.")));
     }
+
 }
