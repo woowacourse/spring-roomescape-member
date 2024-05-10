@@ -2,31 +2,15 @@ package roomescape.acceptance.guest;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.acceptance.AcceptanceTest;
 import roomescape.dto.ThemeResponse;
 
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
-class ThemeAcceptanceTest {
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    private void setUp() {
-        RestAssured.port = port;
-    }
+class ThemeAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("테마 목록을 조회한다.")
     @Test

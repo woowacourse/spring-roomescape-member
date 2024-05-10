@@ -4,12 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.MemberReservationRequest;
 import roomescape.dto.ReservationResponse;
@@ -24,22 +21,11 @@ import static roomescape.acceptance.Fixture.customerToken;
 import static roomescape.acceptance.PreInsertedData.preInsertedReservationTime1;
 import static roomescape.acceptance.PreInsertedData.preInsertedTheme1;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
-class ReservationAcceptanceTest {
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    private void setUp() {
-        RestAssured.port = port;
-    }
+class ReservationAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("고객이 예약을 추가한다.")
     @Nested
-    class addReservation {
+    class addReservation extends NestedAcceptanceTest {
 
         @DisplayName("정상 작동")
         @Test

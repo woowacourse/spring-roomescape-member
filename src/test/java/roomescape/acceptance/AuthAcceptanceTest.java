@@ -5,16 +5,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.LogInRequest;
 import roomescape.dto.MemberNameResponse;
 
@@ -27,18 +21,7 @@ import static roomescape.acceptance.Fixture.secretKey;
 import static roomescape.acceptance.PreInsertedData.preInsertedAdmin;
 import static roomescape.acceptance.PreInsertedData.preInsertedCustomer;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
-class AuthAcceptanceTest {
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    private void setUp() {
-        RestAssured.port = port;
-    }
+class AuthAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("로그인, 로그인 후 보이는 이름 확인")
     @TestFactory
