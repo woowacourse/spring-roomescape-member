@@ -63,7 +63,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findTopThemesByReservationCountDuringPeriod(final int period, final int limit) {
+    public List<Theme> findTopThemesByReservationCountDuringPeriod(final LocalDate period, final int limit) {
         final String sql = """
                 SELECT th.id AS id, th.name AS name, th.description AS description, th.thumbnail AS thumbnail
                 FROM theme th
@@ -73,6 +73,6 @@ public class ThemeJdbcDao implements ThemeDao {
                 ORDER BY COUNT(r.id) DESC
                 LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper, LocalDate.now().minusDays(period), limit);
+        return jdbcTemplate.query(sql, rowMapper, period, limit);
     }
 }

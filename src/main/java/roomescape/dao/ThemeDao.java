@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import roomescape.domain.AggregationLimit;
+import roomescape.domain.AggregationPeriod;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
@@ -16,5 +18,5 @@ public interface ThemeDao {
 
     void deleteById(final Long id);
 
-    List<Theme> findTopThemesByReservationCountDuringPeriod(final int period, final int limit);
+    List<Theme> findTopThemesByReservationCountDuringPeriod(final LocalDate period, final int limit);
 }

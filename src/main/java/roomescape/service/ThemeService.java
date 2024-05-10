@@ -3,18 +3,18 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.AggregationLimit;
+import roomescape.domain.AggregationPeriod;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Transactional
 @Service
 public class ThemeService {
-
-    private static final int POPULARITY_AGGREGATION_PERIOD = 7;
-    private static final int POPULARITY_LIMIT = 10;
 
     private final ThemeDao themeDao;
 
@@ -49,8 +49,13 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> findPopularThemes() {
+
+        final LocalDate period = AggregationPeriod.getAggregationPeriod(LocalDate.now());
+        final int limit = AggregationLimit.getAggregationLimit();
+
         final List<Theme> allOrderByReservationCountInLastWeek
-                = themeDao.findTopThemesByReservationCountDuringPeriod(POPULARITY_AGGREGATION_PERIOD, POPULARITY_LIMIT);
+                = themeDao.findTopThemesByReservationCountDuringPeriod(period, limit);
+
         return allOrderByReservationCountInLastWeek.stream()
                 .map(ThemeResponse::from)
                 .toList();
