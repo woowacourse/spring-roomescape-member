@@ -2,6 +2,7 @@ package roomescape.service.fake;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -16,7 +17,16 @@ public class FakeUserDao implements UserDao {
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) {
         return users.stream()
-                .filter(user -> user.getEmail() == email && user.getPassword() == password)
+                .filter(user -> Objects.equals(user.getEmail(), email)
+                        && Objects.equals(user.getPassword(), password))
+                .findAny();
+    }
+
+    @Override
+    public Optional<String> findUserNameByUserId(Long userId) {
+        return users.stream()
+                .filter(user -> Objects.equals(user.getId(), userId))
+                .map(User::getName)
                 .findAny();
     }
 

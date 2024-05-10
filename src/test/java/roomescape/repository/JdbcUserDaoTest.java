@@ -56,10 +56,20 @@ class JdbcUserDaoTest {
         assertThat(optionalUser).contains(user);
     }
 
+    @DisplayName("아이디로 사용자 이름을 조회한다.")
+    @Test
+    void should_find_username_when_given_user_id() {
+        User user = new User(1L, "썬", "sun@email.com", "1234");
+        insertUser(user);
+
+        Optional<String> userNameByUserId = userDao.findUserNameByUserId(1L);
+
+        assertThat(userNameByUserId).contains("썬");
+    }
+
 
     private void insertUser(User user) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(user);
         insertActor.execute(parameters);
     }
-
 }

@@ -37,4 +37,10 @@ public class JdbcUserDao implements UserDao {
         String sql = "SELECT id, name, email, password FROM users WHERE email = ? AND password = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, email, password));
     }
+
+    @Override
+    public Optional<String> findUserNameByUserId(Long userId) {
+        String sql = "SELECT name FROM users WHERE id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, userId));
+    }
 }
