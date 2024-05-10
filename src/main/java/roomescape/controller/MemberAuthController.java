@@ -17,7 +17,7 @@ import roomescape.controller.request.MemberSignUpRequest;
 import roomescape.controller.request.TokenWebRequest;
 import roomescape.controller.response.MemberWebResponse;
 import roomescape.service.MemberAuthService;
-import roomescape.service.request.MemberAppRequest;
+import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.request.TokenAppRequest;
 import roomescape.service.response.MemberAppResponse;
 
@@ -56,7 +56,7 @@ public class MemberAuthController {
     @PostMapping("/signup")
     public ResponseEntity<MemberWebResponse> signUp(@Valid @RequestBody MemberSignUpRequest request) {
         MemberAppResponse appResponse = memberAuthService.signUp(
-            new MemberAppRequest(request.name(), request.email(), request.password()));
+            new MemberSignUpAppRequest(request.name(), request.email(), request.password()));
 
         MemberWebResponse response = new MemberWebResponse(appResponse.id(), appResponse.name(), appResponse.role());
         return ResponseEntity.created(URI.create("/member" + appResponse.id())).body(response);

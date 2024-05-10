@@ -11,7 +11,7 @@ import roomescape.domain.vo.MemberPassword;
 import roomescape.domain.vo.MemberRole;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.EmailAlreadyExistsException;
-import roomescape.service.request.MemberAppRequest;
+import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.request.TokenAppRequest;
 import roomescape.service.response.MemberAppResponse;
 
@@ -28,7 +28,7 @@ public class MemberAuthService {
         this.memberRepository = memberRepository;
     }
 
-    public MemberAppResponse signUp(MemberAppRequest request) {
+    public MemberAppResponse signUp(MemberSignUpAppRequest request) {
         if (isExistsMember(request.email(), request.password())) {
             throw new EmailAlreadyExistsException();
         }
