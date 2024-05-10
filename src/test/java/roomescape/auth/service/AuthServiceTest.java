@@ -20,6 +20,7 @@ import roomescape.global.exception.NoSuchRecordException;
 import roomescape.global.exception.WrongPasswordException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.fixture.MemberFixture;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -37,12 +38,11 @@ class AuthServiceTest {
     @DisplayName("올바른 로그인 요청이 들어오면 토큰을 반환한다")
     @Test
     void should_return_token_when_valid_login_request_arrived() {
-        Member member = new Member(1L, "리비", "aa@gmail.com", "123");
 
-        when(memberRepository.findByEmail(any(String.class))).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(any(String.class))).thenReturn(Optional.of(MemberFixture.MEMBER_ID_1));
         when(jwtTokenProvider.createToken(any(Member.class))).thenReturn(DUMMY_TOKEN.getAccessToken());
 
-        LoginRequest request = new LoginRequest("aa@gmail.com", "123");
+        LoginRequest request = new LoginRequest("aa@gmail.com", "12");
         assertThat(authService.login(request).getAccessToken()).isNotNull();
     }
 
@@ -59,9 +59,7 @@ class AuthServiceTest {
     @DisplayName("로그인 요청 시 비밀번호가 틀리다면 예외가 발생한다")
     @Test
     void should_throw_exception_when_password_is_incorrect() {
-        Member member = new Member(1L, "리비", "aa@gmail.com", "123");
-
-        when(memberRepository.findByEmail(any(String.class))).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(any(String.class))).thenReturn(Optional.of(MemberFixture.MEMBER_ID_1));
         LoginRequest request = new LoginRequest("aa@gmail.com", "1234");
 
         assertThatThrownBy(() -> authService.login(request))
@@ -71,13 +69,11 @@ class AuthServiceTest {
     @DisplayName("유효한 토큰으로 로그인 체크 시 이름을 반환한다")
     @Test
     void should_return_name_response_when_valid_token_check_performed() {
-        Member member = new Member(1L, "리비", "aa@gmail.com", "123");
-
         when(jwtTokenProvider.isInvalidToken(any(String.class))).thenReturn(false);
         when(jwtTokenProvider.getPayload(DUMMY_TOKEN.getAccessToken())).thenReturn("1");
-        when(memberRepository.findById(any(Long.class))).thenReturn(Optional.of(member));
+        when(memberRepository.findById(any(Long.class))).thenReturn(Optional.of(MemberFixture.MEMBER_ID_1));
 
-        assertThat(authService.checkLogin(DUMMY_TOKEN.getAccessToken()).name()).isEqualTo("리비");
+        assertThat(authService.checkLogin(DUMMY_TOKEN.getAccessToken()).name()).isEqualTo("썬");
     }
 
     @DisplayName("로그인 체크 시 유효하지 않은 토큰이라면 예외가 발생한다")

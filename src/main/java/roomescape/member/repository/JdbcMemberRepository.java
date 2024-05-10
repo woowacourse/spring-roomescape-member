@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.domain.Role;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -16,7 +17,8 @@ public class JdbcMemberRepository implements MemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            Role.from(resultSet.getString("role"))
     );
 
     private final JdbcTemplate jdbcTemplate;

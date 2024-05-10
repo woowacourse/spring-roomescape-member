@@ -16,10 +16,12 @@ values ('16:00:00');
 insert into reservation_time(start_at)
 values ('17:00:00');
 
-insert into member(name, email, password)
-values ('썬', 'aa@gmail.com', '123'),
-       ('리비', 'bb@gmail.com', '123'),
-       ('도도', 'cc@gmail.com', '123');
+insert into member(name, email, password, role)
+values ('썬', 'aa@gmail.com', '123', 'member'),
+       ('리비', 'bb@gmail.com', '123', 'member'),
+       ('도도', 'cc@gmail.com', '123', 'member'),
+       ('어드민', 'dd@gmail.com', '123', 'admin');
+
 
 insert into reservation(member_id, date, time_id, theme_id)
 values (1, '2024-05-01', '1', '1');

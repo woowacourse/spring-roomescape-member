@@ -11,10 +11,12 @@ DELETE  FROM member;
 ALTER TABLE member ALTER COLUMN id RESTART;
 
 
-INSERT INTO member(name, email, password)
-VALUES ('썬', 'aa@gmail.com', '123'),
-       ('리비', 'bb@gmail.com', '123'),
-       ('도도', 'cc@gmail.com', '123');
+INSERT INTO member(name, email, password, role)
+VALUES ('썬', 'aa@gmail.com', '123', 'member'),
+       ('리비', 'bb@gmail.com', '123', 'member'),
+       ('도도', 'cc@gmail.com', '123', 'member'),
+       ('어드민', 'dd@gmail.com', '123', 'admin');
+
 
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),

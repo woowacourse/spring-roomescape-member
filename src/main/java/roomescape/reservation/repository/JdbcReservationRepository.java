@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -22,7 +23,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
             new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
-                    resultSet.getString("member_email"), resultSet.getString("member_password")),
+                    resultSet.getString("member_email"), resultSet.getString("member_password"),
+                    Role.from(resultSet.getString("member_role"))),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(resultSet.getLong("time_id"), resultSet.getTime("time_value").toLocalTime()),
             new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
@@ -49,6 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.name AS member_name,
                     m.email AS member_email,
                     m.password AS member_password,
+                    m.role AS member_role,
                     t.id AS time_id, 
                     t.start_at AS time_value, 
                     th.id AS theme_id, 
@@ -73,6 +76,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.name AS member_name,
                     m.email AS member_email,
                     m.password AS member_password,
+                    m.role AS member_role,
                     t.id AS time_id, 
                     t.start_at AS time_value, 
                     th.id AS theme_id, 
