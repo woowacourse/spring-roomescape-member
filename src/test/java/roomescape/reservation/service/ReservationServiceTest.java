@@ -85,7 +85,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(date);
-        softAssertions.assertThat(reservation.member().getName()).isEqualTo(name);
+        softAssertions.assertThat(reservation.member().name()).isEqualTo(name);
         softAssertions.assertAll();
     }
 
@@ -109,7 +109,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(date);
-        softAssertions.assertThat(reservation.member().getName()).isEqualTo(name);
+        softAssertions.assertThat(reservation.member().name()).isEqualTo(name);
         softAssertions.assertThat(reservation.time().getStartAt()).isEqualTo(LocalTime.of(10, 10));
         softAssertions.assertAll();
     }
@@ -136,7 +136,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(date);
-        softAssertions.assertThat(reservation.member().getName()).isEqualTo(name);
+        softAssertions.assertThat(reservation.member().name()).isEqualTo(name);
         softAssertions.assertThat(reservation.time().getStartAt()).isEqualTo(LocalTime.of(10, 10));
         softAssertions.assertAll();
     }

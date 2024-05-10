@@ -120,7 +120,7 @@ class AdminReservationControllerTest {
                 .cookie("token", accessToken)
                 .when().delete("/admin/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given()
                 .cookie("token", accessToken)
