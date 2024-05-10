@@ -12,6 +12,7 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberEmail;
 import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
@@ -111,6 +112,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
                 m.name AS member_name, 
                 m.email AS member_email,
                 m.password AS member_password,
+                m.role AS member_role,
                 r.date AS reservation_date, 
                 t.id AS time_id, 
                 t.start_at AS time_value,
@@ -132,9 +134,11 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     private RowMapper<Reservation> getReservationRowMapper() {
         return (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
-            new Member(new MemberName(rs.getString("member_name")),
+            new Member(
+                new MemberName(rs.getString("member_name")),
                 new MemberEmail(rs.getString("member_email")),
-                new MemberPassword(rs.getString("member_password"))),
+                new MemberPassword(rs.getString("member_password")),
+                new MemberRole(rs.getString("member_role"))),
             new ReservationDate(
                 rs.getString("reservation_date")),
             new ReservationTime(

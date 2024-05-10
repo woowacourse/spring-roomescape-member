@@ -14,6 +14,7 @@ import roomescape.domain.MemberEmail;
 import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
+import roomescape.domain.MemberRole;
 
 @Repository
 public class JdbcMemberRepositoryImpl implements MemberRepository {
@@ -33,14 +34,15 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
         Map<String, Object> saveSource = Map.ofEntries(
             Map.entry("name", member.getName().getValue()),
             Map.entry("email", member.getEmail().getValue()),
-            Map.entry("password", member.getPassword().getValue())
+            Map.entry("password", member.getPassword().getValue()),
+            Map.entry("role", member.getRole().getValue())
         );
 
         long id = simpleJdbcInsert
             .executeAndReturnKey(saveSource)
             .longValue();
 
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), new MemberRole("USER"));
     }
 
     @Override
@@ -86,6 +88,7 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
             rs.getLong("id"),
             new MemberName(rs.getString("name")),
             new MemberEmail(rs.getString("email")),
-            new MemberPassword(rs.getString("password")));
+            new MemberPassword(rs.getString("password")),
+            new MemberRole(rs.getString("role")));
     }
 }

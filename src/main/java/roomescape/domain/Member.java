@@ -7,18 +7,22 @@ public class Member {
     private final MemberEmail email;
     private final MemberPassword password;
 
-    public Member(MemberName name, MemberEmail email, MemberPassword password) {
-        this(null, name, email, password);
+    private final MemberRole role;
+
+    public Member(MemberName name, MemberEmail email, MemberPassword password, MemberRole role) {
+        this(null, name, email, password, role);
     }
 
-    public Member(Long id, MemberName name, MemberEmail email, MemberPassword password) {
+    public Member(Long id, MemberName name, MemberEmail email, MemberPassword password, MemberRole role) {
         validateName(name);
         validateEmail(email);
         validatePassword(password);
+        validateRole(role);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     private void validateName(MemberName name) {
@@ -39,6 +43,12 @@ public class Member {
         }
     }
 
+    private void validateRole(MemberRole role) {
+        if (role == null) {
+            throw new IllegalArgumentException("사용자 권한은 필수입니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -53,5 +63,9 @@ public class Member {
 
     public MemberPassword getPassword() {
         return password;
+    }
+
+    public MemberRole getRole() {
+        return role;
     }
 }

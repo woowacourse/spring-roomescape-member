@@ -8,6 +8,7 @@ import roomescape.domain.MemberEmail;
 import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
+import roomescape.domain.MemberRole;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.EmailAlreadyExistsException;
 import roomescape.service.request.MemberAppRequest;
@@ -16,6 +17,8 @@ import roomescape.service.response.MemberAppResponse;
 
 @Service
 public class MemberAuthService {
+
+    public static final MemberRole USER_ROLE = new MemberRole("USER");
 
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
@@ -33,8 +36,8 @@ public class MemberAuthService {
         Member newMember = new Member(
             new MemberName(request.name()),
             new MemberEmail(request.email()),
-            new MemberPassword(request.password())
-        );
+            new MemberPassword(request.password()),
+            USER_ROLE);
 
         Member savedMember = memberRepository.save(newMember);
         return new MemberAppResponse(savedMember.getId(), savedMember.getName().getValue());
