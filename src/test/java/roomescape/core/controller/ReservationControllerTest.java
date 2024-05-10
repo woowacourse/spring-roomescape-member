@@ -232,10 +232,10 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .cookies("token", accessToken)
                 .queryParams(
-                        "member", 1L,
-                        "theme", 1L,
-                        "date-from", TOMORROW,
-                        "date-to", DAY_AFTER_TOMORROW
+                        "memberId", 1L,
+                        "themeId", 1L,
+                        "dateFrom", TOMORROW,
+                        "dateTo", DAY_AFTER_TOMORROW
                 )
                 .when().get("/reservations")
                 .then().log().all()

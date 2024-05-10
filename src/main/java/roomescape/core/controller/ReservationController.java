@@ -45,12 +45,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
-    @GetMapping(params = {"member", "theme", "date-from", "date-to"})
+    @GetMapping(params = {"memberId", "themeId", "dateFrom", "dateTo"})
     public ResponseEntity<List<ReservationResponse>> findAllByMemberAndThemeAndPeriod(
-            @RequestParam("member") final Long memberId,
-            @RequestParam("theme") final Long themeId,
-            @RequestParam("date-from") final String dateFrom,
-            @RequestParam("date-to") final String dateTo) {
+            @RequestParam(name = "member-id") final Long memberId,
+            @RequestParam(name = "theme-id") final Long themeId,
+            @RequestParam(name = "date-from") final String dateFrom,
+            @RequestParam(name = "date-to") final String dateTo) {
         return ResponseEntity.ok(
                 reservationService.findAllByMemberAndThemeAndPeriod(memberId, themeId, dateFrom, dateTo));
     }
