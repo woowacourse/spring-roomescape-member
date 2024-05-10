@@ -409,7 +409,7 @@
     host: localhost:8080
     
     {
-       "name": "사용자이름",
+       "password": "비밀번호",
        "email": "admin@email.com",
     } 
     ```
