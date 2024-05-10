@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.model.ReservationTime;
 
-@Repository
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
 

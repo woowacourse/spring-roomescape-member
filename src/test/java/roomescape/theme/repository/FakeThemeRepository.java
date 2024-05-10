@@ -13,14 +13,12 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.model.Theme;
 
-@Repository
 public class FakeThemeRepository implements ThemeRepository {
     private final List<Theme> themes = new ArrayList<>();
 
     private final ReservationRepository reservationRepository;
 
-    public FakeThemeRepository(
-            @Qualifier("fakeReservationRepository") final ReservationRepository reservationRepository) {
+    public FakeThemeRepository(final ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
