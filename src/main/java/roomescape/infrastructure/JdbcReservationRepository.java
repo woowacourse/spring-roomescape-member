@@ -31,7 +31,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
-                    LocalTime.parse(resultSet.getString("time_value"))
+                    LocalTime.parse(resultSet.getString("time_start_at"))
             ),
             new Theme(
                     resultSet.getLong("theme_id"),
@@ -45,7 +45,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 r.id AS reservation_id, 
                 r.date,
                 t.id AS time_id, 
-                t.start_at AS time_value, 
+                t.start_at AS time_start_at, 
                 th.id AS theme_id, 
                 th.name AS theme_name, 
                 th.description AS theme_description, 
@@ -63,7 +63,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
