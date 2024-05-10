@@ -17,6 +17,10 @@ public class Member {
         this(null, new MemberName(name), new EmailAddress(email), new Password(password));
     }
 
+    public Member(long id, Member member) {
+        this(id, member.name, member.email, member.password);
+    }
+
     public Long getId() {
         return id;
     }
@@ -31,5 +35,9 @@ public class Member {
 
     public boolean isPasswordMatches(String value) {
         return password.matches(value);
+    }
+
+    public String getPassword() {
+        return password.getPassword();
     }
 }
