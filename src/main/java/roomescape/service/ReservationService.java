@@ -12,6 +12,7 @@ import roomescape.persistence.MemberRepository;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.persistence.ThemeRepository;
+import roomescape.service.request.AdminReservationRequest;
 import roomescape.service.request.LoginMember;
 import roomescape.service.request.MemberReservationRequest;
 import roomescape.service.response.ReservationResponse;
@@ -38,6 +39,18 @@ public class ReservationService {
 
     public ReservationResponse createReservation(MemberReservationRequest request, LoginMember loginMember) {
         Member member = getMember(loginMember.id());
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+        Reservation reservation = request.toDomain(member, reservationTime, theme);
+        reservation.validateDateTime();
+        validateDuplicateReservation(reservation);
+
+        Reservation createdReservation = reservationRepository.create(reservation);
+        return ReservationResponse.from(createdReservation);
+    }
+
+    public ReservationResponse createAdminReservation(AdminReservationRequest request) {
+        Member member = getMember(request.memberId());
         ReservationTime reservationTime = getReservationTime(request.timeId());
         Theme theme = getTheme(request.themeId());
         Reservation reservation = request.toDomain(member, reservationTime, theme);

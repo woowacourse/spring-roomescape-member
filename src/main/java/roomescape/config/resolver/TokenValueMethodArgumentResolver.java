@@ -1,4 +1,4 @@
-package roomescape.argumentresolver;
+package roomescape.config.resolver;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,17 +8,21 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.service.MemberService;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.service.AuthorizationService;
 import roomescape.service.request.LoginMember;
 import roomescape.web.exception.AuthenticationException;
 
 @Component
 public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
+    private final AuthorizationService authorizationService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public TokenValueMethodArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public TokenValueMethodArgumentResolver(AuthorizationService authorizationService,
+                                            JwtTokenProvider jwtTokenProvider) {
+        this.authorizationService = authorizationService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -28,12 +32,12 @@ public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentRe
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         String tokenValue = getTokenValue(cookies);
 
-        return memberService.getLoginMember(tokenValue);
+        return authorizationService.getLoginMember(tokenValue);
     }
 
     private String getTokenValue(Cookie[] cookies) {

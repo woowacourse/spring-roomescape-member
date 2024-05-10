@@ -1,11 +1,14 @@
-package roomescape.utils;
+package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
+import roomescape.web.exception.AuthenticationException;
 import roomescape.web.exception.AuthorizationException;
 
 @Component
@@ -27,6 +30,14 @@ public class JwtTokenProvider {
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public String getTokenValue(Cookie[] cookies) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new AuthenticationException("로그인된 회원 정보가 없습니다."));
     }
 
     public String getTokenSubject(String token) {
