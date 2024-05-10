@@ -18,6 +18,10 @@ public class Member {
         this.role = role;
     }
 
+    public boolean isNotAdmin() {
+        return role.isNotAdmin();
+    }
+
     public long getId() {
         return id;
     }

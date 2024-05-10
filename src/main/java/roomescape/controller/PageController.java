@@ -16,26 +16,6 @@ public class PageController {
         return "reservation";
     }
 
-    @GetMapping("/admin")
-    public String getAdminPage() {
-        return "admin/index";
-    }
-
-    @GetMapping("/admin/reservation")
-    public String getAdminReservationPage() {
-        return "admin/reservation-new";
-    }
-
-    @GetMapping("/admin/time")
-    public String getAdminReservationTimePage() {
-        return "admin/time";
-    }
-
-    @GetMapping("/admin/theme")
-    public String getAdminThemePage() {
-        return "admin/theme";
-    }
-
     @GetMapping("/login")
     public String getLoginPage() {
         return "login";

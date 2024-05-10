@@ -15,6 +15,10 @@ public enum Role {
         this.isAdmin = isAdmin;
     }
 
+    public boolean isNotAdmin() {
+        return !isAdmin;
+    }
+
     public static Role asRole(String rawRole) {
         return Arrays.stream(values())
                 .filter(role -> role.name().equals(rawRole))
