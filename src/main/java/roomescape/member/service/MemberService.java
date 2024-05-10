@@ -2,10 +2,7 @@ package roomescape.member.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.config.security.JwtTokenProvider;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.LoginMember;
-import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.MemberSignUpRequest;
 import roomescape.member.repository.MemberRepository;
@@ -14,11 +11,9 @@ import roomescape.member.repository.MemberRepository;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public Long save(MemberSignUpRequest memberSignUpRequest) {

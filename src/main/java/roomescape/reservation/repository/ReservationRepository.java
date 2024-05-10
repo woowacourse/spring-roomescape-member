@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
 import roomescape.reservation.domain.Description;
@@ -135,6 +136,7 @@ public class ReservationRepository {
                 rs.getLong("id"),
                 new Member(
                         rs.getLong("member_id"),
+                        Role.from(rs.getString("role")),
                         new MemberName(rs.getString("member_name")),
                         rs.getString("member_email"),
                         rs.getString("member_password")

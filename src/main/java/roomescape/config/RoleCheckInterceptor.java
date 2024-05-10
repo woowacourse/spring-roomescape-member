@@ -6,19 +6,28 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.config.security.JwtTokenProvider;
+import roomescape.exception.NotAllowRoleException;
 import roomescape.member.controller.MemberLoginApiController;
+import roomescape.member.dto.LoginMember;
 
 @Component
-public class LoginCheckInterceptor implements HandlerInterceptor {
+public class RoleCheckInterceptor implements HandlerInterceptor {
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public RoleCheckInterceptor(final JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String requestURI = request.getRequestURI();
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
+        String token = extractTokenFromCookie(cookies);
 
-        if (cookies == null || extractTokenFromCookie(cookies) == null) {
-            response.sendRedirect("/login?redirectURL=" + requestURI);
-            return false;
+        LoginMember loginMember = jwtTokenProvider.getMember(token);
+        if (!loginMember.role().isAdmin()) {
+            throw new NotAllowRoleException("접근 권한이 없습니다.");
         }
         return true;
     }

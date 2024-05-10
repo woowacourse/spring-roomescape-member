@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
 
@@ -70,6 +71,7 @@ public class MemberRepository {
     private RowMapper<Member> createMemberRowMapper() {
         return (rs, rowNum) -> new Member(
                 rs.getLong("id"),
+                Role.from(rs.getString("role")),
                 new MemberName(rs.getString("name")),
                 rs.getString("email"),
                 rs.getString("password")

@@ -20,10 +20,9 @@ CREATE TABLE member
     name     VARCHAR(255) NOT NULL,
     email     VARCHAR(255) NOT NULL UNIQUE,
     password  VARCHAR(255) NOT NULL,
+    role varchar(255) DEFAULT 'MEMBER',
     PRIMARY KEY (id)
 );
-
-DROP TABLE IF EXISTS reservation;
 
 CREATE TABLE reservation
 (

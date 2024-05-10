@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.common.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginMember;
 
@@ -45,9 +46,9 @@ public class JwtTokenProvider {
 
         return new LoginMember(
                 Long.valueOf(claims.get(JwtClaimKey.MEMBER_ID.getKey()).toString()),
+                Role.from(claims.get(JwtClaimKey.ROLE.getKey()).toString()),
                 claims.get(JwtClaimKey.MEMBER_NAME.getKey()).toString(),
-                claims.get(JwtClaimKey.MEMBER_EMAIL.getKey()).toString(),
-                claims.get(JwtClaimKey.ROLE.getKey()).toString()
+                claims.get(JwtClaimKey.MEMBER_EMAIL.getKey()).toString()
         );
     }
 

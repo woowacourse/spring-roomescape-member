@@ -2,7 +2,6 @@ package roomescape.reservation.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.common.Role;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.repository.MemberRepository;
@@ -59,7 +58,7 @@ public class ReservationService {
     }
 
     private Member getValidatedMemberByRole(ReservationSaveRequest reservationSaveRequest, LoginMember loginMember) {
-        if (Role.isAdmin(loginMember.role())) {
+        if (loginMember.role().isAdmin()) {
             return memberRepository.findById(reservationSaveRequest.getMemberId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         }

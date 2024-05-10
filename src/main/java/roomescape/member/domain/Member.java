@@ -4,24 +4,23 @@ import roomescape.common.Role;
 
 public class Member {
     private Long id;
+    private Role role;
     private final MemberName name;
     private final String email;
     private final String password;
-    private final Role role;
 
     public Member(MemberName name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = Role.MEMBER;
     }
 
-    public Member(Long id, MemberName name, String email, String password) {
+    public Member(Long id, Role role, MemberName name, String email, String password) {
         this.id = id;
+        this.role = role;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = Role.MEMBER;
     }
 
     public Long getId() {
