@@ -1,5 +1,10 @@
 package roomescape.domain;
 
+import roomescape.domain.vo.MemberEmail;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.MemberPassword;
+import roomescape.domain.vo.MemberRole;
+
 public class Member {
 
     private final Long id;

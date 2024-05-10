@@ -1,21 +1,21 @@
-package roomescape.domain;
+package roomescape.domain.vo;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.Objects;
 
-public class MemberName {
-    private static final int MAX_NAME_SIZE = 10;
+public class MemberRole {
 
+    private static final int MAX_ROLE_SIZE = 10;
     private final String value;
 
-    public MemberName(String value) {
+    public MemberRole(String value) {
         validate(value);
         this.value = value;
     }
 
     private void validate(String value) {
-        if (StringUtils.isBlank(value) || value.length() > MAX_NAME_SIZE) {
-            throw new IllegalArgumentException(value + " 사용자 이름 1글자 이상 10글자 이하를 입력해주세요.");
+        if (StringUtils.isBlank(value) || value.length() > MAX_ROLE_SIZE) {
+            throw new IllegalArgumentException("사용자의 권한은 1글자 이상 10글자 이하 입니다.");
         }
     }
 
@@ -31,7 +31,7 @@ public class MemberName {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        MemberName that = (MemberName) o;
+        MemberRole that = (MemberRole) o;
         return Objects.equals(value, that.value);
     }
 

@@ -10,11 +10,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
-import roomescape.domain.MemberEmail;
-import roomescape.domain.MemberName;
-import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
-import roomescape.domain.MemberRole;
+import roomescape.domain.vo.MemberEmail;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.MemberPassword;
+import roomescape.domain.vo.MemberRole;
 
 @Repository
 public class JdbcMemberRepositoryImpl implements MemberRepository {

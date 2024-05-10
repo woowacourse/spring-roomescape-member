@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.controller.request.ReservationTimeWebRequest;
 import roomescape.controller.response.ReservationTimeWebResponse;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.vo.ReservationTime;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.request.ReservationTimeAppRequest;
