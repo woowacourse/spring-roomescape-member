@@ -3,6 +3,8 @@ package roomescape.infrastructure;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
+import java.util.Base64;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,9 +12,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
-    private String secretKey; // TODO: Base64로 인코딩 하기
+    private String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
+
+    @PostConstruct
+    protected void init() {
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
 
     public String createToken(String payload) {
         Claims claims = Jwts.claims().setSubject(payload);
