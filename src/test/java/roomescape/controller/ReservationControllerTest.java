@@ -201,7 +201,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                             .cookie("token", token)
                             .when().delete("/reservations/" + createdId)
                             .then().log().all()
-                            .statusCode(401);
+                            .statusCode(404);
                 }),
                 dynamicTest("어드민으로 로그인하기", () -> {
                     token = RestAssured

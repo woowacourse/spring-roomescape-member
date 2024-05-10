@@ -55,6 +55,6 @@ class AdminPageControllerTest extends IntegrationTestSupport {
                 .cookie("token", userToken)
                 .when().get(url)
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(404);
     }
 }

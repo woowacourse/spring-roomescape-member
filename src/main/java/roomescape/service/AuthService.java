@@ -2,11 +2,11 @@ package roomescape.service;
 
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import roomescape.service.dto.MemberResponse;
-import roomescape.exception.AuthorizationException;
 import roomescape.controller.infrastructure.JwtTokenProvider;
-import roomescape.service.dto.LoginMember;
 import roomescape.domain.Role;
+import roomescape.exception.AuthenticationException;
+import roomescape.service.dto.LoginMember;
+import roomescape.service.dto.MemberResponse;
 
 @Service
 public class AuthService {
@@ -40,7 +40,7 @@ public class AuthService {
 
     public void validateToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new AuthorizationException();
+            throw new AuthenticationException();
         }
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.RoomEscapeBusinessException;
 
@@ -18,13 +19,15 @@ public class GlobalExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> authenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("인증되지 않았습니다.");
+    }
+
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<ProblemDetail> handleAuthorizationException() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ProblemDetail.forStatusAndDetail(
-                        HttpStatus.UNAUTHORIZED,
-                        "권한이 없습니다."
-                ));
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
