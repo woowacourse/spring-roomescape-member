@@ -15,4 +15,9 @@ public class UserPageController {
     public String showUserReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String showUserLoginPage() {
+        return "login";
+    }
 }
