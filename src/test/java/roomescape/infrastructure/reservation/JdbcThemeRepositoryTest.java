@@ -66,8 +66,8 @@ class JdbcThemeRepositoryTest {
     @Test
     @Sql("/insert-reservations.sql")
     void shouldReturnPopularThemes() {
-        LocalDate from = LocalDate.of(2024, 12, 24);
-        LocalDate to = LocalDate.of(2024, 12, 28);
+        LocalDate from = LocalDate.of(1999, 12, 24);
+        LocalDate to = LocalDate.of(1999, 12, 29);
         int limit = 3;
 
         List<Long> themeIds = themeRepository.findPopularThemesDateBetween(from, to, limit)

@@ -128,9 +128,9 @@ class JdbcReservationRepositoryTest {
         List<Reservation> reservations = jdbcReservationRepository.findByMemberAndThemeBetweenDates(
                 2L,
                 3L,
-                LocalDate.of(2024, 12, 24),
-                LocalDate.of(2024, 12, 26));
-        assertThat(reservations).hasSize(3);
+                LocalDate.of(1999, 12, 24),
+                LocalDate.of(1999, 12, 29));
+        assertThat(reservations).hasSize(2);
     }
 
     private Reservation createReservation() {

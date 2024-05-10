@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import roomescape.application.reservation.ReservationService;
 import roomescape.auth.TokenManager;
+import roomescape.domain.role.RoleRepository;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(ReservationController.class)
@@ -27,6 +28,9 @@ class ReservationControllerTest extends ControllerTest {
 
     @MockBean
     private TokenManager tokenManager;
+
+    @MockBean
+    private RoleRepository roleRepository;
 
     @DisplayName("저장된 예약이 없다면 빈 리스트를 반환한다.")
     @Test

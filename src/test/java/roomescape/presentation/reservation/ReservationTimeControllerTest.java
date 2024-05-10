@@ -23,6 +23,7 @@ import roomescape.application.reservation.ReservationTimeService;
 import roomescape.application.reservation.dto.request.ReservationTimeRequest;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
 import roomescape.auth.TokenManager;
+import roomescape.domain.role.RoleRepository;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(ReservationTimeController.class)
@@ -32,6 +33,9 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @MockBean
     private TokenManager tokenManager;
+
+    @MockBean
+    private RoleRepository roleRepository;
 
     @DisplayName("예약 시간 저장을 요청하면, 해당 예약 시간의 저장 id와 시간 201 Created 응답으로 반환한다.")
     @Test

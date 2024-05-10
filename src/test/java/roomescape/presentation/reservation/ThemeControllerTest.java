@@ -17,6 +17,7 @@ import roomescape.application.reservation.ThemeService;
 import roomescape.application.reservation.dto.request.ThemeRequest;
 import roomescape.application.reservation.dto.response.ThemeResponse;
 import roomescape.auth.TokenManager;
+import roomescape.domain.role.RoleRepository;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(ThemeController.class)
@@ -26,6 +27,9 @@ class ThemeControllerTest extends ControllerTest {
 
     @MockBean
     private TokenManager tokenManager;
+
+    @MockBean
+    private RoleRepository roleRepository;
 
     @DisplayName("테마를 생성한다.")
     @Test

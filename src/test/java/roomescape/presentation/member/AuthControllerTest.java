@@ -17,6 +17,7 @@ import roomescape.application.member.MemberService;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.response.TokenResponse;
 import roomescape.auth.TokenManager;
+import roomescape.domain.role.RoleRepository;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(AuthController.class)
@@ -27,6 +28,9 @@ class AuthControllerTest extends ControllerTest {
 
     @MockBean
     private TokenManager tokenManager;
+
+    @MockBean
+    private RoleRepository roleRepository;
 
     @Test
     @DisplayName("로그인 시, 토큰이 담긴 쿠키를 반환한다.")
