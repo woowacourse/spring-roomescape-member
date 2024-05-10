@@ -7,3 +7,5 @@ VALUES (1L, '12:00');
 INSERT INTO reservation
 VALUES (1L, '레모네', '2024-05-30', 1L, 1L);
 
+INSERT INTO member
+VALUES (1L, '레모네', 'lemone@wooteco.com', 'lemone1234');
