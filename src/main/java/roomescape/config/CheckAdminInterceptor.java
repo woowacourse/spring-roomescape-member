@@ -1,6 +1,6 @@
 package roomescape.config;
 
-import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -19,16 +19,18 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (request.getCookies() == null) {
-            throw new CustomException(CustomUnauthorized.NOT_LOGIN);
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        try {
+            Arrays.stream(request.getCookies())
+                    .filter(cookie -> cookie.getName().equals("token"))
+                    .map(authService::parseEmail)
+                    .filter(authService::checkAdmin)
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(CustomUnauthorized.NOT_AUTHORIZED));
+            return true;
+        } catch (NullPointerException e) {
+            response.sendRedirect("/login");
         }
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals("token")) {
-                String email = authService.parseEmail(cookie);
-                return authService.checkAdmin(email);
-            }
-        }
-        throw new CustomException(CustomUnauthorized.NOT_AUTHORIZED);
+        return false;
     }
 }
