@@ -190,6 +190,7 @@ class ReservationServiceTest {
                     .isInstanceOf(InvalidValueException.class);
         }
 
+        @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"24-05-10", "2024:05:10"})
         @DisplayName("예약 날짜가 yyyy-MM-dd 형식이 아닌 경우 예외가 발생한다.")
