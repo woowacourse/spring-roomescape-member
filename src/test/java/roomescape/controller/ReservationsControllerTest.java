@@ -11,12 +11,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.AdminReservationRequest;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReservationControllerTest {
+public class ReservationsControllerTest {
     @LocalServerPort
     private int port;
 
@@ -62,7 +62,7 @@ public class ReservationControllerTest {
     void createReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", date, timeId, themeId))
+                .body(new AdminReservationRequest(date, timeId, themeId, 1))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(201).body("id", is(greaterThan(0)));
@@ -74,24 +74,24 @@ public class ReservationControllerTest {
         //given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lilly", date, timeId, themeId))
+                .body(new AdminReservationRequest(date, timeId, themeId, 1))
                 .when().post("/reservations");
 
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lilly", date, timeId, themeId))
+                .body(new AdminReservationRequest(date, timeId, themeId, 1))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400);
     }
 
-    @DisplayName("예약 추가 실패 테스트 - 이름 길이 오류")
+    @DisplayName("예약 추가 실패 테스트 - 이름 길이 오류") //수정 필요
     @Test
     void createInvalidNameReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("", date, timeId, themeId))
+                .body(new AdminReservationRequest(date, timeId, themeId, 1))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("이름은 빈칸(공백)일 수 없습니다."));
@@ -106,7 +106,7 @@ public class ReservationControllerTest {
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lini", invalidDate, timeId, themeId))
+                .body(new AdminReservationRequest(invalidDate, timeId, themeId, 1))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("현재보다 이전으로 일정을 설정할 수 없습니다."));
@@ -121,7 +121,7 @@ public class ReservationControllerTest {
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lini", invalidDate, timeId, themeId))
+                .body(new AdminReservationRequest(invalidDate, timeId, themeId, 1))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("올바르지 않은 날짜입니다."));
@@ -131,7 +131,7 @@ public class ReservationControllerTest {
     @Test
     void findAllReservations() {
         //given
-        RestAssured.given().contentType(ContentType.JSON).body(new ReservationRequest("브라운", date, timeId, themeId))
+        RestAssured.given().contentType(ContentType.JSON).body(new AdminReservationRequest(date, timeId, themeId, 1))
                 .when().post("/reservations");
 
         //when & then
@@ -146,7 +146,7 @@ public class ReservationControllerTest {
     void deleteReservationSuccess() {
         //given
         var id = RestAssured.given().contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", date, timeId, themeId))
+                .body(new AdminReservationRequest(date, timeId, themeId, 1))
                 .when().post("/reservations")
                 .then().extract().body().jsonPath().get("id");
 
