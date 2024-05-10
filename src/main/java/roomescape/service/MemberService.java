@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import jakarta.servlet.http.Cookie;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.UserLoginRequest;
@@ -51,10 +50,5 @@ public class MemberService {
         return members.stream()
                 .map(MemberResponse::from)
                 .toList();
-    }
-
-    public CheckMemberResponse findByCookies(Cookie[] cookies) {
-        Long memberId = jwtTokenProvider.getMemberIdByCookie(cookies);
-        return findById(memberId);
     }
 }

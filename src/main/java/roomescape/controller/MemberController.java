@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -17,6 +16,7 @@ import roomescape.controller.response.CheckMemberResponse;
 import roomescape.controller.response.MemberResponse;
 import roomescape.controller.response.TokenResponse;
 import roomescape.service.MemberService;
+import roomescape.ui.MemberIdConverter;
 
 @RestController
 public class MemberController {
@@ -53,9 +53,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<CheckMemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        CheckMemberResponse checkMemberResponse = memberService.findByCookies(cookies);
+    public ResponseEntity<CheckMemberResponse> checkLogin(@MemberIdConverter Long memberId) {
+        CheckMemberResponse checkMemberResponse = memberService.findById(memberId);
         return ResponseEntity.ok(checkMemberResponse);
     }
 
