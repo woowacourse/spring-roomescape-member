@@ -26,6 +26,15 @@ class MemberAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
+    @TestFactory
+    @DisplayName("이미 회원가입한 이메일로 회원가입을 하면, 예외가 발생한다")
+    Stream<DynamicTest> duplicateMemberTest() {
+        return Stream.of(
+                dynamicTest("멤버를 추가한다", () -> postMember("name1", "email1", "password1", 201)),
+                dynamicTest("동일한 이메일의 멤버를 추가한다", () -> postMember("name2", "email1", "password2", 400))
+        );
+    }
+
     private void postMember(String name, String email, String password, int expectedHttpCode) {
         Map<?, ?> requestBody = Map.of("name", name, "email", email, "password", password);
 
