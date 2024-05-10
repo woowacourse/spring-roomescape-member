@@ -17,7 +17,7 @@ import roomescape.member.dto.MemberSignUpRequest;
 class MemberLoginServiceTest {
 
     @Autowired
-    private MemberSignUpService memberSignUpService;
+    private MemberService memberService;
 
     @Autowired
     private MemberLoginService memberLoginService;
@@ -38,7 +38,7 @@ class MemberLoginServiceTest {
         String password = "1234";
 
         MemberSignUpRequest memberSignUpRequest = new MemberSignUpRequest(name, email, password);
-        memberSignUpService.save(memberSignUpRequest);
+        memberService.save(memberSignUpRequest);
 
         MemberLoginRequest memberLoginRequest = new MemberLoginRequest(email, password);
         String memberToken = memberLoginService.createMemberToken(memberLoginRequest);
@@ -54,7 +54,7 @@ class MemberLoginServiceTest {
         String password = "1234";
 
         MemberSignUpRequest memberSignUpRequest = new MemberSignUpRequest(name, email, password);
-        memberSignUpService.save(memberSignUpRequest);
+        memberService.save(memberSignUpRequest);
 
         MemberLoginRequest memberLoginRequest = new MemberLoginRequest(email, "abcd");
 

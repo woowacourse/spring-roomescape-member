@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.member.controller.MemberApiController;
 import roomescape.member.controller.MemberLoginApiController;
 
 @Component

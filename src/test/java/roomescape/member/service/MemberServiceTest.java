@@ -1,5 +1,6 @@
 package roomescape.member.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.AfterEach;
@@ -11,11 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.config.DatabaseCleaner;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
+import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberSignUpRequest;
 import roomescape.member.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class MemberSignUpServiceTest {
+class MemberServiceTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
@@ -24,7 +26,7 @@ class MemberSignUpServiceTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private MemberSignUpService memberSignUpService;
+    private MemberService memberService;
 
     @AfterEach
     void init() {
@@ -43,7 +45,7 @@ class MemberSignUpServiceTest {
 
         MemberSignUpRequest memberSignUpRequest = new MemberSignUpRequest(name, email, password);
 
-        assertThatThrownBy(() -> memberSignUpService.save(memberSignUpRequest))
+        assertThatThrownBy(() -> memberService.save(memberSignUpRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

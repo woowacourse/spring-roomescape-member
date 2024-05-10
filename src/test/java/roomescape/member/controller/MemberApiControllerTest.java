@@ -1,11 +1,13 @@
 package roomescape.member.controller;
 
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +18,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.config.WebMvcControllerTestConfig;
 import roomescape.member.dto.MemberSignUpRequest;
-import roomescape.member.service.MemberSignUpService;
+import roomescape.member.service.MemberService;
 
-@WebMvcTest(MemberSignUpApiController.class)
+@WebMvcTest(MemberApiController.class)
 @Import(WebMvcControllerTestConfig.class)
-class MemberSignUpApiControllerTest {
+class MemberApiControllerTest {
 
     @MockBean
-    private MemberSignUpService memberSignUpService;
+    private MemberService memberService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +38,7 @@ class MemberSignUpApiControllerTest {
     void signup() throws Exception {
         MemberSignUpRequest memberSignUpRequest = new MemberSignUpRequest("카키", "kaki@email.com", "1234");
 
-        doReturn(1L).when(memberSignUpService)
+        doReturn(1L).when(memberService)
                 .save(memberSignUpRequest);
 
         mockMvc.perform(post("/members")
@@ -45,5 +47,15 @@ class MemberSignUpApiControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/members/1"));
+    }
+
+    @DisplayName("회원 목록 조회에 성공하면 200 응답을 받는다.")
+    @Test
+    void findAll() throws Exception {
+
+        mockMvc.perform(get("/members")
+                        .cookie(new Cookie("token", "cookieValue"))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

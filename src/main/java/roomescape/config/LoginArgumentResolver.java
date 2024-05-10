@@ -11,6 +11,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.common.Login;
 import roomescape.config.security.JwtTokenProvider;
+import roomescape.member.controller.MemberApiController;
 import roomescape.member.controller.MemberLoginApiController;
 import roomescape.member.dto.LoginMember;
 
