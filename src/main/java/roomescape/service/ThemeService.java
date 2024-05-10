@@ -12,6 +12,10 @@ import roomescape.service.response.ThemeResponse;
 @Service
 public class ThemeService {
 
+    private static final int POPULAR_THEME_LIMIT_COUNT = 10;
+    private static final int POPULAR_THEME_START_DAY = 7;
+    private static final int POPULAR_THEME_END_DAY = 1;
+
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
@@ -39,10 +43,10 @@ public class ThemeService {
 
     public List<ThemeResponse> findAll(boolean showRanking) {
         if (showRanking) {
-            LocalDate startDate = LocalDate.now().minusDays(7);
-            LocalDate endDate = LocalDate.now().minusDays(1);
-            int limitCount = 10;
-            return themeRepository.findPopularThemes(startDate, endDate, limitCount).stream()
+            LocalDate startDate = LocalDate.now().minusDays(POPULAR_THEME_START_DAY);
+            LocalDate endDate = LocalDate.now().minusDays(POPULAR_THEME_END_DAY);
+
+            return themeRepository.findPopularThemes(startDate, endDate, POPULAR_THEME_LIMIT_COUNT).stream()
                     .map(ThemeResponse::from)
                     .toList();
         }

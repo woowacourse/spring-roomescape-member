@@ -13,6 +13,9 @@ import roomescape.web.exception.AuthenticationException;
 @Component
 public class JwtTokenProvider {
 
+    private static final String TOKEN_NAME = "token";
+    private static final String ROLE = "role";
+
     @Value("${jwt.secret-key}")
     private String secretKey;
     @Value("${jwt.expiration-minutes}")
@@ -33,7 +36,7 @@ public class JwtTokenProvider {
 
     public String getTokenValue(Cookie[] cookies) {
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
+                .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(() -> new AuthenticationException("로그인된 회원 정보가 없습니다."));
@@ -46,7 +49,7 @@ public class JwtTokenProvider {
 
     public String getTokenRole(String token) {
         validateEmptyToken(token);
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role").toString();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(ROLE).toString();
     }
 
     private void validateEmptyToken(String token) {
