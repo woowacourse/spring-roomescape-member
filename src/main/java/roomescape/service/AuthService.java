@@ -9,16 +9,17 @@ import roomescape.dto.token.TokenDto;
 import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.infrastructure.JwtProvider;
 import roomescape.infrastructure.PasswordEncoder;
+import roomescape.repository.MemberRepository;
 
 @Service
 public class AuthService {
 
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    public AuthService(MemberService memberService, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
-        this.memberService = memberService;
+    public AuthService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+        this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
     }
@@ -30,16 +31,22 @@ public class AuthService {
         return new TokenDto(token);
     }
 
-    public LoginMember findUserByToken(TokenDto tokenDto) {
-        Long userId = extractUserIdByToken(tokenDto.accessToken());
-        Member member = memberService.getMemberById(userId);
-        return LoginMember.from(member);
+    public LoginMember checkLogin(TokenDto tokenDto) {
+        String token = tokenDto.accessToken();
+        Long userId = extractUserIdByToken(token);
+        return new LoginMember(userId);
     }
 
     private Member authenticateUser(LoginRequest request) {
-        Member member = memberService.getMemberByEmail(request.email());
+        Member member = memberRepository.findByEmail(request.email()).orElseThrow();
         validatePassword(request, member);
         return member;
+    }
+
+    private Long extractUserIdByToken(String token) {
+        validateToken(token);
+        String tokenSubject = jwtProvider.getSubject(token);
+        return parseLong(tokenSubject);
     }
 
     private void validatePassword(LoginRequest request, Member memberToLogin) {
@@ -48,14 +55,19 @@ public class AuthService {
         }
     }
 
-    private Long extractUserIdByToken(String accessToken) {
-        String userId = jwtProvider.getSubject(accessToken);
+    private void validateToken(String token) {
+        if (jwtProvider.isValidateToken(token)) {
+            throw new ClientErrorExceptionWithLog("[ERROR] 유효한 토큰이 아닙니다.");
+        }
+    }
+
+    private Long parseLong(String value) {
         try {
-            return Long.valueOf(userId);
+            return Long.valueOf(value);
         } catch (NumberFormatException e) {
             throw new ClientErrorExceptionWithLog(
-                    "[ERROR] 유효한 토큰이 아닙니다.",
-                    "subject(userId) : " + userId
+                    "[ERROR] 토큰의 사용자 ID 형식이 유효하지 않습니다.",
+                    "subject(userId) : " + value
             );
         }
     }

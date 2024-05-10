@@ -12,6 +12,10 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
     public List<MemberResponse> getAllMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
@@ -19,23 +23,23 @@ public class MemberService {
                 .toList();
     }
 
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
-
-    Member getMemberById(Long id) {
-        return memberRepository.findById(id)
+    public MemberResponse getMemberById(Long id) {
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ClientErrorExceptionWithLog(
                         "[ERROR] 존재하지 않는 사용자 입니다.",
                         "member_id : " + id
                 ));
+
+        return MemberResponse.from(member);
     }
 
-    Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
+    public MemberResponse getMemberByEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ClientErrorExceptionWithLog(
                         "[ERROR] 존재하지 않는 아이디(이메일) 입니다.",
                         "email : " + email
                 ));
+
+        return MemberResponse.from(member);
     }
 }
