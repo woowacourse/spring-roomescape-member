@@ -39,7 +39,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 return cookie.getValue();
             }
         }
-        // todo: 로그인을 안해서 토큰이 없으면 어떡하지?
         return null;
     }
 }
