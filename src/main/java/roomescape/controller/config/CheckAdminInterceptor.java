@@ -32,9 +32,9 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
         Cookie token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
-                .filter(cookie -> !cookie.getValue().isBlank())
                 .findFirst()
                 .orElseThrow(AuthorizationException::new);
+
         MemberInfo loginMember = authService.checkToken(token.getValue());
         if (loginMember.isNotAdmin()) {
             throw new AuthorizationException();
