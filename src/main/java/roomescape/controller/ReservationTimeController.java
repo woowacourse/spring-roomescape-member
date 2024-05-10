@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
 import java.util.List;

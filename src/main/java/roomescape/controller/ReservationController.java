@@ -7,6 +7,7 @@ import roomescape.dto.request.MemberRequest;
 import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
+import roomescape.service.ReservationService;
 
 import java.net.URI;
 import java.time.LocalDate;
