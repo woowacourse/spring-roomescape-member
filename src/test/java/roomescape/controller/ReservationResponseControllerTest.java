@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dto.FilterConditionDto;
 import roomescape.dto.LoginRequestDto;
 
 import java.time.LocalDate;
@@ -176,5 +177,23 @@ public class ReservationResponseControllerTest {
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(401);
+    }
+
+    @DisplayName("정상적인 조건으로 요청한 경우 200으로 응답한다.")
+    @Test
+    void getFilteredReservationsTest() {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+
+        LocalDate dateFrom = LocalDate.now(kst).minusWeeks(1);
+        LocalDate dateTo = LocalDate.now(kst).minusDays(1);
+
+        FilterConditionDto filterConditionDto = new FilterConditionDto(1L, 1L, dateFrom, dateTo);
+
+        RestAssured.given().log().all()
+                .contentType("application/json")
+                .body(filterConditionDto)
+                .when().post("/reservations/filter")
+                .then().log().all()
+                .statusCode(200);
     }
 }

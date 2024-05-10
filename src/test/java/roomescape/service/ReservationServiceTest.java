@@ -8,6 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.dto.AdminReservationRequestDto;
+import roomescape.dto.FilterConditionDto;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -81,5 +82,20 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.insertReservation(adminReservationRequestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 시간에 예약이 존재합니다.");
+    }
+
+    @DisplayName("조건에 맞는 예약을 반환한다.")
+    @Test
+    void getFilteredReservationsTest() {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+
+        LocalDate dateFrom = LocalDate.now(kst).minusWeeks(1);
+        LocalDate dateTo = LocalDate.now(kst).minusDays(1);
+
+        FilterConditionDto filterConditionDto = new FilterConditionDto(1L, 1L, dateFrom, dateTo);
+
+        List<Reservation> reservations = reservationService.getFilteredReservations(filterConditionDto);
+
+        assertThat(reservations.size()).isEqualTo(2);
     }
 }

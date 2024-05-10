@@ -11,6 +11,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AdminReservationRequestDto;
+import roomescape.dto.FilterConditionDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -69,5 +70,9 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationDao.deleteById(id);
+    }
+
+    public List<Reservation> getFilteredReservations(FilterConditionDto filterConditionDto) {
+        return reservationDao.findFilteredReservations(filterConditionDto.themeId(), filterConditionDto.memberId(), filterConditionDto.dateFrom().toString(), filterConditionDto.dateTo().toString());
     }
 }

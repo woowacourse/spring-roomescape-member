@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -109,5 +110,18 @@ public class ReservationDaoTest {
         int count = reservationDao.count(LocalDate.now().minusDays(1).toString(), 1L, 1L);
 
         assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("조건에 맞는 예약을 반환한다.")
+    @Test
+    void findFilteredReservationsTest() {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+
+        String dateFrom = LocalDate.now(kst).minusWeeks(1).toString();
+        String dateTo = LocalDate.now(kst).minusDays(1).toString();
+
+        List<Reservation> reservations = reservationDao.findFilteredReservations(1L, 1L, dateFrom, dateTo);
+
+        assertThat(reservations.size()).isEqualTo(2);
     }
 }

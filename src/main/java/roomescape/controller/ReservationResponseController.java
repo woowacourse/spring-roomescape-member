@@ -7,6 +7,7 @@ import roomescape.annotation.AuthenticationPrincipal;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.dto.AdminReservationRequestDto;
+import roomescape.dto.FilterConditionDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.service.ReservationService;
 
@@ -45,5 +46,11 @@ public class ReservationResponseController {
     public ResponseEntity<Reservation> createAdminReservation(@RequestBody AdminReservationRequestDto adminReservationRequestDto) {
         Reservation reservation = reservationService.insertReservation(adminReservationRequestDto);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    }
+
+    @PostMapping("/reservations/filter")
+    public ResponseEntity<List<Reservation>> getFilteredReservations(@RequestBody FilterConditionDto filterConditionDto) {
+        List<Reservation> reservations = reservationService.getFilteredReservations(filterConditionDto);
+        return ResponseEntity.ok().body(reservations);
     }
 }
