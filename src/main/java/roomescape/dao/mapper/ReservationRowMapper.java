@@ -28,10 +28,11 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
 
         final var memberId = rs.getLong("member_id");
         final var memberName = rs.getString("member_name");
+        final var memberRole = rs.getString("member_role");
 
         return new Reservation(
                 reservationId,
-                Member.of(memberId, memberName),
+                Member.of(memberId, memberName, memberRole),
                 ReservationDate.from(date),
                 ReservationTime.of(timeId, startAt),
                 Theme.of(themeId, themeName, description, thumbnail)

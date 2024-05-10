@@ -1,10 +1,12 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.api.dto.request.MemberCreateRequest;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.exception.InvalidInputException;
+import roomescape.service.dto.output.MemberOutput;
 
 @Service
 public class MemberService {
@@ -16,7 +18,7 @@ public class MemberService {
     }
 
     public Member findMember(final MemberCreateRequest request) {
-        final Member member = Member.of(null, null, request.email(), request.password());
+        final Member member = Member.of(null, "임시 이름", request.email(), request.password(), "ADMIN");
 
         final var savedMember = memberDao.findByEmail(member)
                 .orElseThrow(() -> new InvalidInputException("없는 이메일"));
@@ -31,5 +33,10 @@ public class MemberService {
     public Member findMemberById(final String id) {
         return memberDao.findById(id)
                 .orElseThrow(() -> new InvalidInputException("없는 멤버 id"));
+    }
+
+    public List<MemberOutput> getAllMembers() {
+        final var members = memberDao.getAll();
+        return MemberOutput.list(members);
     }
 }

@@ -26,4 +26,8 @@ public class AuthService {
     public String some(final String token) {
         return jwtTokenProvider.getPayload(token);
     }
+
+    public boolean isAdmin(final String token) {
+        return jwtTokenProvider.validateAdmin(token);
+    }
 }

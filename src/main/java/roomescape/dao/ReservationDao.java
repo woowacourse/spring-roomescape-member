@@ -77,7 +77,8 @@ public class ReservationDao {
                 th.description AS theme_description,
                 th.thumbnail AS theme_thumbnail,
                 m.id AS member_id,
-                m.name AS member_name
+                m.name AS member_name,
+                m.role AS member_role
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t 
                 ON r.time_id = t.id 

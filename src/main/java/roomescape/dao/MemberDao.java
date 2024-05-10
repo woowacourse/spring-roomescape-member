@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,7 +32,8 @@ public class MemberDao {
         final var params = new MapSqlParameterSource()
                 .addValue("name", member.name())
                 .addValue("email", member.email())
-                .addValue("password", member.password());
+                .addValue("password", member.password())
+                .addValue("role", member.role());
         final var id = jdbcInsert.executeAndReturnKey(params).longValue();
         return Member.of(id, member);
     }
@@ -61,6 +63,11 @@ public class MemberDao {
         } catch (final EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    public List<Member> getAll() {
+        final var sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
 //    public boolean isExistByStartAt(final String startAt) {
