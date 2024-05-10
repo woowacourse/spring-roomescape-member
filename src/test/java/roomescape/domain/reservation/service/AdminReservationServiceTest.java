@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.domain.member.Role.ADMIN;
 import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
@@ -21,7 +22,7 @@ import roomescape.global.exception.ClientIllegalArgumentException;
 
 class AdminReservationServiceTest {
 
-    private static final Member ADMIN_MEMBER = new Member(1L, "어드민", "admin@gmail.com", "123456");
+    private static final Member ADMIN_MEMBER = new Member(1L, "어드민", "admin@gmail.com", "123456", ADMIN);
     private static final ReservationTime TEN_RESERVATION_TIME = new ReservationTime(1L, TEN_HOUR);
     private static final Theme DUMMY_THEME = new Theme(1L, "dummy", "dummy", "dummy");
 
@@ -89,7 +90,7 @@ class AdminReservationServiceTest {
     void should_throw_ClientIllegalArgumentException_when_reserve_date_and_time_duplicated() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "dummy", "description", "url");
-        Member member = new Member(1L, "dummy", "dummy", "dummy");
+        Member member = new Member(1L, "dummy", "dummy", "dummy", ADMIN);
         Reservation reservation = new Reservation(null, AFTER_ONE_DAYS_DATE, reservationTime, theme, member);
         fakeReservationRepository.insert(reservation);
 

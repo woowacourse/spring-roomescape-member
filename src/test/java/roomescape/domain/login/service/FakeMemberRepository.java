@@ -1,5 +1,7 @@
 package roomescape.domain.login.service;
 
+import static roomescape.domain.member.Role.MEMBER;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,7 @@ public class FakeMemberRepository implements MemberRepository {
     public Member insert(Member member) {
         Long id = atomicLong.incrementAndGet();
 
-        Member addMember = new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        Member addMember = new Member(id, member.getName(), member.getEmail(), member.getPassword(), MEMBER);
         members.put(id, addMember);
         return addMember;
     }

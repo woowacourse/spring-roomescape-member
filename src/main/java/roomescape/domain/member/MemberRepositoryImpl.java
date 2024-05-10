@@ -20,7 +20,8 @@ public class MemberRepositoryImpl implements MemberRepository {
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
-            rs.getString("password")
+            rs.getString("password"),
+            Role.convertToRole(rs.getString("role"))
     ));
 
     public MemberRepositoryImpl(JdbcTemplate jdbcTemplate) {
@@ -36,13 +37,23 @@ public class MemberRepositoryImpl implements MemberRepository {
         memberRow.put("name", member.getName());
         memberRow.put("email", member.getEmail());
         memberRow.put("password", member.getPassword());
+        memberRow.put("role", member.getRole().getValue());
         Long id = simpleJdbcInsert.executeAndReturnKey(memberRow).longValue();
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
     public Optional<Member> findById(Long id) {
-        String sql = "select * from member where id = ?";
+        String sql = """
+                SELECT 
+                    m.id,
+                    m.name,
+                    m.email,
+                    m.password,
+                    m.role 
+                FROM member m 
+                WHERE m.id = ?
+                """;
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -52,7 +63,16 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "select * from member where email = ? and password = ?";
+        String sql = """
+                SELECT 
+                    m.id,
+                    m.name,
+                    m.email,
+                    m.password,
+                    m.role  
+                FROM member m 
+                where m.email = ? and m.password = ?
+                """;
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
         } catch (EmptyResultDataAccessException e) {

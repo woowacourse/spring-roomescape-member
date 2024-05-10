@@ -1,11 +1,11 @@
-insert into member(name, email, password)
-values ('어드민', 'admin@gmail.com', '123456');
+insert into member(name, email, password, role)
+values ('어드민', 'admin@gmail.com', '123456', 'ADMIN');
 
-insert into member(name, email, password)
-values ('도도', 'dodo@gmail.com', '123123');
+insert into member(name, email, password, role)
+values ('도도', 'dodo@gmail.com', '123123', 'MEMBER');
 
-insert into member(name, email, password)
-values ('미르', 'mir@gmail.com', '123456');
+insert into member(name, email, password, role)
+values ('미르', 'mir@gmail.com', '123456', 'MEMBER');
 
 insert into theme(name, description, thumbnail)
 values ('테마1', '테마1입니당 ^0^', 'https://file.miricanvas.com/template_thumb/2021/07/02/13/20/k4t92g5ntu46etia/thumb.jpg');

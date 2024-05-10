@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservationTime.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
@@ -27,7 +28,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail")),
             new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
-                    resultSet.getString("member_email"), resultSet.getString("member_password")));
+                    resultSet.getString("member_email"), resultSet.getString("member_password"),
+                    Role.convertToRole(resultSet.getString("member_role")))
+    );
 
     private RowMapper<ReservationTime> timeRowMapper = ((rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
@@ -62,7 +65,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                         m.id as member_id,
                         m.name as member_name,
                         m.email as member_email,
-                        m.password as member_password
+                        m.password as member_password,
+                        m.role as member_role
                     FROM reservation as r 
                     INNER JOIN reservation_time as t 
                     ON r.time_id = t.id 
@@ -89,7 +93,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email as member_email,
-                    m.password as member_password
+                    m.password as member_password,
+                    m.role as member_role
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                 ON r.time_id = t.id

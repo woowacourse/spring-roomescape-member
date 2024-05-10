@@ -1,9 +1,10 @@
 CREATE TABLE member
 (
-    id       BIGINT              NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255)        NOT NULL,
-    email    VARCHAR(255) unique NOT NULL,
-    password varchar(255)        NOT NULL,
+    id       BIGINT                  NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255)            NOT NULL,
+    email    VARCHAR(255)            NOT NULL,
+    password varchar(255)            NOT NULL,
+    role     ENUM ('ADMIN','MEMBER') NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -25,10 +26,10 @@ CREATE TABLE theme
 
 CREATE TABLE reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     VARCHAR(255) NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    date      VARCHAR(255) NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
     member_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),

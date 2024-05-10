@@ -2,6 +2,7 @@ package roomescape.domain.login.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.fixture.MemberFixture.ADMIN_MEMBER;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,9 +13,6 @@ import roomescape.domain.member.MemberService;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 class MemberServiceTest {
-
-
-    private static final Member ADMIN_MEMBER = new Member(1L, "admin", "admin@gmail.com", "123456");
 
     private MemberService memberService;
     private MemberRepository memberRepository;

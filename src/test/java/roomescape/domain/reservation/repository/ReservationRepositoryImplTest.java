@@ -32,8 +32,8 @@ class ReservationRepositoryImplTest extends RepositoryTest {
     @BeforeEach
     void setUp() {
         reservationRepository = new ReservationRepositoryImpl(jdbcTemplate);
-        jdbcTemplate.update("insert into member (name, email, password) values (?,?,?)"
-                , "어드민", "admin@gmail.com", "123456");
+        jdbcTemplate.update(
+                "insert into member (name, email, password, role) values ('어드민', 'admin@gmail.com', '123456', 'ADMIN')");
         jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
         jdbcTemplate.update("insert into theme(name, description, thumbnail) values(?,?,?)", "리비", "머리 쓰는 중",
                 "url");

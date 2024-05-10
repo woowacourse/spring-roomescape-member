@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class memberController {
+public class MemberController {
 
     private final MemberService memberService;
 
-    public memberController(MemberService memberService) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 

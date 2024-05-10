@@ -1,6 +1,8 @@
 package roomescape.domain.login.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.domain.member.Role.MEMBER;
+import static roomescape.fixture.MemberFixture.ADMIN_MEMBER;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +17,6 @@ import roomescape.domain.member.MemberRepositoryImpl;
 
 class MemberRepositoryImplTest extends RepositoryTest {
 
-    private final static Member ADMIN_MEMBER = new Member(1L, "어드민", "admin@gmail.com", "123456");
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -29,7 +30,7 @@ class MemberRepositoryImplTest extends RepositoryTest {
     void setUp() {
         memberRepository = new MemberRepositoryImpl(jdbcTemplate);
         jdbcTemplate.update(
-                "insert into member (name, email, password) values ('어드민','admin@gmail.com','123456')");
+                "insert into member (name, email, password, role) values ('어드민', 'admin@gmail.com', '123456', 'ADMIN')");
     }
 
     @AfterEach
@@ -40,7 +41,8 @@ class MemberRepositoryImplTest extends RepositoryTest {
     @DisplayName("유저를 table에 넣을 수 있습니다.")
     @Test
     void should_insert_member() {
-        Member testMember = memberRepository.insert(new Member(null, "testName1", "testEmail1@gmail.com", "123123"));
+        Member testMember = memberRepository.insert(new Member(null, "testName1", "testEmail1@gmail.com", "123123",
+                MEMBER));
 
         assertThat(testMember.getId()).isNotNull();
     }
