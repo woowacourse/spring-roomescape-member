@@ -42,7 +42,7 @@ public class MemberService {
             Member findMember = memberOptional.get();
             return new MemberResponse(findMember);
         }
-        throw new IllegalArgumentException("요청을 처리할 수 없습니다. ID를 다시 확인해주세요.");
+        throw new IllegalArgumentException("요청을 처리할 수 없습니다. 회원ID를 다시 확인해주세요.");
     }
 
     public List<MemberResponse> findAll() {

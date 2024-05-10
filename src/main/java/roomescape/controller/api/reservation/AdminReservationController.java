@@ -13,7 +13,6 @@ import roomescape.service.ReservationService;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/reservations")
@@ -28,7 +27,7 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody AdminReservationAddRequest request) { // TODO 테스트추가
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody AdminReservationAddRequest request) {
         MemberResponse memberResponse = memberService.findById(request.memberId());
         ReservationAddMemberRequest memberRequest = new ReservationAddMemberRequest(memberResponse);
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(request.date(), request.timeId(), request.themeId());
