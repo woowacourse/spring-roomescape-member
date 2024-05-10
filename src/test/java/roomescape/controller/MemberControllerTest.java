@@ -7,10 +7,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -27,7 +30,7 @@ class MemberControllerTest {
     @Test
     void given_when_signupSuccess_then_statusCodeIsOk() {
         Map<String, Object> params = new HashMap<>();
-        params.put("email", "wedge@test.com");
+        params.put("email", "wedge@newMember.com");
         params.put("password", "1q2w3e4r!");
         params.put("name", "웨지");
 
@@ -69,5 +72,21 @@ class MemberControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(403);
+    }
+
+    @DisplayName("로그인 성공 시 200 응답하고 cookie 를 설정한다.")
+    @Test
+    void given_when_loginSuccess_then_statusCodeOk() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", "wedge@test.com");
+        params.put("password", "test1234");
+        var response = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all().extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.header("Set-Cookie").split(";")[0]).isNotEmpty();
     }
 }

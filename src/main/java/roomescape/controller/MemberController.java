@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import roomescape.service.MemberService;
 
 @RestController
 public class MemberController {
+    private static final String SESSION_NAME = "token";
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -25,8 +27,9 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest) {
+    ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest, HttpSession httpSession) {
         final TokenResponse tokenResponse = memberService.login(loginRequest);
-        return ResponseEntity.ok(tokenResponse);
+        httpSession.setAttribute(SESSION_NAME, tokenResponse.accessToken());
+        return ResponseEntity.ok().build();
     }
 }

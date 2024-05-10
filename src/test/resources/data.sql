@@ -32,6 +32,7 @@ INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('애쉬', '2099-04-30', 1, 1);
 
 INSERT INTO member(email, password, salt, name)
-VALUES ('poke@test.com', 'hashedpassword', 'salt', 'poke')
+VALUES ('poke@test.com', 'hashedpassword', 'salt', 'poke');
 
-
+INSERT INTO member(email, password, salt, name)
+VALUES ('wedge@test.com', 'yAD5RFQKSwFkOImAX+hDr1RSlsR7MBBSFr/xni5sGOE=', 'SZj5iqlnmc4cLvpOAS0a1g==', 'wedge');
