@@ -9,7 +9,6 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.domain.user.Role;
 
 @Component
 public class JwtProvider {
@@ -22,12 +21,11 @@ public class JwtProvider {
         this.expirationMilliseconds = expirationMilliseconds;
     }
 
-    public String createToken(long id, Role role) {
+    public String createToken(long id) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + expirationMilliseconds);
         return Jwts.builder()
                 .subject(Long.toString(id))
-                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(key)

@@ -22,7 +22,7 @@ public class AuthService {
     public String createToken(TokenCreationRequest request) {
         User user = getUser(request);
         validatePassword(user, request.password());
-        return jwtProvider.createToken(user.getId(), user.getRole());
+        return jwtProvider.createToken(user.getId());
     }
 
     private User getUser(TokenCreationRequest request) {
