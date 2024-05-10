@@ -1,6 +1,7 @@
 package roomescape.infrastructure;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -50,10 +51,9 @@ public class TokenProvider {
     }
 
     public void validateTokenExpiration(final String token) {
-        final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-        final boolean isExpired = claims.getBody().getExpiration().before(new Date());
-
-        if (isExpired) {
+        try {
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
             throw new JwtException("로그인 기간이 만료되었습니다. 다시 로그인 해주세요.");
         }
     }
