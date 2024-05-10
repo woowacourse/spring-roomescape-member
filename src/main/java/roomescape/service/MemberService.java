@@ -29,12 +29,13 @@ public class MemberService {
 
     public TokenResponse createToken(UserLoginRequest userLoginRequest) {
         Member member = memberRepository.findByEmailAndPassword(userLoginRequest.email(), userLoginRequest.password())
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+                .orElseThrow(() -> new IllegalArgumentException("가입되어 있지 않은 유저입니다."));
         return new TokenResponse(jwtTokenProvider.createToken(member));
     }
 
     public CheckMemberResponse findById(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow();
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("가입되어 있지 않은 유저입니다. memberId: " + id));
         return new CheckMemberResponse(member.getName());
     }
 
