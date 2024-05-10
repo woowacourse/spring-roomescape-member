@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
+import roomescape.exception.AuthenticationException;
 import roomescape.service.auth.AuthService;
 
 @Component
@@ -26,7 +27,7 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
         String token = extractTokenFromCookie(cookies);
         Member member = authService.findMemberByToken(token);
         if (member == null || !member.getRole().equals(Role.ADMIN)) {
-            return false;
+            throw new AuthenticationException("권한이 없습니다.");
         }
         return true;
     }
