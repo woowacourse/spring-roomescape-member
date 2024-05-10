@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.LoginException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.member.MemberRepository;
 import roomescape.service.dto.member.MemberLoginRequest;
 import roomescape.service.dto.member.MemberResponse;
@@ -40,5 +41,10 @@ public class MemberService {
         if (!member.isPasswordMatches(password)) {
             throw new LoginException("이메일 혹은 비밀번호가 잘못되었습니다.");
         }
+    }
+
+    public Member get(long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당하는 사용자가 없습니다."));
     }
 }

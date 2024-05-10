@@ -58,4 +58,15 @@ public class MemberDao implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT ID, NAME, EMAIL, PASSWORD FROM MEMBER WHERE ID = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(member);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

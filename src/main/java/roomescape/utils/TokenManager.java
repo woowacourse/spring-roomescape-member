@@ -51,4 +51,8 @@ public class TokenManager {
                 payload.get("name", String.class)
         );
     }
+
+    public long getMemberIdFromToken(String token) {
+        return getMemberResponseFromToken(token).id();
+    }
 }
