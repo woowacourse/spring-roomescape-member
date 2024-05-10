@@ -1,5 +1,7 @@
 package roomescape.web.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.core.dto.LoginCheckResponseDto;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -69,6 +72,49 @@ class AuthControllerTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .when().post("/login")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("로그인 후 인증 정보를 조회한다.")
+    void checkLogin() {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("email", "hong@gmail.com");
+        params.put("password", "1234");
+
+        final String cookie = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        final LoginCheckResponseDto response = RestAssured
+                .given().log().all()
+                .header("Cookie", cookie)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract().as(LoginCheckResponseDto.class);
+
+        assertThat(response).isNotNull()
+                .extracting(LoginCheckResponseDto::getName)
+                .isEqualTo("홍길동");
+    }
+
+    @Test
+    @DisplayName("인증 정보 조회 시, 토큰이 유효하지 않으면 예외가 발생한다.")
+    void checkLoginWithInvalidToken() {
+        final String invalidCookie = "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI";
+
+        RestAssured.given().log().all()
+                .header("Cookie", invalidCookie)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/login/check")
                 .then().log().all()
                 .statusCode(401);
     }

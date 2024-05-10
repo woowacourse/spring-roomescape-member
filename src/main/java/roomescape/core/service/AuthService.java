@@ -27,4 +27,13 @@ public class AuthService {
         }
         throw new AuthorizationException("비밀번호가 일치하지 않습니다.");
     }
+
+    @Transactional(readOnly = true)
+    public Member findMemberByToken(final String token) {
+        if (jwtTokenProvider.isExpiredToken(token)) {
+            throw new AuthorizationException("만료된 토큰입니다.");
+        }
+        final String email = jwtTokenProvider.getPayload(token);
+        return memberRepository.findByEmail(email);
+    }
 }
