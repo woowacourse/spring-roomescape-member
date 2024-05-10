@@ -5,13 +5,11 @@
 ### 메인 페이지 조회
 
 #### Request
-
 ```http request
 GET /admin HTTP/1.1
 ```
 
 #### Response
-
 ```
 HTTP/1.1 200 
 ```
@@ -19,27 +17,40 @@ HTTP/1.1 200
 ### 예약 페이지 조회
 
 #### Request
-
 ```http request
 GET /admin/reservation HTTP/1.1
 ```
 
 #### Response
-
 ```
 HTTP/1.1 200 
+```
+
+### 요청 Body 값을 이용한 예약 생성
+
+#### Request
+```
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
+}
 ```
 
 ### 예약 목록 조회
 
 #### Request
-
 ```http request
 GET /reservations HTTP/1.1
 ```
 
 #### Response
-
 ```
 HTTP/1.1 200 
 Content-Type: application/json
@@ -66,13 +77,11 @@ Content-Type: application/json
 ### 예약 단건 조회
 
 #### Request
-
 ```http request
 GET /reservations/{id} HTTP/1.1
 ```
 
 #### Response
-
 ```http request
 HTTP/1.1 200 
 Content-Type: application/json
@@ -94,24 +103,21 @@ Content-Type: application/json
 }
 ```
 
-### 예약 추가
-
+### 쿠키를 이용한 예약 생성
 #### Request
-
-```http request
+```
 POST /reservations HTTP/1.1
 content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
 
 {
-    "date": "2023-08-05",
-    "name": "브라운",
-    "timeId": 1,
-    "themeId": 1
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1
 }
 ```
-
 #### Response
-
 ```
 HTTP/1.1 201
 Location: /reservation/{id}
@@ -120,13 +126,11 @@ Location: /reservation/{id}
 ### 예약 취소
 
 #### Request
-
 ```http request
 DELETE /reservations/{id} HTTP/1.1
 ```
 
 #### Response
-
 ```
 HTTP/1.1 204
 ```
@@ -136,13 +140,11 @@ HTTP/1.1 204
 ### 시간 목록 조회
 
 #### Request
-
 ```http request
 GET /times HTTP/1.1
 ```
 
 #### Response
-
 ```http request
 HTTP/1.1 200
 Content-Type: application/json
@@ -238,7 +240,6 @@ Content-Type: application/json
 ### 테마 추가
 
 #### Request
-
 ```
 POST /themes HTTP/1.1
 content-type: application/json
@@ -251,7 +252,6 @@ content-type: application/json
 ```
 
 #### Response
-
 ```
 HTTP/1.1 201
 Location: /themes/1
