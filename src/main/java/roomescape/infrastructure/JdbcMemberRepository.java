@@ -8,6 +8,7 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.domain.Role;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -44,5 +45,12 @@ public class JdbcMemberRepository implements MemberRepository {
         Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, memberId);
 
         return Optional.ofNullable(member);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 }
