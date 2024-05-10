@@ -21,7 +21,10 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-@Import({H2ReservationRepository.class, H2ReservationTimeRepository.class, H2ThemeRepository.class})
+@Import({H2ReservationRepository.class,
+        H2ReservationTimeRepository.class,
+        H2ThemeRepository.class,
+        H2MemberRepository.class})
 @JdbcTest
 class ReservationRepositoryTest {
 
