@@ -122,6 +122,14 @@ class ReservationServiceTest {
         ).isInstanceOf(IllegalArgumentException.class).hasMessage("동일한 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
     }
 
+    @DisplayName("dateFrom이 dateTo 이후의 날짜일 경우 예외 발생")
+    @Test
+    void invalidReservationFilterDate() {
+        assertThatThrownBy(() -> reservationService.getReservations(new ReservationFilterRequest(null, null, LocalDate.now().plusMonths(1), LocalDate.now())))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("dateFrom이 dateTo 이후의 날짜입니다.");
+    }
+
     @DisplayName("전체 예약 목록 조회")
     @Test
     void getReservations() {

@@ -29,10 +29,20 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getReservations(final ReservationFilterRequest reservationFilterRequest) {
+        validateReservationFilterDate(reservationFilterRequest);
         return reservationRepository.findByFilter(reservationFilterRequest)
                 .stream()
                 .map(ReservationResponse::new)
                 .toList();
+    }
+
+    private void validateReservationFilterDate(final ReservationFilterRequest request) {
+        if (request.dateFrom() == null || request.dateTo() == null) {
+            return;
+        }
+        if (request.dateFrom().isAfter(request.dateTo())) {
+            throw new IllegalArgumentException("dateFrom이 dateTo 이후의 날짜입니다.");
+        }
     }
 
     public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest, final LoginMember loginMember) {
