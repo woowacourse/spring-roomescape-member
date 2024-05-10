@@ -91,8 +91,18 @@
   - [x] 예약 테이블에서 유저 id를 사용하도록 변경
 - 예약 생성 기능 변경 - 사용자 [POST /reservations]
   - [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
-  - [ ] `reservation.html`, `user-reservation.js` 변경된 명세에 맞게 클라이언트가 동작하도록 변경
+  - [x] `reservation.html`, `user-reservation.js` 변경된 명세에 맞게 클라이언트가 동작하도록 변경
 - 예약 생성 기능 변경 - 관리자 [POST /admin/reservations]
   - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
-  - [ ] `admin/reservation-new.html` 파일에서 로딩하는 js 파일을 변경 
+  - [x] `admin/reservation-new.html` 파일에서 로딩하는 js 파일을 변경 
     - `/js/reservation-new.js` -> `/js/reservation-with-member.js`
+
+## 6단계 기능 요구 사항
+- 멤버 권한 추가
+  - [ ] 멤버 테이블에 역할 추가
+- 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한
+  - [ ] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근
+  - [ ] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답
+- 관리자가 조건에 따라 예약을 검색하는 기능
+  - [ ] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가
+    - themeId, memberId, dateFrom, dateTo 값을 사용 
