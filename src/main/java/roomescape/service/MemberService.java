@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Password;
+import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.exceptions.NotFoundException;
@@ -28,7 +29,7 @@ public class MemberService {
         return memberRepository.findByEmailAndPassword(
                         new Email(loginRequest.email()),
                         new Password(loginRequest.password()))
-                .map(member -> createToken(member))
+                .map(this::createToken)
                 .orElseThrow(() -> new AuthenticationException("이메일 또는 비밀번호가 틀립니다."));
     }
 
@@ -40,7 +41,7 @@ public class MemberService {
                 .compact();
     }
 
-    public MemberResponse getLoginMember(String token) throws AuthenticationException {
+    public MemberResponse getMemberResponse(String token) throws AuthenticationException {
         Long memberId = parseTokenToMemberId(token);
 
         return memberRepository.findById(memberId)
@@ -60,5 +61,13 @@ public class MemberService {
         } catch (JwtException e) {
             throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    public LoginMemberRequest getLoginMemberRequest(String token) throws AuthenticationException {
+        Long memberId = parseTokenToMemberId(token);
+
+        return memberRepository.findById(memberId)
+                .map(member -> new LoginMemberRequest(memberId, member.getName().name(), member.getEmail().email()))
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
     }
 }

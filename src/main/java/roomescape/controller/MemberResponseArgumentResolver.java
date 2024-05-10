@@ -11,13 +11,13 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
 
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class MemberResponseArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String TOKEN = "token";
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public MemberResponseArgumentResolver(MemberService memberService) {
         this.memberService = memberService;
     }
 
@@ -37,7 +37,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = servletRequest.getCookies();
         String token = extractTokenFromCookie(cookies);
 
-        return memberService.getLoginMember(token);
+        return memberService.getMemberResponse(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
