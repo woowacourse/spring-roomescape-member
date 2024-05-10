@@ -44,7 +44,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", startsWith("/reservations/"))
-                .body("name", is("어드민"))
+                .body("member.name", is("어드민"))
                 .body("date", is(date.toString()));
     }
 
