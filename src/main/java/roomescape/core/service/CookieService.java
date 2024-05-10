@@ -2,10 +2,8 @@ package roomescape.core.service;
 
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
-import org.springframework.stereotype.Service;
 import roomescape.core.dto.auth.TokenResponse;
 
-@Service
 public class CookieService {
     public static final String COOKIE_NAME = "token";
 
