@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ThemeService {
     private final ThemeRepository themeRepository;
 
@@ -19,12 +19,12 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ThemeResponse create(Theme theme) {
         Theme savedTheme = themeRepository.save(theme);
         return ThemeResponse.from(savedTheme);
     }
 
-    @Transactional(readOnly = true)
     public List<ThemeResponse> findAll() {
         List<Theme> themes = themeRepository.findAll();
         return themes.stream()
@@ -32,17 +32,16 @@ public class ThemeService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public Theme findById(Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 없습니다."));
     }
 
+    @Transactional
     public void deleteById(Long id) {
         themeRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public List<ThemeResponse> findAllPopular() {
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now().minusDays(1);
