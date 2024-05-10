@@ -1,9 +1,11 @@
 package roomescape.service;
 
 import static roomescape.exception.ExceptionType.NOT_FOUND_MEMBER;
+import static roomescape.exception.ExceptionType.REQUIRED_LOGIN;
 import static roomescape.exception.ExceptionType.WRONG_PASSWORD;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.domain.LoginMember;
@@ -39,11 +41,15 @@ public class LoginService {
     }
 
     public LoginMember checkLogin(String token) {
-        Claims claims = jwtGenerator.getClaims(token);
-        return new LoginMember(
-                claims.get("id", Long.class),
-                claims.get("name", String.class),
-                Role.valueOf(claims.get("role", String.class))
-        );
+        try {
+            Claims claims = jwtGenerator.getClaims(token);
+            return new LoginMember(
+                    claims.get("id", Long.class),
+                    claims.get("name", String.class),
+                    Role.valueOf(claims.get("role", String.class))
+            );
+        } catch (ExpiredJwtException e) {
+            throw new RoomescapeException(REQUIRED_LOGIN);
+        }
     }
 }
