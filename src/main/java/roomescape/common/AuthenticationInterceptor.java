@@ -1,6 +1,5 @@
 package roomescape.common;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.file.AccessDeniedException;
@@ -9,16 +8,19 @@ import roomescape.auth.service.TokenProvider;
 import roomescape.auth.domain.AuthInfo;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
+
+    private final AuthorizationExtractor authorizationExtractor;
     private final TokenProvider tokenProvider;
 
-    public AuthenticationInterceptor(final TokenProvider tokenProvider) {
+    public AuthenticationInterceptor(final AuthorizationExtractor authorizationExtractor, final TokenProvider tokenProvider) {
+        this.authorizationExtractor = authorizationExtractor;
         this.tokenProvider = tokenProvider;
     }
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = authorizationExtractor.extractToken(request);
         if (token == null || token.isBlank()) {
             throw new AccessDeniedException("로그인이 필요한 기능입니다. 다시 로그인을 해주세요.");
         }
@@ -29,14 +31,5 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         return true;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return null;
     }
 }

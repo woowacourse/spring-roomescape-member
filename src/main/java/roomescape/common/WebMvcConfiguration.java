@@ -11,9 +11,11 @@ import roomescape.auth.service.TokenProvider;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+    private final AuthorizationExtractor authorizationExtractor;
     private final TokenProvider tokenProvider;
 
-    public WebMvcConfiguration(final TokenProvider tokenProvider) {
+    public WebMvcConfiguration(final AuthorizationExtractor authorizationExtractor, final TokenProvider tokenProvider) {
+        this.authorizationExtractor = authorizationExtractor;
         this.tokenProvider = tokenProvider;
     }
 
@@ -26,12 +28,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         WebMvcConfigurer.super.addInterceptors(registry);
-        registry.addInterceptor(new AuthenticationInterceptor(tokenProvider))
+        registry.addInterceptor(new AuthenticationInterceptor(authorizationExtractor, tokenProvider))
                 .addPathPatterns("/admin/**");
     }
 
     @Bean
     public AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver() {
-        return new AuthenticationPrincipalArgumentResolver(tokenProvider);
+        return new AuthenticationPrincipalArgumentResolver(tokenProvider, authorizationExtractor);
     }
 }

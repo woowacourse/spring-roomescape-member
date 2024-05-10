@@ -1,6 +1,5 @@
 package roomescape.common;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -12,9 +11,12 @@ import roomescape.auth.service.TokenProvider;
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final TokenProvider tokenProvider;
+    private final AuthorizationExtractor authorizationExtractor;
 
-    public AuthenticationPrincipalArgumentResolver(final TokenProvider tokenProvider) {
+    public AuthenticationPrincipalArgumentResolver(final TokenProvider tokenProvider,
+                                                   final AuthorizationExtractor authorizationExtractor) {
         this.tokenProvider = tokenProvider;
+        this.authorizationExtractor = authorizationExtractor;
     }
 
     @Override
@@ -26,16 +28,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = extractTokenFromCookie(httpServletRequest.getCookies());
+        String token = authorizationExtractor.extractToken(httpServletRequest);
         return tokenProvider.extractAuthInfo(token);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return null;
     }
 }
