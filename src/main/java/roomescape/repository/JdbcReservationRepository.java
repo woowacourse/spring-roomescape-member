@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 
@@ -27,7 +28,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getLong("member_id"),
                 rs.getString("member_email"),
                 rs.getString("member_password"),
-                rs.getString("member_name")
+                rs.getString("member_name"),
+                Role.valueOf(rs.getString("member_role"))
         );
 
         ReservationTime time = new ReservationTime(
@@ -62,6 +64,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         m.email AS member_email,
                         m.password AS member_password,
                         m.name as member_name,
+                        m.role as member_role,
                         t.id as time_id,
                         t.start_at as time_start_at,
                         th.id as theme_id,
@@ -91,6 +94,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         m.email AS member_email,
                         m.password AS member_password,
                         m.name as member_name,
+                        m.role as member_role,
                         t.id as time_id,
                         t.start_at as time_start_at,
                         th.id as theme_id,
@@ -174,6 +178,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         m.email AS member_email,
                         m.password AS member_password,
                         m.name as member_name,
+                        m.role as member_role,
                         t.id as time_id,
                         t.start_at as time_start_at,
                         th.id as theme_id,

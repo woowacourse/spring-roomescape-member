@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
+import roomescape.domain.Role;
 import roomescape.dto.request.MemberRequest;
 import roomescape.dto.response.MemberResponse;
 
@@ -51,7 +52,7 @@ class MemberControllerTest extends BaseControllerTest {
     }
 
     private void addMember() {
-        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자");
+        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자", Role.NORMAL);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -65,12 +66,13 @@ class MemberControllerTest extends BaseControllerTest {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             softly.assertThat(response.header("Location")).isEqualTo("/members/1");
-            softly.assertThat(reservationMemberResponse).isEqualTo(new MemberResponse(1L, "email@email.com", "사용자"));
+            softly.assertThat(reservationMemberResponse)
+                    .isEqualTo(new MemberResponse(1L, "email@email.com", "사용자", Role.NORMAL));
         });
     }
 
     private void addMemberFailWhenDuplicatedEmail() {
-        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자");
+        MemberRequest request = new MemberRequest("email@email.com", "password", "사용자", Role.NORMAL);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -98,7 +100,7 @@ class MemberControllerTest extends BaseControllerTest {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             softly.assertThat(reservationMemberResponses).hasSize(1);
             softly.assertThat(reservationMemberResponses)
-                    .containsExactly(new MemberResponse(1L, "email@email.com", "사용자"));
+                    .containsExactly(new MemberResponse(1L, "email@email.com", "사용자", Role.NORMAL));
         });
     }
 

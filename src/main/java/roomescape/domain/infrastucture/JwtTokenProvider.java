@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Component
 public class JwtTokenProvider {
@@ -18,6 +19,7 @@ public class JwtTokenProvider {
                 .subject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
                 .claim("email", member.getEmail())
+                .claim("role", member.getRole().name())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
@@ -59,6 +61,15 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("name", String.class);
+    }
+
+    public Role getMemberRoleFrom(String token) {
+        return Role.valueOf(Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class));
     }
 }
 

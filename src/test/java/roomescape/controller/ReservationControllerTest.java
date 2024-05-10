@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
@@ -42,7 +43,7 @@ class ReservationControllerTest extends BaseControllerTest {
 
     @BeforeEach
     void setUp() {
-        memberRepository.save(new Member("qwer@naver.com", "1234", "구름"));
+        memberRepository.save(new Member("qwer@naver.com", "1234", "구름", Role.NORMAL));
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
     }
@@ -123,7 +124,7 @@ class ReservationControllerTest extends BaseControllerTest {
                 .extract();
 
         ReservationResponse reservationResponse = response.as(ReservationResponse.class);
-        MemberResponse memberResponse = new MemberResponse(1L, "qwer@naver.com", "구름");
+        MemberResponse memberResponse = new MemberResponse(1L, "qwer@naver.com", "구름", Role.NORMAL);
         ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, LocalTime.of(11, 0));
         ThemeResponse themeResponse = new ThemeResponse(1L, "테마 이름", "테마 설명", "https://example.com");
 
@@ -145,7 +146,7 @@ class ReservationControllerTest extends BaseControllerTest {
                 .extract();
 
         List<ReservationResponse> reservationResponses = response.jsonPath().getList(".", ReservationResponse.class);
-        MemberResponse memberResponse = new MemberResponse(1L, "qwer@naver.com", "구름");
+        MemberResponse memberResponse = new MemberResponse(1L, "qwer@naver.com", "구름", Role.NORMAL);
         ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, LocalTime.of(11, 0));
         ThemeResponse themeResponse = new ThemeResponse(1L, "테마 이름", "테마 설명", "https://example.com");
 

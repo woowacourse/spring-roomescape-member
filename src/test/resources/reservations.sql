@@ -12,8 +12,8 @@ VALUES ('09:00'),
        ('18:00'),
        ('21:00');
 
-INSERT INTO member (email, password, name)
-VALUES ('qwer@naver.com', '1234', '구름');
+INSERT INTO member (email, password, name, role)
+VALUES ('qwer@naver.com', '1234', '구름', 'NORMAL');
 
 INSERT INTO reservation (date, member_id, time_id, theme_id)
 VALUES ('2024-04-1', 1, 1, 5),

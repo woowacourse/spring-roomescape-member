@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.domain.repository.MemberRepository;
 
 @Repository
@@ -21,8 +22,9 @@ public class JdbcMemberRepository implements MemberRepository {
         String email = rs.getString("email");
         String password = rs.getString("password");
         String name = rs.getString("name");
+        Role role = Role.valueOf(rs.getString("role"));
 
-        return new Member(id, email, password, name);
+        return new Member(id, email, password, name, role);
     };
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
@@ -56,11 +58,12 @@ public class JdbcMemberRepository implements MemberRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
-                .addValue("name", member.getName());
+                .addValue("name", member.getName())
+                .addValue("role", member.getRole().name());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, member.getEmail(), member.getPassword(), member.getName());
+        return new Member(id, member.getEmail(), member.getPassword(), member.getName(), member.getRole());
     }
 
     @Override

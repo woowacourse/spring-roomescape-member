@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.TokenResponse;
@@ -27,7 +28,7 @@ class AuthControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("로그인을 한다.")
     void login() {
-        memberRepository.save(new Member("test123@example.com", "password", "test"));
+        memberRepository.save(new Member("test123@example.com", "password", "test", Role.NORMAL));
 
         LoginRequest request = new LoginRequest("test123@example.com", "password");
 
@@ -48,7 +49,7 @@ class AuthControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("로그인 여부를 확인한다.")
     void check() {
-        memberRepository.save(new Member("test123@example.com", "password", "test"));
+        memberRepository.save(new Member("test123@example.com", "password", "test", Role.NORMAL));
         TokenResponse tokenResponse = authService.createToken(new LoginRequest("test123@example.com", "password"));
         String token = tokenResponse.accessToken();
 

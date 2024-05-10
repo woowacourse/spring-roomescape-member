@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
@@ -77,7 +78,7 @@ class ThemeControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("이미 사용 중인 테마을 삭제하면 실패한다.")
     void deleteThemeByIdFailWhenUsedTheme() {
-        Member member = memberRepository.save(new Member("example@example.com", "password", "구름"));
+        Member member = memberRepository.save(new Member("example@example.com", "password", "구름", Role.NORMAL));
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
         Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
         reservationRepository.save(new Reservation(member, LocalDate.of(2024, 4, 9), reservationTime, theme));

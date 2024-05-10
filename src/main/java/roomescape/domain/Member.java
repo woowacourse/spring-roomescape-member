@@ -8,18 +8,20 @@ public class Member {
     private final String email;
     private final String password;
     private final String name;
+    private final Role role;
 
-    public Member(String email, String password, String name) {
-        this(null, email, password, name);
+    public Member(String email, String password, String name, Role role) {
+        this(null, email, password, name, role);
     }
 
-    public Member(Long id, String email, String password, String name) {
+    public Member(Long id, String email, String password, String name, Role role) {
         validate(email, password, name);
 
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
+        this.role = role;
     }
 
     private void validate(String email, String password, String name) {
@@ -65,5 +67,9 @@ public class Member {
 
     public String getName() {
         return name;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
@@ -77,7 +78,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("이미 사용 중인 예약 시간을 삭제하면 실패한다.")
     void deleteReservationTimeByIdFailWhenUsedTime() {
-        Member member = memberRepository.save(new Member(1L, "example@example.com", "password", "구름"));
+        Member member = memberRepository.save(new Member(1L, "example@example.com", "password", "구름", Role.NORMAL));
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
         Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
         reservationRepository.save(new Reservation(member, LocalDate.of(2024, 4, 9), reservationTime, theme));
@@ -96,7 +97,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("이용가능한 시간들을 조회한다.")
     void getAvailableReservationTimes() {
-        Member member = memberRepository.save(new Member("example@example.com", "password", "구름"));
+        Member member = memberRepository.save(new Member("example@example.com", "password", "구름", Role.NORMAL));
         ReservationTime notBookedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         ReservationTime alreadyBookedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));

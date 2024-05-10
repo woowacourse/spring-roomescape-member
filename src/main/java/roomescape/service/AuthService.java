@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.controller.LoginCheckResponse;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.domain.infrastucture.JwtTokenProvider;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginCheckRequest;
@@ -52,7 +53,8 @@ public class AuthService {
         Long memberId = jwtTokenProvider.getMemberIdFrom(token);
         String memberEmail = jwtTokenProvider.getMemberEmailFrom(token);
         String memberName = jwtTokenProvider.getMemberNameFrom(token);
+        Role memberRole = jwtTokenProvider.getMemberRoleFrom(token);
 
-        return new LoginMember(memberId, memberEmail, memberName);
+        return new LoginMember(memberId, memberEmail, memberName, memberRole);
     }
 }
