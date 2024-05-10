@@ -1,14 +1,8 @@
 package roomescape.controller.request;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import roomescape.exception.BadRequestException;
 
 class ReservationRequestTest {
 

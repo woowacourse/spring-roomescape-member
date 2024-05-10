@@ -3,8 +3,6 @@ package roomescape.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import roomescape.exception.BadRequestException;
-
 public class Reservation {
 
     private Long id;

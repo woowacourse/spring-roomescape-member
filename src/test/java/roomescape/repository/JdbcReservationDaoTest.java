@@ -73,7 +73,7 @@ class JdbcReservationDaoTest {
         insertUser("브라운", "brown@email.com", "1111");
         insertUser("리사", "lisa@email.com", "2222");
 
-        insertReservation( "2023-08-05", "1", "1", "1");
+        insertReservation("2023-08-05", "1", "1", "1");
         insertReservation("2023-08-01", "2", "2", "2");
     }
 
