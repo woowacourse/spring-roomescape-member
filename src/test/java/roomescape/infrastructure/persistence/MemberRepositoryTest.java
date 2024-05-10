@@ -2,6 +2,7 @@ package roomescape.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,25 @@ class MemberRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
     private MemberRepository target;
+
+    @Test
+    @DisplayName("모든 멤버 데이터를 가져온다.")
+    void findAll() {
+        List<Member> members = target.findAll();
+
+        assertThat(members).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("멤버 데이터가 존재하지 않으면 빈 리스트를 반환한다.")
+    void empty() {
+        cleanUp("reservation");
+        cleanUp("member");
+
+        List<Member> members = target.findAll();
+
+        assertThat(members).isEmpty();
+    }
 
     @Test
     @DisplayName("이메일로 사용자를 조회할 수 있다.")
