@@ -27,6 +27,10 @@ public class TokenProvider {
     }
 
     public String extractToken(Cookie[] cookies) {
+        if (cookies == null) {
+            return "";
+        }
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
