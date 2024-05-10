@@ -18,6 +18,12 @@ import roomescape.domain.Member;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
+    private static final String ID = "id";
+    private static final String DATE = "date";
+    private static final String MEMBER_ID = "member_id";
+    private static final String TIME_ID = "time_id";
+    private static final String THEME_ID = "theme_id";
+
     private final ReservationRowMapper rowMapper;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -27,7 +33,7 @@ public class H2ReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns(ID);
     }
 
     public List<Reservation> findAll() {
@@ -36,10 +42,10 @@ public class H2ReservationRepository implements ReservationRepository {
 
     public Reservation save(Reservation reservation) {
         Long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "date", reservation.getDate(),
-                        "member_id", reservation.getMember().getId(),
-                        "time_id", reservation.getTimeId(),
-                        "theme_id", reservation.getThemeId()))
+                        DATE, reservation.getDate(),
+                        MEMBER_ID, reservation.getMember().getId(),
+                        TIME_ID, reservation.getTimeId(),
+                        THEME_ID, reservation.getThemeId()))
                 .longValue();
 
         return new Reservation(
@@ -108,17 +114,17 @@ public class H2ReservationRepository implements ReservationRepository {
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Reservation(
                     rs.getLong("reservation_id"),
-                    rs.getDate("date").toLocalDate(),
+                    rs.getDate(DATE).toLocalDate(),
                     new Member(rs.getLong("user_id"),
                             rs.getString("user_name"),
                             rs.getString("email"),
                             rs.getString("user_password"),
                             Role.valueOf(rs.getString("user_role"))),
                     new ReservationTime(
-                            rs.getLong("time_id"),
+                            rs.getLong(TIME_ID),
                             rs.getTime("time_value").toLocalTime()),
                     new Theme(
-                            rs.getLong("theme_id"),
+                            rs.getLong(THEME_ID),
                             rs.getString("theme_name"),
                             rs.getString("theme_description"),
                             rs.getString("theme_thumbnail")

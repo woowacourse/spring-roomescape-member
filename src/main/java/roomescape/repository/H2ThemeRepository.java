@@ -14,6 +14,11 @@ import roomescape.domain.Theme;
 
 @Repository
 public class H2ThemeRepository implements ThemeRepository {
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String THUMBNAIL = "thumbnail";
+
     private final ThemeRowMapper rowMapper;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -23,7 +28,7 @@ public class H2ThemeRepository implements ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns(ID);
     }
 
     public List<Theme> findAll() {
@@ -38,9 +43,9 @@ public class H2ThemeRepository implements ThemeRepository {
 
     public Theme save(Theme theme) {
         Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "name", theme.getName(),
-                        "description", theme.getDescription(),
-                        "thumbnail", theme.getThumbnail()))
+                        NAME, theme.getName(),
+                        DESCRIPTION, theme.getDescription(),
+                        THUMBNAIL, theme.getThumbnail()))
                 .longValue();
 
         return new Theme(
@@ -58,10 +63,10 @@ public class H2ThemeRepository implements ThemeRepository {
     private static class ThemeRowMapper implements RowMapper<Theme> {
         public Theme mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Theme(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("description"),
-                    rs.getString("thumbnail"));
+                    rs.getLong(ID),
+                    rs.getString(NAME),
+                    rs.getString(DESCRIPTION),
+                    rs.getString(THUMBNAIL));
         }
     }
 }

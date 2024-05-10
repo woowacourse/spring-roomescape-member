@@ -15,6 +15,9 @@ import java.util.Optional;
 
 @Repository
 public class H2ReservationTimeRepository implements ReservationTimeRepository {
+    private static final String ID = "id";
+    private static final String START_AT = "start_at";
+
     private final ReservationTimeRowMapper rowMapper;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -24,12 +27,12 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns(ID);
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
         Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "start_at", reservationTime.getStartAt()))
+                        START_AT, reservationTime.getStartAt()))
                 .longValue();
 
         return new ReservationTime(
@@ -59,8 +62,8 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         @Override
         public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new ReservationTime(
-                    rs.getLong("id"),
-                    rs.getTime("start_at").toLocalTime());
+                    rs.getLong(ID),
+                    rs.getTime(START_AT).toLocalTime());
         }
     }
 }

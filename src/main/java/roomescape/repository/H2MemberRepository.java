@@ -15,6 +15,12 @@ import roomescape.domain.Role;
 
 @Repository
 public class H2MemberRepository implements MemberRepository {
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String ROLE = "role";
+
     private final MemberRowMapper rowMapper;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -24,15 +30,15 @@ public class H2MemberRepository implements MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("user_table")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns(ID);
     }
 
     public Member save(Member member) {
         Long memberId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "name", member.getName(),
-                        "email", member.getEmail(),
-                        "password", member.getPassword(),
-                        "role", member.getRole().name()))
+                        NAME, member.getName(),
+                        EMAIL, member.getEmail(),
+                        PASSWORD, member.getPassword(),
+                        ROLE, member.getRole().name()))
                 .longValue();
 
         return new Member(
@@ -91,11 +97,11 @@ public class H2MemberRepository implements MemberRepository {
     private static class MemberRowMapper implements RowMapper<Member> {
         public Member mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Member(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    Role.valueOf(rs.getString("role")));
+                    rs.getLong(ID),
+                    rs.getString(NAME),
+                    rs.getString(EMAIL),
+                    rs.getString(PASSWORD),
+                    Role.valueOf(rs.getString(ROLE)));
         }
     }
 }
