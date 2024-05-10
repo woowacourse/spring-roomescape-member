@@ -5,32 +5,26 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.CustomBadRequest;
+import roomescape.member.domain.Member;
 
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
     private final LocalDateTime createdAt;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
-        validateName(name);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
         validateDateTime(date, time, createdAt);
 
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.createdAt = createdAt;
-    }
-
-    private void validateName(String name) {
-        if (name.isEmpty() || name.length() > 10) {
-            throw new CustomException(CustomBadRequest.INVALID_NAME_LENGTH);
-        }
     }
 
     private void validateDateTime(LocalDate date, ReservationTime time, LocalDateTime createdAt) {
@@ -48,8 +42,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

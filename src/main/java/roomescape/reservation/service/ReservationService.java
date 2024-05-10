@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -31,10 +32,17 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public Reservation createReservation(ReservationRequest reservationRequest) {
+    public Reservation createReservation(Member member, ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeService.findReservationTime(reservationRequest.timeId());
         Theme theme = themeService.findTheme(reservationRequest.themeId());
-        Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
+        Reservation reservation = new Reservation(
+                null,
+                member,
+                reservationRequest.date(),
+                reservationTime,
+                theme,
+                LocalDateTime.now()
+        );
 
         validateDuplication(reservation);
 

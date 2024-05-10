@@ -15,4 +15,9 @@ public class UserPageController {
     public String indexPage() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String logInPage() {
+        return "login";
+    }
 }

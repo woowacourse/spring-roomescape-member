@@ -2,9 +2,6 @@ package roomescape.reservation;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,13 +11,19 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.dto.request.ThemeRequest;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static roomescape.fixture.ThemeFixture.themeFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ThemeTest {
+
+    private final ThemeRequest themeRequest = new ThemeRequest(themeFixture.getName(), themeFixture.getDescription(), themeFixture.getThumbnail());
 
     @LocalServerPort
     int port;
@@ -52,7 +55,6 @@ class ThemeTest {
     @DisplayName("테마 조회 API 테스트")
     @Test
     void getReservation() {
-        ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -71,16 +73,12 @@ class ThemeTest {
     @DisplayName("테마 삭제 API 테스트")
     @Test
     void deleteReservation() {
-        ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeRequest)
                 .when().post("/themes");
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeRequest)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);

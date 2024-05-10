@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.fixture.MemberFixture.memberFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -31,15 +31,15 @@ public class MemberTest {
     void saveMember() {
         RestAssured.port = port;
         jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES (?, ?, ?)",
-                "space", "abcd@gmail.com", "2580");
+                memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword());
     }
 
     @DisplayName("로그인 테스트")
     @Test
     void logIn() {
         Map<String, String> params = new HashMap<>();
-        params.put("email", "abcd@gmail.com");
-        params.put("password", "2580");
+        params.put("email", memberFixture.getEmail());
+        params.put("password", memberFixture.getPassword());
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -53,8 +53,8 @@ public class MemberTest {
     @Test
     void LogInInfo() {
         Map<String, String> params = new HashMap<>();
-        params.put("email", "abcd@gmail.com");
-        params.put("password", "2580");
+        params.put("email", memberFixture.getEmail());
+        params.put("password", memberFixture.getPassword());
 
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -71,6 +71,6 @@ public class MemberTest {
                 .statusCode(200)
                 .extract().as(MemberInfo.class).name();
 
-        assertThat(name).isEqualTo("space");
+        assertThat(name).isEqualTo(memberFixture.getName());
     }
 }

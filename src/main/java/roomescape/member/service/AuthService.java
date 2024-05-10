@@ -4,17 +4,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.handler.exception.CustomBadRequest;
+import roomescape.handler.exception.CustomException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberToken;
 import roomescape.member.dto.LogInRequest;
-import roomescape.member.dto.MemberInfo;
-import roomescape.handler.exception.CustomBadRequest;
-import roomescape.handler.exception.CustomException;
-import java.util.Arrays;
 import java.util.Date;
 
 @Service
@@ -47,8 +44,7 @@ public class AuthService {
     }
 
     private void validateLogin(String principal, String credential) {
-        Member member = memberDao.findMemberByEmail(principal)
-                .orElseThrow(() -> new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION));
+        Member member = findByEmail(principal);
         if (!member.getPassword().equals(credential)) {
             throw new IllegalArgumentException();
         }
@@ -56,7 +52,7 @@ public class AuthService {
 
     public Member findByEmail(String email) {
         return memberDao.findMemberByEmail(email)
-                .orElseThrow(() -> new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION));
+                .orElseThrow(() -> new CustomException(CustomBadRequest.NOT_MEMBER));
     }
 
     public String parseEmail(Cookie cookie) {

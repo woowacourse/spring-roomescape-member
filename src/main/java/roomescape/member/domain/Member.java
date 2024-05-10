@@ -2,6 +2,7 @@ package roomescape.member.domain;
 
 import roomescape.handler.exception.CustomBadRequest;
 import roomescape.handler.exception.CustomException;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Member {
@@ -14,12 +15,19 @@ public class Member {
     private final String password;
 
     public Member(Long id, String name, String email, String password) {
+        validateName(name);
         validateEmail(email);
 
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    private void validateName(String name) {
+        if (name.isEmpty() || name.length() > 10) {
+            throw new CustomException(CustomBadRequest.INVALID_NAME_LENGTH);
+        }
     }
 
     private void validateEmail(String email) {
@@ -42,5 +50,18 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

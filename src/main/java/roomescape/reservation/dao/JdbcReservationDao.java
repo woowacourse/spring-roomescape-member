@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -19,7 +20,12 @@ public class JdbcReservationDao implements ReservationDao {
     private static final RowMapper<Reservation> RESERVATION_MAPPER = (resultSet, row) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password")
+                    ),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -48,7 +54,7 @@ public class JdbcReservationDao implements ReservationDao {
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number id = jdbcInsert.executeAndReturnKey(parameterSource);
-        return new Reservation(id.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme(), reservation.getCreatedAt());
+        return new Reservation(id.longValue(), reservation.getMember(), reservation.getDate(), reservation.getTime(), reservation.getTheme(), reservation.getCreatedAt());
     }
 
     @Override
@@ -56,9 +62,12 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """       
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.date,
                     r.created_at,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -68,6 +77,7 @@ public class JdbcReservationDao implements ReservationDao {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as h on r.theme_id = h.id
+                inner join member as m on r.member_id = m.id
                 """;
 
         return jdbcTemplate.query(sql, RESERVATION_MAPPER);
@@ -78,9 +88,12 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.date,
                     r.created_at,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -90,6 +103,7 @@ public class JdbcReservationDao implements ReservationDao {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as h on r.theme_id = h.id
+                inner join member as m on r.member_id = m.id
                 WHERE r.date = ? and r.theme_id = ?
                 """;
 

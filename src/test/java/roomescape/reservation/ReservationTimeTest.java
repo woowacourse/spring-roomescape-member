@@ -35,8 +35,9 @@ class ReservationTimeTest {
         LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "hi", "happy", "abcd.html");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id, created_at) VALUES(?, ?, ?, ?, ?)",
-                "rush", LocalDate.of(2999, 12, 12), 1, 1, createdAt);
+        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)", "space", "abcd@gmail.com", "2580");
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id, created_at) VALUES(?, ?, ?, ?, ?)",
+                1L, LocalDate.of(2999, 12, 12), 1, 1, createdAt);
     }
 
     @Autowired
