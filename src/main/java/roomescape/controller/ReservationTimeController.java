@@ -29,9 +29,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> postReservationTime(
-            @RequestBody ReservationTimeRequest reservationTimeRequest
-    ) {
+    public ResponseEntity<ReservationTimeResponse> postReservationTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
         ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
         URI location = UriComponentsBuilder.newInstance()
                 .path("/times/{id}")
@@ -49,13 +47,14 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/availability")
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@ModelAttribute AvailableTimeRequest availableTimeRequest) {
+    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(
+            @ModelAttribute AvailableTimeRequest availableTimeRequest) {
         List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(availableTimeRequest);
         return ResponseEntity.ok(availableTimes);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent()
                 .build();

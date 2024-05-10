@@ -23,10 +23,6 @@ public class Reservation {
         this(null, member, date, time, theme);
     }
 
-    public boolean isSameDate(LocalDate localDate) {
-        return date.isEqual(localDate);
-    }
-
     public boolean isSameTime(ReservationTime reservationTime) {
         return time.equals(reservationTime);
     }

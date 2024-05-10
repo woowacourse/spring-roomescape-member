@@ -30,8 +30,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> postReservation(@RequestBody ReservationRequest reservationRequest,
-                                                               LoginUser loginUser) {
+    public ResponseEntity<ReservationResponse> postReservation(
+            @RequestBody ReservationRequest reservationRequest,
+            LoginUser loginUser
+    ) {
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest, loginUser);
         URI location = UriComponentsBuilder.newInstance()
                 .path("/reservations/{id}")
@@ -43,13 +45,14 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservationsOf() {
+    public ResponseEntity<List<ReservationResponse>> getReservationsByCondition() {
         return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
     @GetMapping(params = {"themeId", "memberId", "dateFrom", "dateTo"})
-    public ResponseEntity<List<ReservationResponse>> getReservationsOf(@ModelAttribute ReservationConditionRequest request
-                                                                       ) {
+    public ResponseEntity<List<ReservationResponse>> getReservationsByCondition(
+            @ModelAttribute ReservationConditionRequest request
+    ) {
         return ResponseEntity.ok(reservationService.findAllReservationsByCondition(request));
     }
 

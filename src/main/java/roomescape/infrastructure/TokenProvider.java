@@ -17,9 +17,9 @@ public class TokenProvider {
 
     private static final String RANDOM_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RANDOM_VALUE.getBytes());
-    private static final String AUTHENTICATION_PAYLOAD = "name";
     private static final String TOKEN_COOKIE_NAME = "token";
-    public static final String AUTHENTICATION_ROLE = "role";
+    private static final String AUTHENTICATION_PAYLOAD = "name";
+    private static final String AUTHENTICATION_ROLE = "role";
 
     public String generateTokenOf(Member member) {
         return Jwts.builder()

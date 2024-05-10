@@ -27,7 +27,10 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(
+            @RequestBody TokenRequest tokenRequest,
+            HttpServletResponse response
+    ) {
         TokenResponse tokenResponse = loginService.login(tokenRequest);
 
         ResponseCookie cookie = ResponseCookie.from(TOKEN_COOKIE_NAME, tokenResponse.accessToken())
