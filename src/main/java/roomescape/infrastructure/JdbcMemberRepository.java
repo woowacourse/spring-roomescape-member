@@ -5,12 +5,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Role;
 
 import java.util.Optional;
 
 @Repository
-public class JdbcMemberRepository {
+public class JdbcMemberRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -24,12 +25,12 @@ public class JdbcMemberRepository {
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
 
-
+    @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
@@ -37,6 +38,7 @@ public class JdbcMemberRepository {
         return Optional.ofNullable(member);
     }
 
+    @Override
     public Optional<Member> findById(Long memberId) {
         String sql = "SELECT * FROM member WHERE id = ?";
         Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, memberId);
