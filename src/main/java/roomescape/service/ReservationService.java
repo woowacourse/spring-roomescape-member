@@ -21,4 +21,6 @@ public interface ReservationService {
     void delete(final long id);
 
     List<SelectableTimeResponse> findSelectableTime(final LocalDate date, final long themeId);
+
+    List<ReservationResponse> findReservationBy(long themeId, long memberId, LocalDate start, LocalDate end);
 }

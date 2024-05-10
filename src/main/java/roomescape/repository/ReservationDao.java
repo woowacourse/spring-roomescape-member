@@ -27,4 +27,6 @@ public interface ReservationDao {
     List<Long> findRanking(final LocalDate from, final LocalDate to, final int count);
 
     void delete(final long id);
+
+    List<Reservation> findByThemeIdAndMemberIdInDuration(long themeId, long memberId, LocalDate start, LocalDate end);
 }

@@ -83,6 +83,12 @@ class ReservationServiceImpl implements ReservationService {
         return SelectableTimeResponse.listOf(reservationTimes, usedTimeId);
     }
 
+    @Override
+    public List<ReservationResponse> findReservationBy(long themeId, long memberId, LocalDate start, LocalDate end) {
+        List<Reservation> filteredReservations = reservationDao.findByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
+        return ReservationResponse.listOf(filteredReservations);
+    }
+
     private Member findMemberById(Long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
