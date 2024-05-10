@@ -18,13 +18,12 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.theme.model.Theme;
 import roomescape.util.ReservationFixture;
 import roomescape.util.ThemeFixture;
 
-@ActiveProfiles("test")
-@JdbcTest
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcRepositoryTest
 class JdbcThemeRepositoryTest {
 
     private final ThemeRepository themeRepository;

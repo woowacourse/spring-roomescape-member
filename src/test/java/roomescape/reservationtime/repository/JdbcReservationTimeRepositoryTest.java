@@ -11,16 +11,12 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservationtime.model.ReservationTime;
+import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.util.ReservationTimeFixture;
 
-@ActiveProfiles("test")
-@JdbcTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcRepositoryTest
 class JdbcReservationTimeRepositoryTest {
 
     private final JdbcReservationTimeRepository jdbcReservationTimeRepository;

@@ -12,10 +12,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.JdbcMemberRepository;
 import roomescape.member.repository.MemberRepository;
@@ -23,6 +20,7 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -31,9 +29,7 @@ import roomescape.util.ReservationFixture;
 import roomescape.util.ReservationTimeFixture;
 import roomescape.util.ThemeFixture;
 
-@ActiveProfiles("test")
-@JdbcTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcRepositoryTest
 class JdbcReservationRepositoryTest {
 
     private final ReservationRepository jdbcReservationRepository;
@@ -64,11 +60,12 @@ class JdbcReservationRepositoryTest {
                 .map(jdbcReservationTimeRepository::save)
                 .toList();
         Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.getOne());
+        Member savedMember = jdbcMemberRepository.save(MemberFixture.getOne());
 
         Reservation saveReservation1 = jdbcReservationRepository.save(
-                ReservationFixture.getOneWithTimeTheme(savedTimes.get(0), savedTheme));
+                ReservationFixture.getOneWithMemberTimeTheme(savedMember, savedTimes.get(0), savedTheme));
         Reservation saveReservation2 = jdbcReservationRepository.save(
-                ReservationFixture.getOneWithTimeTheme(savedTimes.get(1), savedTheme));
+                ReservationFixture.getOneWithMemberTimeTheme(savedMember, savedTimes.get(1), savedTheme));
 
         // when & then
         assertThat(jdbcReservationRepository.findAll())
