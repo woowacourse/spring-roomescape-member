@@ -14,6 +14,7 @@ import roomescape.domain.member.Password;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,6 +51,10 @@ public class H2MemberRepository implements MemberRepository {
         );
     }
 
+    public List<Member> findAll() {
+        return jdbcTemplate.query(getBasicSelectQuery(), rowMapper);
+    }
+
     public Optional<Member> findByEmail(String email) {
         String sql = "select * from member where email = ?";
         try {
@@ -58,6 +63,10 @@ public class H2MemberRepository implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    private String getBasicSelectQuery() {
+        return "select * from member";
     }
 
     private static class MemberRowMapper implements RowMapper<Member> {
