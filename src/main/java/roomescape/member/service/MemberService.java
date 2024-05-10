@@ -1,5 +1,6 @@
 package roomescape.member.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.member.domain.Member;
@@ -12,6 +13,10 @@ public class MemberService {
 
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 
     public Member findById(Long id) {
