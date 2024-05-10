@@ -1,4 +1,4 @@
-package roomescape.controller.roomescape;
+package roomescape.controller.roomescape.admin;
 
 import static org.hamcrest.Matchers.is;
 
@@ -78,5 +78,17 @@ class AdminReservationControllerTest {
                 .cookie("token", memberToken)
                 .when().post("/admin/reservations")
                 .then().statusCode(404);
+    }
+
+    @Test
+    void getByFilterWhenAllParametersAreNull() {
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/admin/reservations")
+                .then()
+                .statusCode(200)
+                .assertThat()
+                .body("size()", is(3));
     }
 }

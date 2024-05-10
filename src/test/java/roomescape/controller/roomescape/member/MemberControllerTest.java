@@ -1,4 +1,4 @@
-package roomescape.controller.member;
+package roomescape.controller.roomescape.member;
 
 import static org.hamcrest.Matchers.equalTo;
 
