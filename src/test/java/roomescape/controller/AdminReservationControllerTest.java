@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.config.CheckAdminInterceptor;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
+import roomescape.dto.reservation.ReservationFilterRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
@@ -87,7 +90,7 @@ class AdminReservationControllerTest {
     }
 
     @Test
-    @DisplayName("유효하지않는 값이 입력되면 Bad Request 응답을 반환한다.")
+    @DisplayName("유효하지 않는 값이 입력되면 Bad Request 응답을 반환한다.")
     void createReservationByInvalidRequest() throws Exception {
         //given
         AdminReservationCreateRequest givenRequest
@@ -98,6 +101,38 @@ class AdminReservationControllerTest {
 
         //when //then
         mockMvc.perform(post("/admin/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("필터링한 데이터를 조회하면 200ok를 응답한다.")
+    void getFiltered() throws Exception {
+        //given
+        ReservationFilterRequest request = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-05");
+        given(reservationService.findFiltered(request)).willReturn(List.of());
+        String requestBody = objectMapper.writeValueAsString(request);
+
+        //when //then
+        mockMvc.perform(get("/admin/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("필터링한 데이터를 조회시 예외가 발생하면 400 Bad Request를 응답한다.")
+    void getFilteredWhenIllegalArgumentException() throws Exception {
+        //given
+        ReservationFilterRequest request = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-05");
+        given(reservationService.findFiltered(request)).willThrow(IllegalArgumentException.class);
+        String requestBody = objectMapper.writeValueAsString(request);
+
+        //when //then
+        mockMvc.perform(get("/admin/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
