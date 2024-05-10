@@ -79,8 +79,7 @@ public class H2ReservationRepository implements ReservationRepository {
     public List<Reservation> findSearchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String conditionQuery = " where tm.id = ? and u.id = ? and r.date between ? and ?";
         String sql = getBasicSelectQuery() + conditionQuery;
-        List<Reservation> reservations = jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
-        return reservations;
+        return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
     }
 
     private String getBasicSelectQuery() {
