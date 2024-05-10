@@ -5,9 +5,8 @@
 - [x] localhost:8080/admin 요청 시 어드민 메인 페이지가 응답한다
     - [x] templates/admin/index.html을 사용한다
 
-
 - [x] localhost:8080/admin/reservation 요청 시 예약 관리 페이지가 응답한다
-    - [x] templates/admin/reservation-legacy.html을 사용한다
+    - [x] templates/admin/reservation-new.html을 사용한다
         - h2 데이터 베이스를 활용하여 예약 목록에 접근할 수 있다
             - [x] 예약 목록을 조회할 수 있다
             - [x] 예약 건수를 생성할 수 있다
@@ -37,6 +36,15 @@
 - [x] localhost:8080/ 요청 시 인기 테마 페이지가 응답한다
     - [x] templates/index.html을 사용한다
         - [x] 일주일 기준으로 예약이 가장 많이 된 10개의 테마를 확인할 수 있다
+
+- [x] localhost:8080/login 요청 시 사용자 로그인 페이지가 응답한다
+    - [x] templates/login.html을 사용한다
+    - [ ] 로그인에 성공하면 jwt 토큰이 발급된다
+
+- [x] localhost:8080/signup 요청 시 사용자 로그인 페이지가 응답한다
+- [x] templates/signup.html을 사용한다
+    - h2 데이터 베이스를 활용하여 회원 정보에 접근할 수 있다
+        - [x] 회원을 등록할 수 있다.
 
 ### 데이터베이스 접근 방식
 
@@ -80,3 +88,7 @@
 #### 테마 삭제
 
 - [x] 해당 테마에 예약이 등록되어 있는 경우
+
+#### 회원 가입
+
+- [x] 이미 가입한 회원일 경우
