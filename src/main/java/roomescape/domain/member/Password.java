@@ -2,7 +2,7 @@ package roomescape.domain.member;
 
 public class Password {
     private static final int MIN_LENTH = 5;
-    private static final int MAX_LENTH = 10;
+    private static final int MAX_LENTH = 15;
 
     private final String password;
 
