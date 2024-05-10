@@ -35,14 +35,16 @@ public class ReservationController {
     }
 
     @GetMapping("/available-time")
-    public ResponseEntity<List<AvailableReservationResponse>> readReservationTimes(@RequestParam String date,
-                                                                                   @RequestParam Long themeId) {
+    public ResponseEntity<List<AvailableReservationResponse>> readReservationTimes(
+            @RequestParam String date,
+            @RequestParam Long themeId) {
         return ResponseEntity.ok(reservationService.findTimeByDateAndThemeID(date, themeId));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createByMember(@RequestBody @Valid MemberReservationCreateRequest request,
-                                                              Member member) {
+    public ResponseEntity<ReservationResponse> createByMember(
+            @RequestBody @Valid MemberReservationCreateRequest request,
+            Member member) {
         ReservationResponse newReservation = reservationService.add(request, member);
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.id()))
                 .body(newReservation);

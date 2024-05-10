@@ -60,7 +60,11 @@ public class ReservationService {
 
     public ReservationResponse add(AdminReservationCreateRequest request) {
         Reservation reservation =
-                request.toDomain(findMember(request.memberId()), findReservationTime(request.timeId()), findTheme(request.themeId()));
+                request.toDomain(
+                        findMember(request.memberId()),
+                        findReservationTime(request.timeId()),
+                        findTheme(request.themeId())
+                );
         return add(reservation);
     }
 

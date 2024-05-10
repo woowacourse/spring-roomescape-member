@@ -125,6 +125,7 @@ class ThemeServiceTest {
                     .isInstanceOf(InvalidValueException.class);
         }
     }
+
     @Nested
     @DisplayName("테마 삭제 테스트")
     class DeleteTheme {
