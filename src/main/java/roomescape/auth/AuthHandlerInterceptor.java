@@ -10,6 +10,8 @@ import roomescape.domain.Role;
 import roomescape.exception.AuthenticationException;
 import roomescape.service.auth.AuthService;
 
+import java.util.Arrays;
+
 @Component
 public class AuthHandlerInterceptor implements HandlerInterceptor {
 
@@ -33,11 +35,13 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
+        if (cookies == null) {
+            return "";
         }
-        return "";
+        return Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse("");
     }
 }

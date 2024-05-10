@@ -12,6 +12,8 @@ import roomescape.domain.Member;
 import roomescape.exception.AuthenticationException;
 import roomescape.service.auth.AuthService;
 
+import java.util.Arrays;
+
 @Component
 public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -36,18 +38,21 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
-        if(token.equals("")) {
+        if ("".equals(token)) {
             throw new AuthenticationException("로그인해 주세요");
         }
-            return authService.findMemberByToken(token);
+        return authService.findMemberByToken(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("token")){
-                return cookie.getValue();
-            }
+        if (cookies == null) {
+            return "";
         }
-        return "";
+        return Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse("");
     }
+
 }
