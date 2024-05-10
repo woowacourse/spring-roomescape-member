@@ -20,8 +20,11 @@ public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+    public ReservationTimeService(
+            ReservationTimeRepository reservationTimeRepository,
+            ReservationRepository reservationRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
@@ -67,13 +70,16 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeBookedResponse> getTimesWithBooked(ReservationTimeBookedRequest reservationTimeBookedRequest) {
+    public List<ReservationTimeBookedResponse> getTimesWithBooked(
+            ReservationTimeBookedRequest reservationTimeBookedRequest) {
         if (themeRepository.findById(reservationTimeBookedRequest.themeId()).isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
 
-        List<ReservationTime> bookedTimes = reservationRepository.findTimeByDateAndThemeId(reservationTimeBookedRequest.date(),
-                reservationTimeBookedRequest.themeId());
+        List<ReservationTime> bookedTimes = reservationRepository.findTimeByDateAndThemeId(
+                reservationTimeBookedRequest.date(),
+                reservationTimeBookedRequest.themeId()
+        );
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
