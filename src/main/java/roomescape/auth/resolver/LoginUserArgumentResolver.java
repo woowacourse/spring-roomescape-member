@@ -10,10 +10,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
-import roomescape.exception.BusinessException;
-import roomescape.exception.ErrorType;
 import roomescape.global.annotation.LoginUser;
-import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.service.MemberService;
 
 @Component
 @RequiredArgsConstructor
@@ -21,7 +19,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     private static final String SESSION_KEY = "token";
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     private final AuthService authService;
 
@@ -38,8 +36,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractTokenFromCookie(request.getCookies());
-        return memberRepository.findById(authService.fetchByToken(token).getId())
-                .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_NOT_FOUND));
+        return memberService.findById(authService.fetchByToken(token).getId());
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

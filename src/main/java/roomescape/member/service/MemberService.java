@@ -4,6 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.auth.controller.dto.SignUpRequest;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
@@ -25,5 +27,10 @@ public class MemberService {
         Member member = memberRepository.save(
                 new MemberSignUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName());
+    }
+
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_NOT_FOUND));
     }
 }
