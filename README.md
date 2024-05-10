@@ -33,9 +33,9 @@ Keep-Alive: timeout=60
 Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
 ```
 
-- [ ] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현한다.
-    - [ ] 상단바 우측 로그인 상태를 표현해주기 위해 사용자의 정보를 조회하는 API를 구현한다.
-    - [ ] Cookie를 이용하여 로그인 사용자의 정보를 확인한다.
+- [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현한다.
+    - [x] 상단바 우측 로그인 상태를 표현해주기 위해 사용자의 정보를 조회하는 API를 구현한다.
+    - [x] Cookie를 이용하여 로그인 사용자의 정보를 확인한다.
 
 ``` 
 GET /login/check HTTP/1.1
