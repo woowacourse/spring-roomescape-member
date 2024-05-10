@@ -1,6 +1,7 @@
 package roomescape.global.exception;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import io.jsonwebtoken.security.SignatureException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +35,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(new ExceptionResponse("유효하지 않은 HTTP 요청 메서드입니다."), HttpStatus.BAD_REQUEST);
     }
 
-    // TODO: 잘못된 사용자 정보로 로그인 시도
-//    @ExceptionHandler
-//    public ResponseEntity<ExceptionResponse> handle() {
-//
-//    }
+    @ExceptionHandler(value = SignatureException.class)
+    public ResponseEntity<ExceptionResponse> handle(SignatureException e) {
+        logger.error(e.getMessage());
+
+        return new ResponseEntity(new ExceptionResponse("유효하지 않은 token 정보입니다."), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler
     public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException e) {
@@ -63,10 +65,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity(new ExceptionResponse(message), HttpStatus.BAD_REQUEST);
     }
-
-    // TODO: 유효하지 않은 token으로 인증 시도 시 (잘못된 정보)
-    //      JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted. 처리
-    //      io.jsonwebtoken.security.SignatureException
 
     @ExceptionHandler(value = ApplicationException.class)
     public ResponseEntity<ExceptionResponse> handle(ApplicationException e) {
