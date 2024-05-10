@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessNotAllowException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(AccessNotAllowException e, HttpServletRequest req) {
         final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, req.getRequestURI(), e.getMessage());
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
 

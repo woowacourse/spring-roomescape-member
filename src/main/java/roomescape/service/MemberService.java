@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtTokenProvider;
 import roomescape.domain.Password;
 import roomescape.domain.PasswordEncoder;
 import roomescape.domain.dto.*;
@@ -14,10 +15,12 @@ import java.util.List;
 public class MemberService {
     private final MemberDao memberDao;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(final MemberDao memberDao, final PasswordEncoder passwordEncoder) {
+    public MemberService(final MemberDao memberDao, final PasswordEncoder passwordEncoder, final JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public MemberResponses findEntireMembers() {
@@ -41,13 +44,14 @@ public class MemberService {
         }
     }
 
-    public void login(final LoginRequest loginRequest) {
+    public TokenResponse login(final LoginRequest loginRequest) {
         Password password = memberDao.findPasswordByEmail(loginRequest.email())
                 .orElseThrow(() -> new AccessNotAllowException("회원 정보가 일치하지 않습니다."));
         Password requestPassword = passwordEncoder.encode(loginRequest.password(), password.getSalt());
         if (!password.check(requestPassword)) {
             throw new AccessNotAllowException("회원 정보가 일치하지 않습니다.");
         }
-        // TODO 토큰 반환하기
+        final String accessToken = jwtTokenProvider.createToken(loginRequest.email());
+        return new TokenResponse(accessToken);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.dto.LoginRequest;
 import roomescape.domain.dto.SignupRequest;
 import roomescape.domain.dto.SignupResponse;
+import roomescape.domain.dto.TokenResponse;
 import roomescape.service.MemberService;
 
 @RestController
@@ -24,8 +25,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
-        memberService.login(loginRequest);
-        return ResponseEntity.ok().build();
+    ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest) {
+        final TokenResponse tokenResponse = memberService.login(loginRequest);
+        return ResponseEntity.ok(tokenResponse);
     }
 }
