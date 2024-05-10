@@ -29,8 +29,8 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     @DisplayName("날짜와 테마에 해당하는 예약 시간 목록 조회")
     @Test
     void getAvailableTimes_success() {
-        LocalDate date = preInsertedReservation.getDate();
-        long themeId = preInsertedReservation.getTheme().getId();
+        LocalDate date = preInsertedReservation1.getDate();
+        long themeId = preInsertedReservation1.getTheme().getId();
 
         TypeRef<List<AvailableReservationTimeResponse>> availableTimesFormat = new TypeRef<>() {
         };

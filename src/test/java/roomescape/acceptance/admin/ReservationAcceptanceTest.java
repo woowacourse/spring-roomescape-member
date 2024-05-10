@@ -102,7 +102,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
         private AdminReservationRequest getRequestBody(LocalDate date) {
             return new AdminReservationRequest(
-                    preInsertedCustomer.getId(),
+                    preInsertedCustomer1.getId(),
                     date,
                     preInsertedReservationTime1.getId(),
                     preInsertedTheme1.getId()
@@ -126,7 +126,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         @DisplayName("정상 작동")
         @Test
         void deleteReservation_forExist_success() {
-            Long existReservationId = preInsertedReservation.getId();
+            Long existReservationId = preInsertedReservation1.getId();
 
             sendDeleteRequest(existReservationId)
                     .statusCode(HttpStatus.NO_CONTENT.value());

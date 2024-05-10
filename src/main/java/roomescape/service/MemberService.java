@@ -46,7 +46,7 @@ public class MemberService {
                         .getSubject());
         Member member = findValidatedSiteUserById(memberId);
 
-        return new MemberPreviewResponse(member);
+        return MemberPreviewResponse.from(member);
     }
 
     public Member getUserGivenToken(String token) { //todo: 이름 수정 필요 & 위치가 정말로 여기가 맞는가?
@@ -65,7 +65,7 @@ public class MemberService {
 
     public List<MemberPreviewResponse> getAllMemberPreview() {
         return memberRepository.findAll().stream()
-                .map(MemberPreviewResponse::new)
+                .map(MemberPreviewResponse::from)
                 .toList();
     }
 }

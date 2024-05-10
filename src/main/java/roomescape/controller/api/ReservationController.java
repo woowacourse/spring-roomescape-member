@@ -8,6 +8,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequestMapping("/reservations")
@@ -20,7 +21,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping//todo: 관리자와 관련된 것 같은 기능은 다 /admin 으로 변경하기
     public ResponseEntity<List<ReservationResponse>> getAllReservations() {
         List<ReservationResponse> responses = reservationService.getAllReservations();
 
@@ -45,5 +46,17 @@ public class ReservationController {
 
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<ReservationResponse>> getFilteredReservations(
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo
+    ) {
+        List<ReservationResponse> response = reservationService.getFilteredReservations(themeId, memberId, dateFrom, dateTo);
+
+        return ResponseEntity.ok(response);
     }
 }
