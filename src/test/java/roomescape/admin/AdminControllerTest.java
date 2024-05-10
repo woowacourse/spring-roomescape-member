@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.member.domain.Role;
@@ -43,6 +44,7 @@ class AdminControllerTest extends ControllerTest {
 
     ReservationTimeResponse reservationTimeResponse;
     ThemeResponse themeResponse;
+    String adminToken;
 
     @BeforeEach
     void setData() {
@@ -54,12 +56,22 @@ class AdminControllerTest extends ControllerTest {
         jdbcTemplate.update(sql);
         reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
         themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+
+        adminToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest("admin@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract()
+                .cookie("token");
     }
 
     @DisplayName("관리자 메인 페이지 조회에 성공한다.")
     @Test
     void adminMainPage() {
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200)
@@ -70,16 +82,11 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void adminReservationPage() {
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200)
                 .body(containsString("방탈출 예약 페이지"));
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
     }
 
     @DisplayName("관리자 예약 생성 시 201을 반환한다.")
@@ -95,6 +102,7 @@ class AdminControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -115,6 +123,7 @@ class AdminControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -125,6 +134,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void adminTimePage() {
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200)
@@ -135,9 +145,29 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void adminThemePage() {
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200)
                 .body(containsString("테마 관리 페이지"));
+    }
+
+    @DisplayName("멤버는 관리자 페이지 접근이 불가하다.")
+    @Test
+    void memberCanNotAccessAdminPage() {
+        String memberToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequest("member@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract()
+                .cookie("token");
+
+        RestAssured.given().log().all()
+                .cookie("token", memberToken)
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 }

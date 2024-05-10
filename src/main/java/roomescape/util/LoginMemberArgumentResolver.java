@@ -14,13 +14,11 @@ import roomescape.member.service.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    public static final String TOKEN = "token";
+    private static final String TOKEN = "token";
     private final MemberService memberService;
-    private final TokenProvider tokenProvider;
 
-    public LoginMemberArgumentResolver(final MemberService memberService, final TokenProvider tokenProvider) {
+    public LoginMemberArgumentResolver(final MemberService memberService) {
         this.memberService = memberService;
-        this.tokenProvider = tokenProvider;
     }
 
     @Override
