@@ -3,7 +3,6 @@ package roomescape.controller.api;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.api.dto.SomeResponse;
 import roomescape.controller.api.dto.request.MemberCreateRequest;
 import roomescape.controller.api.dto.response.TokenResponse;
+import roomescape.domain.Member;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
@@ -43,9 +43,7 @@ public class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<SomeResponse> findAuthInfo(@CookieValue("accessToken") final String accessToken) {
-        final String id = authService.some(accessToken);
-        final var member = memberService.findMemberById(id);
+    public ResponseEntity<SomeResponse> findAuthInfo(@AuthenticationPrincipal final Member member) {
         final var response = new SomeResponse(member.name().name());
         return ResponseEntity.ok(response);
     }
