@@ -25,6 +25,7 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("로그인 정보가 잘못 되었습니다."));
         return Jwts.builder()
                 .claims()
+                .add("id", member.getId())
                 .add("email", member.getEmail())
                 .add("name", member.getName())
                 .and()
@@ -33,9 +34,10 @@ public class AuthService {
     }
 
     public AccessToken decode(String token) {
+        Long id = getPayload(token).get("id", Long.class);
         String email = getPayload(token).get("email", String.class);
         String name = getPayload(token).get("name", String.class);
-        return new AccessToken(email, name);
+        return new AccessToken(id, email, name);
     }
 
     private Claims getPayload(String token) {
