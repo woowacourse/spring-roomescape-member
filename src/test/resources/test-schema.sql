@@ -1,6 +1,17 @@
 DROP TABLE IF EXISTS reservation_time CASCADE;
 DROP TABLE IF EXISTS theme CASCADE;
+DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS reservation CASCADE;
+
+CREATE TABLE member
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (email)
+)
 
 CREATE TABLE reservation_time
 (
