@@ -40,7 +40,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public Optional<ReservationTime> readById(long id) {
-        String sql = "SELECT  id, start_at FROM reservation_time WHERE id = ? ";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ? ";
         try {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, RESERVATION_TIME_ROW_MAPPER, id);
             return Optional.of(reservationTime);
