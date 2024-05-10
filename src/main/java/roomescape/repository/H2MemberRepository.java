@@ -22,7 +22,8 @@ public class H2MemberRepository implements MemberRepository {
     public H2MemberRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("MEMBER");
+                .withTableName("MEMBER")
+                .usingGeneratedKeyColumns("ID");
     }
 
     private Member mapRowMember(final ResultSet rs, final int rowNum) throws SQLException {
@@ -61,8 +62,8 @@ public class H2MemberRepository implements MemberRepository {
     @Override
     public Member save(final Member member) {
         final BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(member);
-        simpleJdbcInsert.execute(params);
+        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return member;
+        return member.assignId(id);
     }
 }

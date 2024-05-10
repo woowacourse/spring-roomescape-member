@@ -79,7 +79,11 @@ public class Reservation {
         if (o == null || getClass() != o.getClass()) return false;
 
         final Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(date, that.date) && Objects.equals(time, that.time) && Objects.equals(theme, that.theme) && Objects.equals(member, that.member);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(date, that.date) &&
+                Objects.equals(time, that.time) &&
+                Objects.equals(theme, that.theme) &&
+                Objects.equals(member, that.member);
     }
 
     @Override

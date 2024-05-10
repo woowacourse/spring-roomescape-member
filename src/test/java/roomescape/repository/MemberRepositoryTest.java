@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.service.auth.exception.MemberNotFoundException;
@@ -14,12 +15,13 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Import(H2MemberRepository.class)
 @JdbcTest
 class MemberRepositoryTest {
 
     final List<Member> sampleMembers = List.of(
-            new Member(null, "a@b.c", "pw", "user", Role.USER),
-            new Member(null, "admin@b.c", "pw", "admin", Role.ADMIN)
+            new Member(null, "a@b.c", "pw", "User", Role.USER),
+            new Member(null, "admin@b.c", "pw", "Admin", Role.ADMIN)
     );
 
     @Autowired
@@ -30,7 +32,7 @@ class MemberRepositoryTest {
     void findById() {
         // given
         final Member member = sampleMembers.get(0);
-        final Long id = memberRepository.save(sampleMembers.get(0)).getId();
+        final Long id = memberRepository.save(member).getId();
 
         // when
         final Member expected = member.assignId(id);

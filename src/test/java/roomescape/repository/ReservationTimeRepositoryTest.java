@@ -26,7 +26,7 @@ class ReservationTimeRepositoryTest {
     );
 
     @Autowired
-    private ReservationTimeRepository timeRepository;
+    ReservationTimeRepository timeRepository;
 
     @Test
     @DisplayName("모든 예약 시간 목록을 조회한다.")

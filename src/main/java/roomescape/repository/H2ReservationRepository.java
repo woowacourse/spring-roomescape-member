@@ -132,7 +132,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 .addValue("THEME_ID", reservation.getTheme().getId())
                 .addValue("MEMBER_ID", reservation.getMember().getId());
 
-        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.assignId(id);
     }
 

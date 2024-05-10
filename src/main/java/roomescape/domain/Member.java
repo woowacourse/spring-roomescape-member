@@ -12,22 +12,22 @@ public class Member {
 
     public Member(final Long id) {
         this.id = id;
+        this.name = null;
         this.email = null;
         this.password = null;
-        this.name = null;
         this.role = null;
     }
 
-    public Member(final Long id, final String email, final String password, final String name, final Role role) {
+    public Member(final Long id, final String name, final String email, final String password, final Role role) {
         this.id = id;
+        this.name = name;
         this.email = email;
         this.password = password;
-        this.name = name;
         this.role = role;
     }
 
     public Member assignId(final Long id) {
-        return new Member(id, email, password, name, role);
+        return new Member(id, name, email, password, role);
     }
 
     public Long getId() {
@@ -56,7 +56,11 @@ public class Member {
         if (o == null || getClass() != o.getClass()) return false;
 
         final Member member = (Member) o;
-        return Objects.equals(id, member.id) && Objects.equals(name, member.name) && Objects.equals(email, member.email) && Objects.equals(password, member.password) && role == member.role;
+        return Objects.equals(id, member.id) &&
+                Objects.equals(name, member.name) &&
+                Objects.equals(email, member.email) &&
+                Objects.equals(password, member.password) &&
+                role == member.role;
     }
 
     @Override
