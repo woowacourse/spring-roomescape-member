@@ -42,7 +42,7 @@ public class AuthController {
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         String token = tokenProvider.extractToken(request.getCookies());
 
-        String payload = tokenProvider.getPayload(token);
+        String payload = tokenProvider.getEmail(token);
 
         return ResponseEntity.ok(new MemberResponse(payload));
     }

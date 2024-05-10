@@ -32,7 +32,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         String token = tokenProvider.extractToken(cookies);
-        String email = tokenProvider.getPayload(token);
+        String email = tokenProvider.getEmail(token);
         try {
             return memberService.findByEmail(email);
         } catch (Exception e) {
