@@ -38,13 +38,13 @@ public class ThemeApiController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/themes")
+    @PostMapping("/admin/themes")
     public ThemeResponseDto createTheme(@Valid @RequestBody ThemeRequestDto requestDto) {
         return themeService.createTheme(requestDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/themes/{id}")
+    @DeleteMapping("/admin/themes/{id}")
     public void deleteTheme(@PathVariable long id) {
         themeService.deleteTheme(id);
     }
