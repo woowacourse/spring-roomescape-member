@@ -12,6 +12,10 @@ public class Member {
         this(id, name, role, email, null);
     }
 
+    public Member(final String name, final Role role, final String email, final String password) {
+        this(null, name, role, email, password);
+    }
+
     public Member(final Long id, final String name, final Role role, final String email, final String password) {
         this.id = id;
         this.name = new MemberName(name);

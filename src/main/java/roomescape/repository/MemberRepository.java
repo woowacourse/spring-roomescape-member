@@ -3,6 +3,8 @@ package roomescape.repository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Member;
 import roomescape.model.Role;
@@ -22,9 +24,13 @@ public class MemberRepository {
                 selectedMember.getString("password"));
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert memberInsert;
 
     public MemberRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.memberInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
     }
 
     public List<Member> findAll() {
@@ -80,5 +86,11 @@ public class MemberRepository {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    public Member save(final Member member) {
+        final BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(member);
+        final Long savedMemberId = memberInsert.executeAndReturnKey(parameterSource).longValue();
+        return new Member(savedMemberId, member.getName(), member.getRole(), member.getEmail(), member.getPassword());
     }
 }
