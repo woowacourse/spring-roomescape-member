@@ -43,9 +43,6 @@ public class MemberApiController {
 
     @GetMapping("/members/login/check")
     public MemberResponseDto checkLogin(@AuthenticationPrincipal LoginMember loginMember) {
-        if (loginMember == null) {
-            return null;
-        }
         return new MemberResponseDto(loginMember);
     }
 
