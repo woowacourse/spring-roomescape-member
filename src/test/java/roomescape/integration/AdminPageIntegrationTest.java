@@ -53,7 +53,7 @@ class AdminPageIntegrationTest {
                 .cookies("token", token)
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     @Test

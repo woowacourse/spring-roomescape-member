@@ -12,7 +12,7 @@ import roomescape.service.request.MemberLoginRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/member_test_data.sql")
-public class MemberIntegrationTest {
+public class AuthIntegrationTest {
 
     @LocalServerPort
     private int port;

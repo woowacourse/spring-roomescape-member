@@ -25,9 +25,9 @@ import roomescape.domain.Theme;
 
 /*
  * 테스트 데이터베이스 초기 데이터
- * {ID=1, NAME=브라운, DATE=2024-05-04, TIME={ID=1, START_AT="10:00"}}
- * {ID=2, NAME=엘라, DATE=2024-05-04, TIME={ID=2, START_AT="11:00"}}
- * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}}
+ * {ID=1, MEMBER_ID=1, DATE=2024-05-04, TIME={ID=1, START_AT="10:00"}, THEME_ID=1}
+ * {ID=2, MEMBER_ID=1, DATE=2024-05-04, TIME={ID=2, START_AT="11:00"}, THEME_ID=1}
+ * {ID=3, MEMBER_ID=1, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME_ID=1}
  */
 @JdbcTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
@@ -118,5 +118,22 @@ class ReservationRepositoryTest {
 
         // then
         assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("특정 회원, 테마 기간 조건의 예약 목록을 가져온다.")
+    void findReservationWithMemberThemePeriod() {
+        // given
+        Long memberId = 1L;
+        Long themeId = 1L;
+        LocalDate dateFrom = LocalDate.parse("2024-05-03");
+        LocalDate dateTo = LocalDate.parse("2024-05-05");
+
+        // when
+        List<Reservation> reservations =
+                reservationRepository.findByMemberThemePeriod(memberId, themeId, dateFrom, dateTo);
+
+        // then
+        assertThat(reservations).hasSize(2);
     }
 }

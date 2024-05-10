@@ -53,7 +53,7 @@ class ReservationIntegrationTest {
     }
 
     @Test
-    @DisplayName("예약을 생성한다.")
+    @DisplayName("쿠키에 저장된 토큰을 활용해 예약을 생성한다.")
     void createReservation() {
         LocalDate reservationDate = LocalDate.now().plusDays(1);
         MemberReservationRequest request = new MemberReservationRequest(reservationDate.toString(), 1L, 1L);
