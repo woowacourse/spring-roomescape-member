@@ -84,8 +84,8 @@ class ReservationDaoTest {
         // then
         assertAll(
                 () -> assertThat(reservationDao.findAll()).hasSize(1),
-                () -> assertThat(savedReservation.getMemberNameValue()).isEqualTo(
-                        reservation.getMemberNameValue()),
+                () -> assertThat(savedReservation.getMember().getId()).isEqualTo(
+                        reservation.getMember().getId()),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(reservation.getDate()),
                 () -> assertThat(savedReservation.getTime().getId())
                         .isEqualTo(reservation.getTime().getId()),

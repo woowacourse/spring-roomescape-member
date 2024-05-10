@@ -12,6 +12,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.RoomTheme;
 
 @Repository
@@ -22,6 +23,7 @@ public class ReservationDao {
                 r.date AS reservation_date,
                 m.id AS member_id,
                 m.name AS member_name,
+                m.role AS member_role,
                 m.email AS member_email,
                 t.id AS time_id,
                 t.start_at AS time_value,
@@ -44,6 +46,7 @@ public class ReservationDao {
             rs.getDate("reservation_date").toLocalDate(),
             new Member(rs.getLong("member_id"),
                     new Name(rs.getString("member_name")),
+                    Role.valueOf(rs.getString("member_role")),
                     rs.getString("member_email")),
             new ReservationTime(rs.getLong("time_id"),
                     rs.getTime("time_value").toLocalTime()),

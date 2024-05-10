@@ -11,8 +11,8 @@ public class Member {
         this(null, null, null, email, password);
     }
 
-    public Member(Long id, Name name, String email) {
-        this(id, name, null, email, null);
+    public Member(Long id, Name name, Role role, String email) {
+        this(id, name, role, email, null);
     }
 
     public Member(Long id, Name name, Role role, String email, String password) {
@@ -33,10 +33,6 @@ public class Member {
 
     public String getNameValue() {
         return name.getValue();
-    }
-
-    public Role getRole() {
-        return role;
     }
 
     public String getRoleName() {

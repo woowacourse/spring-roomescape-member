@@ -10,8 +10,6 @@ public record ReservationTimeResponse(
     private static final String TIME_FORMAT = "HH:mm";
 
     public static ReservationTimeResponse fromReservationTime(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(
-                reservationTime.getId(),
-                reservationTime.getStartAt());
+        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
     }
 }

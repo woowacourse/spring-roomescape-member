@@ -62,8 +62,9 @@ class ReservationServiceTest {
     void findAllMatching() {
         // given
         Member member = createAndGetMember();
-        MemberReservationRequest request = createReservationRequest(LocalDate.of(4000, 12, 12));
-        MemberReservationRequest outOfFilterRequest = createReservationRequest(
+        MemberReservationRequest request = createMemberReservationRequest(
+                LocalDate.of(4000, 12, 12));
+        MemberReservationRequest outOfFilterRequest = createMemberReservationRequest(
                 LocalDate.of(4000, 12, 12));
         ReservationResponse response = reservationService.save(request, member);
         reservationService.save(outOfFilterRequest, member);
@@ -83,7 +84,8 @@ class ReservationServiceTest {
     void save() {
         // given
         Member member = createAndGetMember();
-        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
+                DATE_FIXTURE);
         // when
         ReservationResponse response = reservationService.save(memberReservationRequest, member);
         // then
@@ -101,7 +103,7 @@ class ReservationServiceTest {
     void pastReservationSave() {
         // given
         Member member = createAndGetMember();
-        MemberReservationRequest memberReservationRequest = createReservationRequest(
+        MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
                 LocalDate.of(2000, 11, 9));
         // when & then
         assertThatThrownBy(() -> reservationService.save(memberReservationRequest, member))
@@ -114,7 +116,8 @@ class ReservationServiceTest {
     void duplicatedReservationSave() {
         // given
         Member member = createAndGetMember();
-        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
+                DATE_FIXTURE);
         reservationService.save(memberReservationRequest, member);
         // when & then
         assertThatThrownBy(() -> reservationService.save(memberReservationRequest, member))
@@ -127,7 +130,8 @@ class ReservationServiceTest {
     void deleteById() {
         // given
         Member member = createAndGetMember();
-        MemberReservationRequest memberReservationRequest = createReservationRequest(DATE_FIXTURE);
+        MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
+                DATE_FIXTURE);
         ReservationResponse response = reservationService.save(memberReservationRequest, member);
         // when
         reservationService.deleteById(response.id());
@@ -149,7 +153,7 @@ class ReservationServiceTest {
                 PASSWORD_FIXTURE);
     }
 
-    private MemberReservationRequest createReservationRequest(LocalDate date) {
+    private MemberReservationRequest createMemberReservationRequest(LocalDate date) {
         Long timeId = createReservationTime(jdbcTemplate);
         Long themeId = createTheme(jdbcTemplate);
         return new MemberReservationRequest(date, timeId, themeId);
