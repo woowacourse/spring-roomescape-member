@@ -27,6 +27,7 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
 import roomescape.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -73,7 +74,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("모든 예약 목록을 조회한다.")
-    void getAllReservations() {
+    void findAllReservations() {
         // given
         final Member member1 = new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER);
         final Member member2 = new Member(new Name("미아"), "mia@email.com", "1234", Role.USER);
@@ -107,6 +108,41 @@ class ReservationServiceTest {
             assertThat(reservations).extracting(ReservationResponse::theme)
                     .extracting(ReservedThemeResponse::name)
                     .containsExactly(themeName1, themeName2);
+        });
+    }
+
+    @Test
+    @DisplayName("테마, 사용자, 예약 날짜에 따른 예약 목록을 조회한다.")
+    void findAllByThemeAndMemberAndPeriod() {
+        // given
+        final Member member1 = new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER);
+        final String startAt1 = "18:00";
+        final ReservationTime reservationTime1 = new ReservationTime(startAt1);
+        final String themeName1 = "호러";
+        final Theme theme1 = new Theme(themeName1, "매우 무섭습니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Reservation reservation1 = new Reservation(member1, "2034-05-08", reservationTime1, theme1);
+        final Reservation reservation2 = new Reservation(member1, "2034-05-09", reservationTime1, theme1);
+
+        given(reservationDao.findAllByThemeAndMemberAndPeriod(
+                theme1.getId(), member1.getId(), LocalDate.parse("2034-05-08"), LocalDate.parse("2034-05-09")))
+                .willReturn(List.of(reservation1, reservation2));
+
+        // when
+        final List<ReservationResponse> reservations = reservationService.findAllByThemeAndMemberAndPeriod(
+                theme1.getId(), member1.getId(), LocalDate.parse("2034-05-08"), LocalDate.parse("2034-05-09"));
+
+        // then
+        assertAll(() -> {
+            assertThat(reservations).hasSize(2)
+                    .extracting(ReservationResponse::name)
+                    .containsExactly("냥인", "냥인");
+            assertThat(reservations).extracting(ReservationResponse::time)
+                    .extracting(ReservationTimeResponse::startAt)
+                    .containsExactly(startAt1, startAt1);
+            assertThat(reservations).extracting(ReservationResponse::theme)
+                    .extracting(ReservedThemeResponse::name)
+                    .containsExactly(themeName1, themeName1);
         });
     }
 

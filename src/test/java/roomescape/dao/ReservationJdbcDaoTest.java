@@ -71,6 +71,23 @@ class ReservationJdbcDaoTest extends DaoTest {
     }
 
     @Test
+    @DisplayName("테마, 사용자, 예약 날짜에 따른 예약 목록을 조회한다.")
+    void findAllByThemeAndMemberAndPeriod() {
+        // given
+        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
+        reservationDao.save(reservation);
+        final Reservation reservation2 = new Reservation(member, "2034-05-09", reservationTime, theme);
+        reservationDao.save(reservation2);
+
+        // when
+        final List<Reservation> reservations = reservationDao.findAllByThemeAndMemberAndPeriod(
+                theme.getId(), member.getId(), LocalDate.parse("2034-05-08"), LocalDate.parse("2034-05-09"));
+
+        // then
+        assertThat(reservations).hasSize(2);
+    }
+
+    @Test
     @DisplayName("동일 시간대의 예약 목록을 조회한다.")
     void findAllByDateAndTime() {
         // given

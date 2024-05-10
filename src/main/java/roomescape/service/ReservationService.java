@@ -7,6 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -37,6 +38,14 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationResponse> findAll() {
         final List<Reservation> reservations = reservationDao.findAll();
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> findAllByThemeAndMemberAndPeriod(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        final List<Reservation> reservations = reservationDao.findAllByThemeAndMemberAndPeriod(themeId, memberId, dateFrom, dateTo);
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();

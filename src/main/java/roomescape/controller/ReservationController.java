@@ -2,7 +2,14 @@ package roomescape.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.config.AuthenticationPrincipal;
 import roomescape.domain.Reservation;
 import roomescape.dto.MemberLoginResponse;
@@ -16,6 +23,7 @@ import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequestMapping("/reservations")
@@ -52,8 +60,18 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findReservations() {
+    public ResponseEntity<List<ReservationResponse>> findReservations () {
         return ResponseEntity.ok(reservationService.findAll());
+    }
+
+    @GetMapping(params = {"themeId", "memberId", "dateFrom", "dateTo"})
+    public ResponseEntity<List<ReservationResponse>> findReservationsByThemeAndMemberAndPeriod (
+            @RequestParam(required = false) final Long themeId,
+            @RequestParam(required = false) final Long memberId,
+            @RequestParam(required = false) final LocalDate dateFrom,
+            @RequestParam(required = false) final LocalDate dateTo
+    ) {
+        return ResponseEntity.ok(reservationService.findAllByThemeAndMemberAndPeriod(themeId, memberId, dateFrom, dateTo));
     }
 
     @DeleteMapping("/{id}")
