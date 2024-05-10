@@ -13,12 +13,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.DatabaseCleanupListener;
+import roomescape.repository.JdbcMemberRepository;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.repository.JdbcThemeRepository;
@@ -50,6 +51,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private JdbcReservationRepository reservationRepository;
+
+    @Autowired
+    private JdbcMemberRepository memberRepository;
 
     @DisplayName("중복된 예약 시간을 생성하면 에러를 발생시킨다.")
     @Test
@@ -83,12 +87,13 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 삭제 시 해당 시간에 예약이 존재하면 에러를 발생시킨다.")
     @Test
     void throw_exception_when_delete_reservation_time_with_existing_reservation() {
-        ReservationName name = new ReservationName("러너덕");
+        Member member = new Member(1L, "t1@t1.com", "123", "러너덕", "MEMBER");
         Theme theme = new Theme(1L, "공포", "공포는 무서워", "hi.jpg");
         ReservationDate date = new ReservationDate("2025-11-30");
         ReservationTime time = new ReservationTime(1L, "11:00");
-        Reservation reservation = new Reservation(1L, name, theme, date, time);
+        Reservation reservation = new Reservation(1L, member, theme, date, time);
 
+        memberRepository.insertMember(member);
         reservationTimeRepository.insertReservationTime(time);
         themeRepository.insertTheme(theme);
         reservationRepository.insertReservation(reservation);

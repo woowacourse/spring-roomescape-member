@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ProblemDetail handleValidationRoomescapeException(RoomescapeException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler
+    public ProblemDetail handleJwtException(JwtException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler

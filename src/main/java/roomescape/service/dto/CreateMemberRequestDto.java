@@ -23,7 +23,7 @@ public class CreateMemberRequestDto {
     }
 
     public Member toMember() {
-        return new Member(null, email, password, name);
+        return Member.memberRole(null, email, password, name);
     }
 
     public String getEmail() {

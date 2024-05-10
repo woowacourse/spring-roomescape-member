@@ -11,14 +11,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class ReservationRequestDtoTest {
+class MemberReservationRequestDtoTest {
 
     private Validator validator;
 
-    private final String validName = "재즈";
     private final Long validThemeId = 1L;
     private final String validDate = "2024-12-20";
     private final Long validTimeId = 1L;
@@ -29,25 +27,12 @@ class ReservationRequestDtoTest {
         validator = validatorFactory.getValidator();
     }
 
-    @DisplayName("이름이 입력되지 않으면 예외가 발생한다.")
-    @ParameterizedTest
-    @NullAndEmptySource
-    void throw_exception_when_null_name_input(String name) {
-        ReservationRequestDto requestDto = new ReservationRequestDto(name, validThemeId, validDate, validTimeId);
-
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(requestDto);
-
-        assertThat(violations).extracting("message").
-                containsOnly("이름은 반드시 입력되어야 합니다.");
-
-    }
-
     @DisplayName("테마 아이디가 입력되지 않으면 예외가 발생한다.")
     @Test
     void throw_exception_when_null_theme_id_input() {
-        ReservationRequestDto requestDto = new ReservationRequestDto(validName, null, validDate, validTimeId);
+        MemberReservationRequestDto requestDto = new MemberReservationRequestDto(null, validDate, validTimeId);
 
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<MemberReservationRequestDto>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("테마 아이디는 반드시 입력되어야 합니다.");
@@ -57,9 +42,9 @@ class ReservationRequestDtoTest {
     @ParameterizedTest
     @ValueSource(longs = {0, -1})
     void throw_exception_when_not_natural_theme_id_input(Long themeId) {
-        ReservationRequestDto requestDto = new ReservationRequestDto(validName, themeId, validDate, validTimeId);
+        MemberReservationRequestDto requestDto = new MemberReservationRequestDto(themeId, validDate, validTimeId);
 
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<MemberReservationRequestDto>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("테마 아이디는 자연수여야 합니다. " + themeId + "은 사용할 수 없습니다.");
@@ -69,9 +54,9 @@ class ReservationRequestDtoTest {
     @ParameterizedTest
     @ValueSource(strings = {"23", "1-12-20", "2014-11", "2015-13-01", "2016-02-30", "2019-09-31", "2022-05-00"})
     void throw_exception_when_invalid_date_format_input(String date) {
-        ReservationRequestDto requestDto = new ReservationRequestDto(validName, validThemeId, date, validTimeId);
+        MemberReservationRequestDto requestDto = new MemberReservationRequestDto(validThemeId, date, validTimeId);
 
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<MemberReservationRequestDto>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("날짜 입력 형식이 올바르지 않습니다. ex) 1999-11-30");
@@ -80,9 +65,9 @@ class ReservationRequestDtoTest {
     @DisplayName("시간 아이디가 입력되지 않으면 예외가 발생한다.")
     @Test
     void throw_exception_when_null_time_id_input() {
-        ReservationRequestDto requestDto = new ReservationRequestDto(validName, validThemeId, validDate, null);
+        MemberReservationRequestDto requestDto = new MemberReservationRequestDto(validThemeId, validDate, null);
 
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<MemberReservationRequestDto>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("예약 시간 아이디는 반드시 입력되어야 합니다.");
@@ -92,9 +77,9 @@ class ReservationRequestDtoTest {
     @ParameterizedTest
     @ValueSource(longs = {0, -1})
     void throw_exception_when_not_natural_time_id_input(Long timeId) {
-        ReservationRequestDto requestDto = new ReservationRequestDto(validName, validThemeId, validDate, timeId);
+        MemberReservationRequestDto requestDto = new MemberReservationRequestDto(validThemeId, validDate, timeId);
 
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<MemberReservationRequestDto>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("예약 시간 아이디는 자연수여야 합니다. " + timeId + "은 사용할 수 없습니다.");
@@ -103,9 +88,9 @@ class ReservationRequestDtoTest {
     @DisplayName("유효한 예약 입력 시 정상 생성된다.")
     @Test
     void create_success() {
-        ReservationRequestDto requestDto = new ReservationRequestDto(validName, validThemeId, validDate, validTimeId);
+        MemberReservationRequestDto requestDto = new MemberReservationRequestDto(validThemeId, validDate, validTimeId);
 
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<MemberReservationRequestDto>> violations = validator.validate(requestDto);
 
         assertThat(violations.size()).isEqualTo(0);
     }

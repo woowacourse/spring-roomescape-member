@@ -1,9 +1,9 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.auth.JwtProvider;
 import roomescape.service.dto.CreateMemberRequestDto;
 import roomescape.service.dto.LoginMemberRequestDto;
 import roomescape.service.dto.MemberResponseDto;
@@ -13,11 +13,11 @@ import roomescape.service.exception.MemberNotFoundException;
 public class MemberService {
 
     private final JdbcMemberRepository memberRepository;
-    private final JwtProvider jwtProvider;
+    private final JwtService jwtService;
 
-    public MemberService(JdbcMemberRepository memberRepository, JwtProvider jwtProvider) {
+    public MemberService(JdbcMemberRepository memberRepository, JwtService jwtService) {
         this.memberRepository = memberRepository;
-        this.jwtProvider = jwtProvider;
+        this.jwtService = jwtService;
     }
 
     public void signup(CreateMemberRequestDto requestDto) {
@@ -27,21 +27,25 @@ public class MemberService {
         memberRepository.insertMember(requestDto.toMember());
     }
 
-    public String verifyMember(LoginMemberRequestDto requestDto) {
+    public String login(LoginMemberRequestDto requestDto) {
         Member member = memberRepository.findMemberByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
 
-        if (member.isPasswordDifferent(requestDto.getPassword())) {
+        if (member.isMismatchedPassword(requestDto.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
-
-        return jwtProvider.createToken(member);
+        return jwtService.generateToken(member);
     }
 
-    public MemberResponseDto verifyToken(String token) {
-        long memberId = Long.parseLong(jwtProvider.getclaims(token).getSubject());
-        Member member = memberRepository.findMemberById(memberId)
+    public Member findMember(String token) {
+        Long memberId = jwtService.verifyToken(token);
+        return memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
-        return new MemberResponseDto(member);
+    }
+
+    public List<MemberResponseDto> findAllMemberNames() {
+        return memberRepository.findAllMemberNames().stream()
+                .map(MemberResponseDto::new)
+                .toList();
     }
 }

@@ -7,7 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
-import roomescape.service.dto.ReservationRequestDto;
+import roomescape.service.dto.CreateReservationDto;
 import roomescape.service.dto.ReservationResponseDto;
 
 @Service
@@ -29,13 +29,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponseDto createReservation(ReservationRequestDto requestDto) {
-        Reservation reservation = requestDto.toReservation();
+    public ReservationResponseDto createReservation(CreateReservationDto reservationInfo) {
+        Reservation reservation = reservationInfo.toReservation();
         if (!reservationTimeRepository.isTimeExistsByTimeId(reservation.getTimeId())) {
             throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");
         }
 
-        ReservationTime time = reservationTimeRepository.findReservationTimeById(requestDto.getTimeId());
+        ReservationTime time = reservationTimeRepository.findReservationTimeById(reservation.getTimeId());
         if (LocalDateTime.of(reservation.getDate(), time.getStartAt()).isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
         }
