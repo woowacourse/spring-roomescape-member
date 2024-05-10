@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -63,6 +64,62 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findAll(final Long memberId, final Long themeId,
+                                     final LocalDate dateFrom,
+                                     final LocalDate dateTo) { // TODO: 필터 옵션 없는 경우 처리
+        String whereSql = "";
+        String memberIdSql = "";
+        String themeIdSql = "";
+        String dateFromIdSql = "";
+        String dateToIdSql = "";
+
+        List<String> filterSqls = new ArrayList<>();
+        if (memberId != null || themeId != null || dateFrom != null || dateTo != null) {
+            whereSql = "WHERE";
+        }
+        if (memberId != null) {
+            memberIdSql = " member_id = " + memberId;
+            filterSqls.add(memberIdSql);
+        }
+        if (themeId != null) {
+            themeIdSql = " theme_id = " + themeId;
+            filterSqls.add(themeIdSql);
+        }
+        if (dateFrom != null) {
+            dateFromIdSql = " date > " + dateFrom;
+            filterSqls.add(dateFromIdSql);
+        }
+        if (dateTo != null) {
+            dateToIdSql = " date < " + dateTo;
+            filterSqls.add(dateToIdSql);
+        }
+
+        String sql = """
+                SELECT
+                r.id as reservation_id,
+                r.date,
+                t.id as time_id,
+                t.start_at as time_value,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description as theme_description,
+                th.thumbnail as theme_thumbnail,
+                m.id as member_id,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password,
+                m.role as member_role
+                FROM reservation as r
+                INNER JOIN reservation_time as t on r.time_id = t.id
+                INNER JOIN theme as th on r.theme_id = th.id
+                INNER JOIN member as m on r.member_id = m.id
+                WHERE member_id = ? AND theme_id = ? AND date > ? AND date < ?
+                """;
+//                     + whereSql + String.join(" AND", filterSqls);
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
     public Reservation findById(final long id) {
         String sql = """
                 SELECT
@@ -87,34 +144,6 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
 
         return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
-    }
-
-    @Override
-    public List<Reservation> findByMemberIdAndThemeIdAndDateFromTo(final Long memberId, final Long themeId,
-                                                                   final LocalDate dateFrom,
-                                                                   final LocalDate dateTo) {
-        String sql = """
-                SELECT
-                r.id as reservation_id,
-                r.date,
-                t.id as time_id,
-                t.start_at as time_value,
-                th.id as theme_id,
-                th.name as theme_name,
-                th.description as theme_description,
-                th.thumbnail as theme_thumbnail,
-                m.id as member_id,
-                m.name as member_name,
-                m.email as member_email,
-                m.password as member_password,
-                m.role as member_role
-                FROM reservation as r
-                INNER JOIN reservation_time as t on r.time_id = t.id
-                INNER JOIN theme as th on r.theme_id = th.id
-                INNER JOIN member as m on r.member_id = m.id
-                WHERE member_id = ? AND theme_id = ? AND date > ? AND date < ?
-                """;
-        return jdbcTemplate.query(sql, reservationRowMapper, memberId, themeId, dateFrom, dateTo);
     }
 
     @Override

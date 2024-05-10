@@ -59,9 +59,9 @@ public class ReservationRestController {
         return ResponseEntity.created(location).body(reservationResponse);
     }
 
-    @GetMapping("/admin/reservations")  // 얘를 Requestbody로 못받으려나
-    public ResponseEntity<List<ReservationResponse>> getAll(@RequestParam Long memberId, @RequestParam Long themeId, @RequestParam LocalDate dateFrom, @RequestParam LocalDate dateTo) {
-        List<ReservationResponse> reservationResponses = reservationService.findByMemberIdAndThemeIdAndDateFromTo(memberId, themeId, dateFrom, dateTo);
+    @GetMapping("/admin/reservations")
+    public ResponseEntity<List<ReservationResponse>> getAll(@RequestParam(required = false) Long memberId, @RequestParam(required = false) Long themeId, @RequestParam(required = false) LocalDate dateFrom, @RequestParam(required = false) LocalDate dateTo) {
+        List<ReservationResponse> reservationResponses = reservationService.findAll(memberId, themeId, dateFrom, dateTo);
         return ResponseEntity.ok(reservationResponses);
     }
 }
