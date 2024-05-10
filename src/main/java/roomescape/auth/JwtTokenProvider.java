@@ -3,8 +3,10 @@ package roomescape.auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
 
 import java.util.Date;
@@ -33,25 +35,33 @@ public class JwtTokenProvider {
     }
 
     public Map<String, String> decode(String token) {
-        Map<String, String> decodedClaims = new HashMap<>();
+        try {
+            Map<String, String> decodedClaims = new HashMap<>();
 
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
+            Claims claims = Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        decodedClaims.put(EMAIL_KEY, claims.get(EMAIL_KEY).toString());
-        decodedClaims.put(ID_KEY, claims.get(ID_KEY).toString());
+            decodedClaims.put(EMAIL_KEY, claims.get(EMAIL_KEY).toString());
+            decodedClaims.put(ID_KEY, claims.get(ID_KEY).toString());
 
-        return decodedClaims;
+            return decodedClaims;
+        } catch (SignatureException exception) {
+            throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
+        }
     }
 
     public String decode(String token, String key) {
-        return Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody()
-                .get(key)
-                .toString();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get(key)
+                    .toString();
+        } catch (SignatureException exception) {
+            throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
+        }
     }
 }
