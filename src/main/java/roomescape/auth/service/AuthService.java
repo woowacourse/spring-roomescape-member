@@ -32,7 +32,7 @@ public class AuthService {
                 .orElseThrow(() -> new NoSuchElementException("해당 이메일 정보와 일치하는 회원 정보가 없습니다."));
         checkCredential(member, request.password());
 
-        return tokenProvider.createToken(member.getEmail(), member.getRole());
+        return tokenProvider.createToken(member.getId(), member.getRole());
     }
 
     private void checkCredential(final Member member, final String password) {
@@ -43,8 +43,8 @@ public class AuthService {
 
     public Member findAuthenticatedMember(final String accessToken) {
         final AuthenticationToken authenticationToken = tokenProvider.convertAuthenticationToken(accessToken);
-        final String memberEmail = authenticationToken.getClaims().getSubject();
-        return memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new NoSuchElementException("해당 이메일 정보와 일치하는 회원 정보가 없습니다."));
+        final Long memberId = Long.parseLong(authenticationToken.getClaims().getSubject());
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NoSuchElementException("해당 회원 아이디와 일치하는 회원 정보가 없습니다."));
     }
 }
