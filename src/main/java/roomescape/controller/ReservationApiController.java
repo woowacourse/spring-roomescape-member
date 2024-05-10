@@ -27,7 +27,7 @@ public class ReservationApiController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
+    @GetMapping("/admin/reservations")
     public List<ReservationResponseDto> findReservations() {
         return reservationService.findAllReservations();
     }
@@ -47,7 +47,7 @@ public class ReservationApiController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/reservations/{id}")
+    @DeleteMapping("/admin/reservations/{id}")
     public void deleteReservation(@PathVariable long id) {
         reservationService.deleteReservation(id);
     }
