@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.resolver.AuthenticationPrincipal;
-import roomescape.domain.LoginMember;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.AdminReservationRequestDto;
 import roomescape.service.dto.CreateReservationDto;
+import roomescape.service.dto.LoginMember;
 import roomescape.service.dto.MemberReservationRequestDto;
 import roomescape.service.dto.ReservationResponseDto;
 
@@ -41,8 +41,8 @@ public class ReservationApiController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/reservations")
-    public ReservationResponseDto createReservationAdmin(@AuthenticationPrincipal LoginMember loginMember,
-                                                         @Valid @RequestBody AdminReservationRequestDto reservationDto) {
+    public ReservationResponseDto createReservationAdmin(
+            @Valid @RequestBody AdminReservationRequestDto reservationDto) {
         return reservationService.createReservation(reservationDto.toCreateReservation());
     }
 

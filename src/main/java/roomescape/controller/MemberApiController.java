@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.resolver.AuthenticationPrincipal;
-import roomescape.domain.LoginMember;
 import roomescape.service.MemberService;
 import roomescape.service.dto.CreateMemberRequestDto;
+import roomescape.service.dto.LoginMember;
 import roomescape.service.dto.LoginMemberRequestDto;
 import roomescape.service.dto.MemberResponseDto;
 
@@ -37,12 +37,15 @@ public class MemberApiController {
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(24 * 60);
+        cookie.setMaxAge(300);
         response.addCookie(cookie);
     }
 
     @GetMapping("/members/login/check")
     public MemberResponseDto checkLogin(@AuthenticationPrincipal LoginMember loginMember) {
+        if (loginMember == null) {
+            return null;
+        }
         return new MemberResponseDto(loginMember);
     }
 
@@ -50,6 +53,7 @@ public class MemberApiController {
     public void logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 

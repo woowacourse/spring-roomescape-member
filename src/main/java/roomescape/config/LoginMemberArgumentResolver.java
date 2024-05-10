@@ -7,21 +7,21 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.AuthorizationExtractor;
 import roomescape.controller.resolver.AuthenticationPrincipal;
-import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
+import roomescape.service.JwtService;
 import roomescape.service.MemberService;
+import roomescape.service.dto.LoginMember;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
-    private final AuthorizationExtractor authorizationExtractor;
+    private final JwtService jwtService;
 
-    public LoginMemberArgumentResolver(MemberService memberService, AuthorizationExtractor authorizationExtractor) {
+    public LoginMemberArgumentResolver(MemberService memberService, JwtService jwtService) {
         this.memberService = memberService;
-        this.authorizationExtractor = authorizationExtractor;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -33,9 +33,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = authorizationExtractor.extractToken(request);
+        String token = jwtService.extractToken(request);
         Member member = memberService.findMember(token);
         return new LoginMember(member.getId(), member.getEmail(), member.getName(), member.getRole());
     }

@@ -8,6 +8,9 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 
@@ -20,14 +23,27 @@ public class JwtService {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName())
+                .claim("role", member.getRole().name())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
 
-    public Long verifyToken(String token) {
+    public String extractToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new IllegalStateException("쿠키가 존재하지 않습니다.");
+        }
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("토큰이 존재하지 않습니다."))
+                .getValue();
+    }
+
+    public Claims verifyToken(String token) {
         try {
-            Claims claims = parseClaims(token);
-            return Long.parseLong(claims.getSubject());
+            return parseClaims(token);
         } catch (ExpiredJwtException e) {
             throw new JwtException("기한이 만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException | MalformedJwtException e) {

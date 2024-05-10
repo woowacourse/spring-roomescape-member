@@ -1,4 +1,6 @@
-package roomescape.domain;
+package roomescape.service.dto;
+
+import roomescape.domain.Role;
 
 public class LoginMember {
 

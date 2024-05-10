@@ -5,7 +5,8 @@ values (1001, 't1@t1.com', 't1', '재즈', 'MEMBER'),
        (1004, 't4@t4.com', 't4', '브리', 'MEMBER'),
        (1005, 't5@t5.com', 't5', '구구', 'MEMBER'),
        (1006, 't6@t6.com', 't5', '네오', 'MEMBER'),
-       (1007, 't7@t7.com', 't5', '브라운', 'MEMBER');
+       (1007, 't7@t7.com', 't5', '브라운', 'MEMBER'),
+       (1008, 'tt@tt.com', 'tt', '어드민', 'ADMIN');
 
 INSERT INTO reservation_time
 values (1001, '12:00'),

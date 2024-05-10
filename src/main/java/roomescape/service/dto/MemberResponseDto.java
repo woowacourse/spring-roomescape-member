@@ -1,6 +1,5 @@
 package roomescape.service.dto;
 
-import roomescape.domain.LoginMember;
 import roomescape.domain.MemberInfo;
 import roomescape.domain.Reservation;
 
