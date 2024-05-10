@@ -88,7 +88,8 @@ class ReservationServiceTest {
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
-        List<ReservationResponse> reservations = reservationService.findReservationsBy(theme.getId(), member.getId(), LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
+        List<ReservationResponse> reservations = reservationService.findReservationsBy(theme.getId(), member.getId(),
+                LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
 
         //then
         assertAll(
@@ -109,7 +110,8 @@ class ReservationServiceTest {
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
-        List<ReservationResponse> reservations = reservationService.findReservationsBy(theme.getId(), member.getId(), LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
+        List<ReservationResponse> reservations = reservationService.findReservationsBy(theme.getId(), member.getId(),
+                LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
 
         //when & then
         assertAll(
@@ -151,7 +153,8 @@ class ReservationServiceTest {
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when & then
-        assertThatThrownBy(() -> reservationService.findReservationsBy(theme.getId(), member.getId(), LocalDate.parse("2025-01-01"), LocalDate.parse("2024-12-31")))
+        assertThatThrownBy(() -> reservationService.findReservationsBy(theme.getId(), member.getId(),
+                LocalDate.parse("2025-01-01"), LocalDate.parse("2024-12-31")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -180,7 +183,8 @@ class ReservationServiceTest {
         String date = "2099-04-18";
         reservationRepository.save(new Reservation(1L, LocalDate.parse(date), reservationTime, theme));
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId() + 1, theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId() + 1,
+                theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest,
@@ -194,7 +198,8 @@ class ReservationServiceTest {
         //given
         String date = "2099-04-18";
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId(), theme.getId() + 1);
+        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId(),
+                theme.getId() + 1);
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest,

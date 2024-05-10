@@ -6,7 +6,6 @@ import java.util.Map;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
-import roomescape.member.dto.MemberResponse;
 
 public class FakeMemberDao implements MemberRepository {
     private final Map<Long, Member> members = new HashMap<>();

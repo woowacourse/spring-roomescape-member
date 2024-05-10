@@ -3,7 +3,6 @@ package roomescape.reservation.dao;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -72,17 +71,16 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public List<CompletedReservation> findAll() {
         String sql = """
-            SELECT r.id as reservation_id, r.date,
-            t.id as time_id, t.start_at as time_value,
-            th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
-            m.id as member_id, m.name as member_name, m.email, m.password, m.role
-            FROM reservation as r 
-            INNER JOIN reservation_time as t on r.time_id = t.id 
-            INNER JOIN theme as th on r.theme_id = th.id
-            INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
-            INNER JOIN member AS m ON m.id = mr.member_id
-            """;
-
+                SELECT r.id as reservation_id, r.date,
+                t.id as time_id, t.start_at as time_value,
+                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
+                m.id as member_id, m.name as member_name, m.email, m.password, m.role
+                FROM reservation as r 
+                INNER JOIN reservation_time as t on r.time_id = t.id 
+                INNER JOIN theme as th on r.theme_id = th.id
+                INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
+                INNER JOIN member AS m ON m.id = mr.member_id
+                """;
 
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -90,16 +88,16 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public List<CompletedReservation> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
-            SELECT r.id as reservation_id, r.date,
-            t.id as time_id, t.start_at as time_value,
-            th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
-            m.id as member_id, m.name as member_name, m.email, m.password, m.role
-            FROM reservation as r 
-            INNER JOIN reservation_time as t on r.time_id = t.id 
-            INNER JOIN theme as th on r.theme_id = th.id
-            INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
-            INNER JOIN member AS m ON m.id = mr.member_id
-            """;
+                SELECT r.id as reservation_id, r.date,
+                t.id as time_id, t.start_at as time_value,
+                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
+                m.id as member_id, m.name as member_name, m.email, m.password, m.role
+                FROM reservation as r 
+                INNER JOIN reservation_time as t on r.time_id = t.id 
+                INNER JOIN theme as th on r.theme_id = th.id
+                INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
+                INNER JOIN member AS m ON m.id = mr.member_id
+                """;
         sql += makeFilterSql(themeId, memberId, dateFrom, dateTo);
         return jdbcTemplate.query(sql, rowMapper);
     }

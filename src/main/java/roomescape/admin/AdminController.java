@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import roomescape.member.dto.LoginMember;
 import roomescape.reservation.dto.ReservationAdminRequest;
-import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.ReservationTimeService;
@@ -42,15 +40,17 @@ public class AdminController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> reservationByFilter(@RequestParam(value = "themeId", required = false) Long themeId,
-                                                                         @RequestParam(value = "memberId", required = false) Long memberId,
-                                                                         @RequestParam(value = "dateFrom", required = false) LocalDate dateFrom,
-                                                                         @RequestParam(value = "dateTo", required = false)  LocalDate dateTo) {
+    public ResponseEntity<List<ReservationResponse>> reservationByFilter(
+            @RequestParam(value = "themeId", required = false) Long themeId,
+            @RequestParam(value = "memberId", required = false) Long memberId,
+            @RequestParam(value = "dateFrom", required = false) LocalDate dateFrom,
+            @RequestParam(value = "dateTo", required = false) LocalDate dateTo) {
         return ResponseEntity.ok(reservationService.findReservationsBy(themeId, memberId, dateFrom, dateTo));
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> postReservations(@RequestBody @Valid ReservationAdminRequest reservationAdminRequest) {
+    public ResponseEntity<ReservationResponse> postReservations(
+            @RequestBody @Valid ReservationAdminRequest reservationAdminRequest) {
         ReservationResponse response = reservationService.createByAdmin(reservationAdminRequest);
         return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }

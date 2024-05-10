@@ -13,7 +13,6 @@ import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
-import roomescape.member.dto.MemberResponse;
 import roomescape.member.util.FakeTokenProvider;
 import roomescape.reservation.dao.FakeMemberDao;
 
@@ -89,7 +88,6 @@ class MemberServiceTest {
                 () -> assertThat(memberResponses.get(0)).isEqualTo(member)
         );
     }
-
 
 
 }

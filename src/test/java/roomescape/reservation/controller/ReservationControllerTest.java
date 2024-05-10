@@ -15,32 +15,18 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.LoginRequest;
-import roomescape.member.service.MemberService;
-import roomescape.reservation.dao.FakeMemberDao;
-import roomescape.reservation.dao.FakeReservationDao;
-import roomescape.reservation.dao.FakeReservationTimeDao;
-import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.dto.ReservationTimeRequest;
-import roomescape.reservation.dto.ReservationTimeResponse;
-import roomescape.reservation.dto.ThemeRequest;
-import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservation.service.ReservationTimeService;
-import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
 
 @DisplayName("예약 API 통합 테스트")
@@ -79,11 +65,12 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void find() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(), theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(),
+                theme.getId());
         ReservationResponse reservationResponse = reservationService.create(reservationRequest,
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
-         // when & then
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
@@ -179,7 +166,8 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(), theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(),
+                theme.getId());
         ReservationResponse reservationResponse = reservationService.create(reservationRequest,
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
         long id = reservationResponse.id();

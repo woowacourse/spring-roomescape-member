@@ -1,6 +1,5 @@
 package roomescape.member.controller;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;

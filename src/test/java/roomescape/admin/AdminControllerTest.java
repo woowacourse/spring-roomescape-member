@@ -1,7 +1,6 @@
 package roomescape.admin;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -11,21 +10,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.member.domain.Role;
-import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.LoginRequest;
-import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
-import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.ReservationTimeService;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
@@ -38,21 +32,19 @@ class AdminControllerTest extends ControllerTest {
 
     @Autowired
     ThemeService themeService;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     ReservationTimeResponse reservationTimeResponse;
     ThemeResponse themeResponse;
     String adminToken;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setData() {
         String sql = """
-            INSERT INTO member(name, email, password, role) VALUES
-            ('관리자', 'admin@email.com', 'password', 'ADMIN'),
-            ('멤버', 'member@email.com', 'password', 'MEMBER')
-        """;
+                    INSERT INTO member(name, email, password, role) VALUES
+                    ('관리자', 'admin@email.com', 'password', 'ADMIN'),
+                    ('멤버', 'member@email.com', 'password', 'MEMBER')
+                """;
         jdbcTemplate.update(sql);
         reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
         themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));

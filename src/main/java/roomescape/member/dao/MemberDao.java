@@ -11,12 +11,19 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
-import roomescape.member.dto.MemberResponse;
 
 @Repository
 public class MemberDao implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public MemberDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+    }
+
     private final RowMapper<Member> rowMapper() {
         return (resultSet, rowNum) -> {
             final Long memberId = resultSet.getLong("id");
@@ -27,13 +34,6 @@ public class MemberDao implements MemberRepository {
 
             return new Member(memberId, name, email, password, role);
         };
-    }
-
-    public MemberDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id");
     }
 
     @Override

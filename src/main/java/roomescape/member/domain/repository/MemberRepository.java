@@ -2,7 +2,6 @@ package roomescape.member.domain.repository;
 
 import java.util.List;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.MemberResponse;
 
 public interface MemberRepository {
     Member save(Member member);

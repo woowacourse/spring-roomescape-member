@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
@@ -48,7 +47,8 @@ class ReservationTimeServiceTest {
         reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
 
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository, memberRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
     }
 
     @DisplayName("예약 시간 생성에 성공한다.")
@@ -147,7 +147,6 @@ class ReservationTimeServiceTest {
         ReservationTime saveTime2 = reservationTimeRepository.save(new ReservationTime(id2, localTime2));
 
         LocalDate date = LocalDate.now().plusYears(1);
-
 
         Member member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
         themeRepository.save(new Theme("test", "test", "test"));
