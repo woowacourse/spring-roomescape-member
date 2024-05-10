@@ -3,6 +3,7 @@ package roomescape.controller.api;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.ReservationFilterRequest;
 import roomescape.dto.ReservationWithMemberSaveRequest;
 import roomescape.model.LoginMember;
 import roomescape.dto.ReservationResponse;
@@ -22,8 +23,8 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        final List<ReservationResponse> reservationResponses = reservationService.getReservations();
+    public ResponseEntity<List<ReservationResponse>> getReservations(@ModelAttribute final ReservationFilterRequest reservationFilterRequest) {
+        final List<ReservationResponse> reservationResponses = reservationService.getReservations(reservationFilterRequest);
         return ResponseEntity.ok(reservationResponses);
     }
 

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.dto.ReservationFilterRequest;
 import roomescape.dto.ReservationWithMemberSaveRequest;
 import roomescape.model.*;
 import roomescape.dto.ReservationResponse;
@@ -27,8 +28,8 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll()
+    public List<ReservationResponse> getReservations(final ReservationFilterRequest reservationFilterRequest) {
+        return reservationRepository.findByFilter(reservationFilterRequest)
                 .stream()
                 .map(ReservationResponse::new)
                 .toList();
