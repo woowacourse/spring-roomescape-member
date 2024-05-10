@@ -2,6 +2,7 @@ package roomescape.repository.implementation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -136,7 +137,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<Reservation> findByDateAndTheme(LocalDate date, Long themeId) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -159,6 +160,50 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.date = ? AND th.id = ?
                  """;
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public List<Reservation> findByMemberAndThemeAndDateRange(Long memberId, Long themeId, LocalDate dateFrom,
+                                                              LocalDate dateTo) {
+        List<Object> parameters = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("""
+                SELECT
+                r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
+                WHERE 1=1
+                """);
+
+        if (memberId != null) {
+            sql.append(" AND m.id = ?");
+            parameters.add(memberId);
+        }
+        if (themeId != null) {
+            sql.append(" AND th.id = ?");
+            parameters.add(themeId);
+        }
+        if (dateFrom != null && dateTo != null) {
+            sql.append(" AND r.date BETWEEN ? AND ?");
+            parameters.add(dateFrom);
+            parameters.add(dateTo);
+        }
+
+        return jdbcTemplate.query(sql.toString(), ROW_MAPPER, parameters.toArray());
     }
 
     @Override

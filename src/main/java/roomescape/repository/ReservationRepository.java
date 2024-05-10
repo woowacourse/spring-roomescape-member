@@ -15,7 +15,9 @@ public interface ReservationRepository {
 
     List<Long> findThemeReservationCountsForDate(LocalDate startDate, LocalDate endDate);
 
-    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
+    List<Reservation> findByDateAndTheme(LocalDate date, Long themeId);
+
+    List<Reservation> findByMemberAndThemeAndDateRange(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 
     void delete(Long id);
 
