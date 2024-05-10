@@ -6,10 +6,10 @@ drop table if exists reservation_time CASCADE;
 CREATE TABLE member
 (
     id       BIGINT        NOT NULL AUTO_INCREMENT,
-    role     VARCHAR(30)   NOT NULL,
-    password VARCHAR(5000) NOT NULL,
     name     VARCHAR(20)   NOT NULL,
     email    VARCHAR(30)   NOT NULL,
+    password VARCHAR(1000) NOT NULL,
+    role     VARCHAR(20)   NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -32,11 +32,12 @@ CREATE TABLE reservation_time
 CREATE TABLE reservation
 (
     id       BIGINT     NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(100) NOT NULL,
     date     DATE       NOT NULL,
-    time_id  BIGINT, -- 컬럼 수정
-    theme_id BIGINT, -- 컬럼 수정
+    time_id  BIGINT,
+    theme_id BIGINT,
+    member_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
 );

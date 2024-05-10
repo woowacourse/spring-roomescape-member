@@ -40,7 +40,7 @@ public class ReservationController {
             @Authenticated final AuthenticatedMember authenticatedMember
     ) {
         final Reservation savedReservation = reservationService.saveReservation(
-                request.setClientName(authenticatedMember.name()));
+                request.setMemberId(authenticatedMember.id()));
 
         return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId()))
                 .body(ReservationResponse.from(savedReservation));

@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.model.Member;
+import roomescape.member.model.MemberRole;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
@@ -25,12 +27,14 @@ public class InMemoryReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         final String sql = """
                         SELECT
-                            r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, 
+                            r.id AS reservation_id, r.date AS reservation_date, 
                             rt.id AS time_id, rt.start_at AS reservation_time, 
-                            th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail 
+                            th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
+                            m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
                         FROM reservation AS r 
                         INNER JOIN reservation_time AS rt on r.time_id = rt.id 
                         INNER JOIN theme AS th ON r.theme_id = th.id
+                        INNER JOIN member AS m ON r.member_id = m.id
                 """;
 
         return template.query(sql, itemRowMapper());
@@ -39,25 +43,31 @@ public class InMemoryReservationRepository implements ReservationRepository {
     private RowMapper<Reservation> itemRowMapper() {
         return ((rs, rowNum) -> Reservation.of(
                 rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
                 rs.getDate("reservation_date").toLocalDate(),
                 new ReservationTime(rs.getLong("time_id"), rs.getTime("reservation_time").toLocalTime()),
                 Theme.of(
                         rs.getLong("theme_id"),
                         rs.getString("theme_name"),
                         rs.getString("theme_description"),
-                        rs.getString("theme_thumbnail"))
+                        rs.getString("theme_thumbnail")),
+                Member.createMemberWithId(
+                        rs.getLong("member_id"),
+                        MemberRole.of(rs.getString("member_role")),
+                        rs.getString("member_password"),
+                        rs.getString("member_name"),
+                        rs.getString("member_email")
+                )
         ));
     }
 
     @Override
     public Reservation save(final Reservation reservation) {
-        final String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
+        final String sql = "INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (:date, :timeId, :themeId, :memberId)";
         final MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", reservation.getClientName().value())
                 .addValue("date", reservation.getDate().value())
                 .addValue("timeId", reservation.getTime().getId())
-                .addValue("themeId", reservation.getTheme().getId());
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("memberId", reservation.getMember().getId());
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, param, keyHolder);
 
@@ -108,12 +118,14 @@ public class InMemoryReservationRepository implements ReservationRepository {
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = """
                     SELECT
-                        r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, 
+                        r.id AS reservation_id, r.date AS reservation_date, 
                         rt.id AS time_id, rt.start_at AS reservation_time, 
-                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail 
+                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
+                        m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
                     FROM reservation AS r 
                     INNER JOIN reservation_time AS rt ON r.time_id = rt.id 
                     INNER JOIN theme AS th ON r.theme_id = th.id 
+                    INNER JOIN member AS m ON r.member_id = m.id
                     WHERE date = :date AND theme_id = :themeId
                 """;
 

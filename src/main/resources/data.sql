@@ -5,6 +5,12 @@ INSERT INTO member (role, password, name, email)
 VALUES ('ADMIN', 'N6UX5zCeUl/v6khTHKEmTRG/qLZNyrirpjySbDj+Tc0=', '관리자', 'admin@mail.com');  /** adminPw1234! */
 INSERT INTO member (role, password, name, email)
 VALUES ('USER', 'c7c8DLfgOv4RFWUd7q9VDn1684F5dTghVOXoAzrc1GA=', '일반 회원', 'user@mail.com');   /** userPw1234! */
+INSERT INTO member (role, password, name, email)
+VALUES ('USER', 'c7c8DLfgOv4RFWUd7q9VDn1684F5dTghVOXoAzrc1GA=', '켈리', 'kelly@mail.com');   /** userPw1234! */
+INSERT INTO member (role, password, name, email)
+VALUES ('USER', 'c7c8DLfgOv4RFWUd7q9VDn1684F5dTghVOXoAzrc1GA=', '테바', 'teva@mail.com');   /** userPw1234! */
+INSERT INTO member (role, password, name, email)
+VALUES ('USER', 'c7c8DLfgOv4RFWUd7q9VDn1684F5dTghVOXoAzrc1GA=', '파랑 회원', 'blue@mail.com');   /** userPw1234! */
 
 /**
   theme data
@@ -63,38 +69,38 @@ VALUES ('23:30');
 /**
   reservation
  */
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켈리', CAST(TIMESTAMPADD(DAY, -3, NOW()) AS DATE), 1, 1);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('오리', CAST(TIMESTAMPADD(DAY, -4, NOW()) AS DATE), 1, 2);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('치킨보이', CAST(TIMESTAMPADD(DAY, -2, NOW()) AS DATE), 4, 1);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('치킨걸', CAST(TIMESTAMPADD(DAY, -6, NOW()) AS DATE), 3, 1);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (2, CAST(TIMESTAMPADD(DAY, -3, NOW()) AS DATE), 1, 1);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (3, CAST(TIMESTAMPADD(DAY, -4, NOW()) AS DATE), 1, 2);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (4, CAST(TIMESTAMPADD(DAY, -2, NOW()) AS DATE), 4, 1);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (5, CAST(TIMESTAMPADD(DAY, -6, NOW()) AS DATE), 3, 1);
 
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('테바', CAST(TIMESTAMPADD(DAY, -3, NOW()) AS DATE), 5, 1);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('파랑', CAST(TIMESTAMPADD(DAY, -4, NOW()) AS DATE), 7, 2);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('네오', CAST(TIMESTAMPADD(DAY, -2, NOW()) AS DATE), 6, 13);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('워니', CAST(TIMESTAMPADD(DAY, -6, NOW()) AS DATE), 8, 14);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (1, CAST(TIMESTAMPADD(DAY, -3, NOW()) AS DATE), 5, 1);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (2, CAST(TIMESTAMPADD(DAY, -4, NOW()) AS DATE), 7, 2);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (3, CAST(TIMESTAMPADD(DAY, -2, NOW()) AS DATE), 6, 13);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (4, CAST(TIMESTAMPADD(DAY, -6, NOW()) AS DATE), 8, 14);
 
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('커비', CAST(TIMESTAMPADD(DAY, -3, NOW()) AS DATE), 1, 2);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('안나', CAST(TIMESTAMPADD(DAY, -4, NOW()) AS DATE), 1, 12);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('러쉬', CAST(TIMESTAMPADD(DAY, -2, NOW()) AS DATE), 4, 10);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('레모네', CAST(TIMESTAMPADD(DAY, -6, NOW()) AS DATE), 3, 11);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (5, CAST(TIMESTAMPADD(DAY, -3, NOW()) AS DATE), 1, 2);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (3, CAST(TIMESTAMPADD(DAY, -4, NOW()) AS DATE), 1, 12);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (2, CAST(TIMESTAMPADD(DAY, -2, NOW()) AS DATE), 4, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (1, CAST(TIMESTAMPADD(DAY, -6, NOW()) AS DATE), 3, 11);
 
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('호기', CAST(TIMESTAMPADD(DAY, 3, NOW()) AS DATE), 1, 10);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('아루', CAST(TIMESTAMPADD(DAY, 4, NOW()) AS DATE), 1, 15);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('재즈', CAST(TIMESTAMPADD(DAY, 2, NOW()) AS DATE), 4, 9);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('짱수', CAST(TIMESTAMPADD(DAY, 6, NOW()) AS DATE), 3, 8);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (2, CAST(TIMESTAMPADD(DAY, 3, NOW()) AS DATE), 1, 10);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (4, CAST(TIMESTAMPADD(DAY, 4, NOW()) AS DATE), 1, 15);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (1, CAST(TIMESTAMPADD(DAY, 2, NOW()) AS DATE), 4, 9);
+INSERT INTO reservation(member_id, date, time_id, theme_id)
+VALUES (5, CAST(TIMESTAMPADD(DAY, 6, NOW()) AS DATE), 3, 8);
