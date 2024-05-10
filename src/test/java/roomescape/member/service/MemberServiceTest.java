@@ -10,6 +10,8 @@ import roomescape.member.dto.SaveMemberRequest;
 import roomescape.member.model.Member;
 import roomescape.member.model.MemberRole;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -21,6 +23,16 @@ class MemberServiceTest {
     
     @Autowired
     private MemberService memberService;
+
+    @DisplayName("모든 회원 정보를 조회한다.")
+    @Test
+    void getMembersTest() {
+        // When
+        final List<Member> members = memberService.getMembers();
+
+        // Then
+        assertThat(members.size()).isEqualTo(2);
+    }
     
     @DisplayName("회원 정보를 저장한다.")
     @Test
@@ -45,5 +57,7 @@ class MemberServiceTest {
         );
     }
 
-    // TODO : 비밀번호 검증 예외 및 이메일 중복 검증 예외 테스트 추가
+    // TODO : 이메일 중복 검증 예외 테스트 추가 (기능 추가 필요)
+
+    // TODO : 비밀번호 형식 검증 예외 테스트 추가
 }

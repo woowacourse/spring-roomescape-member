@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.member.model.Member;
 import roomescape.member.model.MemberRole;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +21,17 @@ class InMemoryMemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
-    
+
+    @DisplayName("전체 회원 정보를 저장한다.")
+    @Test
+    void findAllTest() {
+        // When
+        final List<Member> members = memberRepository.findAll();
+
+        // Then
+        assertThat(members).hasSize(2);
+    }
+
     @DisplayName("주어진 id에 일치한 member를 찾아 반환한다.")
     @Test
     void findByIdTest() {
@@ -33,9 +44,9 @@ class InMemoryMemberRepositoryTest {
         // Then
         assertThat(member).isPresent();
     }
-    
+
     @DisplayName("member를 저장한다.")
-    @Test        
+    @Test
     void saveTest() {
         // Given
         final long memberId = 3L;

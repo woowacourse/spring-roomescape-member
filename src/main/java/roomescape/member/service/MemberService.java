@@ -6,6 +6,8 @@ import roomescape.member.encoder.PasswordEncoder;
 import roomescape.member.model.Member;
 import roomescape.member.repository.MemberRepository;
 
+import java.util.List;
+
 @Service
 public class MemberService {
 
@@ -15,6 +17,10 @@ public class MemberService {
     public MemberService(final MemberRepository memberRepository, final PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public List<Member> getMembers() {
+        return memberRepository.findAll();
     }
 
     // TODO : email 중복 검증 추가

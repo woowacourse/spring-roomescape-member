@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.model.Member;
 import roomescape.member.model.MemberRole;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -20,6 +21,13 @@ public class InMemoryMemberRepository implements MemberRepository {
 
     public InMemoryMemberRepository(final NamedParameterJdbcTemplate template) {
         this.template = template;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = "SELECT * FROM member";
+
+        return template.query(sql, itemRowMapper());
     }
 
     @Override
