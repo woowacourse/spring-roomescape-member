@@ -55,7 +55,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     public Optional<Theme> findById(Long id) {
         String sql = "select * from theme where id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

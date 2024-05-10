@@ -57,7 +57,7 @@ public class MemberRepositoryImpl implements MemberRepository {
                 WHERE m.id = ?
                 """;
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -76,7 +76,7 @@ public class MemberRepositoryImpl implements MemberRepository {
                 where m.email = ? and m.password = ?
                 """;
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

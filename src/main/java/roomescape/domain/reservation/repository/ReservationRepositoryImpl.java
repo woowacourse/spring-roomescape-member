@@ -134,7 +134,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 WHERE r.id = ?
                 """;
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
