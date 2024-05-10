@@ -1,6 +1,9 @@
-package roomescape.controller;
+package roomescape.controller.rest;
 
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,10 +18,6 @@ import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
-
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -44,7 +43,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody @Valid ReservationRequest reservationRequest) {
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
