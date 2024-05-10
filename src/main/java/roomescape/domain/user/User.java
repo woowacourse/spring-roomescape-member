@@ -20,6 +20,10 @@ public class User {
         this(id, new UserName(name), email, password, role);
     }
 
+    public boolean matchPassword(String password) {
+        return this.password.equals(password);
+    }
+
     public Long getId() {
         return id;
     }
