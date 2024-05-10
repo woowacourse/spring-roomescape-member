@@ -14,10 +14,11 @@ import java.util.Date;
 @Component
 public class TokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validTime;
+    //TODO : @Value 오류 해결
+    //@Value("${security.jwt.token.secret-key}")
+    private String secretKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+    //@Value("${security.jwt.token.expire-length}")
+    private long validTime = 3600000;
 
     public String create(Member member) {
         String accessToken = Jwts.builder()
