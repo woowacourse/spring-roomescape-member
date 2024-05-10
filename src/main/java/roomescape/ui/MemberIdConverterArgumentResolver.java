@@ -13,11 +13,9 @@ import roomescape.service.MemberService;
 
 @Component
 public class MemberIdConverterArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberIdConverterArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.memberService = memberService;
+    public MemberIdConverterArgumentResolver(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
