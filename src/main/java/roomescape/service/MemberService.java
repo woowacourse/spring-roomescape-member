@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.dto.login.LoginRequest;
+import roomescape.dto.login.LoginResponse;
 import roomescape.repository.MemberRepository;
 
 @Service
@@ -32,5 +33,11 @@ public class MemberService {
                 .claim("email", member.getEmail())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+    }
+
+    public LoginResponse findLoggedInMember(Long memberId) {
+        Member member = memberRepository.findById(memberId);
+
+        return LoginResponse.from(member);
     }
 }

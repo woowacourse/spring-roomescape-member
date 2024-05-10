@@ -64,6 +64,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(new ExceptionResponse(message), HttpStatus.BAD_REQUEST);
     }
 
+    // TODO: 유효하지 않은 token으로 인증 시도 시 (잘못된 정보)
+    //      JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted. 처리
+    //      io.jsonwebtoken.security.SignatureException
+
     @ExceptionHandler(value = ApplicationException.class)
     public ResponseEntity<ExceptionResponse> handle(ApplicationException e) {
         logger.error(e.getMessage());

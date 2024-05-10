@@ -124,4 +124,4 @@ VALUES ('예약15', DATEADD('DAY', -3, CURRENT_DATE), 5, 11);
 
 -- 유저 목록 : 1개
 INSERT INTO member (name, email, password)
-VALUES ('user', 'ddang@google.com', 'password');
+VALUES ('ddang', 'ddang@google.com', 'password');

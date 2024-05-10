@@ -21,6 +21,15 @@ public class MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public Member findById(Long id) {
+        String sql = """
+                SELECT * FROM member m 
+                WHERE m.id = ? 
+                """;
+
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+    }
+
     public Member findByEmailAndPassword(String email, String password) {
         String sql = """
                 SELECT * FROM member m 
