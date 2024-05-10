@@ -21,6 +21,11 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AdminControllerTest {
+    private static final String NAME = "한태웅";
+    private static final String EMAIL = "taewoong@example.com";
+    private static final String PASSWORD = "123";
+    private static final String ROLE = "ADMIN";
+    private static final String DATE = "3000-01-01";
 
     @LocalServerPort
     private int port;
@@ -33,8 +38,7 @@ public class AdminControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        adminToken = jwtTokenProvider.createToken(
-                new Member(1L, "한태웅", "taewoong@example.com", "123", "ADMIN"));
+        adminToken = jwtTokenProvider.createToken(new Member(1L, NAME, EMAIL, PASSWORD, ROLE));
     }
 
     @Test
@@ -52,7 +56,7 @@ public class AdminControllerTest {
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .log().all()
-                .body("date", equalTo("3000-01-01"),
+                .body("date", equalTo(DATE),
                         "theme.id", equalTo(1),
                         "time.id", equalTo(1),
                         "member.id", equalTo(1));
