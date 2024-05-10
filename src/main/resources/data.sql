@@ -10,9 +10,9 @@ INSERT INTO theme (name, description, thumbnail) VALUES ( '힐링2', '완전 힐
 INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 2, '2099-12-31', 1, 1);
 INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, '2099-12-31', 1, 2);
 
-INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 2, '2024-4-28', 1, 1);
-INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, '2024-4-28', 1, 2);
-INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 2, '2024-4-30', 1, 1);
-INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, '2024-4-27', 1, 2);
-INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, '2024-4-30', 1, 2);
-INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, '2024-4-30', 1, 3);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 2, FORMATDATETIME(DATEADD('DAY', -3, NOW()), 'yyyy-MM-dd'), 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, FORMATDATETIME(DATEADD('DAY', -3, NOW()), 'yyyy-MM-dd'), 1, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 2, FORMATDATETIME(DATEADD('DAY', -2, NOW()), 'yyyy-MM-dd'), 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, FORMATDATETIME(DATEADD('DAY', -4, NOW()), 'yyyy-MM-dd'), 1, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, FORMATDATETIME(DATEADD('DAY', -2, NOW()), 'yyyy-MM-dd'), 1, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES ( 1, FORMATDATETIME(DATEADD('DAY', -2, NOW()), 'yyyy-MM-dd'), 1, 3);
