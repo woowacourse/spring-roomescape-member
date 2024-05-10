@@ -8,7 +8,7 @@ import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
 import roomescape.service.dto.output.*;
-import roomescape.service.util.TokenProvider;
+import roomescape.util.TokenProvider;
 
 import java.util.List;
 

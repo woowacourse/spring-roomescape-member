@@ -14,7 +14,7 @@ import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.NotExistException;
 import roomescape.exception.PastTimeReservationException;
 import roomescape.service.dto.input.ReservationInput;
-import roomescape.service.util.DateTimeFormatter;
+import roomescape.util.DateTimeFormatter;
 
 import static roomescape.exception.ExceptionDomainType.*;
 

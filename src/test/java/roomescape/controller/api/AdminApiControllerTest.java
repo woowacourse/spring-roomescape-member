@@ -15,7 +15,7 @@ import roomescape.service.MemberService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationTimeInput;
-import roomescape.service.util.TokenProvider;
+import roomescape.util.TokenProvider;
 import roomescape.util.DatabaseCleaner;
 
 import java.util.HashMap;

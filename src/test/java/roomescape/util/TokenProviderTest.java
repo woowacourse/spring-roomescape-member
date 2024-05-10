@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.domain.user.Member;
-import roomescape.service.util.TokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

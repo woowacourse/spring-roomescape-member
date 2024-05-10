@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.fixture.MemberFixture;
+import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
@@ -33,7 +34,8 @@ class ReservationTimeApiControllerTest {
     ReservationService reservationService;
 
     @Autowired
-    ReservationTimeService reservationTimeService;
+    ReservationTimeFixture reservationTimeFixture;
+
     @Autowired
     MemberService memberService;
     @Autowired
@@ -87,8 +89,7 @@ class ReservationTimeApiControllerTest {
     @Test
     @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 409를 반환한다.")
     void return_409_when_delete_id_that_exist_reservation() {
-        final long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("09:00"))
-                                            .id();
+        final long timeId = reservationTimeFixture.예약_시간_생성().id();
         final long themeId = themeService.createTheme(ThemeFixture.getInput())
                                    .id();
         final long memberId = memberService.createMember(MemberFixture.getUserCreateInput()).id();
@@ -102,7 +103,7 @@ class ReservationTimeApiControllerTest {
     @Test
     @DisplayName("중복된 예약 시간을 생성하려 할 때 409를 반환한다.")
     void return_409_when_duplicate_reservationTime() {
-        reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
+        reservationTimeFixture.예약_시간_생성();
 
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");

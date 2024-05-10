@@ -22,7 +22,7 @@ import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
-import roomescape.service.util.TokenProvider;
+import roomescape.util.TokenProvider;
 import roomescape.util.DatabaseCleaner;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

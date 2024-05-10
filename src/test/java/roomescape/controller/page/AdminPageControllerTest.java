@@ -12,7 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.domain.user.Member;
 import roomescape.fixture.MemberFixture;
 import roomescape.service.MemberService;
-import roomescape.service.util.TokenProvider;
+import roomescape.util.TokenProvider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AdminPageControllerTest {
