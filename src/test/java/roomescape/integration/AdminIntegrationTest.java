@@ -26,6 +26,8 @@ public class AdminIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private String adminToken;
+
     @BeforeEach
     void init() {
         jdbcTemplate.update("delete from reservation");
@@ -41,6 +43,16 @@ public class AdminIntegrationTest {
         jdbcTemplate.update(
                 "INSERT INTO MEMBER (NAME, ROLE, EMAIL, PASSWORD) VALUES ( 'name', 'ADMIN', 'email@email.com', 'password' )");
         RestAssured.port = port;
+
+        adminToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "email", "email@email.com",
+                        "password", "password"
+                ))
+                .post("/login")
+                .then().log().all()
+                .extract().cookie("token");
     }
 
     @Test
@@ -54,6 +66,7 @@ public class AdminIntegrationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -89,6 +102,7 @@ public class AdminIntegrationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
