@@ -13,7 +13,7 @@ public class ThemeRowMapper implements RowMapper<Theme> {
     public Theme mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
             return new Theme(
-                    resultSet.getLong("id"),
+                    resultSet.getLong("theme_id"),
                     new ThemeName(resultSet.getString("theme_name")),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")

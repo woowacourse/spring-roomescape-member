@@ -45,7 +45,7 @@ public class ReservationDao {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    m.member_name, m.email, m.password, m.member_role,
+                    m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
                     r.date,
                     time.id AS time_id, time.start_at AS time_value,
                     theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 
@@ -62,7 +62,7 @@ public class ReservationDao {
             String sql = """
                     SELECT
                         r.id AS reservation_id,
-                        m.member_name, m.email, m.password, m.member_role,
+                        m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
                         r.date,
                         time.id AS time_id, time.start_at AS time_value,
                         theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 
@@ -82,7 +82,7 @@ public class ReservationDao {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    m.member_name, m.email, m.password, m.member_role,
+                    m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
                     r.date,
                     time.id AS time_id, time.start_at AS time_value,
                     theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 
@@ -99,7 +99,7 @@ public class ReservationDao {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    m.member_name, m.email, m.password, m.member_role,
+                    m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
                     r.date,
                     time.id AS time_id, time.start_at AS time_value,
                     theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 
@@ -135,7 +135,7 @@ public class ReservationDao {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    m.member_name, m.email, m.password, m.member_role,
+                    m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
                     r.date,
                     time.id AS time_id, time.start_at AS time_value,
                     theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 

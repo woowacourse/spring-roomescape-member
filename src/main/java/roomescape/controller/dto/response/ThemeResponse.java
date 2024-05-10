@@ -11,7 +11,7 @@ public record ThemeResponse(
     public static ThemeResponse from(final Theme theme) {
         return new ThemeResponse(
                 theme.getId(),
-                theme.getName(),
+                theme.getThemeNameValue(),
                 theme.getDescription(),
                 theme.getThumbnail()
         );

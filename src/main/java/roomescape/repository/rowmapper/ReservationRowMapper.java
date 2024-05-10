@@ -27,7 +27,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
     public Reservation mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
             return Reservation.of(
-                    resultSet.getLong("id"),
+                    resultSet.getLong("reservation_id"),
                     memberRowMapper.mapRow(resultSet, rowNumber),
                     resultSet.getString("date"),
                     reservationTimeRowMapper.mapRow(resultSet, rowNumber),

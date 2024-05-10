@@ -4,6 +4,10 @@ import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 
 public class JwtTokenExtractor {
+    private JwtTokenExtractor() {
+
+    }
+
     public static String extractTokenFromCookies(final Cookie[] cookies) {
         if (cookies == null || cookies.length == 0) {
             return "";

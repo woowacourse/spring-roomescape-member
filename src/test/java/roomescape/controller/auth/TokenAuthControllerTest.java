@@ -18,7 +18,7 @@ import roomescape.controller.dto.request.SignupRequest;
 class TokenAuthControllerTest {
     @BeforeEach
     public void setup() {
-        SignupRequest request = new SignupRequest("anna", "anna@gmail.com", "password");
+        SignupRequest request = new SignupRequest("brown", "brown@gmail.com", "password");
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -31,7 +31,7 @@ class TokenAuthControllerTest {
     void login() {
         String token = RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(new LoginRequest("anna@gmail.com", "password"))
+                .body(new LoginRequest("brown@gmail.com", "password"))
                 .when()
                 .post("/login")
                 .then()
@@ -47,7 +47,7 @@ class TokenAuthControllerTest {
     void loginFailed() {
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(new LoginRequest("parang@gmail.com", "password"))
+                .body(new LoginRequest("solar@gmail.com", "password"))
                 .when()
                 .post("/login")
                 .then()
@@ -60,7 +60,7 @@ class TokenAuthControllerTest {
     void getMemberByToken() {
         String token = RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(new LoginRequest("anna@gmail.com", "password"))
+                .body(new LoginRequest("brown@gmail.com", "password"))
                 .when()
                 .post("/login")
                 .then()
@@ -75,7 +75,7 @@ class TokenAuthControllerTest {
                 .assertThat()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("name", equalTo("anna"));
+                .body("name", equalTo("brown"));
     }
 
     @DisplayName("로그아웃에 성공한다.")
@@ -83,7 +83,7 @@ class TokenAuthControllerTest {
     void logout() {
         String token = RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(new LoginRequest("anna@gmail.com", "password"))
+                .body(new LoginRequest("brown@gmail.com", "password"))
                 .when()
                 .post("/login")
                 .then()

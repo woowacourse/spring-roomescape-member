@@ -36,12 +36,14 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> getAll() {
-        return jdbcTemplate.query("SELECT * FROM reservation_time", reservationTimeRowMapper);
+        return jdbcTemplate.query(
+                "SELECT reservation_time.id AS time_id, start_at FROM reservation_time",
+                reservationTimeRowMapper);
     }
 
     public Optional<ReservationTime> findById(final long id) {
         try {
-            String sql = "SELECT * FROM reservation_time WHERE id = ?";
+            String sql = "SELECT reservation_time.id AS time_id, start_at FROM reservation_time WHERE id = ?";
             return Optional.of(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();

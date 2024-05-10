@@ -2,19 +2,19 @@ package roomescape.domain.roomescape;
 
 public class Theme {
     private final Long id;
-    private final ThemeName name;
+    private final ThemeName themeName;
     private final String description;
     private final String thumbnail;
 
-    public Theme(final Long id, final ThemeName name, final String description, final String thumbnail) {
+    public Theme(final Long id, final ThemeName themeName, final String description, final String thumbnail) {
         this.id = id;
-        this.name = name;
+        this.themeName = themeName;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public Theme(final String name, final String description, final String thumbnail) {
-        this(null, new ThemeName(name), description, thumbnail);
+    public Theme(final String themeName, final String description, final String thumbnail) {
+        this(null, new ThemeName(themeName), description, thumbnail);
     }
 
     public Theme(final long themeId) {
@@ -22,15 +22,19 @@ public class Theme {
     }
 
     public Theme assignId(final long id) {
-        return new Theme(id, name, description, thumbnail);
+        return new Theme(id, themeName, description, thumbnail);
     }
 
     public long getId() {
         return id;
     }
 
-    public String getName() {
-        return name.getValue();
+    public ThemeName getThemeName() {
+        return themeName;
+    }
+
+    public String getThemeNameValue() {
+        return themeName.getValue();
     }
 
     public String getDescription() {

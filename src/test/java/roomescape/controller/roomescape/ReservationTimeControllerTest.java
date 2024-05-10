@@ -45,7 +45,7 @@ class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(5));
     }
 
     @DisplayName("예약 가능 시간을 삭제한다.")
@@ -61,7 +61,7 @@ class ReservationTimeControllerTest {
                 .when().post("/times");
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/4")
                 .then().log().all()
                 .statusCode(200);
     }

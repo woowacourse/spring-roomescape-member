@@ -17,70 +17,68 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.controller.dto.request.LoginRequest;
 import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.controller.dto.response.SelectableTimeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationControllerTest {
+class MemberReservationControllerTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    Map<String, Object> reservations;
+    String token;
 
     @BeforeEach
     void setUp() {
-        // time
-        Map<String, String> times = new HashMap<>();
-        times.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
+        // login
+        token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(times)
-                .when().post("/times");
-
-        // theme
-        Map<String, String> themes = new HashMap<>();
-        themes.put("name", "테마 이름");
-        themes.put("description", "테마 설명");
-        themes.put("thumbnail", "테마 썸네일");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themes)
-                .when().post("/themes");
-
-        // reservation
-        reservations = new HashMap<>();
-        reservations.put("name", "브라운");
-        reservations.put("date", LocalDate.now().plusYears(1).format(DateTimeFormatter.ISO_LOCAL_DATE));
-        reservations.put("timeId", 1);
-        reservations.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservations)
-                .when().post("/reservations");
+                .body(new LoginRequest("parang@gmail.com", "password"))
+                .when().post("/login")
+                .cookie("token");
     }
 
     @DisplayName("예약을 정상적으로 추가한다.")
     @Test
     void save() {
+        // when
+        Map<String, Object> reservations = new HashMap<>();
+        reservations.put("date", LocalDate.now().plusYears(1).format(DateTimeFormatter.ISO_LOCAL_DATE));
+        reservations.put("timeId", 1);
+        reservations.put("themeId", 1);
+        reservations.put("memberId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservations)
+                .cookie("token", token)
+                .when().post("/reservations")
+                .then().statusCode(201);
+
         // then
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(4));
     }
 
     @DisplayName("동일한 날짜, 시간, 테마에 예약 내역이 이미 있다면 예약할 수 없다.")
     @Test
     void cannotSaveDuplicatedReservation() {
+        // given
+        Map<String, Object> reservations = new HashMap<>();
+        reservations.put("date", "2024-12-12");
+        reservations.put("timeId", 1);
+        reservations.put("themeId", 1);
+        reservations.put("memberId", 1);
+
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservations)
+                .cookie("token", token)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -91,7 +89,7 @@ class ReservationControllerTest {
     void cannotSaveBeforeNowReservation() {
         // given
         Map<String, Object> reservations = new HashMap<>();
-        reservations.put("name", "브라운");
+        reservations.put("member_name", "브라운");
         reservations.put("date", LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE));
         reservations.put("timeId", 1);
         reservations.put("themeId", 1);
@@ -99,6 +97,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservations)
+                .cookie("token", token)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -129,8 +128,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", SelectableTimeResponse.class);
-
-        assertThat(responses).hasSize(1);
+        assertThat(responses).hasSize(4);
     }
 
     @DisplayName("예약을 삭제한다.")
@@ -144,6 +142,6 @@ class ReservationControllerTest {
 
         // then
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
-        assertThat(countAfterDelete).isZero();
+        assertThat(countAfterDelete).isEqualTo(2);
     }
 }

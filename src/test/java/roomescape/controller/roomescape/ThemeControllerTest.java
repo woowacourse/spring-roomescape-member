@@ -34,7 +34,7 @@ class ThemeControllerTest {
                 .statusCode(201);
     }
 
-    @DisplayName("예약 가능 시간들을 조회한다.")
+    @DisplayName("모든 테마를 조회한다.")
     @Test
     void getAll() {
         // given
@@ -53,15 +53,15 @@ class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(5));
     }
 
-    @DisplayName("예약 가능 시간을 삭제한다.")
+    @DisplayName("테마를 삭제한다.")
     @Test
     void delete() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "테마 이름");
+        params.put("theme_name", "테마 이름");
         params.put("description", "테마 설명");
         params.put("thumbnail", "테마 썸네일");
 
@@ -72,17 +72,17 @@ class ThemeControllerTest {
 
         // when &then
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/4")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @DisplayName("존재하지 않은 예약 가능 시간을 삭제하려는 경우 실패한다.")
+    @DisplayName("존재하지 않는 테마를 삭제하려는 경우 실패한다.")
     @Test
     void doesNotExistsToDelete() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("name", "테마 이름");
+        params.put("theme_name", "테마 이름");
         params.put("description", "테마 설명");
         params.put("thumbnail", "테마 썸네일");
 
@@ -113,7 +113,7 @@ class ThemeControllerTest {
 
         // theme
         Map<String, String> params = new HashMap<>();
-        params.put("name", "테마 이름");
+        params.put("theme_name", "테마 이름");
         params.put("description", "테마 설명");
         params.put("thumbnail", "테마 썸네일");
 
@@ -124,7 +124,7 @@ class ThemeControllerTest {
 
         // reservation
         Map<String, Object> reservations = new HashMap<>();
-        reservations.put("name", "브라운");
+        reservations.put("member_name", "브라운");
         reservations.put("date", LocalDate.now().plusYears(1).format(DateTimeFormatter.ISO_LOCAL_DATE));
         reservations.put("timeId", 1);
         reservations.put("themeId", 1);
