@@ -21,7 +21,7 @@ public class ReservationRequest {
     }
 
     private void validateId(Long id, String fieldName) {
-        if (id < 0) {
+        if (id <= 0) {
             throw new BadRequestException(id.toString(), fieldName);
         }
     }
