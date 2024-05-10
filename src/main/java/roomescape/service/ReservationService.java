@@ -91,4 +91,12 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         reservationRepository.delete(id);
     }
+
+    public List<ReservationResponse> findAllReservationsOf(Long themeId, Long memberId,
+                                                           LocalDate dateFrom, LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.findAllReservationsOf(themeId, memberId, dateFrom, dateTo);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
 }
