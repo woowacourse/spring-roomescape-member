@@ -24,7 +24,7 @@ public class AdminRestController {
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody AdminReservationSaveRequest request) {
         ReservationResponse response = reservationService.saveReservation(request);
 
-        URI location = URI.create("/reservations/" + response.id());
+        URI location = URI.create("admin/reservations/" + response.id());
         return ResponseEntity.created(location).body(response);
     }
 
