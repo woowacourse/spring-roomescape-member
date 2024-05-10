@@ -48,7 +48,7 @@ public class MemberAuthController {
         }
         String token = extractTokenFromCookie(request.getCookies());
         MemberAppResponse appResponse = memberAuthService.findMemberByToken(token);
-        MemberWebResponse response = new MemberWebResponse(appResponse.id(), appResponse.name());
+        MemberWebResponse response = new MemberWebResponse(appResponse.id(), appResponse.name(), appResponse.role());
 
         return ResponseEntity.ok().body(response);
     }
@@ -58,7 +58,7 @@ public class MemberAuthController {
         MemberAppResponse appResponse = memberAuthService.signUp(
             new MemberAppRequest(request.name(), request.email(), request.password()));
 
-        MemberWebResponse response = new MemberWebResponse(appResponse.id(), appResponse.name());
+        MemberWebResponse response = new MemberWebResponse(appResponse.id(), appResponse.name(), appResponse.role());
         return ResponseEntity.created(URI.create("/member" + appResponse.id())).body(response);
     }
 
@@ -78,7 +78,11 @@ public class MemberAuthController {
         List<MemberAppResponse> appResponses = memberAuthService.findAll();
 
         List<MemberWebResponse> responses = appResponses.stream()
-            .map(memberAppResponse -> new MemberWebResponse(memberAppResponse.id(), memberAppResponse.name()))
+            .map(memberAppResponse -> new MemberWebResponse(
+                memberAppResponse.id(),
+                memberAppResponse.name(),
+                memberAppResponse.role())
+            )
             .toList();
 
         return ResponseEntity.ok().body(responses);

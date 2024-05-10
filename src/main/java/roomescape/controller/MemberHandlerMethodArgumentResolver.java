@@ -42,7 +42,7 @@ public class MemberHandlerMethodArgumentResolver implements HandlerMethodArgumen
         String token = extractTokenFromCookie(request.getCookies());
         MemberAppResponse appResponse = memberAuthService.findMemberByToken(token);
 
-        return new LoginMemberInformation(appResponse.name(), appResponse.id());
+        return new LoginMemberInformation(appResponse.id(), appResponse.name(), appResponse.role());
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

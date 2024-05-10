@@ -42,7 +42,7 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
             .executeAndReturnKey(saveSource)
             .longValue();
 
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), new MemberRole("USER"));
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override
