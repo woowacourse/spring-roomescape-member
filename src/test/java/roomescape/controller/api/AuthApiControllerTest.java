@@ -1,11 +1,13 @@
 package roomescape.controller.api;
 
 import io.restassured.RestAssured;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import roomescape.service.dto.request.LoginRequest;
+import roomescape.service.dto.response.MemberIdAndNameResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class AuthApiControllerTest {
@@ -28,6 +30,33 @@ class AuthApiControllerTest {
                 .body(new LoginRequest("wrond@naver.com", "1234"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("로그인한 사용자의 인증 정보 조회 시, 성공한다.")
+    void authenticatedMemberLoginCheck_Success() {
+        String token = RestAssured.given().log().all()
+                .body(new LoginRequest("user@naver.com", "1234"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
+
+        MemberIdAndNameResponse response = RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200).extract().as(MemberIdAndNameResponse.class);
+
+        Assertions.assertThat(response.name()).isEqualTo("testUser");
+    }
+
+    @Test
+    @DisplayName("로그인하지 않은 사용자의 인증 정보 조회 시, 실패한다.")
+    void authenticatedMemberLoginCheck_Failure() {
+        RestAssured.given().log().all()
+                .when().get("/login/check")
                 .then().log().all()
                 .statusCode(401);
     }
