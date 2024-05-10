@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.member.model.MemberEmail;
 import roomescape.member.model.MemberRole;
 
 import java.util.Date;
@@ -22,11 +21,11 @@ class TokenProviderTest {
     @Test
     void createTokenTest() {
         // Given
-        final MemberEmail email = new MemberEmail("kelly6bf@gmail.com");
+        final Long memberId = 3L;
         final MemberRole role = MemberRole.USER;
 
         // When
-        final AuthenticationToken token = tokenProvider.createToken(email, role);
+        final AuthenticationToken token = tokenProvider.createToken(memberId, role);
 
         // Then
         final long expirationDay = token.getClaims().getExpiration().getTime();
@@ -35,7 +34,7 @@ class TokenProviderTest {
 
         assertAll(
                 () -> assertThat(token.validate()).isTrue(),
-                () -> assertThat(token.getClaims().getSubject()).isEqualTo(email.value()),
+                () -> assertThat(Long.parseLong(token.getClaims().getSubject())).isEqualTo(memberId),
                 () -> assertThat(token.getClaims().get("role")).isEqualTo(role.name()),
                 () -> assertThat(expirationPeriod).isEqualTo(7)
         );
@@ -45,16 +44,16 @@ class TokenProviderTest {
     @Test
     void convertAuthenticationTokenTest() {
         // Given
-        final MemberEmail email = new MemberEmail("kelly6bf@gmail.com");
+        final Long memberId = 3L;
         final MemberRole role = MemberRole.USER;
-        final String accessToken = tokenProvider.createToken(email, role).getValue();
+        final String accessToken = tokenProvider.createToken(memberId, role).getValue();
 
         // When
         final AuthenticationToken authenticationToken = tokenProvider.convertAuthenticationToken(accessToken);
 
         // Then
         assertAll(
-                () -> assertThat(authenticationToken.getClaims().getSubject()).isEqualTo(email.value()),
+                () -> assertThat(Long.parseLong(authenticationToken.getClaims().getSubject())).isEqualTo(memberId),
                 () -> assertThat(authenticationToken.getClaims().get("role")).isEqualTo(role.name())
         );
     }

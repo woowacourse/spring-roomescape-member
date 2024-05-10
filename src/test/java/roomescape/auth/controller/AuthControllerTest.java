@@ -12,7 +12,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.token.TokenProvider;
-import roomescape.member.model.MemberEmail;
 import roomescape.member.model.MemberRole;
 
 import static org.hamcrest.Matchers.is;
@@ -92,9 +91,9 @@ class AuthControllerTest {
     @Test
     void loginCheckTest() {
         // Given
-        final MemberEmail email = new MemberEmail("user@mail.com");
+        final Long memberId = 3L;
         final MemberRole role = MemberRole.USER;
-        final String accessToken = tokenProvider.createToken(email, role).getValue();
+        final String accessToken = tokenProvider.createToken(memberId, role).getValue();
 
         // When & Then
         RestAssured.given().log().all()
@@ -102,16 +101,16 @@ class AuthControllerTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
-                .body("name", is("일반 회원"));
+                .body("name", is("켈리"));
     }
 
-    @DisplayName("존재하지 않은 이메일 기반의 인증 토큰이 포함된 쿠키를 전송하면 에러 코드가 반환된다.")
+    @DisplayName("존재하지 않은 사용자 아이디 기반의 인증 토큰이 포함된 쿠키를 전송하면 에러 코드가 반환된다.")
     @Test
     void loginCheckWithUnknownEmailTest() {
         // Given
-        final MemberEmail email = new MemberEmail("hacker@mail.com");
+        final Long memberId = 10L;
         final MemberRole role = MemberRole.USER;
-        final String accessToken = tokenProvider.createToken(email, role).getValue();
+        final String accessToken = tokenProvider.createToken(memberId, role).getValue();
 
         // When & Then
         RestAssured.given().log().all()
@@ -119,7 +118,7 @@ class AuthControllerTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(400)
-                .body("message", is("해당 이메일 정보와 일치하는 회원 정보가 없습니다."));
+                .body("message", is("해당 회원 아이디와 일치하는 회원 정보가 없습니다."));
     }
 
     @DisplayName("유효하지 않은 쿠키를 포함하여 로그인 확인 요청을 하면 에러 코드가 반환된다.")

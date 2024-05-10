@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.model.ReservationDate;
 import roomescape.reservation.model.Theme;
-import roomescape.reservation.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.util.List;

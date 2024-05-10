@@ -8,7 +8,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.token.AuthenticationToken;
+import roomescape.auth.token.TokenProvider;
 import roomescape.member.model.Member;
+import roomescape.member.model.MemberRole;
 
 import java.util.NoSuchElementException;
 
@@ -23,6 +25,8 @@ class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
+    @Autowired
+    private TokenProvider tokenProvider;
 
     @DisplayName("유효한 로그인 정보가 입력되면 인증 토큰을 반환한다.")
     @Test
@@ -65,14 +69,13 @@ class AuthServiceTest {
     @Test
     void findAuthenticatedMemberTest() {
         // Given
-        final String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsImlhdCI6MTcxNTI0MDM1NCwiZX" +
-                "hwIjoxNzE1ODQ1MTU0LCJyb2xlIjoiQURNSU4ifQ.ouMYZ8bzNDauM7xzUDj9SgaJU_8" +
-                "OT4fbEoBZ2oRteJXU8Cr2yyymXqyLToxzc39PqXwhrWxflnjMgMokqi610g";
+        final String accessToken = tokenProvider.createToken(3L, MemberRole.USER)
+                .getValue();
 
         // When
         final Member member = authService.findAuthenticatedMember(accessToken);
 
         // Then
-        assertThat(member.getEmail().value()).isEqualTo("admin@mail.com");
+        assertThat(member.getId()).isEqualTo(3L);
     }
 }

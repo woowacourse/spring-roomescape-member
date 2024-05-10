@@ -32,6 +32,6 @@ class MemberControllerTest {
                 .when().get("/members")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(5));
     }
 }

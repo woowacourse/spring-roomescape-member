@@ -11,7 +11,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.token.TokenProvider;
-import roomescape.member.model.MemberEmail;
 import roomescape.member.model.MemberRole;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.SaveReservationRequest;
@@ -55,7 +54,7 @@ class ReservationControllerTest {
     void saveReservationTest() {
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
                 LocalDate.now().plusDays(1),
-                "브라운",
+                null,
                 1L,
                 1L
         );
@@ -103,7 +102,7 @@ class ReservationControllerTest {
     void saveReservationWithNoExistReservationTime() {
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
                 LocalDate.now().plusDays(1),
-                "브라운",
+                null,
                 80L,
                 1L
         );
@@ -123,7 +122,7 @@ class ReservationControllerTest {
     void saveReservationWithReservationDateAndTimeBeforeNow() {
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
                 LocalDate.now().minusDays(1),
-                "브라운",
+                null,
                 1L,
                 1L
         );
@@ -140,7 +139,7 @@ class ReservationControllerTest {
 
     private String createAccessToken() {
         return tokenProvider.createToken(
-                new MemberEmail("user@mail.com"),
+                3L,
                 MemberRole.USER
         ).getValue();
     }

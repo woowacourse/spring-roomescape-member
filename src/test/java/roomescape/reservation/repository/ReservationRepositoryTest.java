@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.member.model.Member;
+import roomescape.member.model.MemberRole;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
@@ -42,7 +44,8 @@ class ReservationRepositoryTest {
         final LocalDate reservationDate = LocalDate.now().plusDays(10);
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 10));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation reservation = Reservation.of(clientName, reservationDate, reservationTime, theme);
+        final Member member = Member.createMemberWithId(1L, MemberRole.USER, "password1111", "kelly", "kelly6bf@mail.com");
+        final Reservation reservation = Reservation.of(reservationDate, reservationTime, theme, member);
 
         // When
         final Reservation savedReservation = reservationRepository.save(reservation);
@@ -52,7 +55,7 @@ class ReservationRepositoryTest {
         assertAll(
                 () -> assertThat(reservations).hasSize(17),
                 () -> assertThat(savedReservation.getId()).isEqualTo(17L),
-                () -> assertThat(savedReservation.getClientName()).isEqualTo(reservation.getClientName()),
+                () -> assertThat(savedReservation.getMember()).isEqualTo(reservation.getMember()),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(reservation.getDate()),
                 () -> assertThat(savedReservation.getTime()).isEqualTo(reservation.getTime())
         );

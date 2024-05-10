@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.reservation.model.Reservation;
 import roomescape.reservation.dto.SaveReservationRequest;
-import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.model.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -43,7 +42,7 @@ class ReservationServiceTest {
     void saveReservationTest() {
         // Given
         final LocalDate date = LocalDate.now().plusDays(10);
-        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(date, "켈리", 1L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(date, 3L, 1L, 1L);
 
         // When
         final Reservation reservation = reservationService.saveReservation(saveReservationRequest);
@@ -53,7 +52,7 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(reservations).hasSize(17),
                 () -> assertThat(reservation.getId()).isEqualTo(17L),
-                () -> assertThat(reservation.getClientName().value()).isEqualTo("켈리"),
+                () -> assertThat(reservation.getMember().getId()).isEqualTo(3L),
                 () -> assertThat(reservation.getDate().value()).isEqualTo(date),
                 () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(9, 30))
         );
@@ -63,7 +62,7 @@ class ReservationServiceTest {
     @Test
     void throwExceptionWhenSaveReservationWithNotExistReservationTimeTest() {
         // Given
-        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 9L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), 3L, 9L, 1L);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
@@ -95,7 +94,7 @@ class ReservationServiceTest {
     @Test
     void throwExceptionWhenPastDateOrTime() {
         // Given
-        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().minusDays(3), "예약자", 1L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().minusDays(3), 3L, 1L, 1L);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
@@ -109,7 +108,7 @@ class ReservationServiceTest {
         // Given
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
                 LocalDate.now().plusDays(2),
-                "테바",
+                3L,
                 4L,
                 9L
         );

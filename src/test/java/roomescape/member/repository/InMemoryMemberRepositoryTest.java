@@ -22,14 +22,14 @@ class InMemoryMemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("전체 회원 정보를 저장한다.")
+    @DisplayName("전체 회원 정보를 조회한다.")
     @Test
     void findAllTest() {
         // When
         final List<Member> members = memberRepository.findAll();
 
         // Then
-        assertThat(members).hasSize(2);
+        assertThat(members).hasSize(5);
     }
 
     @DisplayName("주어진 id에 일치한 member를 찾아 반환한다.")
@@ -49,7 +49,7 @@ class InMemoryMemberRepositoryTest {
     @Test
     void saveTest() {
         // Given
-        final long memberId = 3L;
+        final long memberId = 6L;
         final MemberRole role = MemberRole.USER;
         final String password = "kellyPw1234";
         final String email = "kelly6bf@gmail.com";

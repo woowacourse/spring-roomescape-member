@@ -2,6 +2,8 @@ package roomescape.reservation.model;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.model.Member;
+import roomescape.member.model.MemberRole;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,12 +24,13 @@ class ReservationTimeAvailabilitiesTest {
         final ReservationTime notBookedTime = new ReservationTime(4L, LocalTime.of(3, 30));
         final List<ReservationTime> reservationTimes = List.of(reservationTime1, reservationTime2, reservationTime3, notBookedTime);
         final Theme theme = Theme.of(1L, "켈리의 두근두근", "안녕", "사진 링크");
+        final Member member = Member.createMemberWithId(1L, MemberRole.USER, "password1111", "kelly", "kelly6bf@mail.com");
 
         final LocalDate date = LocalDate.now().plusDays(3);
         final List<Reservation> reservations = List.of(
-                Reservation.of(1L, "켈리", date, reservationTime1, theme),
-                Reservation.of(2L, "켈리", date, reservationTime2, theme),
-                Reservation.of(3L, "켈리", date, reservationTime3, theme)
+                Reservation.of(1L, date, reservationTime1, theme, member),
+                Reservation.of(2L, date, reservationTime2, theme, member),
+                Reservation.of(3L, date, reservationTime3, theme, member)
         );
 
 
