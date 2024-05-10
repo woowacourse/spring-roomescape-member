@@ -1,10 +1,12 @@
 let isEditing = false;
 const API_ENDPOINT = '/times';
-const cellFields = ['id', 'startAt'];
+const cellFields = ['id', 'startAt', 'alreadyBooked'];
 const createCellFields = ['', createInput()];
+
 function createBody(inputs) {
   return {
     startAt: inputs[0].value,
+    alreadyBooked: inputs[1].value,
   };
 }
 
