@@ -1,9 +1,8 @@
 package roomescape.infrastructure;
 
-import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Date;
 import org.springframework.stereotype.Component;
 import roomescape.dto.member.MemberPayload;
 import roomescape.util.DateUtil;
@@ -21,6 +20,7 @@ public class JwtProvider {
                 .setExpiration(DateUtil.getAfterTenMinutes())
                 .claim("name", memberPayload.name())
                 .claim("email", memberPayload.email())
+                .claim("role", memberPayload.role().name())
                 .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
                 .compact();
     }
@@ -33,11 +33,22 @@ public class JwtProvider {
                 .getSubject();
     }
 
+    public Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey.getBytes())
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     public boolean isValidateToken(String token) {
         try {
-            return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJwt(token)
-                    .getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
+            return !Jwts.parser()
+                    .setSigningKey(secretKey.getBytes())
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration()
+                    .before(DateUtil.getCurrentTime());
+        } catch (Exception e) {
             return false;
         }
     }
