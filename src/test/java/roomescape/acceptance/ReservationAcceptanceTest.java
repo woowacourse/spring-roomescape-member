@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class ReservationAcceptanceTest extends BasicAcceptanceTest {
-    @DisplayName("예약을 추가한다")
+    @DisplayName("어드민이 예약을 추가한다")
     @Sql("/test-data/reservation.sql")
     @TestFactory
     Stream<DynamicTest> reservationTest() {
@@ -56,7 +56,7 @@ public class ReservationAcceptanceTest extends BasicAcceptanceTest {
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(expectedHttpCode)
                 .extract().response();
