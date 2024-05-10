@@ -16,10 +16,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import roomescape.common.Role;
+import roomescape.auth.Role;
 import roomescape.config.RoleCheckInterceptor;
 import roomescape.config.WebMvcControllerTestConfig;
-import roomescape.config.security.JwtTokenProvider;
+import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.ExceptionPageController;
 import roomescape.member.dto.LoginMember;
 

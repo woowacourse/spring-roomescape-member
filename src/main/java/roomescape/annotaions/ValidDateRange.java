@@ -1,4 +1,4 @@
-package roomescape.common;
+package roomescape.annotaions;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -6,7 +6,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import roomescape.config.DateRangeValidator;
+import roomescape.exception.DateRangeValidator;
 
 @Constraint(validatedBy = DateRangeValidator.class)
 @Target(ElementType.TYPE)

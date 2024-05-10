@@ -2,7 +2,7 @@ package roomescape.reservation.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.common.ValidDateRange;
+import roomescape.annotaions.ValidDateRange;
 
 @ValidDateRange
 @NotNull

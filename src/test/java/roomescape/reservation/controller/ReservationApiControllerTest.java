@@ -20,10 +20,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.common.Role;
+import roomescape.auth.Role;
 import roomescape.config.WebMvcControllerTestConfig;
-import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberName;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.dto.ReservationResponse;
@@ -47,7 +45,7 @@ class ReservationApiControllerTest {
 
     @Test
     @DisplayName("예약 목록 조회에 성공하면 200 응답을 받는다.")
-    void getReservationRequestTest() throws Exception {
+    void findAll() throws Exception {
         mockMvc.perform(get("/reservations")
                         .cookie(new Cookie("token", "cookieValue"))
                         .accept(MediaType.APPLICATION_JSON))

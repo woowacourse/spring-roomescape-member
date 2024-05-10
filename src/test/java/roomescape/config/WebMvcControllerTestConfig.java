@@ -4,7 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import roomescape.config.security.JwtTokenProvider;
+import roomescape.auth.JwtTokenProvider;
 
 @TestConfiguration
 public class WebMvcControllerTestConfig {

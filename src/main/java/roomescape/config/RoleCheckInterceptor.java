@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.config.security.JwtTokenProvider;
+import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.NotAllowRoleException;
 import roomescape.member.controller.MemberLoginApiController;
 import roomescape.member.dto.LoginMember;
@@ -37,6 +37,6 @@ public class RoleCheckInterceptor implements HandlerInterceptor {
                 .filter(cookie -> cookie.getName().equals(MemberLoginApiController.COOKIE_TOKEN_KEY))
                 .findAny()
                 .map(Cookie::getValue)
-                .orElse(null);
+                .orElseThrow(() -> new IllegalArgumentException("인증되지 않은 사용자 입니다."));
     }
 }
