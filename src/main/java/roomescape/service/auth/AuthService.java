@@ -23,7 +23,7 @@ public class AuthService {
 
     public Member findMemberByEmail(final String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 로그인 정보 입니다."));
+                .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 로그인 정보 입니다."));
     }
 
     public Member findMemberByToken(final String token) {

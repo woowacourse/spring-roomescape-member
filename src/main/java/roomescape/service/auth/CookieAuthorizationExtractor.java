@@ -9,12 +9,16 @@ public class CookieAuthorizationExtractor implements AuthorizationExtractor<Stri
 
     @Override
     public String extract(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            throw new TokenNotFoundException("토큰이 존재 하지 않습니다.");
+        }
+
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equals(COOKIE_NAME)) {
                 return cookie.getValue();
             }
         }
 
-        throw new TokenNotFoundException("쿠키에 토큰 정보가 존재하지 않습니다.");
+        throw new TokenNotFoundException("토큰이 존재 하지 않습니다.");
     }
 }

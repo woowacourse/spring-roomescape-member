@@ -2,6 +2,7 @@ package roomescape.controller.reservation;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.login.TokenRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,14 +22,25 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
 
+    final TokenRequest request = new TokenRequest("seyang@test.com", "seyang");
+
     @Autowired
     ReservationController reservationController;
     @LocalServerPort
     int port;
 
+    Cookie token;
+
     @BeforeEach
-    void setUp() {
+    void setUpEach() {
         RestAssured.port = port;
+        token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .then().log().all()
+                .extract()
+                .detailedCookie("token");
     }
 
     @Test
@@ -42,11 +55,12 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약을 추가하면 201 과 예약 정보를 응답한다.")
-    void addReservation200AndReservation() {
+    void addReservation201AndReservation() {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
         final ReservationRequest request = new ReservationRequest(tomorrow, 1L, 1L, 2L);
 
         RestAssured.given().log().all()
+                .cookie(token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
@@ -61,7 +75,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("존재하지 않는 시간으로 예약을 추가하면 404 을 응답한다.")
-    void addReservation400TimeNotFound() {
+    void addReservation404TimeNotFound() {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
         final ReservationRequest request = new ReservationRequest(tomorrow, 0L, 1L, 2L);
 

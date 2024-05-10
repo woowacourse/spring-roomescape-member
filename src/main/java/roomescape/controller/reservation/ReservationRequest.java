@@ -7,8 +7,4 @@ public record ReservationRequest(String date, Long timeId, Long themeId, Long me
     public Reservation toDomain() {
         return new Reservation(null, date, timeId, themeId, memberId);
     }
-
-    public ReservationRequest assignMemberId(Long memberId) {
-        return new ReservationRequest(date, timeId, themeId, memberId);
-    }
 }
