@@ -101,7 +101,7 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("예약 날짜를 yyyy-mm-dd 형식으로 반환한다.")
+    @DisplayName("예약 날짜를 yyyy-MM-dd 형식으로 반환한다.")
     void getDateString() {
         final LocalDate date = LocalDate.of(2024, 5, 5);
         final Reservation reservation = new Reservation(ID, MEMBER, date, RESERVATION_TIME, THEME);
