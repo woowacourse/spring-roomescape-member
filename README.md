@@ -67,6 +67,22 @@
     - [x] memberId 인자로 전달한 정보로 예약 생성
     - [x] admin/reservation-new.html 파일에서 로딩하는 js 파일을 변경
 
+## 6단계
+
+- [ ] 사용자 도메인에 role 필드를 추가한다
+- [ ] 토큰 생성 시 토큰에 role을 포함한다
+- [ ] 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한한다
+    - [ ] HandlerInterceptor를 활용해 권한 확인하고, 권한 없는 경우 요청에 대한 거부 응답
+- [ ] 예약 검색 API를 구현한다
+    - [ ] 관리자가 조건에 따라 예약 검색
+    - [ ] 예약자별(memberId), 테마별(themeId), 기간(날짜)별(dateFrom, dateTo) 검색 조건 사용해 검색
+
+## 선택 단계
+
+- [ ] 회원 가입 페이지를 제공한다
+- [ ] 회원 가입 API를 구현한다
+- [ ] 관리자 접근 권한 걸린 api 분리해, 관리자만 호출할 수 있도록 제한한다
+
 # API 명세
 
 ## 인증
@@ -90,7 +106,7 @@ Response
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
-Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+Set-Cookie: token=hello.example.token; Path=/; HttpOnly
 ```
 
 ### 로그아웃 API
@@ -99,7 +115,7 @@ Request
 
 ```
 POST /logout
-Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+Cookie: token=hello.example.token
 ```
 
 Response
@@ -114,7 +130,7 @@ Request
 
 ```
 GET /login/check
-Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+Cookie: token=hello.example.token
 ```
 
 Response
@@ -130,13 +146,12 @@ Content-Type: application/json
 
 ## 사용자
 
-### 사용자 목록 조회 API (관리자)
+### 사용자 목록 조회 API (접근 권한: 관리자)
 
 Request
 
 ```
 GET /members
-Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
 ```
 
 Response
@@ -156,7 +171,7 @@ Content-Type: application/json
 
 ## 예약
 
-### 예약 목록 조회 API
+### 예약 목록 조회 API (접근 권한: 관리자)
 
 Request
 
@@ -187,13 +202,44 @@ Content-Type: application/json
 ]
 ```
 
-### 예약 추가 API (사용자)
+### 예약 검색 API (접근 권한: 관리자)
+
+Request
+
+```
+GET /reservations/search?theme-id={$}&member-id={$}&date-from={$}&date-to={$}
+```
+
+Response
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2023-08-05",
+        "time": {
+            "id": 1,
+            "startAt": "10:00"
+        },
+        "theme": {
+            "id": 1,
+            "name": "레벨2 탈출"
+        }
+    }
+]
+```
+
+### 예약 추가 API
 
 Request
 
 ```
 POST /reservations
-Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+Cookie: token=hello.example.token
 Content-Type: application/json
 
 {
@@ -224,13 +270,13 @@ Content-Type: application/json
 }
 ```
 
-### 예약 추가 API (관리자)
+### 관리자용 예약 추가 API (접근 권한: 관리자)
 
 Request
 
 ```
 POST /admin/reservations
-Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+Cookie: token=hello.example.token
 Content-Type: application/json
 
 {
@@ -262,7 +308,7 @@ Content-Type: application/json
 }
 ```
 
-### 예약 삭제 API
+### 예약 삭제 API (접근 권한: 관리자)
 
 Request
 
@@ -278,7 +324,7 @@ HTTP/1.1 204
 
 ## 시간
 
-### 시간 목록 조회 API
+### 시간 목록 조회 API (접근 권한: 관리자)
 
 Request
 
@@ -305,7 +351,7 @@ Content-Type: application/json
 Request
 
 ```
-GET /times/available?date=$&time-id=$
+GET /times/available?date={&}&time-id={$}
 ```
 
 Response
@@ -323,7 +369,7 @@ Content-Type: application/json
 ]
 ```
 
-### 시간 추가 API
+### 시간 추가 API (접근 권한: 관리자)
 
 Request
 
@@ -348,7 +394,7 @@ Content-Type: application/json
 }
 ```
 
-### 시간 삭제 API
+### 시간 삭제 API (접근 권한: 관리자)
 
 Request
 
@@ -412,7 +458,7 @@ Content-Type: application/json
 ]
 ```
 
-### 테마 추가 API
+### 테마 추가 API (접근 권한: 관리자)
 
 Request
 
@@ -443,7 +489,7 @@ Content-Type: application/json
 
 ```
 
-### 테마 삭제 API
+### 테마 삭제 API (접근 권한: 관리자)
 
 Request
 
