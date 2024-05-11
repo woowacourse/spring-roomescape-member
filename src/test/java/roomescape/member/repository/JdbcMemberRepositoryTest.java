@@ -23,6 +23,13 @@ class JdbcMemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("회원을 저장한다.")
+    void save() {
+        Member member = jdbcMemberRepository.save(MemberFixture.getOne());
+        assertThat(member.getId()).isEqualTo(1L);
+    }
+
+    @Test
     @DisplayName("이메일을 통해 회원을 조회한다.")
     void findByEmail() {
         // given
