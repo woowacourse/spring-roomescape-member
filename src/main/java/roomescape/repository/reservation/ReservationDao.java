@@ -23,7 +23,7 @@ public class ReservationDao implements ReservationRepository {
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     private static final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
+            resultSet.getLong("reservation_id"),
             new Member(
                     resultSet.getLong("member_id"),
                     resultSet.getString("member_name"),
@@ -93,27 +93,27 @@ public class ReservationDao implements ReservationRepository {
     public Optional<Reservation> findById(Long id) {
         try {
             String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    mem.id AS member_id,
-                    mem.name AS member_name,
-                    mem.email AS member_email,
-                    mem.password AS member_password,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                    INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                    INNER JOIN theme AS th
-                        ON r.theme_id = th.id
-                    INNER JOIN member AS mem
-                        ON r.member_id = mem.id
-                WHERE r.id = ?""";
+                    SELECT
+                        r.id AS reservation_id,
+                        mem.id AS member_id,
+                        mem.name AS member_name,
+                        mem.email AS member_email,
+                        mem.password AS member_password,
+                        r.date,
+                        t.id AS time_id,
+                        t.start_at AS start_at,
+                        th.id AS theme_id,
+                        th.name AS theme_name,
+                        th.description AS theme_description,
+                        th.thumbnail AS theme_thumbnail
+                    FROM reservation AS r
+                        INNER JOIN reservation_time AS t
+                            ON r.time_id = t.id
+                        INNER JOIN theme AS th
+                            ON r.theme_id = th.id
+                        INNER JOIN member AS mem
+                            ON r.member_id = mem.id
+                    WHERE r.id = ?""";
             Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException exception) {
@@ -200,5 +200,37 @@ public class ReservationDao implements ReservationRepository {
         String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         Boolean isExist = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(isExist);
+    }
+
+    @Override
+    public List<Reservation> findByMemberAndThemeAndDateBetween(
+            long memberId, long themeId, LocalDate startDate, LocalDate endDate
+    ) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    mem.id AS member_id,
+                    mem.name AS member_name,
+                    mem.email AS member_email,
+                    mem.password AS member_password,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                    INNER JOIN reservation_time AS t
+                        ON r.time_id = t.id
+                    INNER JOIN theme AS th
+                        ON r.theme_id = th.id
+                    INNER JOIN member AS mem
+                        ON r.member_id = mem.id""";
+        String filterCondition = " WHERE MEMBER_ID = ? AND THEME_ID = ? AND DATE BETWEEN ? AND ?";
+        return jdbcTemplate.query(
+                sql + filterCondition, rowMapper,
+                memberId, themeId, startDate, endDate
+        );
     }
 }

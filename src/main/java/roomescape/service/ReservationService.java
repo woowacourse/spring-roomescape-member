@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
@@ -93,5 +94,15 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    public List<ReservationResponse> findFilteredBy(
+            long memberId, long themeId,
+            LocalDate startDateInclusive, LocalDate endDateInclusive
+    ) {
+        return reservationRepository.findByMemberAndThemeAndDateBetween(
+                        memberId, themeId, startDateInclusive, endDateInclusive).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }
