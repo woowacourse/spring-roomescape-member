@@ -10,7 +10,9 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.service.exception.UnauthorizedException;
@@ -19,15 +21,24 @@ import roomescape.utils.CookieUtils;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "011070243be2a70035923d1cf8b65cf39a32a4eb8ae053f31b0f157d0a45bfa8";
     private static final String TOKEN = "token";
+
+    private final String tokenSecretKey;
+    private final long tokenExpirationPeriod;
+
+    public JwtService(@Value("${security.jwt.secret-key}") String tokenSecretKey,
+                      @Value("${security.jwt.expiration-period}") long tokenExpirationPeriod) {
+        this.tokenSecretKey = tokenSecretKey;
+        this.tokenExpirationPeriod = tokenExpirationPeriod;
+    }
 
     public String generateToken(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole().name())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(tokenSecretKey.getBytes()))
+                .expiration(new Date(System.currentTimeMillis() + tokenExpirationPeriod))
                 .compact();
     }
 
@@ -54,7 +65,7 @@ public class JwtService {
 
     private Claims parseClaims(String token) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .verifyWith(Keys.hmacShaKeyFor(tokenSecretKey.getBytes()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
