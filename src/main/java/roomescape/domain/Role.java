@@ -22,4 +22,8 @@ public enum Role {
     private boolean isExpressionMatch(final String expression) {
         return this.expression.equals(expression);
     }
+
+    public boolean isUser() {
+        return this == USER;
+    }
 }

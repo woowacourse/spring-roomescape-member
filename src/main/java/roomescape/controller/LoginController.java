@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +11,7 @@ import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.service.AuthService;
+import roomescape.utils.CookieUtils;
 
 @RestController
 public class LoginController {
@@ -24,42 +24,22 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         final TokenResponse tokenResponse = authService.createToken(loginRequest);
+        CookieUtils.addTokenCookie(response, tokenResponse.getAccessToken());
 
-        Cookie cookie = new Cookie("token", tokenResponse.getAccessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok().body(tokenResponse);
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<Member> checkLogin(HttpServletRequest request) {
-        final Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                final String token = cookie.getValue();
-                final Member memberByToken = authService.findMemberByToken(token);
-                return ResponseEntity.ok().body(memberByToken);
-            }
-        }
+        final String token = CookieUtils.extractTokenFrom(request);
+        final Member member = authService.findMemberByToken(token);
 
-        return null;
+        return ResponseEntity.ok(member);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        expireCookie(response, "token");
+        CookieUtils.expireTokenCookie(response);
         return ResponseEntity.ok().build();
-    }
-
-    private void expireCookie(HttpServletResponse response, String cookieName) {
-        Cookie cookie = new Cookie(cookieName, null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
     }
 }
