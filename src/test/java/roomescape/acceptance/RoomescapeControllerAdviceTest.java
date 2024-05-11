@@ -18,6 +18,6 @@ class RoomescapeControllerAdviceTest extends AcceptanceTest {
                 .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 }

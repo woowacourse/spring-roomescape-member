@@ -3,6 +3,6 @@ package roomescape.auth.exception;
 public class AuthenticationException extends RuntimeException {
 
     public AuthenticationException() {
-        super("권한이 없습니다.");
+        super("인증 정보가 일치하지 않습니다.");
     }
 }

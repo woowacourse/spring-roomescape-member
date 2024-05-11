@@ -17,6 +17,7 @@ import roomescape.auth.exception.AuthenticationException;
 import roomescape.auth.exception.AuthenticationInformationNotFoundException;
 import roomescape.auth.exception.ExpiredTokenException;
 import roomescape.auth.exception.InvalidTokenException;
+import roomescape.auth.exception.UnAuthorizedException;
 
 @RestControllerAdvice
 public class RoomescapeControllerAdvice {
@@ -46,11 +47,17 @@ public class RoomescapeControllerAdvice {
         return problemDetail;
     }
 
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ProblemDetail handleMalformedJwtException(RuntimeException exception) {
+        logger.error(exception.getMessage(), exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
+    }
+
     @ExceptionHandler({
             InvalidTokenException.class, ExpiredTokenException.class,
             AuthenticationInformationNotFoundException.class, AuthenticationException.class
     })
-    public ProblemDetail handleMalformedJwtException(RuntimeException exception) {
+    public ProblemDetail handleUnAuthorizedException(UnAuthorizedException exception) {
         logger.error(exception.getMessage(), exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }

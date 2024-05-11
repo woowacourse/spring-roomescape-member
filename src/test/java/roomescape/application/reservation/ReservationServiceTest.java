@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.ServiceTest;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
-import roomescape.auth.exception.AuthenticationException;
+import roomescape.auth.exception.UnAuthorizedException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberFixture;
 import roomescape.domain.member.MemberRepository;
@@ -166,7 +166,7 @@ class ReservationServiceTest {
         Reservation reservation = saveReservation();
         Member otherMember = memberRepository.save(MemberFixture.createMember("other"));
         assertThatCode(() -> reservationService.deleteById(otherMember.getId(), reservation.getId()))
-                .isInstanceOf(AuthenticationException.class);
+                .isInstanceOf(UnAuthorizedException.class);
     }
 
     @DisplayName("관리자가 다른 사람의 예약을 삭제하는 경우, 예약이 삭제된다.")
