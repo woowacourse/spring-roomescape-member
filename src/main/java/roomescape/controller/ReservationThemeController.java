@@ -11,11 +11,11 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationThemeResponseController {
+public class ReservationThemeController {
 
     private final ReservationThemeService reservationThemeService;
 
-    public ReservationThemeResponseController(ReservationThemeService reservationThemeService) {
+    public ReservationThemeController(ReservationThemeService reservationThemeService) {
         this.reservationThemeService = reservationThemeService;
     }
 

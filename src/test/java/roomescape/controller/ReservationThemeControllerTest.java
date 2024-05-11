@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationThemeResponseControllerTest {
+public class ReservationThemeControllerTest {
 
     @LocalServerPort
     int port;
