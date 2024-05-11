@@ -72,7 +72,7 @@ class JdbcReservationRepositoryTest {
                 .containsExactly(saveReservation1, saveReservation2);
     }
 
-    @Test // TODO: 테스트 이게 맞아? 픽스쳐
+    @Test
     @DisplayName("Reservation 테이블의 주어진 id와 동일한 데이터를 조회한다.")
     void findById() {
         // given
