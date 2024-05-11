@@ -19,6 +19,12 @@ public class ReservationRequest {
         this.themeId = Long.parseLong(themeId);
     }
 
+    public ReservationRequest(AdminReservationRequest request) {
+        this.date = request.getDate();
+        this.timeId = request.getTimeId();
+        this.themeId = request.getThemeId();
+    }
+
     public void validate(String date, String timeId, String themeId) {
         if (date == null || timeId == null || themeId == null) {
             throw new IllegalArgumentException();

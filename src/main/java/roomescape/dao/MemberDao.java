@@ -26,6 +26,13 @@ public class MemberDao implements MemberRepository {
     }
 
     @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        List<Member> member = jdbcTemplate.query(sql, memberRowMapper, id);
+        return DataAccessUtils.optionalResult(member);
+    }
+
+    @Override
     public Optional<Member> findByEmail(String email) {
         String sql = """
                 SELECT *
