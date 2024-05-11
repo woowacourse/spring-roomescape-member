@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("테마 DAO")
 @JdbcTest
-@Sql(value = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeDaoTest {
 
     private final ThemeRepository themeRepository;

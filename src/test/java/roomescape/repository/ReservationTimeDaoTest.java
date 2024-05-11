@@ -61,7 +61,7 @@ class ReservationTimeDaoTest {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        assertThat(reservationTimes).hasSize(2);
+        assertThat(reservationTimes).hasSize(3);
     }
 
     @DisplayName("예약 시간 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")

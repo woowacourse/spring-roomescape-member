@@ -26,7 +26,6 @@ import static roomescape.Fixtures.themeFixture;
 @JdbcTest
 @Import(ReservationDao.class)
 @DisplayName("예약 DAO")
-@Sql(value = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
 
     private final ReservationRepository reservationRepository;
@@ -49,7 +48,7 @@ class ReservationDaoTest {
                 .longValue();
         ReservationTime newReservationTime = new ReservationTime(reservationTimeId, reservationTime.getStartAt());
         Reservation reservation = new Reservation(
-                "브라운",
+                Fixtures.memberFixture,
                 LocalDate.of(2024, 11, 16),
                 newReservationTime,
                 new Theme(1L, themeFixture)

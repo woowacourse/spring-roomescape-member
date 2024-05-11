@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS member (
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
-CREATE INDEX member_email ON member(email);
+CREATE INDEX IF NOT EXISTS member_email ON member(email);
 
 CREATE TABLE IF NOT EXISTS reservation (
     id   BIGINT       NOT NULL AUTO_INCREMENT,

@@ -102,7 +102,7 @@ class ReservationTimeServiceTest {
         LocalDate date = Fixtures.DATE_AFTER_6_MONTH_LATER;
         Long themeId = 1L;
         Mockito.when(reservationRepository.findByDateAndThemeId(date, themeId))
-                .thenReturn(List.of(new Reservation("클로버", date, Fixtures.reservationTimeFixture, Fixtures.themeFixture)));
+                .thenReturn(List.of(new Reservation(Fixtures.memberFixture, date, Fixtures.reservationTimeFixture, Fixtures.themeFixture)));
         Mockito.when(reservationTimeRepository.findAll())
                 .thenReturn(List.of(Fixtures.reservationTimeFixture));
 
