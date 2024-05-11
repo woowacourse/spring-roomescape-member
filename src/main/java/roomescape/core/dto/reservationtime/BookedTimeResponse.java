@@ -7,9 +7,6 @@ public class BookedTimeResponse {
     private String startAt;
     private boolean alreadyBooked;
 
-    public BookedTimeResponse() {
-    }
-
     public BookedTimeResponse(final ReservationTime time, final boolean alreadyBooked) {
         this(time.getId(), time.getStartAtString(), alreadyBooked);
     }

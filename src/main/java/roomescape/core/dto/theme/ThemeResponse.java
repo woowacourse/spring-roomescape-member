@@ -8,9 +8,6 @@ public class ThemeResponse {
     private String description;
     private String thumbnail;
 
-    public ThemeResponse() {
-    }
-
     public ThemeResponse(final Theme theme) {
         this(theme.getId(), theme);
     }

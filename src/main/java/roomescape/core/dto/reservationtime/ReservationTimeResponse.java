@@ -9,9 +9,6 @@ public class ReservationTimeResponse {
     private Long id;
     private String startAt;
 
-    public ReservationTimeResponse() {
-    }
-
     public ReservationTimeResponse(final ReservationTime reservationTime) {
         this(reservationTime.getId(), reservationTime);
     }

@@ -1,4 +1,4 @@
-package roomescape.web.repository;
+package roomescape.core.repository;
 
 import java.util.List;
 import javax.sql.DataSource;
@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Theme;
-import roomescape.core.repository.ThemeRepository;
 
 @Repository
 public class ThemeRepositoryImpl implements ThemeRepository {
@@ -50,12 +49,12 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
     private RowMapper<Theme> getThemeRowMapper() {
         return (resultSet, rowNum) -> {
-            final Long timeId = resultSet.getLong("id");
+            final Long themeId = resultSet.getLong("id");
             final String name = resultSet.getString("name");
             final String description = resultSet.getString("description");
             final String thumbnail = resultSet.getString("thumbnail");
 
-            return new Theme(timeId, name, description, thumbnail);
+            return new Theme(themeId, name, description, thumbnail);
         };
     }
 

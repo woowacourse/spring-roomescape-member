@@ -1,48 +1,23 @@
+INSERT INTO member (name, email, password, role)
+VALUES ('어드민', 'test@email.com', 'password', 'ADMIN'),
+       ('유저', 'user@email.com', 'password', 'USER');
+
 INSERT INTO reservation_time (start_at)
-VALUES ('13:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('14:00');
-INSERT INTO reservation_time (start_at)
-VALUES ('15:00');
+VALUES ('13:00'),
+       ('14:00'),
+       ('15:00');
 
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마1', '테마1 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마2', '테마2 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마3', '테마3 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마4', '테마4 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마5', '테마5 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마6', '테마6 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마7', '테마7 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마8', '테마8 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마9', '테마9 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마10', '테마10 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
-INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마11', '테마11 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
+VALUES ('테마1', '테마1 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+       ('테마2', '테마2 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+       ('테마3', '테마3 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+       ('테마4', '테마4 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+       ('테마5', '테마5 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-24', 1, 4);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-25', 2, 4);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-26', 3, 4);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-27', 1, 4);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-28', 2, 4);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-29', 1, 3);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-30', 1, 3);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-24', 1, 3);
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-25', 1, 3);
+INSERT INTO reservation (date, member_id, time_id, theme_id)
+VALUES ('2024-05-07', 1, 1, 1),
+       ('2024-05-07', 1, 2, 1),
+       ('2024-05-07', 1, 3, 1),
+       ('2024-05-07', 1, 1, 2),
+       ('2024-05-07', 1, 2, 2),
+       ('2024-05-07', 1, 1, 3);

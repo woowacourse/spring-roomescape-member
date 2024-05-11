@@ -14,6 +14,9 @@ public interface ReservationRepository {
 
     List<Reservation> findAllByDateAndThemeId(final String date, long themeId);
 
+    List<Reservation> findAllByMemberAndThemeAndPeriod(final Long memberId, final Long themeId, final String dateFrom,
+                                                       final String dateTo);
+
     Integer countByTimeId(final long timeId);
 
     Integer countByThemeId(final long themeId);
