@@ -34,7 +34,7 @@ public class AuthService {
     }
 
     public AuthInfo fetchByToken(String token) {
-        if (!tokenProvider.validateToken(token)) {
+        if (!tokenProvider.isToken(token)) {
             throw new BusinessException(ErrorType.INVALID_TOKEN);
         }
         Member member = memberRepository.findBy(tokenProvider.getPayload(token))

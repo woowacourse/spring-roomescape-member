@@ -48,7 +48,7 @@ class AuthServiceTest {
         TokenResponse token = authService.createToken(loginRequest);
 
         //then
-        assertThat(tokenProvider.validateToken(token.accessToken())).isTrue();
+        assertThat(tokenProvider.isToken(token.accessToken())).isTrue();
         assertThat(tokenProvider.getPayload(token.accessToken())).isEqualTo(member.getEmail());
     }
 

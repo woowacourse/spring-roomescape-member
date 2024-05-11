@@ -28,7 +28,7 @@ public class FakeTokenProvider implements TokenProvider {
     }
 
     @Override
-    public boolean validateToken(String token) {
+    public boolean isToken(String token) {
         return tokens.containsKey(token);
     }
 }

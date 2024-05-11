@@ -5,5 +5,5 @@ public interface TokenProvider {
 
     String getPayload(String token);
 
-    boolean validateToken(String token);
+    boolean isToken(String token);
 }

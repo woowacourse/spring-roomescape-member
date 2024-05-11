@@ -40,8 +40,8 @@ class JwtTokenProviderTest {
 
         //when & then
         assertAll(
-                () -> assertThat(tokenProvider.validateToken(accessToken)).isTrue(),
-                () -> assertThat(tokenProvider.validateToken(invalidToken)).isFalse()
+                () -> assertThat(tokenProvider.isToken(accessToken)).isTrue(),
+                () -> assertThat(tokenProvider.isToken(invalidToken)).isFalse()
         );
     }
 }
