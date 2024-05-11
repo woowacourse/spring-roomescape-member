@@ -1,5 +1,6 @@
 package roomescape.member.repository;
 
+import java.util.List;
 import org.springframework.stereotype.Repository;
 import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.member.dao.MemberDao;
@@ -22,5 +23,9 @@ public class MemberRepository {
     public String findNameById(long id) {
         return memberDao.findNameById(id)
                 .orElseThrow(() -> new RoomEscapeException(MemberExceptionCode.MEMBER_NOT_EXIST_EXCEPTION));
+    }
+
+    public List<String> findAllName() {
+        return memberDao.findAllNames();
     }
 }
