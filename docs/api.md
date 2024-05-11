@@ -143,6 +143,10 @@ Content-Type: application/json
 DELETE /reservations/1 HTTP/1.1
 ```
 
+| 쿠키    | 타입       | 예시                                                                                                                                                 | 필수 여부 | 설명     |
+|-------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------|-------|--------|
+| token | `String` | `eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZXlhbmdAdGVzdC5jb20iLCJpYXQiOjE3MTU0NDI1ODcsImV4cCI6MTcxNTQ0NjE4N30.hVFU3yPY_kH5eZQ0N_56tTIcH0oEiRcROSuStgF1jnE` | 필수    | 로그인 토큰 |
+
 **Response**
 
 ```http request
@@ -268,7 +272,6 @@ content-type: application/json
     "description": "우테코 레벨2를 탈출하는 내용입니다.",
     "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
 }
-
 ```
 
 **response**
@@ -309,8 +312,13 @@ HTTP/1.1 204
 **request**
 
 ```http request
-GET /themes/popular HTTP/1.1
+GET /themes/popular?days=3&limit=3 HTTP/1.1
 ```
+
+| 쿼리 파라미터 | 타입       | 예시  | 필수 여부 | 기본값  | 설명    |
+|---------|----------|-----|-------|------|-------|
+| days    | `Number` | `3` | 선택    | `7`  | 필터 날짜 |
+| limit   | `Number` | `3` | 선택    | `10` | 테마 번호 |
 
 **response**
 
@@ -320,9 +328,19 @@ Content-Type: application/json
 
 [
     {
-        "name": "theme1",
-        "thumbnail": "https://abc.com/thumb.png",
-        "description": "spring desc"
+        "name": "백투더 씬",
+        "thumbnail": "https://www.keyescape.co.kr/file/theme_info/40_a.jpg",
+        "description": "선생님, 응급 환자입니다! 서둘러 주세요!"
+    },
+    {
+        "name": "메모리 컴패니",
+        "thumbnail": "https://www.keyescape.co.kr/file/theme_info/37_a.jpg",
+        "description": "어서오세요. 메모리 컴패니 입니다."
+    },
+    {
+        "name": "머니머니 패키지",
+        "thumbnail": "https://www.keyescape.co.kr/file/theme_info/38_a.jpg",
+        "description": "각박한 세상 정신 똑바로 차리고 갈 수 있도록!"
     }
 ]
 ```
