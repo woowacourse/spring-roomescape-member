@@ -11,9 +11,9 @@ VALUES (2, '추리', '매우 어렵습니다.', 'https://i.pinimg.com/236x/6e/bc
 INSERT INTO member (id, name, email, password, role)
 VALUES (1, '미아', 'mia@gmail.com', 'asdfe', 'USER');
 INSERT INTO member (id, name, email, password, role)
-VALUES (2, '냥인', 'mia@gmail.com', 'dfdfdf', 'USER');
+VALUES (2, '냥인', 'nyangin@gmail.com', 'dfdfdf', 'USER');
 INSERT INTO member (id, name, email, password, role)
-VALUES (3, '토미', 'mia@gmail.com', 'jyefr', 'USER');
+VALUES (3, '토미', 'tommy@gmail.com', 'jyefr', 'USER');
 
 INSERT INTO reservation (id, date, member_id, theme_id, time_id)
 VALUES (1, CURRENT_DATE() - 7, 1, 1, 1);
