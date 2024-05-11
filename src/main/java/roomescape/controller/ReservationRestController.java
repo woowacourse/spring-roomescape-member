@@ -27,13 +27,6 @@ public class ReservationRestController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> getAll() {
-        List<ReservationResponse> responses = reservationService.findAll();
-
-        return ResponseEntity.ok(responses);
-    }
-
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationCreateRequest request,
                                                       Member member) {
@@ -41,6 +34,13 @@ public class ReservationRestController {
 
         URI location = URI.create("/reservations/" + reservationResponse.id());
         return ResponseEntity.created(location).body(reservationResponse);
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> getAll() {
+        List<ReservationResponse> responses = reservationService.findAll();
+
+        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/reservations/{id}")

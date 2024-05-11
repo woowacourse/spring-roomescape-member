@@ -10,9 +10,4 @@ public class ReservationController {
     public String reservationPage() {
         return "/reservation";
     }
-
-    @GetMapping
-    public String homePage() {
-        return "index";
-    }
 }
