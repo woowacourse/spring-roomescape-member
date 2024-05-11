@@ -2,6 +2,8 @@ package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.InitialDataFixture.INITIAL_RESERVATION_COUNT;
+import static roomescape.InitialMemberFixture.MEMBER_1;
+import static roomescape.InitialMemberFixture.MEMBER_4;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -20,8 +22,8 @@ import org.springframework.test.context.jdbc.Sql;
 class AdminReservationControllerTest {
 
     @Test
-    @DisplayName("관리자가 예약 요칭 시, 요청 Body에 담긴 정보를 바탕으로 예약을 추가한다.")
-    void AdminAddReservationFromRequestBody() {
+    @DisplayName("토큰 없이 관리자 예약을 시도하면 예외가 발생한다.")
+    void throwExceptionWhenAddAdminReservationWithoutToken() {
         Map<String, String> reservationParams = new HashMap<>();
         reservationParams.put("date", LocalDate.now().plusDays(1).toString());
         reservationParams.put("themeId", "1");
@@ -29,6 +31,66 @@ class AdminReservationControllerTest {
         reservationParams.put("memberId", "1");
 
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("관리자가 아닌 사용자가 관리자 예약을 시도하면 예외가 발생한다.")
+    void throwExceptionWhenNormalUserAddAdminReservation() {
+        Map<String, String> memberParam = new HashMap<>();
+        memberParam.put("password", MEMBER_1.getPassword().password());
+        memberParam.put("email", MEMBER_1.getEmail().email());
+
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberParam)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
+
+        Map<String, String> reservationParams = new HashMap<>();
+        reservationParams.put("date", LocalDate.now().plusDays(1).toString());
+        reservationParams.put("themeId", "1");
+        reservationParams.put("timeId", "1");
+        reservationParams.put("memberId", "1");
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("관리자가 예약 요칭 시, 요청 Body에 담긴 정보를 바탕으로 예약을 추가한다.")
+    void AdminAddReservationFromRequestBody() {
+        Map<String, String> memberParam = new HashMap<>();
+        memberParam.put("password", MEMBER_4.getPassword().password());
+        memberParam.put("email", MEMBER_4.getEmail().email());
+
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberParam)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
+
+        Map<String, String> reservationParams = new HashMap<>();
+        reservationParams.put("date", LocalDate.now().plusDays(1).toString());
+        reservationParams.put("themeId", "1");
+        reservationParams.put("timeId", "1");
+        reservationParams.put("memberId", "1");
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
                 .when().post("/admin/reservations")

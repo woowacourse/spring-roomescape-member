@@ -10,6 +10,7 @@ import roomescape.domain.member.Email;
 import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Password;
+import roomescape.domain.member.Role;
 import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberNameResponse;
@@ -39,7 +40,8 @@ public class MemberService {
     private String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
+                .claim("name", member.getName().name())
+                .claim("email", member.getEmail().email())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
@@ -61,9 +63,17 @@ public class MemberService {
                     .getBody()
                     .getSubject()
             );
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             throw new AuthenticationException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    public boolean isAdmin(String token) throws AuthenticationException {
+        Long memberId = parseTokenToMemberId(token);
+
+        return Role.ADMIN == memberRepository.findById(memberId)
+                .map(Member::getRole)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 토큰입니다. token = " + token));
     }
 
     public LoginMemberRequest getLoginMemberRequest(String token) throws AuthenticationException {
@@ -80,8 +90,6 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 id입니다. memberId = " + memberId));
     }
 
-    // 여기까지 구현 완료. 관리자예약 시 MemberId가 필요해서 MemberResponse를 새로 정의함.
-    // 테스트코드 짜고 커밋하면 될 듯?
     public List<MemberResponse> findMembers() {
         return memberRepository.findAll()
                 .stream()

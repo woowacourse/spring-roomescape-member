@@ -2,6 +2,7 @@ package roomescape.controller.member;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static roomescape.InitialMemberFixture.MEMBER_1;
 import static roomescape.InitialMemberFixture.MEMBER_4;
 
 import io.restassured.RestAssured;
@@ -23,8 +24,8 @@ class LoginControllerTest {
     @DisplayName("저장된 회원 정보로 로그인을 시도하면 응답 쿠키에 토큰 값이 반환된다")
     void login() {
         Map<String, String> memberParam = new HashMap<>();
-        memberParam.put("password", "password");
-        memberParam.put("email", "admin@email.com");
+        memberParam.put("password", MEMBER_1.getPassword().password());
+        memberParam.put("email", MEMBER_1.getEmail().email());
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

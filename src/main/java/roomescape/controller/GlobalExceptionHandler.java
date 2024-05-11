@@ -1,4 +1,4 @@
-package roomescape.controller.reservation;
+package roomescape.controller;
 
 import java.time.format.DateTimeParseException;
 import javax.naming.AuthenticationException;
@@ -38,9 +38,9 @@ public class GlobalExceptionHandler {
         return e.getMessage();
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleException() {
-        return "서버에서 예기치 않은 오류가 발생했습니다.";
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public String handleException() {
+//        return "서버에서 예기치 않은 오류가 발생했습니다.";
+//    }
 }
