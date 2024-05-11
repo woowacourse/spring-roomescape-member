@@ -11,17 +11,13 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.theme.model.Theme;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ThemeFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ThemeFixture;
 
 @JdbcRepositoryTest
 class JdbcThemeRepositoryTest {

@@ -29,10 +29,10 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.util.MemberFixture;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ReservationTimeFixture;
-import roomescape.util.ThemeFixture;
+import roomescape.fixture.MemberFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
+import roomescape.fixture.ThemeFixture;
 
 class ReservationServiceTest {
 

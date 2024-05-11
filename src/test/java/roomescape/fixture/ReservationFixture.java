@@ -1,4 +1,4 @@
-package roomescape.util;
+package roomescape.fixture;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

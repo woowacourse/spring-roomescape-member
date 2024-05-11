@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.testutil.JdbcRepositoryTest;
-import roomescape.util.ReservationTimeFixture;
+import roomescape.fixture.ReservationTimeFixture;
 
 @JdbcRepositoryTest
 class JdbcReservationTimeRepositoryTest {

@@ -1,4 +1,4 @@
-package roomescape.util;
+package roomescape.fixture;
 
 import java.util.ArrayList;
 import java.util.List;

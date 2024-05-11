@@ -2,13 +2,12 @@ package roomescape.reservation.model;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ReservationTimeFixture;
-import roomescape.util.ThemeFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
+import roomescape.fixture.ThemeFixture;
 
 class ReservationTest {
 

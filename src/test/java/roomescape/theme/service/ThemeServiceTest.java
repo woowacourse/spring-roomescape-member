@@ -17,8 +17,8 @@ import roomescape.theme.dto.response.FindThemeResponse;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ThemeFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ThemeFixture;
 
 class ThemeServiceTest {
     private ThemeService themeService;

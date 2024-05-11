@@ -18,9 +18,9 @@ import roomescape.reservationtime.dto.response.FindReservationTimeResponse;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ReservationTimeFixture;
-import roomescape.util.ThemeFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
+import roomescape.fixture.ThemeFixture;
 
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.util.MemberFixture;
+import roomescape.fixture.MemberFixture;
 
 class MemberTest {
 

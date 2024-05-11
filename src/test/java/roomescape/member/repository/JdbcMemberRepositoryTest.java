@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.member.domain.Member;
 import roomescape.testutil.JdbcRepositoryTest;
-import roomescape.util.MemberFixture;
+import roomescape.fixture.MemberFixture;
 
 @JdbcRepositoryTest
 class JdbcMemberRepositoryTest {

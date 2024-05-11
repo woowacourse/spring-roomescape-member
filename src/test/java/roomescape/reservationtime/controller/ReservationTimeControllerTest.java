@@ -22,7 +22,7 @@ import roomescape.reservationtime.dto.response.FindReservationTimeResponse;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.testutil.ControllerTest;
-import roomescape.util.ReservationTimeFixture;
+import roomescape.fixture.ReservationTimeFixture;
 
 @ControllerTest
 @Import(ReservationTimeController.class)

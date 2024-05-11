@@ -23,7 +23,7 @@ import roomescape.theme.dto.response.FindPopularThemesResponse;
 import roomescape.theme.dto.response.FindThemeResponse;
 import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
-import roomescape.util.ThemeFixture;
+import roomescape.fixture.ThemeFixture;
 
 @ControllerTest
 @Import(ThemeController.class)

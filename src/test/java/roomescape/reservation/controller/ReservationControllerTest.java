@@ -30,8 +30,8 @@ import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.testutil.ControllerTest;
 import roomescape.theme.model.Theme;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ReservationTimeFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
 
 @ControllerTest
 @Import(ReservationController.class)
