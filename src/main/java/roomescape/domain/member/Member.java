@@ -1,23 +1,23 @@
-package roomescape.domain.user;
+package roomescape.domain.member;
 
-public class User {
+public class Member {
     private final Long id;
-    private final UserName userName;
+    private final MemberName memberName;
     private final String email;
     private final String password;
     private final Role role;
 
-    public User(Long id, UserName userName, String email, String password, Role role) {
+    public Member(Long id, MemberName memberName, String email, String password, Role role) {
         // todo email, password validation
         this.id = id;
-        this.userName = userName;
+        this.memberName = memberName;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    public User(Long id, String name, String email, String password, Role role) {
-        this(id, new UserName(name), email, password, role);
+    public Member(Long id, String name, String email, String password, Role role) {
+        this(id, new MemberName(name), email, password, role);
     }
 
     public boolean matchPassword(String password) {
@@ -29,7 +29,7 @@ public class User {
     }
 
     public String getName() {
-        return userName.getValue();
+        return memberName.getValue();
     }
 
     public String getEmail() {

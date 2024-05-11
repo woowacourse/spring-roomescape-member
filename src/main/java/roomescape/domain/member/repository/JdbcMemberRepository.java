@@ -1,16 +1,16 @@
-package roomescape.domain.user.repository;
+package roomescape.domain.member.repository;
 
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.user.Role;
-import roomescape.domain.user.User;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 @Repository
-public class JdbcUserRepository implements UserRepository {
-    private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) -> new User(
+public class JdbcMemberRepository implements MemberRepository {
+    private static final RowMapper<Member> ROW_MAPPER = (rs, rowNum) -> new Member(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
@@ -20,14 +20,14 @@ public class JdbcUserRepository implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         String query = """
-                SELECT id, name, email, password, role FROM users
+                SELECT id, name, email, password, role FROM member
                 WHERE email = ?
                 """;
         try {
@@ -38,9 +38,9 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> findById(long id) {
+    public Optional<Member> findById(long id) {
         String query = """
-                SELECT id, name, email, password, role FROM users
+                SELECT id, name, email, password, role FROM member
                 WHERE id = ?
                 """;
         try {

@@ -5,37 +5,37 @@ import roomescape.application.dto.request.TokenCreationRequest;
 import roomescape.application.dto.response.MemberResponse;
 import roomescape.application.dto.response.TokenResponse;
 import roomescape.auth.TokenProvider;
-import roomescape.domain.user.User;
-import roomescape.domain.user.repository.UserRepository;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.repository.MemberRepository;
 
 @Service
 public class MemberService {
     private static final String WRONG_EMAIL_OR_PASSWORD_MESSAGE = "등록되지 않은 이메일이거나 비밀번호가 틀렸습니다.";
 
     private final TokenProvider tokenProvider;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
-    public MemberService(TokenProvider tokenProvider, UserRepository userRepository) {
+    public MemberService(TokenProvider tokenProvider, MemberRepository memberRepository) {
         this.tokenProvider = tokenProvider;
-        this.userRepository = userRepository;
+        this.memberRepository = memberRepository;
     }
 
     public TokenResponse authenticateMember(TokenCreationRequest request) {
-        User user = userRepository.findByEmail(request.email())
+        Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException(WRONG_EMAIL_OR_PASSWORD_MESSAGE));
-        validatePassword(user, request.password());
-        String token = tokenProvider.createToken(user.getId());
+        validatePassword(member, request.password());
+        String token = tokenProvider.createToken(member.getId());
         return new TokenResponse(token);
     }
 
-    private void validatePassword(User user, String password) {
-        if (!user.matchPassword(password)) {
+    private void validatePassword(Member member, String password) {
+        if (!member.matchPassword(password)) {
             throw new IllegalArgumentException(WRONG_EMAIL_OR_PASSWORD_MESSAGE);
         }
     }
 
     public MemberResponse getMemberById(long id) {
-        User member = userRepository.findById(id)
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         return new MemberResponse(member.getName());
     }
