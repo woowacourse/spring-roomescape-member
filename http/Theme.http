@@ -20,4 +20,4 @@ cookie: token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMDA4IiwibmFtZSI6IuyWtOuTnOuvvCIsI
 host: localhost:8080
 
 ### 인기 테마 목록 조회 API (예약 순)
-GET http://localhost:8080/themes/popular?start-date=2024-05-01&end-date=2024-05-05&count=10
+GET http://localhost:8080/themes/popular?start-date=2024-05-01&end-date=2024-05-11&count=10
