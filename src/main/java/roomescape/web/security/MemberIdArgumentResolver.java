@@ -6,9 +6,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.infrastructure.authentication.AuthService;
-import roomescape.infrastructure.authentication.AuthenticatedMemberProfile;
-import roomescape.infrastructure.authentication.UnauthorizedException;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticatedMemberProfile;
+import roomescape.service.auth.UnauthorizedException;
 
 public class MemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 

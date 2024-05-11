@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import roomescape.infrastructure.authentication.AuthService;
-import roomescape.infrastructure.authentication.AuthenticationRequest;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/reset_test_data.sql")

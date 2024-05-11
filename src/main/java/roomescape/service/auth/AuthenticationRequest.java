@@ -1,4 +1,4 @@
-package roomescape.infrastructure.authentication;
+package roomescape.service.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

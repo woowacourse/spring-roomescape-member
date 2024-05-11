@@ -17,7 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.infrastructure.authentication.UnauthorizedException;
+import roomescape.service.auth.UnauthorizedException;
 import roomescape.web.exception.response.ErrorResponse;
 
 @ControllerAdvice

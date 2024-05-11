@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.infrastructure.authentication.AuthService;
-import roomescape.infrastructure.authentication.AuthenticatedMemberProfile;
-import roomescape.infrastructure.authentication.AuthenticationRequest;
-import roomescape.infrastructure.authentication.UnauthorizedException;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticatedMemberProfile;
+import roomescape.service.auth.AuthenticationRequest;
+import roomescape.service.auth.UnauthorizedException;
 import roomescape.web.security.CookieTokenExtractor;
 
 @RestController

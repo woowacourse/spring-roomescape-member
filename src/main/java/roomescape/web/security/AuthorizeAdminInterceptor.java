@@ -3,9 +3,9 @@ package roomescape.web.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.infrastructure.authentication.AuthService;
-import roomescape.infrastructure.authentication.AuthenticatedMemberProfile;
-import roomescape.infrastructure.authentication.UnauthorizedException;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticatedMemberProfile;
+import roomescape.service.auth.UnauthorizedException;
 
 public class AuthorizeAdminInterceptor implements HandlerInterceptor {
 
@@ -18,11 +18,7 @@ public class AuthorizeAdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler
-    ) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String cookieToken = extractor.extract(request);
         if (cookieToken == null) {
             throw new UnauthorizedException();

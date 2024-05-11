@@ -1,4 +1,4 @@
-package roomescape.infrastructure.authentication;
+package roomescape.service.auth;
 
 public class UnauthorizedException extends RuntimeException {
 

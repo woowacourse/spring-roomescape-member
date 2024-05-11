@@ -9,9 +9,13 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 import roomescape.infrastructure.persistence.MemberRepository;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticatedMemberProfile;
+import roomescape.service.auth.AuthenticationRequest;
+import roomescape.service.auth.UnauthorizedException;
 
 @Component
-public class AuthService {
+public class JwtAuthService implements AuthService {
 
     private static final String AUTHENTICATION_FAIL_MESSAGE = "올바른 인증 정보를 입력해주세요.";
     private static final String SECRET_KEY_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
@@ -19,10 +23,11 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
 
-    public AuthService(MemberRepository memberRepository) {
+    public JwtAuthService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
+    @Override
     public String authenticate(AuthenticationRequest request) {
         Member member = findMember(request);
         checkPassword(request, member);
@@ -50,6 +55,7 @@ public class AuthService {
                 .compact();
     }
 
+    @Override
     public AuthenticatedMemberProfile authorize(String token) {
         JwtParser parser = Jwts.parser()
                 .verifyWith(KEY)

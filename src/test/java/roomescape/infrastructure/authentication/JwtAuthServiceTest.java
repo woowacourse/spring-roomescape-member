@@ -12,11 +12,14 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
 import roomescape.infrastructure.persistence.MemberRepository;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticationRequest;
+import roomescape.service.auth.UnauthorizedException;
 
-class AuthServiceTest {
+class JwtAuthServiceTest {
 
     private final MemberRepository repository = Mockito.mock(MemberRepository.class);
-    private final AuthService authService = new AuthService(repository);
+    private final AuthService authService = new JwtAuthService(repository);
 
     @Test
     @DisplayName("존재하지 않는 사용자에게 토큰을 발급할 수 없다.")
