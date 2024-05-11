@@ -3,6 +3,8 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import static roomescape.model.Role.MEMBER;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 import roomescape.model.User;
 
@@ -70,8 +73,8 @@ class JdbcReservationDaoTest {
         insertTheme("에버", "공포", "공포.jpg");
         insertTheme("배키", "스릴러", "스릴러.jpg");
 
-        insertUser("브라운", "brown@email.com", "1111");
-        insertUser("리사", "lisa@email.com", "2222");
+        insertUser("브라운", MEMBER, "brown@email.com", "1111");
+        insertUser("리사", MEMBER, "lisa@email.com", "2222");
 
         insertReservation("2023-08-05", "1", "1", "1");
         insertReservation("2023-08-01", "2", "2", "2");
@@ -91,9 +94,10 @@ class JdbcReservationDaoTest {
         themeInsertActor.execute(parameters);
     }
 
-    private void insertUser(String name, String email, String password) {
+    private void insertUser(String name, Role role, String email, String password) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", name);
+        parameters.put("role", role.name());
         parameters.put("email", email);
         parameters.put("password", password);
         userInsertActor.execute(parameters);
@@ -127,7 +131,7 @@ class JdbcReservationDaoTest {
     void should_add_reservation() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "에버", "공포", "공포.jpg");
-        User user = new User(1L, "썬", "sun@email.com", "1234");
+        User user = new User(1L, "썬", MEMBER, "sun@email.com", "1234");
         Reservation reservation =
                 new Reservation(LocalDate.of(2024, 9, 1), reservationTime, theme, user);
 

@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import static roomescape.model.Role.ADMIN;
+import static roomescape.model.Role.MEMBER;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -55,7 +58,7 @@ class ReservationServiceTest {
         Theme theme1 = new Theme(1L, "name1", "description1", "thumbnail1");
         Theme theme2 = new Theme(2L, "name2", "description2", "thumbnail2");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        User user = new User(2L, "배키", "dmsgml@email.com", "2222");
+        User user = new User(2L, "배키", MEMBER, "dmsgml@email.com", "2222");
         fakeReservationDao.addReservation(new Reservation(1L, now(), reservationTime, theme1, user));
         fakeReservationDao.addReservation(new Reservation(2L, now(), reservationTime, theme2, user));
 
@@ -68,7 +71,7 @@ class ReservationServiceTest {
     @Test
     void should_add_reservation_times_when_give_user_request() {
         ReservationRequest request = new ReservationRequest(now().plusDays(2), 1L, 1L);
-        User user = new User(2L, "배키", "dmsgml@email.com", "2222");
+        User user = new User(2L, "배키", MEMBER, "dmsgml@email.com", "2222");
         reservationService.addReservation(request, user);
 
         List<Reservation> allReservations = fakeReservationDao.getAllReservations();
@@ -78,7 +81,7 @@ class ReservationServiceTest {
     @DisplayName("관리자가 예약 시간을 추가한다")
     @Test
     void should_add_reservation_times_when_give_admin_request() {
-        userDao.addUser(new User(1L, "썬", "sun@email.com", "1111"));
+        userDao.addUser(new User(1L, "썬", ADMIN, "sun@email.com", "1111"));
         AdminReservationRequest request =
                 new AdminReservationRequest(now().plusDays(2), 1L, 1L, 1L);
         reservationService.addReservation(request);
@@ -104,7 +107,7 @@ class ReservationServiceTest {
         Theme theme1 = new Theme(1L, "name1", "description1", "thumbnail1");
         Theme theme2 = new Theme(2L, "name2", "description2", "thumbnail2");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        User user = new User(2L, "배키", "dmsgml@email.com", "2222");
+        User user = new User(2L, "배키", ADMIN, "dmsgml@email.com", "2222");
         fakeReservationDao.addReservation(new Reservation(1L, now(), reservationTime, theme1, user));
         fakeReservationDao.addReservation(new Reservation(2L, now(), reservationTime, theme2, user));
 
@@ -128,7 +131,7 @@ class ReservationServiceTest {
         Theme theme1 = new Theme(1L, "name1", "description1", "thumbnail1");
         Theme theme2 = new Theme(2L, "name2", "description2", "thumbnail2");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        User user = new User(2L, "배키", "dmsgml@email.com", "2222");
+        User user = new User(2L, "배키", ADMIN, "dmsgml@email.com", "2222");
         fakeReservationDao.addReservation(new Reservation(1L, now(), reservationTime, theme1, user));
         fakeReservationDao.addReservation(new Reservation(2L, now(), reservationTime, theme2, user));
 
@@ -141,7 +144,7 @@ class ReservationServiceTest {
     void should_throw_exception_when_previous_date() {
         ReservationRequest request =
                 new ReservationRequest(LocalDate.now().minusDays(1), 1L, 1L);
-        User user = new User(1L, "썬", "sun@email.com", "1111");
+        User user = new User(1L, "썬", MEMBER, "sun@email.com", "1111");
 
         assertThatThrownBy(() -> reservationService.addReservation(request, user))
                 .isInstanceOf(BadRequestException.class)
@@ -153,7 +156,7 @@ class ReservationServiceTest {
     void should_not_throw_exception_when_current_date() {
         fakeReservationTimeDao.add(new ReservationTime(3L, LocalTime.now()));
         ReservationRequest request = new ReservationRequest(LocalDate.now(), 3L, 1L);
-        User user = new User(1L, "썬", "sun@email.com", "1111");
+        User user = new User(1L, "썬", MEMBER, "sun@email.com", "1111");
 
         assertThatCode(() -> reservationService.addReservation(request, user))
                 .doesNotThrowAnyException();
@@ -164,7 +167,7 @@ class ReservationServiceTest {
     void should_not_throw_exception_when_later_date() {
         ReservationRequest request =
                 new ReservationRequest(LocalDate.now().plusDays(2), 1L, 1L);
-        User user = new User(1L, "썬", "sun@email.com", "1111");
+        User user = new User(1L, "썬", MEMBER, "sun@email.com", "1111");
 
         assertThatCode(() -> reservationService.addReservation(request, user))
                 .doesNotThrowAnyException();
@@ -176,7 +179,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "name1", "description1", "thumbnail1");
         LocalDate date = now().plusDays(2);
-        User user = new User(2L, "배키", "dmsgml@email.com", "2222");
+        User user = new User(2L, "배키", MEMBER, "dmsgml@email.com", "2222");
         fakeReservationDao.addReservation(new Reservation(1L, date, reservationTime, theme, user));
 
         ReservationRequest request = new ReservationRequest(date, 1L, 1L);

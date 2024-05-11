@@ -7,6 +7,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import static roomescape.model.Role.MEMBER;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -110,7 +112,7 @@ class ReservationTimeServiceTest {
                 new Reservation(now().plusDays(2),
                         reservationTime,
                         new Theme("name", "공포", "미스터리"),
-                        new User(1L, "배키", "dmsgml@email.com", "1234")));
+                        new User(1L, "배키", MEMBER, "dmsgml@email.com", "1234")));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isInstanceOf(BadRequestException.class)

@@ -18,6 +18,7 @@ CREATE TABLE users
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
+    role        VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
@@ -55,8 +56,9 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('브리', '드라마', 
 INSERT INTO theme (name, description, thumbnail) VALUES ('솔라', '공포', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('왼손', '판타지', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO users (name, email, password) VALUES ('썬', 'sun@email.com', '1234');
-INSERT INTO users (name, email, password) VALUES ('배키', 'dmsgml@email.com', '1111');
+INSERT INTO users (name, email, role, password) VALUES ('썬', 'sun@email.com', 'MEMBER', '1234');
+INSERT INTO users (name, email, role, password) VALUES ('배키', 'dmsgml@email.com', 'MEMBER', '1111');
+INSERT INTO users (name, email, role, password) VALUES ('포비', 'pobi@email.com', 'ADMIN', '2222');
 
 INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES ('2024-05-09', 1, 1, 1);
 INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES ('2024-05-07', 2, 1, 1);

@@ -8,22 +8,24 @@ public class User {
 
     private Long id;
     private String name;
+    private Role role;
     private String email;
     private String password;
 
     private User() {
     }
 
-    public User(Long id, String name, String email, String password) {
+    public User(Long id, String name, Role role, String email, String password) {
         validateNullOrBlank(name, "name");
         this.id = id;
         this.name = name;
+        this.role = role;
         this.email = email;
         this.password = password;
     }
 
-    public User(Long id, String name) {
-        this(id, name, null, null);
+    public User(Long id, String name, Role role) {
+        this(id, name, role, null, null);
     }
 
     private void validateNullOrBlank(String value, String fieldName) {
@@ -48,6 +50,10 @@ public class User {
         return password;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -58,13 +64,13 @@ public class User {
         }
         User user = (User) object;
         return Objects.equals(getId(), user.getId()) && Objects.equals(getName(), user.getName())
-                && Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getPassword(),
-                user.getPassword());
+                && getRole() == user.getRole() && Objects.equals(getEmail(), user.getEmail())
+                && Objects.equals(getPassword(), user.getPassword());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getEmail(), getPassword());
+        return Objects.hash(getId(), getName(), getRole(), getEmail(), getPassword());
     }
 
     @Override
@@ -72,6 +78,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", role=" + role +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';

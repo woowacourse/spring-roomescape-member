@@ -2,6 +2,8 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static roomescape.model.Role.MEMBER;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +51,7 @@ class JdbcUserDaoTest {
     @DisplayName("아이디와 비밀번호로 사용자를 조회한다.")
     @Test
     void should_find_user_when_given_email_and_password() {
-        User user = new User(1L, "썬", "sun@email.com", "1234");
+        User user = new User(1L, "썬", MEMBER, "sun@email.com", "1234");
         insertUser(user);
 
         Optional<User> optionalUser = userDao.findUserByEmailAndPassword("sun@email.com", "1234");
@@ -60,7 +62,7 @@ class JdbcUserDaoTest {
     @DisplayName("아이디로 사용자 이름을 조회한다.")
     @Test
     void should_find_username_when_given_user_id() {
-        User user = new User(1L, "썬", "sun@email.com", "1234");
+        User user = new User(1L, "썬", MEMBER, "sun@email.com", "1234");
         insertUser(user);
 
         Optional<String> userNameByUserId = userDao.findUserNameByUserId(1L);
@@ -71,7 +73,7 @@ class JdbcUserDaoTest {
     @DisplayName("아이디로 사용자를 조회한다.")
     @Test
     void should_find_user_when_given_user_id() {
-        User user = new User(1L, "썬", "sun@email.com", "1234");
+        User user = new User(1L, "썬", MEMBER, "sun@email.com", "1234");
         insertUser(user);
 
         Optional<User> userById = userDao.findUserById(1L);
@@ -82,8 +84,8 @@ class JdbcUserDaoTest {
     @DisplayName("모든 사용자를 조회한다.")
     @Test
     void should_find_all_user() {
-        User user1 = new User(1L, "썬", "sun@email.com", "1111");
-        User user2 = new User(2L, "배키", "dmsgml@email.com", "2222");
+        User user1 = new User(1L, "썬", MEMBER, "sun@email.com", "1111");
+        User user2 = new User(2L, "배키", MEMBER, "dmsgml@email.com", "2222");
         insertUser(user1);
         insertUser(user2);
 

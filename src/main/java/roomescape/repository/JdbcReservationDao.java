@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 import roomescape.model.User;
 
@@ -40,7 +41,8 @@ public class JdbcReservationDao implements ReservationDao {
                     ),
                     new User(
                             resultSet.getLong("user_id"),
-                            resultSet.getString("user_name")
+                            resultSet.getString("user_name"),
+                            Role.valueOf(resultSet.getString("role"))
                     )
             );
 
@@ -70,7 +72,8 @@ public class JdbcReservationDao implements ReservationDao {
                     th.description,
                     th.thumbnail,
                     u.id AS user_id,
-                    u.name AS user_name
+                    u.name AS user_name,
+                    u.role
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
