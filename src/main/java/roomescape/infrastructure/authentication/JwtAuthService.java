@@ -17,6 +17,8 @@ import roomescape.service.auth.UnauthorizedException;
 @Component
 public class JwtAuthService implements AuthService {
 
+    private static final String NAME_CLAIM_KEY = "name";
+    private static final String IS_ADMIN_CLAIM_KEY = "isAdmin";
     private static final String AUTHENTICATION_FAIL_MESSAGE = "올바른 인증 정보를 입력해주세요.";
     private static final String SECRET_KEY_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_KEY_VALUE.getBytes());
@@ -49,8 +51,8 @@ public class JwtAuthService implements AuthService {
     private String generateToken(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
-                .claim("name", member.getName().value())
-                .claim("isAdmin", member.isAdmin())
+                .claim(NAME_CLAIM_KEY, member.getName().value())
+                .claim(IS_ADMIN_CLAIM_KEY, member.isAdmin())
                 .signWith(KEY)
                 .compact();
     }
@@ -64,8 +66,8 @@ public class JwtAuthService implements AuthService {
             Claims payload = parser.parseSignedClaims(token)
                     .getPayload();
             Long id = Long.valueOf(payload.getSubject());
-            String name = payload.get("name", String.class);
-            boolean isAdmin = payload.get("isAdmin", Boolean.class);
+            String name = payload.get(NAME_CLAIM_KEY, String.class);
+            boolean isAdmin = payload.get(IS_ADMIN_CLAIM_KEY, Boolean.class);
             return new AuthenticatedMemberProfile(id, name, isAdmin);
         } catch (JwtException e) {
             throw new UnauthorizedException();
