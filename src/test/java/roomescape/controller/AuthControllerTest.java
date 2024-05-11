@@ -13,7 +13,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/memberData.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
-class MemberControllerTest {
+class AuthControllerTest {
 
     @LocalServerPort
     private int port;

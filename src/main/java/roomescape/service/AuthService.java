@@ -4,16 +4,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.dto.login.LoginRequest;
-import roomescape.dto.login.LoginResponse;
+import roomescape.dto.auth.LoginRequest;
+import roomescape.dto.auth.LoginResponse;
 import roomescape.repository.MemberRepository;
 
 @Service
-public class MemberService {
+public class AuthService {
 
     private final MemberRepository memberRepository;
 
-    public MemberService(MemberRepository memberRepository) {
+    public AuthService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 

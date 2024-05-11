@@ -13,24 +13,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.login.LoginRequest;
-import roomescape.dto.login.LoginResponse;
+import roomescape.dto.auth.LoginRequest;
+import roomescape.dto.auth.LoginResponse;
 import roomescape.global.exception.ApplicationException;
-import roomescape.service.MemberService;
+import roomescape.service.AuthService;
 
 @RestController
-@RequestMapping("/login")   // TODO: 제거 고민해보기
-public class MemberController { // TODO: 이름 고민해보기. member? login? auth?
+@RequestMapping("/login")
+public class AuthController {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
-        String accessToken = memberService.login(loginRequest);
+        String accessToken = authService.login(loginRequest);
 
         // TODO: cookie 생성 로직이 controller에 있는게 맞는지 생각해보기
         Cookie cookie = new Cookie("token", accessToken);
@@ -68,6 +68,6 @@ public class MemberController { // TODO: 이름 고민해보기. member? login? 
                 .parseClaimsJws(token)
                 .getBody().getSubject());
 
-        return ResponseEntity.ok(memberService.findLoggedInMember(memberId));
+        return ResponseEntity.ok(authService.findLoggedInMember(memberId));
     }
 }
