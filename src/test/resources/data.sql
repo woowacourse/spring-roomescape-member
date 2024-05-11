@@ -16,13 +16,13 @@ VALUES ('USER', 'c7c8DLfgOv4RFWUd7q9VDn1684F5dTghVOXoAzrc1GA=', '파랑', 'blue@
   theme data
  */
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('테바와 비밀친구', '나랑.. 비밀친구할래..?', '테바 사진');
+VALUES ('테바와 비밀친구', '나랑.. 비밀친구할래..?', 'https://i.ytimg.com/vi/On3nNUVvu4M/maxresdefault.jpg');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('켈리의 댄스교실', '켈켈켈켈켈', '켈리 사진');
+VALUES ('켈리의 댄스교실', '켈켈켈켈켈', 'https://img.biz.sbs.co.kr/upload/2023/03/30/wjW1680139541589-850.jpg');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('우테코 탈출하기', '우테코를... 탈출..하자..!', '우테코 사진');
+VALUES ('우테코 탈출하기', '우테코를... 탈출..하자..!', 'https://user-images.githubusercontent.com/20608121/69005067-ce8b4c00-095f-11ea-956e-cfb07e30cb30.png');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('네오의 두근두근 피드백 강의', '??? : 네오가 setter 쓰라고 했는데요?', '분노하는 네오 사진');
+VALUES ('네오의 두근두근 피드백 강의', '??? : 네오가 setter 쓰라고 했는데요?', 'https://wimg.mk.co.kr/meet/neds/2021/12/image_readtop_2021_1148189_16400449024890188.jpg');
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('리사의 소프트 교육', '에궁..ㅜㅜ', '공감하는 리사 사진');
 INSERT INTO theme(name, description, thumbnail)
@@ -34,15 +34,15 @@ VALUES ('페드로의 주먹', '페급~ (페드로 급이라는 뜻~)', '페드�
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('사물함 탈취하기', '니 사물함 쩔더라 ㅋ', '사물함 사진');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('아루의 입기타', '뚜루루루룰루루루룰', '아루 사진');
+VALUES ('아루의 입기타', '뚜루루루룰루루루룰', 'https://mblogthumb-phinf.pstatic.net/MjAyMDAzMjNfMjY4/MDAxNTg0OTI0MDg4NDg1.mF8ebF1dybaR-EPQ7PxEpupIes6auq93ITImZrT6u2Ug.XHQikRjihAp5pwkQM_yvw7wGD8wlxStaVH7wn3Yn_NMg.JPEG.chopste11/1584924089072.jpg?type=w800');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('이든의 프로틴 쉐이크 제작 강의', '내 단백질 어디있죠?', '이든 사진');
+VALUES ('이든의 프로틴 쉐이크 제작 강의', '내 단백질 어디있죠?', 'https://image.edaily.co.kr/images/Photo/files/NP/S/2020/06/PS20062400239.jpg');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('솔라의 솔라빔', '자라나라 머리머리!', '솔라 사진');
+VALUES ('솔라의 솔라빔', '자라나라 머리머리!', 'https://i.namu.wiki/i/z3gLK6V6DXqH0icCfe1LAailWttZDL0aZW-m4a6B4Vazrxyv4PdIbL9w_angH_uHCx92mqzkOvFFjCoDSGnFsg.webp');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('포비의 긴급 포수타', '포비는 크루들에게 실망했다.', '포비 사진');
+VALUES ('포비의 긴급 포수타', '포비는 크루들에게 실망했다.', 'https://i.namu.wiki/i/kbZH5JV_XOwQipJa6b--LfXq-lQTBacYWUE97S1bTgzUwwD5smdLrPBdTa5WPxKsWWKsFgkVQe5WOIDFdzmmNA.webp');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('브리와 솔라의 페어프로그래밍 연극', '... 이거 이렇게 짜는거 맞아요?', '훈훈한 브리와 솔라 사진');
+VALUES ('브리와 솔라의 페어프로그래밍 연극', '... 이거 이렇게 짜는거 맞아요?', 'https://www.jeollailbo.com/news/photo/201612/501462_16626_3523.png');
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('레디의 코드리뷰', '아씨 깜짝아! 내 코드인줄 알았네 (제제의 코드를 보며)', '레디 사진');
 
