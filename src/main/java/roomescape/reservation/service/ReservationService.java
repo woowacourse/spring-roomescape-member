@@ -99,6 +99,7 @@ public class ReservationService {
 
     public void deleteById(long reservationId, long memberId) {
         validateAuthority(reservationId, memberId);
+        reservationRepository.deleteById(reservationId);
     }
 
     private void validateAuthority(long reservationId, long memberId) {

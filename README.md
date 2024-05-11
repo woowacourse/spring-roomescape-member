@@ -425,12 +425,12 @@
     }
     ```
 ### 사용자 회원가입
-- http method: GET
-- uri: /signup
+- http method: POST
+- uri: /members
 - request
   - 회원가입 성공
     ```
-    POST /signup HTTP/1.1
+    POST /members HTTP/1.1
     content-type: application/json
     host: localhost:8080
     
@@ -461,7 +461,7 @@
   ```
   HTTP/1.1 201 OK
   Content-Type: application/json'
-  location: /login
+  location: /members/1
   ```
 ### 사용자 로그인
 - http method: POST

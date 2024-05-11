@@ -1,6 +1,7 @@
 package roomescape.member.controller;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
+import roomescape.member.service.dto.SignUpRequest;
 
 import static org.hamcrest.Matchers.is;
 
@@ -34,4 +36,15 @@ class MemberControllerTest {
                 .assertThat().statusCode(200).body("size()", is(3));
     }
 
+
+    @DisplayName("회원가입 성공 테스트")
+    @Test
+    void signUp() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
+                .when().post("/members")
+                .then().log().all()
+                .assertThat().statusCode(201);
+    }
 }

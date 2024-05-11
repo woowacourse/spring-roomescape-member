@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
-import roomescape.auth.service.dto.SignUpRequest;
+import roomescape.member.service.dto.SignUpRequest;
 import roomescape.exception.UnauthorizedException;
 
 import java.net.URI;
@@ -42,12 +42,6 @@ public class AuthController {
         cookie.setMaxAge(0);
         httpServletResponse.addCookie(cookie);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
-        authService.signUp(signUpRequest);
-        return ResponseEntity.created(URI.create("/login")).build();
     }
 
     @GetMapping("/login/check")

@@ -113,7 +113,7 @@ function register(event) {
   };
 
   // AJAX 요청 생성 및 전송
-  fetch('/signup', {
+  fetch('/members', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -128,7 +128,6 @@ function register(event) {
       })
       .then(data => {
         // 성공적인 응답 처리
-          alert("Signup successful");
         console.log('Signup successful:', data);
         window.location.replace('/login');
       })
