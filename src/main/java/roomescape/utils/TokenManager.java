@@ -3,6 +3,7 @@ package roomescape.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -17,6 +18,8 @@ import roomescape.service.dto.member.MemberTokenResponse;
 @Component
 // TODO: 적절한 패키지로 이동
 public class TokenManager {
+    private static final String AUTH_COOKIE_NAME = "auth_token";
+
     private final SecretKey secretKey;
 
     public TokenManager(@Value("${jwt.secret}") String secret) {
@@ -37,7 +40,12 @@ public class TokenManager {
         return new MemberTokenResponse(token);
     }
 
-    public MemberResponse getMemberResponseFromToken(String token) {
+    public MemberResponse getMemberResponseFromCookies(Cookie[] cookies) {
+        String token = CookieParser.searchValueFromKey(cookies, AUTH_COOKIE_NAME);
+        return getMemberResponseFromToken(token);
+    }
+
+    private MemberResponse getMemberResponseFromToken(String token) {
         if (token == null || token.isBlank()) {
             throw new EmptyParameterException("토큰 값이 누락되었습니다.");
         }
@@ -50,9 +58,5 @@ public class TokenManager {
                 payload.get("id", Long.class),
                 payload.get("name", String.class)
         );
-    }
-
-    public long getMemberIdFromToken(String token) {
-        return getMemberResponseFromToken(token).id();
     }
 }

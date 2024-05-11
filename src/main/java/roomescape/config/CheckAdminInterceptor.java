@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.service.MemberService;
-import roomescape.utils.CookieParser;
+import roomescape.service.dto.member.MemberResponse;
 import roomescape.utils.TokenManager;
 
 @Component
@@ -20,9 +20,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = CookieParser.searchValueFromKey(request.getCookies(), "auth_token");
-        long memberId = tokenManager.getMemberIdFromToken(token);
-        if (memberService.checkAdmin(memberId)) {
+        MemberResponse member = tokenManager.getMemberResponseFromCookies(request.getCookies());
+        if (memberService.checkAdmin(member.id())) {
             return true;
         }
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);

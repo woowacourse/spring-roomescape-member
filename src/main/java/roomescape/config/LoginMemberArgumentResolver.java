@@ -9,13 +9,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.AuthenticatedMember;
 import roomescape.service.MemberService;
-import roomescape.utils.CookieParser;
+import roomescape.service.dto.member.MemberResponse;
 import roomescape.utils.TokenManager;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private static final String AUTH_COOKIE_NAME = "auth_token";
-
     private final TokenManager tokenManager;
     private final MemberService memberService;
 
@@ -35,8 +33,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = CookieParser.searchValueFromKey(request.getCookies(), AUTH_COOKIE_NAME);
-        long memberId = tokenManager.getMemberIdFromToken(token);
-        return AuthenticatedMember.from(memberService.get(memberId));
+        MemberResponse member = tokenManager.getMemberResponseFromCookies(request.getCookies());
+        return AuthenticatedMember.from(memberService.get(member.id()));
     }
 }

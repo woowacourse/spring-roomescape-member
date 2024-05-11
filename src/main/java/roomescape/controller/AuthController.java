@@ -17,7 +17,7 @@ import roomescape.service.dto.member.MemberTokenResponse;
 
 @Controller
 public class AuthController {
-    private static final String COOKIE_NAME = "auth_token";
+    private static final String AUTH_COOKIE_NAME = "auth_token";
 
     private final MemberService memberService;
 
@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody MemberLoginRequest request) {
         MemberTokenResponse tokenResponse = memberService.login(request);
-        ResponseCookie responseCookie = ResponseCookie.from(COOKIE_NAME, tokenResponse.token())
+        ResponseCookie responseCookie = ResponseCookie.from(AUTH_COOKIE_NAME, tokenResponse.token())
                 .httpOnly(true)
                 .path("/")
                 .build();
@@ -51,7 +51,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, "")
+        ResponseCookie cookie = ResponseCookie.from(AUTH_COOKIE_NAME, "")
                 .httpOnly(true)
                 .path("/")
                 .maxAge(0)
