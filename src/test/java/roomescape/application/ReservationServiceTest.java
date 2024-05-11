@@ -12,9 +12,9 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationCreationRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.support.annotation.FixedClock;
-import roomescape.support.annotation.ServiceTest;
+import roomescape.support.annotation.WithoutWebSpringBootTest;
 
-@ServiceTest
+@WithoutWebSpringBootTest
 @FixedClock(date = "2024-04-20")
 @Sql("/reservation.sql")
 public class ReservationServiceTest {

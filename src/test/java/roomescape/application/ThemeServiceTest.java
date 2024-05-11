@@ -12,9 +12,9 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ThemeCreationRequest;
 import roomescape.application.dto.response.ThemeResponse;
 import roomescape.support.annotation.FixedClock;
-import roomescape.support.annotation.ServiceTest;
+import roomescape.support.annotation.WithoutWebSpringBootTest;
 
-@ServiceTest
+@WithoutWebSpringBootTest
 @FixedClock(date = "2024-05-03")
 @Sql("/theme.sql")
 class ThemeServiceTest {

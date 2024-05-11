@@ -13,5 +13,5 @@ import roomescape.support.extension.TableTruncateExtension;
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @ExtendWith(TableTruncateExtension.class)
-public @interface ServiceTest {
+public @interface WithoutWebSpringBootTest {
 }

@@ -14,11 +14,11 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationTimeCreationRequest;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
-import roomescape.support.annotation.ServiceTest;
+import roomescape.support.annotation.WithoutWebSpringBootTest;
 
-@ServiceTest
+@WithoutWebSpringBootTest
 @Sql("/reservation-time.sql")
-public class ReservationTimeServiceTest {
+public class ReservationTimeWithoutWebSpringBootTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
 

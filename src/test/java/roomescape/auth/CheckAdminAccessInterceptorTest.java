@@ -6,14 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.exception.AccessDeniedException;
 import roomescape.domain.member.MemberRepository;
+import roomescape.support.annotation.WithoutWebSpringBootTest;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@WithoutWebSpringBootTest
 @Sql("/member.sql")
 class CheckAdminAccessInterceptorTest {
     private final CheckAdminAccessInterceptor checkAdminAccessInterceptor;
