@@ -167,4 +167,30 @@ class ReservationJdbcRepositoryTest {
         //then
         assertThat(result).isFalse();
     }
+
+    @DisplayName("주어진 식별자의 예약이 존재한다.")
+    @Test
+    void existsByIdTest() {
+        //given
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
+        Reservation target = reservationRepository.save(reservation);
+
+        //when
+        boolean result = reservationRepository.existsById(target.getId());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("주어진 식별자의 예약이 존재하지 않는다.")
+    @Test
+    void notExistsByIdTest() {
+        //when
+        boolean result = reservationRepository.existsByThemeId(0);
+
+        //then
+        assertThat(result).isFalse();
+    }
+
+
 }

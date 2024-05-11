@@ -13,7 +13,9 @@ public interface ReservationRepository {
 
     boolean existsByDateAndTimeAndTheme(String date, long timeId, long themeId);
 
-    boolean existsByTimeId(long id);
+    boolean existsByTimeId(long timeId);
 
-    boolean existsByThemeId(long id);
+    boolean existsByThemeId(long themeId);
+
+    boolean existsById(long id);
 }

@@ -12,6 +12,7 @@ import roomescape.reservation.domain.repostiory.ReservationRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -77,14 +78,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(long id) {
+    public boolean existsByTimeId(long timeId) {
         String sql = "SELECT COUNT(*) FROM Reservation WHERE time_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+        return jdbcTemplate.queryForObject(sql, Integer.class, timeId) > 0;
     }
 
     @Override
-    public boolean existsByThemeId(long id) {
+    public boolean existsByThemeId(long themeId) {
         String sql = "SELECT COUNT(*) FROM Reservation WHERE theme_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, themeId) > 0;
+    }
+
+    @Override
+    public boolean existsById(long id) {
+        String sql = "SELECT COUNT(*) FROM Reservation WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
     }
 }
