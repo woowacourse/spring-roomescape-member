@@ -5,11 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.LoginResponse;
-import roomescape.member.service.dto.SignUpRequest;
-import roomescape.exception.InvalidMemberException;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Service

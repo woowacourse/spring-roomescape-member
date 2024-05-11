@@ -3,7 +3,6 @@ package roomescape.auth.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.service.TokenProvider;
 
@@ -20,7 +19,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RoleHandlerInterceptor(tokenProvider)).addPathPatterns("/admin/**");;
+        registry.addInterceptor(new RoleHandlerInterceptor(tokenProvider)).addPathPatterns("/admin/**");
+        ;
     }
 
     @Override

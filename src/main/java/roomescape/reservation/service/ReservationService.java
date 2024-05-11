@@ -103,10 +103,10 @@ public class ReservationService {
     }
 
     private void validateAuthority(long reservationId, long memberId) {
-        if(!reservationRepository.existsById(reservationId)){
+        if (!reservationRepository.existsById(reservationId)) {
             return;
         }
-        if(reservationRepository.getById(reservationId).getMember().getId() != memberId){
+        if (reservationRepository.getById(reservationId).getMember().getId() != memberId) {
             throw new UnauthorizedException("예약을 삭제할 권한이 없습니다.");
         }
     }

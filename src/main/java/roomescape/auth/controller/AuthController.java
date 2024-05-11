@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
-import roomescape.member.service.dto.SignUpRequest;
 import roomescape.exception.UnauthorizedException;
 
-import java.net.URI;
 import java.util.Arrays;
 
 @RestController

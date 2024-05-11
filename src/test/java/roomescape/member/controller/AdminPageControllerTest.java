@@ -36,7 +36,7 @@ public class AdminPageControllerTest {
     @Test
     void responseAdminPage() {
         Response response = RestAssured.given().log().all()
-                .cookie("token",token)
+                .cookie("token", token)
                 .when().get("/admin")
                 .then().log().all().extract().response();
 
@@ -47,7 +47,7 @@ public class AdminPageControllerTest {
     @Test
     void responseAdminReservationPage() {
         Response response = RestAssured.given().log().all()
-                .cookie("token",token)
+                .cookie("token", token)
                 .when().get("/admin/reservation")
                 .then().log().all().extract().response();
 
@@ -58,7 +58,7 @@ public class AdminPageControllerTest {
     @Test
     void responseReservationTimePage() {
         RestAssured.given().log().all()
-                .cookie("token",token)
+                .cookie("token", token)
                 .when().get("/admin/time")
                 .then().log().all()
                 .assertThat().statusCode(HttpStatus.OK.value());
@@ -68,7 +68,7 @@ public class AdminPageControllerTest {
     @Test
     void responseThemePage() {
         RestAssured.given().log().all()
-                .cookie("token",token)
+                .cookie("token", token)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .assertThat().statusCode(HttpStatus.OK.value());
