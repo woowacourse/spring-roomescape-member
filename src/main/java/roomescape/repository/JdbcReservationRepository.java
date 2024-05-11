@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.service.dto.ReservationSearchParams;
+import roomescape.domain.reservation.Reservation;
+import roomescape.service.dto.reservation.ReservationSearchParams;
 
 @Repository
 public class JdbcReservationRepository {

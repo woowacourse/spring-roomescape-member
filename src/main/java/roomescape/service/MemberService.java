@@ -2,11 +2,11 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.CreateMemberRequest;
-import roomescape.service.dto.LoginMemberRequest;
-import roomescape.service.dto.MemberResponse;
+import roomescape.service.dto.member.CreateMemberRequest;
+import roomescape.service.dto.member.LoginMemberRequest;
+import roomescape.service.dto.member.MemberResponse;
 import roomescape.service.exception.MemberNotFoundException;
 
 @Service

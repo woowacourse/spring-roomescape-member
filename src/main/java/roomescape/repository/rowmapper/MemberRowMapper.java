@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 
 @Component
 public class MemberRowMapper implements RowMapper<Member> {

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.service.exception.UnauthorizedException;
 
 class JwtServiceTest {

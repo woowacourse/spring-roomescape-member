@@ -1,6 +1,5 @@
 package roomescape.config;
 
-
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.Role;
+import roomescape.domain.member.Role;
 import roomescape.service.JwtService;
 
 @Component

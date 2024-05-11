@@ -14,11 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import roomescape.domain.Member;
+import roomescape.domain.member.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.CreateMemberRequest;
-import roomescape.service.dto.LoginMemberRequest;
+import roomescape.service.dto.member.CreateMemberRequest;
+import roomescape.service.dto.member.LoginMemberRequest;
 import roomescape.service.exception.MemberNotFoundException;
 
 @TestExecutionListeners(value = {

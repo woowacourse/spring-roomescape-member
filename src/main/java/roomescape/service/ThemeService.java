@@ -2,12 +2,12 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Theme;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcThemeRepository;
-import roomescape.service.dto.PopularThemeRequest;
-import roomescape.service.dto.ThemeRequest;
-import roomescape.service.dto.ThemeResponse;
+import roomescape.service.dto.theme.PopularThemeRequest;
+import roomescape.service.dto.theme.ThemeRequest;
+import roomescape.service.dto.theme.ThemeResponse;
 
 @Service
 public class ThemeService {

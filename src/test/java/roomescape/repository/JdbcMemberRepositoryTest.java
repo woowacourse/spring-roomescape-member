@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import roomescape.domain.Member;
-import roomescape.domain.MemberInfo;
-import roomescape.domain.Role;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberInfo;
+import roomescape.domain.member.Role;
 import roomescape.repository.rowmapper.MemberRowMapper;
 
 @TestExecutionListeners(value = {
