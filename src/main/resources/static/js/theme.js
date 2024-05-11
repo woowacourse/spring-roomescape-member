@@ -21,7 +21,7 @@ function render(data) {
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = '';
 
-  data.forEach(item => {
+  data.responses.forEach(item => {
     const row = tableBody.insertRow();
 
     cellFields.forEach((field, index) => {
@@ -111,6 +111,7 @@ function requestCreate(data) {
   return fetch(API_ENDPOINT, requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
+        response.json().then(data => alert(data.errorMessage));
         throw new Error('Create failed');
       });
 }
@@ -130,6 +131,9 @@ function requestDelete(id) {
 
   return fetch(`${API_ENDPOINT}/${id}`, requestOptions)
       .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
+        if (response.status !== 204) {
+          response.json().then(data => alert(data.errorMessage));
+          throw new Error('Delete failed');
+        }
       });
 }

@@ -2,10 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
     /*
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
-    requestRead('/') // 인기 테마 목록 조회 API endpoint
+    const endDate = new Date();
+    const startDate = new Date(endDate.getDate() - 7);
+
+    const start = dateFormat(startDate);
+    const end = dateFormat(endDate);
+    const limit = 10;
+    let offset = 0;
+
+    requestRead(`/themes/hot?start=${start}&end=${end}&limit=${limit}&offset=${offset}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });
+
+function dateFormat(input) {
+    const year = input.getFullYear();
+    const month = String(input.getMonth() + 1).padStart(2, '0');
+    const day = String(input.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
 
 function render(data) {
     const container = document.getElementById('theme-ranking');
@@ -14,10 +30,10 @@ function render(data) {
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출 후 렌더링
           response 명세에 맞춰 name, thumbnail, description 값 설정
     */
-    data.forEach(theme => {
-        const name = '';
-        const thumbnail = '';
-        const description = '';
+    data.responses.forEach(theme => {
+        const name = theme.name;
+        const thumbnail = theme.thumbnail;
+        const description = theme.description;
 
         const htmlContent = `
             <img class="mr-3 img-thumbnail" src="${thumbnail}" alt="${name}">
