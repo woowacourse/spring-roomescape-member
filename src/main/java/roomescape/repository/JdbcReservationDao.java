@@ -83,6 +83,31 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                SELECT 
+                    r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail,
+                    u.id AS user_id,
+                    u.name AS user_name,
+                    u.role
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN users AS u ON r.user_id = u.id
+                WHERE th.id = ? AND u.id = ? 
+                AND r.date BETWEEN ? AND ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, themeId, memberId, dateFrom, dateTo);
+    }
+
+    @Override
     public Reservation addReservation(Reservation reservation) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("date", String.valueOf(reservation.getDate()));

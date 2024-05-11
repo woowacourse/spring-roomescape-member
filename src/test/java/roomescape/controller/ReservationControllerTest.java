@@ -2,6 +2,8 @@ package roomescape.controller;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +33,27 @@ class ReservationControllerTest {
     void should_get_reservations() {
         RestAssured.given().log().all()
                 .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", ReservationResponse.class);
+    }
+
+    @DisplayName("예약을 검색한다.")
+    @Test
+    void should_search_reservations() {
+        UserLoginRequest loginRequest = new UserLoginRequest("2222", "pobi@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
+        RestAssured.given().log().all()
+                .cookie(cookie)
+                .when().get("/admin/reservations?themeId=1&memberId=1&dateFrom=2024-05-05&dateTo=2024-05-10")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);

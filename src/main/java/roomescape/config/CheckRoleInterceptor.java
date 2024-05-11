@@ -22,6 +22,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
             throws Exception {
         Role role = authService.findRoleByCookie(request.getCookies());
         if (role == null || role.equals(Role.ADMIN)) {
+
             return true;
         }
         response.setStatus(HttpStatus.FORBIDDEN.value());

@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import static java.time.LocalDate.now;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -112,11 +114,25 @@ class JdbcReservationDaoTest {
         reservationInsertActor.execute(parameters);
     }
 
-    @DisplayName("모든 예약을 조회한다")
+    @DisplayName("모든 예약을 조회한다.")
     @Test
-    void should_get_reservation() {
+    void should_get_all_reservations() {
         List<Reservation> reservations = reservationDao.getAllReservations();
         assertThat(reservations).hasSize(2);
+    }
+
+    @DisplayName("주어진 조건에 따라 예약을 검색한다.")
+    @Test
+    void should_search_reservation_by_condition() {
+        insertReservation(now().plusDays(3).toString(), "1", "1", "1");
+        insertReservation(now().plusDays(4).toString(), "2", "1", "1");
+        insertReservation(now().plusDays(5).toString(), "2", "1", "1");
+
+        LocalDate from = now().plusDays(2);
+        LocalDate to = now().plusDays(5);
+        List<Reservation> reservations = reservationDao.searchReservation(1L, 1L, from, to);
+
+        assertThat(reservations).hasSize(3);
     }
 
     @DisplayName("조회한 예약에 예약 시간이 존재한다.")

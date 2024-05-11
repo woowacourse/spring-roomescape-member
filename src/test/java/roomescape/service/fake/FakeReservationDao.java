@@ -30,6 +30,16 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getTheme().getId() == themeId
+                        && reservation.getMember().getId() == memberId
+                        && dateFrom.isAfter(reservation.getDate())
+                        && dateTo.isBefore(reservation.getDate()))
+                .toList();
+    }
+
+    @Override
     public void deleteReservation(long id) {
         Reservation foundReservation = reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
