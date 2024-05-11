@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.LoginFailException;
@@ -37,6 +38,13 @@ public class LoginService {
     }
 
     public Member findMemberByEmail(String memberEmail) {
-        return memberDao.findMember(memberEmail);
+        return memberDao.findMemberByEmail(memberEmail);
+    }
+
+    public Member findLoginMember(Cookie[] cookies) {
+        String token = jwtTokenProvider.findTokenByCookie(cookies);
+
+        String memberEmail = jwtTokenProvider.findMemberEmailByToken(token);
+        return memberDao.findMemberByEmail(memberEmail);
     }
 }

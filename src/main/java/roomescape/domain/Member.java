@@ -18,6 +18,10 @@ public class Member {
         this(null, name, email, password);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }

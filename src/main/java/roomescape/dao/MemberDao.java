@@ -2,8 +2,11 @@ package roomescape.dao;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+
+import java.util.List;
 
 @Repository
 public class MemberDao {
@@ -23,19 +26,39 @@ public class MemberDao {
         }
     }
 
-    public Member findMember(String memberEmail) {
-        String sql = "SELECT member.name, member.email, member.password FROM member WHERE member.email = ?";
+    public Member findMemberByEmail(String memberEmail) {
+        String sql = "SELECT member.id, member.name, member.email, member.password FROM member WHERE member.email = ?";
         try {
-            Member member = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-                return new Member(
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password")
-                );
-            }, memberEmail);
+            Member member = jdbcTemplate.queryForObject(sql, getMemberRowMapper(), memberEmail);
             return member;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new queryResultSizeException("db 쿼리 조회 에러");
         }
+    }
+
+    public Member findMemberById(Long memberId) {
+        String sql = "SELECT member.id, member.name, member.email, member.password FROM member WHERE id = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, getMemberRowMapper(), memberId);
+            return member;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new queryResultSizeException("db 쿼리 조회 에러");
+        }
+    }
+
+    public List<Member> allMembers() {
+        String sql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(sql, getMemberRowMapper());
+    }
+
+    private static RowMapper<Member> getMemberRowMapper() {
+        return (rs, rowNum) -> {
+            return new Member(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("password")
+            );
+        };
     }
 }

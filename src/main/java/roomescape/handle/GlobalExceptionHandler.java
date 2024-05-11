@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import roomescape.auth.AuthException;
 import roomescape.auth.LoginFailException;
 import roomescape.domain.exception.InvalidRequestBodyFieldException;
 import roomescape.domain.exception.InvalidReservationTimeException;
@@ -50,6 +51,13 @@ public class GlobalExceptionHandler {
         logger.debug(incorrectResultSizeDataAccessException);
         incorrectResultSizeDataAccessException.printStackTrace();
         return new ResponseEntity<>(incorrectResultSizeDataAccessException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = AuthException.class)
+    public ResponseEntity<String> handleTokenException(AuthException authException) {
+        logger.debug(authException);
+        authException.printStackTrace();
+        return new ResponseEntity<>(authException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = Exception.class)
