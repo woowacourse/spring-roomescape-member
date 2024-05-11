@@ -14,7 +14,7 @@ import roomescape.controller.dto.LoginRequest;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
-class LoginControllerTest extends ControllerTest {
+class AuthControllerTest extends ControllerTest {
     @Autowired
     private AuthService authService;
 

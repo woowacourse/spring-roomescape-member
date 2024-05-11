@@ -9,7 +9,7 @@ import roomescape.application.AuthService;
 import roomescape.application.ReservationService;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
-import roomescape.controller.LoginController;
+import roomescape.controller.AuthController;
 import roomescape.controller.ReservationController;
 import roomescape.controller.ReservationTimeController;
 import roomescape.controller.ThemeController;
@@ -18,7 +18,7 @@ import roomescape.controller.ThemeController;
         ReservationController.class,
         ReservationTimeController.class,
         ThemeController.class,
-        LoginController.class
+        AuthController.class
 })
 public class ControllerTest {
     @Autowired
