@@ -6,9 +6,9 @@ import roomescape.domain.MemberRepository;
 import roomescape.exception.auth.UnauthorizedEmailException;
 import roomescape.exception.auth.UnauthorizedPasswordException;
 import roomescape.exception.auth.UnauthorizedTokenException;
-import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.dto.LoginCheckResponse;
 import roomescape.service.dto.LoginRequest;
+import roomescape.service.helper.JwtTokenProvider;
 
 @Service
 public class AuthService {

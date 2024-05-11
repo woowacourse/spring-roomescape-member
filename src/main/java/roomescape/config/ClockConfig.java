@@ -1,4 +1,4 @@
-package roomescape.service.config;
+package roomescape.config;
 
 import java.time.Clock;
 import java.time.ZoneId;
