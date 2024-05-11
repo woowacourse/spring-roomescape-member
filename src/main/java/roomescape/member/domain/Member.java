@@ -26,7 +26,6 @@ public class Member {
         this.password = password;
         this.role = role;
 
-        // TODO: email regex validate 추가
         validateBlank();
         validateName();
         validatePassword();
@@ -41,14 +40,14 @@ public class Member {
 
     private void validateName() {
         if (name.length() < 1 || name.length() > 10) {
-            throw new ValidateException(ErrorType.MEMBER_REQUEST_DATA_BLANK,
+            throw new ValidateException(ErrorType.INVALID_MEMBER_NAME,
                     String.format("회원(Member)의 이름은 1자 이상 10자 이하여야 합니다. [name: %s]", name));
         }
     }
 
     private void validatePassword() {
         if (password.length() < 8 || password.length() > 16) {
-            throw new ValidateException(ErrorType.MEMBER_REQUEST_DATA_BLANK,
+            throw new ValidateException(ErrorType.INVALID_MEMBER_PASSWORD,
                     String.format("회원(Member)의 패스워드는은 8자 이상 16자 이하여야 합니다. [password: %s]", password));
         }
     }

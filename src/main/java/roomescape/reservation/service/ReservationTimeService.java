@@ -45,7 +45,7 @@ public class ReservationTimeService {
 
         if (duplicateReservationTimes.size() > 0) {
             throw new DataDuplicateException(ErrorType.TIME_DUPLICATED,
-                    String.format("이미 존재하는 예약 시간입니다. [startAt: %s]", reservationTimeRequest.startAt()));
+                    String.format("이미 존재하는 예약 시간(ReservationTime) 입니다. [startAt: %s]", reservationTimeRequest.startAt()));
         }
     }
 
@@ -53,7 +53,7 @@ public class ReservationTimeService {
         List<Reservation> usingTimeReservations = reservationDao.findByTimeId(id);
         if (usingTimeReservations.size() > 0) {
             throw new AssociatedDataExistsException(ErrorType.TIME_IS_USED_CONFLICT,
-                    String.format("해당 시간에 예약이 존재하여 시간을 삭제할 수 없습니다. [timeId: %d]", id));
+                    String.format("해당 예약 시간(ReservationTime) 에 예약이 존재하여 시간을 삭제할 수 없습니다. [timeId: %d]", id));
         }
         reservationTimeDao.deleteById(id);
     }
