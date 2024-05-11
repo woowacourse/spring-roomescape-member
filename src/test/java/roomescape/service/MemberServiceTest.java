@@ -28,21 +28,22 @@ class MemberServiceTest {
     @InjectMocks
     MemberService memberService;
 
-    @DisplayName("해당 이메일과 password인 멤버를 읽을 수 있다.")
+    private final Member member = new Member(1L, "켬미", "aaa@naver.com");
+
+    @DisplayName("이메일와 비밀번호를 통해 멤버를 읽을 수 있다.")
     @Test
     void readMember_byEmailAndPassword() {
-        Member member = new Member(1L, "켬미", "aaa@naver.com");
         when(memberDao.readMemberByEmailAndPassword(any(String.class), any(String.class)))
                 .thenReturn(Optional.of(member));
 
-        MemberModel actual = memberService.readMember(new MemberFindRequest("aaa@naver.com", "1111"));
+        MemberFindRequest request = new MemberFindRequest("aaa@naver.com", "1111");
+        MemberModel actual = memberService.readMember(request);
         assertThat(actual).isEqualTo(MemberModel.from(member));
     }
 
-    @DisplayName("해당 id인 멤버를 읽을 수 있다.")
+    @DisplayName("해당 id를 통해 멤버를 읽을 수 있다.")
     @Test
     void readMember_byId() {
-        Member member = new Member(1L, "켬미", "aaa@naver.com");
         when(memberDao.readMemberById(any(Long.class)))
                 .thenReturn(Optional.of(member));
 
@@ -53,7 +54,6 @@ class MemberServiceTest {
     @DisplayName("멤버를 추가할 수 있다.")
     @Test
     void createMember() {
-        Member member = new Member(1L, "켬미", "aaa@naver.com");
         when(memberDao.createMember(any(Member.class), any(String.class)))
                 .thenReturn(member);
 

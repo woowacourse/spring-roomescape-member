@@ -34,13 +34,13 @@ class TimeServiceTest {
     @InjectMocks
     TimeService timeService;
 
+    private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+    private final ReservationTime time2 = new ReservationTime(1L, LocalTime.of(11, 0));
+
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
     void readTimes() {
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        List<ReservationTime> times = List.of(time);
-
-        lenient().when(timeDao.readTimes()).thenReturn(times);
+        lenient().when(timeDao.readTimes()).thenReturn(List.of(time));
 
         List<TimeResponse> expected = List.of(TimeResponse.from(time));
         assertThat(timeService.readTimes()).isEqualTo(expected);
@@ -49,8 +49,6 @@ class TimeServiceTest {
     @DisplayName("사용 가능한 시간 목록을 읽을 수 있다.")
     @Test
     void readAvailableTimes() {
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = new ReservationTime(1L, LocalTime.of(11, 0));
         List<ReservationTime> allTimes = List.of(time, time2);
         List<ReservationTime> times = List.of(time);
 
@@ -68,10 +66,8 @@ class TimeServiceTest {
     @Test
     void createTime() {
         TimeCreateRequest request = new TimeCreateRequest(LocalTime.of(10, 0));
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
 
         lenient().when(timeDao.createTime(any(ReservationTime.class))).thenReturn(time);
-
         assertThatCode(() -> timeService.createTime(request))
                 .doesNotThrowAnyException();
     }

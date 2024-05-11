@@ -32,10 +32,11 @@ class ThemeServiceTest {
     @InjectMocks
     ThemeService themeService;
 
+    private final Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
+
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
     void readThemes() {
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
         List<Theme> times = List.of(theme);
 
         lenient().when(themeDao.readThemes()).thenReturn(times);
@@ -47,7 +48,6 @@ class ThemeServiceTest {
     @DisplayName("인기 테마 목록을 랭킹 순서 대로 읽을 수 있다.")
     @Test
     void readPopularThemes() {
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
         List<Theme> times = List.of(theme);
 
         lenient().when(themeDao.readThemesRankingOfReservation(any(String.class), any(String.class))).thenReturn(times);
@@ -59,11 +59,9 @@ class ThemeServiceTest {
     @DisplayName("테마를 추가할 수 있다.")
     @Test
     void createTheme() {
-        ThemeCreateRequest request = new ThemeCreateRequest("테마1", "설명1", "https://image.jpg");
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
-
         lenient().when(themeDao.createTheme(any(Theme.class))).thenReturn(theme);
 
+        ThemeCreateRequest request = new ThemeCreateRequest("테마1", "설명1", "https://image.jpg");
         assertThatCode(() -> themeService.createTheme(request))
                 .doesNotThrowAnyException();
     }
