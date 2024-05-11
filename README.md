@@ -470,6 +470,19 @@
   Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
   ```
 
+### 사용자 로그아웃
+- http method: POST
+- uri: /logout
+- response
+  - 로그아웃 성공
+    ```
+    POST /login HTTP/1.1
+    content-type: application/json
+    Keep-Alive: timeout=60
+    Set-Cookie: 
+
+    ```
+
 ### 인증 정보 조회
 - http method: GET
 - uri: /login/check
