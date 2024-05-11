@@ -155,15 +155,16 @@ class ThemeControllerTest {
         params.put("description", THEME_DESCRIPTION);
         params.put("thumbnail", THEME_THUMBNAIL);
 
-        RestAssured.given().log().all()
+        final long savedThemeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + findLastIdOfTheme())
+                .when().delete("/themes/" + savedThemeId)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -175,9 +176,5 @@ class ThemeControllerTest {
     private void insertReservation(final String date, final int timeId, final int themeId, final int memberId) {
         final String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, date, timeId, themeId, memberId);
-    }
-
-    private int findLastIdOfTheme() {
-        return jdbcTemplate.queryForObject("SELECT max(id) FROM theme", Integer.class);
     }
 }
