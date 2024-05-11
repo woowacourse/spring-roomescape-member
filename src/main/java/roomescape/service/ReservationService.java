@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
@@ -74,11 +73,5 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationRepository.removeById(id);
-    }
-
-    public List<ReservationResponse> getAllReservations() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::from)
-                .toList();
     }
 }

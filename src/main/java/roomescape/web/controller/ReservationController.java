@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.ReservationQueryService;
 import roomescape.service.ReservationService;
 import roomescape.service.response.ReservationResponse;
 import roomescape.web.controller.request.ReservationWebRequest;
@@ -21,9 +22,14 @@ import roomescape.web.security.AuthenticatedMemberId;
 class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationQueryService reservationQueryService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(
+            ReservationService reservationService,
+            ReservationQueryService reservationQueryService
+    ) {
         this.reservationService = reservationService;
+        this.reservationQueryService = reservationQueryService;
     }
 
     @PostMapping
@@ -46,7 +52,7 @@ class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations() {
-        List<ReservationResponse> responses = reservationService.getAllReservations();
+        List<ReservationResponse> responses = reservationQueryService.getAllReservations();
 
         return ResponseEntity.ok(responses);
     }
