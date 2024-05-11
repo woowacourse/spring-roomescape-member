@@ -30,7 +30,7 @@ public class LoginController {
     public void login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         Member member = memberService.login(loginRequestDto.email(), loginRequestDto.password());
         String token = authenticationService.createToken(member.getEmail());
-        Cookie cookie = CookieInterpreter.cookieBuild(token);
+        Cookie cookie = CookieInterpreter.buildCookie(token);
         response.addCookie(cookie);
     }
 
@@ -41,7 +41,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
-        Cookie cookie = CookieInterpreter.cookieBuild(null);
+        Cookie cookie = CookieInterpreter.buildCookie(null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }

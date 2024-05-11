@@ -23,7 +23,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = CookieInterpreter.cookieExtract(request);
+        String token = CookieInterpreter.extractCookie(request);
         String email = authenticationService.getPayload(token);
         Member member = memberService.findByEmail(email);
 

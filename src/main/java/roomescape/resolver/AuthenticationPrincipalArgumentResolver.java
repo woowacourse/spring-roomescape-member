@@ -31,7 +31,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = CookieInterpreter.cookieExtract(request);
+        String token = CookieInterpreter.extractCookie(request);
 
         String email = authenticationService.getPayload(token);
         return memberService.findByEmail(email);
