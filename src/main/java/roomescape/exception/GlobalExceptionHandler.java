@@ -18,6 +18,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ExceptionTemplate(exception.getMessage()));
     }
 
+    @ExceptionHandler(value = {ForbiddenException.class})
+    protected ResponseEntity<ExceptionTemplate> handlerForbiddenException(Exception exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionTemplate(exception.getMessage()));
+    }
+
     @ExceptionHandler
     protected ResponseEntity<ExceptionTemplate> handleValidationException(MethodArgumentNotValidException exception) {
         String message = exception.getBindingResult().getFieldError().getDefaultMessage();

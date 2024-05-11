@@ -20,10 +20,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addInterceptor(new RoleHandlerInterceptor(tokenProvider)).addPathPatterns("/admin/**");;
     }
 
     @Override

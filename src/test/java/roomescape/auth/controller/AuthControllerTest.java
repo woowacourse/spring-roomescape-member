@@ -86,11 +86,11 @@ class AuthControllerTest {
                 .contentType(ContentType.JSON)
                 .body(new LoginRequest("lini123", "lini@email.com"))
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie");
+                .then().log().all().extract().cookie("token");
 
         //when&then
         RestAssured.given().log().all()
-                .cookie(token)
+                .cookie("token", token)
                 .when().get("/login/check")
                 .then().log().all()
                 .assertThat().statusCode(200).body("name", is("lini"));

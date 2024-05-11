@@ -33,7 +33,11 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = extractTokenFromCookie(request.getCookies());
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new UnauthorizedException("권한이 없는 접근입니다.");
+        }
+        String token = extractTokenFromCookie(cookies);
         return tokenProvider.extractMemberId(token);
     }
 

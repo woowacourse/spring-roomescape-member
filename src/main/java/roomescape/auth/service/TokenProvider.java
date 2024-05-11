@@ -42,6 +42,11 @@ public class TokenProvider {
         return claims.get("id", Long.class);
     }
 
+    public String extractMemberRole(String token) {
+        Claims claims = getPayload(token);
+        return (String) claims.get("role");
+    }
+
     public Claims getPayload(String token) {
         try {
             Claims claims = Jwts.parser()

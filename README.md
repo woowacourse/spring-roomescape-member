@@ -4,21 +4,53 @@
 - http method: GET
 - uri: /admin
 - file path: templates/admin/index.html
+- 사용자는 권한 없음
+  ```
+    HTTP/1.1 403
+
+    {
+    "message": "권한이 없는 접근입니다."
+    }
+  ```
 
 ### 어드민 예약 페이지 접근
 - http method: GET
 - uri: /admin/reservation
 - file path: templates/admin/reservation-new.html
+- 사용자는 권한 없음
+  ```
+    HTTP/1.1 403
+
+    {
+    "message": "권한이 없는 접근입니다."
+    }
+  ```
 
 ### 어드민 시간 페이지 접근
 - http method: GET
 - uri: /admin/time
 - file path: templates/admin/time.html
+- 사용자는 권한 없음
+  ```
+    HTTP/1.1 403
+
+    {
+    "message": "권한이 없는 접근입니다."
+    }
+  ```
 
 ### 어드민 테마 페이지 접근
 - http method: GET
 - uri: /admin/theme
 - file path: templates/admin/theme.html
+- 사용자는 권한 없음
+  ```
+    HTTP/1.1 403
+
+    {
+    "message": "권한이 없는 접근입니다."
+    }
+  ```
 
 ### 사용자 예약 페이지 접근
 - http method: GET
