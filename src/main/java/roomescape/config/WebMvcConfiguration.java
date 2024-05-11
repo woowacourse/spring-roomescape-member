@@ -5,10 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.controller.CheckLoginInterceptor;
-import roomescape.controller.LoginMemberRequestArgumentResolver;
-import roomescape.controller.MemberResponseArgumentResolver;
-import roomescape.service.MemberService;
+import roomescape.login.CheckLoginInterceptor;
+import roomescape.login.LoginMemberRequestArgumentResolver;
+import roomescape.member.MemberNameResponseArgumentResolver;
+import roomescape.member.service.MemberService;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
@@ -21,7 +21,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new MemberResponseArgumentResolver(memberService));
+        resolvers.add(new MemberNameResponseArgumentResolver(memberService));
         resolvers.add(new LoginMemberRequestArgumentResolver(memberService));
     }
 

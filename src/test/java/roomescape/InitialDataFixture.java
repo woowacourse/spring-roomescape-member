@@ -6,10 +6,10 @@ import static roomescape.InitialMemberFixture.LOGIN_MEMBER_3;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeName;
 
 public class InitialDataFixture {
 

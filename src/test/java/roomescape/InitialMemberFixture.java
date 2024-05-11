@@ -1,11 +1,11 @@
 package roomescape;
 
-import roomescape.domain.member.Email;
-import roomescape.domain.member.LoginMember;
-import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberName;
-import roomescape.domain.member.Password;
-import roomescape.domain.member.Role;
+import roomescape.member.domain.Email;
+import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberName;
+import roomescape.member.domain.Password;
+import roomescape.member.domain.Role;
 
 public class InitialMemberFixture {
 

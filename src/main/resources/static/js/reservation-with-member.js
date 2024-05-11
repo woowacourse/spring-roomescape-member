@@ -200,7 +200,8 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+  // TODO: /search로 depth를 늘리는게 좋은가 아니면 reservations? 로 가는게 좋은가. RESTful 관점에서 설명하기
+  fetch(`/admin/reservations/search?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}`, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
