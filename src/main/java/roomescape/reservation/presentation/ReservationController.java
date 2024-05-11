@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.AuthenticationPrincipal;
+import roomescape.global.Authenticated;
 import roomescape.member.domain.Member;
 import roomescape.reservation.dto.MemberReservationAddRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -45,7 +45,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> saveMemberReservation(
-            @AuthenticationPrincipal Member member,
+            @Authenticated Member member,
             @Valid @RequestBody MemberReservationAddRequest memberReservationAddRequest) {
         ReservationResponse saveResponse = reservationService.saveMemberReservation(member,
                 memberReservationAddRequest);

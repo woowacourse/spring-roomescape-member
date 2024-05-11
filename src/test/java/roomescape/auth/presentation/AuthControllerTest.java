@@ -18,10 +18,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.auth.LoginMemberArgumentResolver;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.service.AuthService;
+import roomescape.global.AuthenticatedMemberArgumentResolver;
 
 @WebMvcTest(AuthController.class)
 class AuthControllerTest {
@@ -36,7 +36,7 @@ class AuthControllerTest {
     private AuthService authService;
 
     @MockBean
-    private LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
 
     @DisplayName("로그인 요청 성공 시 응답 쿠키에 토큰을 포함시킨다")
     @Test

@@ -20,7 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.auth.LoginMemberArgumentResolver;
+import roomescape.global.AuthenticatedMemberArgumentResolver;
 import roomescape.member.fixture.MemberFixture;
 import roomescape.reservation.dto.MemberReservationAddRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -39,7 +39,7 @@ class ReservationControllerTest {
     private ReservationService reservationService;
 
     @MockBean
-    private LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
 
     @DisplayName("전체 예약 목록을 읽는 요청을 처리할 수 있다")
     @Test

@@ -20,7 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.auth.LoginMemberArgumentResolver;
+import roomescape.global.AuthenticatedMemberArgumentResolver;
 import roomescape.time.dto.ReservationTimeAddRequest;
 import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.service.ReservationTimeService;
@@ -38,7 +38,7 @@ class ReservationTimeControllerTest {
     private ReservationTimeService reservationTimeService;
 
     @MockBean
-    private LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
 
     @DisplayName("전체 시간을 읽는 요청을 처리할 수 있다")
     @Test

@@ -18,7 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.auth.LoginMemberArgumentResolver;
+import roomescape.global.AuthenticatedMemberArgumentResolver;
 import roomescape.theme.dto.ThemeAddRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -36,7 +36,7 @@ class ThemeControllerTest {
     private ThemeService themeService;
 
     @MockBean
-    private LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
 
     @DisplayName("전체 테마 목록을 읽는 요청을 처리할 수 있다")
     @Test
