@@ -14,7 +14,7 @@ import roomescape.member.service.dto.SignUpRequest;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:truncate-with-guest.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate-with-guests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class AuthControllerTest {
     @LocalServerPort
     private int port;

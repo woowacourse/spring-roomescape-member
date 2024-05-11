@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:truncate-with-guest.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate-with-guests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationControllerTest {
     @LocalServerPort
     private int port;
@@ -154,5 +154,35 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .assertThat().body("size()", is(0));
+    }
+
+    @DisplayName("예약 취소 실패 테스트 - 본인 예약 아님")
+    @Test
+    void cannotDeleteReservationSuccess() {
+        //given
+        var id = RestAssured.given().contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(new ReservationRequest(date, timeId, themeId))
+                .when().post("/reservations")
+                .then().extract().body().jsonPath().get("id");
+
+        String wrongToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new LoginRequest("guest123", "guest2@email.com"))
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+
+        //when
+        RestAssured.given().log().all()
+                .cookie("token", wrongToken)
+                .when().delete("/reservations/" + id)
+                .then().log().all()
+                .assertThat().statusCode(401);
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/reservations")
+                .then().log().all()
+                .assertThat().body("size()", is(1));
     }
 }
