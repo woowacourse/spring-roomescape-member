@@ -74,16 +74,16 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
-          throw new Error('Login failed');
-        }
+        if (200 === !response.status)return response.json().then(data => {
+            throw new Error(data.message || 'login failed');
+        });
       })
       .then(() => {
         updateUIBasedOnLogin(); // UI 업데이트
         window.location.href = '/';
       })
       .catch(error => {
+          alert(error.message);
         console.error('Error during login:', error);
       });
 }
@@ -121,10 +121,9 @@ function register(event) {
     body: JSON.stringify(formData)
   })
       .then(response => {
-        if (!response.ok) {
-          alert('Signup request failed');
-          throw new Error('Signup request failed');
-        }
+        if (!response.ok) return response.json().then(data => {
+            throw new Error(data.message || 'Signup request failed');
+        });
         return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
@@ -133,8 +132,8 @@ function register(event) {
         window.location.href = '/login';
       })
       .catch(error => {
-        // 에러 처리
-        console.error('Error during signup:', error);
+          alert(error.message);
+          console.error('Error during signup:', error);
       });
 
   // 폼 제출에 의한 페이지 리로드 방지
