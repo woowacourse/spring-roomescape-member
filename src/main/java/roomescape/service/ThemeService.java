@@ -27,17 +27,17 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findTopBookedThemes(PopularThemeRequest requestDto) {
+    public List<ThemeResponse> findTopBookedThemes(PopularThemeRequest request) {
         List<Theme> topBookedThemes = themeRepository.findTopThemesDescendingByReservationCount(
-                requestDto.getStartDate(), requestDto.getEndDate(), requestDto.getCount());
+                request.getStartDate(), request.getEndDate(), request.getCount());
 
         return topBookedThemes.stream()
                 .map(ThemeResponse::new)
                 .toList();
     }
 
-    public ThemeResponse createTheme(ThemeRequest requestDto) {
-        Theme theme = themeRepository.insertTheme(requestDto.toTheme());
+    public ThemeResponse createTheme(ThemeRequest request) {
+        Theme theme = themeRepository.insertTheme(request.toTheme());
         return new ThemeResponse(theme);
     }
 

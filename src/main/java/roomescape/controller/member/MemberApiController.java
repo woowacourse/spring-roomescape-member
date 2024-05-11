@@ -28,13 +28,13 @@ public class MemberApiController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/members/signup")
-    public void signup(@Valid @RequestBody CreateMemberRequest requestDto) {
-        memberService.signup(requestDto);
+    public void signup(@Valid @RequestBody CreateMemberRequest request) {
+        memberService.signup(request);
     }
 
     @PostMapping("/members/login")
-    public void login(@Valid @RequestBody LoginMemberRequest requestDto, HttpServletResponse response) {
-        String token = memberService.login(requestDto);
+    public void login(@Valid @RequestBody LoginMemberRequest request, HttpServletResponse response) {
+        String token = memberService.login(request);
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

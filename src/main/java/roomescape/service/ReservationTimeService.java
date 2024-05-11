@@ -30,17 +30,17 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public AvailableTimeResponses findAvailableReservationTimes(AvailableTimeRequest requestDto) {
+    public AvailableTimeResponses findAvailableReservationTimes(AvailableTimeRequest request) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationTimeRepository.findReservedTimeByThemeAndDate(
-                requestDto.getDate(), requestDto.getThemeId());
+                request.getDate(), request.getThemeId());
 
         ReservationTimeStatuses reservationStatuses = new ReservationTimeStatuses(allTimes, bookedTimes);
         return new AvailableTimeResponses(reservationStatuses);
     }
 
-    public ReservationTimeResponse createReservationTime(ReservationTimeRequest requestDto) {
-        ReservationTime reservationTime = requestDto.toReservationTime();
+    public ReservationTimeResponse createReservationTime(ReservationTimeRequest request) {
+        ReservationTime reservationTime = request.toReservationTime();
         if (reservationTimeRepository.isTimeExistsByStartTime(reservationTime.getStartAt().toString())) {
             throw new IllegalArgumentException("중복된 시간을 입력할 수 없습니다.");
         }

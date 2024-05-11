@@ -38,22 +38,22 @@ public class ReservationApiController {
             @RequestParam(name = "start-date", required = false) LocalDate dateFrom,
             @RequestParam(name = "end-date", required = false) LocalTime dateTo) {
 
-        ReservationSearchParams requestDto = new ReservationSearchParams(memberId, themeId, dateFrom, dateTo);
-        return reservationService.findAllReservations(requestDto);
+        ReservationSearchParams request = new ReservationSearchParams(memberId, themeId, dateFrom, dateTo);
+        return reservationService.findAllReservations(request);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/reservations")
     public ReservationResponseDto createReservationMember(@AuthenticationPrincipal LoginMember loginMember,
-                                                          @Valid @RequestBody MemberReservationRequest requestDto) {
-        return reservationService.createReservation(new CreateReservation(loginMember, requestDto));
+                                                          @Valid @RequestBody MemberReservationRequest request) {
+        return reservationService.createReservation(new CreateReservation(loginMember, request));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/reservations")
     public ReservationResponseDto createReservationAdmin(
-            @Valid @RequestBody AdminReservationRequest reservationDto) {
-        return reservationService.createReservation(reservationDto.toCreateReservation());
+            @Valid @RequestBody AdminReservationRequest reservation) {
+        return reservationService.createReservation(reservation.toCreateReservation());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

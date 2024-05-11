@@ -31,14 +31,14 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping("/times/available")
-    public AvailableTimeResponses findAvailableReservationTimes(@Valid AvailableTimeRequest requestDto) {
-        return reservationTimeService.findAvailableReservationTimes(requestDto);
+    public AvailableTimeResponses findAvailableReservationTimes(@Valid AvailableTimeRequest request) {
+        return reservationTimeService.findAvailableReservationTimes(request);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/times")
-    public ReservationTimeResponse createReservationTime(@Valid @RequestBody ReservationTimeRequest requestDto) {
-        return reservationTimeService.createReservationTime(requestDto);
+    public ReservationTimeResponse createReservationTime(@Valid @RequestBody ReservationTimeRequest request) {
+        return reservationTimeService.createReservationTime(request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

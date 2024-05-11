@@ -39,8 +39,8 @@ public class ThemeApiController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/themes")
-    public ThemeResponse createTheme(@Valid @RequestBody ThemeRequest requestDto) {
-        return themeService.createTheme(requestDto);
+    public ThemeResponse createTheme(@Valid @RequestBody ThemeRequest request) {
+        return themeService.createTheme(request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

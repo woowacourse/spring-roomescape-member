@@ -23,8 +23,8 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationResponseDto> findAllReservations(ReservationSearchParams requestDto) {
-        return reservationRepository.findReservationsWithParams(requestDto)
+    public List<ReservationResponseDto> findAllReservations(ReservationSearchParams request) {
+        return reservationRepository.findReservationsWithParams(request)
                 .stream()
                 .map(ReservationResponseDto::new)
                 .toList();
