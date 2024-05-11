@@ -11,13 +11,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import lombok.RequiredArgsConstructor;
-import roomescape.service.MemberService;
 import roomescape.service.security.JwtUtils;
 import roomescape.web.dto.request.MemberInfo;
 
 @RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberService memberService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -29,6 +27,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = request.getHeader(COOKIE);
-        return new MemberInfo(JwtUtils.decode(token));
+        return new MemberInfo(JwtUtils.decodeId(token));
     }
 }

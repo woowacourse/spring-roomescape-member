@@ -21,9 +21,9 @@ public class MemberService {
 
         return "token=" + JwtUtils.encode(findMember);
     }
-    
+
     public MemberResponse findMemberByToken(String token) {
-        Long decodedId = JwtUtils.decode(token);
+        Long decodedId = JwtUtils.decodeId(token);
         Member findMember = memberRepository.findById(decodedId)
                 .orElseThrow(AuthenticationFailureException::new);
         return new MemberResponse(findMember.getName());

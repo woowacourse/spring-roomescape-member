@@ -37,7 +37,7 @@ class MemberServiceTest {
         String token = memberService.login(request);
 
         // then
-        Assertions.assertThat(JwtUtils.decode(token)).isEqualTo(savedMember.getId());
+        Assertions.assertThat(JwtUtils.decodeId(token)).isEqualTo(savedMember.getId());
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import groovy.util.logging.Slf4j;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Slf4j
 class JwtUtilsTest {
@@ -20,9 +21,23 @@ class JwtUtilsTest {
         String encodedToken = JwtUtils.encode(user);
 
         //then
-        Long decode = JwtUtils.decode(encodedToken);
+        Long decode = JwtUtils.decodeId(encodedToken);
         Assertions.assertThat(decode)
                 .isOne();
+    }
+
+    @Test
+    @DisplayName("사용자의 권한을 토큰에서 찾을 수 있다")
+    void decodeRole_ShouldExtractRole() {
+        // given
+        Member member = new Member(1L, "name", "email", "password", Role.ADMIN);
+        String encoded = JwtUtils.encode(member);
+
+        // when
+        Role role = JwtUtils.decodeRole(encoded);
+
+        // then
+        Assertions.assertThat(role).isSameAs(Role.ADMIN);
     }
 
 }

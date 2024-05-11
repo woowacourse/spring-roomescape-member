@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.exception.reservation.NotFoundReservationException;
@@ -44,7 +45,8 @@ public class ReservationDao implements ReservationRepository {
                     resultSet.getLong("member_id"),
                     resultSet.getString("member_name"),
                     resultSet.getString("member_email"),
-                    "masked password"
+                    "masked password",
+                    Role.of(resultSet.getString("member_role"))
             )
     );
 
@@ -62,7 +64,8 @@ public class ReservationDao implements ReservationRepository {
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
                 theme.id AS theme_id, theme.name AS theme_name, 
                 theme.description AS theme_description, theme.thumbnail AS theme_thumbnail,
-                member.id AS member_id, member.name AS member_name, member.email AS member_email  
+                member.id AS member_id, member.name AS member_name, member.email AS member_email,
+                member.role AS member_role  
                 FROM reservation 
                 INNER JOIN reservation_time AS `time` ON reservation.time_id = `time`.id 
                 INNER JOIN theme ON reservation.theme_id = theme.id
@@ -78,7 +81,7 @@ public class ReservationDao implements ReservationRepository {
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
                 theme.id AS theme_id, theme.name AS theme_name, 
                 theme.description AS theme_description, theme.thumbnail AS theme_thumbnail, 
-                member.id AS member_id, member.name AS member_name, member.email AS member_email
+                member.id AS member_id, member.name AS member_name, member.email AS member_email, member.role AS member_role
                 FROM reservation 
                 INNER JOIN reservation_time AS `time` ON reservation.time_id = `time`.id 
                 INNER JOIN theme ON reservation.theme_id = theme.id

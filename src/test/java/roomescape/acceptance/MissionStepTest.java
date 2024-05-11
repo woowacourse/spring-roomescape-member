@@ -18,12 +18,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.service.security.JwtUtils;
 import roomescape.web.controller.ReservationController;
 import roomescape.web.dto.response.ReservationResponse;
 
 class MissionStepTest extends AcceptanceTest {
-    private static final String TOKEN = JwtUtils.encode(new Member(1L, "a", "B", "c"));
+    private static final String TOKEN = JwtUtils.encode(new Member(1L, "a", "B", "c", Role.ADMIN));
 
     @Autowired
     private ReservationController reservationController;
@@ -32,6 +33,7 @@ class MissionStepTest extends AcceptanceTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
+                .cookie("token", TOKEN)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -40,6 +42,7 @@ class MissionStepTest extends AcceptanceTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
+                .cookie("token", TOKEN)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
