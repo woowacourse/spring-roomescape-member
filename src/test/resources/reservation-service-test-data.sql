@@ -10,5 +10,5 @@ INSERT INTO theme (name, description, thumbnail) VALUES
 INSERT INTO reservation_time (start_at) VALUES
 ('10:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES
-('테드', CURRENT_DATE() - INTERVAL '1' DAY, 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES
+(1, CURRENT_DATE() - INTERVAL '1' DAY, 1, 1);
