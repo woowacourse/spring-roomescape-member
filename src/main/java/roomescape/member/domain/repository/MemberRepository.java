@@ -3,6 +3,7 @@ package roomescape.member.domain.repository;
 import roomescape.exception.InvalidMemberException;
 import roomescape.member.domain.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository {
@@ -21,4 +22,6 @@ public interface MemberRepository {
     }
 
     boolean existsByEmail(String email);
+
+    List<Member> findAll();
 }

@@ -6,15 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
-import roomescape.member.infrastructure.MemberJdbcRepository;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
@@ -53,7 +51,7 @@ class MemberJdbcRepositoryTest {
     @Test
     void findMemberByEmail() {
         //given
-        Member member = memberJdbcRepository.save(new Member("lini","lini@email.com","lini123", Role.GUEST));
+        Member member = memberJdbcRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
 
         //when
         Optional<Member> result = memberJdbcRepository.findByEmail(member.getEmail());
@@ -79,7 +77,7 @@ class MemberJdbcRepositoryTest {
     @Test
     void getMemberByEmail() {
         //given
-        Member member = memberJdbcRepository.save(new Member("lini","lini@email.com","lini123", Role.GUEST));
+        Member member = memberJdbcRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
 
         //when
         Member result = memberJdbcRepository.getByEmail(member.getEmail());
@@ -92,7 +90,7 @@ class MemberJdbcRepositoryTest {
     @Test
     void existsMemberByEmail() {
         //given
-        Member member = memberJdbcRepository.save(new Member("lini","lini@email.com","lini123", Role.GUEST));
+        Member member = memberJdbcRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
 
         //when
         boolean result = memberJdbcRepository.existsByEmail(member.getEmail());
@@ -109,6 +107,21 @@ class MemberJdbcRepositoryTest {
 
         //then
         assertThat(result).isFalse();
+    }
+
+    @DisplayName("모든 사용자 정보를 조회한다.")
+    @Test
+    void findAll() {
+        //given
+        memberJdbcRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
+        memberJdbcRepository.save(new Member("lini2", "lini2@email.com", "lini123", Role.GUEST));
+        memberJdbcRepository.save(new Member("lini3", "lini3@email.com", "lini123", Role.GUEST));
+
+        //when
+        List<Member> members = memberJdbcRepository.findAll();
+
+        //then
+        assertThat(members).hasSize(3);
     }
 
 }

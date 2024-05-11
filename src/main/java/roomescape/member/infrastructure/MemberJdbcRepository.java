@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -69,5 +70,11 @@ public class MemberJdbcRepository implements MemberRepository {
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM member WHERE email = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, email) > 0;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 }
