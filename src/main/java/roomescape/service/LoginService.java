@@ -40,11 +40,6 @@ public class LoginService {
         return cookieManager.makeResetCookie(cookies);
     }
 
-    public Long findMemberIdByToken(Token token) {
-        return tokenGenerator.getMemberId(token);
-
-    }
-
     private void validateLogin(LoginRequest loginRequest, Member member) {
         if (loginRequest.password().equals(member.getPassword())) {
             return;
