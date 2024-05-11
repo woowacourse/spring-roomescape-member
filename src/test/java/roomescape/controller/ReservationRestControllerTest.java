@@ -128,7 +128,7 @@ class ReservationRestControllerTest {
     }
 
     @Test
-    @DisplayName("관리자가 예약을 같은 날짜, 테마, 시간에 중복된 예약을 생성하려고 하면 예외를 발생한다.")
+    @DisplayName("관리자가 예약을 같은 날짜, 테마, 시간에 중복된 예약을 생성하려고 하면 BAD_REQUEST를 반환한다.")
     void adminCreate_duplicate_badRequest() {
         // given
         setAdmin();
@@ -146,7 +146,7 @@ class ReservationRestControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
     @Test

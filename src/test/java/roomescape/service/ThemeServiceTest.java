@@ -38,12 +38,12 @@ class ThemeServiceTest {
     }
 
     @Test
-    void findAllThemes() {
+    void findAll() {
         // given
         themeDao.themes.add(new Theme(1L,"이름", "설명", "썸네일"));
 
         // when
-        List<ThemeResponse> allThemes = themeService.findAllThemes();
+        List<ThemeResponse> allThemes = themeService.findAll();
 
         // then
         assertThat(allThemes).containsExactly(new ThemeResponse(1L, "이름", "설명", "썸네일"));
@@ -83,7 +83,7 @@ class ThemeServiceTest {
         ));
 
         // when && then
-        assertThatThrownBy(() -> themeService.deleteThemeById(1L))
+        assertThatThrownBy(() -> themeService.deleteById(1L))
                 .isInstanceOf(ExistReservationException.class);
     }
 }

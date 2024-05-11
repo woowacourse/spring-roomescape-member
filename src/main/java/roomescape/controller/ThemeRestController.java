@@ -22,14 +22,14 @@ public class ThemeRestController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        List<ThemeResponse> responses = themeService.findAllThemes();
+        List<ThemeResponse> responses = themeService.findAll();
 
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ThemeResponse>> getRankThemes() {
-        List<ThemeResponse> responses = themeService.findRankThemes();
+        List<ThemeResponse> responses = themeService.findRank();
 
         return ResponseEntity.ok(responses);
     }
@@ -44,7 +44,7 @@ public class ThemeRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable(name = "id") Long id) {
-        themeService.deleteThemeById(id);
+        themeService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
