@@ -22,7 +22,8 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       });
 });
 
-document.getElementById('register-btn').addEventListener('click', register);
+const registerBtn = document.getElementById('register-btn');
+if (registerBtn !== null) registerBtn.addEventListener('click', register);
 
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
@@ -142,7 +143,7 @@ function register(event) {
       });
 
   // 폼 제출에 의한 페이지 리로드 방지
-  event.preventDefault();
+  // event.preventDefault();
 }
 
 function base64DecodeUnicode(str) {
