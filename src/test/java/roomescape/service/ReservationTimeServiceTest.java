@@ -8,7 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.exception.NotRemovableByConstraintException;
+import roomescape.exception.SqlExecutionException;
 import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
@@ -61,7 +61,7 @@ public class ReservationTimeServiceTest {
     @Test
     void deleteInvalidTimeIdTest() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(NotRemovableByConstraintException.class);
+                .isInstanceOf(SqlExecutionException.class);
     }
 
     @DisplayName("예약이 가능한 시간인지 확인한다.")

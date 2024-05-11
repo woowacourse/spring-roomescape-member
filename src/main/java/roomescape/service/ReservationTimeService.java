@@ -5,7 +5,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.exception.NotRemovableByConstraintException;
+import roomescape.exception.SqlExecutionException;
 import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
@@ -36,7 +36,7 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         if (reservationDao.countByTimeId(id) != 0) {
-            throw new NotRemovableByConstraintException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new SqlExecutionException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteById(id);
     }

@@ -5,7 +5,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationThemeDao;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequestDto;
-import roomescape.exception.NotRemovableByConstraintException;
+import roomescape.exception.SqlExecutionException;
 import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
@@ -45,7 +45,7 @@ public class ReservationThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationDao.countByThemeId(id) != 0) {
-            throw new NotRemovableByConstraintException("예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new SqlExecutionException("예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
         reservationThemeDao.deleteById(id);
     }

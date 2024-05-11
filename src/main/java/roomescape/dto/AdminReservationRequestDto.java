@@ -1,6 +1,6 @@
 package roomescape.dto;
 
-import roomescape.exception.NullRequestParameterException;
+import roomescape.exception.InvalidParameterException;
 
 import java.time.LocalDate;
 
@@ -8,16 +8,16 @@ public record AdminReservationRequestDto(LocalDate date, Long timeId, Long theme
 
     public AdminReservationRequestDto {
         if (date == null) {
-            throw new NullRequestParameterException("날짜를 입력하여야 합니다.");
+            throw new InvalidParameterException("날짜를 입력하여야 합니다.");
         }
         if (timeId == null) {
-            throw new NullRequestParameterException("시간을 입력하여야 합니다.");
+            throw new InvalidParameterException("시간을 입력하여야 합니다.");
         }
         if (themeId == null) {
-            throw new NullRequestParameterException("테마를 입력하여야 합니다.");
+            throw new InvalidParameterException("테마를 입력하여야 합니다.");
         }
         if (memberId == null) {
-            throw new NullRequestParameterException("멤버를 입력하여야 합니다.");
+            throw new InvalidParameterException("멤버를 입력하여야 합니다.");
         }
     }
 }
