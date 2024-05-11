@@ -25,9 +25,9 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
       .then(response => {
-        if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경우
-          throw new Error('Not logged in or other error');
-        }
+        if (!response.ok)  return response.json().then(data => {
+            throw new Error(data.message || 'Not logged in or other error');
+        }); // 요청이 실패하거나 로그인 상태가 아닌 경우
         return response.json(); // 응답 본문을 JSON으로 파싱
       })
       .then(data => {
@@ -74,7 +74,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status)return response.json().then(data => {
+        if (200 === !response.status) return response.json().then(data => {
             throw new Error(data.message || 'login failed');
         });
       })

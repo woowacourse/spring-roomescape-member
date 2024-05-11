@@ -43,6 +43,24 @@ class AuthControllerTest {
                 .assertThat().statusCode(200);
     }
 
+    @DisplayName("로그아웃 성공 테스트")
+    @Test
+    void logout() {
+        //given
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
+                .when().post("/signup")
+                .then().log().all();
+
+        //when&then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().post("/logout")
+                .then().log().all()
+                .assertThat().statusCode(200);
+    }
+
     @DisplayName("회원가입 성공 테스트")
     @Test
     void signUp() {

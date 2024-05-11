@@ -18,6 +18,7 @@ import java.net.URI;
 @RestController
 public class AuthController {
 
+    private static final String KEY = "token";
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -26,9 +27,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
-        Cookie cookie = new Cookie("token", authService.login(loginRequest).token());
+        Cookie cookie = new Cookie(KEY, authService.login(loginRequest).token());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        httpServletResponse.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse httpServletResponse) {
+        Cookie cookie = new Cookie(KEY, null);
+        cookie.setMaxAge(0);
         httpServletResponse.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
