@@ -1,9 +1,12 @@
 package roomescape.repository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
@@ -11,6 +14,7 @@ import roomescape.domain.Member;
 public class JdbcMemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("name"),
@@ -20,6 +24,16 @@ public class JdbcMemberRepository {
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        List<Member> reservations = jdbcTemplate.query(sql, memberRowMapper);
+
+        return Collections.unmodifiableList(reservations);
     }
 
     public Member findById(long id) {
@@ -41,5 +55,22 @@ public class JdbcMemberRepository {
         }
 
         return Optional.of(members.get(0));
+    }
+
+    public Member save(Member member) {
+        Map<String, Object> params = Map.of(
+                "name", member.getName(),
+                "email", member.getEmail(),
+                "password", member.getEmail()
+        );
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM member WHERE id = ?";
+
+        jdbcTemplate.update(sql, id);
     }
 }

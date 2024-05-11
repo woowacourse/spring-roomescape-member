@@ -122,4 +122,11 @@ public class JdbcReservationRepository {
 
         return !reservations.isEmpty();
     }
+
+    public boolean existByMemberId(Long id) {
+        String sql = basicSelectQuery + "WHERE member_id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
+
+        return !reservations.isEmpty();
+    }
 }
