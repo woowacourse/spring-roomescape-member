@@ -49,7 +49,7 @@ public class LoginApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        MemberResponse response = new MemberResponse(member.getName().getValue());
+        MemberResponse response = new MemberResponse(member);
 
         return ResponseEntity.ok(response);
     }

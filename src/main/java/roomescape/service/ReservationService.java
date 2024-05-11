@@ -3,11 +3,13 @@ package roomescape.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.ReservationAdminRequest;
+import roomescape.service.dto.ReservationCookieRequest;
 import roomescape.service.dto.ReservationResponse;
 
 @Service
@@ -29,13 +31,32 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationRequest requestDto) {
-        Reservation reservation = requestDto.toReservation();
+    public ReservationResponse createReservation2(ReservationCookieRequest request, Member member) {
+        Reservation reservation = request.toReservation(member);
         if (!reservationTimeRepository.isExistTimeOf(reservation.getTimeId())) {
             throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");
         }
 
-        ReservationTime time = reservationTimeRepository.findReservationTimeById(requestDto.getTimeId());
+        ReservationTime time = reservationTimeRepository.findReservationTimeById(request.getTimeId());
+        if (isBeforeNow(reservation, time)) {
+            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
+        }
+
+        if (reservationRepository.hasSameReservationForThemeAtDateTime(reservation)) {
+            throw new IllegalArgumentException("해당 테마는 같은 시간에 이미 예약이 존재합니다.");
+        }
+
+        Reservation savedReservation = reservationRepository.insertReservation(reservation);
+        return new ReservationResponse(savedReservation);
+    }
+
+    public ReservationResponse createReservation3(ReservationAdminRequest request) {
+        Reservation reservation = request.toReservation();
+        if (!reservationTimeRepository.isExistTimeOf(reservation.getTimeId())) {
+            throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");
+        }
+
+        ReservationTime time = reservationTimeRepository.findReservationTimeById(request.getTimeId());
         if (isBeforeNow(reservation, time)) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
         }
