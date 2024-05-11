@@ -31,6 +31,17 @@
 GET /reservations HTTP/1.1
 ```
 
+```http request
+GET /reservations?themeId=3&memberId=2&dateFrom=2024-05-09&dateTo=2024-05-10 HTTP/1.1
+```
+
+| 쿼리 파라미터  | 타입       | 예시           | 필수 여부 | 설명           |
+|----------|----------|--------------|-------|--------------|
+| themeId  | `Number` | `3`          | 선택    | 테마 번호        |
+| memberId | `Number` | `2`          | 선택    | 멤버 번호        |
+| dateFrom | `String` | `2024-05-09` | 선택    | 시작 날짜 필터 범위  |
+| dateTo   | `String` | `2024-05-10` | 선택    | 마지막 날짜 필터 범위 |
+
 <br>
 
 **Response**
@@ -133,6 +144,15 @@ HTTP/1.1 204
 ```http request
 GET /times HTTP/1.1
 ```
+
+```http request
+GET /times?date=2024-05-11&themeId=1 HTTP/1.1
+```
+
+| 쿼리 파라미터 | 타입       | 예시           | 필수 여부 | 설명    |
+|---------|----------|--------------|-------|-------|
+| date    | `String` | `2024-05-11` | 선택    | 필터 날짜 |
+| themeId | `Number` | `1`          | 선택    | 테마 번호 |
 
 **Response**
 
@@ -363,6 +383,10 @@ host: localhost:8080
     "memberId": 1
 }
 ```
+
+| 쿠키    | 타입       | 예시                                                                                                                                                | 필수 여부 | 설명     |
+|-------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------|-------|--------|
+| token | `String` | `eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsImlhdCI6MTcxNTQzODI4OSwiZXhwIjoxNzE1NDQxODg5fQ.m6cd4k5XaC0SKgAhDfZsiinQZw3z8eFTzZ5CYaE2-Ow` | 필수    | 로그인 토큰 |
 
 **response**
 

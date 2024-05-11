@@ -20,6 +20,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    // [질문] 보통 GET 요청에 대해서도 Request Content-Type 을 JSON 을 많이 사용하는지? 저는 보통 URL 인코딩 방식으로 query string으로 요청했습니다
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParams SearchReservationRequest request) {
         if (request == null || request.existNull()) {
