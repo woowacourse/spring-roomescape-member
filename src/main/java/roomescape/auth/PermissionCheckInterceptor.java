@@ -20,10 +20,10 @@ public class PermissionCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
-        PermissionRequired permissionRequired = method.getAnnotation(PermissionRequired.class);
-        if (permissionRequired == null) {
+        if (!method.isAnnotationPresent(PermissionRequired.class)) {
             return true;
         }
+        PermissionRequired permissionRequired = method.getAnnotation(PermissionRequired.class);
         Role requiredRole = permissionRequired.value();
         String requestToken = AuthInformationExtractor.extractToken(request);
         MemberRole memberRole = tokenManager.extract(requestToken);
