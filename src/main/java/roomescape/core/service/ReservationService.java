@@ -14,7 +14,6 @@ import roomescape.core.repository.MemberRepository;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.core.repository.ThemeRepository;
-import roomescape.web.exception.AuthorizationException;
 import roomescape.web.exception.BadRequestException;
 
 @Service
@@ -43,10 +42,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation createByAdmin(final AdminReservationRequestDto request, final LoginMemberDto loginMember) {
-        if (loginMember == null || loginMember.isNotAdmin()) {
-            throw new AuthorizationException("관리자가 아닙니다.");
-        }
+    public Reservation createByAdmin(final AdminReservationRequestDto request) {
         final Member member = memberRepository.findById(request.getMemberId());
         final ReservationRequestDto reservationRequest = new ReservationRequestDto(
                 request.getDate(),
