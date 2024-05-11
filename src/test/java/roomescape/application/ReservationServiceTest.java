@@ -6,19 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationCreationRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.support.annotation.FixedClock;
-import roomescape.support.extension.MockClockExtension;
-import roomescape.support.extension.TableTruncateExtension;
+import roomescape.support.annotation.ServiceTest;
 
-@SpringBootTest
-@ExtendWith({TableTruncateExtension.class, MockClockExtension.class})
+@ServiceTest
 @FixedClock(date = "2024-04-20")
 @Sql("/reservation.sql")
 public class ReservationServiceTest {

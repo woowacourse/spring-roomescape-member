@@ -8,18 +8,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationTimeCreationRequest;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
-import roomescape.support.extension.TableTruncateExtension;
+import roomescape.support.annotation.ServiceTest;
 
-@SpringBootTest
-@ExtendWith(TableTruncateExtension.class)
+@ServiceTest
 @Sql("/reservation-time.sql")
 public class ReservationTimeServiceTest {
     @Autowired
