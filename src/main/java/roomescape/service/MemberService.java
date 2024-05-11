@@ -5,6 +5,8 @@ import roomescape.dao.MemberDAO;
 import roomescape.domain.Member;
 import roomescape.dto.MemberRequest;
 
+import java.util.List;
+
 @Service
 public class MemberService {
     private final MemberDAO memberDAO;
@@ -17,5 +19,9 @@ public class MemberService {
     public Member join(final MemberRequest memberRequest) {
         Member member = memberRequest.toEntity();
         return memberDAO.insert(member);
+    }
+
+    public List<Member> findAll() {
+        return memberDAO.findAll();
     }
 }

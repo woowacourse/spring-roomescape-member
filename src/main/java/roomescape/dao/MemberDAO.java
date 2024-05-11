@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 
 @Repository
 public class MemberDAO {
@@ -56,6 +57,11 @@ public class MemberDAO {
     public Member findById(final Long id) {
         final String sql = "SELECT * FROM member WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, memberRowMapper(), id);
+    }
+
+    public List<Member> findAll() {
+        final String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, memberRowMapper());
     }
 
     private RowMapper<Member> memberRowMapper() {
