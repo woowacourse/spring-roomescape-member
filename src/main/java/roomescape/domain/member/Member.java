@@ -16,18 +16,28 @@ public class Member {
         this.role = role;
     }
 
-    public static Member memberRole(Long id, String email, String password, String name) {
-        return new Member(
+    public Member(Long id, String email, String password, String name, String role) {
+        this(
                 id,
                 new MemberEmail(email),
                 new MemberPassword(password),
                 new MemberName(name),
-                Role.getRole(name)
+                Role.getRole(role)
         );
     }
 
-    public boolean isMismatchedPassword(String password) {
-        return !this.password.equals(password);
+    public Member(Long id, String email, String password, String name) {
+        this(
+                id,
+                new MemberEmail(email),
+                new MemberPassword(password),
+                new MemberName(name),
+                Role.MEMBER
+        );
+    }
+
+    public boolean isMismatchedPassword(MemberPassword other) {
+        return this.password.isMismatchedPassword(other);
     }
 
     public Long getId() {

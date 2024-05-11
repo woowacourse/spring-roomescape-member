@@ -30,7 +30,7 @@ public class CreateReservation {
     public Reservation toReservation() {
         return new Reservation(
                 null,
-                Member.memberRole(memberId, null, null, null),
+                new Member(memberId, null, null, null),
                 new Theme(themeId, (String) null, null, null),
                 new ReservationDate(date),
                 new ReservationTime(timeId, (LocalTime) null)

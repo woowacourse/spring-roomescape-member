@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberPassword;
 import roomescape.repository.JdbcMemberRepository;
 import roomescape.service.dto.member.CreateMemberRequest;
 import roomescape.service.dto.member.LoginMemberRequest;
@@ -31,7 +32,8 @@ public class MemberService {
         Member member = memberRepository.findMemberByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
 
-        if (member.isMismatchedPassword(requestDto.getPassword())) {
+        MemberPassword request = new MemberPassword(requestDto.getPassword());
+        if (member.isMismatchedPassword(request)) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
         return jwtService.generateToken(member);
