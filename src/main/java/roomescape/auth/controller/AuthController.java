@@ -1,5 +1,6 @@
 package roomescape.auth.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginMemberRequest) {
+    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginMemberRequest) {
         LoginResponse loginResponse = authService.login(loginMemberRequest);
         ResponseCookie responseCookie = ResponseCookie.from(TOKEN_COOKIE_NAME, loginResponse.token())
                 .build();
