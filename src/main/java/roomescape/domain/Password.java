@@ -21,7 +21,7 @@ public class Password {
             throw new InvalidInputException(password + "은 유효하지 않은 비밀번호입니다. 6자 이상 20자 이하로 입력해주세요.");
         }
         if (!password.matches(PASSWORD_FORMAT)) {
-            throw new InvalidInputException(password + "은 유효하지 않은 비밀번호입니다. 영문과 숫자, 특수문자만을 모두 포함해야 합니다.");
+            throw new InvalidInputException(password + "은 유효하지 않은 비밀번호입니다. 영문과 숫자, 특수문자(@!%*#?&)만을 모두 포함해야 합니다.");
         }
     }
 

@@ -36,6 +36,6 @@ class PasswordTest {
         //given & when & then
         assertThatThrownBy(() -> new Password(password))
                 .isInstanceOf(InvalidInputException.class)
-                .hasMessage(password + "은 유효하지 않은 비밀번호입니다. 영문과 숫자, 특수문자만을 모두 포함해야 합니다.");
+                .hasMessage(password + "은 유효하지 않은 비밀번호입니다. 영문과 숫자, 특수문자(@!%*#?&)만을 모두 포함해야 합니다.");
     }
 }
