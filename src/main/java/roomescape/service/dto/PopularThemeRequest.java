@@ -1,5 +1,6 @@
 package roomescape.service.dto;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import roomescape.service.dto.validator.DateFormatConstraint;
@@ -14,6 +15,7 @@ public class PopularThemeRequest {
 
     @NotNull(message = "불러올 테마 개수는 반드시 입력되어야 합니다.")
     @Positive(message = "불러올 테마 개수는 자연수여야 합니다. ${validatedValue}은 사용할 수 없습니다.")
+    @Max(value = 20, message = "불러올 테마 최대 개수는 20개까지 가능합니다.")
     private final Integer count;
 
     public PopularThemeRequest(String startDate, String endDate, Integer count) {
