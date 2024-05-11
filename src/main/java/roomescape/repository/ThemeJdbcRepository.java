@@ -48,16 +48,16 @@ public class ThemeJdbcRepository implements ThemeRepository {
     public List<Theme> findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer limit, Integer offset) {
         String sql = """
                 SELECT
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.id AS id,
+                    th.name AS name,
+                    th.description AS description,
+                    th.thumbnail AS thumbnail
                 FROM
                     reservation AS r
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.date BETWEEN ? AND ?
-                GROUP BY theme_id
-                ORDER BY COUNT(r.id) DESC, theme_name
+                GROUP BY id
+                ORDER BY COUNT(r.id) DESC, name
                 LIMIT ?
                 OFFSET ?;
                 """;
