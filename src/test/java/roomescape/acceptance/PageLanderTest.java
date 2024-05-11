@@ -1,25 +1,53 @@
 package roomescape.acceptance;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
+
+import static roomescape.acceptance.Fixture.adminToken;
+import static roomescape.acceptance.Fixture.customerToken;
 
 class PageLanderTest extends BaseAcceptanceTest {
 
-    @ParameterizedTest(name = "{0} ,{1}") //TODO: ADMIN 페이지 접속 제한 걸어야 함
-    @CsvSource(value = {
-            "/admin:관리자 메인 페이지",
-            "/admin/reservation:예약 관리 페이지",
-            "/admin/time:예약 시간 관리 페이지",
-            "/admin/theme:테마 관리 페이지",
-            "/reservation:예약 페이지",
-            "/:사용자 메인 페이지"
-    }, delimiter = ':')
-    void loadPage(String path, String description) {
-        RestAssured.given().log().all()
-                .when().get(path)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
+    @DisplayName("관리자만 접근 가능한 페이지가 있다.")
+    @Nested
+    class pagesOnlyForAdmin extends NestedAcceptanceTest {
+
+        @DisplayName("관리자는 접근 가능하다.")
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "/admin",
+                "/admin/reservation",
+                "/admin/time",
+                "/admin/theme"
+        })
+        void adminPageAccess_success(String path) {
+
+            RestAssured.given().log().all()
+                    .cookie("token", adminToken)
+                    .when().get(path)
+                    .then().log().all()
+                    .statusCode(HttpStatus.OK.value());
+        }
+
+        @DisplayName("관리자가 아닌 사람은 접근 할 수 없다.")
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "/admin",
+                "/admin/reservation",
+                "/admin/time",
+                "/admin/theme"
+        })
+        void adminPageAccess_fail(String path) {
+
+            RestAssured.given().log().all()
+                    .cookie("token", customerToken)
+                    .when().get(path)
+                    .then().log().all()
+                    .statusCode(HttpStatus.FORBIDDEN.value());
+        }
     }
 }

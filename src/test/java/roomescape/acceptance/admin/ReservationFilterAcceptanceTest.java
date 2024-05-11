@@ -10,7 +10,7 @@ import roomescape.dto.ReservationResponse;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.acceptance.Fixture.adminToken;
 import static roomescape.acceptance.PreInsertedData.*;
 
@@ -86,7 +86,8 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private List<ReservationResponse> sendRequestFiltering(String path) {
-        TypeRef<List<ReservationResponse>> memberListFormat = new TypeRef<>() {};
+        TypeRef<List<ReservationResponse>> memberListFormat = new TypeRef<>() {
+        };
 
         return RestAssured.given().log().all()
                 .cookie("token", adminToken)

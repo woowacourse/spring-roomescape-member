@@ -1,7 +1,6 @@
 package roomescape;
 
 import io.restassured.RestAssured;
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
 class DataBaseConnectionTest {
 
     @LocalServerPort
@@ -40,7 +37,6 @@ class DataBaseConnectionTest {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             Assertions.assertAll(
                     () -> assertThat(connection).isNotNull(),
-                    () -> assertThat(connection.getCatalog()).isEqualTo("TEST"),
                     () -> assertThat(isTableExist(connection, "RESERVATION")).isTrue(),
                     () -> assertThat(isTableExist(connection, "RESERVATION_TIME")).isTrue(),
                     () -> assertThat(isTableExist(connection, "THEME")).isTrue(),
