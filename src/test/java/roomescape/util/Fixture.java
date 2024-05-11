@@ -1,5 +1,8 @@
 package roomescape.util;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
@@ -21,6 +24,17 @@ public class Fixture {
 
     public static final Long ID = 1L;
     public static final String DATE = "2024-05-06";
+
+    public static final String TODAY = LocalDate.now()
+            .format(DateTimeFormatter.ISO_DATE);
+
+    public static final String TOMORROW = LocalDate.now()
+            .plusDays(1)
+            .format(DateTimeFormatter.ISO_DATE);
+
+    public static final String PAST_TIME = LocalTime.now()
+            .minusSeconds(1)
+            .format(DateTimeFormatter.ofPattern("HH:mm"));
 
     public Fixture() {
     }

@@ -1,9 +1,11 @@
 INSERT INTO member (name, email, password, role)
 VALUES ('홍길동', 'hong@gmail.com', '1234', 'MEMBER');
 INSERT INTO member (name, email, password, role)
+VALUES ('조조', 'imjojo@gmail.com', 'qwer', 'MEMBER');
+INSERT INTO member (name, email, password, role)
 VALUES ('행성이', 'planet@gmail.com', '1111', 'ADMIN');
 INSERT INTO member (name, email, password, role)
-VALUES ('조조', 'imjojo@gmail.com', 'qwer', 'MEMBER');
+VALUES ('어드민', 'admin@gmail.com', '12345', 'ADMIN');
 
 INSERT INTO reservation_time (start_at)
 VALUES ('13:00');
