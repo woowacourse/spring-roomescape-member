@@ -6,7 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.exception.IllegalTokenException;
+import roomescape.auth.exception.AuthorizationException;
 
 import java.security.Key;
 import java.util.Date;
@@ -58,7 +58,7 @@ class JwtTokenProviderTest {
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.validateToken(expiredToken))
-                .isInstanceOf(IllegalTokenException.class);
+                .isInstanceOf(AuthorizationException.class);
     }
 
     @Test
@@ -69,6 +69,6 @@ class JwtTokenProviderTest {
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.validateToken(invalidFormatToken))
-                .isInstanceOf(IllegalTokenException.class);
+                .isInstanceOf(AuthorizationException.class);
     }
 }

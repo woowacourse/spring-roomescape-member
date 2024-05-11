@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.request.LoginRequest;
 import roomescape.auth.exception.AuthorizationException;
-import roomescape.auth.exception.IllegalTokenException;
 import roomescape.common.ControllerTest;
 
 import java.util.stream.Stream;
@@ -116,7 +115,7 @@ class AuthControllerTest extends ControllerTest {
         // given
         Cookie cookie = new Cookie("token", "invalid-token");
 
-        BDDMockito.willThrow(new IllegalTokenException(TEST_ERROR_MESSAGE))
+        BDDMockito.willThrow(new AuthorizationException(TEST_ERROR_MESSAGE))
                 .given(authService)
                 .extractMember(any());
 

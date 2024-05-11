@@ -5,7 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.auth.exception.IllegalTokenException;
+import roomescape.auth.exception.AuthorizationException;
 
 import java.security.Key;
 import java.util.Date;
@@ -50,9 +50,9 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new IllegalTokenException("만료된 JWT 토큰입니다.");
+            throw new AuthorizationException("만료된 JWT 토큰입니다.");
         } catch (JwtException | IllegalArgumentException e) {
-            throw new IllegalTokenException("유효하지 않은 JWT 토큰입니다.");
+            throw new AuthorizationException("유효하지 않은 JWT 토큰입니다.");
         }
     }
 }
