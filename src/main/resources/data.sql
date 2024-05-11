@@ -24,4 +24,7 @@ VALUES ('User1', '2024-04-24', 1, 1),
        ('User3', '2024-04-26', 3, 3),
        ('User4', '2024-04-26', 4, 2),
        ('User5', '2024-05-01', 1, 5),
-       ('User5', '2024-05-02', 6, 6)
+       ('User5', '2024-05-02', 6, 6);
+
+INSERT INTO member (name, email, password)
+VALUES ('pond', 'pond@naver.com', '123');
