@@ -10,7 +10,7 @@ import roomescape.reservation.domain.*;
 
 @Sql("/test-schema.sql")
 @ActiveProfiles(value = "test")
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public abstract class ServiceTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
