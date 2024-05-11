@@ -25,7 +25,7 @@ public class MemberRepository {
                 .orElseThrow(() -> new RoomEscapeException(MemberExceptionCode.MEMBER_NOT_EXIST_EXCEPTION));
     }
 
-    public List<String> findAllName() {
-        return memberDao.findAllNames();
+    public List<Long> findAllId() {
+        return memberDao.findAllId();
     }
 }

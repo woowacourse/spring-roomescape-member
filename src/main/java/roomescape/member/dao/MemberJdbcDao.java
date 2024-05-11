@@ -53,13 +53,13 @@ public class MemberJdbcDao implements MemberDao {
     }
 
     @Override
-    public List<String> findAllNames() {
+    public List<Long> findAllId() {
         String findNameByIdSql = """
-                SELECT name
+                SELECT id
                 FROM member
                 """;
 
         return jdbcTemplate.query(findNameByIdSql,
-                (resultSet, rowNum) -> resultSet.getString("name"));
+                (resultSet, rowNum) -> resultSet.getLong("id"));
     }
 }

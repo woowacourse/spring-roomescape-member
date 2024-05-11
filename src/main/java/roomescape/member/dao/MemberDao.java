@@ -9,5 +9,5 @@ public interface MemberDao {
 
     Optional<String> findNameById(long id);
 
-    List<String> findAllNames();
+    List<Long> findAllId();
 }

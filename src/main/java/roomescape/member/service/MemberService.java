@@ -20,10 +20,10 @@ public class MemberService {
         return new MemberLoginCheckResponse(name);
     }
 
-    public List<MemberResponse> findMemberNames() {
-        List<String> names = memberRepository.findAllName();
+    public List<MemberResponse> findMembersId() {
+        List<Long> ids = memberRepository.findAllId();
 
-        return names.stream()
+        return ids.stream()
                 .map(MemberResponse::new)
                 .toList();
     }

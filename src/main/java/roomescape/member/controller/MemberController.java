@@ -16,7 +16,7 @@ public class MemberController {
     }
 
     @GetMapping("/members")
-    public List<MemberResponse> memberList() {
-        return memberService.findMemberNames();
+    public List<MemberResponse> memberIdList() {
+        return memberService.findMembersId();
     }
 }
