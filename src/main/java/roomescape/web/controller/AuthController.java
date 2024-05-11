@@ -1,7 +1,6 @@
 package roomescape.web.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.auth.AuthService;
 import roomescape.service.auth.AuthenticatedMemberProfile;
 import roomescape.service.auth.AuthenticationRequest;
-import roomescape.service.auth.UnauthorizedException;
+import roomescape.web.security.Authenticated;
 import roomescape.web.security.CookieTokenExtractor;
 
 @RestController
@@ -43,12 +42,9 @@ class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<AuthenticatedMemberProfile> check(HttpServletRequest request) {
-        String token = extractor.extract(request);
-        if (token == null) {
-            throw new UnauthorizedException();
-        }
-
-        return ResponseEntity.ok(authService.authorize(token));
+    public ResponseEntity<AuthenticatedMemberProfile> check(
+            @Authenticated AuthenticatedMemberProfile profile
+    ) {
+        return ResponseEntity.ok(profile);
     }
 }
