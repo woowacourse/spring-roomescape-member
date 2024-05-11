@@ -58,3 +58,5 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('유저03', '202
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('유저03', '2023-04-26', '1', '10');
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('유저03', '2023-04-26', '2', '10');
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('유저03', '2023-04-26', '4', '10');
+
+INSERT INTO member (name, email, password) VALUES ('어드민', 'user@example.com', 'password1!');
