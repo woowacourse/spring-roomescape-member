@@ -12,7 +12,10 @@ INSERT INTO reservation_time(start_at)
 VALUES ('10:00');
 
 INSERT INTO member(name, email, password, role)
-VALUES ('wiib', 'repday0609@gmail.com', 'asd', 'ADMIN');
+VALUES ('Stitch', 'admin@gmail.com', 'asd', 'ADMIN');
+
+INSERT INTO member(name, email, password, role)
+VALUES ('Wiib', 'user@gmail.com', 'asd', 'USER');
 
 INSERT INTO reservation(date, time_id, theme_id, member_id)
 VALUES (TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1, 1);
