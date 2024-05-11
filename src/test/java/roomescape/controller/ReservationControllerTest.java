@@ -11,11 +11,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,18 +35,42 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
-    void moveToReservationPage_Success() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-    }
+    @DisplayName("관리자는 예약 조회, 삭제를 할 수 있다.")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
+    void findDeleteReservationWithAdmin_Success() {
+        String token = AuthenticationProvider.loginAdmin();
+        Map<String, Object> reservation = Map.of(
+                "date", LocalDate.now().plusDays(1L).toString(),
+                "timeId", 1,
+                "themeId", 1
+        );
 
-    @Test
-    @DisplayName("예약 목록 조회 요청이 정상석으로 수행된다.")
-    void selectReservationListRequest_Success() {
+        String location = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract().header("Location");
+
         RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        String reservationId = location.substring(location.lastIndexOf("/") + 1);
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().delete("/reservations/" + reservationId)
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -56,59 +78,33 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 한 사용자가 예약 추가, 조회를 정상적으로 수행한다.")
+    @DisplayName("일반 사용자는 예약 조회, 삭제를 할 수 없다.")
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
-    void reserveWithLogin_Success() {
-        Map<String, String> params = Map.of(
-                "email", "naknak@example.com",
-                "password", "nak123"
-        );
+    void findDeleteReservationWithMember_Failure() {
+        String token = AuthenticationProvider.loginMember();
 
-        String header = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .extract()
-                .header("Set-Cookie");
+                .statusCode(403);
 
-        String[] parts = header.split(";");
-        String token = parts[0].split("=")[1];
-
-        Map<String, String> time = Map.of(
-                "startAt", "10:00"
-        );
-
-        Map<String, Object> theme = Map.of(
-                "name", "테마",
-                "description", "테마 설명",
-                "thumbnail", "테마 썸네일"
-        );
-
-        String timeLocation = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(time)
-                .when().post("/times")
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(201)
-                .extract().header("Location");
+                .statusCode(403);
+    }
 
-        String themeLocation = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().header("Location");
-
-        Long timeId = Long.parseLong(timeLocation.substring(timeLocation.lastIndexOf("/") + 1));
-        Long themeId = Long.parseLong(themeLocation.substring(themeLocation.lastIndexOf("/") + 1));
-
+    @Test
+    @DisplayName("일반 사용자는 예약을 추가할 수 있다.")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
+    void addReservationWithMember_Success() {
+        String token = AuthenticationProvider.loginMember();
         Map<String, Object> reservation = Map.of(
                 "date", LocalDate.now().plusDays(1L).toString(),
-                "timeId", timeId,
-                "themeId", themeId
+                "timeId", 1,
+                "themeId", 1
         );
 
         RestAssured.given().log().all()
@@ -118,52 +114,16 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
-
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
     @Test
-    @DisplayName("로그인 하지 않은 사용자는 예약 추가를 할 수 없다.")
-    @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
-    void reserveWithoutLogin_Failure() {
-        Map<String, String> time = Map.of(
-                "startAt", "10:00"
-        );
-
-        Map<String, Object> theme = Map.of(
-                "name", "테마",
-                "description", "테마 설명",
-                "thumbnail", "테마 썸네일"
-        );
-
-        String timeLocation = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(time)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .extract().header("Location");
-
-        String themeLocation = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().header("Location");
-
-        Long timeId = Long.parseLong(timeLocation.substring(timeLocation.lastIndexOf("/") + 1));
-        Long themeId = Long.parseLong(themeLocation.substring(themeLocation.lastIndexOf("/") + 1));
-
+    @DisplayName("로그인 하지 않은 사용자는 예약을 추가할 수 없다.")
+    @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
+    void addReservationWithoutLogin_Failure() {
         Map<String, Object> reservation = Map.of(
                 "date", LocalDate.now().plusDays(1L).toString(),
-                "timeId", timeId,
-                "themeId", themeId
+                "timeId", 1,
+                "themeId", 1
         );
 
         RestAssured.given().log().all()
@@ -172,105 +132,5 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(401);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @Test
-    @DisplayName("DB에 저장된 예약을 정상적으로 삭제한다.")
-    @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
-    void deleteReservation_InDatabase_Success() {
-        Map<String, String> params = Map.of(
-                "email", "naknak@example.com",
-                "password", "nak123"
-        );
-
-        String header = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .header("Set-Cookie");
-
-        String[] parts = header.split(";");
-        String token = parts[0].split("=")[1];
-
-        Map<String, String> time = Map.of(
-                "startAt", "10:00"
-        );
-
-        Map<String, Object> theme = Map.of(
-                "name", "테마",
-                "description", "테마 설명",
-                "thumbnail", "테마 썸네일"
-        );
-
-        String timeLocation = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(time)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .extract().header("Location");
-
-        String themeLocation = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract().header("Location");
-
-        Long timeId = Long.parseLong(timeLocation.substring(timeLocation.lastIndexOf("/") + 1));
-        Long themeId = Long.parseLong(themeLocation.substring(themeLocation.lastIndexOf("/") + 1));
-
-        Map<String, Object> reservation = Map.of(
-                "date", LocalDate.now().plusDays(1L).toString(),
-                "timeId", timeId,
-                "themeId", themeId
-        );
-
-        String reservationLocation = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie("token", token)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .extract().header("Location");
-
-        String reservationId = reservationLocation.substring(reservationLocation.lastIndexOf("/") + 1);
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/" + reservationId)
-                .then().log().all()
-                .statusCode(204);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @Test
-    @DisplayName("데이터베이스 관련 로직을 컨트롤러에서 분리하였다.")
-    void layerRefactoring() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertThat(isJdbcTemplateInjected).isFalse();
     }
 }

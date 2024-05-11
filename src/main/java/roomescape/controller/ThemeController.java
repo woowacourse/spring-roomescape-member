@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.security.Permission;
 import roomescape.domain.Theme;
+import roomescape.domain.member.Role;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeResponse;
 import roomescape.service.dto.ThemeSaveRequest;
@@ -19,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
+@Permission(role = Role.ADMIN)
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -28,6 +31,7 @@ public class ThemeController {
     }
 
     @GetMapping
+    @Permission(role = Role.NONE)
     public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<ThemeResponse> themeResponses = themeService.findThemes().stream()
                 .map(ThemeResponse::of)
@@ -36,6 +40,7 @@ public class ThemeController {
     }
 
     @GetMapping("/ranks")
+    @Permission(role = Role.NONE)
     public ResponseEntity<List<ThemeResponse>> getThemeRanks() {
         List<ThemeResponse> themeResponses = themeService.findTop10Recent7Days().stream()
                 .map(ThemeResponse::of)

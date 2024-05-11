@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.security.Permission;
 import roomescape.domain.Reservation;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
@@ -20,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
+@Permission(role = Role.ADMIN)
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -37,6 +40,7 @@ public class ReservationController {
     }
 
     @PostMapping
+    @Permission(role = Role.MEMBER)
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody @Valid ReservationSaveRequest request,
             Member member) {

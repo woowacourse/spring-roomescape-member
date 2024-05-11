@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.infrastructure.TokenExtractor;
 import roomescape.service.AuthService;
 import roomescape.service.dto.login.LoginRequest;
@@ -21,6 +22,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/login")
+@Permission(role = Role.NONE)
 public class LoginController {
 
     private final AuthService authService;

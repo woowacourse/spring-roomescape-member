@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.security.Permission;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.member.Role;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeAvailabilityResponse;
 import roomescape.service.dto.ReservationTimeResponse;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/times")
+@Permission(role = Role.ADMIN)
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
@@ -40,6 +43,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
+    @Permission(role = Role.NONE)
     public ResponseEntity<List<ReservationTimeAvailabilityResponse>> getReservationTimeAvailability(@RequestParam LocalDate date,
                                                                                                     @RequestParam Long themeId) {
         List<ReservationTimeAvailabilityResponse> reservationTimeAvailabilities =

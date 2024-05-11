@@ -35,9 +35,10 @@ class AdminReservationControllerTest {
     }
 
     @Test
-    @DisplayName("관리자가 예약 추가, 조회를 정상적으로 수행한다.")
+    @DisplayName("관리자가 예약 추가, 조회를 정상적으로 수행할 수 있다.")
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
-    void ReservationTime_CREATE_READ_Success() {
+    void adminReservation_Success() {
+        String token = AuthenticationProvider.loginAdmin();
         Map<String, String> time = Map.of(
                 "startAt", "10:00"
         );
@@ -49,6 +50,7 @@ class AdminReservationControllerTest {
         );
 
         String timeLocation = RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(time)
                 .when().post("/times")
@@ -57,6 +59,7 @@ class AdminReservationControllerTest {
                 .extract().header("Location");
 
         String themeLocation = RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(theme)
                 .when().post("/themes")
@@ -75,6 +78,7 @@ class AdminReservationControllerTest {
         );
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -82,9 +86,31 @@ class AdminReservationControllerTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    @Test
+    @DisplayName("일반 사용자는 다른 사람의 예약을 추가를 할 수 없다.")
+    @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
+    void adminReservationWithMember_Failure() {
+        String token = AuthenticationProvider.loginMember();
+        Map<String, Object> reservation = Map.of(
+                "date", LocalDate.now().plusDays(1L).toString(),
+                "timeId", 1,
+                "themeId", 1,
+                "memberId", 1
+        );
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(403);
     }
 }

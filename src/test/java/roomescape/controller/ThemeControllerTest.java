@@ -26,7 +26,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("테마 조회를 정상적으로 수행한다.")
+    @DisplayName("권한에 상관없이 테마를 조회할 수 있다.")
     void findTheme_Success() {
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -36,36 +36,17 @@ public class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("테마 추가를 정상적으로 수행한다.")
-    void addTheme_Success() {
-        Map<String, String> params = Map.of("name", "레벨2 탈출",
-                "description", "우테코 레벨2를 탈출하는 내용입니다.",
-                "thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
-    @DisplayName("테마 삭제를 정상적으로 수행한다.")
-    void deleteTheme_Success() {
+    @DisplayName("관리자는 테마 추가 및 삭제를 할 수 있다.")
+    @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
+    void addDeleteThemeWithAdmin_Success() {
+        String token = AuthenticationProvider.loginAdmin();
         Map<String, String> params = Map.of("name", "레벨2 탈출",
                 "description", "우테코 레벨2를 탈출하는 내용입니다.",
                 "thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
         String location = RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
@@ -75,13 +56,60 @@ public class ThemeControllerTest {
 
         String id = location.substring(location.lastIndexOf("/") + 1);
 
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().delete("/themes/" + id)
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
+    @DisplayName("일반 사용자는 테마 추가 및 삭제를 할 수 없다.")
+    @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
+    void addDeleteThemeWithMember_Failure() {
+        String token = AuthenticationProvider.loginMember();
+        Map<String, String> params = Map.of("name", "레벨2 탈출",
+                "description", "우테코 레벨2를 탈출하는 내용입니다.",
+                "thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        );
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
