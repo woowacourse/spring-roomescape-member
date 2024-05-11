@@ -3,10 +3,10 @@ package roomescape.member.domain;
 import java.util.Objects;
 
 public class Member {
-    private Long id;
-    private Name name;
-    private String email;
-    private Role role;
+    private final Long id;
+    private final Name name;
+    private final String email;
+    private final Role role;
 
     public Member(Long id, String name, String email, Role role) {
         this.id = id;

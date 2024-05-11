@@ -5,7 +5,7 @@ import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
 
 public class Theme {
-    private Long id;
+    private final Long id;
     private String name;
     private String description;
     private String thumbnail;

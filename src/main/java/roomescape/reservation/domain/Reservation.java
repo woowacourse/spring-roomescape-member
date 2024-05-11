@@ -6,10 +6,10 @@ import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
 
 public class Reservation {
-    private Long id;
-    private LocalDate date;
-    private ReservationTime time;
-    private Theme theme;
+    private final Long id;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final Theme theme;
 
     public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme) {
         validate(date, time);

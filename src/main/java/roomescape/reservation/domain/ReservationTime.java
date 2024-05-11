@@ -6,7 +6,7 @@ import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
 
 public class ReservationTime {
-    private Long id;
+    private final Long id;
     private LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {

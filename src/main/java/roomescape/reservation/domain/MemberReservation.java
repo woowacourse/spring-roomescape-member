@@ -4,7 +4,7 @@ import java.util.Objects;
 import roomescape.member.domain.Member;
 
 public class MemberReservation {
-    private Long id;
+    private final Long id;
     private Member member;
     private Reservation reservation;
 
