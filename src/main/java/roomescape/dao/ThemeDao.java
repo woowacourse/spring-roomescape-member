@@ -1,8 +1,6 @@
 package roomescape.dao;
 
-import roomescape.domain.AggregationLimit;
-import roomescape.domain.AggregationPeriod;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.Theme;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -3,8 +3,8 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.Reservation;
-import roomescape.dto.ReservationResponse;
+import roomescape.domain.reservation.Reservation;
+import roomescape.dto.reservation.ReservationResponse;
 
 import java.time.LocalDate;
 import java.util.List;

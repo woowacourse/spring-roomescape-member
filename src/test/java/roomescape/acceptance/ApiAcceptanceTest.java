@@ -7,11 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.MemberReservationSaveRequest;
-import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.dto.ThemeSaveRequest;
-import roomescape.dto.TokenRequest;
-import roomescape.dto.TokenResponse;
+import roomescape.dto.reservation.MemberReservationSaveRequest;
+import roomescape.dto.reservation.ReservationTimeSaveRequest;
+import roomescape.dto.theme.ThemeSaveRequest;
+import roomescape.dto.auth.TokenRequest;
+import roomescape.dto.auth.TokenResponse;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

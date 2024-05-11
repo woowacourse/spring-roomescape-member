@@ -1,6 +1,12 @@
-package roomescape.dto;
+package roomescape.dto.reservation;
 
-import roomescape.domain.*;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Name;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.Theme;
+import roomescape.dto.MemberResponse;
+import roomescape.dto.theme.ThemeResponse;
 
 public record AdminReservationSaveRequest (
         Long memberId,

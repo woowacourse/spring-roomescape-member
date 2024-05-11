@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.domain.Member;
-import roomescape.domain.Name;
-import roomescape.domain.Role;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Name;
+import roomescape.domain.member.Role;
 
 import java.util.List;
 import java.util.Optional;

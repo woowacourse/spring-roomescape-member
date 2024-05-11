@@ -6,7 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.dto.ThemeSaveRequest;
+import roomescape.dto.theme.ThemeSaveRequest;
 
 class ThemeAcceptanceTest extends ApiAcceptanceTest {
 

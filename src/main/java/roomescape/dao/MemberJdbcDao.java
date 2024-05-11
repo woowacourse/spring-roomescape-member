@@ -5,9 +5,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Name;
-import roomescape.domain.Member;
-import roomescape.domain.Role;
+import roomescape.domain.member.Name;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 import java.util.List;
 import java.util.Map;

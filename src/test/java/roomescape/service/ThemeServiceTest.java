@@ -17,10 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.AggregationLimit;
-import roomescape.domain.AggregationPeriod;
-import roomescape.domain.Theme;
-import roomescape.dto.ThemeResponse;
+import roomescape.domain.theme.ThemeAggregationLimit;
+import roomescape.domain.theme.ThemeAggregationPeriod;
+import roomescape.domain.theme.Theme;
+import roomescape.dto.theme.ThemeResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -130,8 +130,8 @@ class ThemeServiceTest {
     void findAllPopular() {
         // given
         final List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
-        final LocalDate period = AggregationPeriod.calculateAggregationPeriod(LocalDate.now());
-        final int limit = AggregationLimit.getAggregationLimit();
+        final LocalDate period = ThemeAggregationPeriod.calculateAggregationPeriod(LocalDate.now());
+        final int limit = ThemeAggregationLimit.getAggregationLimit();
 
         given(themeDao.findTopThemesByReservationCountDuringPeriod(period, limit))
                 .willReturn(expectedThemes);

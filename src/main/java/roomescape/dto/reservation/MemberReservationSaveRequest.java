@@ -1,10 +1,12 @@
-package roomescape.dto;
+package roomescape.dto.reservation;
 
-import roomescape.domain.Member;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Name;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.Theme;
+import roomescape.dto.MemberResponse;
+import roomescape.dto.theme.ThemeResponse;
 
 public record MemberReservationSaveRequest(
         String date,

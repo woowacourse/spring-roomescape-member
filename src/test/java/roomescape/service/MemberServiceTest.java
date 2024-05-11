@@ -11,9 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.MemberDao;
-import roomescape.domain.Member;
-import roomescape.domain.Name;
-import roomescape.domain.Role;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Name;
+import roomescape.domain.member.Role;
 import roomescape.dto.MemberResponse;
 
 import java.util.List;

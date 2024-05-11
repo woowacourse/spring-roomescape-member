@@ -5,7 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.domain.*;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Name;
+import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.ThemeAggregationLimit;
+import roomescape.domain.theme.ThemeAggregationPeriod;
+import roomescape.domain.theme.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -113,8 +120,8 @@ class ThemeJdbcDaoTest extends DaoTest {
         reservationDao.save(new Reservation(member, "2034-05-08", reservationTime1, theme1));
         reservationDao.save(new Reservation(member, "2034-05-08", reservationTime2, theme1));
         reservationDao.save(new Reservation(member, "2034-05-08", reservationTime1, theme2));
-        final LocalDate period = AggregationPeriod.calculateAggregationPeriod(LocalDate.parse("2034-05-08"));
-        final int limit = AggregationLimit.getAggregationLimit();
+        final LocalDate period = ThemeAggregationPeriod.calculateAggregationPeriod(LocalDate.parse("2034-05-08"));
+        final int limit = ThemeAggregationLimit.getAggregationLimit();
 
         // when
         final List<Theme> allOrderByReservationCountInLastWeek = themeDao.findTopThemesByReservationCountDuringPeriod(period, limit);

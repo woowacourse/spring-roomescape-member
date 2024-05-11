@@ -2,11 +2,11 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
-import roomescape.domain.Member;
-import roomescape.dto.MemberLoginResponse;
+import roomescape.domain.member.Member;
+import roomescape.dto.auth.MemberLoginResponse;
 import roomescape.dto.MemberResponse;
-import roomescape.dto.TokenRequest;
-import roomescape.dto.TokenResponse;
+import roomescape.dto.auth.TokenRequest;
+import roomescape.dto.auth.TokenResponse;
 import roomescape.auth.JwtTokenProvider;
 
 import java.util.List;

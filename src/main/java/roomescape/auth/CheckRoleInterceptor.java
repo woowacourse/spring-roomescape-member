@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.Role;
-import roomescape.dto.MemberLoginResponse;
+import roomescape.domain.member.Role;
+import roomescape.dto.auth.MemberLoginResponse;
 import roomescape.service.MemberService;
 
 @Component

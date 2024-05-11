@@ -6,8 +6,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.dto.AdminReservationSaveRequest;
-import roomescape.dto.MemberReservationSaveRequest;
+import roomescape.dto.reservation.AdminReservationSaveRequest;
+import roomescape.dto.reservation.MemberReservationSaveRequest;
 
 class ReservationAcceptanceTest extends ApiAcceptanceTest {
 

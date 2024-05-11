@@ -6,6 +6,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;

@@ -1,7 +1,7 @@
 package roomescape.dto;
 
-import roomescape.domain.Member;
-import roomescape.domain.Role;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 public record MemberResponse(
         Long id,

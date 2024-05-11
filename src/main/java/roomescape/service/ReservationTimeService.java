@@ -3,9 +3,9 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.dto.reservation.AvailableReservationTimeResponse;
+import roomescape.dto.reservation.ReservationTimeResponse;
 import roomescape.dao.ReservationTimeDao;
 
 import java.time.LocalDate;

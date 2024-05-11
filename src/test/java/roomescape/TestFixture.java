@@ -1,6 +1,11 @@
 package roomescape;
 
-import roomescape.domain.*;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Name;
+import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 public class TestFixture {
     public static final String MEMBER_MIA_NAME = "미아";

@@ -6,7 +6,7 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import roomescape.dto.MemberLoginResponse;
+import roomescape.dto.auth.MemberLoginResponse;
 
 public class MemberAcceptanceTest extends ApiAcceptanceTest {
 
