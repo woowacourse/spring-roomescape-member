@@ -47,7 +47,5 @@ public class JdbcMemberRepository {
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
-
-//        return jdbcTemplate.queryForObject(sql, Member.class, email, password);
     }
 }

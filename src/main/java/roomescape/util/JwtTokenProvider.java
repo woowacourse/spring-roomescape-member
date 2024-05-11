@@ -34,19 +34,20 @@ public class JwtTokenProvider {
     }
 
     public String getPayload(String token, String claimName) {
-        if (validateToken(token)) {
-            throw new AuthorizationException("토큰이 유효하지 않습니다.");
-        }
+        validateToken(token);
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(claimName, String.class);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
-            return !claims.getBody().getExpiration().before(new Date());
+            boolean isBefore = claims.getBody().getExpiration().before(new Date());
+            if (isBefore) {
+                throw new AuthorizationException("토큰이 만료되었습니다.");
+            }
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new AuthorizationException("토큰이 유효하지 않습니다.");
         }
     }
 }
