@@ -23,6 +23,10 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
             throws Exception {
         String accessToken = jwtTokenProvider.parseToken(request);
         Member findMember = memberService.findById(Long.valueOf(jwtTokenProvider.getPayload(accessToken)));
-        return findMember.isAdminMember();
+        if (findMember.isAdminMember()) {
+            return true;
+        }
+        response.setStatus(401);
+        return false;
     }
 }
