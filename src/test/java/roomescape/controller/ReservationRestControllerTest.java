@@ -21,7 +21,7 @@ import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationControllerTest {
+class ReservationRestControllerTest {
 
     @Autowired
     private ReservationService reservationService;
@@ -35,23 +35,12 @@ class ReservationControllerTest {
         RestAssured.port = port;
     }
 
-    @BeforeEach
-    void setAdmin() {
-        MemberRequest memberRequest = new MemberRequest("password", "admin@email.com");
-
-        cookies = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(memberRequest)
-                .when().post("/login")
-                .then().log().all()
-                .extract()
-                .response()
-                .getDetailedCookies();
-    }
-
     @Test
-    @DisplayName("모든 예약을 조회한다.")
+    @DisplayName("관리자가 모든 예약을 조회한다.")
     void getAll() {
+        // given
+        setAdmin();
+
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -64,8 +53,11 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("필터 옵션을 적용한 모든 예약을 조회한다.")
+    @DisplayName("관리자가 필터 옵션을 적용한 모든 예약을 조회한다.")
     void getAll_filter() {
+        // given
+        setAdmin();
+
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .cookies(cookies)
@@ -83,9 +75,10 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("관리자가 예약을 생성한다.")
+    @DisplayName("사용자가 예약을 생성한다.")
     void create() {
         // given
+        setMemer();
         Map<String, String> params = Map.of(
                 "date", "2099-12-31",
                 "timeId", "1",
@@ -104,13 +97,65 @@ class ReservationControllerTest {
         List<ReservationResponse> reservations = reservationService.findAll();
 
         // then
-        assertThat(reservations).hasSize(11); // TODO: ReservationResponse 테마아이디,이름으로 변경
+        assertThat(reservations).hasSize(11);
+    }
+
+    @Test
+    @DisplayName("관리자가 예약을 생성한다.")
+    void adminCreate() {
+        // given
+        setAdmin();
+        Map<String, String> params = Map.of(
+                "date", "2099-12-31",
+                "timeId", "1",
+                "themeId", "1",
+                "memberId", "1"
+        );
+
+        // when
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookies(cookies)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        List<ReservationResponse> reservations = reservationService.findAll();
+
+        // then
+        assertThat(reservations).hasSize(11);
+    }
+
+    @Test
+    @DisplayName("관리자가 예약을 같은 날짜, 테마, 시간에 중복된 예약을 생성하려고 하면 예외를 발생한다.")
+    void adminCreate_duplicate_badRequest() {
+        // given
+        setAdmin();
+        Map<String, String> params = Map.of(
+                "date", "2024-05-10",
+                "timeId", "1",
+                "themeId", "1",
+                "memberId", "1"
+        );
+
+        // when
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookies(cookies)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
     @DisplayName("해당 id의 예약을 삭제한다.")
     void delete() {
-        // given && when
+        // given
+        setAdmin();
+
+        // when
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -120,5 +165,31 @@ class ReservationControllerTest {
 
         // then
         assertThat(reservations).hasSize(9);
+    }
+
+    void setAdmin() {
+        MemberRequest memberRequest = new MemberRequest("password", "admin@email.com");
+
+        cookies = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberRequest)
+                .when().post("/login")
+                .then().log().all()
+                .extract()
+                .response()
+                .getDetailedCookies();
+    }
+
+    void setMemer() {
+        MemberRequest memberRequest = new MemberRequest("password1", "member1@email.com");
+
+        cookies = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberRequest)
+                .when().post("/login")
+                .then().log().all()
+                .extract()
+                .response()
+                .getDetailedCookies();
     }
 }
