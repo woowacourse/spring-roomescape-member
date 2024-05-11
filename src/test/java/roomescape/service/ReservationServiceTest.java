@@ -22,10 +22,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
-import roomescape.dto.request.AdminReservationRequest;
-import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.security.Accessor;
 
 @SpringBootTest(classes = TestConfig.class)
 @Transactional
@@ -93,50 +90,12 @@ class ReservationServiceTest {
         Theme theme = themeRepository.save(new Theme("테마", "테마 설명", "https://example.com"));
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
 
-        ReservationRequest request = new ReservationRequest(
-                LocalDate.of(2024, 4, 9),
-                time.getId(),
-                theme.getId()
-        );
-
-        Accessor accessor = new Accessor(
-                member.getId(),
-                member.getEmail(),
-                member.getName(),
-                member.getRole()
-        );
-
-        ReservationResponse response = reservationService.addReservation(request, accessor);
-
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(response.date()).isEqualTo("2024-04-09");
-            softly.assertThat(response.member().id()).isEqualTo(member.getId());
-            softly.assertThat(response.member().email()).isEqualTo("new@gmail.com");
-            softly.assertThat(response.member().name()).isEqualTo("nickname");
-            softly.assertThat(response.theme().id()).isEqualTo(theme.getId());
-            softly.assertThat(response.theme().name()).isEqualTo("테마");
-            softly.assertThat(response.theme().description()).isEqualTo("테마 설명");
-            softly.assertThat(response.theme().thumbnail()).isEqualTo("https://example.com");
-            softly.assertThat(response.time().id()).isEqualTo(time.getId());
-            softly.assertThat(response.time().startAt()).isEqualTo("10:30");
-        });
-    }
-
-    @Test
-    @DisplayName("어드민이 예약을 추가한다.")
-    void addAdminReservation() {
-        Member member = memberRepository.save(new Member("new@gmail.com", "password", "nickname", Role.USER));
-        Theme theme = themeRepository.save(new Theme("테마", "테마 설명", "https://example.com"));
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
-
-        AdminReservationRequest request = new AdminReservationRequest(
+        ReservationResponse response = reservationService.addReservation(
                 LocalDate.of(2024, 4, 9),
                 time.getId(),
                 theme.getId(),
                 member.getId()
         );
-
-        ReservationResponse response = reservationService.addAdminReservation(request);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(response.date()).isEqualTo("2024-04-09");

@@ -47,7 +47,12 @@ public class ReservationController {
             @RequestBody @Valid ReservationRequest request,
             @Auth Accessor accessor
     ) {
-        ReservationResponse reservationResponse = reservationService.addReservation(request, accessor);
+        ReservationResponse reservationResponse = reservationService.addReservation(
+                request.date(),
+                request.timeId(),
+                request.themeId(),
+                accessor.id()
+        );
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);

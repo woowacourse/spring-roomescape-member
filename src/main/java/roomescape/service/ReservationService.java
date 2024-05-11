@@ -15,10 +15,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
-import roomescape.dto.request.AdminReservationRequest;
-import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.security.Accessor;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,26 +56,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse addReservation(ReservationRequest reservationRequest, Accessor accessor) {
-        return createReservation(
-                reservationRequest.date(),
-                reservationRequest.timeId(),
-                reservationRequest.themeId(),
-                accessor.id()
-        );
-    }
-
-    @Transactional
-    public ReservationResponse addAdminReservation(AdminReservationRequest request) {
-        return createReservation(
-                request.date(),
-                request.timeId(),
-                request.themeId(),
-                request.memberId()
-        );
-    }
-
-    private ReservationResponse createReservation(
+    public ReservationResponse addReservation(
             LocalDate date,
             Long timeId,
             Long themeId,

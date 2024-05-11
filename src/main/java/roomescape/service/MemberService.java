@@ -52,4 +52,8 @@ public class MemberService {
 
         return MemberResponse.from(member);
     }
+
+    public Member getByEmail(String email) {
+        return memberRepository.getByEmail(email);
+    }
 }
