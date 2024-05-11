@@ -1,4 +1,4 @@
-package roomescape.presentation.acceptance;
+package roomescape.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

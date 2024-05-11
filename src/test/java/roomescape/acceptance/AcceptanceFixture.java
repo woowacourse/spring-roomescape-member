@@ -1,4 +1,4 @@
-package roomescape.presentation.acceptance;
+package roomescape.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
