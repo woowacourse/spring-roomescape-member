@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static roomescape.exception.ExceptionType.DELETE_USED_TIME;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
+import static roomescape.service.mapper.ReservationTimeResponseMapper.toResponse;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.mapper.ReservationTimeResponseMapper;
 
 @Service
 @Transactional
@@ -34,13 +36,9 @@ public class ReservationTimeService {
         return toResponse(saved);
     }
 
-    private ReservationTimeResponse toResponse(ReservationTime saved) {
-        return new ReservationTimeResponse(saved.getId(), saved.getStartAt());
-    }
-
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(ReservationTimeResponseMapper::toResponse)
                 .toList();
     }
 

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
+import static roomescape.service.mapper.ThemeResponseMapper.toResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +14,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.mapper.ThemeResponseMapper;
 
 @Service
 @Transactional
@@ -37,19 +39,15 @@ public class ThemeService {
         return toResponse(saved);
     }
 
-    private ThemeResponse toResponse(Theme theme) {
-        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
-    }
-
     public List<ThemeResponse> findAll() {
         return themeRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(ThemeResponseMapper::toResponse)
                 .toList();
     }
 
     public List<ThemeResponse> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
         return themeRepository.findAndOrderByPopularity(start, end, count).stream()
-                .map(this::toResponse)
+                .map(ThemeResponseMapper::toResponse)
                 .toList();
     }
 

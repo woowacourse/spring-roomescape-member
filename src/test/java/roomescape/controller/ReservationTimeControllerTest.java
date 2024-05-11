@@ -1,85 +1,52 @@
 package roomescape.controller;
 
-import java.lang.reflect.Field;
-import java.time.LocalTime;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.ReservationTimeFixture.DEFAULT_REQUEST;
+import static roomescape.fixture.ReservationTimeFixture.DEFAULT_RESPONSE;
+
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.repository.CollectionReservationRepository;
-import roomescape.repository.CollectionReservationTimeRepository;
-import roomescape.repository.CollectionThemeRepository;
 import roomescape.service.AvailableTimeService;
 import roomescape.service.ReservationTimeService;
 
+@SpringBootTest
 class ReservationTimeControllerTest {
-
-    private CollectionReservationTimeRepository reservationTimeRepository;
+    @MockBean
+    private ReservationTimeService reservationTimeService;
+    @MockBean
+    private AvailableTimeService availableTimeService;
+    @Autowired
     private ReservationTimeController reservationTimeController;
 
-    @BeforeEach
-    void init() {
-        reservationTimeRepository = new CollectionReservationTimeRepository();
-        CollectionReservationRepository reservationRepository = new CollectionReservationRepository();
-        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationRepository,
-                reservationTimeRepository);
-        CollectionThemeRepository themeRepository = new CollectionThemeRepository();
-        AvailableTimeService availableTimeService = new AvailableTimeService(reservationTimeRepository,
-                themeRepository);
-        reservationTimeController = new ReservationTimeController(reservationTimeService, availableTimeService);
-    }
-
     @Test
-    @DisplayName("시간을 잘 저장하는지 확인한다.")
+    @DisplayName("예약 시간 정상 동작 시 API 명세대로 응답이 생성되는지 확인")
     void save() {
-        LocalTime time = LocalTime.now();
-        ReservationTimeResponse save = reservationTimeController.save(new ReservationTimeRequest(time)).getBody();
+        Mockito.when(reservationTimeService.save(DEFAULT_REQUEST))
+                .thenReturn(DEFAULT_RESPONSE);
 
-        ReservationTimeResponse expected = new ReservationTimeResponse(save.id(), time);
-        Assertions.assertThat(save)
-                .isEqualTo(expected);
+        ResponseEntity<ReservationTimeResponse> response = reservationTimeController.save(DEFAULT_REQUEST);
+        assertAll(
+                () -> Assertions.assertThat(response.getStatusCode())
+                        .isEqualTo(HttpStatusCode.valueOf(201)),
+                () -> Assertions.assertThat(response.getBody())
+                        .isEqualTo(DEFAULT_RESPONSE)
+        );
     }
 
     @Test
-    @DisplayName("시간을 잘 불러오는지 확인한다.")
-    void findAll() {
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeController.findAll();
-
-        Assertions.assertThat(reservationTimeResponses)
-                .isEmpty();
-    }
-
-    @Test
-    @DisplayName("시간을 잘 지우는지 확인한다.")
+    @DisplayName("예약 시간 삭제 정상 동작 시 API 명세대로 응답이 생성되는지 확인")
     void delete() {
-        //given
-        reservationTimeRepository.save(new ReservationTime(1L, LocalTime.now()));
+        ResponseEntity<Void> response = reservationTimeController.delete(DEFAULT_RESPONSE.id());
 
-        //when
-        reservationTimeController.delete(1);
-
-        //then
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeController.findAll();
-        Assertions.assertThat(reservationTimeResponses)
-                .isEmpty();
-    }
-
-    @Test
-    @DisplayName("내부에 Repository를 의존하고 있지 않은지 확인한다.")
-    void checkRepositoryDependency() {
-        boolean isRepositoryInjected = false;
-
-        for (Field field : reservationTimeController.getClass().getDeclaredFields()) {
-            if (field.getType().getName().contains("Repository")) {
-                isRepositoryInjected = true;
-                break;
-            }
-        }
-
-        Assertions.assertThat(isRepositoryInjected).isFalse();
+        Assertions.assertThat(response.getStatusCode())
+                .isEqualTo(HttpStatusCode.valueOf(204));
     }
 }

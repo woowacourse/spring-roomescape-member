@@ -1,7 +1,7 @@
 package roomescape.repository;
 
-import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
-import static roomescape.fixture.ThemeBuilder.DEFAULT_THEME;
+import static roomescape.fixture.MemberFixture.DEFAULT_MEMBER;
+import static roomescape.fixture.ThemeFixture.DEFAULT_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.fixture.ReservationBuilder;
-import roomescape.fixture.ThemeBuilder;
+import roomescape.fixture.ThemeFixture;
 
 @SpringBootTest
 class JdbcTemplateThemeRepositoryTest {
@@ -54,9 +54,9 @@ class JdbcTemplateThemeRepositoryTest {
     @Test
     @DisplayName("인기 순으로 테마를 잘 조회하는지 확인")
     void findAndOrderByPopularity() {
-        Theme theme1 = themeRepository.save(ThemeBuilder.from("name1"));
-        Theme theme2 = themeRepository.save(ThemeBuilder.from("name2"));
-        Theme theme3 = themeRepository.save(ThemeBuilder.from("name3"));
+        Theme theme1 = themeRepository.save(ThemeFixture.from("name1"));
+        Theme theme2 = themeRepository.save(ThemeFixture.from("name2"));
+        Theme theme3 = themeRepository.save(ThemeFixture.from("name3"));
 
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 30)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(2, 30)));
@@ -64,14 +64,14 @@ class JdbcTemplateThemeRepositoryTest {
 
         LocalDate date = LocalDate.now().plusDays(1);
         Member member = DEFAULT_MEMBER;
-        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime2, theme2));
-        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime1, theme2));
-        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime3, theme2));
+        reservationRepository.save(new Reservation(member, date, reservationTime2, theme2));
+        reservationRepository.save(new Reservation(member, date, reservationTime1, theme2));
+        reservationRepository.save(new Reservation(member, date, reservationTime3, theme2));
 
-        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime1, theme1));
-        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime2, theme1));
+        reservationRepository.save(new Reservation(member, date, reservationTime1, theme1));
+        reservationRepository.save(new Reservation(member, date, reservationTime2, theme1));
 
-        reservationRepository.save(ReservationBuilder.withOutId(member, date, reservationTime1, theme3));
+        reservationRepository.save(new Reservation(member, date, reservationTime1, theme3));
 
         List<Theme> result = themeRepository.findAndOrderByPopularity(date, date.plusDays(1), 10);
         Assertions.assertThat(result)

@@ -5,6 +5,7 @@ import static roomescape.exception.ExceptionType.NOT_FOUND_MEMBER;
 import static roomescape.exception.ExceptionType.NOT_FOUND_RESERVATION_TIME;
 import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
 import static roomescape.exception.ExceptionType.PAST_TIME_RESERVATION;
+import static roomescape.service.mapper.ReservationResponseMapper.toResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,13 +18,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.mapper.ReservationResponseMapper;
 
 @Service
 @Transactional
@@ -76,20 +76,9 @@ public class ReservationService {
         }
     }
 
-    private ReservationResponse toResponse(Reservation reservation) {
-        ReservationTime reservationTime = reservation.getReservationTime();
-        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(reservationTime.getId(),
-                reservation.getTime());
-        Theme theme = reservation.getTheme();
-        ThemeResponse themeResponse = new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(),
-                theme.getThumbnail());
-        return new ReservationResponse(reservation.getId(),
-                reservation.getName(), reservation.getDate(), reservationTimeResponse, themeResponse);
-    }
-
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(ReservationResponseMapper::toResponse)
                 .toList();
     }
 
@@ -97,7 +86,7 @@ public class ReservationService {
                                                                       LocalDate end) {
         return reservationRepository.findByMemberAndThemeBetweenDates(memberId, themeId, start, end)
                 .stream()
-                .map(this::toResponse)
+                .map(ReservationResponseMapper::toResponse)
                 .toList();
     }
 

@@ -1,11 +1,13 @@
 package roomescape.domain;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class Sha256EncryptorTest {
 
     @Test
+    @DisplayName("문자열 암호화 확인")
     void encrypt() {
         Sha256Encryptor sha256Encryptor = new Sha256Encryptor();
         String encrypted = sha256Encryptor.encrypt("qwer");

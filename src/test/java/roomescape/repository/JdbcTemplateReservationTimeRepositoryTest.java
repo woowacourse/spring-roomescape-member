@@ -1,9 +1,9 @@
 package roomescape.repository;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
-import static roomescape.fixture.ReservationTimeBuilder.DEFAULT_TIME;
-import static roomescape.fixture.ThemeBuilder.DEFAULT_THEME;
+import static roomescape.fixture.ReservationFixture.DEFAULT_RESERVATION;
+import static roomescape.fixture.ReservationTimeFixture.DEFAULT_TIME;
+import static roomescape.fixture.ThemeFixture.DEFAULT_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -28,8 +27,6 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
     @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -38,6 +35,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
         jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -95,10 +94,10 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Test
     @DisplayName("특정 날짜와 테마에 예약이 있는 예약 시간의 목록을 잘 반환하는지 확인한다.")
     void findUsedTimeByDateAndTheme() {
-        LocalDate date = LocalDate.of(2024, 12, 30);
+        LocalDate date = DEFAULT_RESERVATION.getDate();
         Theme theme = themeRepository.save(DEFAULT_THEME);
         ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
-        reservationRepository.save(new Reservation(DEFAULT_MEMBER, date, time, theme));
+        reservationRepository.save(DEFAULT_RESERVATION);
 
         List<ReservationTime> response = reservationTimeRepository.findUsedTimeByDateAndTheme(date, theme);
 

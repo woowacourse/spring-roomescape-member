@@ -4,6 +4,7 @@ import static roomescape.domain.Role.MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.INVALID_EMAIL_FORMAT;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import roomescape.exception.RoomescapeException;
@@ -84,5 +85,35 @@ public class Member {
 
     public Role getRole() {
         return role;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Member member = (Member) o;
+
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", encryptedPassword='" + encryptedPassword + '\'' +
+                ", role=" + role +
+                '}';
     }
 }

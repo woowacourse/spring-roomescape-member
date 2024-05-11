@@ -12,6 +12,7 @@ public enum ExceptionType {
     EMPTY_TIME(BAD_REQUEST, "시작 시간은 필수 값입니다."),
     EMPTY_DATE(BAD_REQUEST, "날짜는 필수값 입니다."),
     EMPTY_THEME(BAD_REQUEST, "테마는 필수값 입니다."),
+    EMPTY_MEMBER(BAD_REQUEST, "회원은 필수값 입니다."),
     EMPTY_DESCRIPTION(BAD_REQUEST, "테마 설명은 필수값 입니다."),
     EMPTY_THUMBNAIL(BAD_REQUEST, "테마 썸네일은 필수값 입니다."),
     NOT_URL_BASE_THUMBNAIL(BAD_REQUEST, "테마 썸네일이 url 형태가 아닙니다."),

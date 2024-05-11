@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
+import static roomescape.exception.ExceptionType.EMPTY_MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
 
@@ -22,6 +23,7 @@ public class Reservation implements Comparable<Reservation> {
     }
 
     public Reservation(Long id, Member reservationMember, LocalDate date, ReservationTime time, Theme theme) {
+        validateMember(reservationMember);
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
@@ -30,6 +32,12 @@ public class Reservation implements Comparable<Reservation> {
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private void validateMember(Member reservationMember) {
+        if (reservationMember == null) {
+            throw new RoomescapeException(EMPTY_MEMBER);
+        }
     }
 
     private void validateTheme(Theme theme) {

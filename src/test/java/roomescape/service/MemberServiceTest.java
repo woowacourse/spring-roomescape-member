@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import static roomescape.exception.ExceptionType.LOGIN_FAIL;
-import static roomescape.fixture.MemberBuilder.DEFAULT_MEMBER;
+import static roomescape.fixture.MemberFixture.DEFAULT_MEMBER;
 
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -11,6 +11,7 @@ import roomescape.domain.Sha256Encryptor;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.UserInfo;
 import roomescape.exception.RoomescapeException;
+import roomescape.fixture.MemberFixture;
 import roomescape.repository.CollectionMemberRepository;
 import roomescape.repository.MemberRepository;
 
@@ -37,6 +38,6 @@ class MemberServiceTest {
         Long memberId = DEFAULT_MEMBER.getId();
         UserInfo userInfo = memberService.findByUserId(memberId);
         Assertions.assertThat(userInfo)
-                .isEqualTo(new UserInfo(memberId, DEFAULT_MEMBER.getName(), DEFAULT_MEMBER.getRole().name()));
+                .isEqualTo(MemberFixture.DEFAULT_MEMBER_INFO);
     }
 }

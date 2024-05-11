@@ -1,9 +1,9 @@
 package roomescape.repository;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.fixture.ReservationBuilder.DEFAULT_RESERVATION_WITHOUT_ID;
-import static roomescape.fixture.ReservationTimeBuilder.DEFAULT_TIME;
-import static roomescape.fixture.ThemeBuilder.DEFAULT_THEME;
+import static roomescape.fixture.ReservationFixture.DEFAULT_RESERVATION;
+import static roomescape.fixture.ReservationTimeFixture.DEFAULT_TIME;
+import static roomescape.fixture.ThemeFixture.DEFAULT_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,29 +24,30 @@ class JdbcTemplateReservationRepositoryTest {
     @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private ThemeRepository themeRepository;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void init() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES('11:56')");
-
         jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) VALUES('name', 'description', 'http://thumbnail')");
 
+        reservationTimeRepository.save(DEFAULT_TIME);
+        themeRepository.save(DEFAULT_THEME);
     }
 
     @Test
     @DisplayName("Reservation 을 잘 저장하는지 확인한다.")
     void save() {
         var beforeSave = reservationRepository.findAll();
-        Reservation saved = reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
+        Reservation saved = reservationRepository.save(DEFAULT_RESERVATION);
         var afterSave = reservationRepository.findAll();
 
         Assertions.assertThat(afterSave)
@@ -58,8 +59,8 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 조회하는지 확인한다.")
     void findAll() {
         List<Reservation> beforeSave = reservationRepository.findAll();
-        reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
-        reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
+        reservationRepository.save(DEFAULT_RESERVATION);
+        reservationRepository.save(DEFAULT_RESERVATION);
 
         List<Reservation> afterSave = reservationRepository.findAll();
         Assertions.assertThat(afterSave.size())
@@ -70,9 +71,9 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 지우는지 확인한다.")
     void delete() {
         List<Reservation> beforeSaveAndDelete = reservationRepository.findAll();
-        reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
+        Reservation saved = reservationRepository.save(DEFAULT_RESERVATION);
 
-        reservationRepository.delete(1L);
+        reservationRepository.delete(saved.getId());
 
         List<Reservation> afterSaveAndDelete = reservationRepository.findAll();
 
@@ -83,9 +84,9 @@ class JdbcTemplateReservationRepositoryTest {
     @Test
     @DisplayName("특정 테마에 특정 날짜 특정 시간에 예약 여부를 잘 반환하는지 확인한다.")
     void existsByThemeAndDateAndTime() {
-        LocalDate date1 = DEFAULT_RESERVATION_WITHOUT_ID.getDate();
+        LocalDate date1 = DEFAULT_RESERVATION.getDate();
         LocalDate date2 = date1.plusDays(1);
-        reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
+        reservationRepository.save(DEFAULT_RESERVATION);
 
         assertAll(
                 () -> Assertions.assertThat(
@@ -100,7 +101,7 @@ class JdbcTemplateReservationRepositoryTest {
     @Test
     @DisplayName("특정 시간에 예약이 있는지 확인한다.")
     void existsByTime() {
-        reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
+        reservationRepository.save(DEFAULT_RESERVATION);
 
         assertAll(
                 () -> Assertions.assertThat(reservationRepository.existsByTime(DEFAULT_TIME))
@@ -114,7 +115,7 @@ class JdbcTemplateReservationRepositoryTest {
     @Test
     @DisplayName("특정 테마에 예약이 있는지 확인한다.")
     void existsByTheme() {
-        reservationRepository.save(DEFAULT_RESERVATION_WITHOUT_ID);
+        reservationRepository.save(DEFAULT_RESERVATION);
 
         assertAll(
                 () -> Assertions.assertThat(reservationRepository.existsByTheme(DEFAULT_THEME))
