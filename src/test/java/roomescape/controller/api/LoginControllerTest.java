@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/reset.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -72,16 +73,17 @@ class LoginControllerTest {
     void checkLogin() {
         final String email = "111@aaa.com";
         final String password = "abc1234";
-        final Map<String, String> params = Map.of("email", email, "password", password);
         final Member member = memberRepository.save(new Member("감자", Role.USER, email, password));
         final String token = tokenProvider.createToken(member);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
-                .body(params)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("name", equalTo(member.getName()),
+                        "role", equalTo(member.getRole().toString()),
+                        "email", equalTo(email));
     }
 }
