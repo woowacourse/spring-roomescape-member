@@ -20,6 +20,28 @@ import java.util.Optional;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
+    private static final String FIND_ALL_QUERY = """
+            SELECT
+                r.id AS reservation_id,
+                mem.id AS member_id,
+                mem.name AS member_name,
+                mem.email AS member_email,
+                mem.password AS member_password,
+                r.date,
+                t.id AS time_id,
+                t.start_at AS start_at,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail
+            FROM reservation AS r
+                INNER JOIN reservation_time AS t
+                    ON r.time_id = t.id
+                INNER JOIN theme AS th
+                    ON r.theme_id = th.id
+                INNER JOIN member AS mem
+                    ON r.member_id = mem.id""";
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -66,56 +88,14 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    mem.id AS member_id,
-                    mem.name AS member_name,
-                    mem.email AS member_email,
-                    mem.password AS member_password,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                    INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                    INNER JOIN theme AS th
-                        ON r.theme_id = th.id
-                    INNER JOIN member AS mem
-                        ON r.member_id = mem.id""";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(FIND_ALL_QUERY, rowMapper);
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
         try {
-            String sql = """
-                    SELECT
-                        r.id AS reservation_id,
-                        mem.id AS member_id,
-                        mem.name AS member_name,
-                        mem.email AS member_email,
-                        mem.password AS member_password,
-                        r.date,
-                        t.id AS time_id,
-                        t.start_at AS start_at,
-                        th.id AS theme_id,
-                        th.name AS theme_name,
-                        th.description AS theme_description,
-                        th.thumbnail AS theme_thumbnail
-                    FROM reservation AS r
-                        INNER JOIN reservation_time AS t
-                            ON r.time_id = t.id
-                        INNER JOIN theme AS th
-                            ON r.theme_id = th.id
-                        INNER JOIN member AS mem
-                            ON r.member_id = mem.id
-                    WHERE r.id = ?""";
-            Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            String filterCondition = " WHERE r.id = ?";
+            Reservation reservation = jdbcTemplate.queryForObject(FIND_ALL_QUERY + filterCondition, rowMapper, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -124,56 +104,14 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public List<Reservation> findByDateBetween(LocalDate start, LocalDate end) {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    mem.id AS member_id,
-                    mem.name AS member_name,
-                    mem.email AS member_email,
-                    mem.password AS member_password,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                    INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                    INNER JOIN theme AS th
-                        ON r.theme_id = th.id
-                    INNER JOIN member AS mem
-                        ON r.member_id = mem.id
-                WHERE r.date BETWEEN ? AND ?""";
-        return jdbcTemplate.query(sql, rowMapper, start, end);
+        String filterCondition = " WHERE r.date BETWEEN ? AND ?";
+        return jdbcTemplate.query(FIND_ALL_QUERY + filterCondition, rowMapper, start, end);
     }
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    mem.id AS member_id,
-                    mem.name AS member_name,
-                    mem.email AS member_email,
-                    mem.password AS member_password,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                    INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                    INNER JOIN theme AS th
-                        ON r.theme_id = th.id
-                    INNER JOIN member AS mem
-                        ON r.member_id = mem.id
-                WHERE r.date = ? AND th.id = ?""";
-        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+        String filterCondition = " WHERE r.date = ? AND th.id = ?";
+        return jdbcTemplate.query(FIND_ALL_QUERY + filterCondition, rowMapper, date, themeId);
     }
 
     @Override
@@ -207,30 +145,9 @@ public class ReservationDao implements ReservationRepository {
     public List<Reservation> findByMemberAndThemeAndDateBetween(
             long memberId, long themeId, LocalDate startDate, LocalDate endDate
     ) {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    mem.id AS member_id,
-                    mem.name AS member_name,
-                    mem.email AS member_email,
-                    mem.password AS member_password,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                    INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                    INNER JOIN theme AS th
-                        ON r.theme_id = th.id
-                    INNER JOIN member AS mem
-                        ON r.member_id = mem.id""";
         String filterCondition = " WHERE MEMBER_ID = ? AND THEME_ID = ? AND DATE BETWEEN ? AND ?";
         return jdbcTemplate.query(
-                sql + filterCondition, rowMapper,
+                FIND_ALL_QUERY + filterCondition, rowMapper,
                 memberId, themeId, startDate, endDate
         );
     }
