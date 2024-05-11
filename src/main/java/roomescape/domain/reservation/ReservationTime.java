@@ -19,14 +19,6 @@ public class ReservationTime {
         this(null, startAt);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -41,5 +33,13 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalTime getStartAt() {
+        return startAt;
     }
 }

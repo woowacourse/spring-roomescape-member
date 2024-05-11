@@ -40,22 +40,6 @@ public class Theme {
         return new Theme(id, name, description, thumbnailUrl);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name.getName();
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -71,5 +55,21 @@ public class Theme {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name.getName();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
 }

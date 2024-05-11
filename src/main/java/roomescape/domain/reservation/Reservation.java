@@ -36,8 +36,28 @@ public class Reservation {
         }
     }
 
+    public Reservation withId(long id) {
+        return new Reservation(id, member, date, time, theme, createdAt);
+    }
+
     public boolean isOwnedBy(long memberId) {
         return member.hasId(memberId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Reservation that)) {
+            return false;
+        }
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     public Long getId() {
@@ -66,25 +86,5 @@ public class Reservation {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
-    }
-
-    public Reservation withId(long id) {
-        return new Reservation(id, member, date, time, theme, createdAt);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Reservation that)) {
-            return false;
-        }
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }

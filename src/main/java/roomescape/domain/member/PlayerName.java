@@ -25,10 +25,6 @@ public class PlayerName {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -43,5 +39,9 @@ public class PlayerName {
     @Override
     public int hashCode() {
         return Objects.hashCode(name);
+    }
+
+    public String getName() {
+        return name;
     }
 }

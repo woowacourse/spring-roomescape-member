@@ -28,7 +28,7 @@ public class JdbcMemberRepository implements MemberRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getEncryptedPassword());
+                .addValue("password", member.getPassword());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return member.withId(id);
     }

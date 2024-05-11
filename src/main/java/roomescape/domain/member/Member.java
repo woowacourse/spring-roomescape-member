@@ -25,6 +25,10 @@ public class Member {
         return id.equals(memberId);
     }
 
+    public boolean matchPassword(String otherPassword) {
+        return password.matches(otherPassword);
+    }
+
     public Long getId() {
         return id;
     }
@@ -37,11 +41,7 @@ public class Member {
         return email.getAddress();
     }
 
-    public boolean matchPassword(String rawPassword) {
-        return password.matches(rawPassword);
-    }
-
-    public String getEncryptedPassword() {
+    public String getPassword() {
         return password.getPassword();
     }
 }

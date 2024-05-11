@@ -1,5 +1,7 @@
 package roomescape.domain.reservation;
 
+import java.util.Objects;
+
 public class ThemeName {
     private static final int NAME_MAX_LENGTH = 20;
 
@@ -9,10 +11,6 @@ public class ThemeName {
         validateNonBlank(name);
         validateLength(name);
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     private void validateNonBlank(String name) {
@@ -25,5 +23,26 @@ public class ThemeName {
         if (name != null && name.length() > NAME_MAX_LENGTH) {
             throw new IllegalArgumentException(String.format("테마명은 %d자 이하여야 합니다.", NAME_MAX_LENGTH));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ThemeName themeName = (ThemeName) o;
+        return name.equals(themeName.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    public String getName() {
+        return name;
     }
 }

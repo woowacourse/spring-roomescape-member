@@ -141,7 +141,7 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.create(new Theme("theme1", "desc", "url"));
         LocalDate date = LocalDate.of(2024, 12, 25);
         Member member = MemberFixture.createMember("오리");
-        jdbcTemplate.update(memberSql, 1L, member.getName(), member.getEmail(), member.getEncryptedPassword());
+        jdbcTemplate.update(memberSql, 1L, member.getName(), member.getEmail(), member.getPassword());
         jdbcTemplate.update(reservationSql, 1L, 1L, date, reservationTime.getId(), theme.getId(), BASE_TIME);
         return new Reservation(1L, member, date, reservationTime, theme, BASE_TIME);
     }
