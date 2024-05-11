@@ -12,9 +12,13 @@ public class Duration {
     }
 
     public static Duration ofLastWeek() {
+        return Duration.ofLastWeek(LocalDate.now());
+    }
+
+    public static Duration ofLastWeek(LocalDate baseDate) {
         return new Duration(
-                LocalDate.now().minusDays(7),
-                LocalDate.now().minusDays(1)
+                baseDate.minusDays(7),
+                baseDate.minusDays(1)
         );
     }
 
