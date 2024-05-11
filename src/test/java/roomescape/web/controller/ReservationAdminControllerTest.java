@@ -10,7 +10,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.support.IntegrationTestSupport;
-import roomescape.web.controller.request.CreateReservationAdminRequest;
+import roomescape.web.controller.request.ReservationAdminWebRequest;
 
 class ReservationAdminControllerTest extends IntegrationTestSupport {
 
@@ -18,8 +18,8 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     @DisplayName("어드민이 예약을 생성한다.")
     void create() {
         LocalDate date = nextDate();
-        CreateReservationAdminRequest request =
-                new CreateReservationAdminRequest(date.toString(), 1L, 1L, 1L);
+        ReservationAdminWebRequest request =
+                new ReservationAdminWebRequest(date.toString(), 1L, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -48,8 +48,8 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 날짜는 올바른 형식이어야 한다.")
     void validateDateFormat() {
         String invalidDate = "date";
-        CreateReservationAdminRequest invalidRequest
-                = new CreateReservationAdminRequest(invalidDate, 1L, 1L, 1L);
+        ReservationAdminWebRequest invalidRequest
+                = new ReservationAdminWebRequest(invalidDate, 1L, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -77,8 +77,8 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void nonPositiveTimeId() {
         Long invalidTimeId = 0L;
         String date = nextDate().toString();
-        CreateReservationAdminRequest invalidRequest =
-                new CreateReservationAdminRequest(date, 1L, invalidTimeId, 1L);
+        ReservationAdminWebRequest invalidRequest =
+                new ReservationAdminWebRequest(date, 1L, invalidTimeId, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -106,8 +106,8 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void nonPositiveMemberId() {
         Long invalidMemberId = 0L;
         String date = nextDate().toString();
-        CreateReservationAdminRequest invalidRequest =
-                new CreateReservationAdminRequest(date, invalidMemberId, 1L, 1L);
+        ReservationAdminWebRequest invalidRequest =
+                new ReservationAdminWebRequest(date, invalidMemberId, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

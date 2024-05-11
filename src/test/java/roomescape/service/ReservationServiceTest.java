@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.ReservationTime;
 import roomescape.infrastructure.persistence.ReservationTimeRepository;
-import roomescape.service.request.CreateReservationRequest;
+import roomescape.service.request.ReservationRequest;
 import roomescape.support.IntegrationTestSupport;
 
 class ReservationServiceTest extends IntegrationTestSupport {
@@ -25,8 +25,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("신규 예약을 생성할 수 있다.")
     void createReservation() {
         LocalDate date = nextDate();
-        CreateReservationRequest request =
-                new CreateReservationRequest(date.toString(), 1L, 1L, 1L);
+        ReservationRequest request =
+                new ReservationRequest(date.toString(), 1L, 1L, 1L);
 
         assertThatCode(() -> target.createReservation(request))
                 .doesNotThrowAnyException();
@@ -36,8 +36,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("중복된 예약은 생성할 수 없다.")
     void duplicated() {
         LocalDate date = nextDate();
-        CreateReservationRequest request =
-                new CreateReservationRequest(date.toString(), 1L, 1L, 1L);
+        ReservationRequest request =
+                new ReservationRequest(date.toString(), 1L, 1L, 1L);
         target.createReservation(request);
 
         assertThatThrownBy(() -> target.createReservation(request))
@@ -50,8 +50,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     void withUnknownMember() {
         LocalDate date = nextDate();
         Long unknownMemberId = 3L;
-        CreateReservationRequest request =
-                new CreateReservationRequest(date.toString(), unknownMemberId, 1L, 1L);
+        ReservationRequest request =
+                new ReservationRequest(date.toString(), unknownMemberId, 1L, 1L);
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(NoSuchElementException.class)
@@ -63,8 +63,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     void withUnknownTheme() {
         LocalDate date = nextDate();
         Long unknownThemeId = 3L;
-        CreateReservationRequest request =
-                new CreateReservationRequest(date.toString(), 1L, 1L, unknownThemeId);
+        ReservationRequest request =
+                new ReservationRequest(date.toString(), 1L, 1L, unknownThemeId);
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(NoSuchElementException.class)
@@ -76,8 +76,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     void withUnknownTime() {
         LocalDate date = nextDate();
         Long unknownTimeId = 4L;
-        CreateReservationRequest request =
-                new CreateReservationRequest(date.toString(), 1L, unknownTimeId, 2L);
+        ReservationRequest request =
+                new ReservationRequest(date.toString(), 1L, unknownTimeId, 2L);
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(NoSuchElementException.class)
@@ -88,8 +88,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("지나간 날짜에 대한 예약은 생성할 수 없다.")
     void withPreviousDate() {
         LocalDate previousDate = previousDate();
-        CreateReservationRequest request
-                = new CreateReservationRequest(previousDate.toString(), 1L, 1L, 1L);
+        ReservationRequest request
+                = new ReservationRequest(previousDate.toString(), 1L, 1L, 1L);
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(IllegalStateException.class)
@@ -102,8 +102,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
         ReservationTime previousTime = new ReservationTime(previousTime());
         ReservationTime time = reservationTimeRepository.save(previousTime);
         LocalDate date = today();
-        CreateReservationRequest request =
-                new CreateReservationRequest(date.toString(), 1L, time.getId(), 1L);
+        ReservationRequest request =
+                new ReservationRequest(date.toString(), 1L, time.getId(), 1L);
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(IllegalStateException.class)
