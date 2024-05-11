@@ -1,5 +1,6 @@
 package roomescape.config.resolver;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.config.util.CookieExtractor;
 import roomescape.domain.member.Member;
 import roomescape.service.AuthService;
-import roomescape.service.exception.AuthorizationException;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -33,10 +33,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (servletRequest == null || servletRequest.getCookies() == null) {
-            throw new AuthorizationException("사용자 정보를 조회할 수 없습니다.");
+        Cookie[] cookies = servletRequest.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return null;
         }
-        String token = CookieExtractor.extractTokenFromCookie(servletRequest.getCookies());
+        String token = CookieExtractor.extractTokenFromCookie(cookies);
+        if (token == null || token.isBlank()) {
+            return null;
+        }
         return authService.findMemberByToken(token);
     }
 }
