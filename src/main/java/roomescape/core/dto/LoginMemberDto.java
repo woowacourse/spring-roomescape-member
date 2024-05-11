@@ -31,6 +31,14 @@ public class LoginMemberDto {
         this.role = role;
     }
 
+    public Member toMember() {
+        return new Member(id, name, email, password, role);
+    }
+
+    public boolean isNotAdmin() {
+        return role != Role.ADMIN;
+    }
+
     public Long getId() {
         return id;
     }

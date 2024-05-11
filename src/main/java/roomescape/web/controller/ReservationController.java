@@ -33,7 +33,7 @@ public class ReservationController {
             @RequestBody @Valid final ReservationRequestDto request,
             final LoginMemberDto loginMember
     ) {
-        final Reservation reservation = reservationService.createByLoginMember(request, loginMember);
+        final Reservation reservation = reservationService.create(request, loginMember);
         final ReservationResponseDto response = new ReservationResponseDto(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + response.getId()))
                 .body(response);
@@ -41,9 +41,10 @@ public class ReservationController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponseDto> createReservationByAdmin(
-            @RequestBody @Valid final AdminReservationRequestDto request
+            @RequestBody @Valid final AdminReservationRequestDto request,
+            final LoginMemberDto loginMember
     ) {
-        final Reservation reservation = reservationService.createByAdmin(request);
+        final Reservation reservation = reservationService.createByAdmin(request, loginMember);
         final ReservationResponseDto response = new ReservationResponseDto(reservation);
         return ResponseEntity.created(URI.create("/admin/reservations" + response.getId()))
                 .body(response);

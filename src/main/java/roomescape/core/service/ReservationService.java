@@ -14,6 +14,7 @@ import roomescape.core.repository.MemberRepository;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.core.repository.ThemeRepository;
+import roomescape.web.exception.AuthorizationException;
 import roomescape.web.exception.BadRequestException;
 
 @Service
@@ -36,35 +37,23 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation createByLoginMember(final ReservationRequestDto request, final LoginMemberDto loginMember) {
-        final Member member = new Member(
-                loginMember.getId(),
-                loginMember.getName(),
-                loginMember.getEmail(),
-                loginMember.getPassword(),
-                loginMember.getRole()
-        );
-        final ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
-        final Theme theme = themeRepository.findById(request.getThemeId());
-        final Reservation reservation = new Reservation(member, request.getDate(), time, theme);
-
-        validateDateTimeIsNotPast(reservation, time);
-        validateDuplicatedReservation(reservation, time);
-        final Long id = reservationRepository.save(reservation);
-        return new Reservation(id, member, reservation.getDate(), time, theme);
+    public Reservation create(final ReservationRequestDto request, final LoginMemberDto loginMember) {
+        final Member member = loginMember.toMember();
+        return createReservation(request, member);
     }
 
     @Transactional
-    public Reservation createByAdmin(final AdminReservationRequestDto request) {
+    public Reservation createByAdmin(final AdminReservationRequestDto request, final LoginMemberDto loginMember) {
+        if (loginMember == null || loginMember.isNotAdmin()) {
+            throw new AuthorizationException("관리자가 아닙니다.");
+        }
         final Member member = memberRepository.findById(request.getMemberId());
-        final ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
-        final Theme theme = themeRepository.findById(request.getThemeId());
-        final Reservation reservation = new Reservation(member, request.getDate(), time, theme);
-
-        validateDateTimeIsNotPast(reservation, time);
-        validateDuplicatedReservation(reservation, time);
-        final Long id = reservationRepository.save(reservation);
-        return new Reservation(id, member, reservation.getDate(), time, theme);
+        final ReservationRequestDto reservationRequest = new ReservationRequestDto(
+                request.getDate(),
+                request.getTimeId(),
+                request.getThemeId()
+        );
+        return createReservation(reservationRequest, member);
     }
 
     @Transactional(readOnly = true)
@@ -75,6 +64,17 @@ public class ReservationService {
     @Transactional
     public void delete(final long id) {
         reservationRepository.deleteById(id);
+    }
+
+    private Reservation createReservation(final ReservationRequestDto request, final Member member) {
+        final ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
+        final Theme theme = themeRepository.findById(request.getThemeId());
+        final Reservation reservation = new Reservation(member, request.getDate(), time, theme);
+
+        validateDateTimeIsNotPast(reservation, time);
+        validateDuplicatedReservation(reservation, time);
+        final Long id = reservationRepository.save(reservation);
+        return new Reservation(id, member, reservation.getDate(), time, theme);
     }
 
     private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {

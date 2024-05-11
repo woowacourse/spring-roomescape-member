@@ -106,6 +106,24 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("관리자 예약 생성 시, 관리자가 로그인한 경우가 아니면 예외가 발생한다.")
+    void createReservationByAdminWithNotAdmin() {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("date", TOMORROW_DATE);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("memberId", 1);
+
+        RestAssured.given().log().all()
+                .header("Cookie", loginTokenCookie)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
     @DisplayName("관리자 예약 생성 시, memberId가 존재하지 않으면 예외가 발생한다.")
     void createReservationByAdminWithNotFoundMemberId() {
         final Map<String, Object> loginParams = new HashMap<>();
