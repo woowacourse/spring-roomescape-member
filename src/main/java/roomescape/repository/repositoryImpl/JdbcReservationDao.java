@@ -88,7 +88,7 @@ public class JdbcReservationDao implements ReservationDao {
                 INNER JOIN member as m on r.member_id = m.id
                 WHERE member_id = ? AND theme_id = ? AND date > ? AND date < ?
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper, memberId, themeId, dateFrom, dateTo);
+        return Collections.unmodifiableList(jdbcTemplate.query(sql, reservationRowMapper, memberId, themeId, dateFrom, dateTo));
     }
 
     @Override
@@ -143,8 +143,8 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
-        return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class,
-                date, themeId);
+        return Collections.unmodifiableList(jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class,
+                date, themeId));
     }
 
     @Override
