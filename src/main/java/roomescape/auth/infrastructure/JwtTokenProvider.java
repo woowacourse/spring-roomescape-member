@@ -35,19 +35,23 @@ public class JwtTokenProvider implements TokenProvider {
 
     @Override
     public String getPayload(String token) {
-        if (!isTokenTimeOut(token)) {
-            throw new IllegalArgumentException("토큰 시간이 만료되었습니다.");
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
+        }
+        if (!isValidToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     @Override
-    public boolean isTokenTimeOut(String token) {
+    public boolean isValidToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }

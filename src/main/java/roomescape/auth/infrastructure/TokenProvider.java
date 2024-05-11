@@ -6,5 +6,5 @@ public interface TokenProvider {
 
     String getPayload(String token);
 
-    boolean isTokenTimeOut(String token);
+    boolean isValidToken(String token);
 }
