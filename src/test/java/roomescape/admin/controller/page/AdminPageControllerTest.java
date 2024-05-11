@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.servlet.http.Cookie;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,6 +43,7 @@ public class AdminPageControllerTest {
     }
 
 
+    @DisplayName("admin 권한이 있는 사용자의 경우 admin 페이지에 접근할 수 있다.")
     @Test
     void admin() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin")
@@ -49,6 +51,7 @@ public class AdminPageControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("admin 권한이 있는 사용자의 경우 admin/reservation 페이지에 접근할 수 있다.")
     @Test
     void reservation() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/reservation")
@@ -56,6 +59,7 @@ public class AdminPageControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("admin 권한이 있는 사용자의 경우 admin/time 페이지에 접근할 수 있다.")
     @Test
     void time() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/time")
@@ -63,6 +67,7 @@ public class AdminPageControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("admin 권한이 있는 사용자의 경우 admin/theme 페이지에 접근할 수 있다.")
     @Test
     void theme() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/theme")

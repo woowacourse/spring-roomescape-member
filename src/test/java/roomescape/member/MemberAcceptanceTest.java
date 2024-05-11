@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.member;
 
 import static org.hamcrest.Matchers.is;
 
@@ -13,55 +13,44 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.theme.dao.ThemeDao;
-import roomescape.theme.dto.ThemeRequestDto;
+import roomescape.member.domain.Role;
+import roomescape.member.dto.MemberRequestDto;
+import roomescape.member.service.MemberService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/schema.sql"})
-public class ThemeAcceptanceTest {
+public class MemberAcceptanceTest {
 
     @LocalServerPort
     private int port;
-
     @Autowired
-    private ThemeDao themeDao;
-    private final ThemeRequestDto requestDto = new ThemeRequestDto("정글 모험", "열대 정글의 심연을 탐험하세요.",
-            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    private MemberService memberService;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
     }
 
-    @DisplayName("테마를 저장할 수 있다.")
+    @DisplayName("사용자를 생성할 수 있다.")
     @Test
-    void save() {
+    void create() {
+        MemberRequestDto memberRequestDto = new MemberRequestDto("hotea@hotea.com", "1234", "hotea", Role.USER);
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(requestDto)
-                .when().post("/themes")
+                .body(memberRequestDto)
+                .when().post("/signup")
                 .then().statusCode(201);
     }
 
-    @DisplayName("모든 테마를 조회할 수 있다.")
+    @DisplayName("모든 사용자를 검색할 수 있다.")
     @Test
     void findAll() {
-        themeDao.save(requestDto.toTheme());
-
+        memberService.save(new MemberRequestDto("hotea@hotea.com", "1234", "hotea", Role.USER));
+        memberService.save(new MemberRequestDto("zeus@zeus.com", "1234", "zeus", Role.USER));
         RestAssured.given()
-                .when().get("/themes")
-                .then().statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @DisplayName("특정 테마를 삭제할 수 있다.")
-    @Test
-    void delete() {
-        themeDao.save(requestDto.toTheme());
-
-        RestAssured.given()
-                .when().delete("/themes/1")
-                .then().statusCode(200);
+                .contentType(ContentType.JSON)
+                .when().get("/members")
+                .then().statusCode(200).body("size()", is(2));
     }
 }

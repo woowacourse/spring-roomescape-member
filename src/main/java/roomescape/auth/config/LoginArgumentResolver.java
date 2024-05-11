@@ -1,4 +1,4 @@
-package roomescape.auth.controller;
+package roomescape.auth.config;
 
 import java.util.Arrays;
 
