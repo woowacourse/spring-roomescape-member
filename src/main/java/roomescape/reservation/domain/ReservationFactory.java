@@ -9,9 +9,9 @@ import roomescape.member.domain.MemberInfo;
 @Component
 public class ReservationFactory {
 
-    public Reservation createForAdd(String name, LocalDate date, ReservationTime time, ReservationTheme theme, MemberInfo member) {
+    public Reservation createForAdd(LocalDate date, ReservationTime time, ReservationTheme theme, MemberInfo member) {
         validateIsPast(date, time.getStartAt());
-        return new Reservation(null, name, date, time, theme, member);
+        return new Reservation(null, date, time, theme, member);
     }
 
     private void validateIsPast(LocalDate date, LocalTime time) {

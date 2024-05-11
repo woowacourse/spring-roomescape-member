@@ -29,7 +29,6 @@ public class ReservationDao {
         String findAllSql = """
                         SELECT 
                             r.id as reservation_id, 
-                            r.name,     
                             r.date, 
                             t.id as time_id, 
                             t.start_at as time_value, 
@@ -50,18 +49,17 @@ public class ReservationDao {
         return jdbcTemplate.query(findAllSql, getReservationRowMapper());
     }
 
-    public Reservation insert(Reservation reservation, MemberInfo member) {
+    public Reservation insert(Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate().toString())
                 .addValue("time_id", reservation.getTimeId())
                 .addValue("theme_id", reservation.getThemeId())
-                .addValue("member_id", member.getId());
+                .addValue("member_id", reservation.getMemberId());
 
         Long id = insertActor.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme(), member);
+        return new Reservation(id, reservation.getDate(), reservation.getTime(),
+                reservation.getTheme(), reservation.getMember());
     }
 
     public void deleteById(Long id) {
@@ -87,7 +85,6 @@ public class ReservationDao {
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, numRow) -> new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
