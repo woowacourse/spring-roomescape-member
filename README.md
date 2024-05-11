@@ -359,13 +359,13 @@
         {
             "id": 1,
             "name": "냥인",
-            "email": "nyangin@emil.com",
+            "email": "nyangin@email.com",
             "role": "ADMIN"
         },
         {
             "id": 2,
             "name": "미아",
-            "email": "mia@emil.com",
+            "email": "mia@email.com",
             "role": "USER"
         }
     ]
@@ -388,8 +388,9 @@
         "themeId": 1
     }
     ```
+  
   |파라미터|타입|필수여부|설명|
-      |-----|---|------|---|
+  |-----|---|------|---|
   |token|String|true|사용자 인증 토큰|
 
 - Response
