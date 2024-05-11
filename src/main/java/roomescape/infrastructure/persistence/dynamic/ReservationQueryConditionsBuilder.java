@@ -35,8 +35,8 @@ public class ReservationQueryConditionsBuilder {
         return this;
     }
 
-    private void appendBigIntSimpleCondition(Long id, String memberId) {
-        SimpleCondition simpleCondition = new SimpleCondition(memberId);
+    private void appendBigIntSimpleCondition(Long id, String column) {
+        SimpleCondition simpleCondition = new SimpleCondition(column);
         conditions.add(simpleCondition);
         args.add(id);
         argTypes.add(Types.BIGINT);
