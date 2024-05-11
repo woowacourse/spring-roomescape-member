@@ -36,7 +36,8 @@ public class MemberService {
         validateExist(signupRequest);
         Password password = passwordEncoder.encode(signupRequest.password());
         Long id = memberDao.create(signupRequest, password);
-        return new SignupResponse(id);
+        String accessToken = jwtTokenProvider.createToken(signupRequest.email());
+        return new SignupResponse(id, accessToken);
     }
 
     private void validateExist(final SignupRequest signupRequest) {
