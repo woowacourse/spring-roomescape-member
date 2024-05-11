@@ -29,6 +29,10 @@ public class Member {
         return new Member(null, new MemberName(name), email, password, Role.from(role));
     }
 
+    public long getId() {
+        return id;
+    }
+
     public MemberName getMemberName() {
         return memberName;
     }
@@ -43,10 +47,6 @@ public class Member {
 
     public String getPassword() {
         return password;
-    }
-
-    public long getId() {
-        return id;
     }
 
     public Role getRole() {

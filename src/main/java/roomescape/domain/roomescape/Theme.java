@@ -17,10 +17,6 @@ public class Theme {
         this(null, new ThemeName(themeName), description, thumbnail);
     }
 
-    public Theme(final long themeId) {
-        this(themeId, null, null, null);
-    }
-
     public Theme assignId(final long id) {
         return new Theme(id, themeName, description, thumbnail);
     }

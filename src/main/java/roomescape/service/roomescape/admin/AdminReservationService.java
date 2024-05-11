@@ -38,7 +38,9 @@ public class AdminReservationService {
         ReservationTime reservationTime = findReservationTimeById(reservationSaveRequest);
         Theme theme = findThemeById(reservationSaveRequest);
 
-        Reservation reservation = reservationDao.save(reservationSaveRequest.toEntity(member, reservationTime, theme));
+        Reservation reservation = reservationDao.save(
+                reservationSaveRequest.toEntity(member, reservationTime, theme)
+        );
         return AdminReservationResponse.from(reservation);
     }
 
@@ -61,10 +63,8 @@ public class AdminReservationService {
             final Long memberId, final Long themeId,
             final LocalDate dateFrom, final LocalDate dateTo
     ) {
-        List<Reservation> reservations =
-                reservationDao.findByMemberIdAndThemeIdAndDateFromAndDateTo(
-                        memberId, themeId, dateFrom, dateTo
-                );
+        List<Reservation> reservations = reservationDao
+                .findByMemberIdAndThemeIdAndDateFromAndDateTo(memberId, themeId, dateFrom, dateTo);
         return reservations.stream()
                 .map(AdminReservationResponse::from)
                 .toList();
