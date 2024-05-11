@@ -7,15 +7,17 @@ import roomescape.exception.auth.UnauthorizedTokenException;
 
 @Component
 public class CookieExtractor {
+    private final String COOKIE_NAME = "token";
+
     public Cookie createCookie(String token) {
-        Cookie cookie = new Cookie("token", token); // TODO: session key 상수로 빼기
+        Cookie cookie = new Cookie(COOKIE_NAME, token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
     }
 
     public Cookie deleteCookie() {
-        Cookie cookie = new Cookie("token", null);
+        Cookie cookie = new Cookie(COOKIE_NAME, null);
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -24,10 +26,10 @@ public class CookieExtractor {
 
     public String getToken(Cookie[] cookies) {
         if (cookies == null) {
-            throw new UnauthorizedTokenException(); // TODO: 토큰이 존재하지 않습니다 란 예외로 따로 처리할지 고민하기
+            throw new UnauthorizedTokenException();
         }
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
+                .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(UnauthorizedTokenException::new);
