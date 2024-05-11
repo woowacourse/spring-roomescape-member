@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @Repository
 public class MemberDao {
@@ -31,7 +32,8 @@ public class MemberDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password"))
+            resultSet.getString("password"),
+            Role.valueOf(resultSet.getString("role")))
     );
 
     public Member getByEmailAndPassword(final String email, final String password) {
@@ -56,7 +58,8 @@ public class MemberDao {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword());
+                .addValue("password", member.getPassword())
+                .addValue("role", member.getRole().name());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 

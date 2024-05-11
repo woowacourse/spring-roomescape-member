@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
@@ -36,7 +37,8 @@ public class ReservationDao {
             new Member(
                     resultSet.getLong("member_id"),
                     resultSet.getString("name"),
-                    resultSet.getString("email")
+                    resultSet.getString("email"),
+                    Role.valueOf(resultSet.getString("role"))
             ),
             new ReservationDate(resultSet.getString("date")),
             new ReservationTime(
@@ -56,7 +58,7 @@ public class ReservationDao {
                 SELECT r.id AS reservation_id, r.date, 
                        rt.id AS time_id, rt.start_at AS time_value, 
                        t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail, 
-                       m.id AS member_id, m.name, m.email 
+                       m.id AS member_id, m.name, m.email, m.role 
                 FROM reservation r 
                 INNER JOIN reservation_time rt ON r.time_id = rt.id 
                 INNER JOIN theme t ON r.theme_id = t.id 

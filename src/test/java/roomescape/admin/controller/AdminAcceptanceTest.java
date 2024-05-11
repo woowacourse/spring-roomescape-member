@@ -14,6 +14,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.admin.dto.AdminReservationRequestDto;
 import roomescape.auth.dto.LoginRequestDto;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.MemberRequestDto;
 import roomescape.theme.dto.ThemeRequestDto;
 import roomescape.time.dto.ReservationTimeRequestDto;
@@ -49,7 +50,7 @@ class AdminAcceptanceTest {
 
         RestAssured.given()
                 .log().all()
-                .body(new MemberRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .body(new MemberRequestDto("hotea@hotea.com", "1234", "hotea", Role.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()

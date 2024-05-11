@@ -17,11 +17,11 @@ VALUES ('정글 모험', '열대 정글의 심연을 탐험하세요.', 'https:/
        ('미스터리 저택', '저택 안에 숨겨진 미스터리를 풀어보세요.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('해적의 만', '바다를 항해하며 묻힌 금을 찾아보세요.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO member (name, email, password)
-VALUES ('hotea', 'hotea@hotea.com', '1234'),
-       ('zoysun', 'zoysun@zoysun.com', '1234'),
-       ('kyum', 'kyum@kyum.com', '1234'),
-       ('zeus', 'zeus@zeus.com', '1234');
+INSERT INTO member (name, email, password, role)
+VALUES ('hotea', 'hotea@hotea.com', '1234', 'ADMIN'),
+       ('zoysun', 'zoysun@zoysun.com', '1234', 'USER'),
+       ('kyum', 'kyum@kyum.com', '1234', 'USER'),
+       ('zeus', 'zeus@zeus.com', '1234', 'USER');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id)
 VALUES (1, '2024-04-23', 1, 1),

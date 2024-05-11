@@ -15,6 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.dao.ThemeDao;
@@ -38,7 +39,7 @@ class ReservationDaoTest {
     private MemberDao memberDao;
 
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
-    private final Member member = new Member(1L, "hotea", "hotea@hotea.com");
+    private final Member member = new Member(1L, "hotea", "hotea@hotea.com", Role.USER);
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     private final Reservation reservation = new Reservation(1L, member, new ReservationDate(LocalDate.MAX.toString()), reservationTime, theme);
 
@@ -54,7 +55,7 @@ class ReservationDaoTest {
     @DisplayName("예약을 모두 조회할 수 있다.")
     @Test
     void findAll() {
-        Member memberWithPassword = new Member(1L, "hotea", "hotea@hotea.com", "password");
+        Member memberWithPassword = new Member(1L, "hotea", "hotea@hotea.com", "password", Role.USER);
         reservationTimeDao.save(reservationTime);
         themeDao.save(theme);
         memberDao.save(memberWithPassword);

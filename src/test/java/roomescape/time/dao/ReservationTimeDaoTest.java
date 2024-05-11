@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -73,7 +74,7 @@ class ReservationTimeDaoTest {
     void findAvailableTime() {
         Theme theme = new Theme(1L, "테마 이름", "테마 설명", "테마 썸네일");
         ReservationTime bookedReservationTime = new ReservationTime(2L, "11:00");
-        Member member = new Member(1L, "hotea", "hotea@hotea.com");
+        Member member = new Member(1L, "hotea", "hotea@hotea.com", Role.USER);
         Reservation reservation = new Reservation(member, new ReservationDate("2024-04-01"), bookedReservationTime, theme);
         reservationTimeDao.save(reservationTime);
         reservationTimeDao.save(bookedReservationTime);

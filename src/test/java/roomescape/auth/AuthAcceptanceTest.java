@@ -11,6 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import roomescape.auth.dto.LoginRequestDto;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.MemberRequestDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,7 +31,7 @@ public class AuthAcceptanceTest {
     void tokenLogin() {
         RestAssured.given()
                 .log().all()
-                .body(new MemberRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .body(new MemberRequestDto("hotea@hotea.com", "1234", "hotea", Role.USER))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()
@@ -47,12 +48,12 @@ public class AuthAcceptanceTest {
                 .then().statusCode(200).cookie("token");
     }
 
-    @DisplayName("토큰을 통해 사용자 정보를 확인할 수 있다..")
+    @DisplayName("토큰을 통해 사용자 정보를 확인할 수 있다.")
     @Test
     void tokenValidate() {
         RestAssured.given()
                 .log().all()
-                .body(new MemberRequestDto("hotea@hotea.com", "1234", "hotea"))
+                .body(new MemberRequestDto("hotea@hotea.com", "1234", "hotea", Role.USER))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .log().all()

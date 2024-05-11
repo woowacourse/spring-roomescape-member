@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dao.ThemeDao;
@@ -41,7 +42,7 @@ class ReservationServiceTest {
     @Test
     void save() {
         Long id = 1L;
-        Member member = new Member(1L, "hotea", "hotea@hotea.com");
+        Member member = new Member(1L, "hotea", "hotea@hotea.com", Role.USER);
         ReservationTime reservationTime = new ReservationTime(id, "00:00");
         Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         when(reservationTimeDao.getById(id)).thenReturn(reservationTime);

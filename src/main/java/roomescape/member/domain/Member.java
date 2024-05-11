@@ -11,22 +11,25 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final Role role;
 
-    public Member(final Long id, final String name, final String email, final String password) {
+
+    public Member(final Long id, final String name, final String email, final String password, final Role role) {
         validateInvalidName(name);
         validateInvalidEmail(email);
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public Member(final String email, final String password, final String name) {
-        this(null, name, email, password);
+    public Member(final String email, final String password, final String name, final Role role) {
+        this(null, name, email, password, role);
     }
 
-    public Member(final Long id, final String name, final String email) {
-        this(id, name, email, null);
+    public Member(final Long id, final String name, final String email, final Role role) {
+        this(id, name, email, null, role);
     }
 
     private void validateInvalidName(final String name) {
@@ -57,16 +60,20 @@ public class Member {
         return password;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return Objects.equals(id, member.id) && Objects.equals(name, member.name) && Objects.equals(email, member.email) && Objects.equals(password, member.password);
+        return Objects.equals(id, member.id) && Objects.equals(name, member.name) && Objects.equals(email, member.email) && Objects.equals(password, member.password) && role == member.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password);
+        return Objects.hash(id, name, email, password, role);
     }
 }

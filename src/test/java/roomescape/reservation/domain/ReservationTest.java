@@ -8,11 +8,12 @@ import org.junit.jupiter.api.Test;
 
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
-    private final Member member = new Member(1L, "hotea", "hotea@hotea.com");
+    private final Member member = new Member(1L, "hotea", "hotea@hotea.com", Role.USER);
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     private final ReservationTime reservationTime = new ReservationTime(1L, "15:46");
 

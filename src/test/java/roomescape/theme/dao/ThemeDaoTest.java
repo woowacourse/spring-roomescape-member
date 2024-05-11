@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -32,9 +33,9 @@ class ThemeDaoTest {
     @Autowired
     private ReservationDao reservationDao;
 
-    private final Member memberOne = new Member(1L, "hotea", "hotea@hotea.com");
-    private final Member memberTwo = new Member(2L, "zeus", "zues@zeus.com");
-    private final Member memberThree = new Member(3L, "zh", "zh@zh.com");
+    private final Member memberOne = new Member(1L, "hotea", "hotea@hotea.com", Role.USER);
+    private final Member memberTwo = new Member(2L, "zeus", "zues@zeus.com", Role.USER);
+    private final Member memberThree = new Member(3L, "zh", "zh@zh.com", Role.USER);
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     private final Reservation reservation = new Reservation(memberOne, new ReservationDate("2024-04-27"), reservationTime, theme);
