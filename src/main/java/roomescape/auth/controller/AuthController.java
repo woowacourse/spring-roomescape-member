@@ -12,7 +12,7 @@ import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.infrastructure.TokenCookieManager;
 import roomescape.auth.resolver.LoginMember;
 import roomescape.auth.service.AuthService;
-import roomescape.member.dto.MemberResponse;
+import roomescape.member.domain.MemberInfo;
 
 @Controller
 public class AuthController {
@@ -32,7 +32,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> findInfo(@LoginMember MemberResponse member) {
+    public ResponseEntity<MemberInfo> findInfo(@LoginMember MemberInfo member) {
         return ResponseEntity.ok().body(member);
     }
 

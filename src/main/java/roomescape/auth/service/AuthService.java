@@ -5,8 +5,8 @@ import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.dao.MemberRepository;
+import roomescape.member.domain.MemberInfo;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.MemberResponse;
 
 @Service
 public class AuthService {
@@ -27,15 +27,15 @@ public class AuthService {
         return new TokenResponse(accessToken);
     }
 
-    public MemberResponse findMemberByToken(String token) {
+    public MemberInfo findMemberByToken(String token) {
         String payload = jwtTokenProvider.getPayload(token);
         return findMember(payload);
     }
 
-    private MemberResponse findMember(String principal) {
+    private MemberInfo findMember(String principal) {
         Member member = memberRepository.findByEmail(principal)
                 .orElseThrow(() -> new IllegalArgumentException("멤버가 존재하지 않습니다."));
 
-        return new MemberResponse(member);
+        return new MemberInfo(member.getId(), member.getName());
     }
 }
