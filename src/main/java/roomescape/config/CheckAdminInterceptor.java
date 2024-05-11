@@ -25,7 +25,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         if (memberService.checkAdmin(memberId)) {
             return true;
         }
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return false;
     }
 }
