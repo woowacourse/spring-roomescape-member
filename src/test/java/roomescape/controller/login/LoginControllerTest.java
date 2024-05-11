@@ -14,6 +14,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -105,5 +106,15 @@ class LoginControllerTest {
                 .statusCode(200)
                 .cookie("token", notNullValue())
                 .cookie("token", not(expiredToken.getValue()));
+    }
+
+    @Test
+    @DisplayName("로그아웃 시 204 와 빈 토큰을 응답한다.")
+    void postLogout204EmptyToken() {
+        RestAssured.given().log().all()
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(204)
+                .cookie("token", emptyString());
     }
 }

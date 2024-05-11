@@ -7,12 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.auth.AuthService;
 
 @RestController
-@RequestMapping("/login")
 public class LoginController {
 
     private final AuthService authService;
@@ -21,7 +19,7 @@ public class LoginController {
         this.authService = authService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> loginCredential(@RequestBody final TokenRequest request) {
         final TokenResponse token = authService.createToken(request);
         final ResponseCookie cookie = ResponseCookie.from("token", token.token())
@@ -36,11 +34,21 @@ public class LoginController {
                 .build();
     }
 
-    @GetMapping("/check")
+    @GetMapping("/login/check")
     public ResponseEntity<MemberCheckResponse> findInformation(LoginMember member) {
         return ResponseEntity.ok()
                 .header("Keep-Alive", "timeout=60")
                 .header(HttpHeaders.TRANSFER_ENCODING, "chunked")
                 .body(MemberCheckResponse.from(member));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        final ResponseCookie cookie = ResponseCookie.from("token")
+                .build();
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 }
