@@ -24,6 +24,14 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public static Reservation createIfFuture(final LocalDateTime thresholdDateTime, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+        final LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(thresholdDateTime)) {
+            throw new IllegalArgumentException(String.format("지나간 시간에 대한 예약은 생성할 수 없습니다. (%s)", reservationDateTime));
+        }
+        return new Reservation(member, date, time, theme);
+    }
+
     private static void validateDate(final LocalDate date) {
         if (date == null) {
             throw new IllegalArgumentException("날짜가 비어 있습니다.");

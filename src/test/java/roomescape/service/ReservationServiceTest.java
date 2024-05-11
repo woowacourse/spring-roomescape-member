@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -101,10 +102,12 @@ class ReservationServiceTest {
         final LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole(), member.getEmail());
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
+        final LocalDate localDate = LocalDate.now().minusDays(1);
 
         assertThatThrownBy(() -> {
-            reservationService.saveReservation(new ReservationSaveRequest(LocalDate.now().minusDays(1), reservationTime.getId(), theme.getId()), loginMember);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessage("지나간 시간에 대한 예약은 생성할 수 없습니다.");
+            reservationService.saveReservation(new ReservationSaveRequest(localDate, reservationTime.getId(), theme.getId()), loginMember);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(String.format("지나간 시간에 대한 예약은 생성할 수 없습니다. (%s)", LocalDateTime.of(localDate, reservationTime.getStartAt())));
     }
 
     @DisplayName("동일한 날짜, 시간, 테마에 대한 예약 저장 시 예외 발생")

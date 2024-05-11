@@ -50,8 +50,8 @@ public class ReservationService {
         final ReservationTime time = getTimeById(reservationSaveRequest.timeId());
         final Theme theme = getThemeId(reservationSaveRequest.themeId());
         final Member member = new Member(loginMember.getId(), loginMember.getName(), loginMember.getRole(), loginMember.getEmail());
-        final Reservation reservation = new Reservation(member, reservationSaveRequest.date(), time, theme);
-        validateReservation(reservation);
+        final Reservation reservation = Reservation.createIfFuture(LocalDateTime.now(), member, reservationSaveRequest.date(), time, theme);
+        validateUnique(reservation);
 
         final Reservation savedReservation = reservationRepository.save(reservation);
         return new ReservationResponse(savedReservation);
@@ -67,18 +67,6 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
     }
 
-    private void validateReservation(final Reservation reservation) {
-        validateDateTime(reservation);
-        validateUnique(reservation);
-    }
-
-    private void validateDateTime(final Reservation reservation) {
-        final boolean isBeforeNow = reservation.isBefore(LocalDateTime.now());
-        if (isBeforeNow) {
-            throw new IllegalArgumentException("지나간 시간에 대한 예약은 생성할 수 없습니다.");
-        }
-    }
-
     private void validateUnique(final Reservation reservation) {
         final boolean isReservationExist = reservationRepository.existByDateAndTimeIdAndThemeId(reservation.getDate(),
                 reservation.getTimeId(), reservation.getThemeId());
@@ -92,8 +80,8 @@ public class ReservationService {
         final Theme theme = getThemeId(reservationSaveRequest.themeId());
         final Member member = memberRepository.findById(reservationSaveRequest.memberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
-        final Reservation reservation = new Reservation(member, reservationSaveRequest.date(), time, theme);
-        validateReservation(reservation);
+        final Reservation reservation = Reservation.createIfFuture(LocalDateTime.now(), member, reservationSaveRequest.date(), time, theme);
+        validateUnique(reservation);
 
         final Reservation savedReservation = reservationRepository.save(reservation);
         return new ReservationResponse(savedReservation);
