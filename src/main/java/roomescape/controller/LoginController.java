@@ -31,22 +31,23 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String loginToken = loginService.getLoginToken(loginRequest);
         Cookie cookie = new Cookie("token", loginToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-        //todo ResponseEntity 를 사용해서 쿠키를 넣어주는 방법?
-        //return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie token = CookieExtractor.getCookie(request, "token")
                 .orElseThrow(() -> new RoomescapeException(REQUIRED_LOGIN));
         token.setMaxAge(0);
         response.addCookie(token);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
