@@ -11,6 +11,7 @@ import roomescape.domain.Member;
 import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.service.auth.AuthService;
 import roomescape.service.auth.AuthenticatedMemberProfile;
+import roomescape.service.auth.AuthenticationFailException;
 import roomescape.service.auth.AuthenticationRequest;
 import roomescape.service.auth.UnauthorizedException;
 
@@ -19,7 +20,6 @@ public class JwtAuthService implements AuthService {
 
     private static final String NAME_CLAIM_KEY = "name";
     private static final String IS_ADMIN_CLAIM_KEY = "isAdmin";
-    private static final String AUTHENTICATION_FAIL_MESSAGE = "올바른 인증 정보를 입력해주세요.";
     private static final String SECRET_KEY_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_KEY_VALUE.getBytes());
 
@@ -39,12 +39,12 @@ public class JwtAuthService implements AuthService {
     private Member findMember(AuthenticationRequest request) {
         return memberRepository
                 .findByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException(AUTHENTICATION_FAIL_MESSAGE));
+                .orElseThrow(AuthenticationFailException::new);
     }
 
     private void checkPassword(AuthenticationRequest request, Member member) {
         if (!member.isValidPassword(request.password())) {
-            throw new IllegalArgumentException(AUTHENTICATION_FAIL_MESSAGE);
+            throw new AuthenticationFailException();
         }
     }
 

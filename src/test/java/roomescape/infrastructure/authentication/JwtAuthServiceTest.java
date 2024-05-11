@@ -13,6 +13,7 @@ import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
 import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticationFailException;
 import roomescape.service.auth.AuthenticationRequest;
 import roomescape.service.auth.UnauthorizedException;
 
@@ -29,7 +30,7 @@ class JwtAuthServiceTest {
         AuthenticationRequest request = new AuthenticationRequest("email", "password");
 
         assertThatThrownBy(() -> authService.authenticate(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(AuthenticationFailException.class)
                 .hasMessage("올바른 인증 정보를 입력해주세요.");
     }
 
@@ -47,7 +48,7 @@ class JwtAuthServiceTest {
         AuthenticationRequest request = new AuthenticationRequest("email@test.com", "wrongPassword");
 
         assertThatThrownBy(() -> authService.authenticate(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(AuthenticationFailException.class)
                 .hasMessage("올바른 인증 정보를 입력해주세요.");
     }
 
