@@ -39,8 +39,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(long id, ReservationRequest request) {
-        Member member = memberRepository.getById(id);
+    public ReservationResponse create(ReservationRequest request) {
+        Member member = memberRepository.getById(request.memberId());
         Theme theme = themeRepository.getById(request.themeId());
         ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
         Reservation reservation = request.toReservation(member, reservationTime, theme, LocalDateTime.now(clock));

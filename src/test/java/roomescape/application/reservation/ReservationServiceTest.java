@@ -52,12 +52,13 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme("themeName", "desc", "url"));
         Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest reservationRequest = new ReservationRequest(
+                member.getId(),
                 LocalDate.of(2024, 1, 1),
                 time.getId(),
                 theme.getId()
         );
 
-        reservationService.create(member.getId(), reservationRequest);
+        reservationService.create(reservationRequest);
 
         List<Reservation> reservations = reservationRepository.findAll();
         assertThat(reservations).hasSize(1);
@@ -69,11 +70,12 @@ class ReservationServiceTest {
         Theme savedTheme = themeRepository.create(new Theme("test", "test", "test"));
         Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest request = new ReservationRequest(
+                member.getId(),
                 LocalDate.of(2024, 1, 1),
                 99L,
                 savedTheme.getId());
 
-        assertThatCode(() -> reservationService.create(member.getId(), request))
+        assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
@@ -84,11 +86,12 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest request = new ReservationRequest(
+                member.getId(),
                 LocalDate.of(2024, 1, 1),
                 time.getId(),
                 99L
         );
-        assertThatCode(() -> reservationService.create(member.getId(), request))
+        assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
     }
@@ -101,13 +104,14 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme("test", "test", "test"));
         Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest request = new ReservationRequest(
+                member.getId(),
                 LocalDate.of(2024, 1, 1),
                 time.getId(),
                 theme.getId()
         );
         reservationRepository.create(request.toReservation(member, time, theme, LocalDateTime.now(clock)));
 
-        assertThatCode(() -> reservationService.create(member.getId(), request))
+        assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }
@@ -119,12 +123,13 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme("test", "test", "test"));
         Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest request = new ReservationRequest(
+                member.getId(),
                 LocalDate.of(1999, 12, 31),
                 time.getId(),
                 theme.getId()
         );
 
-        assertThatCode(() -> reservationService.create(member.getId(), request))
+        assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
