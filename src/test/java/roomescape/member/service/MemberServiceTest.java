@@ -42,7 +42,7 @@ class MemberServiceTest {
         final String password = "kellyPw1234";
         final String email = "kelly6bf@gmail.com";
         final String name = "kelly";
-        final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(role, email, name, password);
+        final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(email, password, name, role);
 
         // When
         final Member savedMember = memberService.saveUser(saveMemberRequest);
