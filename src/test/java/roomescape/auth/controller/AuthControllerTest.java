@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.AuthService;
+import roomescape.member.domain.Role;
 import roomescape.util.ControllerTest;
 
 @DisplayName("회원 API 통합 테스트")
@@ -79,6 +80,9 @@ class AuthControllerTest extends ControllerTest {
                 .statusCode(HttpStatus.OK.value()).extract().as(AuthInfo.class);
 
         //then
+        assertThat(authInfo.getId()).isEqualTo(1);
+        assertThat(authInfo.getName()).isEqualTo("초코칩");
+        assertThat(authInfo.getRole()).isEqualTo(Role.USER);
         assertThat(authInfo.getEmail()).isEqualTo(email);
     }
 
