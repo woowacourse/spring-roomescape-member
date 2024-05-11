@@ -11,6 +11,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.persistence.dynamic.ReservationQueryConditions;
 import roomescape.support.IntegrationTestSupport;
 
 class ReservationRepositoryTest extends IntegrationTestSupport {
@@ -20,8 +21,8 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("모든 예약 데이터를 가져온다.")
-    void findAll() {
-        List<Reservation> reservations = target.findAll();
+    void findAllBy() {
+        List<Reservation> reservations = target.findAllBy(ReservationQueryConditions.noneConditions());
 
         assertThat(reservations).hasSize(3);
     }
@@ -31,7 +32,7 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     void empty() {
         cleanUp("reservation");
 
-        List<Reservation> reservations = target.findAll();
+        List<Reservation> reservations = target.findAllBy(ReservationQueryConditions.noneConditions());
 
         assertThat(reservations).isEmpty();
     }

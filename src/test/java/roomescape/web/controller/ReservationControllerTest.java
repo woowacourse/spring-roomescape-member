@@ -25,6 +25,37 @@ class ReservationControllerTest extends IntegrationTestSupport {
     }
 
     @Test
+    @DisplayName("특정 사용자가 예약한 주어진 기간 동안의 예약 목록을 조회한다.")
+    void getAllByMemberId() {
+        RestAssured.given().log().all()
+                .when().get("/reservations?memberId=1&fromDate=2023-05-01&endDate=2023-05-04")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @Test
+    @DisplayName("특정 기간의 예약 목록을 조회한다.")
+    void getAllByPeriod() {
+        RestAssured.given().log().all()
+                .when().get("/reservations?fromDate=2023-05-01&endDate=2023-05-04")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @Test
+    @DisplayName("검색 대상 예약의 날짜는 올바른 형식이어야한다.")
+    void getAllByInvalidThemeId() {
+        String invalidQueryParameters = "fromDate=2022-222-22&endDate=2022-22-12";
+        RestAssured.given().log().all()
+                .when().get("/reservations?" + invalidQueryParameters)
+                .then().log().all()
+                .statusCode(400)
+                .body("details.message", hasItem("올바른 날짜 형태가 아닙니다."));
+    }
+
+    @Test
     @DisplayName("사용자가 예약을 생성한다.")
     void create() {
         LocalDate date = nextDate();

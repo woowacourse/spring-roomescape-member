@@ -15,6 +15,7 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.persistence.dynamic.ReservationQueryConditions;
 
 @Repository
 public class ReservationRepository {
@@ -91,12 +92,12 @@ public class ReservationRepository {
         return hasCount > 0;
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAllBy(ReservationQueryConditions conditions) {
         String sql = """
-                SELECT 
-                    r.id AS reservation_id, 
-                    r.date, 
-                    t.id AS time_id, 
+                SELECT
+                    r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
@@ -106,7 +107,7 @@ public class ReservationRepository {
                     m.name,
                     m.email,
                     m.password
-                FROM reservation AS r 
+                FROM reservation AS r
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id
                 INNER JOIN theme AS th
@@ -115,7 +116,12 @@ public class ReservationRepository {
                 ON r.member_id = m.id
                 """;
 
-        return jdbcTemplate.query(sql, getReservationRowMapper());
+        return jdbcTemplate.query(
+                conditions.createDynamicQuery(sql),
+                conditions.getArgs(),
+                conditions.getArgTypes(),
+                getReservationRowMapper()
+        );
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
