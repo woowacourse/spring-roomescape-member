@@ -19,8 +19,11 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
-        boolean isAdmin = false;
+        if(cookies == null) {
+            throw new ForbiddenAccessException("관리자만 접근 가능합니다.");
+        }
 
+        boolean isAdmin = false;
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 Member member = memberService.getUserByToken(cookie.getValue());
@@ -31,7 +34,6 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         if (!isAdmin) {
             throw new ForbiddenAccessException("관리자만 접근 가능합니다.");
         }
-
         return true;
     }
 }

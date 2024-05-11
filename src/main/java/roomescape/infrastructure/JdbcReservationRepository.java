@@ -156,9 +156,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             return sql;
         }
 
-        String hi = sql + " WHERE " + String.join(" AND ", wherePhrase);
-        System.out.println("무야호" + hi);
-
-        return hi;
+        return sql + " WHERE " + String.join(" AND ", wherePhrase);
     }
 }
