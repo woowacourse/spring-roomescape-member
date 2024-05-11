@@ -13,7 +13,7 @@ import roomescape.auth.provider.CookieProvider;
 import roomescape.auth.provider.model.TokenProvider;
 import roomescape.model.IntegrationTest;
 
-public class AdminControllerIntegrationTest extends IntegrationTest {
+public class AdminIntegrationTest extends IntegrationTest {
 
     private Token token;
     private ResponseCookie cookie;
