@@ -10,13 +10,22 @@ public class AuthorizationExtractor {
     private final String TOKEN_COOKIE_NAME = "token";
 
     public String extractToken(HttpServletRequest httpServletRequest) {
-        Cookie cookie = extractTokenCookie(httpServletRequest)
-                .orElseThrow(() -> new SecurityException("회원 정보를 찾을 수 없습니다. 다시 로그인해주세요."));
+        Cookie[] cookies = httpServletRequest.getCookies();
+        checkCookieExist(cookies);
+
+        Cookie cookie = extractTokenCookie(cookies)
+                .orElseThrow(() -> new SecurityException("토큰에 대한 쿠키가 없어서 회원 정보를 찾을 수 없습니다. 다시 로그인해주세요."));
         return cookie.getValue();
     }
 
-    private Optional<Cookie> extractTokenCookie(HttpServletRequest httpServletRequest) {
-        for (Cookie cookie : httpServletRequest.getCookies()) {
+    private void checkCookieExist(final Cookie[] cookies) {
+        if (cookies == null) {
+            throw new SecurityException("쿠키가 없어서 회원 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
+        }
+    }
+
+    private Optional<Cookie> extractTokenCookie(final Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
             if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
                 return Optional.of(cookie);
             }
