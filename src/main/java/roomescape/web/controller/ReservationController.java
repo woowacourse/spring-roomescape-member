@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.core.domain.Reservation;
 import roomescape.core.dto.AdminReservationRequestDto;
@@ -50,8 +52,13 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponseDto>> findAllReservations() {
-        return reservationService.findAll()
+    public ResponseEntity<List<ReservationResponseDto>> findReservationsWithConditions(
+            @RequestParam(value = "member-id", required = false) final Long memberId,
+            @RequestParam(value = "theme-id", required = false) final Long themeId,
+            @RequestParam(value = "date-from", required = false) final LocalDate dateFrom,
+            @RequestParam(value = "date-to", required = false) final LocalDate dateTo
+    ) {
+        return reservationService.findAllWithConditions(memberId, themeId, dateFrom, dateTo)
                 .stream()
                 .map(ReservationResponseDto::new)
                 .collect(collectingAndThen(toList(), ResponseEntity::ok));

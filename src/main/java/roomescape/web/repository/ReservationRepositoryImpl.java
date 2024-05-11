@@ -1,5 +1,7 @@
 package roomescape.web.repository;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,34 +39,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        final String query = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    m.id AS theme_id,
-                    m.name AS theme_name,
-                    m.description AS theme_description,
-                    m.thumbnail AS theme_thumbnail,
-                    b.id AS member_id,
-                    b.name AS member_name,
-                    b.email AS member_email,
-                    b.password AS member_password,
-                    b.role AS member_role
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
-                INNER JOIN theme AS m
-                ON r.theme_id = m.id
-                INNER JOIN member AS b
-                ON r.member_id = b.id
-                """;
-        return jdbcTemplate.query(query, getReservationRowMapper());
-    }
-
-    @Override
     public List<Reservation> findAllByDateAndThemeId(final String date, final long themeId) {
         final String query = """
                 SELECT
@@ -91,6 +65,48 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
         return jdbcTemplate.query(query, getReservationRowMapper(), date, themeId);
+    }
+
+    @Override
+    public List<Reservation> findAllWithConditions(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo
+    ) {
+        final StringBuilder queryBuilder = new StringBuilder("""
+                SELECT
+                    r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    m.id AS theme_id,
+                    m.name AS theme_name,
+                    m.description AS theme_description,
+                    m.thumbnail AS theme_thumbnail,
+                    b.id AS member_id,
+                    b.name AS member_name,
+                    b.email AS member_email,
+                    b.password AS member_password,
+                    b.role AS member_role
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                INNER JOIN theme AS m
+                ON r.theme_id = m.id
+                INNER JOIN member AS b
+                ON r.member_id = b.id
+                """
+        );
+
+        final List<String> arguments = new ArrayList<>();
+
+        appendQueryIfNotNull(memberId, " r.member_id = ?", queryBuilder, arguments);
+        appendQueryIfNotNull(themeId, " r.theme_id = ?", queryBuilder, arguments);
+        appendQueryIfNotNull(dateFrom, " r.date >= ?", queryBuilder, arguments);
+        appendQueryIfNotNull(dateTo, " r.date <= ?", queryBuilder, arguments);
+
+        return jdbcTemplate.query(queryBuilder.toString(), getReservationRowMapper(), arguments.toArray());
     }
 
     @Override
@@ -146,5 +162,25 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     theme
             );
         };
+    }
+
+    private void appendQueryIfNotNull(
+            final Object value,
+            final String condition,
+            final StringBuilder queryBuilder,
+            final List<String> arguments
+    ) {
+        if (value != null) {
+            queryBuilder.append(findConjunction(arguments));
+            queryBuilder.append(condition);
+            arguments.add(String.valueOf(value));
+        }
+    }
+
+    private String findConjunction(final List<String> arguments) {
+        if (arguments.isEmpty()) {
+            return " WHERE";
+        }
+        return " AND";
     }
 }

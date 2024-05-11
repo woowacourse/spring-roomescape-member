@@ -31,3 +31,5 @@ VALUES ('테마11', '테마11 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc4
 
 INSERT INTO reservation (date, time_id, theme_id, member_id)
 VALUES ('2024-05-05', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2024-05-07', 1, 3, 1);

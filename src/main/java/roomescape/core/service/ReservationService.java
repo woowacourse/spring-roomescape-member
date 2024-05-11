@@ -1,5 +1,6 @@
 package roomescape.core.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,8 +54,13 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    public List<Reservation> findAllWithConditions(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo
+    ) {
+        return reservationRepository.findAllWithConditions(memberId, themeId, dateFrom, dateTo);
     }
 
     @Transactional

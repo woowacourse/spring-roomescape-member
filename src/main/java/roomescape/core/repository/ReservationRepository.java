@@ -1,14 +1,20 @@
 package roomescape.core.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.core.domain.Reservation;
 
 public interface ReservationRepository {
     Long save(final Reservation reservation);
 
-    List<Reservation> findAll();
-
     List<Reservation> findAllByDateAndThemeId(final String date, final long themeId);
+
+    List<Reservation> findAllWithConditions(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate dateFrom,
+            final LocalDate dateTo
+    );
 
     boolean hasReservationAtTime(final long timeId);
 
