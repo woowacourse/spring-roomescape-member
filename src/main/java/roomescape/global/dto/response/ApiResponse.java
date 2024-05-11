@@ -1,7 +1,5 @@
 package roomescape.global.dto.response;
 
-import roomescape.global.exception.error.ErrorType;
-
 public record ApiResponse<T>(
         String message,
         T data
@@ -14,9 +12,5 @@ public record ApiResponse<T>(
 
     public static <T> ApiResponse<T> success() {
         return new ApiResponse<>(SUCCESS_MESSAGE, null);
-    }
-
-    public static <T> ApiResponse<T> fail(final ErrorType errorType) {
-        return new ApiResponse<>(errorType.getDescription(), null);
     }
 }
