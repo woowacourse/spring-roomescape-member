@@ -27,6 +27,8 @@
         - [x] 테마 슬롯을 생성할 수 있다
         - [x] 테마 슬롯을 삭제할 수 있다
 
+- [x] localhost:8080/admin/**는 관리자만 접근할 수 있다.
+
 #### 사용자 기능
 
 - [x] localhost:8080/reservation 요청 시 사용자 예약 페이지가 응답한다
@@ -39,7 +41,7 @@
 
 - [x] localhost:8080/login 요청 시 사용자 로그인 페이지가 응답한다
     - [x] templates/login.html을 사용한다
-    - [ ] 로그인에 성공하면 jwt 토큰이 발급된다
+    - [x] 로그인에 성공하면 jwt 토큰이 발급된다
 
 - [x] localhost:8080/signup 요청 시 사용자 로그인 페이지가 응답한다
 - [x] templates/signup.html을 사용한다
