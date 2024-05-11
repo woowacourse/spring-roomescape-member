@@ -2,7 +2,6 @@ package roomescape.service.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.service.auth.exception.TokenNotFoundException;
 
 public class CookieAuthorizationExtractor implements AuthorizationExtractor<String> {
     private static final String COOKIE_NAME = "token";
@@ -10,7 +9,7 @@ public class CookieAuthorizationExtractor implements AuthorizationExtractor<Stri
     @Override
     public String extract(HttpServletRequest request) {
         if (request.getCookies() == null) {
-            throw new TokenNotFoundException("토큰이 존재 하지 않습니다.");
+            return null;
         }
 
         for (Cookie cookie : request.getCookies()) {
@@ -19,6 +18,6 @@ public class CookieAuthorizationExtractor implements AuthorizationExtractor<Stri
             }
         }
 
-        throw new TokenNotFoundException("토큰이 존재 하지 않습니다.");
+        return null;
     }
 }
