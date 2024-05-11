@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import roomescape.service.dto.LoginRequest;
 
 class ReservationIntegrationTest extends IntegrationTest {
     @Nested
@@ -134,9 +136,15 @@ class ReservationIntegrationTest extends IntegrationTest {
         @Test
         void 관리자가_아닌_일반_사용자가_사용시_예외가_발생한다() {
             jdbcTemplate.update("UPDATE MEMBER SET role = 'USER'");
+            String userCookie = RestAssured.given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(new LoginRequest("admin@email.com", "password"))
+                    .when().post("/login")
+                    .then().log().all()
+                    .extract().header("Set-Cookie").split(";")[0];
 
             RestAssured.given().log().all()
-                    .header("Cookie", cookieProvider.getCookie())
+                    .header("Cookie", userCookie)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/admin/reservations")
