@@ -16,6 +16,10 @@ public class Member {
         this.role = role;
     }
 
+    public Member(Long id, Member member) {
+        this(id, member.name, member.email, member.password, member.role);
+    }
+
     public boolean isAdmin() {
         return role == Role.ADMIN;
     }

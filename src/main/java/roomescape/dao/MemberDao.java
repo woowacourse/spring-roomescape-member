@@ -11,4 +11,8 @@ public interface MemberDao {
     Optional<Member> readById(Long id);
 
     Optional<Member> readByEmailAndPassword(String email, String password);
+
+    Optional<Member> readByEmail(String email);
+
+    Member create(Member member);
 }

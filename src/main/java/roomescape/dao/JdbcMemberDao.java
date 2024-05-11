@@ -6,6 +6,9 @@ import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
@@ -26,9 +29,13 @@ public class JdbcMemberDao implements MemberDao {
             );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public JdbcMemberDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -57,5 +64,28 @@ public class JdbcMemberDao implements MemberDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Optional<Member> readByEmail(String email) {
+        String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Member create(Member member) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", member.getName().getValue())
+                .addValue("email", member.getEmail().getValue())
+                .addValue("password", member.getPassword().getValue())
+                .addValue("role", member.getRole());
+
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        return new Member(id, member);
     }
 }
