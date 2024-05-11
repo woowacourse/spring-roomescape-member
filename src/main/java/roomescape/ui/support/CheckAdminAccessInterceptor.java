@@ -1,8 +1,9 @@
-package roomescape.auth;
+package roomescape.ui.support;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.AuthenticationInfoExtractor;
 import roomescape.auth.exception.AccessDeniedException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;

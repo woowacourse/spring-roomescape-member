@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.ui.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.AuthenticationInfoExtractor;
+import roomescape.auth.TokenProvider;
 import roomescape.auth.exception.AccessDeniedException;
 import roomescape.domain.member.MemberRepository;
 import roomescape.support.annotation.WithoutWebSpringBootTest;

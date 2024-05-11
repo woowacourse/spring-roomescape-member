@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.ui.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -20,10 +20,10 @@ import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ThemeResponse;
-import roomescape.controller.dto.ThemeRequest;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
+import roomescape.ui.controller.dto.ThemeRequest;
 
 class ThemeControllerTest extends ControllerTest {
     @Autowired

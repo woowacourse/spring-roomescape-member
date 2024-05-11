@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.ui.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.MemberService;
 import roomescape.application.dto.response.MemberResponse;
 import roomescape.application.dto.response.TokenResponse;
-import roomescape.auth.AuthenticationPrincipal;
-import roomescape.controller.dto.LoginRequest;
+import roomescape.ui.controller.dto.LoginRequest;
+import roomescape.ui.support.AuthenticationPrincipal;
 
 @RestController
 public class AuthController {

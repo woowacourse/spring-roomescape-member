@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.ui.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.MemberService;
 import roomescape.application.dto.response.TokenResponse;
-import roomescape.controller.dto.LoginRequest;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
+import roomescape.ui.controller.dto.LoginRequest;
 
 class AuthControllerTest extends ControllerTest {
     @Autowired

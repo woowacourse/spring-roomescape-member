@@ -9,10 +9,12 @@ import roomescape.application.MemberService;
 import roomescape.application.ReservationService;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
-import roomescape.controller.AuthController;
-import roomescape.controller.ReservationController;
-import roomescape.controller.ReservationTimeController;
-import roomescape.controller.ThemeController;
+import roomescape.auth.AuthenticationInfoExtractor;
+import roomescape.domain.member.MemberRepository;
+import roomescape.ui.controller.AuthController;
+import roomescape.ui.controller.ReservationController;
+import roomescape.ui.controller.ReservationTimeController;
+import roomescape.ui.controller.ThemeController;
 
 @WebMvcTest(controllers = {
         ReservationController.class,
@@ -33,4 +35,8 @@ public class ControllerTest {
     private ThemeService themeService;
     @MockBean
     private MemberService memberService;
+    @MockBean
+    private AuthenticationInfoExtractor authenticationInfoExtractor;
+    @MockBean
+    private MemberRepository memberRepository;
 }

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.ui.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -21,7 +21,7 @@ import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ThemeResponse;
-import roomescape.controller.dto.ThemeRequest;
+import roomescape.ui.controller.dto.ThemeRequest;
 
 @RestController
 @RequestMapping("/themes")

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.ui.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationService;
 import roomescape.application.dto.request.ReservationFilteringRequest;
 import roomescape.application.dto.response.ReservationResponse;
-import roomescape.controller.dto.AdminReservationRequest;
+import roomescape.ui.controller.dto.AdminReservationRequest;
 
 @RestController
 @RequestMapping("/admin")

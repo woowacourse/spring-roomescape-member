@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.ui.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -17,10 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationService;
 import roomescape.application.dto.response.ReservationResponse;
-import roomescape.controller.dto.ReservationRequest;
 import roomescape.fixture.ReservationFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
+import roomescape.ui.controller.dto.ReservationRequest;
 
 class ReservationControllerTest extends ControllerTest {
     @Autowired
