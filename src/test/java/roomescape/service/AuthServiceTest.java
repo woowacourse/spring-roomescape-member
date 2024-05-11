@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.TokenProvider;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
@@ -28,7 +28,7 @@ class AuthServiceTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private TokenProvider tokenProvider;
 
     @DisplayName("토큰을 올바르게 생성")
     @Test
@@ -39,7 +39,7 @@ class AuthServiceTest {
         final TokenRequest tokenRequest = new TokenRequest(email, password);
         final TokenResponse tokenResponse = authService.createToken(tokenRequest);
 
-        assertThat(jwtTokenProvider.getMemberId(tokenResponse.accessToken()))
+        assertThat(tokenProvider.getMemberId(tokenResponse.accessToken()))
                 .isEqualTo(member.getId());
     }
 

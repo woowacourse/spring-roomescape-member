@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.TokenProvider;
 import roomescape.model.*;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -45,7 +45,7 @@ class ReservationControllerTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private TokenProvider tokenProvider;
 
     @BeforeEach
     void initPort() {
@@ -72,7 +72,7 @@ class ReservationControllerTest {
     @TestFactory
     Stream<DynamicTest> userSaveAndDeleteReservation() {
         final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
-        final String token = jwtTokenProvider.createToken(member);
+        final String token = tokenProvider.createToken(member);
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
 
@@ -106,7 +106,7 @@ class ReservationControllerTest {
     void adminSaveReservation() {
         final Member admin = memberRepository.save(new Member("고구마", Role.ADMIN, "111@aaa.com", "abc1234"));
         final Member member = memberRepository.save(new Member("감자", Role.USER, "222@aaa.com", "abc1234"));
-        final String token = jwtTokenProvider.createToken(admin);
+        final String token = tokenProvider.createToken(admin);
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
 
@@ -131,7 +131,7 @@ class ReservationControllerTest {
     void forbiddenAdminSaveReservation() {
         memberRepository.save(new Member("고구마", Role.ADMIN, "111@aaa.com", "abc1234"));
         final Member member = memberRepository.save(new Member("감자", Role.USER, "222@aaa.com", "abc1234"));
-        final String token = jwtTokenProvider.createToken(member);
+        final String token = tokenProvider.createToken(member);
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
 
@@ -154,7 +154,7 @@ class ReservationControllerTest {
     @Test
     void blankReservationDate() {
         final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
-        final String token = jwtTokenProvider.createToken(member);
+        final String token = tokenProvider.createToken(member);
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
 
@@ -178,7 +178,7 @@ class ReservationControllerTest {
     @Test
     void blankReservationThemeId() {
         final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
-        final String token = jwtTokenProvider.createToken(member);
+        final String token = tokenProvider.createToken(member);
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
 
         final Map<String, Object> params = Map.of(
@@ -201,7 +201,7 @@ class ReservationControllerTest {
     @Test
     void blankReservationTimeId() {
         final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
-        final String token = jwtTokenProvider.createToken(member);
+        final String token = tokenProvider.createToken(member);
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
 
         final Map<String, Object> params = Map.of(
@@ -225,7 +225,7 @@ class ReservationControllerTest {
     @ValueSource(strings = {"2099.22.11", "2022", "abc"})
     void invalidDateFormat(final String date) {
         final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
-        final String token = jwtTokenProvider.createToken(member);
+        final String token = tokenProvider.createToken(member);
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
         final Map<String, Object> params = Map.of(

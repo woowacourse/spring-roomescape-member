@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.TokenProvider;
 import roomescape.model.Member;
 import roomescape.model.Role;
 import roomescape.repository.MemberRepository;
@@ -32,7 +32,7 @@ class LoginControllerTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private TokenProvider tokenProvider;
 
     @BeforeEach
     void initPort() {
@@ -56,7 +56,7 @@ class LoginControllerTest {
                 .extract();
 
         final String tokenValue = extractTokenValue(response.header("Set-Cookie"));
-        assertThat(jwtTokenProvider.getMemberId(tokenValue)).isEqualTo(member.getId());
+        assertThat(tokenProvider.getMemberId(tokenValue)).isEqualTo(member.getId());
     }
 
     private static String extractTokenValue(String setCookieHeaderValue) {
@@ -74,7 +74,7 @@ class LoginControllerTest {
         final String password = "abc1234";
         final Map<String, String> params = Map.of("email", email, "password", password);
         final Member member = memberRepository.save(new Member("감자", Role.USER, email, password));
-        final String token = jwtTokenProvider.createToken(member);
+        final String token = tokenProvider.createToken(member);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

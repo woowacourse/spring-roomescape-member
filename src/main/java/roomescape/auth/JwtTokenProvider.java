@@ -7,7 +7,7 @@ import roomescape.model.Member;
 
 @ConfigurationProperties(prefix = "token-provider")
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
 
     private String secretKey;
 
