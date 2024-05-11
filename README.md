@@ -36,8 +36,8 @@
   - [x] POST /login 요청시, 폼에 입력한 email, password 값을 body에 포함한다.
   - [x] 로그인 시 응답 Cookie의 "token"에 토큰이 포함되도록 한다.
   
-- [ ] 사용자 도메인을 추가한다.
+- [x] 사용자 도메인을 추가한다.
   - [x] 사용자는 name, email, password 정보를 가진다.
-  - [ ] email을 로그인의 id로 사용한다.
+  - [x] email을 로그인의 id로 사용한다.
 
 - [ ] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현한다.

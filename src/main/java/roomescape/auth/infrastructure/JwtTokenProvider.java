@@ -6,16 +6,18 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Component
-public class JwtTokenProvider implements TokenProvider{
+@ConfigurationProperties(prefix = "security.jwt.token")
+public class JwtTokenProvider implements TokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final String secretKey;
+    private final long validityInMilliseconds;
+
+    public JwtTokenProvider(String secretKey, long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     @Override
     public String createToken(String payload) {
@@ -33,11 +35,14 @@ public class JwtTokenProvider implements TokenProvider{
 
     @Override
     public String getPayload(String token) {
+        if (!isTokenTimeOut(token)) {
+            throw new IllegalArgumentException("토큰 시간이 만료되었습니다.");
+        }
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     @Override
-    public boolean validateToken(String token) {
+    public boolean isTokenTimeOut(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
