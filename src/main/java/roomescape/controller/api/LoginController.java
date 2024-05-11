@@ -1,12 +1,12 @@
 package roomescape.controller.api;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.token.TokenManager;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
@@ -16,21 +16,18 @@ import roomescape.service.AuthService;
 @RestController
 public class LoginController {
 
-    private static final String TOKEN_FIELD = "token";
-
     private final AuthService authService;
+    private final TokenManager tokenManager;
 
-    public LoginController(final AuthService authService) {
+    public LoginController(AuthService authService, TokenManager tokenManager) {
         this.authService = authService;
+        this.tokenManager = tokenManager;
     }
 
     @PostMapping("/login")
     public void login(@RequestBody final TokenRequest tokenRequest, final HttpServletResponse response) {
         final TokenResponse tokenResponse = authService.createToken(tokenRequest);
-        final Cookie cookie = new Cookie(TOKEN_FIELD, tokenResponse.accessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        tokenManager.setToken(response, tokenResponse);
     }
 
     @GetMapping("/login/check")
