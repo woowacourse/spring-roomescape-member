@@ -2,10 +2,10 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.AuthInfo;
+import roomescape.auth.dto.request.LoginRequest;
 import roomescape.auth.dto.response.GetAuthInfoResponse;
 import roomescape.auth.dto.response.LoginResponse;
 import roomescape.member.domain.Member;
-import roomescape.auth.dto.request.LoginRequest;
 import roomescape.member.repository.MemberRepository;
 
 @Service

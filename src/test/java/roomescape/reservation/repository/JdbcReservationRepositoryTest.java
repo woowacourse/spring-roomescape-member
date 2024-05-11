@@ -13,6 +13,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.fixture.MemberFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
+import roomescape.fixture.ThemeFixture;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.JdbcMemberRepository;
 import roomescape.member.repository.MemberRepository;
@@ -24,10 +28,6 @@ import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.fixture.MemberFixture;
-import roomescape.fixture.ReservationFixture;
-import roomescape.fixture.ReservationTimeFixture;
-import roomescape.fixture.ThemeFixture;
 
 @JdbcRepositoryTest
 class JdbcReservationRepositoryTest {

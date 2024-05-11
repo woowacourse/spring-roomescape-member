@@ -46,10 +46,6 @@ public class Theme {
         }
     }
 
-    public boolean isSameTo(final Long themeId) {
-        return Objects.equals(this.id, themeId);
-    }
-
     public Long getId() {
         return id;
     }

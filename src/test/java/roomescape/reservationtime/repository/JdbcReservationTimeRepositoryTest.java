@@ -12,9 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.fixture.ReservationTimeFixture;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.testutil.JdbcRepositoryTest;
-import roomescape.fixture.ReservationTimeFixture;
 
 @JdbcRepositoryTest
 class JdbcReservationTimeRepositoryTest {

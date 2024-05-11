@@ -12,12 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ThemeFixture;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.theme.model.Theme;
-import roomescape.fixture.ReservationFixture;
-import roomescape.fixture.ThemeFixture;
 
 @JdbcRepositoryTest
 class JdbcThemeRepositoryTest {
