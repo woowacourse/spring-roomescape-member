@@ -19,8 +19,17 @@ public class AuthService {
     this.jwtTokenProvider = jwtTokenProvider;
   }
 
-  public String createUser(LoginRequest request) {
-    return jwtTokenProvider.createToken(request.email(), "어드민");
+  public String login(LoginRequest request) {
+    Member member = checkEmailAndPassword(request);
+    return jwtTokenProvider.createToken(member.getEmail(), member.getName().getValue());
+  }
+
+  private Member checkEmailAndPassword(LoginRequest request) {
+    Member member = findMemberByEmail(request.email());
+    if (!member.getPassword().equals(request.password())) {
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    }
+    return member;
   }
 
   public Member findMember(String token) {

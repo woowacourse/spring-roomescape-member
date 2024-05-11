@@ -29,7 +29,7 @@ class AuthServiceIntegrationTest {
     String email = "user@mail.com";
     LoginRequest loginRequest = new LoginRequest(email, "1234qwer");
     // When
-    String token = authService.createUser(loginRequest);
+    String token = authService.login(loginRequest);
     // Then
     assertThat(email).isEqualTo(jwtTokenProvider.getPayload(token).get("email"));
   }

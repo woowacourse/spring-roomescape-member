@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookies;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,8 +36,7 @@ class AuthControllerIntegrationTest {
   @Test
   void login() {
     // Given
-    LoginRequest request = new LoginRequest("user@mail.com", "1234");
-    String token = jwtTokenProvider.createToken(request.email(), "어드민");
+    LoginRequest request = new LoginRequest("kelly@example.com", "password123");
 
     // Then
     RestAssured.given().log().all()
@@ -47,13 +48,48 @@ class AuthControllerIntegrationTest {
         .cookie("token", notNullValue());
   }
 
+  @DisplayName("가입하지 않은 이메일로 로그인을 시도할 시 예외를 발생한다.")
+  @Test
+  void loginWithInvalidEmail() {
+    // Given
+    LoginRequest request = new LoginRequest("user@mail.com", "1234");
+
+    // Then
+    RestAssured.given().log().all()
+        .contentType(ContentType.JSON)
+        .body(request)
+        .post("/login")
+        .then().log().all()
+        .statusCode(400);
+  }
+
+  @DisplayName("올바르지 않은 패스워드로 로그인을 시도할 시 예외를 발생한다.")
+  @Test
+  void loginWithInvalidPassword() {
+    // Given
+    LoginRequest request = new LoginRequest("kelly@example.com", "1234");
+
+    // Then
+    RestAssured.given().log().all()
+        .contentType(ContentType.JSON)
+        .body(request)
+        .post("/login")
+        .then().log().all()
+        .statusCode(400);
+  }
+
   @DisplayName("로그인 상태를 반환한다.")
   @Test
   void checkLogin() {
     // Given
     String name = "켈리";
-    LoginRequest request = new LoginRequest("kelly@example.com", name);
-    String token = jwtTokenProvider.createToken(request.email(), name);
+    LoginRequest request = new LoginRequest("kelly@example.com", "password123");
+    Response response = RestAssured.given().log().all()
+        .contentType(ContentType.JSON)
+        .body(request)
+        .post("/login");
+    Cookies cookies = response.getDetailedCookies();
+    String token = cookies.getValue("token");
 
     // Then
     RestAssured.given().log().all()
