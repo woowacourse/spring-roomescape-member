@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTheme;
 import roomescape.dto.AdminReservationRequestDto;
 import roomescape.dto.FilterConditionDto;
 import roomescape.exception.WrongStateException;
@@ -96,7 +98,13 @@ public class ReservationServiceTest {
         FilterConditionDto filterConditionDto = new FilterConditionDto(1L, 1L, dateFrom, dateTo);
 
         List<Reservation> reservations = reservationService.getFilteredReservations(filterConditionDto);
+        List<Long> themeIds = reservations.stream().map(Reservation::getTheme).map(ReservationTheme::getId).toList();
+        List<Long> memberId = reservations.stream().map(Reservation::getMember).map(Member::getId).toList();
+        List<String> dates = reservations.stream().map(Reservation::getDate).toList();
 
         assertThat(reservations.size()).isEqualTo(2);
+        assertThat(themeIds).containsOnly(1L);
+        assertThat(memberId).containsOnly(1L);
+        dates.forEach(date -> assertThat(date).isBetween(dateFrom.toString(), dateTo.toString()));
     }
 }
