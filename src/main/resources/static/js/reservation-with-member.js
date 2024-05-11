@@ -196,11 +196,23 @@ function applyFilter(event) {
   const dateFrom = document.getElementById('date-from').value;
   const dateTo = document.getElementById('date-to').value;
 
+  const params = new URLSearchParams();
+
+  if (themeId) params.append('themeId', themeId);
+  if (memberId) params.append('memberId', memberId);
+  if (dateFrom) params.append('dateFrom', dateFrom);
+  if (dateTo) params.append('dateTo', dateTo);
+
+  let url = `/reservations`;
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
   /*
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+  fetch(url, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

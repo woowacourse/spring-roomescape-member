@@ -2,6 +2,7 @@ package roomescape.controller.api;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,10 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.service.ReservationService;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.security.Accessor;
+import roomescape.security.Auth;
+import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
@@ -26,18 +30,32 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
-        List<ReservationResponse> response = reservationService.getAllReservations();
+    public ResponseEntity<List<ReservationResponse>> getReservationsByConditions(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo
+    ) {
+        List<ReservationResponse> reservationResponses = reservationService
+                .getReservationsByConditions(memberId, themeId, dateFrom, dateTo);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid ReservationRequest request) {
-        ReservationResponse response = reservationService.addReservation(request);
+    public ResponseEntity<ReservationResponse> addReservation(
+            @RequestBody @Valid ReservationRequest request,
+            @Auth Accessor accessor
+    ) {
+        ReservationResponse reservationResponse = reservationService.addReservation(
+                request.date(),
+                request.timeId(),
+                request.themeId(),
+                accessor.id()
+        );
 
-        return ResponseEntity.created(URI.create("/reservations/" + response.id()))
-                .body(response);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
+                .body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")

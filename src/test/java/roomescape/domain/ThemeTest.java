@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.domain.theme.Theme;
 
 class ThemeTest {
 
@@ -29,13 +30,13 @@ class ThemeTest {
     }
 
     @Test
-    @DisplayName("이름이 255자를 넘으면 예외가 발생한다.")
+    @DisplayName("이름이 30자를 넘으면 예외가 발생한다.")
     void validateNameLength() {
-        String name = "a".repeat(256);
+        String name = "a".repeat(31);
 
         assertThatThrownBy(() -> new Theme(name, "description", "thumbnail"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 255자를 넘을 수 없습니다.");
+                .hasMessage("이름은 30자를 넘을 수 없습니다.");
     }
 
     @ParameterizedTest

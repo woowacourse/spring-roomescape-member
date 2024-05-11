@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 
 @JdbcTest
 class JdbcThemeRepositoryTest {
@@ -25,6 +25,20 @@ class JdbcThemeRepositoryTest {
     public JdbcThemeRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
+    }
+
+    @Test
+    @DisplayName("테마를 추가한다.")
+    void save() {
+        Theme save = themeRepository.save(new Theme(null, "테마1", "테마1 설명", "https://example1.com"));
+
+        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "theme");
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(count).isEqualTo(1);
+            softly.assertThat(save.getName()).isEqualTo("테마1");
+            softly.assertThat(save.getDescription()).isEqualTo("테마1 설명");
+            softly.assertThat(save.getThumbnail()).isEqualTo("https://example1.com");
+        });
     }
 
     @Test
@@ -54,12 +68,56 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("테마를 추가한다.")
-    void save() {
-        themeRepository.save(new Theme(null, "테마1", "테마1 설명", "https://example1.com"));
+    @DisplayName("인기 있는 테마들을 조회한다.")
+    void findPopularThemes() {
+        String insertMemberSQL = """
+                    INSERT INTO member (id, email, password, name, role)
+                    VALUES (1, 'example1@gmail.com', 'password', 'name1', 'USER'),
+                           (2, 'example2@gmail.com', 'password', 'name2', 'USER');
+                """;
 
-        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "theme");
-        assertThat(count).isEqualTo(1);
+        String insertThemeSQL = """
+                    INSERT INTO theme (id, name, description, thumbnail) 
+                    VALUES (1, '테마1', '테마1 설명', 'https://example1.com'),
+                           (2, '테마2', '테마2 설명', 'https://example2.com'),
+                           (3, '테마3', '테마3 설명', 'https://example3.com');
+                """;
+        String insertTimeSQL = """
+                    INSERT INTO reservation_time (id, start_at)
+                    VALUES (1, '09:00'),
+                           (2, '10:00'),
+                           (3, '11:00');
+                """;
+        String insertReservationSQL = """
+                    INSERT INTO reservation (id, date, member_id, time_id, theme_id)
+                    VALUES (1, '2024-05-04', 1, 1, 1),
+                           (2, '2024-05-05', 2, 2, 1),
+                           (3, '2024-05-06', 1, 3, 1),
+                           (4, '2024-05-07', 2, 1, 2),
+                           (5, '2024-05-08', 1, 2, 2),
+                           (6, '2024-05-09', 2, 3, 3),
+                           (7, '2024-05-10', 1, 1, 3),
+                           (8, '2024-05-11', 2, 2, 3),
+                           (9, '2024-05-12', 1, 3, 3);
+                """;
+
+        jdbcTemplate.update(insertMemberSQL);
+        jdbcTemplate.update(insertTimeSQL);
+        jdbcTemplate.update(insertThemeSQL);
+        jdbcTemplate.update(insertReservationSQL);
+
+        LocalDate startDate = LocalDate.of(2024, 5, 6);
+        LocalDate endDate = LocalDate.of(2024, 5, 11);
+        int limit = 6;
+
+        List<Theme> popularThemes = themeRepository.findPopularThemes(startDate, endDate, limit);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(popularThemes).hasSize(3);
+            softly.assertThat(popularThemes.get(0).getId()).isEqualTo(3);
+            softly.assertThat(popularThemes.get(1).getId()).isEqualTo(2);
+            softly.assertThat(popularThemes.get(2).getId()).isEqualTo(1);
+        });
     }
 
     @Test
@@ -95,52 +153,6 @@ class JdbcThemeRepositoryTest {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(themeRepository.existsByName("테마1")).isTrue();
             softly.assertThat(themeRepository.existsByName("테마2")).isFalse();
-        });
-    }
-
-    @Test
-    @DisplayName("인기 있는 테마들을 조회한다.")
-    void findPopularThemes() {
-        String insertThemeSQL = """
-                    INSERT INTO theme (id, name, description, thumbnail) 
-                    VALUES (1, '테마1', '테마1 설명', 'https://example1.com'),
-                           (2, '테마2', '테마2 설명', 'https://example2.com'),
-                           (3, '테마3', '테마3 설명', 'https://example3.com');
-                """;
-        String insertTimeSQL = """
-                    INSERT INTO reservation_time (id, start_at)
-                    VALUES (1, '09:00'),
-                           (2, '10:00'),
-                           (3, '11:00');
-                """;
-        String insertReservationSQL = """
-                    INSERT INTO reservation (id, name, date, time_id, theme_id)
-                    VALUES (1, '예약1', '2024-05-04', 1, 1),
-                           (2, '예약2', '2024-05-05', 2, 1),
-                           (3, '예약3', '2024-05-06', 3, 1),
-                           (4, '예약4', '2024-05-07', 1, 2),
-                           (5, '예약5', '2024-05-08', 2, 2),
-                           (6, '예약6', '2024-05-09', 3, 3),
-                           (7, '예약7', '2024-05-10', 1, 3),
-                           (8, '예약8', '2024-05-11', 2, 3),
-                           (9, '예약9', '2024-05-12', 3, 3);
-                """;
-
-        jdbcTemplate.update(insertThemeSQL);
-        jdbcTemplate.update(insertTimeSQL);
-        jdbcTemplate.update(insertReservationSQL);
-
-        LocalDate startDate = LocalDate.of(2024, 5, 6);
-        LocalDate endDate = LocalDate.of(2024, 5, 11);
-        int limit = 6;
-
-        List<Theme> popularThemes = themeRepository.findPopularThemes(startDate, endDate, limit);
-
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(popularThemes).hasSize(3);
-            softly.assertThat(popularThemes.get(0).getId()).isEqualTo(3);
-            softly.assertThat(popularThemes.get(1).getId()).isEqualTo(2);
-            softly.assertThat(popularThemes.get(2).getId()).isEqualTo(1);
         });
     }
 }

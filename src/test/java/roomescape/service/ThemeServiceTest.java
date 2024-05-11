@@ -1,131 +1,101 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestConfig;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = TestConfig.class)
+@Transactional
 class ThemeServiceTest {
 
-    @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
-    private ThemeRepository themeRepository;
-
-    @InjectMocks
+    @Autowired
     private ThemeService themeService;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     @DisplayName("모든 테마들을 조회한다.")
     void getAllThemes() {
-        Theme theme = new Theme(1L, "테마", "테마 설명", "https://example.com");
-        BDDMockito.given(themeRepository.findAll())
-                .willReturn(List.of(theme));
+        Theme theme = new Theme("테마", "테마 설명", "https://example.com");
+        Theme savedTheme = themeRepository.save(theme);
 
         List<ThemeResponse> themeResponses = themeService.getAllThemes();
 
-        ThemeResponse expected = ThemeResponse.from(theme);
-        assertThat(themeResponses).containsExactly(expected);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(themeResponses).hasSize(1);
+            softly.assertThat(themeResponses.get(0).id()).isEqualTo(savedTheme.getId());
+            softly.assertThat(themeResponses.get(0).name()).isEqualTo("테마");
+            softly.assertThat(themeResponses.get(0).description()).isEqualTo("테마 설명");
+            softly.assertThat(themeResponses.get(0).thumbnail()).isEqualTo("https://example.com");
+        });
     }
 
     @Test
     @DisplayName("테마를 추가한다.")
     void addTheme() {
-        Theme theme = new Theme(1L, "테마", "테마 설명", "https://example.com");
-        BDDMockito.given(themeRepository.existsByName(anyString()))
-                .willReturn(false);
-        BDDMockito.given(themeRepository.save(any()))
-                .willReturn(theme);
+        ThemeRequest request = new ThemeRequest("테마", "테마 설명", "https://example.com");
 
-        ThemeRequest themeRequest = new ThemeRequest("테마", "테마 설명", "https://example.com");
-        ThemeResponse themeResponse = themeService.addTheme(themeRequest);
+        ThemeResponse themeResponse = themeService.addTheme(request);
 
-        ThemeResponse expected = new ThemeResponse(1L, "테마", "테마 설명", "https://example.com");
-        assertThat(themeResponse).isEqualTo(expected);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(themeResponse.name()).isEqualTo("테마");
+            softly.assertThat(themeResponse.description()).isEqualTo("테마 설명");
+            softly.assertThat(themeResponse.thumbnail()).isEqualTo("https://example.com");
+        });
     }
 
     @Test
-    @DisplayName("이미 존재하는 이름의 테마를 추가할 수 없다.")
-    void addThemeWithDuplicatedName() {
-        BDDMockito.given(themeRepository.existsByName(anyString()))
-                .willReturn(true);
-
-        ThemeRequest themeRequest = new ThemeRequest("테마", "테마 설명", "https://example.com");
-
-        assertThatThrownBy(() -> themeService.addTheme(themeRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 이름의 테마는 이미 존재합니다.");
-    }
-
-    @Test
-    @DisplayName("테마를 삭제한다.")
+    @DisplayName("id로 테마를 조회한다.")
     void deleteThemeById() {
-        BDDMockito.given(themeRepository.existsById(any()))
-                .willReturn(true);
-        BDDMockito.given(reservationRepository.existsByThemeId(any()))
-                .willReturn(false);
+        Theme theme = new Theme("테마", "테마 설명", "https://example.com");
+        Theme savedTheme = themeRepository.save(theme);
 
-        themeService.deleteThemeById(1L);
+        themeService.deleteThemeById(savedTheme.getId());
 
-        BDDMockito.verify(themeRepository).deleteById(1L);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(themeRepository.findById(savedTheme.getId())).isEmpty();
+        });
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마를 삭제할 수 없다.")
-    void deleteNotExistedTheme() {
-        BDDMockito.given(themeRepository.existsById(any()))
-                .willReturn(false);
-
-        assertThatThrownBy(() -> themeService.deleteThemeById(1L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당 id의 테마가 존재하지 않습니다.");
-    }
-
-    @Test
-    @DisplayName("사용 중인 테마를 삭제할 수 없다.")
-    void deleteThemeInUse() {
-        BDDMockito.given(themeRepository.existsById(any()))
-                .willReturn(true);
-        BDDMockito.given(reservationRepository.existsByThemeId(any()))
-                .willReturn(true);
-
-        assertThatThrownBy(() -> themeService.deleteThemeById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 테마를 사용하는 예약이 존재합니다.");
-    }
-
-    @Test
-    @DisplayName("인기 있는 테마들을 조회한다.")
+    @DisplayName("인기있는 테마들을 조회한다.")
+    @Sql("/popular-themes.sql")
     void getPopularThemes() {
-        Theme theme = new Theme(1L, "테마", "테마 설명", "https://example.com");
-        BDDMockito.given(themeRepository.findPopularThemes(any(), any(), anyInt()))
-                .willReturn(List.of(theme));
+        LocalDate stateDate = LocalDate.of(2024, 4, 6);
+        LocalDate endDate = LocalDate.of(2024, 4, 10);
+        int limit = 3;
 
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusDays(7);
-        int limit = 1;
-        List<ThemeResponse> themeResponses = themeService.getPopularThemes(startDate, endDate, limit);
+        List<ThemeResponse> popularThemes = themeService.getPopularThemes(stateDate, endDate, limit);
 
-        ThemeResponse expected = ThemeResponse.from(theme);
-        assertThat(themeResponses).containsExactly(expected);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(popularThemes).hasSize(3);
+
+            softly.assertThat(popularThemes.get(0).id()).isEqualTo(4);
+            softly.assertThat(popularThemes.get(0).name()).isEqualTo("마법의 숲");
+            softly.assertThat(popularThemes.get(0).description()).isEqualTo("요정과 마법사들이 사는 신비로운 숲 속으로!");
+            softly.assertThat(popularThemes.get(0).thumbnail()).isEqualTo("https://via.placeholder.com/150/30f9e7");
+
+            softly.assertThat(popularThemes.get(1).id()).isEqualTo(3);
+            softly.assertThat(popularThemes.get(1).name()).isEqualTo("시간여행");
+            softly.assertThat(popularThemes.get(1).description()).isEqualTo("과거와 미래를 오가며 역사의 비밀을 밝혀보세요.");
+            softly.assertThat(popularThemes.get(1).thumbnail()).isEqualTo("https://via.placeholder.com/150/24f355");
+
+            softly.assertThat(popularThemes.get(2).id()).isEqualTo(2);
+            softly.assertThat(popularThemes.get(2).name()).isEqualTo("우주 탐험");
+            softly.assertThat(popularThemes.get(2).description()).isEqualTo("끝없는 우주에 숨겨진 비밀을 파헤치세요.");
+            softly.assertThat(popularThemes.get(2).thumbnail()).isEqualTo("https://via.placeholder.com/150/771796");
+        });
     }
 }

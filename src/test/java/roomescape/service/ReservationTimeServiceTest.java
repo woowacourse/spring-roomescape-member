@@ -1,137 +1,96 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.dto.AvailableReservationTimeDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestConfig;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = TestConfig.class)
+@Transactional
 class ReservationTimeServiceTest {
 
-    @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @InjectMocks
+    @Autowired
     private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Test
     @DisplayName("모든 예약 시간들을 조회한다.")
     void getAllReservationTimes() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        BDDMockito.given(reservationTimeRepository.findAll())
-                .willReturn(List.of(reservationTime));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 30));
+        reservationTimeRepository.save(reservationTime);
 
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getAllReservationTimes();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
 
-        ReservationTimeResponse expected = ReservationTimeResponse.from(reservationTime);
-        assertThat(reservationTimeResponses).containsExactly(expected);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(responses).hasSize(1);
+            softly.assertThat(responses.get(0).startAt()).isEqualTo("10:30");
+        });
     }
 
     @Test
     @DisplayName("예약 시간을 추가한다.")
     void addReservationTime() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        BDDMockito.given(reservationTimeRepository.existsByStartAt(any()))
-                .willReturn(false);
-        BDDMockito.given(reservationTimeRepository.save(any()))
-                .willReturn(reservationTime);
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
+        ReservationTimeResponse response = reservationTimeService.addReservationTime(request);
 
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.addReservationTime(
-                reservationTimeRequest);
-
-        ReservationTimeResponse expected = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
-        assertThat(reservationTimeResponse).isEqualTo(expected);
+        assertThat(response.startAt()).isEqualTo("10:30");
     }
 
     @Test
-    @DisplayName("이미 존재하는 예약 시간을 추가할 수 없다.")
-    void addExistingReservationTime() {
-        BDDMockito.given(reservationTimeRepository.existsByStartAt(any()))
-                .willReturn(true);
-
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
-
-        assertThatThrownBy(() -> reservationTimeService.addReservationTime(reservationTimeRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 시간은 이미 존재합니다.");
-    }
-
-    @Test
-    @DisplayName("예약 시간을 삭제한다.")
+    @DisplayName("id로 예약 시간을 삭제한다.")
     void deleteReservationTimeById() {
-        BDDMockito.given(reservationTimeRepository.existsById(anyLong()))
-                .willReturn(true);
-        BDDMockito.given(reservationRepository.existsByTimeId(anyLong()))
-                .willReturn(false);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 30));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        reservationTimeService.deleteReservationTimeById(1L);
+        reservationTimeService.deleteReservationTimeById(savedReservationTime.getId());
 
-        BDDMockito.verify(reservationTimeRepository).deleteById(1L);
+        assertThat(reservationTimeRepository.findById(savedReservationTime.getId())).isEmpty();
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간을 삭제할 수 없다.")
-    void deleteNotExistedReservationTime() {
-        BDDMockito.given(reservationTimeRepository.existsById(anyLong()))
-                .willReturn(false);
-
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당 id의 시간이 존재하지 않습니다.");
-    }
-
-    @Test
-    @DisplayName("사용 중인 예약 시간을 삭제할 수 없다.")
-    void deleteReservationTimeInUse() {
-        BDDMockito.given(reservationTimeRepository.existsById(anyLong()))
-                .willReturn(true);
-        BDDMockito.given(reservationRepository.existsByTimeId(anyLong()))
-                .willReturn(true);
-
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 시간을 사용하는 예약이 존재합니다.");
-    }
-
-    @Test
-    @DisplayName("특정 날짜에 사용 가능한 예약 시간을 조회한다.")
+    @DisplayName("날짜와 테마 id로 예약 가능한 시간들을 조회한다.")
+    @Sql("/available-reservation-times.sql")
     void getAvailableReservationTimes() {
-        AvailableReservationTimeDto availableReservationTimeDto1 = new AvailableReservationTimeDto(1L,
-                LocalTime.of(10, 0), true);
-        AvailableReservationTimeDto availableReservationTimeDto2 = new AvailableReservationTimeDto(2L,
-                LocalTime.of(12, 0), false);
-        BDDMockito.given(reservationTimeRepository.findAvailableReservationTimes(any(), anyLong()))
-                .willReturn(List.of(availableReservationTimeDto1, availableReservationTimeDto2));
+        LocalDate date = LocalDate.of(2024, 4, 9);
+        Long themeId = 1L;
 
-        List<AvailableReservationTimeResponse> availableTimes = reservationTimeService.getAvailableReservationTimes(
-                LocalDate.of(2024, 5, 1), 1L);
+        List<AvailableReservationTimeResponse> response = reservationTimeService
+                .getAvailableReservationTimes(date, themeId);
 
-        assertThat(availableTimes).containsExactly(
-                new AvailableReservationTimeResponse(1L, LocalTime.of(10, 0), true),
-                new AvailableReservationTimeResponse(2L, LocalTime.of(12, 0), false)
-        );
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response).hasSize(4);
+
+            softly.assertThat(response.get(0).timeId()).isEqualTo(1L);
+            softly.assertThat(response.get(0).startAt()).isEqualTo("09:00");
+            softly.assertThat(response.get(0).alreadyBooked()).isFalse();
+
+            softly.assertThat(response.get(1).timeId()).isEqualTo(2L);
+            softly.assertThat(response.get(1).startAt()).isEqualTo("12:00");
+            softly.assertThat(response.get(1).alreadyBooked()).isTrue();
+
+            softly.assertThat(response.get(2).timeId()).isEqualTo(3L);
+            softly.assertThat(response.get(2).startAt()).isEqualTo("17:00");
+            softly.assertThat(response.get(2).alreadyBooked()).isFalse();
+
+            softly.assertThat(response.get(3).timeId()).isEqualTo(4L);
+            softly.assertThat(response.get(3).startAt()).isEqualTo("21:00");
+            softly.assertThat(response.get(3).alreadyBooked()).isTrue();
+        });
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -34,6 +34,18 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public Theme save(Theme theme) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
+
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
 
@@ -52,16 +64,25 @@ public class JdbcThemeRepository implements ThemeRepository {
         }
     }
 
+
     @Override
-    public Theme save(Theme theme) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName())
-                .addValue("description", theme.getDescription())
-                .addValue("thumbnail", theme.getThumbnail());
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = """
+                    SELECT
+                        th.id,
+                        th.name,
+                        th.description,
+                        th.thumbnail
+                    FROM theme AS th
+                    JOIN reservation AS r
+                    ON th.id = r.theme_id
+                    WHERE r.date BETWEEN ? AND ?
+                    GROUP BY th.id
+                    ORDER BY COUNT(th.id) DESC
+                    LIMIT ?;
+                """;
 
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }
 
     @Override
@@ -83,25 +104,5 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE name = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
-    }
-
-    @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
-        String sql = """
-                    SELECT
-                        th.id,
-                        th.name,
-                        th.description,
-                        th.thumbnail
-                    FROM theme AS th
-                    JOIN reservation AS r
-                    ON th.id = r.theme_id
-                    WHERE r.date BETWEEN ? AND ?
-                    GROUP BY th.id
-                    ORDER BY COUNT(th.id) DESC
-                    LIMIT ?;
-                """;
-
-        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }
 }

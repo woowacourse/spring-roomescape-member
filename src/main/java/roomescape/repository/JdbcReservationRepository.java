@@ -2,16 +2,19 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -20,8 +23,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
         Long id = rs.getLong("id");
-        String name = rs.getString("name");
         LocalDate date = rs.getObject("date", LocalDate.class);
+
+        Member member = new Member(
+                rs.getLong("member_id"),
+                rs.getString("member_email"),
+                rs.getString("member_password"),
+                rs.getString("member_name"),
+                Role.valueOf(rs.getString("member_role"))
+        );
 
         ReservationTime time = new ReservationTime(
                 rs.getLong("time_id"),
@@ -35,7 +45,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getString("theme_thumbnail")
         );
 
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, date, member, time, theme);
     };
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
@@ -46,33 +56,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = """
-                    SELECT
-                        r.id,
-                        r.name,
-                        r.date,
-                        t.id AS time_id,
-                        t.start_at AS time_start_at,
-                        th.id AS theme_id,
-                        th.name AS theme_name,
-                        th.description AS theme_description,
-                        th.thumbnail AS theme_thumbnail
-                    FROM reservation AS r
-                    JOIN reservation_time AS t
-                    ON r.time_id = t.id
-                    JOIN theme AS th
-                    ON r.theme_id = th.id
-                """;
-
-        return jdbcTemplate.query(sql, rowMapper);
-    }
-
-    @Override
     public Reservation save(Reservation reservation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
+                .addValue("member_id", reservation.getMemberId())
                 .addValue("time_id", reservation.getTimeId())
                 .addValue("theme_id", reservation.getThemeId());
 
@@ -80,11 +67,61 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return new Reservation(
                 id,
-                reservation.getName(),
                 reservation.getDate(),
+                reservation.getMember(),
                 reservation.getTime(),
                 reservation.getTheme()
         );
+    }
+
+    @Override
+    public List<Reservation> findAllByConditions(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                    SELECT
+                        r.id,
+                        r.date,
+                        m.id AS member_id,
+                        m.email AS member_email,
+                        m.password AS member_password,
+                        m.name AS member_name,
+                        m.role AS member_role,
+                        t.id AS time_id,
+                        t.start_at AS time_start_at,
+                        th.id AS theme_id,
+                        th.name AS theme_name,
+                        th.description AS theme_description,
+                        th.thumbnail AS theme_thumbnail
+                    FROM reservation AS r
+                    JOIN member AS m
+                    ON r.member_id = m.id
+                    JOIN reservation_time AS t
+                    ON r.time_id = t.id
+                    JOIN theme AS th
+                    ON r.theme_id = th.id
+                """;
+
+        List<String> conditions = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        addCondition(memberId, conditions, "r.member_id = ?", params);
+        addCondition(themeId, conditions, "r.theme_id = ?", params);
+        addCondition(dateFrom, conditions, "r.date >= ?", params);
+        addCondition(dateTo, conditions, "r.date <= ?", params);
+
+        if (!conditions.isEmpty()) {
+            sql += " WHERE " + String.join(" AND ", conditions);
+        }
+
+        return jdbcTemplate.query(sql, rowMapper, params.toArray());
+    }
+
+    private void addCondition(Object param, List<String> conditions, String sql, List<Object> params) {
+        if (param == null) {
+            return;
+        }
+
+        conditions.add(sql);
+        params.add(param);
     }
 
     @Override

@@ -1,12 +1,20 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   sql:
     init:
-      # 비어 있으면 정상 작동, test-data.sql을 만들고 비워두면 에러.
       data-locations:
 
 logging:
   level:
     org.springframework:
       jdbc: DEBUG
+
+security:
+  jwt:
+    secret-key: abcdefghijklmnopqrstuvwxyz0123456789
+    expiration-time: 3600000 # 1 hour

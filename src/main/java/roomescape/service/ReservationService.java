@@ -1,18 +1,20 @@
 package roomescape.service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.dto.response.ReservationResponse;
 
 @Service
@@ -22,22 +24,31 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
     private final Clock clock;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
             ThemeRepository themeRepository,
+            MemberRepository memberRepository,
             Clock clock
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
         this.clock = clock;
     }
 
-    public List<ReservationResponse> getAllReservations() {
-        List<Reservation> reservations = reservationRepository.findAll();
+    public List<ReservationResponse> getReservationsByConditions(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationRepository
+                .findAllByConditions(memberId, themeId, dateFrom, dateTo);
 
         return reservations.stream()
                 .map(ReservationResponse::from)
@@ -45,10 +56,17 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
-        Theme theme = themeRepository.getById(reservationRequest.themeId());
-        Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
+    public ReservationResponse addReservation(
+            LocalDate date,
+            Long timeId,
+            Long themeId,
+            Long memberId
+    ) {
+        Member member = memberRepository.getById(memberId);
+        ReservationTime reservationTime = reservationTimeRepository.getById(timeId);
+        Theme theme = themeRepository.getById(themeId);
+
+        Reservation reservation = new Reservation(date, member, reservationTime, theme);
 
         validateDuplicatedReservation(reservation);
         validateDateTimeNotPassed(reservation);

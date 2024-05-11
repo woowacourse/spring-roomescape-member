@@ -10,9 +10,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.dto.AvailableReservationTimeDto;
+import roomescape.domain.reservationtime.AvailableReservationTimeDto;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -31,6 +31,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public ReservationTime save(ReservationTime reservationTime) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt());
+
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override
@@ -72,16 +82,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
             return new AvailableReservationTimeDto(id, startAt, alreadyBooked);
         }, date, themeId);
-    }
-
-    @Override
-    public ReservationTime save(ReservationTime reservationTime) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
-
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-
-        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override

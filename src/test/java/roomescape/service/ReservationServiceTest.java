@@ -1,148 +1,134 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.NoSuchElementException;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
-import roomescape.dto.request.ReservationRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestConfig;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
+import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.dto.response.ReservationResponse;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = TestConfig.class)
+@Transactional
 class ReservationServiceTest {
 
-    private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2024-04-09T00:00:00Z"), ZoneId.systemDefault());
-
-    @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @Mock
-    private ThemeRepository themeRepository;
-
-    @Mock
-    private Clock clock;
-
-    @InjectMocks
+    @Autowired
     private ReservationService reservationService;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Test
-    @DisplayName("모든 예약들을 조회한다.")
-    void getAllReservations() {
-        Reservation reservation = getReservation();
-        BDDMockito.given(reservationRepository.findAll())
-                .willReturn(List.of(reservation));
+    @DisplayName("예약들을 조회한다.")
+    void getReservations() {
+        Member member = memberRepository.save(new Member("new@gmail.com", "password", "nickname", Role.USER));
+        Theme theme = themeRepository.save(new Theme("테마", "테마 설명", "https://example.com"));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
 
-        List<ReservationResponse> reservationResponses = reservationService.getAllReservations();
+        Reservation reservation = new Reservation(
+                LocalDate.of(2024, 4, 9),
+                member,
+                time,
+                theme
+        );
+        reservationRepository.save(reservation);
 
-        ReservationResponse expected = ReservationResponse.from(reservation);
-        assertThat(reservationResponses).containsExactly(expected);
+        List<ReservationResponse> responses = reservationService.getReservationsByConditions(
+                member.getId(),
+                theme.getId(),
+                LocalDate.of(2024, 4, 9),
+                LocalDate.of(2024, 4, 9)
+        );
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(responses).hasSize(1);
+            softly.assertThat(responses.get(0).date()).isEqualTo("2024-04-09");
+            softly.assertThat(responses.get(0).member().id()).isEqualTo(member.getId());
+            softly.assertThat(responses.get(0).member().email()).isEqualTo("new@gmail.com");
+            softly.assertThat(responses.get(0).member().name()).isEqualTo("nickname");
+            softly.assertThat(responses.get(0).theme().id()).isEqualTo(theme.getId());
+            softly.assertThat(responses.get(0).theme().name()).isEqualTo("테마");
+            softly.assertThat(responses.get(0).theme().description()).isEqualTo("테마 설명");
+            softly.assertThat(responses.get(0).theme().thumbnail()).isEqualTo("https://example.com");
+            softly.assertThat(responses.get(0).time().id()).isEqualTo(time.getId());
+            softly.assertThat(responses.get(0).time().startAt()).isEqualTo("10:30");
+        });
     }
 
     @Test
     @DisplayName("예약을 추가한다.")
     void addReservation() {
-        Reservation reservation = getReservation();
-        BDDMockito.given(reservationTimeRepository.getById(anyLong()))
-                .willReturn(getReservationTime());
-        BDDMockito.given(themeRepository.getById(anyLong()))
-                .willReturn(getTheme());
-        BDDMockito.given(reservationRepository.save(any()))
-                .willReturn(reservation);
-        BDDMockito.given(reservationRepository.existsByReservation(any(), anyLong(), anyLong()))
-                .willReturn(false);
-        BDDMockito.given(clock.instant())
-                .willReturn(Instant.now(FIXED_CLOCK));
-        BDDMockito.given(clock.getZone())
-                .willReturn(FIXED_CLOCK.getZone());
+        Member member = memberRepository.save(new Member("new@gmail.com", "password", "nickname", Role.USER));
+        Theme theme = themeRepository.save(new Theme("테마", "테마 설명", "https://example.com"));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
 
-        ReservationRequest reservationRequest = new ReservationRequest("예약", "2024-04-09", 1L, 1L);
-        ReservationResponse reservationResponse = reservationService.addReservation(reservationRequest);
+        ReservationResponse response = reservationService.addReservation(
+                LocalDate.of(2024, 4, 9),
+                time.getId(),
+                theme.getId(),
+                member.getId()
+        );
 
-        ReservationResponse expected = ReservationResponse.from(reservation);
-        assertThat(reservationResponse).isEqualTo(expected);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.date()).isEqualTo("2024-04-09");
+            softly.assertThat(response.member().id()).isEqualTo(member.getId());
+            softly.assertThat(response.member().email()).isEqualTo("new@gmail.com");
+            softly.assertThat(response.member().name()).isEqualTo("nickname");
+            softly.assertThat(response.theme().id()).isEqualTo(theme.getId());
+            softly.assertThat(response.theme().name()).isEqualTo("테마");
+            softly.assertThat(response.theme().description()).isEqualTo("테마 설명");
+            softly.assertThat(response.theme().thumbnail()).isEqualTo("https://example.com");
+            softly.assertThat(response.time().id()).isEqualTo(time.getId());
+            softly.assertThat(response.time().startAt()).isEqualTo("10:30");
+        });
     }
 
     @Test
-    @DisplayName("이미 존재하는 예약을 추가할 수 없다.")
-    void addExistingReservation() {
-        BDDMockito.given(reservationTimeRepository.getById(anyLong()))
-                .willReturn(getReservationTime());
-        BDDMockito.given(themeRepository.getById(anyLong()))
-                .willReturn(getTheme());
-        BDDMockito.given(reservationRepository.existsByReservation(any(), anyLong(), anyLong()))
-                .willReturn(true);
+    @DisplayName("id로 예약을 삭제한다.")
+    void deleteReservationById() {
+        Member member = memberRepository.save(new Member("new@gmail.com", "password", "nickname", Role.USER));
+        Theme theme = themeRepository.save(new Theme("테마", "테마 설명", "https://example.com"));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
 
-        ReservationRequest reservationRequest = new ReservationRequest("예약", "2024-04-09", 1L, 1L);
+        Reservation reservation = new Reservation(
+                LocalDate.of(2024, 4, 9),
+                member,
+                time,
+                theme
+        );
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        assertThatThrownBy(() -> reservationService.addReservation(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 날짜/시간에 이미 예약이 존재합니다.");
-    }
+        reservationService.deleteReservationById(savedReservation.getId());
 
-    @Test
-    @DisplayName("지난 날짜/시간에 대한 예약은 불가능하다.")
-    void addReservationWithPassedDateTime() {
-        BDDMockito.given(reservationTimeRepository.getById(anyLong()))
-                .willReturn(getReservationTime());
-        BDDMockito.given(themeRepository.getById(anyLong()))
-                .willReturn(getTheme());
-        BDDMockito.given(clock.instant())
-                .willReturn(Instant.now(FIXED_CLOCK));
-        BDDMockito.given(clock.getZone())
-                .willReturn(FIXED_CLOCK.getZone());
-
-        ReservationRequest reservationRequest = new ReservationRequest("예약", "2024-04-08", 1L, 1L);
-
-        assertThatThrownBy(() -> reservationService.addReservation(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지나간 날짜/시간에 대한 예약은 불가능합니다.");
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약을 삭제할 수 없다.")
-    void deleteNotExistedReservation() {
-        BDDMockito.given(reservationRepository.existsById(anyLong()))
-                .willReturn(false);
-
-        assertThatThrownBy(() -> reservationService.deleteReservationById(1L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당 id의 예약이 존재하지 않습니다.");
-    }
-
-    private Reservation getReservation() {
-        ReservationTime reservationTime = getReservationTime();
-        Theme theme = getTheme();
-        return new Reservation(1L, "예약", LocalDate.of(2024, 4, 9), reservationTime, theme);
-    }
-
-    private ReservationTime getReservationTime() {
-        return new ReservationTime(1L, LocalTime.of(10, 0));
-    }
-
-    private Theme getTheme() {
-        return new Theme(1L, "테마", "테마 설명", "https://example.com");
+        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
+        Assertions.assertThat(count).isZero();
     }
 }

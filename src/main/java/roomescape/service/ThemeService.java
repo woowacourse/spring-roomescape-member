@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 

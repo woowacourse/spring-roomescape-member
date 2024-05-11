@@ -1,22 +1,204 @@
-## 예외 처리 목록
-- 도메인 필드에 null, blank 를 검즘한다.
-  - [x] Reservation
-  - [x] Reservation Time
-  - [x] Theme
-- ReservationService
-  - [x] 지나간 날짜/시간에 대한 예악은 불가능하다.
-  - [x] 해당 날짜/시간에 이미 예약이 존재한다면 예약을 생성할 수 없다.
-  - [x] 존재하지 않는 id의 예약 삭제는 불가능하다.
-- ReservationTimeService
-  - [x] 이미 존재하는 예약 시간이 있다면 생성할 수 없다.
-  - [x] 존재하지 않는 id의 예약 시간 삭제는 불가능하다.
-  - [x] 예약 시간 삭제 시 해당 시간을 사용하는 예약이 존재한다면 삭제할 수 없다.
-- ThemeService
-  - [x] 존재하지 않는 id의 테마 삭제는 불가능하다.
-  - [x] 동일한 이름의 테마는 생성할 수 없다.
-  - [x] 테마 삭제 시 해당 테마를 사용하는 예약이 존재한다면 삭제할 수 없다.
-
 ## API 명세서
+
+### 어드민 예약
+
+<details>
+<summary>POST <code>/admin/reservations</code> 어드민 예약 추가 API</summary>
+
+#### Request
+
+어드민 권한 필요
+
+```http
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+
+{
+    "name": "브라운",
+    "date": "2023-08-05",
+    "timeId": 1,
+    "themeId": 1,
+    "memberId": 1
+}
+```
+
+#### Response
+
+```http
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+    "id": 1,
+    "date": "2023-08-05",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    },
+    "theme" : {
+        "id": 1,
+        "name": "테마1",
+        "thumbnail": "https://example.com/thumbnail.jpg"
+    },
+    "member" : {
+        "id": 1,
+        "email": "example@gmail.com",
+        "name": "브라운",
+        "role": "USER"
+    }
+}
+```
+
+</details>
+
+### 인증
+
+<details>
+
+<summary>POST <code>/login</code> 로그인 API</summary>
+
+#### Request
+
+```http
+POST /login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "example@gmail.com",
+    "password": "password"
+}
+
+```
+
+#### Response
+
+이름이 "token"인 쿠키에 JWT 토큰을 저장한다.
+
+```http
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+    "id": 1,
+    "email": "example@gmail.com",
+    "name": "브라운",
+    "role": "USER"
+}
+
+```
+
+</details>
+
+<details>
+
+<summary>POST <code>/login/check</code> 로그인 체크 API</summary>
+
+#### Request
+
+```http
+POST /login/check HTTP/1.1
+```
+
+#### Response
+
+```http
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+    "id": 1,
+    "email": "example@gmail.com",
+    "name": "브라운",
+    "role": "USER"
+}
+
+```
+
+</details>
+
+<details>
+
+<summary>POST <code>/logout</code> 로그아웃 API</summary>
+
+이름이 "token"인 쿠키를 삭제한다.
+
+#### Request
+
+```http
+POST /logout HTTP/1.1
+```
+
+#### Response
+
+```http
+HTTP/1.1 204
+```
+
+</details>
+
+### 회원
+
+<details>
+
+<summary>POST <code>/members</code> 회원 가입 API</summary>
+
+#### Request
+
+```http
+POST /members HTTP/1.1
+content-type: application/json
+
+{
+    "email": "example@gmail.com",
+    "password": "password",
+    "name": "브라운"
+}
+```
+
+#### Response
+
+```http
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+    "id": 1,
+    "email": "example@gmail.com",
+    "name": "브라운",
+    "role": "USER"
+}
+```
+
+</details>
+
+<details>
+
+<summary>GET <code>/members</code> 전체 회원 조회 API</summary>
+
+#### Request
+
+```http
+GET /members HTTP/1.1
+```
+
+#### Response
+
+```http
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "email": "example@gmail.com",
+        "name": "브라운",
+        "role": "USER"
+    }
+]
+```
+
+</details>
+        
 
 ### 예약
 
@@ -25,12 +207,13 @@
 
 #### Request
 
+"token"인 쿠키 필요
+
 ```http
 POST /reservations HTTP/1.1
 content-type: application/json
 
 {
-    "name": "브라운",
     "date": "2023-08-05",
     "timeId": 1,
     "themeId": 1
@@ -45,7 +228,6 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "name": "브라운",
     "date": "2023-08-05",
     "time" : {
         "id": 1,
@@ -55,6 +237,12 @@ Content-Type: application/json
         "id": 1,
         "name": "테마1",
         "thumbnail": "https://example.com/thumbnail.jpg"
+    }, 
+    "member" : {
+        "id": 1,
+        "email": "example@gmail.com",
+        "name": "브라운",
+        "role": "USER"
     }
 }
 ```
@@ -79,7 +267,6 @@ Content-Type: application/json
 [
   {
     "id": 1,
-    "name": "브라운",
     "date": "2023-08-05",
     "time" : {
         "id": 1,
@@ -89,6 +276,12 @@ Content-Type: application/json
         "id": 1,
         "name": "테마1",
         "thumbnail": "https://example.com/thumbnail.jpg"
+    }, 
+    "member" : {
+        "id": 1,
+        "email": "example@gmail.com",
+        "name": "브라운",
+        "role": "USER"
     }
   }
 ]

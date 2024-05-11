@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.dto.AvailableReservationTimeDto;
+import roomescape.domain.reservationtime.AvailableReservationTimeDto;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -25,6 +25,16 @@ class JdbcReservationTimeRepositoryTest {
     public JdbcReservationTimeRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+    }
+
+    @Test
+    @DisplayName("예약 시간을 추가한다.")
+    void save() {
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+
+        assertThat(savedReservationTime.getId()).isEqualTo(1L);
+        assertThat(savedReservationTime.getStartAt()).isEqualTo("10:00");
     }
 
     @Test
@@ -49,6 +59,11 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @DisplayName("예약 가능한 시간들을 조회한다.")
     void findAvailableReservationTimes() {
+        String insertMemberSQL = """
+                INSERT INTO member (id, email, password, name, role)
+                VALUES ('1', 'example@gmail.com', 'password', 'name1', 'USER');
+                """;
+
         String insertTimeSQL = """
                 INSERT INTO reservation_time (id, start_at)
                 VALUES (1, '10:00'), 
@@ -62,11 +77,12 @@ class JdbcReservationTimeRepositoryTest {
                 """;
 
         String insertReservationSQL = """
-                INSERT INTO reservation (id, name, date, time_id, theme_id)
-                VALUES (1, '예약1', '2024-05-04', 1, 1),
-                       (2, '예약2', '2024-05-04', 3, 1);
+                INSERT INTO reservation (id, date, member_id, time_id, theme_id)
+                VALUES (1, '2024-05-04', 1, 1, 1),
+                       (2, '2024-05-04', 1, 3, 1);
                 """;
 
+        jdbcTemplate.update(insertMemberSQL);
         jdbcTemplate.update(insertTimeSQL);
         jdbcTemplate.update(insertThemeSQL);
         jdbcTemplate.update(insertReservationSQL);
@@ -74,22 +90,12 @@ class JdbcReservationTimeRepositoryTest {
         LocalDate date = LocalDate.of(2024, 5, 4);
         List<AvailableReservationTimeDto> availableReservationTimes = reservationTimeRepository
                 .findAvailableReservationTimes(date, 1L);
-        System.out.println(availableReservationTimes);
+
         assertThat(availableReservationTimes).containsExactly(
                 new AvailableReservationTimeDto(1L, LocalTime.of(10, 0), true),
                 new AvailableReservationTimeDto(2L, LocalTime.of(11, 0), false),
                 new AvailableReservationTimeDto(3L, LocalTime.of(12, 0), true)
         );
-    }
-
-    @Test
-    @DisplayName("예약 시간을 추가한다.")
-    void save() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-
-        assertThat(savedReservationTime.getId()).isEqualTo(1L);
-        assertThat(savedReservationTime.getStartAt()).isEqualTo("10:00");
     }
 
     @Test

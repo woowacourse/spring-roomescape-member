@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.service.ReservationTimeService;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
@@ -36,7 +37,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(
-            @RequestBody ReservationTimeRequest reservationTimeRequest
+            @RequestBody @Valid ReservationTimeRequest reservationTimeRequest
     ) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.addReservationTime(
                 reservationTimeRequest);

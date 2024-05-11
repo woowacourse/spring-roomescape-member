@@ -1,17 +1,15 @@
 package roomescape.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
-import roomescape.controller.exception.valid.TimeValid;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservationtime.ReservationTime;
 
 public record ReservationTimeRequest(
-        @NotBlank(message = "예약 시작 시간을 입력해주세요.")
-        @TimeValid
-        String startAt
+        @NotNull(message = "예약 시작 시간을 입력해주세요.")
+        LocalTime startAt
 ) {
 
     public ReservationTime toReservationTime() {
-        return new ReservationTime(LocalTime.parse(startAt));
+        return new ReservationTime(startAt);
     }
 }
