@@ -1,10 +1,10 @@
 package roomescape.controller.admin.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
@@ -12,7 +12,7 @@ import roomescape.service.reservation.ReservationService;
 
 import java.net.URI;
 
-@Controller
+@RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
 

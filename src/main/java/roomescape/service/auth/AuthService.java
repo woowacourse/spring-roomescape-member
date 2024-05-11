@@ -3,11 +3,13 @@ package roomescape.service.auth;
 import org.springframework.stereotype.Service;
 import roomescape.controller.login.TokenRequest;
 import roomescape.controller.login.TokenResponse;
+import roomescape.controller.member.MemberResponse;
 import roomescape.domain.Member;
 import roomescape.exception.UnauthorizedException;
 import roomescape.repository.MemberRepository;
 import roomescape.service.auth.exception.MemberNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,15 +23,21 @@ public class AuthService {
         this.memberRepository = memberRepository;
     }
 
-    public Member findMemberByEmail(final String email) {
+    public List<MemberResponse> getMembers() {
+        return memberRepository.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
+    }
+
+    public Member getMemberByEmail(final String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 로그인 정보 입니다."));
     }
 
-    public Member findMemberByToken(final String token) {
+    public Member getMemberByToken(final String token) {
         String payload = jwtTokenProvider.getPayload(token);
 
-        return findMemberByEmail(payload);
+        return getMemberByEmail(payload);
     }
 
     public TokenResponse createToken(final TokenRequest token) {

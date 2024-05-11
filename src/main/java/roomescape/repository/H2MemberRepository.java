@@ -11,6 +11,7 @@ import roomescape.service.auth.exception.MemberNotFoundException;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -34,6 +35,13 @@ public class H2MemberRepository implements MemberRepository {
                 rs.getString("PASSWORD"),
                 Role.valueOf(rs.getString("ROLE"))
         );
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = "SELECT * FROM MEMBER";
+
+        return jdbcTemplate.query(sql, this::mapRowMember);
     }
 
     @Override
