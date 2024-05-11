@@ -19,12 +19,11 @@ public class TokenProvider {
     private long validTime = 3600000;
 
     public String create(Member member) {
-        Claims claims = Jwts.claims().setSubject(String.valueOf(member.getId()));
         Date now = new Date();
         Date validity = new Date(now.getTime() + validTime);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .claim("id", member.getId())
                 .claim("role", member.getRole())
                 .claim("email", member.getEmail())
                 .setIssuedAt(now)
@@ -36,6 +35,11 @@ public class TokenProvider {
     public String extractMemberEmail(String token) {
         Claims claims = getPayload(token);
         return (String) claims.get("email");
+    }
+
+    public long extractMemberId(String token) {
+        Claims claims = getPayload(token);
+        return (Long) claims.get("id");
     }
 
     public Claims getPayload(String token) {

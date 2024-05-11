@@ -12,8 +12,10 @@ import roomescape.auth.service.AuthService;
 import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.SignUpRequest;
+import roomescape.exception.UnauthorizedException;
 
 import java.net.URI;
+import java.util.Arrays;
 
 @RestController
 public class AuthController {
@@ -56,11 +58,10 @@ public class AuthController {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(KEY))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new UnauthorizedException("권한이 없는 접근입니다."));
     }
 }
