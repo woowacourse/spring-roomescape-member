@@ -147,7 +147,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(403);
+                .statusCode(403)
+                .body(equalTo(String.format("관리자 권한이 없는 사용자입니다. {id: %d, role: %s}", member.getId(), member.getRole().name())));
     }
 
     @DisplayName("예약 날짜가 비어 있는 예약 추가 시 BadRequest 반환")

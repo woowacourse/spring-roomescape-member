@@ -46,10 +46,11 @@ class AuthServiceTest {
     @DisplayName("가입되지 않은 이메일일 경우 예외 발생")
     @Test
     void loginEmailNotFound() {
-        final TokenRequest tokenRequest = new TokenRequest("111@aaa.com", "abc1234");
+        final String email = "111@aaa.com";
+        final TokenRequest tokenRequest = new TokenRequest(email, "abc1234");
         assertThatThrownBy(() -> authService.createToken(tokenRequest))
                 .isInstanceOf(AuthenticationException.class)
-                .hasMessage("가입되지 않은 이메일입니다.");
+                .hasMessage(String.format("가입되지 않은 이메일입니다. (%s)", email));
     }
 
     @DisplayName("비밀번호가 일치하지 않을 경우 예외 발생")

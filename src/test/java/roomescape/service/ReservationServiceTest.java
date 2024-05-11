@@ -79,7 +79,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() ->
             reservationService.saveReservation(reservationSaveRequest, loginMember)
-        ).isInstanceOf(IllegalArgumentException.class).hasMessage("존재하지 않는 예약 시간입니다.");
+        ).isInstanceOf(IllegalArgumentException.class).hasMessage(String.format("존재하지 않는 예약 시간입니다. (%d)", 1L));
     }
 
     @DisplayName("존재하지 않는 테마로 예약 저장 시 예외 발생")
@@ -92,7 +92,8 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() ->
             reservationService.saveReservation(reservationSaveRequest, loginMember)
-        ).isInstanceOf(IllegalArgumentException.class).hasMessage("존재하지 않는 테마입니다.");
+        ).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(String.format("존재하지 않는 테마입니다. (%d)", 1L));
     }
 
     @DisplayName("지나간 시간에 대한 예약 저장 시 예외 발생")
@@ -128,9 +129,11 @@ class ReservationServiceTest {
     @DisplayName("dateFrom이 dateTo 이후의 날짜일 경우 예외 발생")
     @Test
     void invalidReservationFilterDate() {
-        assertThatThrownBy(() -> reservationService.getReservations(new ReservationFilterRequest(null, null, LocalDate.now().plusMonths(1), LocalDate.now())))
+        final LocalDate dateFrom = LocalDate.now().plusMonths(1);
+        final LocalDate dateTo = LocalDate.now();
+        assertThatThrownBy(() -> reservationService.getReservations(new ReservationFilterRequest(null, null, dateFrom, dateTo)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("dateFrom이 dateTo 이후의 날짜입니다.");
+                .hasMessage(String.format("dateFrom이 dateTo 이후의 날짜입니다. {dateFrom: %s, dateTo: %s}", dateFrom, dateTo));
     }
 
     @DisplayName("전체 예약 목록 조회")
@@ -201,6 +204,6 @@ class ReservationServiceTest {
     void deleteReservationNotFound() {
         assertThatThrownBy(() -> {
             reservationService.deleteReservation(1L);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessage("존재하지 않는 예약입니다.");
+        }).isInstanceOf(IllegalArgumentException.class).hasMessage(String.format("존재하지 않는 예약입니다. (%d)", 1L));
     }
 }

@@ -29,7 +29,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         final MemberResponse memberResponse = authService.findMemberByToken(token);
         final Role memberRole = Role.from(memberResponse.role());
         if (Role.ADMIN != memberRole) {
-            throw new AuthorizationException("관리자 권한이 없는 사용자입니다.");
+            throw new AuthorizationException(String.format("관리자 권한이 없는 사용자입니다. {id: %d, role: %s}", memberResponse.id(), memberResponse.role()));
         }
         return true;
     }

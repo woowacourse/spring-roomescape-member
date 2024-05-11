@@ -56,11 +56,12 @@ class ReservationTimeServiceTest {
     @DisplayName("중복된 시간 저장 시 예외 발생")
     @Test
     void saveExistTime() {
-        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        final LocalTime startAt = LocalTime.parse("09:00");
+        reservationTimeRepository.save(new ReservationTime(startAt));
 
         assertThatCode(() ->
                 reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("09:00")))
-        ).isInstanceOf(IllegalArgumentException.class).hasMessage("이미 저장된 예약 시간입니다.");
+        ).isInstanceOf(IllegalArgumentException.class).hasMessage(String.format("이미 저장된 예약 시간입니다. (%s)", startAt));
     }
 
     @DisplayName("예약 시간 저장")
@@ -86,7 +87,7 @@ class ReservationTimeServiceTest {
     void deleteTimeNotFound() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .hasMessage(String.format("존재하지 않는 예약 시간입니다. (%d)", 1L));
     }
 
     @DisplayName("예약이 존재하는 시간 삭제 시 예외 발생")
@@ -99,7 +100,7 @@ class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.deleteTime(reservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
+                .hasMessage(String.format("예약이 존재하는 시간은 삭제할 수 없습니다. (%d)", reservationTime.getId()));
     }
 
     @DisplayName("특정 날짜의 테마에 대한 전체 시간 예약 여부 오름차순 조회")

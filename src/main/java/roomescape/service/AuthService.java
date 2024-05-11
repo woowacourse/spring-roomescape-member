@@ -23,7 +23,7 @@ public class AuthService {
     public TokenResponse createToken(final TokenRequest tokenRequest) {
         final String inputPassword = tokenRequest.password();
         final Member member = memberRepository.findByEmail(tokenRequest.email())
-                .orElseThrow(() -> new AuthenticationException("가입되지 않은 이메일입니다."));
+                .orElseThrow(() -> new AuthenticationException(String.format("가입되지 않은 이메일입니다. (%s)", tokenRequest.email())));
         if (!member.getPassword().equals(inputPassword)) {
             throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
         }
@@ -34,7 +34,7 @@ public class AuthService {
     public MemberResponse findMemberByToken(final String token) {
         final Long memberId = tokenProvider.getMemberId(token);
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new AuthenticationException("존재하지 않는 멤버입니다."));
+                .orElseThrow(() -> new AuthenticationException(String.format("존재하지 않는 멤버입니다. (%d)", memberId)));
         return new MemberResponse(member);
     }
 }

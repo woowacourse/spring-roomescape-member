@@ -78,7 +78,7 @@ class ThemeServiceTest {
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .hasMessage(String.format("존재하지 않는 테마입니다. (%d)", 1L));
     }
 
     @DisplayName("예약이 존재하는 테마 삭제 시 예외 발생")
@@ -91,7 +91,7 @@ class ThemeServiceTest {
 
         assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다.");
+                .hasMessage(String.format("예약이 존재하는 테마는 삭제할 수 없습니다. (%d)", 1L));
     }
 
     @DisplayName("인기 테마 조회")

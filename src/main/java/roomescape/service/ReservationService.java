@@ -42,7 +42,7 @@ public class ReservationService {
             return;
         }
         if (request.dateFrom().isAfter(request.dateTo())) {
-            throw new IllegalArgumentException("dateFrom이 dateTo 이후의 날짜입니다.");
+            throw new IllegalArgumentException(String.format("dateFrom이 dateTo 이후의 날짜입니다. {dateFrom: %s, dateTo: %s}", request.dateFrom(), request.dateTo()));
         }
     }
 
@@ -59,19 +59,19 @@ public class ReservationService {
 
     private ReservationTime getTimeById(final Long reservationTimeId) {
         return reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 예약 시간입니다. (%d)", reservationTimeId)));
     }
 
     private Theme getThemeId(final Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 테마입니다. (%s)", themeId)));
     }
 
     private void validateUnique(final Reservation reservation) {
         final boolean isReservationExist = reservationRepository.existByDateAndTimeIdAndThemeId(reservation.getDate(),
                 reservation.getTimeId(), reservation.getThemeId());
         if (isReservationExist) {
-            throw new IllegalArgumentException("동일한 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
+            throw new IllegalArgumentException(String.format("동일한 날짜, 시간, 테마에 대한 예약이 이미 존재합니다."));
         }
     }
 
@@ -79,7 +79,7 @@ public class ReservationService {
         final ReservationTime time = getTimeById(reservationSaveRequest.timeId());
         final Theme theme = getThemeId(reservationSaveRequest.themeId());
         final Member member = memberRepository.findById(reservationSaveRequest.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 멤버입니다. (%d)", reservationSaveRequest.memberId())));
         final Reservation reservation = Reservation.createIfFuture(LocalDateTime.now(), member, reservationSaveRequest.date(), time, theme);
         validateUnique(reservation);
 
@@ -89,7 +89,7 @@ public class ReservationService {
 
     public void deleteReservation(final Long id) {
         reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 예약입니다. (%d)", id)));
         reservationRepository.deleteById(id);
     }
 }
