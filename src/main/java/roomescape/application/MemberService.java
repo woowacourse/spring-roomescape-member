@@ -6,7 +6,7 @@ import roomescape.application.dto.response.MemberResponse;
 import roomescape.application.dto.response.TokenResponse;
 import roomescape.auth.TokenProvider;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.repository.MemberRepository;
+import roomescape.domain.member.MemberRepository;
 
 @Service
 public class MemberService {

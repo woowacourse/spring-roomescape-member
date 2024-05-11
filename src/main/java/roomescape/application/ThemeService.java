@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.request.ThemeCreationRequest;
 import roomescape.application.dto.response.ThemeResponse;
-import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.domain.theme.ThemeRepository;
 
 @Service
 public class ThemeService {

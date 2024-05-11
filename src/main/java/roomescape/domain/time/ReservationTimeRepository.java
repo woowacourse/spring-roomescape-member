@@ -1,10 +1,9 @@
-package roomescape.domain.time.repository;
+package roomescape.domain.time;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import roomescape.domain.time.ReservationTime;
 
 public interface ReservationTimeRepository {
     ReservationTime save(ReservationTime reservationTime);

@@ -1,4 +1,4 @@
-package roomescape.domain.time.repository;
+package roomescape.infrastructure;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.domain.time.ReservationTimeRepository;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {

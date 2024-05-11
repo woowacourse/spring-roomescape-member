@@ -1,4 +1,4 @@
-package roomescape.domain.theme.repository;
+package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.fixture.ThemeFixture;
 
 @JdbcTest

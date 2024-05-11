@@ -1,7 +1,6 @@
-package roomescape.domain.member.repository;
+package roomescape.domain.member;
 
 import java.util.Optional;
-import roomescape.domain.member.Member;
 
 public interface MemberRepository {
     Optional<Member> findByEmail(String email);

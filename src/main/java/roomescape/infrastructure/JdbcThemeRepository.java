@@ -1,4 +1,4 @@
-package roomescape.domain.theme.repository;
+package roomescape.infrastructure;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {

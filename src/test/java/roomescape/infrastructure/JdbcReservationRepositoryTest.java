@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository;
+package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -12,10 +12,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.repository.JdbcThemeRepository;
-import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
-import roomescape.domain.time.repository.JdbcReservationTimeRepository;
 import roomescape.fixture.ReservationFixture;
 
 @JdbcTest

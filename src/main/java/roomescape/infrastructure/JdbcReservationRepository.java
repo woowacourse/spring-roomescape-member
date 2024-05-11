@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository;
+package roomescape.infrastructure;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
 
