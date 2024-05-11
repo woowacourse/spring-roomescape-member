@@ -11,8 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.login.TokenRequest;
 
-@Sql(statements = "INSERT INTO MEMBER (NAME, EMAIL, PASSWORD, ROLE) VALUES ('어드민', 'admin@test.com', 'admin', 'ADMIN')",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(value = "/insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AdminControllerTest {
 

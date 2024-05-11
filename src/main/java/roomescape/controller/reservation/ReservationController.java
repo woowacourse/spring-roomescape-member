@@ -1,15 +1,9 @@
 package roomescape.controller.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.controller.RequestParams;
 import roomescape.controller.login.LoginMember;
 import roomescape.service.reservation.ReservationService;
 
@@ -26,24 +20,18 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    // TODO: RequestParams, QueryStringArgumentResolver 만들기 (https://growing-up-constantly.tistory.com/53)
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations(
-            @RequestParam(value = "themeId", required = false) Long themeId,
-            @RequestParam(value = "memberId", required = false) Long memberId,
-            @RequestParam(value = "dateFrom", required = false) String dateFrom,
-            @RequestParam(value = "dateTo", required = false) String dateTo
-    ) {
-        SearchReservationRequest request = new SearchReservationRequest(themeId, memberId, dateFrom, dateTo);
-
-        if (request.existNull()) {
+    public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParams SearchReservationRequest request) {
+        if (request == null || request.existNull()) {
             return ResponseEntity.ok(reservationService.getReservations());
         }
         return ResponseEntity.ok(reservationService.getReservations(request));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody CreateReservationRequest request, LoginMember member) {
+    public ResponseEntity<ReservationResponse> addReservation(
+            @RequestBody CreateReservationRequest request,
+            LoginMember member) {
         CreateReservationRequest assignedMemberRequest = request.assignMemberId(member.id());
         ReservationResponse reservation = reservationService.addReservation(assignedMemberRequest);
         URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
