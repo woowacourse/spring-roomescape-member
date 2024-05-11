@@ -10,6 +10,8 @@ import roomescape.dto.AdminReservationRequest;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -46,5 +48,16 @@ public class AdminController {
     public ResponseEntity<Reservation> saveAdminReservation(@AuthenticationPrincipal Member member, @RequestBody AdminReservationRequest adminReservationRequest) {
         Reservation savedReservation = reservationService.save(member, adminReservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId())).body(savedReservation);
+    }
+
+    @GetMapping(path = "/reservations", params = {"memberId", "themeId", "dateFrom", "dateTo"})
+    public ResponseEntity<List<Reservation>> findFilteredReservation(
+            @RequestParam(name = "memberId") Long memberId,
+            @RequestParam(name = "themeId") Long themeId,
+            @RequestParam(name = "dateFrom") LocalDate dateFrom,
+            @RequestParam(name = "dateTo") LocalDate dateTo) {
+        List<Reservation> reservations = reservationService.findFilteredReservation(memberId, themeId, dateFrom, dateTo);
+
+        return ResponseEntity.ok(reservations);
     }
 }

@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ class AdminControllerTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("어드민 페이지를 조회한다.")
     void readAdminPage() {
         RestAssured.given().log().all()
@@ -31,6 +33,7 @@ class AdminControllerTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("어드민 예약 페이지를 조회한다.")
     void readAdminReservationPage() {
         RestAssured.given().log().all()

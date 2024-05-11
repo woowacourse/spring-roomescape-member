@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class MemberDao {
     }
 
     public Member findMemberByEmail(String memberEmail) {
-        String sql = "SELECT member.id, member.name, member.email, member.password FROM member WHERE member.email = ?";
+        String sql = "SELECT member.id, member.name, member.email, member.password, member.role FROM member WHERE member.email = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, getMemberRowMapper(), memberEmail);
             return member;
@@ -37,7 +38,7 @@ public class MemberDao {
     }
 
     public Member findMemberById(Long memberId) {
-        String sql = "SELECT member.id, member.name, member.email, member.password FROM member WHERE id = ?";
+        String sql = "SELECT member.id, member.name, member.email, member.password, member.role FROM member WHERE id = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, getMemberRowMapper(), memberId);
             return member;
@@ -47,7 +48,7 @@ public class MemberDao {
     }
 
     public List<Member> allMembers() {
-        String sql = "SELECT id, name, email, password FROM member";
+        String sql = "SELECT id, name, email, password, role FROM member";
         return jdbcTemplate.query(sql, getMemberRowMapper());
     }
 
@@ -57,7 +58,8 @@ public class MemberDao {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("email"),
-                    rs.getString("password")
+                    rs.getString("password"),
+                    Role.findRole(rs.getString("role"))
             );
         };
     }

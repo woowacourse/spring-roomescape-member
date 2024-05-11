@@ -49,4 +49,14 @@ public class LoginController {
         }
         throw new LoginFailException("쿠키에 토큰이 없습니다");
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse httpServletResponse) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        httpServletResponse.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
 }

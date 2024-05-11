@@ -17,13 +17,16 @@ INSERT INTO theme(name, description, thumbnail) VALUES ('테마 1', '테마 1입
                          ( '테마 10', '테마 10입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
                          ( '테마 11', '테마 11입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO member(name, email, password) VALUES ('잉크', 'asdf@a.com', '1234');
+INSERT INTO member(name, email, password, role) VALUES ('관리자', 'admin@a.com', '1234', 'admin'),
+                                                    ('손님', 'user@a.com', '1234', 'user');
 
-INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1L, '2024-04-25', 1, 1),
-                               (1L, '2024-04-25', 2, 1),
-                               (1L, '2024-04-26', 3, 2),
-                               (1L, '2024-04-26', 4, 2),
-                               (1L, '2024-04-27', 5, 3),
-                               (1L, '2024-04-28', 6, 2),
-                               (1L, '2024-04-29', 1, 2);
-
+INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES (1L, DATEADD('DAY', -10, CURRENT_DATE), 1, 1),
+                               (1L, DATEADD('DAY', -9, CURRENT_DATE), 2, 1),
+                               (1L, DATEADD('DAY', -8, CURRENT_DATE), 3, 1),
+                               (1L, DATEADD('DAY', -7, CURRENT_DATE), 4, 2),
+                               (1L, DATEADD('DAY', -6, CURRENT_DATE), 5, 2),
+                               (1L, DATEADD('DAY', -5, CURRENT_DATE), 6, 3),
+                               (2L, DATEADD('DAY', -4, CURRENT_DATE), 1, 5),
+                               (2L, DATEADD('DAY', -3, CURRENT_DATE), 2, 6),
+                               (2L, DATEADD('DAY', -2, CURRENT_DATE), 3, 7),
+                               (2L, DATEADD('DAY', -1, CURRENT_DATE), 4, 10);

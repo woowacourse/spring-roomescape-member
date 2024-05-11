@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
 
-    private final Member member = new Member("잉크", "asdf@a.com", "1234");
+    private final Member member = new Member("잉크", "asdf@a.com", "1234", Role.ADMIN);
 
     @Test
     @DisplayName("올바른 입력시 객체를 생성한다.")

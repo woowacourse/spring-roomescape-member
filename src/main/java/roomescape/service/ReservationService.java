@@ -78,4 +78,8 @@ public class ReservationService {
     public void delete(long id) {
         reservationDAO.deleteById(id);
     }
+
+    public List<Reservation> findFilteredReservation(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationDAO.findReservationsBy(memberId, themeId, dateFrom, dateTo);
+    }
 }

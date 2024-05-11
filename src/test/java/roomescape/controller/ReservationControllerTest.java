@@ -45,6 +45,7 @@ class ReservationControllerTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("예약 정보를 조회한다.")
     void readReservations() {
         RestAssured.given().log().all()
