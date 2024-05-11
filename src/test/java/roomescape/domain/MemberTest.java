@@ -12,7 +12,7 @@ public class MemberTest {
     void isEmailMatchesTest(String expectedEmail) {
         String email = "correct@email.com";
         boolean expectedMatches = expectedEmail.equals(email);
-        Member member = new Member(1L, "name", "USER", email, "password");
+        Member member = new Member(1L, "name", Role.USER, email, "password");
 
         boolean actualMatches = member.isEmailMatches(expectedEmail);
 
@@ -24,7 +24,7 @@ public class MemberTest {
     void isPasswordMatchesTest(String expectedPassword) {
         String password = "correct";
         boolean expectedMatches = expectedPassword.equals(password);
-        Member member = new Member(1L, "name", "USER", "email@email.com", password);
+        Member member = new Member(1L, "name", Role.USER, "email@email.com", password);
 
         boolean actualMatches = member.isPasswordMatches(expectedPassword);
 

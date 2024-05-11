@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -42,7 +43,7 @@ public class MemberDao {
                 (resultSet, numRow) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
-                        resultSet.getString("role"),
+                        Role.findRole(resultSet.getString("role")),
                         resultSet.getString("email"),
                         resultSet.getString("password"))
                 , email);
@@ -55,7 +56,7 @@ public class MemberDao {
                 (resultSet, numRow) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
-                        resultSet.getString("role"),
+                        Role.findRole(resultSet.getString("role")),
                         resultSet.getString("email"),
                         resultSet.getString("password"))
                 , id);
@@ -68,7 +69,7 @@ public class MemberDao {
                 (resultSet, numRow) -> new Member(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
-                        resultSet.getString("role"),
+                        Role.findRole(resultSet.getString("role")),
                         resultSet.getString("email"),
                         resultSet.getString("password")));
     }

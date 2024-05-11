@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.dto.RegisterRequestDto;
 import roomescape.exception.WrongStateException;
 
@@ -32,7 +33,7 @@ public class MemberService {
             throw new WrongStateException("이미 존재하는 아이디입니다.");
         });
         Long id = memberDao.insert(registerRequestDto.name(), registerRequestDto.email(), registerRequestDto.password());
-        return new Member(id, registerRequestDto.name(), "USER", registerRequestDto.email(), registerRequestDto.password());
+        return new Member(id, registerRequestDto.name(), Role.USER, registerRequestDto.email(), registerRequestDto.password());
     }
 
     public Member findByEmail(String email) {

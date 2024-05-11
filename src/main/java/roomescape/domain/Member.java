@@ -4,11 +4,11 @@ public class Member {
 
     private final Long id;
     private final String name;
-    private final String role;
+    private final Role role;
     private final String email;
     private final String password;
 
-    public Member(Long id, String name, String role, String email, String password) {
+    public Member(Long id, String name, Role role, String email, String password) {
         this.id = id;
         this.name = name;
         this.role = role;
@@ -32,7 +32,7 @@ public class Member {
         return name;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 

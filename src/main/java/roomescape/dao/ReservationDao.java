@@ -5,10 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTheme;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.*;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -137,7 +134,7 @@ public class ReservationDao {
                 new Member(
                         resultSet.getLong("member_id"),
                         resultSet.getString("name"),
-                        resultSet.getString("role"),
+                        Role.findRole(resultSet.getString("role")),
                         resultSet.getString("email"),
                         resultSet.getString("password")
                 )
