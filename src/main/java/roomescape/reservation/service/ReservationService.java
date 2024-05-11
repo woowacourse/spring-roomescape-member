@@ -41,6 +41,13 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findAllByMemberAndThemeAndPeriod(Long memberId, Long themeId, LocalDate dateFrom,
+                                                                      LocalDate dateTo) {
+        return reservationRepository.findAllByMemberAndThemeAndPeriod(memberId, themeId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
     public ReservationResponse saveMemberReservation(Long memberId, MemberReservationAddRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoSuchRecordException("ID: " + memberId + " 해당하는 회원을 찾을 수 없습니다"));

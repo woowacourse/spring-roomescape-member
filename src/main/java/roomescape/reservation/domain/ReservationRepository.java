@@ -8,6 +8,9 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findAllByMemberAndThemeAndPeriod(Long memberId, Long themeId, LocalDate dateFrom,
+                                                       LocalDate dateTo);
+
     Optional<Reservation> findById(Long id);
 
     Reservation save(Reservation reservation);
