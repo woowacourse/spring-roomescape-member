@@ -25,6 +25,7 @@ import roomescape.domain.exception.InvalidValueException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberPassword;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.MemberReservationCreateRequest;
@@ -137,7 +138,8 @@ class ReservationServiceTest {
                     1L,
                     new MemberName("사용자1"),
                     new MemberEmail("user1@wooteco.com"),
-                    "user1", USER
+                    new MemberPassword("user1"),
+                    USER
             );
 
             ReservationResponse result = reservationService.add(request, member);

@@ -5,10 +5,10 @@ public class Member {
     private final Long id;
     private final MemberName name;
     private final MemberEmail email;
-    private final String password;
+    private final MemberPassword password;
     private final Role role;
 
-    public Member(Long id, MemberName name, MemberEmail email, String password, Role role) {
+    public Member(Long id, MemberName name, MemberEmail email, MemberPassword password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -32,7 +32,7 @@ public class Member {
         return email;
     }
 
-    public String getPassword() {
+    public MemberPassword getPassword() {
         return password;
     }
 

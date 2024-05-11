@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberPassword;
 import roomescape.domain.member.Role;
 
 @Repository
@@ -20,7 +21,7 @@ public class JdbcMemberDao implements MemberDao {
                     resultSet.getLong("id"),
                     new MemberName(resultSet.getString("name")),
                     new MemberEmail(resultSet.getString("email")),
-                    resultSet.getString("password"),
+                    new MemberPassword(resultSet.getString("password")),
                     Role.valueOf(resultSet.getString("role"))
             );
 
