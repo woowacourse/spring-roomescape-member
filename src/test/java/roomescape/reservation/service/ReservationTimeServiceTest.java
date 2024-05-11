@@ -111,12 +111,7 @@ class ReservationTimeServiceTest {
         Long memberId = memberRepository.save(new Member(1L, Role.MEMBER, new MemberName("카키"), "kaki@email.com", "1234"));
         Member member = memberRepository.findById(memberId).get();
 
-        Reservation reservation = new Reservation(
-                member,
-                LocalDate.now(),
-                theme,
-                reservationTime
-        );
+        Reservation reservation = new Reservation(member, LocalDate.now(), theme, reservationTime);
         reservationRepository.save(reservation);
 
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))

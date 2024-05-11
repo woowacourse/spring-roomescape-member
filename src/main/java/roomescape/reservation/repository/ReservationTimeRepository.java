@@ -51,19 +51,16 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, createReservationTimeRowMapper());
     }
 
-    public Optional<ReservationTime> findReservationInSameId(Long id) {
+    public List<ReservationTime> findReservationTimesThatReservationReferById(Long id) {
         String sql = """
-                select t.id, t.start_at
+                select *
                 from reservation_time t
                 join reservation r
                 on r.time_id = t.id
                 where t.id = ?
                 """;
-        try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, createReservationTimeRowMapper(), id));
-        } catch (DataAccessException exception) {
-            return Optional.empty();
-        }
+
+        return jdbcTemplate.query(sql, createReservationTimeRowMapper(), id);
     }
 
     public void delete(Long id) {

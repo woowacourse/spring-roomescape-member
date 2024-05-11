@@ -58,7 +58,7 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("해당 시간을 참조하는 Reservation이 있는지 찾는다.")
+    @DisplayName("예약시간 ID로 예약이 참조된 예약시간들을 찾는다.")
     void findReservationInSameIdTest() {
         Long themeId = themeRepository.save(
                 new Theme(
@@ -76,7 +76,7 @@ class ReservationTimeRepositoryTest {
         Member member = memberRepository.findById(memberId).get();
 
         reservationRepository.save(new Reservation(member, LocalDate.now(), theme, reservationTime));
-        boolean exist = reservationTimeRepository.findReservationInSameId(timeId).isPresent();
+        boolean exist = !reservationTimeRepository.findReservationTimesThatReservationReferById(timeId).isEmpty();
 
         assertThat(exist).isTrue();
     }
