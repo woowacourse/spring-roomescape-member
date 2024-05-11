@@ -1,5 +1,6 @@
 package roomescape.core.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Member;
@@ -33,6 +34,11 @@ public class MemberService {
                 request.getPassword(),
                 Role.MEMBER
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<Member> findAllRoleMembers() {
+        return memberRepository.findAllByRoleMember();
     }
 
     private void validateDuplicatedEmail(final String email) {

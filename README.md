@@ -82,6 +82,8 @@
 | GET         | `/themes/popular?period-day={periodDay}`          | 기간 별 인기 테마 목록 조회 |
 | POST        | `/themes`                                         | 테마 추가            |
 | DELETE      | `/themes/{id}`                                    | 테마 삭제            |
+| POST        | `/members`                                        | 회원 가입            |
+| GET         | `/members`                                        | 회원 목록 조회         |
 | POST        | `/login`                                          | 로그인              |
 | GET         | `/login/check`                                    | 로그인 인증 정보 조회     |
 | POST        | `/logout`                                         | 로그아웃             |

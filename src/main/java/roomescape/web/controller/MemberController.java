@@ -1,8 +1,13 @@
 package roomescape.web.controller;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +32,14 @@ public class MemberController {
         final MemberResponseDto response = new MemberResponseDto(member);
         return ResponseEntity.created(URI.create("/members/" + response.getId()))
                 .body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MemberResponseDto>> findAllRoleMembers() {
+        return memberService.findAllRoleMembers()
+                .stream()
+                .map(MemberResponseDto::new)
+                .collect(collectingAndThen(toList(), ResponseEntity::ok));
     }
 }
 

@@ -1,5 +1,6 @@
 package roomescape.web.repository;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Member;
+import roomescape.core.domain.Role;
 import roomescape.core.repository.MemberRepository;
 import roomescape.web.exception.NotFoundException;
 
@@ -41,11 +43,17 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public List<Member> findAllByRoleMember() {
+        final String query = "SELECT id, name, email, password, role FROM member WHERE role = ?";
+        return jdbcTemplate.query(query, getMemberRowMapper(), Role.MEMBER.name());
+    }
+
+    @Override
     public Member findByEmail(final String email) {
         try {
             final String query = "SELECT id, name, email, password, role FROM member WHERE email = ?";
             return jdbcTemplate.queryForObject(query, getMemberRowMapper(), email);
-        } catch (DataAccessException e) {
+        } catch (final DataAccessException e) {
             throw new NotFoundException("해당 이메일 사용자를 찾을 수 없습니다.");
         }
     }
