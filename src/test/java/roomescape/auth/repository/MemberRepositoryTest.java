@@ -1,9 +1,10 @@
 package roomescape.auth.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+import java.util.List;
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,16 @@ class MemberRepositoryTest {
     // When
     Optional<Member> member = memberRepository.findByEmail(email);
     // Then
-    Assertions.assertThat(member.isPresent()).isTrue();
+    assertThat(member.isPresent()).isTrue();
+  }
+
+  @DisplayName("가입한 모든 멤버를 조회한다.")
+  @Test
+  void findAll() {
+    // given
+    // when
+    List<Member> members = memberRepository.findAll();
+    //then
+    assertThat(members).hasSize(16);
   }
 }
