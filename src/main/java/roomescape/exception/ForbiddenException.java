@@ -25,4 +25,8 @@ public class ForbiddenException extends RuntimeException {
     public ProblemDetail getBody() {
         return body;
     }
+
+    public HttpStatus getHttpStatus() {
+        return STATUS;
+    }
 }

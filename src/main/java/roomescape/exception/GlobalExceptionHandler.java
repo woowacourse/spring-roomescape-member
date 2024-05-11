@@ -16,19 +16,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = IllegalUserRequestException.class)
     public ResponseEntity<ProblemDetail> handleIllegalUserRequestException(IllegalUserRequestException exception) {
         System.err.println(exception.getMessage());
-        return ResponseEntity.badRequest().body(exception.getBody());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.getBody());
     }
 
     @ExceptionHandler(value = AuthorizationException.class)
     public ResponseEntity<ProblemDetail> handleAuthorizationException(AuthorizationException exception) {
         System.err.println(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getBody());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.getBody());
     }
 
     @ExceptionHandler(value = ForbiddenException.class)
     public ResponseEntity<ProblemDetail> handleForbiddenException(ForbiddenException exception) {
         System.err.println(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getBody());
+        return ResponseEntity.status(exception.getHttpStatus()).body(exception.getBody());
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
