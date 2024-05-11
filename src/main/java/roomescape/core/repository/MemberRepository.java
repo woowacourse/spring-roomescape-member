@@ -11,4 +11,6 @@ public interface MemberRepository {
     List<Member> findAllByRoleMember();
 
     Member findByEmail(final String email);
+
+    Member findById(final Long memberId);
 }

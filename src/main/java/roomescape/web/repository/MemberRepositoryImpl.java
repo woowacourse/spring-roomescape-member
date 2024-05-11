@@ -58,6 +58,16 @@ public class MemberRepositoryImpl implements MemberRepository {
         }
     }
 
+    @Override
+    public Member findById(final Long memberId) {
+        try {
+            final String query = "SELECT id, name, email, password, role FROM member WHERE id = ?";
+            return jdbcTemplate.queryForObject(query, getMemberRowMapper(), memberId);
+        } catch (final DataAccessException e) {
+            throw new NotFoundException("해당 id 사용자를 찾을 수 없습니다.");
+        }
+    }
+
     private RowMapper<Member> getMemberRowMapper() {
         return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),

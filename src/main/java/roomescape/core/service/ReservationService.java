@@ -7,8 +7,10 @@ import roomescape.core.domain.Member;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
+import roomescape.core.dto.AdminReservationRequestDto;
 import roomescape.core.dto.LoginMemberDto;
 import roomescape.core.dto.ReservationRequestDto;
+import roomescape.core.repository.MemberRepository;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.core.repository.ThemeRepository;
@@ -19,19 +21,22 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             final ReservationRepository reservationRepository,
             final ReservationTimeRepository reservationTimeRepository,
-            final ThemeRepository themeRepository
+            final ThemeRepository themeRepository,
+            final MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Transactional
-    public Reservation create(final ReservationRequestDto request, final LoginMemberDto loginMember) {
+    public Reservation createByLoginMember(final ReservationRequestDto request, final LoginMemberDto loginMember) {
         final Member member = new Member(
                 loginMember.getId(),
                 loginMember.getName(),
@@ -39,6 +44,19 @@ public class ReservationService {
                 loginMember.getPassword(),
                 loginMember.getRole()
         );
+        final ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
+        final Theme theme = themeRepository.findById(request.getThemeId());
+        final Reservation reservation = new Reservation(member, request.getDate(), time, theme);
+
+        validateDateTimeIsNotPast(reservation, time);
+        validateDuplicatedReservation(reservation, time);
+        final Long id = reservationRepository.save(reservation);
+        return new Reservation(id, member, reservation.getDate(), time, theme);
+    }
+
+    @Transactional
+    public Reservation createByAdmin(final AdminReservationRequestDto request) {
+        final Member member = memberRepository.findById(request.getMemberId());
         final ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
         final Theme theme = themeRepository.findById(request.getThemeId());
         final Reservation reservation = new Reservation(member, request.getDate(), time, theme);

@@ -58,8 +58,87 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 회원이 예약을 생성한다.")
+    void createReservationByLoginMember() {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("date", TOMORROW_DATE);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .header("Cookie", loginTokenCookie)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("관리자가 예약을 생성한다.")
+    void createReservationByAdmin() {
+        final Map<String, Object> loginParams = new HashMap<>();
+        loginParams.put("email", "planet@gmail.com");
+        loginParams.put("password", "1111");
+
+        final String adminTokenCookie = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("date", TOMORROW_DATE);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("memberId", 1);
+
+        RestAssured.given().log().all()
+                .header("Cookie", adminTokenCookie)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("관리자 예약 생성 시, memberId가 존재하지 않으면 예외가 발생한다.")
+    void createReservationByAdminWithNotFoundMemberId() {
+        final Map<String, Object> loginParams = new HashMap<>();
+        loginParams.put("email", "planet@gmail.com");
+        loginParams.put("password", "1111");
+
+        final String adminTokenCookie = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        final Map<String, Object> params = new HashMap<>();
+        params.put("date", TOMORROW_DATE);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("memberId", 10);
+
+        RestAssured.given().log().all()
+                .header("Cookie", adminTokenCookie)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
     @DisplayName("예약 생성 시, 쿠키에 로그인 정보가 없으면 예외가 발생한다.")
-    void createReservationWithoutLogin() {
+    void createReservationByLoginMemberWithoutLogin() {
         final Map<String, Object> params = new HashMap<>();
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);

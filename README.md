@@ -72,8 +72,9 @@
 | GET         | `/login`                                          | 사용자 로그인 페이지      |
 | GET         | `/reservation`                                    | 사용자 예약 페이지       |
 | GET         | `/reservations`                                   | 예약 목록 조회         |
-| POST        | `/reservations`                                   | 예약 추가            | 
+| POST        | `/reservations`                                   | 사용자 예약 추가        | 
 | DELETE      | `/reservations/{id}`                              | 예약 삭제            |
+| POST        | `/admin/reservations`                             | 관리자 예약 추가        |
 | GET         | `/times`                                          | 시간 목록 조회         |
 | GET         | `/times/available?date={date}&theme-id={themeId}` | 예약 가능 시간 목록 조회   |
 | POST        | `/times`                                          | 시간 추가            | 
