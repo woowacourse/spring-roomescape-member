@@ -30,8 +30,8 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> save(@RequestBody @Valid ReservationMemberRequest request,
-                                                    @Auth Member member) {
-        ReservationRequest reservationRequest = new ReservationRequest(member.getName(), request.date(),
+                                                    @Auth String principal) {
+        ReservationRequest reservationRequest = new ReservationRequest(principal, request.date(),
                 request.timeId(), request.themeId());
 
         ReservationResponse reservationResponse = reservationService.save(reservationRequest);

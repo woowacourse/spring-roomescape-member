@@ -35,7 +35,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         String token = tokenProvider.extractToken(cookies)
                 .orElseThrow(AuthorizationException::new);
 
-        String email = tokenProvider.getEmail(token);
-        return memberService.findByEmail(email);
+        return tokenProvider.getEmail(token);
     }
 }

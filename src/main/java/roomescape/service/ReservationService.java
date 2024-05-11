@@ -36,7 +36,7 @@ public class ReservationService {
         ReservationTime requestedReservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
         Theme requestedTheme = themeRepository.getById(reservationRequest.themeId());
 
-        Reservation requestedReservation = reservationFactory.createReservation(reservationRequest.name(),
+        Reservation requestedReservation = reservationFactory.createReservation(reservationRequest.principal(),
                 reservationRequest.date(), requestedReservationTime, requestedTheme);
 
         rejectDuplicateReservation(requestedReservation);
