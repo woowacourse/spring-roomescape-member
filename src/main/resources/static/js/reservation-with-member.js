@@ -200,7 +200,7 @@ function applyFilter(event) {
   };
 
   fetch('/reservations/filter', { // 예약 검색 API 호출
-    method: 'POST',
+    method: 'GET',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(filterCondition)
   }).then(response => {

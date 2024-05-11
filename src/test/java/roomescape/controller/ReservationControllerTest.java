@@ -192,7 +192,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType("application/json")
                 .body(filterConditionDto)
-                .when().post("/reservations/filter")
+                .when().get("/reservations/filter")
                 .then().log().all()
                 .statusCode(200);
     }

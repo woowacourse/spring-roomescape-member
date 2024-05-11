@@ -48,7 +48,7 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
-    @PostMapping("/reservations/filter")
+    @GetMapping("/reservations/filter")
     public ResponseEntity<List<Reservation>> getFilteredReservations(@RequestBody FilterConditionDto filterConditionDto) {
         List<Reservation> reservations = reservationService.getFilteredReservations(filterConditionDto);
         return ResponseEntity.ok().body(reservations);
