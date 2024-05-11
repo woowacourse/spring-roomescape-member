@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.request.MemberSignUpRequest;
+import roomescape.controller.request.MemberSignUpWebRequest;
 import roomescape.controller.request.TokenWebRequest;
 import roomescape.controller.response.MemberWebResponse;
 import roomescape.service.JwtProvider;
@@ -58,7 +58,7 @@ public class MemberAuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<MemberWebResponse> signUp(@Valid @RequestBody MemberSignUpRequest request) {
+    public ResponseEntity<MemberWebResponse> signUp(@Valid @RequestBody MemberSignUpWebRequest request) {
         MemberAppResponse appResponse = memberAuthService.signUp(
             new MemberSignUpAppRequest(request.name(), request.email(), request.password()));
 

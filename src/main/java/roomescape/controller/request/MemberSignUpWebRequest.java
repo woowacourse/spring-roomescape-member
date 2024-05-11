@@ -3,7 +3,7 @@ package roomescape.controller.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record MemberSignUpRequest(
+public record MemberSignUpWebRequest(
     @NotBlank(message = "사용자 이름은 필수 입니다.")
     String name,
     @NotBlank(message = "이메일은 필수 입니다.")
