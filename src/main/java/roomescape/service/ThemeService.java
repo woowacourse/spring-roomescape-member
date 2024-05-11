@@ -27,6 +27,11 @@ public class ThemeService {
         return new ThemeResponses(themeResponses);
     }
 
+    public ThemeResponse findByThemeId(Long id) {
+        Theme theme = themeRepository.findByThemeId(id);
+        return ThemeResponse.from(theme);
+    }
+
     public ThemeResponses findHotThemesByDurationAndCount(LocalDate start,
                                                           LocalDate end,
                                                           Integer limit,

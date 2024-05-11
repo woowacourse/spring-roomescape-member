@@ -33,6 +33,14 @@ public class ThemeController {
                 .body(themeResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ThemeResponse> findBytThemeId(@PathVariable Long id) {
+        ThemeResponse themeResponse = themeService.findByThemeId(id);
+        return ResponseEntity.ok()
+                .body(themeResponse);
+    }
+
+
     @GetMapping("/hot")
     public ResponseEntity<ThemeResponses> findHotThemesByDurationAndCount(
             @RequestParam LocalDate start,
