@@ -1,6 +1,6 @@
 package roomescape.controller;
 
-import static roomescape.controller.TokenExtractor.extractTokenFromCookie;
+import static roomescape.controller.CookieHandler.extractTokenFromCookies;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -18,7 +18,6 @@ import roomescape.service.response.MemberAppResponse;
 public class MemberHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberAuthService memberAuthService;
-
     private final JwtProvider jwtProvider;
 
     public MemberHandlerMethodArgumentResolver(MemberAuthService memberAuthService, JwtProvider jwtProvider) {
@@ -42,7 +41,7 @@ public class MemberHandlerMethodArgumentResolver implements HandlerMethodArgumen
         if (request.getCookies() == null) {
             throw new IllegalArgumentException("쿠키가 없습니다. 다시 로그인 해주세요.");
         }
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = extractTokenFromCookies(request.getCookies());
         String email = jwtProvider.getPayload(token);
         MemberAppResponse appResponse = memberAuthService.findMemberByEmail(email);
 

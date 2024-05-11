@@ -1,6 +1,6 @@
 package roomescape.controller;
 
-import static roomescape.controller.TokenExtractor.extractTokenFromCookie;
+import static roomescape.controller.CookieHandler.extractTokenFromCookies;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,8 +15,8 @@ import roomescape.service.response.MemberAppResponse;
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
     public static final String ADMIN = "ADMIN";
-    private final MemberAuthService memberAuthService;
 
+    private final MemberAuthService memberAuthService;
     private final JwtProvider jwtProvider;
 
     public CheckLoginInterceptor(MemberAuthService memberAuthService, JwtProvider jwtProvider) {
@@ -29,7 +29,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         if (request.getCookies() == null) {
             throw new IllegalArgumentException("쿠키가 없습니다. 다시 로그인 해주세요.");
         }
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = extractTokenFromCookies(request.getCookies());
         String email = jwtProvider.getPayload(token);
         MemberAppResponse appResponse = memberAuthService.findMemberByEmail(email);
         if (token == null || !appResponse.role().equals(ADMIN)) {

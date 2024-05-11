@@ -1,8 +1,8 @@
 package roomescape.controller.api;
 
-import static roomescape.controller.TokenExtractor.extractTokenFromCookie;
+import static roomescape.controller.CookieHandler.createCookieByToken;
+import static roomescape.controller.CookieHandler.extractTokenFromCookies;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -37,10 +37,7 @@ public class MemberAuthController {
     public ResponseEntity<Void> login(@Valid @RequestBody TokenWebRequest request,
                                       HttpServletResponse response) {
         String token = jwtProvider.createToken(new TokenAppRequest(request.email(), request.password()));
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        response.addCookie(createCookieByToken(token));
         return ResponseEntity.ok().build();
     }
 
@@ -49,7 +46,7 @@ public class MemberAuthController {
         if (request.getCookies() == null) {
             throw new IllegalArgumentException("쿠키가 없습니다. 다시 로그인 해주세요.");
         }
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = extractTokenFromCookies(request.getCookies());
         String email = jwtProvider.getPayload(token);
         MemberAppResponse appResponse = memberAuthService.findMemberByEmail(email);
         MemberWebResponse response = new MemberWebResponse(appResponse.id(), appResponse.name(), appResponse.role());
@@ -68,12 +65,9 @@ public class MemberAuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = extractTokenFromCookies(request.getCookies());
         String expiredToken = jwtProvider.createExpiredToken(token);
-        Cookie cookie = new Cookie("token", expiredToken);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
+        response.addCookie(createCookieByToken(expiredToken));
         return ResponseEntity.ok().build();
     }
 
