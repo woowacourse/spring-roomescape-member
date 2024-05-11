@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.annotaions.Login;
 import roomescape.member.dto.LoginMember;
-import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.dto.ReservationSearchCondRequest;
 import roomescape.reservation.service.ReservationService;
 
@@ -44,7 +44,7 @@ public class ReservationApiController {
         return ResponseEntity.ok(reservationResponses);
     }
 
-    @PostMapping( path = {"/reservations", "/admin/reservations"})
+    @PostMapping(path = {"/reservations", "/admin/reservations"})
     public ResponseEntity<ReservationResponse> createMemberReservation(
             @Valid @RequestBody ReservationSaveRequest reservationSaveRequest,
             @Login LoginMember loginMember

@@ -15,7 +15,6 @@ import roomescape.member.domain.MemberName;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;

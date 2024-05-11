@@ -9,6 +9,7 @@ import roomescape.reservation.domain.Theme;
 
 public class ReservationSaveRequest {
 
+    @NotNull
     private Long memberId;
 
     @NotNull
@@ -23,23 +24,14 @@ public class ReservationSaveRequest {
     public ReservationSaveRequest() {
     }
 
-    public ReservationSaveRequest(
-            Long memberId,
-            LocalDate date,
-            Long themeId,
-            Long timeId
-    ) {
-        this.memberId = memberId;
+    public ReservationSaveRequest(LocalDate date, Long themeId, Long timeId) {
         this.date = date;
         this.themeId = themeId;
         this.timeId = timeId;
     }
 
-    public ReservationSaveRequest(
-            LocalDate date,
-            Long themeId,
-            Long timeId
-    ) {
+    public ReservationSaveRequest(Long memberId, LocalDate date, Long themeId, Long timeId) {
+        this.memberId = memberId;
         this.date = date;
         this.themeId = themeId;
         this.timeId = timeId;

@@ -1,6 +1,5 @@
 package roomescape.member.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.config.DatabaseCleaner;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberName;
-import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberSignUpRequest;
 import roomescape.member.repository.MemberRepository;
 

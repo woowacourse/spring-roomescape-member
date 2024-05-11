@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.repository.MemberRepository;
-import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.dto.ReservationSearchCondRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
@@ -42,10 +42,7 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    private Reservation getValidatedReservation(
-            ReservationSaveRequest reservationSaveRequest,
-            LoginMember loginMember
-    ) {
+    private Reservation getValidatedReservation(ReservationSaveRequest reservationSaveRequest, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationSaveRequest.getTimeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
