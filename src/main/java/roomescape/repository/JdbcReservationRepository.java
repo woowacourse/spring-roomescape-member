@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.service.dto.ReservationSearchParamsDto;
+import roomescape.service.dto.ReservationSearchParams;
 
 @Repository
 public class JdbcReservationRepository {
@@ -39,7 +39,7 @@ public class JdbcReservationRepository {
         this.rowMapper = rowMapper;
     }
 
-    public List<Reservation> findReservationsWithParams(ReservationSearchParamsDto requestDto) {
+    public List<Reservation> findReservationsWithParams(ReservationSearchParams requestDto) {
         String sql = RESERVATION_TABLE;
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
 

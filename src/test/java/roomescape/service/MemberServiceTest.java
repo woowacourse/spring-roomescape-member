@@ -17,8 +17,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.domain.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.CreateMemberRequestDto;
-import roomescape.service.dto.LoginMemberRequestDto;
+import roomescape.service.dto.CreateMemberRequest;
+import roomescape.service.dto.LoginMemberRequest;
 import roomescape.service.exception.MemberNotFoundException;
 
 @TestExecutionListeners(value = {
@@ -54,7 +54,7 @@ class MemberServiceTest {
     void throw_exception_when_create_duplicated_member_email() {
         memberRepository.insertMember(member1);
 
-        CreateMemberRequestDto requestDto = new CreateMemberRequestDto("t1@t1.com", "11", "워니");
+        CreateMemberRequest requestDto = new CreateMemberRequest("t1@t1.com", "11", "워니");
 
         assertThatThrownBy(() -> memberService.signup(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -64,7 +64,7 @@ class MemberServiceTest {
     @DisplayName("회원을 정상적으로 생성한다.")
     @Test
     void success_signup_member() {
-        CreateMemberRequestDto requestDto = new CreateMemberRequestDto("t1@t1.com", "11", "워니");
+        CreateMemberRequest requestDto = new CreateMemberRequest("t1@t1.com", "11", "워니");
 
         assertThatNoException()
                 .isThrownBy(() -> memberService.signup(requestDto));
@@ -73,7 +73,7 @@ class MemberServiceTest {
     @DisplayName("로그인 시 저장되어있지 않은 이메일이면 에러를 발생시킨다.")
     @Test
     void throw_exception_when_login_not_saved__member_email() {
-        LoginMemberRequestDto requestDto = new LoginMemberRequestDto("t4@t4.com", "1212");
+        LoginMemberRequest requestDto = new LoginMemberRequest("t4@t4.com", "1212");
 
         assertThatThrownBy(() -> memberService.login(requestDto))
                 .isInstanceOf(MemberNotFoundException.class)
@@ -85,7 +85,7 @@ class MemberServiceTest {
     void throw_exception_when_is_mismatched_password() {
         memberRepository.insertMember(member3);
 
-        LoginMemberRequestDto requestDto = new LoginMemberRequestDto("t3@t3.com", "1212");
+        LoginMemberRequest requestDto = new LoginMemberRequest("t3@t3.com", "1212");
 
         assertThatThrownBy(() -> memberService.login(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -97,7 +97,7 @@ class MemberServiceTest {
     void success_login() {
         Member savedMember = memberRepository.insertMember(member3);
         String expectedToken = jwtService.generateToken(savedMember);
-        LoginMemberRequestDto requestDto = new LoginMemberRequestDto("t3@t3.com", "125");
+        LoginMemberRequest requestDto = new LoginMemberRequest("t3@t3.com", "125");
 
         String actualToken = memberService.login(requestDto);
 

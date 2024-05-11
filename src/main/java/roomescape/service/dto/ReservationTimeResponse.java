@@ -2,17 +2,17 @@ package roomescape.service.dto;
 
 import roomescape.domain.ReservationTime;
 
-public class ReservationTimeResponseDto {
+public class ReservationTimeResponse {
 
     private final long id;
     private final String startAt;
 
-    public ReservationTimeResponseDto(long id, String startAt) {
+    public ReservationTimeResponse(long id, String startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTimeResponseDto(ReservationTime reservationTime) {
+    public ReservationTimeResponse(ReservationTime reservationTime) {
         this(reservationTime.getId(), reservationTime.getStartAt().toString());
     }
 

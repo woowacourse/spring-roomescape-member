@@ -5,22 +5,22 @@ import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import java.util.List;
 import roomescape.domain.ReservationTimeStatuses;
 
-public class AvailableTimeResponseDtos {
+public class AvailableTimeResponses {
 
-    private final List<AvailableTimeResponseDto> availableTimeResponses;
+    private final List<AvailableTimeResponse> availableTimeResponses;
 
     @JsonCreator(mode = Mode.PROPERTIES)
-    public AvailableTimeResponseDtos(List<AvailableTimeResponseDto> availableTimeResponses) {
+    public AvailableTimeResponses(List<AvailableTimeResponse> availableTimeResponses) {
         this.availableTimeResponses = availableTimeResponses;
     }
 
-    public AvailableTimeResponseDtos(ReservationTimeStatuses reservationTimeStatuses) {
+    public AvailableTimeResponses(ReservationTimeStatuses reservationTimeStatuses) {
         this(reservationTimeStatuses.getTimeStatuses().stream()
-                .map(AvailableTimeResponseDto::new)
+                .map(AvailableTimeResponse::new)
                 .toList());
     }
 
-    public List<AvailableTimeResponseDto> getAvailableTimeResponses() {
+    public List<AvailableTimeResponse> getAvailableTimeResponses() {
         return availableTimeResponses;
     }
 }

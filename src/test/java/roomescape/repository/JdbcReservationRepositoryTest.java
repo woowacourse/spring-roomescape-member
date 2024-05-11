@@ -24,7 +24,7 @@ import roomescape.repository.rowmapper.MemberRowMapper;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 import roomescape.repository.rowmapper.ThemeRowMapper;
-import roomescape.service.dto.ReservationSearchParamsDto;
+import roomescape.service.dto.ReservationSearchParams;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -89,14 +89,14 @@ class JdbcReservationRepositoryTest {
         reservationRepository.insertReservation(reservation1);
         reservationRepository.insertReservation(reservation2);
 
-        ReservationSearchParamsDto params1 = new ReservationSearchParamsDto(null, null, null, null);
+        ReservationSearchParams params1 = new ReservationSearchParams(null, null, null, null);
         List<Reservation> reservations1 = reservationRepository.findReservationsWithParams(params1);
 
-        ReservationSearchParamsDto params2 = new ReservationSearchParamsDto(1L, null, null, null);
+        ReservationSearchParams params2 = new ReservationSearchParams(1L, null, null, null);
         List<Reservation> reservations2 = reservationRepository.findReservationsWithParams(params2);
 
         LocalDate from = LocalDate.of(2024, 04, 25);
-        ReservationSearchParamsDto params3 = new ReservationSearchParamsDto(null, null, from, null);
+        ReservationSearchParams params3 = new ReservationSearchParams(null, null, from, null);
         List<Reservation> reservations3 = reservationRepository.findReservationsWithParams(params3);
 
         assertAll(
@@ -126,7 +126,7 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("예약을 id로 삭제한다.")
     void delete_reservation_by_id() {
-        ReservationSearchParamsDto params = new ReservationSearchParamsDto(null, null, null, null);
+        ReservationSearchParams params = new ReservationSearchParams(null, null, null, null);
 
         reservationRepository.insertReservation(reservation1);
         int beforeSize = reservationRepository.findReservationsWithParams(params).size();

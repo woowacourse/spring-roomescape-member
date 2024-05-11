@@ -3,25 +3,25 @@ package roomescape.service.dto;
 import roomescape.domain.MemberInfo;
 import roomescape.domain.Reservation;
 
-public class MemberResponseDto {
+public class MemberResponse {
 
     private final long id;
     private final String name;
 
-    public MemberResponseDto(long id, String name) {
+    public MemberResponse(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public MemberResponseDto(MemberInfo memberInfo) {
+    public MemberResponse(MemberInfo memberInfo) {
         this(memberInfo.getId(), memberInfo.getName());
     }
 
-    public MemberResponseDto(LoginMember member) {
+    public MemberResponse(LoginMember member) {
         this(member.getId(), member.getName());
     }
 
-    public MemberResponseDto(Reservation reservation) {
+    public MemberResponse(Reservation reservation) {
         this(reservation.getMemberId(), reservation.getMemberName());
     }
 

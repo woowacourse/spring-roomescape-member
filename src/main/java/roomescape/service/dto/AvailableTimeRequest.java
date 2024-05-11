@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import roomescape.service.dto.validator.DateFormatConstraint;
 
-public class AvailableTimeRequestDto {
+public class AvailableTimeRequest {
 
     @DateFormatConstraint
     private final String date;
@@ -13,7 +13,7 @@ public class AvailableTimeRequestDto {
     @Positive(message = "테마 아이디는 자연수여야 합니다. ${validatedValue}은 사용할 수 없습니다.")
     private final Long themeId;
 
-    public AvailableTimeRequestDto(String date, Long themeId) {
+    public AvailableTimeRequest(String date, Long themeId) {
         this.date = date;
         this.themeId = themeId;
     }

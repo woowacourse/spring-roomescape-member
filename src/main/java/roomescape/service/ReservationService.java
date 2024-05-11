@@ -7,9 +7,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
-import roomescape.service.dto.CreateReservationDto;
+import roomescape.service.dto.CreateReservation;
 import roomescape.service.dto.ReservationResponseDto;
-import roomescape.service.dto.ReservationSearchParamsDto;
+import roomescape.service.dto.ReservationSearchParams;
 
 @Service
 public class ReservationService {
@@ -23,14 +23,14 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationResponseDto> findAllReservations(ReservationSearchParamsDto requestDto) {
+    public List<ReservationResponseDto> findAllReservations(ReservationSearchParams requestDto) {
         return reservationRepository.findReservationsWithParams(requestDto)
                 .stream()
                 .map(ReservationResponseDto::new)
                 .toList();
     }
 
-    public ReservationResponseDto createReservation(CreateReservationDto reservationInfo) {
+    public ReservationResponseDto createReservation(CreateReservation reservationInfo) {
         Reservation reservation = reservationInfo.toReservation();
         if (!reservationTimeRepository.isTimeExistsByTimeId(reservation.getTimeId())) {
             throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");

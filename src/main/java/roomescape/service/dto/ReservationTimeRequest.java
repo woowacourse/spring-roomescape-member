@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import roomescape.domain.ReservationTime;
 import roomescape.service.dto.validator.TimeFormatConstraint;
 
-public class ReservationTimeRequestDto {
+public class ReservationTimeRequest {
 
     @TimeFormatConstraint
     private final String startAt;
 
     @JsonCreator(mode = Mode.PROPERTIES)
-    public ReservationTimeRequestDto(String startAt) {
+    public ReservationTimeRequest(String startAt) {
         this.startAt = startAt;
     }
 

@@ -1,11 +1,11 @@
 package roomescape.service.dto;
 
-public class LoginMemberRequestDto {
+public class LoginMemberRequest {
 
     private final String email;
     private final String password;
 
-    public LoginMemberRequestDto(String email, String password) {
+    public LoginMemberRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }

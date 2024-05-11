@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.resolver.AuthenticationPrincipal;
 import roomescape.service.MemberService;
-import roomescape.service.dto.CreateMemberRequestDto;
+import roomescape.service.dto.CreateMemberRequest;
 import roomescape.service.dto.LoginMember;
-import roomescape.service.dto.LoginMemberRequestDto;
-import roomescape.service.dto.MemberResponseDto;
+import roomescape.service.dto.LoginMemberRequest;
+import roomescape.service.dto.MemberResponse;
 
 @RestController
 public class MemberApiController {
@@ -28,12 +28,12 @@ public class MemberApiController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/members/signup")
-    public void signup(@Valid @RequestBody CreateMemberRequestDto requestDto) {
+    public void signup(@Valid @RequestBody CreateMemberRequest requestDto) {
         memberService.signup(requestDto);
     }
 
     @PostMapping("/members/login")
-    public void login(@Valid @RequestBody LoginMemberRequestDto requestDto, HttpServletResponse response) {
+    public void login(@Valid @RequestBody LoginMemberRequest requestDto, HttpServletResponse response) {
         String token = memberService.login(requestDto);
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
@@ -43,8 +43,8 @@ public class MemberApiController {
     }
 
     @GetMapping("/members/login/check")
-    public MemberResponseDto checkLogin(@AuthenticationPrincipal LoginMember loginMember) {
-        return new MemberResponseDto(loginMember);
+    public MemberResponse checkLogin(@AuthenticationPrincipal LoginMember loginMember) {
+        return new MemberResponse(loginMember);
     }
 
     @PostMapping("/members/logout")
@@ -56,7 +56,7 @@ public class MemberApiController {
     }
 
     @GetMapping("/admin/members")
-    public List<MemberResponseDto> findAllMembers() {
+    public List<MemberResponse> findAllMembers() {
         return memberService.findAllMemberNames();
     }
 }

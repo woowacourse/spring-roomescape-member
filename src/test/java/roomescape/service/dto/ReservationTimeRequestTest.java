@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class ReservationTimeRequestDtoTest {
+class ReservationTimeRequestTest {
 
     private Validator validator;
 
@@ -26,9 +26,9 @@ class ReservationTimeRequestDtoTest {
     @ParameterizedTest
     @ValueSource(strings = {"23", "25:00", "3:3", "3시 25분", "03:60"})
     void throw_exception_when_invalid_time_format_input(String startAt) {
-        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto(startAt);
+        ReservationTimeRequest requestDto = new ReservationTimeRequest(startAt);
 
-        Set<ConstraintViolation<ReservationTimeRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<ReservationTimeRequest>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("시간 입력 형식이 올바르지 않습니다. ex) 13:40");
@@ -38,9 +38,9 @@ class ReservationTimeRequestDtoTest {
     @ParameterizedTest
     @ValueSource(strings = {"00:00", "23:59", "05:05"})
     void create_success(String startAt) {
-        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto(startAt);
+        ReservationTimeRequest requestDto = new ReservationTimeRequest(startAt);
 
-        Set<ConstraintViolation<ReservationTimeRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<ReservationTimeRequest>> violations = validator.validate(requestDto);
 
         assertThat(violations.size()).isEqualTo(0);
     }

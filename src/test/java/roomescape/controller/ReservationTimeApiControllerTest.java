@@ -17,13 +17,13 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.domain.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.JwtService;
-import roomescape.service.dto.AdminReservationRequestDto;
-import roomescape.service.dto.AvailableTimeResponseDto;
-import roomescape.service.dto.AvailableTimeResponseDtos;
-import roomescape.service.dto.CreateMemberRequestDto;
-import roomescape.service.dto.ReservationTimeRequestDto;
-import roomescape.service.dto.ReservationTimeResponseDto;
-import roomescape.service.dto.ThemeRequestDto;
+import roomescape.service.dto.AdminReservationRequest;
+import roomescape.service.dto.AvailableTimeResponse;
+import roomescape.service.dto.AvailableTimeResponses;
+import roomescape.service.dto.CreateMemberRequest;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.ThemeRequest;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -47,14 +47,14 @@ class ReservationTimeApiControllerTest {
         adminToken = jwtService.generateToken(admin);
     }
 
-    private final ReservationTimeRequestDto reservationTimeCreate1 = new ReservationTimeRequestDto("10:00");
-    private final ReservationTimeRequestDto reservationTimeCreate2 = new ReservationTimeRequestDto("12:00");
+    private final ReservationTimeRequest reservationTimeCreate1 = new ReservationTimeRequest("10:00");
+    private final ReservationTimeRequest reservationTimeCreate2 = new ReservationTimeRequest("12:00");
 
-    private final ThemeRequestDto themeCreate1 = new ThemeRequestDto("공포", "공포는 무서워", "hi.jpg");
+    private final ThemeRequest themeCreate1 = new ThemeRequest("공포", "공포는 무서워", "hi.jpg");
 
-    private final CreateMemberRequestDto memberCreate1 = new CreateMemberRequestDto("t1@t1.com", "123", "재즈");
+    private final CreateMemberRequest memberCreate1 = new CreateMemberRequest("t1@t1.com", "123", "재즈");
 
-    private final AdminReservationRequestDto reservationCreate1 = new AdminReservationRequestDto(1L, 1L,
+    private final AdminReservationRequest reservationCreate1 = new AdminReservationRequest(1L, 1L,
             "2100-01-01", 1L);
 
     private void create(String path, Object param) {
@@ -90,15 +90,15 @@ class ReservationTimeApiControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        List<ReservationTimeResponseDto> actualResponse = RestAssured.given().log().all()
+        List<ReservationTimeResponse> actualResponse = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
                 .jsonPath()
-                .getList(".", ReservationTimeResponseDto.class);
+                .getList(".", ReservationTimeResponse.class);
 
-        ReservationTimeResponseDto expectedResponse = new ReservationTimeResponseDto(1L, "10:00");
+        ReservationTimeResponse expectedResponse = new ReservationTimeResponse(1L, "10:00");
 
         assertThat(actualResponse)
                 .usingRecursiveComparison()
@@ -121,20 +121,20 @@ class ReservationTimeApiControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        AvailableTimeResponseDtos actualResponse = RestAssured.given().log().all()
+        AvailableTimeResponses actualResponse = RestAssured.given().log().all()
                 .when().get("/times/available?date=2100-01-01&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
                 .jsonPath()
-                .getObject(".", AvailableTimeResponseDtos.class);
+                .getObject(".", AvailableTimeResponses.class);
 
-        AvailableTimeResponseDto availableTimeResponseDto1 = new AvailableTimeResponseDto(
-                new ReservationTimeResponseDto(1L, "10:00"), true);
-        AvailableTimeResponseDto availableTimeResponseDto2 = new AvailableTimeResponseDto(
-                new ReservationTimeResponseDto(2L, "12:00"), false);
-        AvailableTimeResponseDtos expectedResponse = new AvailableTimeResponseDtos(List.of(
-                availableTimeResponseDto1, availableTimeResponseDto2
+        AvailableTimeResponse availableTimeResponse1 = new AvailableTimeResponse(
+                new ReservationTimeResponse(1L, "10:00"), true);
+        AvailableTimeResponse availableTimeResponse2 = new AvailableTimeResponse(
+                new ReservationTimeResponse(2L, "12:00"), false);
+        AvailableTimeResponses expectedResponse = new AvailableTimeResponses(List.of(
+                availableTimeResponse1, availableTimeResponse2
         ));
 
         assertThat(actualResponse)

@@ -3,7 +3,7 @@ package roomescape.service.dto;
 import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.Theme;
 
-public class ThemeRequestDto {
+public class ThemeRequest {
 
     @NotBlank(message = "이름은 반드시 입력되어야 합니다.")
     private final String name;
@@ -14,7 +14,7 @@ public class ThemeRequestDto {
     @NotBlank(message = "썸네일은 반드시 입력되어야 합니다.")
     private final String thumbnail;
 
-    public ThemeRequestDto(String name, String description, String thumbnail) {
+    public ThemeRequest(String name, String description, String thumbnail) {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;

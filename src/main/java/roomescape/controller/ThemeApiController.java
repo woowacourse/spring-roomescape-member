@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.PopularThemeRequestDto;
-import roomescape.service.dto.ThemeRequestDto;
-import roomescape.service.dto.ThemeResponseDto;
+import roomescape.service.dto.PopularThemeRequest;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @RestController
 public class ThemeApiController {
@@ -26,20 +26,20 @@ public class ThemeApiController {
     }
 
     @GetMapping("/themes")
-    public List<ThemeResponseDto> findAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         return themeService.findAllThemes();
     }
 
     @GetMapping("/themes/popular")
-    public List<ThemeResponseDto> findTopBookedThemes(@RequestParam(name = "start-date") String startDate,
-                                                      @RequestParam(name = "end-date") String endDate,
-                                                      @RequestParam Integer count) {
-        return themeService.findTopBookedThemes(new PopularThemeRequestDto(startDate, endDate, count));
+    public List<ThemeResponse> findTopBookedThemes(@RequestParam(name = "start-date") String startDate,
+                                                   @RequestParam(name = "end-date") String endDate,
+                                                   @RequestParam Integer count) {
+        return themeService.findTopBookedThemes(new PopularThemeRequest(startDate, endDate, count));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/themes")
-    public ThemeResponseDto createTheme(@Valid @RequestBody ThemeRequestDto requestDto) {
+    public ThemeResponse createTheme(@Valid @RequestBody ThemeRequest requestDto) {
         return themeService.createTheme(requestDto);
     }
 

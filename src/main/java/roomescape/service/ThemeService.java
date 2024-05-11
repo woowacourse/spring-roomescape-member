@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcThemeRepository;
-import roomescape.service.dto.PopularThemeRequestDto;
-import roomescape.service.dto.ThemeRequestDto;
-import roomescape.service.dto.ThemeResponseDto;
+import roomescape.service.dto.PopularThemeRequest;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -20,25 +20,25 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ThemeResponseDto> findAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         return themeRepository.findAllThemes()
                 .stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
-    public List<ThemeResponseDto> findTopBookedThemes(PopularThemeRequestDto requestDto) {
+    public List<ThemeResponse> findTopBookedThemes(PopularThemeRequest requestDto) {
         List<Theme> topBookedThemes = themeRepository.findTopThemesDescendingByReservationCount(
                 requestDto.getStartDate(), requestDto.getEndDate(), requestDto.getCount());
 
         return topBookedThemes.stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
-    public ThemeResponseDto createTheme(ThemeRequestDto requestDto) {
+    public ThemeResponse createTheme(ThemeRequest requestDto) {
         Theme theme = themeRepository.insertTheme(requestDto.toTheme());
-        return new ThemeResponseDto(theme);
+        return new ThemeResponse(theme);
     }
 
     public void deleteTheme(long id) {

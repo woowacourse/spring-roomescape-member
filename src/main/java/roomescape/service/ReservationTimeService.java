@@ -6,10 +6,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeStatuses;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
-import roomescape.service.dto.AvailableTimeRequestDto;
-import roomescape.service.dto.AvailableTimeResponseDtos;
-import roomescape.service.dto.ReservationTimeRequestDto;
-import roomescape.service.dto.ReservationTimeResponseDto;
+import roomescape.service.dto.AvailableTimeRequest;
+import roomescape.service.dto.AvailableTimeResponses;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -23,29 +23,29 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ReservationTimeResponseDto> findAllReservationTimes() {
+    public List<ReservationTimeResponse> findAllReservationTimes() {
         return reservationTimeRepository.findAllReservationTimes()
                 .stream()
-                .map(ReservationTimeResponseDto::new)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 
-    public AvailableTimeResponseDtos findAvailableReservationTimes(AvailableTimeRequestDto requestDto) {
+    public AvailableTimeResponses findAvailableReservationTimes(AvailableTimeRequest requestDto) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationTimeRepository.findReservedTimeByThemeAndDate(
                 requestDto.getDate(), requestDto.getThemeId());
 
         ReservationTimeStatuses reservationStatuses = new ReservationTimeStatuses(allTimes, bookedTimes);
-        return new AvailableTimeResponseDtos(reservationStatuses);
+        return new AvailableTimeResponses(reservationStatuses);
     }
 
-    public ReservationTimeResponseDto createReservationTime(ReservationTimeRequestDto requestDto) {
+    public ReservationTimeResponse createReservationTime(ReservationTimeRequest requestDto) {
         ReservationTime reservationTime = requestDto.toReservationTime();
         if (reservationTimeRepository.isTimeExistsByStartTime(reservationTime.getStartAt().toString())) {
             throw new IllegalArgumentException("중복된 시간을 입력할 수 없습니다.");
         }
         ReservationTime savedTime = reservationTimeRepository.insertReservationTime(reservationTime);
-        return new ReservationTimeResponseDto(savedTime);
+        return new ReservationTimeResponse(savedTime);
     }
 
     public void deleteReservationTime(long id) {

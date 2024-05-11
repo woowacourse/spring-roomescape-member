@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-class ThemeRequestDtoTest {
+class ThemeRequestTest {
 
     private Validator validator;
 
@@ -26,9 +26,9 @@ class ThemeRequestDtoTest {
     @ParameterizedTest
     @NullAndEmptySource
     void throw_exception_when_null_name_input(String name) {
-        ThemeRequestDto requestDto = new ThemeRequestDto(name, "하이", "hi.jpg");
+        ThemeRequest requestDto = new ThemeRequest(name, "하이", "hi.jpg");
 
-        Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<ThemeRequest>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("이름은 반드시 입력되어야 합니다.");
@@ -38,9 +38,9 @@ class ThemeRequestDtoTest {
     @ParameterizedTest
     @NullAndEmptySource
     void throw_exception_when_null_description_input(String description) {
-        ThemeRequestDto requestDto = new ThemeRequestDto("재즈의 신나는 프로그래밍", description, "hi.jpg");
+        ThemeRequest requestDto = new ThemeRequest("재즈의 신나는 프로그래밍", description, "hi.jpg");
 
-        Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<ThemeRequest>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("설명은 반드시 입력되어야 합니다.");
@@ -50,9 +50,9 @@ class ThemeRequestDtoTest {
     @ParameterizedTest
     @NullAndEmptySource
     void throw_exception_when_null_thumbnail_input(String thumbnail) {
-        ThemeRequestDto requestDto = new ThemeRequestDto("재즈의 신나는 프로그래밍", "하이", thumbnail);
+        ThemeRequest requestDto = new ThemeRequest("재즈의 신나는 프로그래밍", "하이", thumbnail);
 
-        Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(requestDto);
+        Set<ConstraintViolation<ThemeRequest>> violations = validator.validate(requestDto);
 
         assertThat(violations).extracting("message").
                 containsOnly("썸네일은 반드시 입력되어야 합니다.");

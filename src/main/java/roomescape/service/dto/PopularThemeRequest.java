@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import roomescape.service.dto.validator.DateFormatConstraint;
 
-public class PopularThemeRequestDto {
+public class PopularThemeRequest {
 
     @DateFormatConstraint
     private final String startDate;
@@ -16,7 +16,7 @@ public class PopularThemeRequestDto {
     @Positive(message = "불러올 테마 개수는 자연수여야 합니다. ${validatedValue}은 사용할 수 없습니다.")
     private final Integer count;
 
-    public PopularThemeRequestDto(String startDate, String endDate, Integer count) {
+    public PopularThemeRequest(String startDate, String endDate, Integer count) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.count = count;

@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.resolver.AuthenticationPrincipal;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.AdminReservationRequestDto;
-import roomescape.service.dto.CreateReservationDto;
+import roomescape.service.dto.AdminReservationRequest;
+import roomescape.service.dto.CreateReservation;
 import roomescape.service.dto.LoginMember;
-import roomescape.service.dto.MemberReservationRequestDto;
+import roomescape.service.dto.MemberReservationRequest;
 import roomescape.service.dto.ReservationResponseDto;
-import roomescape.service.dto.ReservationSearchParamsDto;
+import roomescape.service.dto.ReservationSearchParams;
 
 @RestController
 public class ReservationApiController {
@@ -38,21 +38,21 @@ public class ReservationApiController {
             @RequestParam(name = "start-date", required = false) LocalDate dateFrom,
             @RequestParam(name = "end-date", required = false) LocalTime dateTo) {
 
-        ReservationSearchParamsDto requestDto = new ReservationSearchParamsDto(memberId, themeId, dateFrom, dateTo);
+        ReservationSearchParams requestDto = new ReservationSearchParams(memberId, themeId, dateFrom, dateTo);
         return reservationService.findAllReservations(requestDto);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/reservations")
     public ReservationResponseDto createReservationMember(@AuthenticationPrincipal LoginMember loginMember,
-                                                          @Valid @RequestBody MemberReservationRequestDto requestDto) {
-        return reservationService.createReservation(new CreateReservationDto(loginMember, requestDto));
+                                                          @Valid @RequestBody MemberReservationRequest requestDto) {
+        return reservationService.createReservation(new CreateReservation(loginMember, requestDto));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/reservations")
     public ReservationResponseDto createReservationAdmin(
-            @Valid @RequestBody AdminReservationRequestDto reservationDto) {
+            @Valid @RequestBody AdminReservationRequest reservationDto) {
         return reservationService.createReservation(reservationDto.toCreateReservation());
     }
 

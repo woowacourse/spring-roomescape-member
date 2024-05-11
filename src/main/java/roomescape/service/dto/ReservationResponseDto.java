@@ -5,13 +5,13 @@ import roomescape.domain.Reservation;
 public class ReservationResponseDto {
 
     private final long id;
-    private final MemberResponseDto member;
-    private final ThemeResponseDto theme;
+    private final MemberResponse member;
+    private final ThemeResponse theme;
     private final String date;
-    private final ReservationTimeResponseDto time;
+    private final ReservationTimeResponse time;
 
-    public ReservationResponseDto(long id, MemberResponseDto member, ThemeResponseDto theme, String date,
-                                  ReservationTimeResponseDto time) {
+    public ReservationResponseDto(long id, MemberResponse member, ThemeResponse theme, String date,
+                                  ReservationTimeResponse time) {
         this.id = id;
         this.member = member;
         this.theme = theme;
@@ -21,21 +21,21 @@ public class ReservationResponseDto {
 
     public ReservationResponseDto(Reservation reservation) {
         this(reservation.getId(),
-                new MemberResponseDto(reservation),
-                new ThemeResponseDto(reservation.getTheme()),
+                new MemberResponse(reservation),
+                new ThemeResponse(reservation.getTheme()),
                 reservation.getDate().toString(),
-                new ReservationTimeResponseDto(reservation.getReservationTime()));
+                new ReservationTimeResponse(reservation.getReservationTime()));
     }
 
     public long getId() {
         return id;
     }
 
-    public MemberResponseDto getMember() {
+    public MemberResponse getMember() {
         return member;
     }
 
-    public ThemeResponseDto getTheme() {
+    public ThemeResponse getTheme() {
         return theme;
     }
 
@@ -43,7 +43,7 @@ public class ReservationResponseDto {
         return date;
     }
 
-    public ReservationTimeResponseDto getTime() {
+    public ReservationTimeResponse getTime() {
         return time;
     }
 }

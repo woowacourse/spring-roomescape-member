@@ -24,7 +24,7 @@ import roomescape.repository.JdbcMemberRepository;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.repository.JdbcThemeRepository;
-import roomescape.service.dto.CreateReservationDto;
+import roomescape.service.dto.CreateReservation;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -67,7 +67,7 @@ class ReservationServiceTest {
         memberRepository.insertMember(member);
         themeRepository.insertTheme(theme);
 
-        CreateReservationDto reservationDto = new CreateReservationDto(1L, 1L, "2025-11-30", 1L);
+        CreateReservation reservationDto = new CreateReservation(1L, 1L, "2025-11-30", 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(reservationDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -81,7 +81,7 @@ class ReservationServiceTest {
         reservationTimeRepository.insertReservationTime(time);
         themeRepository.insertTheme(theme);
 
-        CreateReservationDto reservationDto = new CreateReservationDto(1L, 1L, "2024-05-07", 1L);
+        CreateReservation reservationDto = new CreateReservation(1L, 1L, "2024-05-07", 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(reservationDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -97,7 +97,7 @@ class ReservationServiceTest {
         Reservation reservation1 = new Reservation(1L, member, theme, date, time);
         reservationRepository.insertReservation(reservation1);
 
-        CreateReservationDto reservationDto = new CreateReservationDto(1L, 1L, "2025-11-30", 1L);
+        CreateReservation reservationDto = new CreateReservation(1L, 1L, "2025-11-30", 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(reservationDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -111,7 +111,7 @@ class ReservationServiceTest {
         themeRepository.insertTheme(theme);
         memberRepository.insertMember(member);
 
-        CreateReservationDto reservationDto = new CreateReservationDto(1L, 1L, "2025-11-30", 1L);
+        CreateReservation reservationDto = new CreateReservation(1L, 1L, "2025-11-30", 1L);
 
         assertThatNoException()
                 .isThrownBy(() -> reservationService.createReservation(reservationDto));

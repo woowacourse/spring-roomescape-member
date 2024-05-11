@@ -17,15 +17,15 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.domain.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.JwtService;
-import roomescape.service.dto.AdminReservationRequestDto;
-import roomescape.service.dto.CreateMemberRequestDto;
-import roomescape.service.dto.MemberReservationRequestDto;
-import roomescape.service.dto.MemberResponseDto;
+import roomescape.service.dto.AdminReservationRequest;
+import roomescape.service.dto.CreateMemberRequest;
+import roomescape.service.dto.MemberReservationRequest;
+import roomescape.service.dto.MemberResponse;
 import roomescape.service.dto.ReservationResponseDto;
-import roomescape.service.dto.ReservationTimeRequestDto;
-import roomescape.service.dto.ReservationTimeResponseDto;
-import roomescape.service.dto.ThemeRequestDto;
-import roomescape.service.dto.ThemeResponseDto;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -57,7 +57,7 @@ class ReservationApiControllerTest {
     }
 
     private void initializeMemberData() {
-        CreateMemberRequestDto createRequest = new CreateMemberRequestDto("t1@t1.com", "123", "재즈");
+        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
@@ -69,7 +69,7 @@ class ReservationApiControllerTest {
     }
 
     private void initializeThemeData() {
-        ThemeRequestDto param = new ThemeRequestDto("공포", "공포는 무서워", "hi.jpg");
+        ThemeRequest param = new ThemeRequest("공포", "공포는 무서워", "hi.jpg");
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
@@ -81,7 +81,7 @@ class ReservationApiControllerTest {
     }
 
     private void initializeTimesData() {
-        ReservationTimeRequestDto param = new ReservationTimeRequestDto("10:00");
+        ReservationTimeRequest param = new ReservationTimeRequest("10:00");
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
@@ -95,7 +95,7 @@ class ReservationApiControllerTest {
     @DisplayName("예약 목록을 조회하는데 성공하면 응답과 200 상태 코드를 반환한다.")
     @Test
     void return_200_when_find_all_reservations() {
-        AdminReservationRequestDto reservationCreate = new AdminReservationRequestDto(1L, 1L,
+        AdminReservationRequest reservationCreate = new AdminReservationRequest(1L, 1L,
                 "2100-08-05", 1L);
 
         RestAssured.given().log().all()
@@ -116,10 +116,10 @@ class ReservationApiControllerTest {
                 .getList(".", ReservationResponseDto.class);
 
         ReservationResponseDto expectedResponse = new ReservationResponseDto(
-                1L, new MemberResponseDto(1L, "재즈"),
-                new ThemeResponseDto(1L, "공포", "공포는 무서워", "hi.jpg"),
+                1L, new MemberResponse(1L, "재즈"),
+                new ThemeResponse(1L, "공포", "공포는 무서워", "hi.jpg"),
                 "2100-08-05",
-                new ReservationTimeResponseDto(1L, "10:00")
+                new ReservationTimeResponse(1L, "10:00")
         );
 
         assertThat(actualResponse)
@@ -130,7 +130,7 @@ class ReservationApiControllerTest {
     @DisplayName("멤버가 예약을 생성하는데 성공하면 응답과 201 상태 코드를 반환한다.")
     @Test
     void return_201_when_create_reservation_member() {
-        MemberReservationRequestDto reservationCreate = new MemberReservationRequestDto(1L,
+        MemberReservationRequest reservationCreate = new MemberReservationRequest(1L,
                 "2100-08-05", 1L);
 
         RestAssured.given().log().all()
@@ -145,7 +145,7 @@ class ReservationApiControllerTest {
     @DisplayName("어드민이 예약을 생성하는데 성공하면 응답과 201 상태 코드를 반환한다.")
     @Test
     void return_201_when_create_reservation_admin() {
-        AdminReservationRequestDto reservationCreate = new AdminReservationRequestDto(1L, 1L,
+        AdminReservationRequest reservationCreate = new AdminReservationRequest(1L, 1L,
                 "2100-08-05", 1L);
 
         RestAssured.given().log().all()
@@ -160,7 +160,7 @@ class ReservationApiControllerTest {
     @DisplayName("어드민이 예약을 삭제하는데 성공하면 응답과 204 상태 코드를 반환한다.")
     @Test
     void return_204_when_delete_reservation() {
-        MemberReservationRequestDto reservationCreate = new MemberReservationRequestDto(1L,
+        MemberReservationRequest reservationCreate = new MemberReservationRequest(1L,
                 "2100-08-05", 1L);
 
         RestAssured.given().log().all()

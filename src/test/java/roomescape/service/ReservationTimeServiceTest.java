@@ -23,7 +23,7 @@ import roomescape.repository.JdbcMemberRepository;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.repository.JdbcThemeRepository;
-import roomescape.service.dto.ReservationTimeRequestDto;
+import roomescape.service.dto.ReservationTimeRequest;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -60,7 +60,7 @@ class ReservationTimeServiceTest {
     void throw_exception_when_create_duplicated_reservation_time() {
         reservationTimeRepository.insertReservationTime(new ReservationTime(1L, "10:00"));
 
-        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("10:00");
+        ReservationTimeRequest requestDto = new ReservationTimeRequest("10:00");
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -70,7 +70,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 생성에 성공한다.")
     @Test
     void success_create_reservation_time() {
-        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("10:00");
+        ReservationTimeRequest requestDto = new ReservationTimeRequest("10:00");
 
         assertThatNoException()
                 .isThrownBy(() -> reservationTimeService.createReservationTime(requestDto));

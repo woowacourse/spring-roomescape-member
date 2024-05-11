@@ -2,21 +2,21 @@ package roomescape.service.dto;
 
 import roomescape.domain.Theme;
 
-public class ThemeResponseDto {
+public class ThemeResponse {
 
     private final long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
-    public ThemeResponseDto(long id, String name, String description, String thumbnail) {
+    public ThemeResponse(long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public ThemeResponseDto(Theme theme) {
+    public ThemeResponse(Theme theme) {
         this(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 

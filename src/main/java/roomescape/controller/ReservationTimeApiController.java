@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.AvailableTimeRequestDto;
-import roomescape.service.dto.AvailableTimeResponseDtos;
-import roomescape.service.dto.ReservationTimeRequestDto;
-import roomescape.service.dto.ReservationTimeResponseDto;
+import roomescape.service.dto.AvailableTimeRequest;
+import roomescape.service.dto.AvailableTimeResponses;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeResponse;
 
 @RestController
 public class ReservationTimeApiController {
@@ -26,18 +26,18 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping("/times")
-    public List<ReservationTimeResponseDto> findReservationTimes() {
+    public List<ReservationTimeResponse> findReservationTimes() {
         return reservationTimeService.findAllReservationTimes();
     }
 
     @GetMapping("/times/available")
-    public AvailableTimeResponseDtos findAvailableReservationTimes(@Valid AvailableTimeRequestDto requestDto) {
+    public AvailableTimeResponses findAvailableReservationTimes(@Valid AvailableTimeRequest requestDto) {
         return reservationTimeService.findAvailableReservationTimes(requestDto);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/times")
-    public ReservationTimeResponseDto createReservationTime(@Valid @RequestBody ReservationTimeRequestDto requestDto) {
+    public ReservationTimeResponse createReservationTime(@Valid @RequestBody ReservationTimeRequest requestDto) {
         return reservationTimeService.createReservationTime(requestDto);
     }
 

@@ -4,9 +4,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.CreateMemberRequestDto;
-import roomescape.service.dto.LoginMemberRequestDto;
-import roomescape.service.dto.MemberResponseDto;
+import roomescape.service.dto.CreateMemberRequest;
+import roomescape.service.dto.LoginMemberRequest;
+import roomescape.service.dto.MemberResponse;
 import roomescape.service.exception.MemberNotFoundException;
 
 @Service
@@ -20,14 +20,14 @@ public class MemberService {
         this.jwtService = jwtService;
     }
 
-    public void signup(CreateMemberRequestDto requestDto) {
+    public void signup(CreateMemberRequest requestDto) {
         if (memberRepository.isMemberExistsByEmail(requestDto.getEmail())) {
             throw new IllegalArgumentException("이미 가입되어 있는 이메일 주소입니다.");
         }
         memberRepository.insertMember(requestDto.toMember());
     }
 
-    public String login(LoginMemberRequestDto requestDto) {
+    public String login(LoginMemberRequest requestDto) {
         Member member = memberRepository.findMemberByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
 
@@ -42,9 +42,9 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
     }
 
-    public List<MemberResponseDto> findAllMemberNames() {
+    public List<MemberResponse> findAllMemberNames() {
         return memberRepository.findAllMemberNames().stream()
-                .map(MemberResponseDto::new)
+                .map(MemberResponse::new)
                 .toList();
     }
 }

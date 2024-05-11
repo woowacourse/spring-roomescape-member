@@ -17,11 +17,11 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.domain.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.JwtService;
-import roomescape.service.dto.AdminReservationRequestDto;
-import roomescape.service.dto.CreateMemberRequestDto;
-import roomescape.service.dto.ReservationTimeRequestDto;
-import roomescape.service.dto.ThemeRequestDto;
-import roomescape.service.dto.ThemeResponseDto;
+import roomescape.service.dto.AdminReservationRequest;
+import roomescape.service.dto.CreateMemberRequest;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -36,25 +36,25 @@ class ThemeApiControllerTest {
     @Autowired
     private JwtService jwtService;
 
-    private final ReservationTimeRequestDto reservationTimeCreate1 = new ReservationTimeRequestDto("10:00");
-    private final ReservationTimeRequestDto reservationTimeCreate2 = new ReservationTimeRequestDto("12:00");
+    private final ReservationTimeRequest reservationTimeCreate1 = new ReservationTimeRequest("10:00");
+    private final ReservationTimeRequest reservationTimeCreate2 = new ReservationTimeRequest("12:00");
 
-    private final ThemeRequestDto themeCreate1 = new ThemeRequestDto("공포", "공포는 무서워", "hi.jpg");
-    private final ThemeRequestDto themeCreate2 = new ThemeRequestDto("추리", "추리는 재밌어", "hi.jpg");
-    private final ThemeRequestDto themeCreate3 = new ThemeRequestDto("탈출", "탈출은 빠르게", "hi.jpg");
+    private final ThemeRequest themeCreate1 = new ThemeRequest("공포", "공포는 무서워", "hi.jpg");
+    private final ThemeRequest themeCreate2 = new ThemeRequest("추리", "추리는 재밌어", "hi.jpg");
+    private final ThemeRequest themeCreate3 = new ThemeRequest("탈출", "탈출은 빠르게", "hi.jpg");
 
-    private final CreateMemberRequestDto memberCreate1 = new CreateMemberRequestDto("t1@t1.com", "123", "재즈");
-    private final CreateMemberRequestDto memberCreate2 = new CreateMemberRequestDto("t2@t2.com", "124", "러너덕");
-    private final CreateMemberRequestDto memberCreate3 = new CreateMemberRequestDto("t3@t3.com", "125", "재즈덕");
-    private final CreateMemberRequestDto memberCreate4 = new CreateMemberRequestDto("t4@t4.com", "126", "덕");
+    private final CreateMemberRequest memberCreate1 = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+    private final CreateMemberRequest memberCreate2 = new CreateMemberRequest("t2@t2.com", "124", "러너덕");
+    private final CreateMemberRequest memberCreate3 = new CreateMemberRequest("t3@t3.com", "125", "재즈덕");
+    private final CreateMemberRequest memberCreate4 = new CreateMemberRequest("t4@t4.com", "126", "덕");
 
-    private final AdminReservationRequestDto reservationCreate1 = new AdminReservationRequestDto(1L, 1L,
+    private final AdminReservationRequest reservationCreate1 = new AdminReservationRequest(1L, 1L,
             "2100-01-01", 1L);
-    private final AdminReservationRequestDto reservationCreate2 = new AdminReservationRequestDto(2L, 1L,
+    private final AdminReservationRequest reservationCreate2 = new AdminReservationRequest(2L, 1L,
             "2025-08-05", 1L);
-    private final AdminReservationRequestDto reservationCreate3 = new AdminReservationRequestDto(2L, 2L,
+    private final AdminReservationRequest reservationCreate3 = new AdminReservationRequest(2L, 2L,
             "2025-08-05", 2L);
-    private final AdminReservationRequestDto reservationCreate4 = new AdminReservationRequestDto(2L, 2L,
+    private final AdminReservationRequest reservationCreate4 = new AdminReservationRequest(2L, 2L,
             "2025-08-06", 1L);
 
     private final Member admin = new Member(2L, "t2@t2.com", "124", "재즈", "ADMIN");
@@ -93,16 +93,16 @@ class ThemeApiControllerTest {
     void return_200_when_find_all_themes() {
         create("/admin/themes", themeCreate1);
         create("/admin/themes", themeCreate2);
-        List<ThemeResponseDto> actualResponse = RestAssured.given().log().all()
+        List<ThemeResponse> actualResponse = RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
                 .jsonPath()
-                .getList(".", ThemeResponseDto.class);
+                .getList(".", ThemeResponse.class);
 
-        ThemeResponseDto expectedResponse1 = new ThemeResponseDto(1L, "공포", "공포는 무서워", "hi.jpg");
-        ThemeResponseDto expectedResponse2 = new ThemeResponseDto(2L, "추리", "추리는 재밌어", "hi.jpg");
+        ThemeResponse expectedResponse1 = new ThemeResponse(1L, "공포", "공포는 무서워", "hi.jpg");
+        ThemeResponse expectedResponse2 = new ThemeResponse(2L, "추리", "추리는 재밌어", "hi.jpg");
 
         assertThat(actualResponse)
                 .usingRecursiveComparison()
@@ -126,17 +126,17 @@ class ThemeApiControllerTest {
         create("/admin/reservations", reservationCreate3);
         create("/admin/reservations", reservationCreate4);
 
-        List<ThemeResponseDto> actualResponse = RestAssured.given().log().all()
+        List<ThemeResponse> actualResponse = RestAssured.given().log().all()
                 .when().get("/themes/popular?start-date=2025-08-05&end-date=2025-08-07&count=2")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
                 .jsonPath()
-                .getList(".", ThemeResponseDto.class);
+                .getList(".", ThemeResponse.class);
 
-        List<ThemeResponseDto> expectedResponse = List.of(
-                new ThemeResponseDto(2L, "추리", "추리는 재밌어", "hi.jpg"),
-                new ThemeResponseDto(1L, "공포", "공포는 무서워", "hi.jpg")
+        List<ThemeResponse> expectedResponse = List.of(
+                new ThemeResponse(2L, "추리", "추리는 재밌어", "hi.jpg"),
+                new ThemeResponse(1L, "공포", "공포는 무서워", "hi.jpg")
         );
 
         assertThat(actualResponse)
