@@ -18,4 +18,9 @@ public class MemberRepository {
         return memberDao.findIdByEmailAndPassword(email, password)
                 .orElseThrow(() -> new RoomEscapeException(MemberExceptionCode.ID_AND_PASSWORD_NOT_MATCH_OR_EXIST));
     }
+
+    public String findNameById(long id) {
+        return memberDao.findNameById(id)
+                .orElseThrow(() -> new RoomEscapeException(MemberExceptionCode.MEMBER_NOT_EXIST_EXCEPTION));
+    }
 }

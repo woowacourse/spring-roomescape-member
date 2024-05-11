@@ -32,4 +32,22 @@ public class MemberJdbcDao implements MemberDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<String> findNameById(long id) {
+        String findNameByIdSql = """
+                SELECT name
+                FROM member
+                WHERE id =?
+                """;
+
+        try {
+            String name = jdbcTemplate.queryForObject(findNameByIdSql,
+                    (resultSet, rowNum) -> resultSet.getString("name"), id);
+
+            return Optional.ofNullable(name);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
