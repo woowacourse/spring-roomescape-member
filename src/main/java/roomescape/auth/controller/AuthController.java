@@ -35,4 +35,11 @@ public class AuthController {
     public ResponseEntity<MemberResponse> findInfo(@LoginMember MemberResponse member) {
         return ResponseEntity.ok().body(member);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        TokenCookieManager.expireToken(response);
+
+        return ResponseEntity.ok().build();
+    }
 }

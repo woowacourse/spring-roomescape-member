@@ -26,4 +26,12 @@ public class TokenCookieManager {
         cookie.setPath("/");
         response.addCookie(cookie);
     }
+
+    public static void expireToken(HttpServletResponse response) {
+        Cookie cookie = new Cookie(TOKEN_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
 }
