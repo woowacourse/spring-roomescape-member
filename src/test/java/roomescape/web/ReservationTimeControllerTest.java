@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ReservationTimeControllerTest extends ControllerTest {
+class ReservationTimeControllerTest extends ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

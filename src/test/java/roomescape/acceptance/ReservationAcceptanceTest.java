@@ -36,22 +36,20 @@ import static org.mockito.Mockito.doReturn;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationAcceptanceTest {
+class ReservationAcceptanceTest {
 
     @LocalServerPort
     private int port;
 
-    @SpyBean
-    private TokenProvider tokenProvider;
-
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
     @Autowired
     private ThemeRepository themeRepository;
+
+    @SpyBean
+    private TokenProvider tokenProvider;
 
     @BeforeEach
     void setUp() {
@@ -72,8 +70,8 @@ public class ReservationAcceptanceTest {
         themeRepository.save(UserFixture.theme);
     }
 
-    @Test
     @DisplayName("사용자 권한으로 예약할 수 있다")
+    @Test
     void when_postReservationWithUser_then_created() {
         // given
         String token = tokenProvider.createToken(UserFixture.member);
@@ -103,8 +101,8 @@ public class ReservationAcceptanceTest {
         );
     }
 
-    @Test
     @DisplayName("어드민 권한으로 예약할 수 있다")
+    @Test
     void when_postReservationWithAdmin_then_created() {
         // given
         String token = tokenProvider.createToken(AdminFixture.member);

@@ -22,7 +22,6 @@ class AuthControllerTest extends ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private TokenProvider tokenProvider;
 

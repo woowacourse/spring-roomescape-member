@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class ReservationRepositoryTest {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

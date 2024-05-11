@@ -16,16 +16,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class MemberControllerTest extends ControllerTest {
-
-    @MockBean
-    private MemberAuthValidateInterceptor memberAuthValidateInterceptor;
-
-    @MockBean
-    private AdminAuthValidateInterceptor adminAuthValidateInterceptor;
+class MemberControllerTest extends ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private MemberAuthValidateInterceptor memberAuthValidateInterceptor;
+    @MockBean
+    private AdminAuthValidateInterceptor adminAuthValidateInterceptor;
 
     @DisplayName("모든 사용자를 조회한다")
     @Sql("/test-data/members.sql")

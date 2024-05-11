@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 class ReservationTest {
+
     @DisplayName("예약을 생성한다")
     @Test
     void when_createReservation_then_created() {

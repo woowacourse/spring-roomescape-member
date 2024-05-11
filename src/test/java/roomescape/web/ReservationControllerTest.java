@@ -25,22 +25,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ReservationControllerTest extends ControllerTest {
+class ReservationControllerTest extends ControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     MemberAuthValidateInterceptor memberAuthValidateInterceptor;
-
     @MockBean
     AdminAuthValidateInterceptor adminAuthValidateInterceptor;
 
     @SpyBean
     MemberArgumentResolver memberArgumentResolver;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @DisplayName("예약을 생성한다")
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql"})
