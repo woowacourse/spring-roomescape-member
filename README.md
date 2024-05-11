@@ -18,6 +18,8 @@
 - `/admin/reservation` 으로 접속할 수 있다.
 - 예약 목록을 볼 수 있다.
     - 예약 번호, 이름, 날짜, 시간을 볼 수 있다.
+- 예약 목록을 조건별로 조회할 수 있다.
+    -  예약자별, 테마별, 날짜별 조건을 추가할 수 있다.
 - 예약을 추가할 수 있다.
     - 이름, 날짜, 시간을 입력하여 추가한다.
     - 빈 값이 있으면 예외를 던진다.
@@ -62,29 +64,30 @@
 
 ## API 명세서
 
-| HTTP Method | URI                                               | Description      |
-|-------------|---------------------------------------------------|------------------|
-| GET         | `/`                                               | 주간 인기 테마 페이지     |
-| GET         | `/admin`                                          | 관리자 메인 페이지       | 
-| GET         | `/admin/reservation`                              | 예약 관리 페이지        |
-| GET         | `/admin/time`                                     | 시간 관리 페이지        |
-| GET         | `/admin/theme`                                    | 테마 관리 페이지        |
-| GET         | `/login`                                          | 사용자 로그인 페이지      |
-| GET         | `/reservation`                                    | 사용자 예약 페이지       |
-| GET         | `/reservations`                                   | 예약 목록 조회         |
-| POST        | `/reservations`                                   | 사용자 예약 추가        | 
-| DELETE      | `/reservations/{id}`                              | 예약 삭제            |
-| POST        | `/admin/reservations`                             | 관리자 예약 추가        |
-| GET         | `/times`                                          | 시간 목록 조회         |
-| GET         | `/times/available?date={date}&theme-id={themeId}` | 예약 가능 시간 목록 조회   |
-| POST        | `/times`                                          | 시간 추가            | 
-| DELETE      | `/times/{id}`                                     | 시간 삭제            |
-| GET         | `/themes`                                         | 테마 목록 조회         |
-| GET         | `/themes/popular?period-day={periodDay}`          | 기간 별 인기 테마 목록 조회 |
-| POST        | `/themes`                                         | 테마 추가            |
-| DELETE      | `/themes/{id}`                                    | 테마 삭제            |
-| POST        | `/members`                                        | 회원 가입            |
-| GET         | `/members`                                        | 회원 목록 조회         |
-| POST        | `/login`                                          | 로그인              |
-| GET         | `/login/check`                                    | 로그인 인증 정보 조회     |
-| POST        | `/logout`                                         | 로그아웃             |
+| HTTP Method | URI                                                                                                  | Description      |
+|-------------|------------------------------------------------------------------------------------------------------|------------------|
+| GET         | `/`                                                                                                  | 주간 인기 테마 페이지     |
+| GET         | `/admin`                                                                                             | 관리자 메인 페이지       | 
+| GET         | `/admin/reservation`                                                                                 | 예약 관리 페이지        |
+| GET         | `/admin/time`                                                                                        | 시간 관리 페이지        |
+| GET         | `/admin/theme`                                                                                       | 테마 관리 페이지        |
+| GET         | `/login`                                                                                             | 사용자 로그인 페이지      |
+| GET         | `/reservation`                                                                                       | 사용자 예약 페이지       |
+| GET         | `/reservations`                                                                                      | 예약 목록 조회         |
+| GET         | `/reservations/search?member-id={memberId}&theme-id={themeId}&date-from={dateFrom}&date-to={dateTo}` | 조건별 예약 목록 조회     |
+| POST        | `/reservations`                                                                                      | 사용자 예약 추가        | 
+| DELETE      | `/reservations/{id}`                                                                                 | 예약 삭제            |
+| POST        | `/admin/reservations`                                                                                | 관리자 예약 추가        |
+| GET         | `/times`                                                                                             | 시간 목록 조회         |
+| GET         | `/times/available?date={date}&theme-id={themeId}`                                                    | 예약 가능 시간 목록 조회   |
+| POST        | `/times`                                                                                             | 시간 추가            | 
+| DELETE      | `/times/{id}`                                                                                        | 시간 삭제            |
+| GET         | `/themes`                                                                                            | 테마 목록 조회         |
+| GET         | `/themes/popular?period-day={periodDay}`                                                             | 기간 별 인기 테마 목록 조회 |
+| POST        | `/themes`                                                                                            | 테마 추가            |
+| DELETE      | `/themes/{id}`                                                                                       | 테마 삭제            |
+| POST        | `/members`                                                                                           | 회원 가입            |
+| GET         | `/members`                                                                                           | 회원 목록 조회         |
+| POST        | `/login`                                                                                             | 로그인              |
+| GET         | `/login/check`                                                                                       | 로그인 인증 정보 조회     |
+| POST        | `/logout`                                                                                            | 로그아웃             |
