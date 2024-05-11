@@ -83,6 +83,7 @@
   - [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 리팩터링
 - 예약 생성 기능 변경 - 관리자
   - 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
-  - [ ] POST `/admin/reservations` 요청 시 Body 값을 이용하여 예약 생성
+  - [x] GET `/members` 요청 시 사용자들의 id, 이름 반환
+  - [x] POST `/admin/reservations` 요청 시 Body 값을 이용하여 예약 생성
   - [x] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경합니다.
     - `/js/reservation-new.js` -> `/js/reservation-with-member.js`

@@ -8,7 +8,6 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.member.model.Member;
 import roomescape.member.repositoy.JdbcMemberRepository;
-import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
 import roomescape.reservation.dto.response.FindReservationResponse;
@@ -39,18 +38,23 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public CreateReservationResponse createReservation(final CreateReservationRequest request, Long memberId) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+    public CreateReservationResponse createReservation(
+            final Long memberId,
+            final LocalDate date,
+            final Long themeId,
+            final Long timeId
+    ) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
 
-        Theme theme = themeRepository.findById(request.themeId())
+        Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다."));
 
-        validateReservationDateTime(request.date(), reservationTime.getTime());
-        Reservation reservation = new Reservation(null, member, request.date(), reservationTime, theme);
+        validateReservationDateTime(date, reservationTime.getTime());
+        Reservation reservation = new Reservation(null, member, date, reservationTime, theme);
 
         if (reservationRepository.existsByDateAndTimeAndTheme(
                 reservation.getDate(), reservationTime.getId(), theme.getId())) {

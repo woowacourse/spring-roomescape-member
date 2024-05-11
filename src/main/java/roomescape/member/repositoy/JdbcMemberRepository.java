@@ -1,5 +1,6 @@
 package roomescape.member.repositoy;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -40,19 +41,24 @@ public class JdbcMemberRepository {
         return new Member(id, member.getName(), member.getEmail(), member.getPassword());
     }
 
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email, password));
-        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
-            return Optional.empty();
-        }
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Optional<Member> findById(Long id) {
         String sql = "SELECT * FROM member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email, password));
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }

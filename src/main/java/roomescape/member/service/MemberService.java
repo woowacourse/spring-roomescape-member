@@ -1,7 +1,9 @@
 package roomescape.member.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.AuthInformationResponse;
+import roomescape.member.dto.response.FindMemberResponse;
 import roomescape.member.model.Member;
 import roomescape.member.repositoy.JdbcMemberRepository;
 
@@ -16,6 +18,12 @@ public class MemberService {
 
     Member createMember(Member member) {
         return memberRepository.save(member); // TODO: 패스워드 암호화
+    }
+
+    public List<FindMemberResponse> getMembers() {
+        return memberRepository.findAll().stream()
+                .map(FindMemberResponse::of)
+                .toList();
     }
 
     public AuthInformationResponse getMemberNameById(Long id) {
