@@ -11,8 +11,8 @@ class RoomescapeControllerAdviceTest extends AcceptanceTest {
     @DisplayName("권한이 없는 사용자가 admin 페이지에 접근한다.")
     void unAuthorizedMemberTest() {
         MemberRegisterRequest request = new MemberRegisterRequest("name", "email@email.com", "12341234");
-        AcceptanceFixture.registerMember(request);
-        String token = AcceptanceFixture.loginAndGetToken("email@email.com", "12341234");
+        fixture.registerMember(request);
+        String token = fixture.loginAndGetToken("email@email.com", "12341234");
 
         RestAssured.given().log().all()
                 .cookie("token", token)

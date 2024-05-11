@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.reservation.ThemeService;
 import roomescape.application.reservation.dto.request.ThemeRequest;
 import roomescape.application.reservation.dto.response.ThemeResponse;
+import roomescape.auth.PermissionRequired;
 
 @RestController
 @RequestMapping("/themes")
@@ -31,6 +32,7 @@ public class ThemeController {
     }
 
     @PostMapping
+    @PermissionRequired
     public ResponseEntity<ThemeResponse> create(@RequestBody @Valid ThemeRequest request) {
         ThemeResponse response = themeService.create(request);
         URI location = URI.create("/themes/" + response.id());
@@ -38,6 +40,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
+    @PermissionRequired
     public ResponseEntity<Void> delete(@PathVariable long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();

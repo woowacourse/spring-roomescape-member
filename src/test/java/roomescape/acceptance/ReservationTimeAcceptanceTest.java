@@ -21,10 +21,11 @@ import roomescape.application.reservation.dto.response.ReservationTimeResponse;
 class ReservationTimeAcceptanceTest extends AcceptanceTest {
 
     @Test
-    @DisplayName("예약 시간을 생성한다.")
+    @DisplayName("관리자가 예약 시간을 생성한다.")
     void createReservationTimeTest() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 0));
         RestAssured.given().log().all()
+                .cookie("token", fixture.getAdminToken())
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/times")
@@ -35,8 +36,8 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("예약 시간을 모두 조회한다.")
     void findAllReservationTimesTest() {
-        AcceptanceFixture.createReservationTime(10, 0);
-        AcceptanceFixture.createReservationTime(11, 30);
+        fixture.createReservationTime(10, 0);
+        fixture.createReservationTime(11, 30);
 
         ReservationTimeResponse[] responses = RestAssured.given().log().all()
                 .when().get("/times")
@@ -49,11 +50,12 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("예약 시간을 삭제한다.")
+    @DisplayName("관리자가 예약 시간을 삭제한다.")
     void deleteReservationTimeTest() {
-        ReservationTimeResponse response = AcceptanceFixture.createReservationTime(10, 0);
+        ReservationTimeResponse response = fixture.createReservationTime(10, 0);
 
         RestAssured.given().log().all()
+                .cookie("token", fixture.getAdminToken())
                 .when().delete("/times/{id}", response.id())
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
@@ -62,14 +64,14 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("예약 가능한 시간을 조회한다.")
     void findAvailableTimesTest() {
-        AcceptanceFixture.registerMember(new MemberRegisterRequest("name", "email@mail.com", "password"));
-        String token = AcceptanceFixture.loginAndGetToken("email@mail.com", "password");
-        AcceptanceFixture.createReservationTime(10, 0);
-        AcceptanceFixture.createReservationTime(11, 30);
-        long timeId = AcceptanceFixture.createReservationTime(13, 0).id();
-        long themeId = AcceptanceFixture.createTheme(new ThemeRequest("theme", "desc", "url")).id();
+        fixture.registerMember(new MemberRegisterRequest("name", "email@mail.com", "password"));
+        String token = fixture.loginAndGetToken("email@mail.com", "password");
+        fixture.createReservationTime(10, 0);
+        fixture.createReservationTime(11, 30);
+        long timeId = fixture.createReservationTime(13, 0).id();
+        long themeId = fixture.createTheme(new ThemeRequest("theme", "desc", "url")).id();
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 12, 25), timeId, themeId);
-        AcceptanceFixture.createReservation(token, request);
+        fixture.createReservation(token, request);
 
         AvailableTimeResponse[] responses = RestAssured.given().log().all()
                 .queryParam("date", "2024-12-25")

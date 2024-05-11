@@ -25,6 +25,10 @@ public class MemberRole {
         return role.isAdmin();
     }
 
+    public boolean hasRoleOf(Role other) {
+        return role == other;
+    }
+
     public long getMemberId() {
         return memberId;
     }

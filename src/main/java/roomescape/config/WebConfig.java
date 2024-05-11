@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AdminRoleInterceptor;
 import roomescape.auth.LoginMemberIdArgumentResolver;
+import roomescape.auth.PermissionCheckInterceptor;
 import roomescape.auth.TokenManager;
 
 @Configuration
@@ -26,5 +27,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AdminRoleInterceptor(tokenManager))
                 .addPathPatterns("/admin/**");
+        registry.addInterceptor(new PermissionCheckInterceptor(tokenManager));
     }
 }

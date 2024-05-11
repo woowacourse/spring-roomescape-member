@@ -17,6 +17,7 @@ import roomescape.application.reservation.ReservationTimeService;
 import roomescape.application.reservation.dto.request.ReservationTimeRequest;
 import roomescape.application.reservation.dto.response.AvailableTimeResponse;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
+import roomescape.auth.PermissionRequired;
 
 @RestController
 @RequestMapping("/times")
@@ -28,6 +29,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
+    @PermissionRequired
     public ResponseEntity<ReservationTimeResponse> create(@RequestBody @Valid ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.create(request);
         URI location = URI.create("/times/" + response.id());
@@ -41,6 +43,7 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
+    @PermissionRequired
     public ResponseEntity<Void> delete(@PathVariable long id) {
         reservationTimeService.deleteById(id);
         return ResponseEntity.noContent().build();

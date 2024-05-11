@@ -15,10 +15,10 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("예약을 생성한다.")
     void createReservationTest() {
-        long themeId = AcceptanceFixture.createTheme(new ThemeRequest("테마명", "테마 설명", "url")).id();
-        long timeId = AcceptanceFixture.createReservationTime(10, 0).id();
-        AcceptanceFixture.registerMember(new MemberRegisterRequest("name", "email@mail.com", "12341234"));
-        String token = AcceptanceFixture.loginAndGetToken("email@mail.com", "12341234");
+        long themeId = fixture.createTheme(new ThemeRequest("테마명", "테마 설명", "url")).id();
+        long timeId = fixture.createReservationTime(10, 0).id();
+        fixture.registerMember(new MemberRegisterRequest("name", "email@mail.com", "12341234"));
+        String token = fixture.loginAndGetToken("email@mail.com", "12341234");
 
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 12, 25), timeId, themeId);
         RestAssured.given().log().all()
@@ -31,13 +31,13 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("예약을 삭제한다.")
+    @DisplayName("관리자가 예약을 삭제한다.")
     void deleteReservation() {
-        long themeId = AcceptanceFixture.createTheme(new ThemeRequest("name", "desc", "url")).id();
-        long timeId = AcceptanceFixture.createReservationTime(10, 0).id();
-        AcceptanceFixture.registerMember(new MemberRegisterRequest("name", "email@mail.com", "12341234"));
-        String token = AcceptanceFixture.loginAndGetToken("email@mail.com", "12341234");
-        ReservationResponse response = AcceptanceFixture.createReservation(
+        long themeId = fixture.createTheme(new ThemeRequest("name", "desc", "url")).id();
+        long timeId = fixture.createReservationTime(10, 0).id();
+        fixture.registerMember(new MemberRegisterRequest("name", "email@mail.com", "12341234"));
+        String token = fixture.loginAndGetToken("email@mail.com", "12341234");
+        ReservationResponse response = fixture.createReservation(
                 token,
                 new ReservationRequest(LocalDate.of(2024, 12, 25), timeId, themeId)
         );

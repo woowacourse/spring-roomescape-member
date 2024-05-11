@@ -13,7 +13,7 @@ class AuthAcceptanceTest extends AcceptanceTest {
     @DisplayName("사용자가 로그인한다.")
     void loginTest() {
         MemberRegisterRequest request = new MemberRegisterRequest("aru", "aru@test.com", "12341234");
-        long memberId = AcceptanceFixture.registerMember(request)
+        long memberId = fixture.registerMember(request)
                 .body()
                 .as(MemberResponse.class)
                 .id();
