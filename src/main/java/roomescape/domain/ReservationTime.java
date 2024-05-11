@@ -34,6 +34,10 @@ public class ReservationTime {
         }
     }
 
+    public boolean isPast() {
+        return startAt.isBefore(LocalTime.now());
+    }
+
     public Long getId() {
         return id;
     }
@@ -44,9 +48,5 @@ public class ReservationTime {
 
     public String getStartAtString() {
         return startAt.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
-    }
-
-    public boolean isPast() {
-        return startAt.isBefore(LocalTime.now());
     }
 }
