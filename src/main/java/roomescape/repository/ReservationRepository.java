@@ -8,6 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -24,7 +25,8 @@ public class ReservationRepository {
             resultSet.getLong("id"),
             new Member(
                     resultSet.getLong("member_id"),
-                    resultSet.getString("member_name")
+                    resultSet.getString("member_name"),
+                    Role.of(resultSet.getString("role_name"))
             ),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(
@@ -47,6 +49,7 @@ public class ReservationRepository {
                 "r.id AS reservation_id, " +
                 "r.member_id AS member_id, " +
                 "m.name AS member_name, " +
+                "rl.name AS role_name, " +
                 "r.date, " +
                 "t.id AS reservation_time_id, " +
                 "t.start_at AS time_value, " +
@@ -60,7 +63,9 @@ public class ReservationRepository {
                 "INNER JOIN theme AS th " +
                 "ON r.theme_id = th.id " +
                 "INNER JOIN member AS m " +
-                "ON r.member_id = m.id";
+                "ON r.member_id = m.id " +
+                "INNER JOIN role AS rl " +
+                "ON rl.id = m.role_id";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 

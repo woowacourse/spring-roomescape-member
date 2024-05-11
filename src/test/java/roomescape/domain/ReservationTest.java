@@ -3,6 +3,7 @@ package roomescape.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,13 +17,13 @@ class ReservationTest {
     void checkSameReservation_Success() {
         Reservation reservation1 = new Reservation(
                 1L,
-                new Member("capy"),
+                new Member("capy", Role.MEMBER),
                 LocalDate.now().plusDays(1L),
                 new ReservationTime(LocalTime.of(10, 0)),
                 new Theme("capyTheme", "capyDescription", "capyThumbnail"));
         Reservation reservation2 = new Reservation(
                 1L,
-                new Member("capy"),
+                new Member("capy", Role.MEMBER),
                 LocalDate.now().plusDays(1L),
                 new ReservationTime(LocalTime.of(10, 0)),
                 new Theme("capyTheme", "capyDescription", "capyThumbnail"));
@@ -35,13 +36,13 @@ class ReservationTest {
     void checkSameReservation_Failure() {
         Reservation reservation1 = new Reservation(
                 1L,
-                new Member("capy"),
+                new Member("capy", Role.MEMBER),
                 LocalDate.now().plusDays(1L),
                 new ReservationTime(LocalTime.of(10, 0)),
                 new Theme("capyTheme", "capyDescription", "capyThumbnail"));
         Reservation reservation2 = new Reservation(
                 2L,
-                new Member("capy"),
+                new Member("capy", Role.MEMBER),
                 LocalDate.now().plusDays(1L),
                 new ReservationTime(LocalTime.of(11, 0)),
                 new Theme("capyTheme", "capyDescription", "capyThumbnail"));

@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.exception.AuthorizationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +16,7 @@ class JwtTokenProviderTest {
     void checkJwtToken_Success() {
         // given
         JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("secret", 3600000L);
-        String token = jwtTokenProvider.createToken(new Member(1L, "naknak"));
+        String token = jwtTokenProvider.createToken(new Member(1L, "naknak", Role.MEMBER));
 
         // when
         Member member = jwtTokenProvider.getMember(token);
@@ -23,7 +24,7 @@ class JwtTokenProviderTest {
         // then
         assertThat(member)
                 .usingRecursiveComparison()
-                .isEqualTo(new Member(1L, "naknak"));
+                .isEqualTo(new Member(1L, "naknak", Role.MEMBER));
     }
 
     @Test
@@ -32,7 +33,7 @@ class JwtTokenProviderTest {
         // given
         JwtTokenProvider jwtTokenProvider1 = new JwtTokenProvider("secret", 3600000L);
         JwtTokenProvider jwtTokenProvider2 = new JwtTokenProvider("otherSecret", 3600000L);
-        String token = jwtTokenProvider1.createToken(new Member(1L, "naknak"));
+        String token = jwtTokenProvider1.createToken(new Member(1L, "naknak", Role.MEMBER));
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider2.getMember(token))
@@ -45,7 +46,7 @@ class JwtTokenProviderTest {
     void checkJwtTokenExpire_Failure() {
         // given
         JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("secret", -3600000L);
-        String token1 = jwtTokenProvider.createToken(new Member(1L, "naknak"));
+        String token1 = jwtTokenProvider.createToken(new Member(1L, "naknak", Role.MEMBER));
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.getMember(token1))

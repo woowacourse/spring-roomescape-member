@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.exception.AuthorizationException;
 
 import java.util.Date;
@@ -30,6 +31,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
+                .claim("role", member.getRole().getName())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -48,8 +50,13 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody()
                     .get("name", String.class);
+            Role role = Role.of(Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("role", String.class));
 
-            return new Member(id, name);
+            return new Member(id, name, role);
         } catch (ExpiredJwtException exception) {
             throw new AuthorizationException("인증이 만료되었습니다.");
         } catch (JwtException | IllegalArgumentException exception) {

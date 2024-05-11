@@ -1,8 +1,17 @@
-CREATE TABLE member
+CREATE TABLE role
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (id)
+);
+
+CREATE TABLE member
+(
+    id      BIGINT       NOT NULL AUTO_INCREMENT,
+    name    VARCHAR(255) NOT NULL UNIQUE,
+    role_id BIGINT       NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (role_id) REFERENCES role (id)
 );
 
 CREATE TABLE member_credential

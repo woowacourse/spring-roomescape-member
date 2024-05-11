@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.exception.AuthorizationException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberCredentialRepository;
@@ -72,7 +73,7 @@ class AuthServiceTest {
         // then
         assertThat(member)
                 .usingRecursiveComparison()
-                .isEqualTo(new Member(1L, "naknak"));
+                .isEqualTo(new Member(2L, "naknak", Role.MEMBER));
     }
 
     @Test

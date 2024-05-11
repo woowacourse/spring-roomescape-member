@@ -27,11 +27,18 @@ VALUES (1, '10:00'),
        (10, '19:00'),
        (11, '20:00');
 
+INSERT INTO role
+VALUES (1, 'NONE'),
+       (2, 'MEMBER'),
+       (3, 'ADMIN');
+
 INSERT INTO member
-VALUES (1, 'naknak');
+VALUES (1, 'admin', 3),
+       (2, 'naknak', 2);
 
 INSERT INTO member_credential
-VALUES (1, 1, 'naknak@example.com', 'nak123');
+VALUES (1, 1, 'admin@example.com', 'woowa123!'),
+       (2, 2, 'naknak@example.com', 'nak123');
 
 INSERT INTO reservation (id, member_id, date, reservation_time_id, theme_id)
 VALUES (1, 1, CURRENT_DATE - INTERVAL '1' DAY, 1, 5),
