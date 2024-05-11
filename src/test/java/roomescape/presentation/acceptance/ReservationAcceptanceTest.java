@@ -7,17 +7,22 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
+import roomescape.domain.Member;
+import roomescape.domain.MemberCommandRepository;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationCommandRepository;
 import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
@@ -35,64 +40,99 @@ public class ReservationAcceptanceTest extends AcceptanceTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberCommandRepository memberCommandRepository;
+
+    private static String accessToken;
+
+    @BeforeEach
+    void setUp() {
+        accessToken = RestAssured.given()
+                .contentType("application/json")
+                .body("{\"email\":\"admin@wooteco.com\", \"password\":\"1234\"}")
+                .when().post("/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .cookie("token");
+    }
+
     @DisplayName("예약을 추가한다.")
     @Test
     void createReservationTest() {
-        ReservationTime reservationTime = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
-        Theme theme = themeRepository.create(ThemeFixture.defaultValue());
-        ReservationRequest request = ReservationRequestFixture.defaultValue(reservationTime, theme);
+        ReservationRequest request = ReservationRequestFixture.of(1L, 1L);
 
         ReservationResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
+                .cookie("token", accessToken)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .extract()
                 .as(ReservationResponse.class);
 
-        assertThat(response.name()).isEqualTo("test");
+        assertThat(response.member().name()).isEqualTo("운영자");
         assertThat(response.date()).isEqualTo(LocalDate.of(2024, 1, 1));
     }
 
-    @DisplayName("등록된 모든 예약을 조회한다.")
+    @DisplayName("존재하지 않는 테마로 예약을 추가 요청하면 에러가 발생한다.")
     @Test
-    void getAllReservationsTest() {
-        ReservationTime savedReservationTime1 = reservationTimeRepository.create(ReservationTimeFixture.of(10, 0));
-        ReservationTime savedReservationTime2 = reservationTimeRepository.create(ReservationTimeFixture.of(11, 0));
-        Theme theme1 = themeRepository.create(ThemeFixture.defaultValue());
-        Theme theme2 = themeRepository.create(ThemeFixture.defaultValue());
-        List.of(createReservation("아루", LocalDate.of(2024, 1, 1), savedReservationTime1, theme1),
-                        createReservation("이상", LocalDate.of(2024, 12, 25), savedReservationTime2, theme2))
-                .forEach(reservationCommandRepository::create);
+    void createNotFoundTheme() {
+        ReservationRequest request = ReservationRequestFixture.of(1L, 100L);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie("token", accessToken)
+                .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(2));
+                .statusCode(404);
     }
 
-    private static Reservation createReservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(new PlayerName(name),
-                date,
-                reservationTime,
-                theme);
-    }
-
-    @DisplayName("id로 저장된 예약을 삭제한다.")
+    @DisplayName("존재하지 않는 시간으로 예약을 추가 요청하면 에러가 발생한다.")
     @Test
-    void deleteByIdTest() {
-        ReservationTime reservationTime = reservationTimeRepository.create(ReservationTimeFixture.of(10, 0));
-        Theme theme = themeRepository.create(ThemeFixture.defaultValue());
-        Reservation reservation = createReservation("이름", LocalDate.of(2024, 12, 25), reservationTime, theme);
-        Reservation savedReservation = reservationCommandRepository.create(reservation);
+    void creatNotFoundReservationTime() {
+        ReservationRequest request = ReservationRequestFixture.of(100L, 1L);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/" + savedReservation.getId())
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie("token", accessToken)
+                .when().post("/reservations")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(404);
+    }
 
-        assertThat(reservationQueryRepository.findAll()).isEmpty();
+    @DisplayName("과거 시간으로 예약 요청하면 에러가 발생한다.")
+    @Test
+    void createPastDate() {
+        ReservationRequest request = ReservationRequestFixture.of(LocalDate.of(1999, 1, 1), 1L, 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie("token", accessToken)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("이미 존재하는 예약을 요청하면 에러가 발생한다.")
+    @Test
+    void createDuplicatedReservation() {
+        Reservation reservation = reservationQueryRepository.findAll().get(0);
+
+        ReservationRequest request = ReservationRequestFixture.of(reservation.getDate(),
+                reservation.getTheme().getId(),
+                reservation.getTime().getId());
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie("token", accessToken)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
     }
 }

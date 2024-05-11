@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 
 @JdbcTest
+@Sql("/truncate.sql")
 @Import(JdbcReservationTimeRepository.class)
 class JdbcReservationTimeRepositoryTest {
     private static final String INSERT_SQL = "insert into reservation_time (id, start_at) values (?, ?)";

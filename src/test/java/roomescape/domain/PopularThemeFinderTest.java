@@ -26,28 +26,36 @@ public class PopularThemeFinderTest {
     private ThemeRepository themeRepository;
 
     @Autowired
+    private MemberCommandRepository memberCommandRepository;
+
+    @Autowired
     private Clock clock;
 
     @DisplayName("현재 날짜 이전 1주일 동안 가장 예약이 많이 된 테마 10개를 내림차순 정렬하여 조회한다.")
     @Test
     void shouldReturnThemesWhenFindPopularThemes() {
-        ReservationTime reservationTime = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
+        ReservationTime reservationTime1 = reservationTimeRepository.findById(1L).orElseThrow();
+        ReservationTime reservationTime2 = reservationTimeRepository.findById(2L).orElseThrow();
+        ReservationTime reservationTime3 = reservationTimeRepository.findById(3L).orElseThrow();
         Theme theme1 = themeRepository.create(ThemeFixture.of("test1", "test1", "test1"));
         Theme theme2 = themeRepository.create(ThemeFixture.of("test2", "test2", "test2"));
         Theme theme3 = themeRepository.create(ThemeFixture.of("test3", "test3", "test3"));
-        reservationCommandRepository.create(createReservation(reservationTime, theme1));
-        reservationCommandRepository.create(createReservation(reservationTime, theme2));
-        reservationCommandRepository.create(createReservation(reservationTime, theme2));
+        Member member = memberCommandRepository.create(MemberFixture.defaultValue());
+        reservationCommandRepository.create(createReservation(member, reservationTime1, theme1));
+        reservationCommandRepository.create(createReservation(member, reservationTime2, theme2));
+        reservationCommandRepository.create(createReservation(member, reservationTime3, theme2));
 
         List<Theme> popularThemes = popularThemeFinder.findThemes();
 
         assertThat(popularThemes).containsExactly(theme2, theme1);
     }
 
-    private Reservation createReservation(ReservationTime reservationTime, Theme theme1) {
-        return new Reservation(new PlayerName("test"),
+    private Reservation createReservation(Member member, ReservationTime reservationTime, Theme theme) {
+        return new Reservation(
+                member,
                 LocalDate.now(clock).minusDays(1),
                 reservationTime,
-                theme1);
+                theme
+        );
     }
 }
