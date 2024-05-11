@@ -79,7 +79,8 @@ class ReservationDaoTest {
                 new Member(4L, "오리", "duck@abc.com"),
                 LocalDate.of(2024, 8, 15),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
-                new Theme(3L, "레벨4 탈출", "레벨4 탈출하기", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+                new Theme(3L, "레벨4 탈출", "레벨4 탈출하기",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         Reservation actual = reservationDao.createReservation(reservation);
 
