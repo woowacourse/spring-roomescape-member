@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static roomescape.Fixture.COOKIE_NAME;
 import static roomescape.Fixture.VALID_ADMIN_EMAIL;
 import static roomescape.Fixture.VALID_ADMIN_NAME;
 import static roomescape.Fixture.VALID_ADMIN_PASSWORD;
@@ -37,7 +38,7 @@ class AdminPageControllerTest extends ControllerTest {
     @ValueSource(strings = {"/admin", "/admin/reservation"})
     void getAdminPage(String endPoint) {
         RestAssured.given().log().all()
-            .cookie("token", getAdminToken())
+            .cookie(COOKIE_NAME, getAdminToken())
             .when().get(endPoint)
             .then().log().all()
             .statusCode(200);
@@ -48,7 +49,7 @@ class AdminPageControllerTest extends ControllerTest {
     @ValueSource(strings = {"/admin", "/admin/reservation"})
     void getAdminPage_ByUser(String endPoint) {
         RestAssured.given().log().all()
-            .cookie("token", getUserToken())
+            .cookie(COOKIE_NAME, getUserToken())
             .when().get(endPoint)
             .then().log().all()
             .statusCode(401);

@@ -18,7 +18,6 @@ import roomescape.service.request.TokenAppRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ControllerTest {
-    public static final String COOKIE_NAME = "token";
     @Autowired
     JdbcTemplate jdbcTemplate;
 

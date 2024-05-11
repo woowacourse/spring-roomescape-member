@@ -30,4 +30,6 @@ public class Fixture {
     public static final Reservation VALID_RESERVATION = new Reservation(VALID_MEMBER, VALID_RESERVATION_DATE,
         VALID_RESERVATION_TIME, VALID_THEME);
 
+    public static final String COOKIE_NAME = "token";
+
 }
