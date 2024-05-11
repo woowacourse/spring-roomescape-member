@@ -1,9 +1,10 @@
 package roomescape.service;
 
+import io.jsonwebtoken.Claims;
 import roomescape.model.User;
 
 public interface TokenProvider {
     String createToken(User user);
 
-    String getPayload(String token);
+    Claims getPayload(String token);
 }

@@ -4,14 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import static roomescape.model.Role.ADMIN;
 import static roomescape.model.Role.MEMBER;
 
 import jakarta.servlet.http.Cookie;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import roomescape.exception.BadRequestException;
+import roomescape.model.Role;
 import roomescape.model.User;
 import roomescape.service.fake.FakeJwtTokenProvider;
 
@@ -56,5 +59,22 @@ class AuthServiceTest {
         Long userId = authService.findUserNameByCookies(cookies);
 
         assertThat(userId).isEqualTo(1L);
+    }
+
+    @DisplayName("쿠키를 주면 권한을 반환한다.")
+    @Test
+    void should_return_role_when_give_cookie() {
+        User adminUser = new User(1L, "썬", ADMIN, "sun@email.com", "1234");
+        User memberUser = new User(2L, "배키", MEMBER, "dmsgml@email.com", "1111");
+        String adminToken = jwtTokenProvider.createToken(adminUser);
+        String memberToken = jwtTokenProvider.createToken(memberUser);
+
+        Role admin = authService.findRoleByCookie(new Cookie[]{new Cookie("token", adminToken)});
+        Role member = authService.findRoleByCookie(new Cookie[]{new Cookie("token", memberToken)});
+
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(admin).isEqualTo(ADMIN);
+            softAssertions.assertThat(member).isEqualTo(MEMBER);
+        });
     }
 }

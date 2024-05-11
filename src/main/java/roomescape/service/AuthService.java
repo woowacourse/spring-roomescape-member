@@ -6,8 +6,10 @@ import jakarta.servlet.http.Cookie;
 
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.BadRequestException;
+import roomescape.model.Role;
 import roomescape.model.User;
 
 @Service
@@ -30,9 +32,17 @@ public class AuthService {
 
     public Long findUserNameByCookies(Cookie[] cookies) {
         Cookie cookie = findCookieIfExist(cookies);
-        String payload = tokenProvider.getPayload(cookie.getValue());
+        Claims claims = tokenProvider.getPayload(cookie.getValue());
+        String payload = claims.get("user_id", String.class);
         validateUser(payload);
         return Long.parseLong(payload);
+    }
+
+    public Role findRoleByCookie(Cookie[] cookies) {
+        Cookie cookie = findCookieIfExist(cookies);
+        Claims claims = tokenProvider.getPayload(cookie.getValue());
+        String payload = claims.get("role", String.class);
+        return Role.valueOf(payload);
     }
 
     private Cookie findCookieIfExist(Cookie[] cookies) {

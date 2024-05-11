@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,8 +21,8 @@ public class JwtTokenProvider implements TokenProvider {
     private long validityInMilliseconds;
 
     @Override
-    public String createToken(User user) { // todo user말고 id값만 받는다면?
-        Claims claims = Jwts.claims().setSubject(user.getId().toString());
+    public String createToken(User user) {
+        Map<String, Object> claims = createClaimsByUser(user);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -33,7 +35,14 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public String getPayload(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    public Claims getPayload(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    }
+
+    private Map<String, Object> createClaimsByUser(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("user_id", user.getId().toString());
+        claims.put("role", user.getRole().toString());
+        return claims;
     }
 }
