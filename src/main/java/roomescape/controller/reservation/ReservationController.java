@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.exception.AuthenticationException;
 import roomescape.controller.member.dto.LoginMember;
+import roomescape.controller.reservation.dto.CreateReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.controller.reservation.dto.ReservationSearch;
 import roomescape.controller.reservation.dto.UserCreateReservationRequest;
@@ -45,7 +46,11 @@ public class ReservationController {
         if (loginMember == null) {
             throw new AuthenticationException("인증되지 않은 사용자입니다.");
         }
-        final Reservation reservation = reservationService.addReservation(request, loginMember);
+
+        final CreateReservationRequest create = new CreateReservationRequest(loginMember.id(),
+                request.themeId(), request.date(), request.timeId());
+
+        final Reservation reservation = reservationService.addReservation(create);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.getId())
                 .toUri();

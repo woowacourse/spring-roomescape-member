@@ -1,9 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.member.dto.AdminCreateReservationRequest;
-import roomescape.controller.member.dto.LoginMember;
-import roomescape.controller.reservation.dto.UserCreateReservationRequest;
+import roomescape.controller.reservation.dto.CreateReservationRequest;
 import roomescape.controller.reservation.dto.ReservationSearch;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
@@ -51,21 +49,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public Reservation addReservation(final UserCreateReservationRequest userCreateReservationRequest,
-                                      final LoginMember loginMember) {
-        final ReservationTime time = reservationTimeRepository.fetchById(userCreateReservationRequest.timeId());
-        final Theme theme = themeRepository.fetchById(userCreateReservationRequest.themeId());
-        final Member member = memberRepository.fetchById(loginMember.id());
-
-        final Reservation parsedReservation = userCreateReservationRequest.toDomain(member, time, theme);
-        validateDuplicate(theme, time, parsedReservation);
-        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
-        validateBeforeDay(reservationDateTime);
-
-        return reservationRepository.save(parsedReservation);
-    }
-
-    public Reservation addReservationAdmin(final AdminCreateReservationRequest reservationRequest) {
+    public Reservation addReservation(final CreateReservationRequest reservationRequest) {
         final ReservationTime time = reservationTimeRepository.fetchById(reservationRequest.timeId());
         final Theme theme = themeRepository.fetchById(reservationRequest.themeId());
         final Member member = memberRepository.fetchById(reservationRequest.memberId());
@@ -90,10 +74,9 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicate(final Theme theme, final ReservationTime time, final Reservation parsedReservation) {
-        final boolean isExistsReservation =
-                reservationRepository.existsByThemesAndDateAndTimeId(theme.getId(), time.getId(),
-                        parsedReservation.getDate());
+    private void validateDuplicate(final Theme theme, final ReservationTime time, final Reservation reservation) {
+        final boolean isExistsReservation = reservationRepository
+                .existsByThemesAndDateAndTimeId(theme.getId(), time.getId(), reservation.getDate());
         if (isExistsReservation) {
             throw new DuplicateReservationException("중복된 시간으로 예약이 불가합니다.");
         }

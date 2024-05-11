@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.member.dto.AdminCreateReservationRequest;
+import roomescape.controller.reservation.dto.CreateReservationRequest;
 import roomescape.controller.member.dto.MemberLoginRequest;
 
 import java.time.LocalDate;
@@ -69,7 +69,7 @@ class AdminReservationControllerTest {
     @Test
     @DisplayName("ADMIN이 예약 생성")
     void createReservationAdmin() {
-        final AdminCreateReservationRequest request = new AdminCreateReservationRequest(1L,
+        final CreateReservationRequest request = new CreateReservationRequest(1L,
                 1L, LocalDate.now().plusDays(1), 1L);
 
         RestAssured.given().log().all()
