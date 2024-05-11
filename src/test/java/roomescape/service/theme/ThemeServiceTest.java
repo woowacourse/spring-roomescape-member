@@ -19,10 +19,11 @@ import roomescape.service.theme.exception.RowsLimitException;
 import roomescape.service.theme.exception.ThemeUsedException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,12 +37,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         H2MemberRepository.class})
 class ThemeServiceTest {
 
-    final List<CreateThemeRequest> sampleThemes = IntStream.range(1, 9)
-            .mapToObj(i -> new CreateThemeRequest(
-                    "Theme " + i,
-                    "Description " + i,
-                    "Thumbnail " + i
-            )).toList();
+    final List<CreateThemeRequest> sampleThemes = List.of(
+            new CreateThemeRequest("Theme 1", "Desc 1", "Thumb 1"),
+            new CreateThemeRequest("Theme 2", "Desc 2", "Thumb 2"),
+            new CreateThemeRequest("Theme 3", "Desc 3", "Thumb 3"),
+            new CreateThemeRequest("Theme 4", "Desc 4", "Thumb 4")
+    );
 
     @Autowired
     ThemeService themeService;
@@ -130,37 +131,69 @@ class ThemeServiceTest {
                 .isInstanceOf(ThemeUsedException.class);
     }
 
-    // TODO: MethodParams 써서 random 하지 않은 테스트로 변경
     @ParameterizedTest
-    @CsvSource(value = {"7:10"}, delimiter = ':')
+    @CsvSource(value = {"1,1", "1,2", "1,3", "2,1", "2,2", "2,3", "3,1", "3,2", "3,3"}, delimiter = ',')
     @DisplayName("인기 테마를 조회한다.")
     void getPopularThemes(int days, int limit) {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
-        Member member = memberRepository.save(
-                new Member(null, "User", "user@test.com", "user", Role.USER)
-        );
-        List<ThemeResponse> themes = sampleThemes.stream()
-                .map(themeService::addTheme)
-                .toList();
-
-        List<Reservation> reservations = new ArrayList<>();
-        createRandomReservations(days, themes, time, member, reservations);
-
+        List<Reservation> reservations = generateAndSaveReservations();
         LocalDate from = LocalDate.now().minusDays(days);
         PopularThemeRequest request = new PopularThemeRequest(days, limit);
 
         // when
         List<PopularThemeResponse> actual = themeService.getPopularThemes(request);
-        List<PopularThemeResponse> themesContainExpected = reservations.stream()
-                .filter(r -> r.getDate().isAfter(from))
-                .map(this::createPopularThemeResponseFromReservation)
-                .distinct()
+        Map<PopularThemeResponse, Long> countByPopularTheme = reservations.stream()
+                .filter(r -> r.getDate().isAfter(from) || r.getDate().isEqual(from))
+                .map(r -> PopularThemeResponse.from(r.getTheme()))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        List<Long> expectedDescendingCounts = actual.stream()
+                .map(countByPopularTheme::get)
                 .toList();
+
+        System.out.println("actual = " + actual);
+        System.out.println("countByPopularTheme = " + countByPopularTheme);
+        System.out.println("expectedDescendingCounts = " + expectedDescendingCounts);
 
         // then
         assertThat(actual.size()).isLessThanOrEqualTo(limit);
-        assertThat(themesContainExpected.containsAll(actual)).isTrue();
+        assertThat(expectedDescendingCounts).isSortedAccordingTo((a, b) -> Math.toIntExact(b - a));
+    }
+
+    private List<Reservation> generateAndSaveReservations() {
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
+        Member member = memberRepository.save(
+                new Member(null, "User", "user@test.com", "user", Role.USER)
+        );
+        List<Theme> themes = Stream.of(
+                        new CreateThemeRequest("N1", "D1", "T1"),
+                        new CreateThemeRequest("N2", "D2", "T2"),
+                        new CreateThemeRequest("N3", "D3", "T3"),
+                        new CreateThemeRequest("N4", "D4", "T4")
+                )
+                .map(themeService::addTheme)
+                .map(res -> new Theme(res.id(), res.name(), res.description(), res.thumbnail()))
+                .toList();
+
+        LocalDate threeDaysAgo = LocalDate.now().minusDays(3);
+        LocalDate twoDaysAgo = LocalDate.now().minusDays(2);
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        List<Reservation> reservations = List.of(
+                new Reservation(null, threeDaysAgo, time, themes.get(0), member),
+                new Reservation(null, threeDaysAgo, time, themes.get(1), member),
+                new Reservation(null, threeDaysAgo, time, themes.get(3), member),
+
+                new Reservation(null, twoDaysAgo, time, themes.get(1), member),
+                new Reservation(null, twoDaysAgo, time, themes.get(2), member),
+                new Reservation(null, twoDaysAgo, time, themes.get(3), member),
+
+                new Reservation(null, yesterday, time, themes.get(2), member),
+                new Reservation(null, yesterday, time, themes.get(3), member)
+        );
+
+        return reservations.stream()
+                .map(reservationRepository::save)
+                .toList();
     }
 
     @Test
@@ -177,37 +210,5 @@ class ThemeServiceTest {
         assertThatThrownBy(() ->
                 getPopularThemes(7, 101))
                 .isInstanceOf(RowsLimitException.class);
-    }
-
-    private void createRandomReservations(
-            int days,
-            List<ThemeResponse> themes,
-            ReservationTime time,
-            Member member,
-            List<Reservation> reservations) {
-        Random random = new Random();
-        for (int day = 1; day < days * 2; day++) {
-            LocalDate date = LocalDate.now().minusDays(day);
-            for (ThemeResponse theme : themes) {
-                if (random.nextBoolean()) {
-                    Reservation reservation = new Reservation(
-                            null,
-                            date,
-                            time,
-                            new Theme(theme.id(), theme.name(), theme.description(), theme.thumbnail()),
-                            member
-                    );
-                    reservations.add(reservationRepository.save(reservation));
-                }
-            }
-        }
-    }
-
-    private PopularThemeResponse createPopularThemeResponseFromReservation(Reservation reservation) {
-        return new PopularThemeResponse(
-                reservation.getTheme().getName(),
-                reservation.getTheme().getThumbnail(),
-                reservation.getTheme().getDescription()
-        );
     }
 }
