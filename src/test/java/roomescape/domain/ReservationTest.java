@@ -63,7 +63,6 @@ class ReservationTest {
     @DisplayName("동일한 테마와 시간을 가지는 예약은 같은 예약으로 판단한다.")
     @Test
     void isSameReservationTest() {
-        String name = "sameName";
         LocalDate date = LocalDate.now();
         Theme theme = new Theme(1L, "name", "description", "thumbnail");
         ReservationTime time = new ReservationTime(1L, LocalTime.now());
@@ -91,7 +90,7 @@ class ReservationTest {
                 LocalDate.of(2024, 6, 20)
         );
         Reservation reservation = new Reservation(
-                LocalDate.of(2024, 05, 05),
+                LocalDate.of(2024, 5, 5),
                 new ReservationTime(LocalTime.of(16, 30)),
                 new Theme("name", "description", "thumbnail"),
                 Fixture.defaultLoginuser

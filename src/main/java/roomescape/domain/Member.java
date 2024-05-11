@@ -7,10 +7,6 @@ public class Member {
     private final String email;
     private final String password;
 
-    public Member(String name, Role role, String email, String password) {
-        this(null, name, role, email, password);
-    }
-
     public Member(long id, Member member) {
         this(id, member.loginMember.getName(), member.getRole(), member.email, member.password);
     }
