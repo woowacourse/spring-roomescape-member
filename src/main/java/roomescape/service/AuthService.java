@@ -25,7 +25,7 @@ public class AuthService {
         if (!member.getPassword().equals(request.getPassword())) {
             throw new UnauthorizedPasswordException();
         }
-        return jwtTokenProvider.createToken(member.getEmail());
+        return jwtTokenProvider.createToken(member.getEmail(), member.getRole());
     }
 
     public LoginCheckResponse loginCheck(Member member) {
