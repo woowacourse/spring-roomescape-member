@@ -41,4 +41,9 @@ public class AuthController {
     public LoginCheckResponse checkLogin(@Authenticated AuthenticatedMember authenticatedMember) {
         return new LoginCheckResponse(authenticatedMember.name());
     }
+
+    @PostMapping("/logout")
+    public void logout(final HttpServletRequest request, final HttpServletResponse response) {
+        CookieUtil.deleteCookie(request, response, "token");
+    }
 }
