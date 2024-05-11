@@ -1,7 +1,6 @@
 package roomescape.repository.repositoryImpl;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -89,7 +88,7 @@ public class JdbcReservationDao implements ReservationDao {
                 INNER JOIN member as m on r.member_id = m.id
                 WHERE member_id = ? AND theme_id = ? AND date > ? AND date < ?
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        return jdbcTemplate.query(sql, reservationRowMapper, memberId, themeId, dateFrom, dateTo);
     }
 
     @Override
