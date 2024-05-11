@@ -91,3 +91,11 @@ host: localhost:8080
     "memberId": 1
 }
 ```
+
+## 6단계
+- [x] Member에 Role을 추가한다.
+- [ ] `/admin`으로 시작하는 페이지 접근은 Role이 `ADMIN`인 Member만 가능하도록 제한한다.
+  - [ ] 인터셉터가 쿠키에 포함된 토큰을 바탕으로 사용자가 admin 권한이 있는지 판단한다.
+- [ ] 관리자가 예약자별, 테마별, 날짜별 검색 조건을 이용해 예약을 검색할 수 있도록 기능을 추가한다.
+  - 검색 조건을 선택하고 적용을 누르면, reservation-with-member.js의 applyFilter() 함수가 실행된다
+  - [ ] 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성한다.

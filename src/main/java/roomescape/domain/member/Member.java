@@ -7,20 +7,22 @@ public class Member {
     private final MemberName name;
     private final Email email;
     private final Password password;
+    private final Role role;
 
-    public Member(Long id, MemberName name, Email email, Password password) {
+    public Member(Long id, MemberName name, Email email, Password password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public Member(MemberName name, Email email, Password password) {
-        this(null, name, email, password);
+    public Member(MemberName name, Email email, Password password, Role role) {
+        this(null, name, email, password, role);
     }
 
     public Member(Long id, Member member) {
-        this(id, member.name, member.email, member.password);
+        this(id, member.name, member.email, member.password, member.role);
     }
 
     public Long getId() {
@@ -37,6 +39,10 @@ public class Member {
 
     public Password getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override

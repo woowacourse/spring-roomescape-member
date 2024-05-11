@@ -31,7 +31,7 @@ class MemberServiceTest {
     void throwExceptionIfIncorrectMemberInfo(String password, String email) {
         LoginRequest loginRequest = new LoginRequest(password, email);
 
-        assertThatThrownBy(() -> memberService.getLoginToken(loginRequest))
+        assertThatThrownBy(() -> memberService.createLoginToken(loginRequest))
                 .isInstanceOf(AuthenticationException.class);
     }
 
@@ -40,7 +40,7 @@ class MemberServiceTest {
     void getTokenIfLoginSucceeds() throws AuthenticationException {
         LoginRequest loginRequest = new LoginRequest(MEMBER_4.getPassword().password(), MEMBER_4.getEmail().email());
 
-        String token = memberService.getLoginToken(loginRequest);
+        String token = memberService.createLoginToken(loginRequest);
 
         assertThat(token).isNotNull();
     }
@@ -56,7 +56,7 @@ class MemberServiceTest {
     @DisplayName("토큰에 대응하는 멤버 정보를 가져온다.")
     void getLoginMember() throws AuthenticationException {
         LoginRequest loginRequest = new LoginRequest(MEMBER_4.getPassword().password(), MEMBER_4.getEmail().email());
-        String token = memberService.getLoginToken(loginRequest);
+        String token = memberService.createLoginToken(loginRequest);
 
         MemberNameResponse memberNameResponse = memberService.getMemberResponse(token);
 

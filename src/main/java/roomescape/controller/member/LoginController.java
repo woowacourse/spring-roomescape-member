@@ -28,7 +28,7 @@ public class LoginController {
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response)
             throws AuthenticationException {
-        String token = memberService.getLoginToken(loginRequest);
+        String token = memberService.createLoginToken(loginRequest);
 
         Cookie cookie = new Cookie(TOKEN, token);
         cookie.setPath("/");

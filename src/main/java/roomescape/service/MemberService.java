@@ -28,7 +28,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public String getLoginToken(LoginRequest loginRequest) throws AuthenticationException {
+    public String createLoginToken(LoginRequest loginRequest) throws AuthenticationException {
         return memberRepository.findByEmailAndPassword(
                         new Email(loginRequest.email()),
                         new Password(loginRequest.password()))

@@ -20,6 +20,24 @@ class AdminReservationPageControllerTest {
     }
 
     @Test
+    @DisplayName("/admin/time 페이지를 응답한다.")
+    void responseAdminTimePage() {
+        RestAssured.given().log().all()
+                .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("/admin/theme 페이지를 응답한다.")
+    void responseAdminThemePage() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
     @DisplayName("/admin/reservation-new 페이지를 응답한다.")
     void responseAdminReservationPage() {
         RestAssured.given().log().all()

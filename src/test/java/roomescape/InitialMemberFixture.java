@@ -5,6 +5,7 @@ import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.Password;
+import roomescape.domain.member.Role;
 
 public class InitialMemberFixture {
 
@@ -13,31 +14,36 @@ public class InitialMemberFixture {
             1L,
             new MemberName("카고"),
             new Email("kargo123@email.com"),
-            new Password("123456")
+            new Password("123456"),
+            Role.USER
     );
     public static final Member MEMBER_2 = new Member(
             2L,
             new MemberName("브라운"),
             new Email("brown123@email.com"),
-            new Password("123456")
+            new Password("123456"),
+            Role.USER
     );
     public static final Member MEMBER_3 = new Member(
             3L,
             new MemberName("솔라"),
             new Email("solar123@email.com"),
-            new Password("123456")
+            new Password("123456"),
+            Role.USER
     );
     public static final Member MEMBER_4 = new Member(
             4L,
             new MemberName("어드민"),
             new Email("admin@email.com"),
-            new Password("password")
+            new Password("password"),
+            Role.ADMIN
     );
 
     public static final Member NOT_SAVED_MEMBER = new Member(
             new MemberName("네오"),
             new Email("neo123@email.com"),
-            new Password("123456")
+            new Password("123456"),
+            Role.USER
     );
 
     public static final LoginMember LOGIN_MEMBER_1 = new LoginMember(
