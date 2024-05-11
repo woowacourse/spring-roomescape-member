@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.exception.InvalidValueException;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberName;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.MemberReservationCreateRequest;
@@ -131,7 +132,7 @@ class ReservationServiceTest {
                     1L,
                     1L
             );
-            Member member = new Member(1L, "사용자1", "user1@wooteco.com", "user1", USER);
+            Member member = new Member(1L, new MemberName("사용자1"), "user1@wooteco.com", "user1", USER);
 
             ReservationResponse result = reservationService.add(request, member);
 

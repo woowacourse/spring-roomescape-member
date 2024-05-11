@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberName;
 import roomescape.domain.member.Role;
 
 @Repository
@@ -16,7 +17,7 @@ public class JdbcMemberDao implements MemberDao {
     private static final RowMapper<Member> MEMBER_ROW_MAPPER =
             (resultSet, rowNum) -> new Member(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    new MemberName(resultSet.getString("name")),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
                     Role.valueOf(resultSet.getString("role"))

@@ -33,6 +33,6 @@ class AuthServiceTest {
         String token = authService.createToken(MemberLoginRequest.of("user1", "user1@wooteco.com"));
         Member result = authService.findMemberByToken(token);
 
-        assertThat(result.getName()).isEqualTo("user1");
+        assertThat(result.getName().getValue()).isEqualTo("user1");
     }
 }

@@ -5,6 +5,6 @@ import roomescape.domain.member.Member;
 public record ReservationMemberResponse(Long id, String name) {
 
     public static ReservationMemberResponse of(Member member) {
-        return new ReservationMemberResponse(member.getId(), member.getName());
+        return new ReservationMemberResponse(member.getId(), member.getName().getValue());
     }
 }
