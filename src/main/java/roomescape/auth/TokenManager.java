@@ -19,6 +19,9 @@ import roomescape.domain.role.Role;
 
 @Component
 public class TokenManager {
+    public static final String CLAIM_NAME = "name";
+    public static final String CLAIM_ROLE = "role";
+
     private final SecretKey secretKey;
     private final long tokenExpirationMills;
     private final Clock clock;
@@ -42,8 +45,8 @@ public class TokenManager {
 
         return Jwts.builder()
                 .setSubject(String.valueOf(memberRole.getMemberId()))
-                .claim("name", memberRole.getMemberName())
-                .claim("role", memberRole.getRoleName())
+                .claim(CLAIM_NAME, memberRole.getMemberName())
+                .claim(CLAIM_ROLE, memberRole.getRoleName())
                 .setIssuedAt(now)
                 .setExpiration(expiresAt)
                 .signWith(secretKey)
@@ -56,8 +59,8 @@ public class TokenManager {
                     .getBody();
             return new MemberRole(
                     Long.parseLong(claims.getSubject()),
-                    claims.get("name", String.class),
-                    Role.from(claims.get("role", String.class))
+                    claims.get(CLAIM_NAME, String.class),
+                    Role.from(claims.get(CLAIM_ROLE, String.class))
             );
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException(e);
