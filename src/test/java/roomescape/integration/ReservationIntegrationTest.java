@@ -17,11 +17,38 @@ import roomescape.service.dto.LoginRequest;
 class ReservationIntegrationTest extends IntegrationTest {
     @Nested
     @DisplayName("예약 목록 조회 API")
-    class FindAllReservations {
+    class FindAllReservation {
         @Test
         void 예약_목록을_조회할_수_있다() {
             RestAssured.given().log().all()
                     .when().get("/reservations")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
+        }
+
+        @Test
+        void 예약_목록을_예약자별로_필터링해_조회할_수_있다() {
+            RestAssured.given().log().all()
+                    .when().get("/reservations?member-id=1")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
+        }
+
+        @Test
+        void 예약_목록을_테마별로_필터링해_조회할_수_있다() {
+            RestAssured.given().log().all()
+                    .when().get("/reservations?theme-id=1")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
+        }
+
+        @Test
+        void 예약_목록을_기간별로_필터링해_조회할_수_있다() {
+            RestAssured.given().log().all()
+                    .when().get("/reservations?date-from=2024-08-05&date-to=2024-08-10")
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(1));
