@@ -7,6 +7,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,10 +36,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ProblemDetail> catchIllegalAccessException(IllegalAccessException ex) {
-        System.out.println(EXCEPTION_PREFIX + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage()));
+    public ResponseEntity<ProblemDetail> catcHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        String exceptionMessage = "입력값의 형식이 올바르지 않습니다. 다시 시도해주세요.";
+        System.out.println(exceptionMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exceptionMessage));
     }
 
     @ExceptionHandler
