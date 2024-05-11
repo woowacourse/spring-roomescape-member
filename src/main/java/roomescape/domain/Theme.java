@@ -1,7 +1,6 @@
 package roomescape.domain;
 
-import roomescape.exception.ErrorType;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 public class Theme {
     private final Long id;
@@ -22,7 +21,7 @@ public class Theme {
 
     private void validateEmpty(final String fieldName, final String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, fieldName, value);
+            throw new EmptyValueNotAllowedException(fieldName);
         }
     }
 

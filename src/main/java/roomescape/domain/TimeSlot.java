@@ -1,7 +1,6 @@
 package roomescape.domain;
 
-import roomescape.exception.ErrorType;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 import java.time.LocalTime;
 
@@ -11,7 +10,7 @@ public class TimeSlot {
 
     public TimeSlot(Long id, LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "startAt", "");
+            throw new EmptyValueNotAllowedException("startAt");
         }
 
         this.id = id;

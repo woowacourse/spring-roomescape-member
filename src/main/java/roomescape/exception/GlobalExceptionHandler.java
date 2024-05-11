@@ -10,11 +10,19 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final String MESSAGE_FORMAT = "%s 필드명 : [%s], 값 : [%s]";
+    private static final String MESSAGE_FORMAT = "%s 필드명 : [%s]";
+    private static final String MESSAGE_FORMAT_WITH_VALUE = "%s 필드명 : [%s], 값 : [%s]";
 
-    @ExceptionHandler(value = InvalidClientRequestException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(InvalidClientRequestException ex, HttpServletRequest req) {
-        final String message = MESSAGE_FORMAT.formatted(ex.getErrorType().getMessage(), ex.getFieldName(), ex.getValue());
+    @ExceptionHandler(value = InvalidClientFieldException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidClientField(InvalidClientFieldException ex, HttpServletRequest req) {
+        final String message = MESSAGE_FORMAT.formatted(ex.getErrorType().getMessage(), ex.getFieldName());
+        final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, req.getRequestURI(), message);
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(value = InvalidClientFieldWithValueException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidClientFieldWithValue(InvalidClientFieldWithValueException ex, HttpServletRequest req) {
+        final String message = MESSAGE_FORMAT_WITH_VALUE.formatted(ex.getErrorType().getMessage(), ex.getFieldName(), ex.getValue());
         final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, req.getRequestURI(), message);
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -25,7 +33,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    //TODO : 기깔나게 상위 클래스로 묶어버리기
     @ExceptionHandler(DeleteNotAllowException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(DeleteNotAllowException e, HttpServletRequest req) {
         final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, req.getRequestURI(), e.getMessage());
@@ -54,7 +61,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Object handleMissingServletRequestParameterException(
             MissingServletRequestParameterException ex, HttpServletRequest req) {
-        final String message = MESSAGE_FORMAT.formatted(ErrorType.EMPTY_VALUE_NOT_ALLOWED, ex.getParameterName(), "");
+        final String message = MESSAGE_FORMAT.formatted(ErrorType.EMPTY_VALUE_NOT_ALLOWED, ex.getParameterName());
         final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, req.getRequestURI(), message);
         return ResponseEntity.badRequest().body(errorResponse);
     }

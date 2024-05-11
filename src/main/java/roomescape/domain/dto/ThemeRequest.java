@@ -1,8 +1,7 @@
 package roomescape.domain.dto;
 
 import roomescape.domain.Theme;
-import roomescape.exception.ErrorType;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 public record ThemeRequest(String name, String description, String thumbnail) {
     public ThemeRequest {
@@ -17,7 +16,7 @@ public record ThemeRequest(String name, String description, String thumbnail) {
 
     private void validEmpty(final String fieldName, final String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, fieldName, value);
+            throw new EmptyValueNotAllowedException(fieldName);
         }
     }
 

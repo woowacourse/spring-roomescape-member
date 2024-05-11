@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.dto.ReservationRequest;
 import roomescape.domain.dto.ReservationResponse;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.InvalidClientFieldWithValueException;
 import roomescape.exception.ReservationFailException;
 
 import java.time.LocalDate;
@@ -80,7 +80,7 @@ class ReservationServiceTest {
         long initialSize = getReservationSize();
         final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("2099-01-01"), 1L, 99L, 1L);
         //when, then
-        assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientRequestException.class);
+        assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientFieldWithValueException.class);
         assertThat(getReservationSize()).isEqualTo(initialSize);
     }
 
@@ -91,7 +91,7 @@ class ReservationServiceTest {
         long initialSize = getReservationSize();
         final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("2099-01-01"), 99L, 1L, 1L);
         //when, then
-        assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientRequestException.class);
+        assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientFieldWithValueException.class);
         assertThat(getReservationSize()).isEqualTo(initialSize);
     }
 
@@ -102,7 +102,7 @@ class ReservationServiceTest {
         long initialSize = getReservationSize();
         final ReservationRequest reservationRequest = new ReservationRequest(LocalDate.parse("2099-01-01"), 1L, 1L, 99L);
         //when, then
-        assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientRequestException.class);
+        assertThatThrownBy(() -> service.create(reservationRequest)).isInstanceOf(InvalidClientFieldWithValueException.class);
         assertThat(getReservationSize()).isEqualTo(initialSize);
     }
 }

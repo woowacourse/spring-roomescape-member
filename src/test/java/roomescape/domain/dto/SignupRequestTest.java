@@ -3,7 +3,7 @@ package roomescape.domain.dto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -13,6 +13,6 @@ class SignupRequestTest {
     @ParameterizedTest
     void given_when_newWithEmptyValue_then_throwException(String email, String password, String name) {
         assertThatThrownBy(() -> new SignupRequest(email, password, name))
-                .isInstanceOf(InvalidClientRequestException.class);
+                .isInstanceOf(EmptyValueNotAllowedException.class);
     }
 }

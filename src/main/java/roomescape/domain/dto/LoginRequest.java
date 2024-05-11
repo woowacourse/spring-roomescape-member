@@ -1,7 +1,6 @@
 package roomescape.domain.dto;
 
-import roomescape.exception.ErrorType;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 public record LoginRequest(String email, String password) {
     public LoginRequest {
@@ -11,7 +10,7 @@ public record LoginRequest(String email, String password) {
 
     private void validEmpty(final String fieldName, final String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, fieldName, "");
+            throw new EmptyValueNotAllowedException(fieldName);
         }
     }
 }

@@ -1,15 +1,13 @@
 package roomescape.exception;
 
-public class InvalidClientRequestException extends IllegalArgumentException {
+public class InvalidClientFieldException extends BadRequestException {
     private final ErrorType errorType;
     private final String fieldName;
-    private final String value;
 
-    public InvalidClientRequestException(final ErrorType errorType, final String fieldName, final String value) {
+    public InvalidClientFieldException(final ErrorType errorType, final String fieldName) {
         super();
         this.errorType = errorType;
         this.fieldName = fieldName;
-        this.value = value;
     }
 
     public ErrorType getErrorType() {
@@ -18,9 +16,5 @@ public class InvalidClientRequestException extends IllegalArgumentException {
 
     public String getFieldName() {
         return fieldName;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

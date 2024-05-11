@@ -5,9 +5,8 @@ import roomescape.domain.*;
 import roomescape.domain.dto.ReservationRequest;
 import roomescape.domain.dto.ReservationResponse;
 import roomescape.domain.dto.ReservationResponses;
-import roomescape.exception.ErrorType;
-import roomescape.exception.InvalidClientRequestException;
 import roomescape.exception.ReservationFailException;
+import roomescape.exception.clienterror.InvalidIdException;
 import roomescape.repository.MemberDao;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
@@ -51,17 +50,17 @@ public class ReservationService {
 
     private TimeSlot getTimeSlot(final ReservationRequest reservationRequest) {
         return timeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new InvalidClientRequestException(ErrorType.NOT_EXIST_TIME, "timeId", reservationRequest.timeId().toString()));
+                .orElseThrow(() -> new InvalidIdException("timeId", reservationRequest.timeId()));
     }
 
     private Theme getTheme(final ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new InvalidClientRequestException(ErrorType.NOT_EXIST_TIME, "themeId", reservationRequest.themeId().toString()));
+                .orElseThrow(() -> new InvalidIdException("themeId", reservationRequest.themeId()));
     }
 
     private Member getMember(final ReservationRequest reservationRequest) {
         return memberDao.findById(reservationRequest.memberId())
-                .orElseThrow(() -> new InvalidClientRequestException(ErrorType.NOT_EXIST_TIME, "themeId", reservationRequest.themeId().toString()));
+                .orElseThrow(() -> new InvalidIdException("memberId", reservationRequest.memberId()));
     }
 
     private void validateDuplicatedReservation(final ReservationRequest reservationRequest) {
