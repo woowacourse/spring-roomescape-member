@@ -69,8 +69,8 @@ public class ReservationService {
         return LocalDateTime.of(date, reservationTime.getStartAt());
     }
 
-    public List<Reservation> findReservations() {
-        return reservationRepository.findAll();
+    public List<Reservation> findReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findByThemeIdAndMemberIdAndBetweenDate(themeId, memberId, dateFrom, dateTo);
     }
 
     public void deleteReservation(Long id) {

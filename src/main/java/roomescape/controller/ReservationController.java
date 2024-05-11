@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.security.Permission;
 import roomescape.domain.Reservation;
@@ -18,6 +19,7 @@ import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,10 +34,15 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> reservationResponses = reservationService.findReservations().stream()
-                .map(ReservationResponse::of)
-                .toList();
+    public ResponseEntity<List<ReservationResponse>> getReservations(
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo) {
+        List<ReservationResponse> reservationResponses =
+                reservationService.findReservations(themeId, memberId, dateFrom, dateTo).stream()
+                        .map(ReservationResponse::of)
+                        .toList();
         return ResponseEntity.ok(reservationResponses);
     }
 
