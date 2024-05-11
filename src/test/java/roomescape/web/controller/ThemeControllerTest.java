@@ -39,7 +39,7 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마 생성 시, name 값이 null이면 예외가 발생한다.")
     void validateThemeWithNullName() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", null);
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
@@ -56,7 +56,7 @@ class ThemeControllerTest {
     @ValueSource(strings = {"", " "})
     @DisplayName("테마 생성 시, name 값이 비어있으면 예외가 발생한다.")
     void validateThemeWithNameEmpty(final String name) {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
@@ -72,7 +72,7 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마 생성 시, description 값이 null이면 예외가 발생한다.")
     void validateThemeWithNullDescription() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", null);
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
@@ -89,7 +89,7 @@ class ThemeControllerTest {
     @ValueSource(strings = {"", " "})
     @DisplayName("테마 생성 시, description 값이 비어있으면 예외가 발생한다.")
     void validateThemeWithDescriptionEmpty(final String description) {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", description);
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
@@ -105,7 +105,7 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마 생성 시, thumbnail 값이 null이면 예외가 발생한다.")
     void validateThemeWithNullThumbnail() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", null);
@@ -122,7 +122,7 @@ class ThemeControllerTest {
     @ValueSource(strings = {"", " "})
     @DisplayName("테마 생성 시, thumbnail 값이 비어있으면 예외가 발생한다.")
     void validateThemeWithThumbnailEmpty(final String thumbnail) {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", thumbnail);
@@ -138,7 +138,7 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마 생성 시, name 값이 중복이면 예외가 발생한다.")
     void validateThemeWithDuplicatedName() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
@@ -172,7 +172,7 @@ class ThemeControllerTest {
     @DisplayName("지난 한 주 동안의 인기 테마 목록을 조회한다.")
     void findPopularThemesInLastWeek() {
         final String yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
-        insertReservation("브라운", yesterday, 1, 1);
+        insertReservation(yesterday, 1, 1, 1);
 
         RestAssured.given().log().all()
                 .when().get("/themes/popular?period-day=7")
@@ -193,7 +193,7 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마 삭제 시, 해당 테마를 참조하는 예약이 없으면 테마가 삭제된다.")
     void deleteTheme() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
@@ -215,9 +215,9 @@ class ThemeControllerTest {
         return jdbcTemplate.queryForObject("SELECT count(*) FROM theme", Integer.class);
     }
 
-    private void insertReservation(String name, String date, int timeId, int themeId) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, name, date, timeId, themeId);
+    private void insertReservation(final String date, final int timeId, final int themeId, final int memberId) {
+        final String sql = "INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, date, timeId, themeId, memberId);
     }
 
     private int findLastIdOfTheme() {

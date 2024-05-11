@@ -26,7 +26,7 @@ import roomescape.core.service.ReservationTimeService;
 public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 

@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -45,7 +46,7 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("시간 생성 시, startAt 값이 null이면 예외가 발생한다.")
     void validateTimeCreateWithNullStartAt() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("startAt", null);
 
         RestAssured.given().log().all()
@@ -60,7 +61,7 @@ class ReservationTimeControllerTest {
     @ValueSource(strings = {"", " ", "10:89"})
     @DisplayName("시간 생성 시, startAt 값의 형식이 올바르지 않으면 예외가 발생한다.")
     void validateTimeCreateWithStartAtFormat(final String startAt) {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("startAt", startAt);
 
         RestAssured.given().log().all()
@@ -74,7 +75,7 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("시간 생성 시, startAt 값이 중복되면 예외가 발생한다.")
     void validateTimeDuplicated() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("startAt", "10:10");
 
         RestAssured.given().log().all()
@@ -106,20 +107,33 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
     void findAvailableTimes() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", TOMORROW_DATE);
-        params.put("timeId", 1);
-        params.put("themeId", 1);
+        final Map<String, Object> loginParams = new HashMap<>();
+        loginParams.put("email", "hong@gmail.com");
+        loginParams.put("password", "1234");
+
+        final String loginTokenCookie = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        final Map<String, Object> reservationParams = new HashMap<>();
+        reservationParams.put("date", TOMORROW_DATE);
+        reservationParams.put("timeId", 1);
+        reservationParams.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .header("Cookie", loginTokenCookie)
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
-        List<ReservationTimeWithStateDto> times = RestAssured.given().log().all()
+        final List<ReservationTimeWithStateDto> times = RestAssured.given().log().all()
                 .when().get("/times/available?date=" + TOMORROW_DATE + "&theme-id=1")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -148,7 +162,7 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 없으면 시간이 삭제된다.")
     void deleteTime() {
-        Map<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put("startAt", "10:10");
 
         RestAssured.given().log().all()

@@ -30,8 +30,8 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public Member findMemberByToken(final String token) {
-        if (jwtTokenProvider.isExpiredToken(token)) {
-            throw new AuthorizationException("만료된 토큰입니다.");
+        if (token == null || jwtTokenProvider.isExpiredToken(token)) {
+            throw new AuthorizationException("토큰이 없거나 만료되었습니다.");
         }
         final String email = jwtTokenProvider.getPayload(token);
         return memberRepository.findByEmail(email);

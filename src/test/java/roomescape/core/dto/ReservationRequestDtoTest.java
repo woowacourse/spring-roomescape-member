@@ -3,7 +3,6 @@ package roomescape.core.dto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.util.Fixture.DATE;
 import static roomescape.util.Fixture.ID;
-import static roomescape.util.Fixture.USER_NAME;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -31,33 +30,20 @@ class ReservationRequestDtoTest {
     @DisplayName("date가 null이나 빈 값이면 검증에 실패한다")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\n"})
-    void notEmptyViolationWithBlankDate(String emptyDate) {
-        ReservationRequestDto reservationRequest = new ReservationRequestDto(emptyDate, USER_NAME, ID, ID);
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
+    void notEmptyViolationWithBlankDate(final String emptyDate) {
+        final ReservationRequestDto reservationRequest = new ReservationRequestDto(emptyDate, ID, ID);
+        final Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
                 .first()
                 .isEqualTo("예약 날짜는 null이나 빈 값일 수 없습니다.");
     }
 
-    @ParameterizedTest
-    @DisplayName("name가 null이나 빈 값이면 검증에 실패한다")
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "\n"})
-    void notEmptyViolationWithBlankName(String emptyName) {
-        ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE, emptyName, ID, ID);
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
-        assertThat(violations).hasSize(1)
-                .extracting(ConstraintViolation::getMessage)
-                .first()
-                .isEqualTo("예약 이름은 null이나 빈 값일 수 없습니다.");
-    }
-
     @Test
     @DisplayName("timeId가 null이면 검증에 실패한다")
     void notEmptyViolationWithNullTimeId() {
-        ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE, USER_NAME, null, ID);
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
+        final ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE, null, ID);
+        final Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
                 .first()
@@ -67,8 +53,8 @@ class ReservationRequestDtoTest {
     @Test
     @DisplayName("themeId가 null이면 검증에 실패한다")
     void notEmptyViolationWithNullThemeId() {
-        ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE, USER_NAME, ID, null);
-        Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
+        final ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE, ID, null);
+        final Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
                 .first()

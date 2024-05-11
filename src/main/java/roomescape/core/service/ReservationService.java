@@ -3,9 +3,11 @@ package roomescape.core.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.core.domain.Member;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
+import roomescape.core.dto.LoginMemberDto;
 import roomescape.core.dto.ReservationRequestDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
@@ -29,15 +31,22 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation create(final ReservationRequestDto request) {
+    public Reservation create(final ReservationRequestDto request, final LoginMemberDto loginMember) {
+        final Member member = new Member(
+                loginMember.getId(),
+                loginMember.getName(),
+                loginMember.getEmail(),
+                loginMember.getPassword(),
+                loginMember.getRole()
+        );
         final ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
         final Theme theme = themeRepository.findById(request.getThemeId());
-        final Reservation reservation = new Reservation(request.getName(), request.getDate(), time, theme);
+        final Reservation reservation = new Reservation(member, request.getDate(), time, theme);
 
         validateDateTimeIsNotPast(reservation, time);
         validateDuplicatedReservation(reservation, time);
         final Long id = reservationRepository.save(reservation);
-        return new Reservation(id, reservation.getName(), reservation.getDateString(), time, theme);
+        return new Reservation(id, member, reservation.getDate(), time, theme);
     }
 
     @Transactional(readOnly = true)

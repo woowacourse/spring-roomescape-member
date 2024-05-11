@@ -7,46 +7,66 @@ import roomescape.web.exception.BadRequestException;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     public Reservation(
-            final String name,
+            final Member member,
             final String date,
             final ReservationTime time,
             final Theme theme
     ) {
-        this(null, name, date, time, theme);
+        this(null, member, date, time, theme);
     }
 
     public Reservation(
             final Long id,
-            final String name,
+            final Member member,
             final String date,
             final ReservationTime time,
             final Theme theme
     ) {
-        validateEmpty(name, date, time, theme);
+        this(id, member, parseDate(date), time, theme);
+    }
+
+    public Reservation(
+            final Long id,
+            final Member member,
+            final LocalDate date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
+        validateEmpty(member, date, time, theme);
         this.id = id;
-        this.name = name;
-        this.date = parseDate(date);
+        this.member = member;
+        this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
+    private static LocalDate parseDate(final String date) {
+        try {
+            return LocalDate.parse(date);
+        } catch (final NullPointerException e) {
+            throw new BadRequestException("예약 날짜는 null일 수 없습니다.");
+        } catch (final DateTimeParseException e) {
+            throw new BadRequestException("예약 날짜 형식이 잘못되었습니다.");
+        }
+    }
+
     private void validateEmpty(
-            final String name,
-            final String date,
+            final Member member,
+            final LocalDate date,
             final ReservationTime time,
             final Theme theme
     ) {
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("예약 이름은 null이나 빈 값일 수 없습니다.");
+        if (member == null) {
+            throw new BadRequestException("예약자는 null일 수 없습니다.");
         }
-        if (date == null || date.isBlank()) {
-            throw new BadRequestException("예약 날짜는 null이나 빈 값일 수 없습니다.");
+        if (date == null) {
+            throw new BadRequestException("예약 날짜는 null일 수 없습니다.");
         }
         if (time == null) {
             throw new BadRequestException("예약 시간은 null일 수 없습니다.");
@@ -56,20 +76,24 @@ public class Reservation {
         }
     }
 
-    private LocalDate parseDate(final String date) {
-        try {
-            return LocalDate.parse(date);
-        } catch (final DateTimeParseException e) {
-            throw new BadRequestException("예약 날짜 형식이 잘못되었습니다.");
-        }
+    public boolean isDatePast() {
+        return date.isBefore(LocalDate.now());
+    }
+
+    public boolean isDateToday() {
+        return date.isEqual(LocalDate.now());
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
+    }
+
+    public Long getMemberId() {
+        return member.getId();
     }
 
     public LocalDate getDate() {
@@ -84,7 +108,7 @@ public class Reservation {
         return time.getId();
     }
 
-    public ReservationTime getReservationTime() {
+    public ReservationTime getTime() {
         return time;
     }
 
@@ -94,13 +118,5 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public boolean isDatePast() {
-        return date.isBefore(LocalDate.now());
-    }
-
-    public boolean isDateToday() {
-        return date.isEqual(LocalDate.now());
     }
 }
