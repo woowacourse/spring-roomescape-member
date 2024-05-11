@@ -88,4 +88,16 @@ public class AuthControllerTest {
                 .then()
                 .body("data.name", is("이름"));
     }
+
+    @Test
+    @DisplayName("로그인 없이, 검증요청을 보내면 401 Unauthorized 를 발생한다.")
+    void checkLoginFailByNotAuthorized() {
+        // given
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .when().get("/login/check")
+                .then()
+                .statusCode(401);
+    }
 }
