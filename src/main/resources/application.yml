@@ -10,3 +10,4 @@ spring:
       path: /h2-console
 jwt:
   secret: devdevdevdevdevdevdevdevdevdevdevdev
+  expire-in-millis: 180000

@@ -3,6 +3,7 @@ package roomescape.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.exception.AuthenticationException;
 import roomescape.domain.role.RoleRepository;
 
 public class AdminRoleInterceptor implements HandlerInterceptor {
@@ -17,7 +18,8 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        long memberId = tokenManager.getMemberIdFromCookies(request.getCookies());
+        String token = AuthInformationExtractor.extractToken(request);
+        long memberId = tokenManager.getMemberIdFrom(token);
         if (roleRepository.isAdminByMemberId(memberId)) {
             return true;
         }

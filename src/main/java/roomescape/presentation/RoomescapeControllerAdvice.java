@@ -1,7 +1,5 @@
 package roomescape.presentation;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -15,7 +13,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.auth.AuthenticationException;
+import roomescape.auth.exception.AuthenticationException;
+import roomescape.auth.exception.AuthenticationInformationNotFoundException;
+import roomescape.auth.exception.ExpiredTokenException;
+import roomescape.auth.exception.InvalidTokenException;
 
 @RestControllerAdvice
 public class RoomescapeControllerAdvice {
@@ -45,22 +46,19 @@ public class RoomescapeControllerAdvice {
         return problemDetail;
     }
 
-    @ExceptionHandler(JwtException.class)
-    public ProblemDetail handleMalformedJwtException(MalformedJwtException exception) {
+    @ExceptionHandler({
+            InvalidTokenException.class, ExpiredTokenException.class,
+            AuthenticationInformationNotFoundException.class, AuthenticationException.class
+    })
+    public ProblemDetail handleMalformedJwtException(RuntimeException exception) {
         logger.error(exception.getMessage(), exception);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
 
     @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
     public ProblemDetail handleIllegalArgumentException(RuntimeException exception) {
         logger.error(exception.getMessage(), exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ProblemDetail handleAuthenticationException(AuthenticationException exception) {
-        logger.error(exception.getMessage(), exception);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

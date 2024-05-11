@@ -15,6 +15,9 @@ public class TestConfig {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${jwt.expire-in-millis}")
+    private long expireInMillis;
+
     @Bean
     @Primary
     public Clock testClock() {
@@ -24,6 +27,6 @@ public class TestConfig {
     @Bean
     @Primary
     public TokenManager testTokenManager() {
-        return new TokenManager(secret);
+        return new TokenManager(secret, expireInMillis, testClock());
     }
 }

@@ -41,7 +41,8 @@ public class MemberService {
         if (!member.matchPassword(request.password())) {
             throw new IllegalArgumentException("이메일 / 비밀번호를 확인해 주세요.");
         }
-        return tokenManager.createToken(member);
+        String token = tokenManager.createToken(member.getId());
+        return new TokenResponse(token);
     }
 
     public MemberResponse findById(Long memberId) {

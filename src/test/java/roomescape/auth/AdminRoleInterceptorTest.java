@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import roomescape.auth.exception.AuthenticationException;
 import roomescape.domain.role.RoleRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +29,7 @@ class AdminRoleInterceptorTest {
     @Test
     @DisplayName("인증되지 않은 사용자의 경우, admin 페이지에 접근 시 401 응답을 반환한다.")
     void unAuthorizedOnNotAdminInterceptorTest() {
-        given(tokenManager.getMemberIdFromCookies(any())).willReturn(1L);
+        given(tokenManager.getMemberIdFrom(any())).willReturn(1L);
         given(roleRepository.isAdminByMemberId(anyLong())).willReturn(false);
         AdminRoleInterceptor interceptor = new AdminRoleInterceptor(tokenManager, roleRepository);
 
@@ -44,7 +45,7 @@ class AdminRoleInterceptorTest {
     @Test
     @DisplayName("인증된 사용자의 경우, admin 페이지에 접근할 수 있다.")
     void authorizedInterceptorTest() {
-        given(tokenManager.getMemberIdFromCookies(any())).willReturn(1L);
+        given(tokenManager.getMemberIdFrom(any())).willReturn(1L);
         given(roleRepository.isAdminByMemberId(anyLong())).willReturn(true);
         AdminRoleInterceptor interceptor = new AdminRoleInterceptor(tokenManager, roleRepository);
 
