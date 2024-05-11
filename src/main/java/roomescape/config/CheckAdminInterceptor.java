@@ -10,6 +10,8 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.service.MemberService;
 
+import java.util.Arrays;
+
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
@@ -23,7 +25,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
                              final HttpServletResponse response, final Object handler) {
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
-        if (token.isEmpty()) {
+        if (token == null) {
             throw new AuthenticationException("인증되지 않은 사용자입니다.");
         }
 
@@ -36,13 +38,12 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private String extractTokenFromCookie(final Cookie[] cookies) {
         if (cookies == null) {
-            return "";
+            return null;
         }
-        for (final Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .map(Cookie::getValue)
+                .findAny()
+                .orElse(null);
     }
 }

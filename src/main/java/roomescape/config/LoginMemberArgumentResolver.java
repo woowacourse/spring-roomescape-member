@@ -11,6 +11,8 @@ import roomescape.controller.member.dto.LoginMember;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
+import java.util.Arrays;
+
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
@@ -27,28 +29,25 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
-
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-
+        //TODO 쿠키 추출 로직 한곳으로 이동시키기
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
-        if (cookies == null || cookies.length == 0 || token == null || token.isBlank()) {
+        if (token == null) {
             return null;
         }
-
         final Member member = memberService.findMemberByToken(token);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
     }
 
     private String extractTokenFromCookie(final Cookie[] cookies) {
         if (cookies == null) {
-            return "";
+            return null;
         }
-        for (final Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .map(Cookie::getValue)
+                .findAny()
+                .orElse(null);
     }
 }
