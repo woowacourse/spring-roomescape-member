@@ -27,6 +27,8 @@
 
 ## 관리자 페이지
 
+- 관리자로 로그인한 사람만 접속할 수 있다.
+
 ### 메인 페이지
 
 - `/admin` 으로 접속할 수 있다.
@@ -43,6 +45,8 @@
     - 이름, 날짜, 시간에 빈 값을 입력할 수 없다.
     - 지나간 날짜와 시간에 대한 예약을 추가할 수 없다.
     - 이미 존재하는 예약과 같은 시간에 예약을 추가할 수 없다.
+- 예약을 필터링해 검색할 수 있다.
+    - 사용자, 테마, 시작 날짜, 끝 날짜를 기준으로 검색할 수 있다.
 
 ### 예약 시간 관리 페이지
 
@@ -66,23 +70,24 @@
 
 ## API 명세서
 
-| HTTP Method | URI                  | Description  |
-|-------------|----------------------|--------------|
-| GET         | `/admin`             | 관리자 메인 페이지   | 
-| GET         | `/admin/reservation` | 예약 관리 페이지    |
-| GET         | `/admin/time`        | 예약 시간 관리 페이지 |
-| GET         | `/admin/theme`       | 테마 관리 페이지    |
-| GET         | `/`                  | 사용자 메인 페이지   |
-| GET         | `/reservation`       | 예약 페이지       |
-| GET         | `/login`             | 로그인 페이지      |
-| GET         | `/reservations`      | 예약 목록 조회     |
-| POST        | `/reservations`      | 예약 추가        |
-| DELETE      | `/reservations/{id}` | 예약 삭제        |
-| GET         | `/times`             | 예약 시간 목록 조회  |
-| POST        | `/times`             | 예약 시간 추가     |
-| DELETE      | `/times/{id}`        | 예약 시간 삭제     |
-| GET         | `/themes`            | 테마 목록 조회     |
-| POST        | `/themes`            | 테마 추가        |
-| DELETE      | `/themes/{id}`       | 테마 삭제        | 
-| POST        | `/login`             | 로그인 요청       |
-| GET         | `/login/check`       | 로그인 정보 조회    |
+| HTTP Method | URI                    | Description  |
+|-------------|------------------------|--------------|
+| GET         | `/admin`               | 관리자 메인 페이지   | 
+| GET         | `/admin/reservation`   | 예약 관리 페이지    |
+| GET         | `/admin/time`          | 예약 시간 관리 페이지 |
+| GET         | `/admin/theme`         | 테마 관리 페이지    |
+| GET         | `/`                    | 사용자 메인 페이지   |
+| GET         | `/reservation`         | 예약 페이지       |
+| GET         | `/login`               | 로그인 페이지      |
+| GET         | `/reservations`        | 예약 목록 조회     |
+| POST        | `/reservations`        | 예약 추가        |
+| GET         | `/reservations/filter` | 예약 목록 필터링    |
+| DELETE      | `/reservations/{id}`   | 예약 삭제        |
+| GET         | `/times`               | 예약 시간 목록 조회  |
+| POST        | `/times`               | 예약 시간 추가     |
+| DELETE      | `/times/{id}`          | 예약 시간 삭제     |
+| GET         | `/themes`              | 테마 목록 조회     |
+| POST        | `/themes`              | 테마 추가        |
+| DELETE      | `/themes/{id}`         | 테마 삭제        | 
+| POST        | `/login`               | 로그인 요청       |
+| GET         | `/login/check`         | 로그인 정보 조회    |
