@@ -62,7 +62,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return ReservationResponse.listOf(reservationDao.getAll());
+        return mapToReservationTimeResponses(reservationDao.getAll());
     }
 
     public void delete(final long id) {
@@ -73,12 +73,12 @@ public class ReservationService {
     public List<SelectableTimeResponse> findSelectableTime(final LocalDate date, final long themeId) {
         List<Long> usedTimeId = findUsedTimeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
-        return SelectableTimeResponse.listOf(reservationTimes, usedTimeId);
+        return mapToSelectableTimeResponses(reservationTimes, usedTimeId);
     }
 
     public List<ReservationResponse> findReservationBy(long themeId, long memberId, LocalDate start, LocalDate end) {
         List<Reservation> filteredReservations = reservationDao.findByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
-        return ReservationResponse.listOf(filteredReservations);
+        return mapToReservationTimeResponses(filteredReservations);
     }
 
     private List<Long> findUsedTimeId(LocalDate date, long themeId) {
@@ -121,5 +121,18 @@ public class ReservationService {
     private void checkReservationExist(long id) {
         reservationDao.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 삭제할 예약 데이터가 없습니다."));
+    }
+
+    private List<ReservationResponse> mapToReservationTimeResponses(List<Reservation> reservations) {
+        return reservations
+                .stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
+    private List<SelectableTimeResponse> mapToSelectableTimeResponses(List<ReservationTime> reservationTimes, List<Long> usedTimeIds) {
+        return reservationTimes.stream()
+                .map(time -> SelectableTimeResponse.from(time, usedTimeIds))
+                .toList();
     }
 }

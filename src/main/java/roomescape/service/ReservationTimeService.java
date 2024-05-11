@@ -30,7 +30,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> findAll() {
-        return ReservationTimeResponse.listOf(reservationTimeDao.getAll());
+        return mapToResponses(reservationTimeDao.getAll());
     }
 
     public void delete(final long id) {
@@ -49,5 +49,12 @@ public class ReservationTimeService {
     private void validateIdExists(final long id) {
         reservationTimeDao.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 삭제할 예약 시간이 없습니다."));
+    }
+
+    private List<ReservationTimeResponse> mapToResponses(List<ReservationTime> reservationTimes) {
+        return reservationTimes
+                .stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
     }
 }

@@ -17,6 +17,9 @@ public class MemberController {
 
     @GetMapping("/members")
     public List<MemberResponse> members() {
-        return MemberResponse.listOf(memberService.findAllMembers());
+        return memberService.findAllMembers()
+                .stream()
+                .map(MemberResponse::new)
+                .toList();
     }
 }

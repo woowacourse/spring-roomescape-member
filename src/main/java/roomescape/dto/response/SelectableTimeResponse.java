@@ -21,10 +21,4 @@ public record SelectableTimeResponse(
                 usedTimeIds.contains(time.getId())
         );
     }
-
-    public static List<SelectableTimeResponse> listOf(List<ReservationTime> reservationTimes, List<Long> usedTimeIds) {
-        return reservationTimes.stream()
-                .map(time -> SelectableTimeResponse.from(time, usedTimeIds))
-                .toList();
-    }
 }
