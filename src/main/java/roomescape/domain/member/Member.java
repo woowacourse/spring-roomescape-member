@@ -1,31 +1,22 @@
 package roomescape.domain.member;
 
 public class Member {
-    private static final int MAX_EMAIL_LENGTH = 30;
-
     private final Long id;
     private final MemberName memberName;
-    private final String email;
+    private final Email email;
     private final Password password;
     private final Role role;
 
     public Member(Long id, MemberName memberName, String email, String password, Role role) {
-        validateEmail(email);
         this.id = id;
         this.memberName = memberName;
-        this.email = email;
+        this.email = new Email(email);
         this.password = new Password(password);
         this.role = role;
     }
 
     public Member(Long id, String name, String email, String password, Role role) {
         this(id, new MemberName(name), email, password, role);
-    }
-
-    private void validateEmail(String email) {
-        if (email.length() > MAX_EMAIL_LENGTH) {
-            throw new IllegalArgumentException(String.format("이메일은 %d자 이하여야 합니다.", MAX_EMAIL_LENGTH));
-        }
     }
 
     public boolean matchPassword(String rawPassword) {
@@ -45,7 +36,7 @@ public class Member {
     }
 
     public String getEmail() {
-        return email;
+        return email.getValue();
     }
 
     public String getPassword() {
