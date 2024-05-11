@@ -8,7 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.response.MemberResponse;
+import roomescape.dto.response.MemberNameResponse;
 import roomescape.service.MemberService;
 
 public class MemberResponseArgumentResolver implements HandlerMethodArgumentResolver {
@@ -23,7 +23,7 @@ public class MemberResponseArgumentResolver implements HandlerMethodArgumentReso
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(MemberResponse.class);
+        return parameter.getParameterType().equals(MemberNameResponse.class);
     }
 
     @Override

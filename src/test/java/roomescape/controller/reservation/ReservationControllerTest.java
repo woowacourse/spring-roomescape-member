@@ -30,18 +30,30 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("Reservation을 추가한다.")
+    @DisplayName("로그인 후 Reservation을 추가한다.")
     void addReservation() {
         //given
-        LocalDate localDate = LocalDate.now().plusDays(1);
+        Map<String, String> memberParam = new HashMap<>();
+        memberParam.put("password", "password");
+        memberParam.put("email", "admin@email.com");
+
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberParam)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
+
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
         Map<String, String> reservationParams = new HashMap<>();
-        reservationParams.put("name", "브리");
-        reservationParams.put("date", localDate.toString());
+        reservationParams.put("date", tomorrow.toString());
         reservationParams.put("timeId", "1");
         reservationParams.put("themeId", "1");
 
         //when & then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
                 .when().post("/reservations")

@@ -8,7 +8,8 @@ public record ReservationResponse(
         String name,
         String date,
         ReservationTimeResponse time,
-        ThemeResponse theme
+        ThemeResponse theme,
+        MemberNameResponse member
 ) {
 
     public ReservationResponse(Reservation reservation) {
@@ -17,7 +18,8 @@ public record ReservationResponse(
                 reservation.getLoginMember().getName().name(),
                 reservation.getDate(DateTimeFormatter.ISO_DATE),
                 new ReservationTimeResponse(reservation.getTime()),
-                new ThemeResponse(reservation.getTheme())
+                new ThemeResponse(reservation.getTheme()),
+                new MemberNameResponse(reservation.getLoginMember())
         );
     }
 }

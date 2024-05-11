@@ -20,6 +20,10 @@ public class LoginMember {
         this(id, new MemberName(name), new Email(email));
     }
 
+    public LoginMember(Member member) {
+        this(member.getId(), member.getName(), member.getEmail());
+    }
+
     public Long getId() {
         return id;
     }

@@ -57,9 +57,9 @@
   - [x] 변경된 명세에 맞게 클라이언트가 동작하도록 코드를 수정한다.
     - [x] `reservation.html`
     - [x] `user-reservation.js`
-- [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 한다. (아래 2번 API 참고)
-  - [ ] 관리자용 `ReservationRequest`를 만든다.
-  - [ ] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경한다.
+- [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 한다. (아래 2번 API 참고)
+  - [x] 관리자용 `AdminReservationRequest`를 만든다.
+  - [x] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경한다.
   - `js/reservation-new.js` -> `/js/reservation-with-member.js`
   
 ### 5단계에서 변경된 명세

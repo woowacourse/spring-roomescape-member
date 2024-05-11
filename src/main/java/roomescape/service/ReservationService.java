@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.member.LoginMember;
+import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
@@ -19,18 +20,24 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final MemberService memberService;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            ReservationTimeService reservationTimeService, ThemeService themeService
+            ReservationTimeService reservationTimeService,
+            ThemeService themeService,
+            MemberService memberService
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.memberService = memberService;
     }
 
     public ReservationResponse addReservation(
-            ReservationRequest reservationRequest, LoginMemberRequest loginMemberRequest) {
+            ReservationRequest reservationRequest,
+            LoginMemberRequest loginMemberRequest
+    ) {
         ReservationTimeResponse timeResponse = reservationTimeService.getTime(reservationRequest.timeId());
         ThemeResponse themeResponse = themeService.getTheme(reservationRequest.themeId());
 
@@ -38,7 +45,24 @@ public class ReservationService {
                 reservationRequest.date(),
                 timeResponse.toReservationTime(),
                 themeResponse.toTheme(),
-                new LoginMember(loginMemberRequest.id(), loginMemberRequest.name(), loginMemberRequest.email())
+                loginMemberRequest.toLoginMember()
+        );
+        validateIsBeforeNow(reservation);
+        validateIsDuplicated(reservation);
+
+        return new ReservationResponse(reservationRepository.save(reservation));
+    }
+
+    public ReservationResponse addReservation(AdminReservationRequest adminReservationRequest) {
+        LoginMember loginMember = memberService.getLoginMemberById(adminReservationRequest.memberId());
+        ReservationTimeResponse timeResponse = reservationTimeService.getTime(adminReservationRequest.timeId());
+        ThemeResponse themeResponse = themeService.getTheme(adminReservationRequest.themeId());
+
+        Reservation reservation = new Reservation(
+                adminReservationRequest.date(),
+                timeResponse.toReservationTime(),
+                themeResponse.toTheme(),
+                loginMember
         );
         validateIsBeforeNow(reservation);
         validateIsDuplicated(reservation);

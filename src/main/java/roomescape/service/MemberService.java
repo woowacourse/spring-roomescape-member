@@ -3,13 +3,16 @@ package roomescape.service;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.util.List;
 import javax.naming.AuthenticationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Email;
+import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Password;
 import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.MemberNameResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.exceptions.NotFoundException;
 import roomescape.repository.member.MemberRepository;
@@ -41,11 +44,11 @@ public class MemberService {
                 .compact();
     }
 
-    public MemberResponse getMemberResponse(String token) throws AuthenticationException {
+    public MemberNameResponse getMemberResponse(String token) throws AuthenticationException {
         Long memberId = parseTokenToMemberId(token);
 
         return memberRepository.findById(memberId)
-                .map(member -> new MemberResponse(member.getName().name()))
+                .map(member -> new MemberNameResponse(member.getName().name()))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
     }
 
@@ -69,5 +72,20 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .map(member -> new LoginMemberRequest(memberId, member.getName().name(), member.getEmail().email()))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
+    }
+
+    public LoginMember getLoginMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .map(LoginMember::new)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 id입니다. memberId = " + memberId));
+    }
+
+    // 여기까지 구현 완료. 관리자예약 시 MemberId가 필요해서 MemberResponse를 새로 정의함.
+    // 테스트코드 짜고 커밋하면 될 듯?
+    public List<MemberResponse> findMembers() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponse::new)
+                .toList();
     }
 }

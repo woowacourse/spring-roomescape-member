@@ -36,8 +36,8 @@ class LoginControllerTest {
     }
 
     @Test
-    @DisplayName("요청 쿠키에 올바른 토큰 값을 담아서 대응하는 회원 정보를 요청하면 회원 정보를 응답한다.")
-    void getLoginMember() {
+    @DisplayName("요청 쿠키에 담긴 토큰에 대응하는 회원 이름을 응답한다.")
+    void getLoginMemberName() {
         //given
         Map<String, String> memberParam = new HashMap<>();
         memberParam.put("password", "password");

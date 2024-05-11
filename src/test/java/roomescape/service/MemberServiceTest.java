@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.LoginRequest;
-import roomescape.dto.response.MemberResponse;
+import roomescape.dto.response.MemberNameResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -58,8 +58,8 @@ class MemberServiceTest {
         LoginRequest loginRequest = new LoginRequest(MEMBER_4.getPassword().password(), MEMBER_4.getEmail().email());
         String token = memberService.getLoginToken(loginRequest);
 
-        MemberResponse memberResponse = memberService.getMemberResponse(token);
+        MemberNameResponse memberNameResponse = memberService.getMemberResponse(token);
 
-        assertThat(memberResponse.name()).isEqualTo(MEMBER_4.getName().name());
+        assertThat(memberNameResponse.name()).isEqualTo(MEMBER_4.getName().name());
     }
 }
