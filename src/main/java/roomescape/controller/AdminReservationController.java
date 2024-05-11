@@ -14,6 +14,10 @@ import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
+import java.time.LocalDate;
+import java.util.List;
+
+@RequestMapping("/admin/reservations")
 @RestController
 public class AdminReservationController {
 
@@ -34,7 +38,7 @@ public class AdminReservationController {
         this.themeService = themeService;
     }
 
-    @PostMapping("/admin/reservations")
+    @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final AdminReservationSaveRequest request) {
         final MemberResponse memberResponse = memberService.findById(request.memberId());
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
@@ -42,5 +46,15 @@ public class AdminReservationController {
 
         final Reservation reservation = request.toModel(memberResponse, themeResponse, reservationTimeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
+    }
+
+    @GetMapping(params = {"themeId", "memberId", "dateFrom", "dateTo"})
+    public ResponseEntity<List<ReservationResponse>> findReservationsByThemeAndMemberAndPeriod (
+            @RequestParam(required = false) final Long themeId,
+            @RequestParam(required = false) final Long memberId,
+            @RequestParam(required = false) final LocalDate dateFrom,
+            @RequestParam(required = false) final LocalDate dateTo
+    ) {
+        return ResponseEntity.ok(reservationService.findAllByThemeAndMemberAndPeriod(themeId, memberId, dateFrom, dateTo));
     }
 }
