@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.util.List;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -16,9 +17,16 @@ public class JdbcMemberRepository implements MemberRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<Member> rowMapper;
 
-    public JdbcMemberRepository(NamedParameterJdbcTemplate jdbcTemplate, RowMapper<Member> rowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcMemberRepository(DataSource dataSource, RowMapper<Member> rowMapper) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.rowMapper = rowMapper;
+    }
+
+    @Override
+    public List<Member> findAllMembers() {
+        String sql = "SELECT id, name, email, password, role FROM member";
+
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override

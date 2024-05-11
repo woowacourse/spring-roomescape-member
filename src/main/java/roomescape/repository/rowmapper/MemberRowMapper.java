@@ -13,10 +13,10 @@ public class MemberRowMapper implements RowMapper<Member> {
     public Member mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         return new Member(
                 resultSet.getLong("id"),
-                resultSet.getString("email"),
-                resultSet.getString("password"),
                 resultSet.getString("name"),
-                resultSet.getString("role")
+                resultSet.getString("role"),
+                resultSet.getString("email"),
+                resultSet.getString("password")
         );
     }
 }
