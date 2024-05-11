@@ -7,28 +7,26 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AdminRoleInterceptor;
 import roomescape.auth.LoginMemberIdArgumentResolver;
-import roomescape.auth.TokenManager;
-import roomescape.domain.role.RoleRepository;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    private final AdminRoleInterceptor adminRoleInterceptor;
+    private final LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;
 
-    private final TokenManager tokenManager;
-    private final RoleRepository roleRepository;
-
-    public WebConfig(TokenManager tokenManager, RoleRepository roleRepository) {
-        this.tokenManager = tokenManager;
-        this.roleRepository = roleRepository;
+    public WebConfig(AdminRoleInterceptor adminRoleInterceptor,
+                     LoginMemberIdArgumentResolver loginMemberIdArgumentResolver) {
+        this.adminRoleInterceptor = adminRoleInterceptor;
+        this.loginMemberIdArgumentResolver = loginMemberIdArgumentResolver;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberIdArgumentResolver(tokenManager));
+        resolvers.add(loginMemberIdArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminRoleInterceptor(tokenManager, roleRepository))
+        registry.addInterceptor(adminRoleInterceptor)
                 .addPathPatterns("/admin/**");
     }
 }
