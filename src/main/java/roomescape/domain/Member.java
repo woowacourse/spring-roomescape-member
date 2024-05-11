@@ -3,7 +3,7 @@ package roomescape.domain;
 public class Member {
     private Long id;
     private String name;
-    private String email; // TODO: 이메일 객체로 추출
+    private String email;
     private String password;
     private MemberRole role;
 

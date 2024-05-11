@@ -39,8 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@LoginMember Member member,
-                                       HttpServletResponse response) { // TODO: 기존 토큰 검증 로직 위치 개선하기
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = cookieExtractor.deleteCookie();
         response.addCookie(cookie);
         return ResponseEntity.ok().build();

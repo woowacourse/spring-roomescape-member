@@ -71,7 +71,7 @@ class ReservationIntegrationTest extends IntegrationTest {
             params.put("date", "2023-08-06");
 
             RestAssured.given().log().all()
-                    .header("Cookie", cookieProvider.getCookie()) // TODO: 인증 테스트 따로 진행하고 mock 쓸지 고민해보기
+                    .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")

@@ -69,8 +69,6 @@ class AuthIntegrationTest extends IntegrationTest {
                     .then().log().all()
                     .statusCode(HttpStatus.UNAUTHORIZED.value());
         }
-
-        // TODO: 만료된 토큰 테스트하기
     }
 
     @Nested
