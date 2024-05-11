@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.infrastructure.authentication.AuthenticationRequest;
 import roomescape.support.IntegrationTestSupport;
 
-//TODO: 테스트 개선
 class AuthControllerTest extends IntegrationTestSupport {
 
     @Test

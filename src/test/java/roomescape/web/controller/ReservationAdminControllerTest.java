@@ -23,6 +23,7 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getAdminToken())
                 .body(request)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -37,6 +38,7 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void validateDate() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getAdminToken())
                 .body("{}")
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -53,6 +55,7 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getAdminToken())
                 .body(invalidRequest)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -65,6 +68,7 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void validateTimeId() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getAdminToken())
                 .body("{}")
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -82,6 +86,7 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getAdminToken())
                 .body(invalidRequest)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -94,6 +99,7 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void validateMemberId() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getAdminToken())
                 .body("{}")
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -111,10 +117,28 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getAdminToken())
                 .body(invalidRequest)
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(400)
                 .body("details.message", hasItem("0보다 커야 합니다"));
+    }
+
+    @Test
+    @DisplayName("어드민만 접근 가능하다.")
+    void onlyAdmin() {
+        String date = nextDate().toString();
+        ReservationAdminWebRequest request =
+                new ReservationAdminWebRequest(date, 1L, 1L, 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
+                .body(request)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(401)
+                .body("message", is("유효한 인가 정보를 입력해주세요."));
     }
 }

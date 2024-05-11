@@ -45,6 +45,7 @@ public class AuthService {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim("name", member.getName().value())
+                .claim("isAdmin", member.isAdmin())
                 .signWith(KEY)
                 .compact();
     }
@@ -58,7 +59,8 @@ public class AuthService {
                     .getPayload();
             Long id = Long.valueOf(payload.getSubject());
             String name = payload.get("name", String.class);
-            return new AuthenticatedMemberProfile(id, name);
+            boolean isAdmin = payload.get("isAdmin", Boolean.class);
+            return new AuthenticatedMemberProfile(id, name, isAdmin);
         } catch (JwtException e) {
             throw new UnauthorizedException();
         }

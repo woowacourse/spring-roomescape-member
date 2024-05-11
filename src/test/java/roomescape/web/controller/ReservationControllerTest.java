@@ -9,16 +9,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.infrastructure.authentication.AuthService;
-import roomescape.infrastructure.authentication.AuthenticationRequest;
 import roomescape.support.IntegrationTestSupport;
 import roomescape.web.controller.request.ReservationWebRequest;
 
 class ReservationControllerTest extends IntegrationTestSupport {
-
-    @Autowired
-    private AuthService authService;
 
     @Test
     @DisplayName("전체 예약 목록을 조회한다.")
@@ -38,13 +32,13 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", startsWith("/reservations/"))
-                .body("member.name", is("어드민"))
+                .body("member.name", is("일반 사용자"))
                 .body("date", is(date.toString()));
     }
 
@@ -53,7 +47,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void validateDate() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body("{}")
                 .when().post("/reservations")
                 .then().log().all()
@@ -69,7 +63,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -82,7 +76,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void validateTimeId() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body("{}")
                 .when().post("/reservations")
                 .then().log().all()
@@ -99,7 +93,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -116,7 +110,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -129,7 +123,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void validateThemeId() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body("{}")
                 .when().post("/reservations")
                 .then().log().all()
@@ -146,7 +140,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -163,7 +157,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -179,7 +173,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -187,7 +181,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -203,7 +197,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", givenToken())
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -224,9 +218,5 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));
-    }
-
-    private String givenToken() {
-        return authService.authenticate(new AuthenticationRequest("admin@test.com", "password"));
     }
 }

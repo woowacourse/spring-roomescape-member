@@ -8,7 +8,7 @@ import roomescape.support.IntegrationTestSupport;
 class LoginPageControllerTest extends IntegrationTestSupport {
 
     @Test
-    @DisplayName("\"/login\"으로 GET 요청을 보낼 수 있다.")
+    @DisplayName("login 페이지 조회가 가능하다.")
     void loginPage() {
         RestAssured.given().log().all()
                 .when().get("/login")

@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import roomescape.infrastructure.authentication.AuthService;
+import roomescape.infrastructure.authentication.AuthenticationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/reset_test_data.sql")
@@ -26,6 +28,9 @@ public abstract class IntegrationTestSupport {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private AuthService authService;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +59,14 @@ public abstract class IntegrationTestSupport {
 
     protected LocalTime previousTime() {
         return LocalTime.parse("00:00");
+    }
+
+    protected String getAdminToken() {
+        return authService.authenticate(new AuthenticationRequest("admin@test.com", "password"));
+    }
+
+    protected String getMemberToken() {
+        return authService.authenticate(new AuthenticationRequest("member@test.com", "password"));
     }
 
     @Configuration

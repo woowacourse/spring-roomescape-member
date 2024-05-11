@@ -4,8 +4,10 @@ package roomescape.web.config;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.infrastructure.authentication.AuthService;
+import roomescape.web.security.AuthorizeAdminInterceptor;
 import roomescape.web.security.CookieTokenExtractor;
 import roomescape.web.security.MemberIdArgumentResolver;
 
@@ -23,5 +25,11 @@ class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new MemberIdArgumentResolver(authService, extractor));
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AuthorizeAdminInterceptor(authService, extractor))
+                .addPathPatterns("/admin/**");
     }
 }

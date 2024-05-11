@@ -21,7 +21,7 @@ class MemberRepositoryTest extends IntegrationTestSupport {
     void findAll() {
         List<Member> members = target.findAll();
 
-        assertThat(members).hasSize(1);
+        assertThat(members).hasSize(2);
     }
 
     @Test
