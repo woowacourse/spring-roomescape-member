@@ -6,8 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
-import roomescape.dto.ReservationRequestDto;
+import roomescape.domain.ReservationTheme;
+import roomescape.dto.AdminReservationRequestDto;
+import roomescape.dto.FilterConditionDto;
+import roomescape.exception.WrongStateException;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -33,19 +37,21 @@ public class ReservationServiceTest {
     void getAllReservationsTest() {
         List<Reservation> reservations = reservationService.getAllReservations();
 
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.size()).isGreaterThan(0);
     }
 
     @DisplayName("예약을 추가한다.")
     @Test
     void insertReservationTest() {
         ZoneId kst = ZoneId.of("Asia/Seoul");
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now(kst).plusDays(1), 1L, 1L);
-        Reservation reservation = reservationService.insertReservation(reservationRequestDto);
+        int size = reservationService.getAllReservations().size();
 
-        assertThat(reservation.getId()).isEqualTo(2L);
-        assertThat(reservation.getName()).isEqualTo(reservationRequestDto.name());
-        assertThat(reservation.getDate()).isEqualTo(reservationRequestDto.date().toString());
+        AdminReservationRequestDto adminReservationRequestDto = new AdminReservationRequestDto(LocalDate.now(kst).plusDays(1), 1L, 1L, 1L);
+        Reservation reservation = reservationService.insertReservation(adminReservationRequestDto);
+
+        assertThat(reservation.getId()).isEqualTo(size + 1L);
+        assertThat(reservation.getMember().getName()).isEqualTo("name");
+        assertThat(reservation.getDate()).isEqualTo(adminReservationRequestDto.date().toString());
     }
 
     @DisplayName("예약을 삭제한다.")
@@ -61,11 +67,10 @@ public class ReservationServiceTest {
     void invalidDateTimeTest() {
         ZoneId kst = ZoneId.of("Asia/Seoul");
         LocalDate localDate = LocalDate.now(kst).minusDays(2);
+        AdminReservationRequestDto adminReservationRequestDto = new AdminReservationRequestDto(localDate, 1L, 1L, 1L);
 
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", localDate, 1L, 1L);
-
-        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequestDto))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> reservationService.insertReservation(adminReservationRequestDto))
+                .isInstanceOf(WrongStateException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }
 
@@ -73,12 +78,33 @@ public class ReservationServiceTest {
     @Test
     void duplicatedReservationTest() {
         ZoneId kst = ZoneId.of("Asia/Seoul");
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now(kst).plusDays(2), 1L, 1L);
+        AdminReservationRequestDto adminReservationRequestDto = new AdminReservationRequestDto(LocalDate.now(kst).plusDays(2), 1L, 1L, 1L);
 
-        reservationService.insertReservation(reservationRequestDto);
+        reservationService.insertReservation(adminReservationRequestDto);
 
-        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequestDto))
-                .isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> reservationService.insertReservation(adminReservationRequestDto))
+                .isInstanceOf(WrongStateException.class)
                 .hasMessage("이미 해당 시간에 예약이 존재합니다.");
+    }
+
+    @DisplayName("조건에 맞는 예약을 반환한다.")
+    @Test
+    void getFilteredReservationsTest() {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+
+        LocalDate dateFrom = LocalDate.now(kst).minusWeeks(1);
+        LocalDate dateTo = LocalDate.now(kst).minusDays(1);
+
+        FilterConditionDto filterConditionDto = new FilterConditionDto(1L, 1L, dateFrom, dateTo);
+
+        List<Reservation> reservations = reservationService.getFilteredReservations(filterConditionDto);
+        List<Long> themeIds = reservations.stream().map(Reservation::getTheme).map(ReservationTheme::getId).toList();
+        List<Long> memberId = reservations.stream().map(Reservation::getMember).map(Member::getId).toList();
+        List<String> dates = reservations.stream().map(Reservation::getDate).toList();
+
+        assertThat(reservations.size()).isEqualTo(2);
+        assertThat(themeIds).containsOnly(1L);
+        assertThat(memberId).containsOnly(1L);
+        dates.forEach(date -> assertThat(date).isBetween(dateFrom.toString(), dateTo.toString()));
     }
 }

@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationTimeResponseControllerTest {
+public class AdminReservationTimeControllerTest {
 
     @LocalServerPort
     int port;
@@ -108,7 +108,7 @@ public class ReservationTimeResponseControllerTest {
         RestAssured.given().log().all()
                 .param("date", "2024-05-01")
                 .param("themeId", "1")
-                .when().get("/times/user")
+                .when().get("/times/filter")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
@@ -124,7 +124,7 @@ public class ReservationTimeResponseControllerTest {
         RestAssured.given().log().all()
                 .param("date", LocalDate.now(kst).minusDays(1).toString())
                 .param("themeId", "1")
-                .when().get("/times/user")
+                .when().get("/times/filter")
                 .then().log().all()
                 .statusCode(200)
                 .body("[0].startAt", is("01:00"))

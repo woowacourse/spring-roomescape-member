@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationThemeResponseControllerTest {
+public class AdminReservationThemeControllerTest {
 
     @LocalServerPort
     int port;
@@ -37,7 +37,7 @@ public class ReservationThemeResponseControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
     }
 
     @DisplayName("정상적인 테마 추가 요청 시 201으로 응답한다.")
@@ -94,15 +94,5 @@ public class ReservationThemeResponseControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body(is("예약이 존재하는 테마는 삭제할 수 없습니다."));
-    }
-
-    @DisplayName("최근 일주일간 가장 예약이 많은 테마를 조회한다.")
-    @Test
-    void weeklyBestThemesTest() {
-        RestAssured.given().log().all()
-                .when().get("/best-themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 }

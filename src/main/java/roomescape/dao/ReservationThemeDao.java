@@ -21,9 +21,20 @@ public class ReservationThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<ReservationTheme> findAll() {
-        String findAllSql = "SELECT * FROM theme";
-        return jdbcTemplate.query(findAllSql, getReservationThemeRowMapper());
+    public Long insert(String name, String description, String thumbnail) {
+        String insertSql = "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    insertSql,
+                    new String[]{"id"});
+            ps.setString(1, name);
+            ps.setString(2, description);
+            ps.setString(3, thumbnail);
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
     public Optional<ReservationTheme> findById(Long id) {
@@ -47,21 +58,9 @@ public class ReservationThemeDao {
         return jdbcTemplate.query(sql, getReservationThemeRowMapper(), from, to, count);
     }
 
-
-    public Long insert(String name, String description, String thumbnail) {
-        String insertSql = "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    insertSql,
-                    new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, description);
-            ps.setString(3, thumbnail);
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+    public List<ReservationTheme> findAll() {
+        String findAllSql = "SELECT * FROM theme";
+        return jdbcTemplate.query(findAllSql, getReservationThemeRowMapper());
     }
 
     public void deleteById(Long id) {

@@ -5,9 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTheme;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.*;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -21,42 +19,82 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAll() {
-        String findAllSql = """
+    public Long insert(String date, Long timeId, Long themeId, Long memberId) {
+        String insertSql = "INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    insertSql,
+                    new String[]{"id"});
+            ps.setString(1, date);
+            ps.setLong(2, timeId);
+            ps.setLong(3, themeId);
+            ps.setLong(4, memberId);
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
+    }
+
+    public List<Reservation> findFilteredReservations(Long themeId, Long memberId, String dateFrom, String dateTo) {
+        String findFilteredSql = """
                 SELECT 
-                    r.id as reservation_id, 
-                    r.name,     
+                    r.id as reservation_id,      
                     r.date, 
                     t.id as time_id, 
                     t.start_at as time_value, 
                     tm.id as theme_id, 
                     tm.name as theme_name, 
                     tm.description,     
-                    tm.thumbnail 
+                    tm.thumbnail, 
+                    m.id as member_id,
+                    m.name as name,
+                    m.role,
+                    m.email,
+                    m.password
+                    
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t 
                 ON r.time_id = t.id 
                 INNER JOIN theme AS tm 
                 ON r.theme_id = tm.id
+                INNER JOIN member AS m 
+                ON r.member_id = m.id
+        
+                WHERE
+                    tm.id = ? AND
+                    m.id = ? AND
+                    (r.date BETWEEN ? AND ?)
         """;
-        return jdbcTemplate.query(findAllSql,getReservationRowMapper());
+        return jdbcTemplate.query(findFilteredSql, getReservationRowMapper(), themeId, memberId, dateFrom, dateTo);
     }
 
-    public Long insert(String name, String date, Long timeId, Long themeId) {
-        String insertSql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    insertSql,
-                    new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, date);
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+    public List<Reservation> findAll() {
+        String findAllSql = """
+                SELECT 
+                    r.id as reservation_id,      
+                    r.date, 
+                    t.id as time_id, 
+                    t.start_at as time_value, 
+                    tm.id as theme_id, 
+                    tm.name as theme_name, 
+                    tm.description,     
+                    tm.thumbnail, 
+                    m.id as member_id,
+                    m.name as name,
+                    m.role,
+                    m.email,
+                    m.password
+                    
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS tm 
+                ON r.theme_id = tm.id
+                INNER JOIN member AS m 
+                ON r.member_id = m.id
+        """;
+        return jdbcTemplate.query(findAllSql,getReservationRowMapper());
     }
 
     public void deleteById(Long id) {
@@ -82,7 +120,6 @@ public class ReservationDao {
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, numRow) -> new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
                 resultSet.getString("date"),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -93,6 +130,13 @@ public class ReservationDao {
                         resultSet.getString("theme_name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
+                ),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("name"),
+                        Role.findRole(resultSet.getString("role")),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")
                 )
         );
     }

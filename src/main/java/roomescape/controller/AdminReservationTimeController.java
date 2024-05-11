@@ -13,11 +13,11 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationTimeResponseController {
+public class AdminReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeResponseController(ReservationTimeService reservationTimeService) {
+    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
@@ -33,7 +33,7 @@ public class ReservationTimeResponseController {
         return ResponseEntity.ok().body(reservationTimes);
     }
 
-    @GetMapping("/times/user")
+    @GetMapping("/times/filter")
     public ResponseEntity<List<ReservationTimeResponseDto>> getTimesByDateAndTheme(@DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam String date, @RequestParam Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
         List<ReservationTimeResponseDto> timeResponses = reservationTimes.stream()
@@ -46,10 +46,5 @@ public class ReservationTimeResponseController {
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(value = NullPointerException.class)
-    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
-        return ResponseEntity.badRequest().body("시간을 선택해야 합니다.");
     }
 }

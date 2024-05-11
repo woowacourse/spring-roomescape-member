@@ -6,9 +6,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import roomescape.dto.LoginRequestDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PageControllerTest {
+public class AdminPageControllerTest {
+
+    String accessToken;
 
     @LocalServerPort
     int port;
@@ -16,12 +20,21 @@ public class PageControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequestDto("admin@email.com", "admin"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().statusCode(200)
+                .extract().header("Set-Cookie").split("=")[1];
     }
 
     @DisplayName("어드민 페이지를 호출 시 200으로 응답한다.")
     @Test
     void adminPageTest() {
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -31,6 +44,7 @@ public class PageControllerTest {
     @Test
     void reservationPageTest() {
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -40,6 +54,7 @@ public class PageControllerTest {
     @Test
     void themePageTest() {
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
@@ -49,25 +64,8 @@ public class PageControllerTest {
     @Test
     void timeTest() {
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @DisplayName("유저 예약 페이지 요청 시 200으로 응답한다.")
-    @Test
-    void welcomePageTest() {
-        RestAssured.given().log().all()
-                .when().get("/reservation")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @DisplayName("인기 테마 페이지 요청 시 200으로 응답한다.")
-    @Test
-    void bestPageTest() {
-        RestAssured.given().log().all()
-                .when().get("/")
                 .then().log().all()
                 .statusCode(200);
     }

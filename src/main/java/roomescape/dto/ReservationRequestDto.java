@@ -1,15 +1,20 @@
 package roomescape.dto;
 
+import roomescape.exception.InvalidParameterException;
+
 import java.time.LocalDate;
 
-public record ReservationRequestDto(String name, LocalDate date, Long timeId, Long themeId) {
+public record ReservationRequestDto(LocalDate date, Long timeId, Long themeId) {
 
     public ReservationRequestDto {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름을 입력하여야 합니다.");
-        }
         if (date == null) {
-            throw new IllegalArgumentException("날짜를 입력하여야 합니다.");
+            throw new InvalidParameterException("날짜를 입력하여야 합니다.");
+        }
+        if (timeId == null) {
+            throw new InvalidParameterException("시간을 입력하여야 합니다.");
+        }
+        if (themeId == null) {
+            throw new InvalidParameterException("테마를 입력하여야 합니다.");
         }
     }
 }

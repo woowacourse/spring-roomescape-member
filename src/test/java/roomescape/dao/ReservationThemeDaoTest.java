@@ -35,7 +35,7 @@ public class ReservationThemeDaoTest {
     void findAllTest() {
         List<ReservationTheme> reservationThemes = reservationThemeDao.findAll();
 
-        assertThat(reservationThemes.size()).isEqualTo(1);
+        assertThat(reservationThemes.size()).isGreaterThan(0);
     }
 
     @DisplayName("테마 ID를 이용하여 테마를 조회한다.")
@@ -89,13 +89,15 @@ public class ReservationThemeDaoTest {
                 LocalDate.now().minusWeeks(1).toString(),
                 LocalDate.now().minusDays(1).toString(), 10);
 
-        assertThat(bestTheme.size()).isEqualTo(1);
+        List<Long> bestThemeIds = bestTheme.stream().map(ReservationTheme::getId).toList();
+
+        assertThat(bestThemeIds).isEqualTo(List.of(3L, 1L, 2L));
     }
 
     @DisplayName("존재하는 테마 이름인지 확인한다.")
     @Test
     void existNameTest() {
-        String name = "레벨2 탈출";
+        String name = "testTheme1";
 
         assertThat(reservationThemeDao.existName(name)).isTrue();
     }

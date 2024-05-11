@@ -35,17 +35,17 @@ public class ReservationTimeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public List<ReservationTime> findAll() {
-        String findAllSql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(findAllSql,
-                getReservationTimeRowMapper());
-    }
-
     public Optional<ReservationTime> findById(Long id) {
         String findByIdSql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(findByIdSql, getReservationTimeRowMapper(), id);
 
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationTimes));
+    }
+
+    public List<ReservationTime> findAll() {
+        String findAllSql = "SELECT id, start_at FROM reservation_time";
+        return jdbcTemplate.query(findAllSql,
+                getReservationTimeRowMapper());
     }
 
     public void deleteById(Long id) {

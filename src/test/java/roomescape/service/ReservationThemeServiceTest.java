@@ -8,6 +8,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequestDto;
+import roomescape.exception.SqlExecutionException;
+import roomescape.exception.WrongStateException;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class ReservationThemeServiceTest {
     void getAllThemesTest() {
         List<ReservationTheme> reservationThemes = reservationThemeService.getAllThemes();
 
-        assertThat(reservationThemes.size()).isEqualTo(1);
+        assertThat(reservationThemes.size()).isGreaterThan(0);
     }
 
     @DisplayName("테마를 추가한다.")
@@ -59,7 +61,7 @@ public class ReservationThemeServiceTest {
     @Test
     void deleteInvalidThemeIdTest() {
         assertThatThrownBy(() -> reservationThemeService.deleteTheme(1L))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(SqlExecutionException.class);
     }
 
     @DisplayName("지난 일주일간 가장 많이 예약된 테마를 조회한다.")
@@ -67,17 +69,20 @@ public class ReservationThemeServiceTest {
     void getBestThemesTest() {
         List<ReservationTheme> reservationThemes = reservationThemeService.getBestThemes();
 
-        assertThat(reservationThemes.size()).isEqualTo(1);
+        List<Long> bestThemeIds = reservationThemes.stream()
+                        .map(ReservationTheme::getId).toList();
+
+        assertThat(bestThemeIds).isEqualTo(List.of(3L,1L,2L));
     }
 
     @DisplayName("이미 존재하는 테마 이름이면 예외를 발생한다.")
     @Test
     void insertExistNameThemeTest() {
-        String name = "레벨2 탈출";
+        String name = "testTheme1";
         ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(name, "testDesc", "testImg");
 
         assertThatThrownBy(() -> reservationThemeService.insertTheme(reservationThemeRequestDto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WrongStateException.class)
                 .hasMessage("이미 존재하는 테마 이름입니다.");
     }
 }

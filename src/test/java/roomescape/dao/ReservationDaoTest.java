@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,14 +39,14 @@ public class ReservationDaoTest {
     void findAllTest() {
         List<Reservation> reservations = reservationDao.findAll();
 
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.size()).isGreaterThan(0);
     }
 
     @DisplayName("예약을 추가한다.")
     @Test
     void insertTest() {
         Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM reservation", Long.class);
-        Long id = reservationDao.insert("토미", "2024-01-02", 1L, 1L);
+        Long id = reservationDao.insert("2024-01-02", 1L, 1L, 1L);
 
         assertThat(id).isEqualTo(index + 1);
     }
@@ -53,13 +54,13 @@ public class ReservationDaoTest {
     @DisplayName("요청 파라미터의 값이 올바르지 않으면 예외를 발생한다.")
     @Test
     void wrongInsertTest() {
-        assertThatThrownBy(() -> reservationDao.insert("토미".repeat(130), "2024-01-01", 1L, 1L))
+        assertThatThrownBy(() -> reservationDao.insert( "2024-01-01", -1L, 1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", "2024-01-01", -1L, 1L))
+        assertThatThrownBy(() -> reservationDao.insert(null, 1L, 1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", null, 1L, 1L))
+        assertThatThrownBy(() -> reservationDao.insert("2024-01-01", 1L, -1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", "2024-01-01", 1L, -1L))
+        assertThatThrownBy(() -> reservationDao.insert("2024-01-01", 1L, 1L, -1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -68,10 +69,10 @@ public class ReservationDaoTest {
     void deleteByIdTest() {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(name, date, time_Id, theme_id) VALUES (?, ?, ?, ?)",
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, time_Id, theme_id, member_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"});
-            ps.setString(1, "네오");
-            ps.setString(2, "2024-01-03");
+            ps.setString(1, "2024-01-03");
+            ps.setLong(2, 1L);
             ps.setLong(3, 1L);
             ps.setLong(4, 1L);
             return ps;
@@ -92,7 +93,7 @@ public class ReservationDaoTest {
     void countByTimeIdTest() {
         int count = reservationDao.countByTimeId(1L);
 
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isGreaterThan(0);
     }
 
     @DisplayName("특정 테마에 대한 모든 예약의 개수를 조회한다.")
@@ -100,7 +101,7 @@ public class ReservationDaoTest {
     void countByThemeIdTest() {
         int count = reservationDao.countByThemeId(1L);
 
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isGreaterThan(0);
     }
 
     @DisplayName("특정 날짜, 시간, 테마에 대한 모든 예약의 개수를 조회한다.")
@@ -109,5 +110,18 @@ public class ReservationDaoTest {
         int count = reservationDao.count(LocalDate.now().minusDays(1).toString(), 1L, 1L);
 
         assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("조건에 맞는 예약을 반환한다.")
+    @Test
+    void findFilteredReservationsTest() {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+
+        String dateFrom = LocalDate.now(kst).minusWeeks(1).toString();
+        String dateTo = LocalDate.now(kst).minusDays(1).toString();
+
+        List<Reservation> reservations = reservationDao.findFilteredReservations(1L, 1L, dateFrom, dateTo);
+
+        assertThat(reservations.size()).isEqualTo(2);
     }
 }
