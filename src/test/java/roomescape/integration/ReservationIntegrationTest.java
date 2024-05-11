@@ -108,14 +108,18 @@ class ReservationIntegrationTest extends IntegrationTest {
     @Nested
     @DisplayName("관리자 예약 추가 API")
     class SaveAdminReservation {
-        @Test
-        void 관리자는_선택한_사용자_id로_예약을_추가할_수_있다() {
-            Map<String, String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
+
+        @BeforeEach
+        void setUp() {
             params.put("themeId", "1");
             params.put("timeId", "1");
             params.put("memberId", "1");
             params.put("date", "2023-08-06");
+        }
 
+        @Test
+        void 관리자는_선택한_사용자_id로_예약을_추가할_수_있다() {
             RestAssured.given().log().all()
                     .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
@@ -125,6 +129,19 @@ class ReservationIntegrationTest extends IntegrationTest {
                     .statusCode(201)
                     .header("Location", "/reservations/2")
                     .body("id", is(2));
+        }
+
+        @Test
+        void 관리자가_아닌_일반_사용자가_사용시_예외가_발생한다() {
+            jdbcTemplate.update("UPDATE MEMBER SET role = 'USER'");
+
+            RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/admin/reservations")
+                    .then().log().all()
+                    .statusCode(403);
         }
     }
 
