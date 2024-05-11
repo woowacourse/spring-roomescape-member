@@ -4,9 +4,9 @@ import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.controller.helper.CookieExtractor;
 import roomescape.controller.helper.LoginMemberArgumentResolver;
 import roomescape.service.MemberService;
+import roomescape.service.helper.CookieExtractor;
 import roomescape.service.helper.JwtTokenProvider;
 
 @Configuration

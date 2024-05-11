@@ -7,6 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.service.MemberService;
+import roomescape.service.helper.CookieExtractor;
 import roomescape.service.helper.JwtTokenProvider;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
