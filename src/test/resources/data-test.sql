@@ -1,7 +1,7 @@
 INSERT INTO member (name, email, password, role)
-VALUES ('홍길동', 'hong@gmail.com', '1234', 'MEMBER');
-INSERT INTO member (name, email, password, role)
 VALUES ('조조', 'imjojo@gmail.com', 'qwer', 'MEMBER');
+INSERT INTO member (name, email, password, role)
+VALUES ('미아', 'mia@gmail.com', '1234', 'MEMBER');
 INSERT INTO member (name, email, password, role)
 VALUES ('행성이', 'planet@gmail.com', '1111', 'ADMIN');
 INSERT INTO member (name, email, password, role)
