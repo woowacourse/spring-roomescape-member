@@ -2,10 +2,13 @@ package roomescape.domain;
 
 public class Member {
 
-    private final Long id;
-    private final String name;
-    private final String email;
-    private final String password;
+    private Long id;
+    private String name;
+    private String email;
+    private String password;
+
+    private Member() {
+    }
 
     public Member(final String name, final String email, final String password) {
         this(null, name, email, password);
@@ -32,5 +35,15 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
