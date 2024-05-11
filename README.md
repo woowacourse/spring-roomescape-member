@@ -69,7 +69,7 @@
 
 ## 5단계
 
-- [ ] TODO: [5단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정하세요.
+- [x] TODO: [5단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정하세요.
 
 ###  로그인 리팩터링
 - 사용자의 정보를 조회하는 로직을 리팩터링
@@ -83,6 +83,6 @@
   - [ ] reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경합니다.
 - 예약 생성 기능 변경 - 관리자
   - 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
-  - [ ] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경합니다.
+  - [x] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경합니다.
     - AS-IS: /js/reservation-new.js
     - TO-BE: /js/reservation-with-member.js
