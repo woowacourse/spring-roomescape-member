@@ -1,5 +1,8 @@
 package roomescape.controller.api;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -28,34 +31,30 @@ public class ThemeController {
     public ResponseEntity<ThemeResponseDto> createTheme(@RequestBody @Valid final ThemeRequestDto request) {
         final Theme theme = themeService.create(request);
         final ThemeResponseDto response = new ThemeResponseDto(theme);
-        return ResponseEntity.created(URI.create("/themes/" + response.getId()))
-                .body(response);
+        return ResponseEntity.created(URI.create("/themes/" + response.getId())).body(response);
     }
 
     @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponseDto>> findAllThemes() {
-        final List<Theme> themes = themeService.findAll();
-        final List<ThemeResponseDto> response = themes.stream()
+        return themeService.findAll()
+                .stream()
                 .map(ThemeResponseDto::new)
-                .toList();
-        return ResponseEntity.ok(response);
+                .collect(collectingAndThen(toList(), ResponseEntity::ok));
     }
 
     @GetMapping("/themes/popular")
     public ResponseEntity<List<ThemeResponseDto>> findPopularThemesByPeriod(
             @RequestParam("period-day") final Long periodDay
     ) {
-        final List<Theme> themes = themeService.findPopularThemesByPeriod(periodDay);
-        final List<ThemeResponseDto> response = themes.stream()
+        return themeService.findPopularThemesByPeriod(periodDay)
+                .stream()
                 .map(ThemeResponseDto::new)
-                .toList();
-        return ResponseEntity.ok(response);
+                .collect(collectingAndThen(toList(), ResponseEntity::ok));
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") final long id) {
         themeService.delete(id);
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }
