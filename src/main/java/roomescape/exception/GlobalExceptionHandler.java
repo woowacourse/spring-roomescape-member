@@ -29,10 +29,10 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.CONFLICT, e);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorResponse> handleException(final Exception e) {
-//        return ResponseEntity.internalServerError().build();
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(final Exception e) {
+        return ResponseEntity.internalServerError().build();
+    }
 
     public ResponseEntity<ErrorResponse> createErrorResponse(final HttpStatus httpStatus, final Exception e) {
         return ResponseEntity.status(httpStatus)

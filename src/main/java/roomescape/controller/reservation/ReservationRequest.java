@@ -4,8 +4,8 @@ import roomescape.domain.Reservation;
 
 public record ReservationRequest(String date, Long timeId, Long themeId, Long memberId) {
 
-    public ReservationRequest(String date, Long timeId, Long themeId) {
-        this(date, timeId, themeId, null);
+    public static ReservationRequest from(String date, Long timeId, Long themeId) {
+        return new ReservationRequest(date, timeId, themeId, null);
     }
 
     public Reservation toDomain() {

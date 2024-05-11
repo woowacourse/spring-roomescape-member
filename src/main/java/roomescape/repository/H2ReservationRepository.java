@@ -88,7 +88,6 @@ public class H2ReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, this::mapRowFull);
     }
 
-    // TODO: Sub Query 써서 Time Repository 로 넘길지 고려
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
         final String sql = """

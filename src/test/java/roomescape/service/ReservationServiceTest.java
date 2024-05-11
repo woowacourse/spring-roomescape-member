@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.controller.login.MemberCheckResponse;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.theme.ReservationThemeResponse;
@@ -126,10 +127,10 @@ class ReservationServiceTest {
 
         final ReservationResponse expected = new ReservationResponse(
                 actual.id(),
-                memberOptional.get().getName(),
                 reservationRequest.date(),
                 TimeResponse.from(timeOptional.get(), false),
-                ReservationThemeResponse.from(themeOptional.get())
+                ReservationThemeResponse.from(themeOptional.get()),
+                new MemberCheckResponse(memberOptional.get().getName())
         );
 
         // then

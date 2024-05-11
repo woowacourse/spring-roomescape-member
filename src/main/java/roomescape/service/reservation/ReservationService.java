@@ -63,18 +63,19 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime time = findTimeOrElseThrow(reservationRequest.timeId());
-        final Theme theme = findThemeOrElseThrow(reservationRequest.themeId());
-        final Member member = findMemberOrElseThrow(reservationRequest.memberId());
-        final Reservation parsedReservation = reservationRequest.toDomain()
-                .assignTime(time)
-                .assignTheme(theme)
-                .assignMember(member);
+        final Reservation reservation = reservationRequest.toDomain()
+                .assignTime(findTimeOrElseThrow(reservationRequest.timeId()))
+                .assignTheme(findThemeOrElseThrow(reservationRequest.themeId()))
+                .assignMember(findMemberOrElseThrow(reservationRequest.memberId()));
 
-        validateReservationDuplicated(parsedReservation.getDate(), time.getId(), theme.getId());
-        validateDateTimeFuture(parsedReservation.getDate(), parsedReservation.getTime());
+        validateReservationDuplicated(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        );
+        validateDateTimeFuture(reservation.getDate(), reservation.getTime());
 
-        final Reservation savedReservation = reservationRepository.save(parsedReservation);
+        final Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
 

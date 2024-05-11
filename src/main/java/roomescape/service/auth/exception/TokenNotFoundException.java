@@ -1,9 +1,8 @@
 package roomescape.service.auth.exception;
 
-import roomescape.exception.BadRequestException;
+import roomescape.exception.UnauthorizedException;
 
-// TODO: Split service package and locate exceptions
-public class TokenNotFoundException extends BadRequestException {
+public class TokenNotFoundException extends UnauthorizedException {
 
     public TokenNotFoundException(final String message) {
         super(message);
