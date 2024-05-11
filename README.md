@@ -21,6 +21,11 @@
   - 관리자가 아닌 사용자가 예약 가능한 시간을 조회하고, 예약할 수 있도록 기능을 추가/변경 합니다.
   - 인기 테마 조회 기능을 추가합니다.
 
+- **4 단계**
+  - 사용자 도메인 추가
+  - 로그인 기능 추가 구현
+  - 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 추가 구현
+
 ### 세부 요구 사항
 
 #### 관리자 기능
@@ -52,7 +57,10 @@
 
 #### 사용자 기능
 0. 사용자 페이지
-- [x] 사용자 페이지 요청시 반환 기능
+- [ ] 사용자 로그인 페이지 요청시 반환 기능
+  - [ ] 로그인 후 우측 상단의 Login 버튼이 사용자 이름으로 변경
+  - [ ] 로그아웃 시 다시 Login 버튼이 노출
+- [x] 사용자 예약 페이지 요청시 반환 기능
 
 1. 예약 조회
 - [x] 모든 예약 시간을 보여준다.
@@ -64,55 +72,65 @@
 3. 테마 목록 조회
 - [x] 예약 많은 순으로 테마 순위를 오름차순으로 보여준다.
 
-### 3단계 추가 API 명세서
+4. 사용자 로그인
+- [ ] emali과 비밀번호를 입력하여 로그인한다.
+  - [ ] 토큰 발행 방식으로 로그인 정보 인증
+  - [ ] 인증 정보 클라이언트 Cookie에 저장
 
 
-- 예약 가능 시간 조회
+## 4단계 추가 API 명세서
+
+## Login API 명세
+
+### Login 정보 요청
 
 #### Request
-> GET /reservations/{themeId}?date= HTTP/1.1
->
-> content-type: application/json
+```http request
 
-#### Response
+POST /login HTTP/1.1
 
-> HTTP/1.1 200
->
-> Content-Type: application/json
+content-type: application/json
+host: localhost:8080
 
-```json
-[
-  {
-    "timeId": 1,
-    "startAt": "09:35"
-  }
-]
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+
 ```
-
-- 인기 테마 목록 조회
-
-### Request
-> GET /themes/rank HTTP/1.1
->
-> content-type: application/json
 
 ### Response
-
-> HTTP/1.1 200
->
-> Content-Type: application/json
-
-```json
-[
-  {
-    "name": "polla 테마",
-    "thumbnail": "https://cdn.palms.blog/polla/image/0c10be97-f2f1-497e-855f-8f2f83f938f2.jpg",
-    "description": "폴라 방탈출"
-  },
-  {
-    "name": "dobby 테마",
-    "thumbnail": "https://mblogthumb-phinf.pstatic.net/MjAxOTA3MDJfMjAg/MDAxNTYyMDMyNDU3MjYy.cPtTMpCaonsPlOXPHubzE_j71yVeF7L95OoxXs31lYkg.ZQg5emgUhXDPa7cdrMZh4KktyHk-QXub5LSm-5f13tMg.JPEG.yeorang92/DOBBY_by%ED%99%8D%EC%97%AC%EB%9E%91.jpg?type=w800",
-    "description": "도비 방탈출"
-  }
-]
+```http request
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
 ```
+
+### Login 인증 정보 조회
+
+#### Request
+```http request
+
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+
+
+```
+
+### Response
+```http request
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+    "name": "어드민"
+}
+```
+
+
