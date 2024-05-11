@@ -37,7 +37,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
         final Member member = memberService.findMemberByToken(token);
-        //TODO 여기에 invalidTokenException 올라올 때 어케 처리할지 고민하기
+        //TODO 여기에 invalidTokenException 올라올 때 어케 처리할지 고민하기 로그아웃 안하고 종료했을 때, 만료된 기존 토큰이 남아있음
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
     }
 

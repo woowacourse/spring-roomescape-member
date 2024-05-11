@@ -83,6 +83,7 @@ public class ReservationService {
     }
 
     private void validateDateRange(final ReservationSearchCondition request) {
+        //TODO date null 허용하기
         if (request.dateFrom() == null || request.dateTo() == null) {
             throw new InvalidSearchDateException("유효하지 않는 데이터 반환입니다.");
         }

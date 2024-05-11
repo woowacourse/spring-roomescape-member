@@ -35,4 +35,9 @@ public class UserPageController {
         response.addCookie(cookie);
         return showPopularThemePage();
     }
+
+    @GetMapping("/signup")
+    public String signup() {
+        return "/signup";
+    }
 }

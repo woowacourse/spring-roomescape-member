@@ -3,13 +3,17 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.TokenResponse;
 import roomescape.controller.member.dto.MemberLoginRequest;
+import roomescape.controller.member.dto.SignupRequest;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.domain.exception.InvalidRequestException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;
+import roomescape.service.exception.DuplicateEmailException;
 import roomescape.service.exception.InvalidTokenException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -20,6 +24,15 @@ public class MemberService {
     public MemberService(final MemberRepository memberRepository, final JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    public Member save(final SignupRequest request) {
+        final Optional<Member> findMember = memberRepository.findByEmail(request.email());
+        if (findMember.isPresent()) {
+            throw new DuplicateEmailException("해당 email로 사용자가 존재합니다.");
+        }
+        final Member member = new Member(null, request.name(), request.email(), request.password(), Role.USER);
+        return memberRepository.save(member);
     }
 
     public boolean checkInvalidLogin(final String email, final String password) {
