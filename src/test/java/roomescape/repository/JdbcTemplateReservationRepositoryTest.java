@@ -34,7 +34,7 @@ class JdbcTemplateReservationRepositoryTest {
     @BeforeEach
     void init() {
         jdbcTemplate.update("insert into MEMBER(name, role, email, password) VALUES (?, ?, ?, ?)",
-                DEFAULT_MEMBER.getName(), DEFAULT_MEMBER.getLoginMember().getRole().toString(),
+                DEFAULT_MEMBER.getName(), DEFAULT_MEMBER.getRole().toString(),
                 DEFAULT_MEMBER.getEmail(),
                 DEFAULT_MEMBER.getPassword());
         jdbcTemplate.update("insert into reservation_time(start_at) values('11:56')");

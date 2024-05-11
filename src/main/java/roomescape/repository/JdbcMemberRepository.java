@@ -71,7 +71,7 @@ public class JdbcMemberRepository implements MemberRepository {
                     new String[]{"id"}
             );
             preparedStatement.setString(1, member.getName());
-            preparedStatement.setString(2, member.getLoginMember().getRole().name());
+            preparedStatement.setString(2, member.getRole().name());
             preparedStatement.setString(3, member.getEmail());
             preparedStatement.setString(4, member.getPassword());
             return preparedStatement;

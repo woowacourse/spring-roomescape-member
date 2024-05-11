@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
@@ -75,9 +74,9 @@ class ReservationTimeServiceTest {
         LocalDate selectedDate = LocalDate.of(2024, 1, 1);
 
         reservationRepository.save(new Reservation(selectedDate, reservationTime1, DEFUALT_THEME,
-                new LoginMember(1L, "name", null)));
+                new LoginMember(1L, "name")));
         reservationRepository.save(new Reservation(selectedDate, reservationTime3, DEFUALT_THEME,
-                new LoginMember(1L, "name", null)));
+                new LoginMember(1L, "name")));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findByThemeAndDate(selectedDate,
@@ -138,7 +137,7 @@ class ReservationTimeServiceTest {
                     LocalDate.now(),
                     new ReservationTime(1L, SAVED_TIME),
                     new Theme(1L, "name", "description", "thumbnail"),
-                    new LoginMember(1L, "name", Role.USER)
+                    new LoginMember(1L, "name")
             ));
 
             //when & then

@@ -2,6 +2,8 @@ package roomescape.domain;
 
 public class Member {
     private final LoginMember loginMember;
+
+    private final Role role;
     private final String email;
     private final String password;
 
@@ -10,21 +12,30 @@ public class Member {
     }
 
     public Member(long id, Member member) {
-        this(id, member.loginMember.getName(), member.getLoginMember().getRole(), member.email, member.password);
+        this(id, member.loginMember.getName(), member.getRole(), member.email, member.password);
     }
 
     public Member(Long id, String name, Role role, String email, String password) {
-        this(new LoginMember(id, name, role), email, password);
+        this(new LoginMember(id, name), role, email, password);
     }
 
-    public Member(LoginMember loginMember, String email, String password) {
+    public Member(LoginMember loginMember, Role role, String email, String password) {
         this.loginMember = loginMember;
+        this.role = role;
         this.email = email;
         this.password = password;
     }
 
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
+    }
+
     public LoginMember getLoginMember() {
         return loginMember;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public long getId() {
