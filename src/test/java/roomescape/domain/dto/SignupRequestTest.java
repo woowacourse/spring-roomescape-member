@@ -15,6 +15,4 @@ class SignupRequestTest {
         assertThatThrownBy(() -> new SignupRequest(email, password, name))
                 .isInstanceOf(InvalidClientRequestException.class);
     }
-    //TODO : 패스워드 길이 검사
-    //TODO : 이메일 양식 검사
 }

@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class MemberTest {
 
     @DisplayName("이메일, 이름 또는 역할 공백이면 예외를 발생시킨다.")
-    @CsvSource({"email@email.com,,role", ",test,role", "email@email.com,test,"})
+    @CsvSource({"email@email.com,,role", ",test@test.com,role", "email@email.com,test,"})
     @ParameterizedTest
     void given_emailWithName_when_newWithEmptyValue_then_thrownException(String email, String name, String role) {
         assertThatThrownBy(() -> new Member(1L, email, name, role)).isInstanceOf(InvalidClientRequestException.class);
@@ -31,5 +31,13 @@ class MemberTest {
         final Member member = new Member(1L, "poke@test.com", "poke", "ADMIN");
         //when,then
         assertThat(member.isAdmin()).isTrue();
+    }
+
+    @DisplayName("이메일 양식이 부적절하면 예외를 발생시킨다")
+    @Test
+    void given_when_newWithInvalidEmailForm_then_thrownException() {
+        //given, when, then
+        assertThatThrownBy(() -> new Member(1L, "poke", "poke", "ADMIN"))
+                .isInstanceOf(InvalidClientRequestException.class);
     }
 }
