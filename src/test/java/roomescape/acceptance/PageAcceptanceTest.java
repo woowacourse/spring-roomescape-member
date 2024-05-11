@@ -1,5 +1,7 @@
 package roomescape.acceptance;
 
+import static org.hamcrest.Matchers.containsString;
+
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +19,8 @@ class PageAcceptanceTest extends ApiAcceptanceTest{
                 .cookie("token", accessToken)
                 .when().get(adminPath)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body(containsString("<!DOCTYPE html>"));
     }
 
     @ParameterizedTest
@@ -40,6 +43,7 @@ class PageAcceptanceTest extends ApiAcceptanceTest{
         RestAssured.given().log().all()
                 .when().get(path)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body(containsString("<!DOCTYPE html>"));
     }
 }
