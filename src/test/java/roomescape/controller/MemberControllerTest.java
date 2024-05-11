@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ReservationControllerTest {
+class MemberControllerTest {
 
     @LocalServerPort
     private int port;
@@ -19,11 +19,20 @@ class ReservationControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("유저 예약 페이지 호출 테스트")
+    @DisplayName("회원가입 예약 페이지 호출 테스트")
     @Test
-    void user_reservation_page() {
+    void signup_page() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("로그인 예약 페이지 호출 테스트")
+    @Test
+    void login_page() {
+        RestAssured.given().log().all()
+                .when().get("/login")
                 .then().log().all()
                 .statusCode(200);
     }

@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +28,12 @@ public class MemberApiController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/members/signup")
-    public void signup(@RequestBody CreateMemberRequestDto requestDto) {
+    public void signup(@Valid @RequestBody CreateMemberRequestDto requestDto) {
         memberService.signup(requestDto);
     }
 
     @PostMapping("/members/login")
-    public void login(@RequestBody LoginMemberRequestDto requestDto, HttpServletResponse response) {
+    public void login(@Valid @RequestBody LoginMemberRequestDto requestDto, HttpServletResponse response) {
         String token = memberService.login(requestDto);
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
@@ -54,7 +55,7 @@ public class MemberApiController {
         response.addCookie(cookie);
     }
 
-    @GetMapping("/members")
+    @GetMapping("/admin/members")
     public List<MemberResponseDto> findAllMembers() {
         return memberService.findAllMemberNames();
     }

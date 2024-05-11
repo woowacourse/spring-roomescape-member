@@ -60,7 +60,7 @@ function fetchThemes() {
 }
 
 function fetchMembers() {
-    requestRead(MEMBER_API_ENDPOINT)
+    requestRead("/admin/members")
         .then(data => {
             membersOptions.push(...data);
             populateSelect('member', membersOptions, 'name');
