@@ -1,5 +1,6 @@
 package roomescape.reservation.infrastructure;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -93,5 +94,23 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public boolean existsById(long id) {
         String sql = "SELECT COUNT(*) FROM Reservation WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+    }
+
+    @Override
+    public Optional<Reservation> findById(long id) {
+        String sql = "SELECT r.id as reservation_id, r.date, "
+                + "rt.id as time_id, rt.start_at, "
+                + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail, "
+                + "m.id as member_id, m.name as member_name, m.email, m.password, m.role "
+                + "FROM reservation as r "
+                + "inner join reservation_time as rt on r.time_id = rt.id "
+                + "inner join theme as t on r.theme_id = t.id "
+                + "inner join member as m on r.member_id = m.id "
+                + "WHERE r.id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

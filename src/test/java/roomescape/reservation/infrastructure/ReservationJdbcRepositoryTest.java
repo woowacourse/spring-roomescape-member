@@ -20,6 +20,7 @@ import roomescape.reservation.domain.repostiory.ThemeRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -192,5 +193,41 @@ class ReservationJdbcRepositoryTest {
         assertThat(result).isFalse();
     }
 
+    @DisplayName("주어진 식별자의 예약을 찾는다.")
+    @Test
+    void findById() {
+        //given
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
+        Reservation target = reservationRepository.save(reservation);
 
+        //when
+        Optional<Reservation> result = reservationRepository.findById(target.getId());
+
+        //then
+        assertThat(result).isNotEmpty();
+    }
+
+    @DisplayName("주어진 식별자의 예약을 찾지 못한다.")
+    @Test
+    void cannotFindById() {
+        //when
+        Optional<Reservation> reservation = reservationRepository.findById(0);
+
+        //then
+        assertThat(reservation).isEmpty();
+    }
+
+    @DisplayName("주어진 식별자의 예약을 가져온다.")
+    @Test
+    void getById() {
+        //given
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
+        Reservation target = reservationRepository.save(reservation);
+
+        //when
+        Reservation result = reservationRepository.getById(target.getId());
+
+        //then
+        assertThat(result.getId()).isEqualTo(target.getId());
+    }
 }

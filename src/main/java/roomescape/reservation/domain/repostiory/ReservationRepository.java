@@ -1,8 +1,10 @@
 package roomescape.reservation.domain.repostiory;
 
+import roomescape.exception.UnauthorizedException;
 import roomescape.reservation.domain.Reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository {
     List<Reservation> findAll();
@@ -18,4 +20,10 @@ public interface ReservationRepository {
     boolean existsByThemeId(long themeId);
 
     boolean existsById(long id);
+
+    Optional<Reservation> findById(long id);
+
+    default Reservation getById(long id) {
+        return findById(id).orElseThrow(() -> new UnauthorizedException("더이상 존재하지 않는 예약입니다."));
+    }
 }
