@@ -31,7 +31,7 @@ class ReservationResponseTest {
     assertAll(
         () -> assertThat(reservationResponse).isNotNull(),
         () -> assertThat(reservationResponse.id()).isEqualTo(reservation.getId()),
-        () -> assertThat(reservationResponse.name()).isEqualTo(
+        () -> assertThat(reservationResponse.member().name()).isEqualTo(
             reservation.getMember().getName().getValue()),
         () -> assertThat(reservationResponse.date()).isEqualTo(reservation.getDate().getValue()),
         () -> assertThat(reservationResponse.time().startAt()).isEqualTo(
