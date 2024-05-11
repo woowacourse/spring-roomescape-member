@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -34,15 +33,14 @@ public class TokenProvider {
                 .compact();
     }
 
-    public long extractMemberId(String token) {
+    public String extractSubject(String token) {
         try {
-            Claims claims = Jwts.parser()
+            return Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
-                    .getPayload();
-            String subject = claims.getSubject();
-            return Long.parseLong(subject);
+                    .getPayload()
+                    .getSubject();
         } catch (ExpiredJwtException e) {
             throw new AuthorizationException("만료된 토큰입니다.");
         } catch (SignatureException e) {
