@@ -28,11 +28,11 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 T2.id AS theme_id,
                 T2.name AS theme_name,
                 T2.description AS description,
-                T2.thumbnail AS thumbnail, 
-                M.id AS member_id, 
-                M.name AS member_name, 
-                M.role AS member_role, 
-                M.email AS member_email 
+                T2.thumbnail AS thumbnail,
+                M.id AS member_id,
+                M.name AS member_name,
+                M.role AS member_role,
+                M.email AS member_email
             FROM RESERVATION AS R
                 INNER JOIN RESERVATION_TIME T ON R.time_id = T.id
                 INNER JOIN THEME T2 ON T2.id = R.theme_id
