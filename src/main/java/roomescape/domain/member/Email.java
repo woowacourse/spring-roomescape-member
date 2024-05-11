@@ -14,7 +14,7 @@ public record Email(String value) {
         validateFormat(value);
     }
 
-    private void validateNonNull(final String value) {
+    private void validateNonNull(String value) {
         if (Objects.isNull(value)) {
             throw new IllegalArgumentException("이메일은 null이 될 수 없습니다.");
         }

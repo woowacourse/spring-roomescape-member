@@ -10,7 +10,7 @@ public class Member {
     public Member() {
     }
 
-    public Member(final Long id, final String name, final String email, final String password, final String role) {
+    public Member(Long id, String name, String email, String password, String role) {
         this.id = id;
         this.name = new Name(name);
         this.email = new Email(email);
@@ -18,7 +18,7 @@ public class Member {
         this.role = Role.from(role);
     }
 
-    public Member(final String name, final String email, final String password) {
+    public Member(String name, String email, String password) {
         this.name = new Name(name);
         this.email = new Email(email);
         this.password = new Password(password);

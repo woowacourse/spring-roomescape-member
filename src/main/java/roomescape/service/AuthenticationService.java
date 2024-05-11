@@ -36,7 +36,7 @@ public class AuthenticationService {
                 .compact();
     }
 
-    public Long findByToken(final String token) {
+    public Long findByToken(String token) {
         return Long.valueOf(
                 Jwts.parser()
                         .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))

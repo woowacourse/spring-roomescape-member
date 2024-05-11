@@ -15,11 +15,11 @@ import roomescape.service.AuthenticationService;
 import roomescape.service.MemberService;
 
 @Component
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
     private final AuthenticationService authService;
 
-    public LoginMemberArgumentResolver(MemberService memberService, AuthenticationService authService) {
+    public MemberArgumentResolver(MemberService memberService, AuthenticationService authService) {
         this.memberService = memberService;
         this.authService = authService;
     }

@@ -24,9 +24,12 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final JdbcMemberRepository memberRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository timeRepository, final ThemeRepository themeRepository,
-                              final JdbcMemberRepository memberRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository timeRepository,
+            ThemeRepository themeRepository,
+            JdbcMemberRepository memberRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
@@ -54,7 +57,9 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("id가 존재하지 않습니다 : " + id));
+        if (reservationRepository.findById(id).isEmpty()) {
+            throw new IllegalArgumentException("id가 존재하지 않습니다 : " + id);
+        }
         reservationRepository.delete(id);
     }
 
@@ -84,7 +89,7 @@ public class ReservationService {
         }
     }
 
-    public Long addReservation(final AdminReservationRequest adminReservationRequest, final Member member) {
+    public Long addReservation(AdminReservationRequest adminReservationRequest, Member member) {
         if (!member.isAdmin()) {
             throw new IllegalArgumentException("관리자가 아닙니다.");
         }
@@ -96,8 +101,8 @@ public class ReservationService {
         return savedId;
     }
 
-    public List<ReservationResponse> getFilteredReservations(final Long themeId, final Long memberId,
-                                                             final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId,
+                                                             LocalDate dateFrom, LocalDate dateTo) {
         return reservationRepository.findByConditions(themeId, memberId, dateFrom, dateTo)
                 .stream()
                 .map(ReservationResponse::from)

@@ -12,9 +12,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.theme.Theme;
 
 @Repository
@@ -114,7 +114,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
 
     @Override
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT *
                 FROM reservation AS r
@@ -151,8 +151,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByConditions(final Long themeId, final Long memberId, final LocalDate dateFrom,
-                                              final LocalDate dateTo) {
+    public List<Reservation> findByConditions(Long themeId, Long memberId, LocalDate dateFrom,
+                                              LocalDate dateTo) {
         String sql = """
                 SELECT *
                 FROM reservation AS r

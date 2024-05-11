@@ -39,7 +39,7 @@ public record ReservationRequest(
     }
 
     public Reservation toEntity(Member member, ReservationTime reservationTime, Theme theme) {
-         return new Reservation(
+        return new Reservation(
                 member,
                 date,
                 reservationTime,

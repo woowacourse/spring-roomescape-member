@@ -6,8 +6,10 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dto.LoginRequest;
 import roomescape.dto.ReservationTimeRequest;
 
 @Sql("/reservation-time-api-test-data.sql")
@@ -74,7 +77,6 @@ class ReservationTimeApiTest {
     @Sql("/reservation-time-service-test-data.sql")
     @Test
     void 예약_가능한_시간_조회() {
-
         String targetDay = LocalDate.now().plusDays(1).toString();
         given().log().all()
                 .port(port)

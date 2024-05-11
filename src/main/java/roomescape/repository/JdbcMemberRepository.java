@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -29,14 +28,14 @@ public class JdbcMemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcMemberRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcMemberRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Long save(final Member member) {
+    public Long save(Member member) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
@@ -46,7 +45,7 @@ public class JdbcMemberRepository {
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public Optional<Member> findByEmail(final String email) {
+    public Optional<Member> findByEmail(String email) {
         String sql = "SELECT * FROM member where email = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);
@@ -56,7 +55,7 @@ public class JdbcMemberRepository {
         }
     }
 
-    public Optional<Member> findById(final Long id) {
+    public Optional<Member> findById(Long id) {
         String sql = "SELECT * FROM member where id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
