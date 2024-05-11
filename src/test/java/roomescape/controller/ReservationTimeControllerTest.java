@@ -27,7 +27,7 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_times() {
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(16, 0));//todo 스키마와 분리
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(16, 0));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

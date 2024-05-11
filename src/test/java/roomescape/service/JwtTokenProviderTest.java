@@ -33,7 +33,7 @@ class JwtTokenProviderTest {
     @Test
     void should_get_payload_when_given_token() {
         User user = new User(1L, "썬", MEMBER, "sun@email.com", "1234");
-        String token = jwtTokenProvider.createToken(user); //todo 이렇게 해도 되는 건가? provider를 두번 사용하는 것이 되잖아.
+        String token = jwtTokenProvider.createToken(user);
 
         Claims claims = jwtTokenProvider.getPayload(token);
 

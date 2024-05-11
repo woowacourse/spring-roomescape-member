@@ -41,7 +41,7 @@ class ReservationServiceTest {
             new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao, userDao);
 
     @BeforeEach
-    void setUp() {//todo 기본값 수정
+    void setUp() {
         fakeThemeDao.clear();
         fakeReservationTimeDao.clear();
         fakeReservationDao.clear();

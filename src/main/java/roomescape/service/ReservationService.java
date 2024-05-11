@@ -44,7 +44,7 @@ public class ReservationService {
         return reservationDao.getAllReservations();
     }
 
-    public List<Reservation> filterReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo)  {
+    public List<Reservation> filterReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         return reservationDao.searchReservation(themeId, memberId, dateFrom, dateTo);
     }
 

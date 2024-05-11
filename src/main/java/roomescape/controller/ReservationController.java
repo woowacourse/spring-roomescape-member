@@ -41,9 +41,9 @@ public class ReservationController {
 
     @GetMapping("/admin/reservations")
     public ResponseEntity<List<ReservationResponse>> searchReservations(@RequestParam("themeId") Long themeId,
-                                                         @RequestParam("memberId") Long memberId,
-                                                         @RequestParam("dateFrom") LocalDate dateFrom,
-                                                         @RequestParam("dateTo") LocalDate dateTo) {
+                                                                        @RequestParam("memberId") Long memberId,
+                                                                        @RequestParam("dateFrom") LocalDate dateFrom,
+                                                                        @RequestParam("dateTo") LocalDate dateTo) {
         List<Reservation> reservations = reservationService.filterReservation(themeId, memberId, dateFrom, dateTo);
         List<ReservationResponse> responses = reservations.stream()
                 .map(ReservationResponse::new)

@@ -42,7 +42,7 @@ class UserServiceTest {
     @DisplayName("아이디와 비밀번호 같은 유저가 없으면 예외가 발생한다.")
     @Test
     void should_throw_exception_when_user_not_exist() {
-        User user = new User(1L, "배키", MEMBER,"hello@email.com", "1234");
+        User user = new User(1L, "배키", MEMBER, "hello@email.com", "1234");
         userDao.addUser(user);
         UserLoginRequest request = new UserLoginRequest("1111", "sun@email.com");
 
