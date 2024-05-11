@@ -78,7 +78,17 @@ public class LoginControllerTest {
     @DisplayName("정상적인 로그아웃 요청 시 200을 응답한다.")
     @Test
     void logoutTest() {
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequestDto("email@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().statusCode(200)
+                .extract().header("Set-Cookie");
+
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().post("/logout")
                 .then().log().all().statusCode(200);
     }
