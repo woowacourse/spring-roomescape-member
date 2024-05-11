@@ -32,6 +32,14 @@ public class ReservationTimeController {
                 .body(reservationTimeResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationTimeResponse> findByReservationTimeId(@PathVariable Long id) {
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.findByReservationTimeId(id);
+
+        return ResponseEntity.ok()
+                .body(reservationTimeResponse);
+    }
+
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @RequestBody ReservationTimeCreateRequest reservationTimeCreateRequest) {

@@ -26,6 +26,11 @@ public class ReservationTimeService {
         return new ReservationTimeResponses(reservationTimeResponses);
     }
 
+    public ReservationTimeResponse findByReservationTimeId(Long id) {
+        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(id);
+        return ReservationTimeResponse.from(reservationTime);
+    }
+
     public ReservationTimeResponse create(ReservationTimeCreateRequest reservationTimeCreateRequest) {
         ReservationTime reservationTime = new ReservationTime(reservationTimeCreateRequest.startAt());
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);

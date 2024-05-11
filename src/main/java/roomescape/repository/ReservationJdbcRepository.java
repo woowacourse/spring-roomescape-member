@@ -78,12 +78,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     th.name AS theme_name,
                     th.description AS theme_description,
                     th.thumbnail AS theme_thumbnail
-                WHERE
-                    r.id = ?
                 FROM
                     reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id;
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE
+                    r.id = ?;
                 """;
         return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
     }
