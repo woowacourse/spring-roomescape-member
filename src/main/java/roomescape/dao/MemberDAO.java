@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -49,12 +50,20 @@ public class MemberDAO {
 
     public Member findByEmail(final String email) {
         final String sql = "SELECT * FROM member WHERE email = ?;";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper(), email);
+    }
 
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Member(
+    public Member findById(final Long id) {
+        final String sql = "SELECT * FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper(), id);
+    }
+
+    private RowMapper<Member> memberRowMapper() {
+        return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
                 resultSet.getString("password")
-        ), email);
+        );
     }
 }

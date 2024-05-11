@@ -5,12 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
+    @Autowired
+    MemberService memberService;
     @Autowired
     ReservationTimeService reservationTimeService;
     @Autowired
@@ -65,7 +65,8 @@ class ReservationTimeServiceTest {
     void invalidDelete() {
         ReservationTime savedReservationTime = reservationTimeService.save(new ReservationTimeRequest(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeService.save(new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationService.save(new ReservationRequest("abc", LocalDate.now().plusDays(1), savedReservationTime.getId(), savedTheme.getId()));
+        final Member member = memberService.join(new MemberRequest("email@email.com", "1234", "뽀로로"));
+        reservationService.save(new ReservationRequest(LocalDate.now().plusDays(1), savedReservationTime.getId(), savedTheme.getId(), member.getId()));
 
         assertThatThrownBy(() -> reservationTimeService.delete(savedReservationTime.getId()))
                 .isInstanceOf(IllegalStateException.class)
@@ -90,8 +91,9 @@ class ReservationTimeServiceTest {
         reservationTimeService.save(new ReservationTimeRequest(LocalTime.of(16, 30)));
         reservationTimeService.save(new ReservationTimeRequest(LocalTime.of(17, 30)));
         Theme savedTheme = themeService.save(new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        final Member member = memberService.join(new MemberRequest("email@email.com", "1234", "뽀로로"));
         final LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationService.save(new ReservationRequest("abc", tomorrow, firstReservationTime.getId(), savedTheme.getId()));
+        reservationService.save(new ReservationRequest(tomorrow, firstReservationTime.getId(), savedTheme.getId(), member.getId()));
 
         final List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(tomorrow, savedTheme.getId());
 
