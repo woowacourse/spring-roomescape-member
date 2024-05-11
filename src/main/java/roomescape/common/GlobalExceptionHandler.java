@@ -1,14 +1,13 @@
 package roomescape.common;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -18,51 +17,58 @@ public class GlobalExceptionHandler {
     private static final String EXCEPTION_PREFIX = "[ERROR] ";
 
     @ExceptionHandler
-    public ResponseEntity<String> catchInternalServerException(Exception ex) {
+    public ResponseEntity<ProblemDetail> catchInternalServerException(Exception ex) {
         System.out.println(EXCEPTION_PREFIX + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> catchValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ProblemDetail> catchValidationException(MethodArgumentNotValidException ex) {
         String exceptionMessages = ex.getBindingResult().getFieldErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining("\n"));
 
         System.out.println(exceptionMessages);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessages);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exceptionMessages));
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> catchIllegalAccessException(IllegalAccessException ex) {
+    public ResponseEntity<ProblemDetail> catchIllegalAccessException(IllegalAccessException ex) {
         System.out.println(EXCEPTION_PREFIX + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> catchBadRequestException(IllegalArgumentException ex) {
+    public ResponseEntity<ProblemDetail> catchBadRequestException(IllegalArgumentException ex) {
         System.out.println(EXCEPTION_PREFIX + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
     @ExceptionHandler({
             SecurityException.class,
             JwtException.class
     })
-    public ResponseEntity<String> catchUnauthorizedException(Exception ex) {
+    public ResponseEntity<ProblemDetail> catchUnauthorizedException(Exception ex) {
         System.out.println(EXCEPTION_PREFIX + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(EXCEPTION_PREFIX + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> catchConflictException(IllegalStateException ex) {
+    public ResponseEntity<ProblemDetail> catchNotFoundException(NoSuchElementException ex) {
         System.out.println(EXCEPTION_PREFIX + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> catchNotFoundException(NoSuchElementException ex) {
+    public ResponseEntity<ProblemDetail> catchConflictException(IllegalStateException ex) {
         System.out.println(EXCEPTION_PREFIX + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage()));
     }
 }
