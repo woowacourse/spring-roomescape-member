@@ -2,21 +2,19 @@ package roomescape.domain.member;
 
 public class Member {
     private static final int MAX_EMAIL_LENGTH = 30;
-    private static final int MIN_PASSWORD_LENGTH = 8;
-    private static final int MAX_PASSWORD_LENGTH = 20;
+
     private final Long id;
     private final MemberName memberName;
     private final String email;
-    private final String password;
+    private final Password password;
     private final Role role;
 
     public Member(Long id, MemberName memberName, String email, String password, Role role) {
         validateEmail(email);
-        validatePassword(password);
         this.id = id;
         this.memberName = memberName;
         this.email = email;
-        this.password = password;
+        this.password = new Password(password);
         this.role = role;
     }
 
@@ -30,16 +28,8 @@ public class Member {
         }
     }
 
-    private void validatePassword(String password) {
-        if (password.length() < MIN_PASSWORD_LENGTH || password.length() > MAX_PASSWORD_LENGTH) {
-            throw new IllegalArgumentException(
-                    String.format("비밀번호는 %d자 이상, %d자 이하여야 합니다.", MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
-            );
-        }
-    }
-
-    public boolean matchPassword(String password) {
-        return this.password.equals(password);
+    public boolean matchPassword(String rawPassword) {
+        return password.match(rawPassword);
     }
 
     public boolean isAdmin() {
@@ -59,7 +49,7 @@ public class Member {
     }
 
     public String getPassword() {
-        return password;
+        return password.getValue();
     }
 
     public Role getRole() {
