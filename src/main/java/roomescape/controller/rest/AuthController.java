@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,9 @@ import roomescape.service.AuthService;
 @RestController
 @RequestMapping("/login")
 public class AuthController {
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     private final AuthService authService;
 
@@ -57,9 +62,6 @@ public class AuthController {
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException("쿠키에 토큰 정보가 존재하지 않습니다."))
                 .getValue();
-
-        // TODO: 환경 변수 분리
-        String secretKey = "나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.";
 
         // TODO: 책임 소재 고민
         Long memberId = Long.valueOf(Jwts.parser()
