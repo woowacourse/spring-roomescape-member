@@ -34,17 +34,14 @@ class JdbcReservationRepositoryTest {
     void 예약을_저장한다() {
         ReservationTime time = reservationTimeRepository.findById(1L).orElseThrow();
         Theme theme = themeRepository.findById(1L).orElseThrow();
-        Reservation reservation = ReservationFixture.reservation("prin", "2024-04-18", time, theme);
+        Reservation reservation = ReservationFixture.reservation("2024-04-18", time, theme);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
         assertAll(
-                () -> assertThat(savedReservation.getName()).isEqualTo(reservation.getName()),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(reservation.getDate()),
-                () -> assertThat(savedReservation.getTimeId()).isEqualTo(time.getId()),
-                () -> assertThat(savedReservation.getTime()).isEqualTo(time.getStartAt()),
-                () -> assertThat(savedReservation.getTheme().getId()).isEqualTo(theme.getId()),
-                () -> assertThat(savedReservation.getTheme().getName()).isEqualTo(theme.getName())
+                () -> assertThat(savedReservation.getReservationTime().getId()).isEqualTo(time.getId()),
+                () -> assertThat(savedReservation.getTheme().getId()).isEqualTo(theme.getId())
         );
     }
 

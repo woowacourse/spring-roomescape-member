@@ -28,12 +28,11 @@ public class ReservationServiceTest {
     @Test
     void 예약을_성공한다() {
         LocalDate date = LocalDate.parse("2024-04-21");
-        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest(date, 1L, 1L, 1L);
 
         ReservationResponse response = reservationService.reserve(request);
 
         assertAll(
-                () -> assertThat(response.name()).isEqualTo(request.name()),
                 () -> assertThat(response.date()).isEqualTo(request.date()),
                 () -> assertThat(response.time().id()).isEqualTo(request.timeId()),
                 () -> assertThat(response.theme().id()).isEqualTo(request.themeId())
@@ -43,7 +42,7 @@ public class ReservationServiceTest {
     @Test
     void 최소_1일_전에_예약하지_않으면_예약을_실패한다() {
         LocalDate invalidDate = LocalDate.parse("2024-04-20");
-        ReservationCreationRequest request = new ReservationCreationRequest("liv", invalidDate, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest(invalidDate, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -53,7 +52,7 @@ public class ReservationServiceTest {
     @Test
     void 중복된_예약이_있으면_예약을_실패한다() {
         LocalDate date = LocalDate.parse("2024-05-01");
-        ReservationCreationRequest request = new ReservationCreationRequest("sudal", date, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isExactlyInstanceOf(DuplicateKeyException.class);
