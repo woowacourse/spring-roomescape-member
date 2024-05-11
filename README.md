@@ -85,3 +85,23 @@
 - [x] GET /login/check 사용자의 정보(이름)를 조회할 수 있다.
 - [x] POST /logout 요청 시 쿠키에 로그인 정보를 제거한다.
 - [x] POST /members 요청 시 member를 생성해준다. (name, email, password)
+
+## 5단계 기능 요구 사항
+
+- [ ] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+  - [ ] HandlerMethodArgumentResolver을 활용해 회원정보를 객체를 컨트롤러 메서드에 주입
+
+- [ ] `reservation` 테이블 변경
+  - 이름(name) -> member id
+
+- [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
+ - [ ] date, themeId, timeId를 입력
+ - [ ] name은 쿠키에 저장된 사용자를 식별해, 사용자 이름으로 대체하도록 수정
+   - 사용자 식별은 이름이 아닌, id로 하도록 구현
+
+- [ ] 관리자 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
+  - [ ] date, themeId, timeId, memberId를 입력
+
+- [ ] `reservation.html`, `user-reservation.js` 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경
+- [ ] `admin/reservation-new.html` 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경
+
