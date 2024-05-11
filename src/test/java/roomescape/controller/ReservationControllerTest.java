@@ -41,8 +41,8 @@ class ReservationControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("모든 예약을 조회한다.")
     @Test
+    @DisplayName("모든 예약을 조회한다.")
     void getAll() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
@@ -70,8 +70,8 @@ class ReservationControllerTest {
 
     }
 
-    @DisplayName("예약을 생성한다.")
     @Test
+    @DisplayName("관리자가 예약을 생성한다.")
     void create() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
@@ -117,8 +117,8 @@ class ReservationControllerTest {
         );
     }
 
-    @DisplayName("해당 id의 예약을 삭제한다.")
     @Test
+    @DisplayName("해당 id의 예약을 삭제한다.")
     void delete() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
