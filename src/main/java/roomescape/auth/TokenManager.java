@@ -47,7 +47,6 @@ public class TokenManager {
                 .setSubject(String.valueOf(memberRole.getMemberId()))
                 .claim(CLAIM_NAME, memberRole.getMemberName())
                 .claim(CLAIM_ROLE, memberRole.getRoleName())
-                .setIssuedAt(now)
                 .setExpiration(expiresAt)
                 .signWith(secretKey)
                 .compact();
