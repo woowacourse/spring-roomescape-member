@@ -14,7 +14,6 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    // TODO dto 반환으로 일관화 시키기
     public Member findMemberById(Long id) {
         return findById(id);
     }

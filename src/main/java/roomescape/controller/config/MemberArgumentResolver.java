@@ -36,9 +36,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     // TODO 예외가 터지는 상황에 대해 고려해보기
-    // TODO 리턴타입을 더 한정시키기
     @Override
-    public Object resolveArgument(
+    public MemberRequest resolveArgument(
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
