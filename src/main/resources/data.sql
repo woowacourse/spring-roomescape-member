@@ -13,7 +13,6 @@ INSERT INTO reservation_time (start_at) VALUES ('15:00');
 INSERT INTO reservation_time (start_at) VALUES ('16:00');
 INSERT INTO reservation_time (start_at) VALUES ('17:00');
 INSERT INTO reservation_time (start_at) VALUES ('18:00');
-INSERT INTO reservation_time (start_at) VALUES ('19:00');
 
 INSERT INTO theme (name, description, thumbnail) VALUES ('링', '공포', 'https://www.zerogangnam.com/storage/fXDXCwrwxpUJYIJCLmnCUbwwPNqVSwvJISISPCyc.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('콜러', '공포', 'https://www.zerogangnam.com/storage/Tzt6E8ICK3GP13OGFVQsN4vIyqgvZQ3jca7XnGI9.jpg');
