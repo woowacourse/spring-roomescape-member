@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.service.MemberService;
+import roomescape.service.security.JwtUtils;
 import roomescape.web.dto.request.LoginRequest;
 import roomescape.web.dto.response.MemberResponse;
 
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
-public class LoginController {
+public class AuthController {
     private final MemberService memberService;
 
     @PostMapping
@@ -33,9 +34,9 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> findAuthenticatedMember(
+    public ResponseEntity<MemberResponse> checkAuthenticated(
             @CookieValue(value = "token", defaultValue = "") String token) {
-        MemberResponse response = memberService.findMemberByToken(token);
+        MemberResponse response = new MemberResponse(JwtUtils.decodeName(token));
 
         return ResponseEntity.ok()
                 .body(response);

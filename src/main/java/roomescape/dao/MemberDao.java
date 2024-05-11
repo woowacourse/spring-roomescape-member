@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -44,10 +45,22 @@ public class MemberDao implements MemberRepository {
     }
 
     @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, memberRowMapper);
+    }
+
+    @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         List<Member> findMembers = jdbcTemplate.query(sql, memberRowMapper, email, password);
         return DataAccessUtils.optionalResult(findMembers);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM member WHERE email = ?)";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, email));
     }
 
     @Override
@@ -59,6 +72,12 @@ public class MemberDao implements MemberRepository {
         Long id = jdbcInsert.executeAndReturnKey(sqlParams)
                 .longValue();
         return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
+    }
+
+    @Override
+    public void delete(Member member) {
+        String sql = "DELETE FROM member WHERE id = ?";
+        jdbcTemplate.update(sql, member.getId());
     }
 
     @Override

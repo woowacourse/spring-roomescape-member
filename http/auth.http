@@ -12,3 +12,4 @@ host: localhost:8080
 GET localhost:8080/login/check
 Cookie: token=eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJhZG1pbkBlbWFpbC5jb20iLCJuYW1lIjoibmFtZSJ9.qHWZiKO5LIR1IfD3Q8orxnI9FQJHdWGzXAw35qjEgs552Ctg2XcGStZJ1EE8p9y3
 host: localhost:8080
+

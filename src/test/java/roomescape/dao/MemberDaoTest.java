@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,4 +61,65 @@ class MemberDaoTest {
         Assertions.assertThat(memberDao.findByEmailAndPassword(dummyMember.getEmail(), dummyMember.getPassword()))
                 .isEmpty();
     }
+
+    @Test
+    @DisplayName("저장 된 모든 사용자들을 찾아낸다.")
+    void findAll_ShouldReturnAllPersistence() {
+        // given
+        memberDao.save(dummyMember);
+        memberDao.save(dummyMember);
+
+        memberDao.save(dummyMember);
+        memberDao.save(dummyMember);
+        memberDao.save(dummyMember);
+
+        // when
+        List<Member> members = memberDao.findAll();
+
+        // then
+        Assertions.assertThat(members).hasSize(5);
+
+    }
+
+    @Test
+    @DisplayName("이메일이 존재하는지 확인 할 수 잇다 -존재")
+    void existsByEmail_ShouldCheckExistenceOfMember() {
+        // given
+        memberDao.save(new Member("name", "email", "aa"));
+
+        // when
+        boolean result = memberDao.existsByEmail("email");
+
+        // then
+        Assertions.assertThat(result).isTrue();
+
+    }
+
+    @Test
+    @DisplayName("이메일이 존재하는지 확인 할 수 있다 - 존재X")
+    void existsByEmail_ShouldCheckDoesNotExistenceOfMember() {
+        // given
+        memberDao.save(new Member("name", "email", "aa"));
+
+        // when
+        boolean result = memberDao.existsByEmail("email2");
+
+        // then
+        Assertions.assertThat(result).isFalse();
+
+    }
+
+    @Test
+    @DisplayName("회원을 삭제할 수 있다")
+    void delete_ShouldRemovePersistence() {
+        // given
+        Member savedMember = memberDao.save(dummyMember);
+
+        // when
+        memberDao.delete(savedMember);
+
+        // then
+        Assertions.assertThat(memberDao.findAll()).isEmpty();
+    }
+
 }

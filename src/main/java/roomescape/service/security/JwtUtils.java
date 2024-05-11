@@ -9,6 +9,7 @@ import roomescape.exception.member.AuthenticationFailureException;
 public class JwtUtils {
     private static final String SECRET_KEY = "hellowootecoworldhihowareyouiamfinethankyouandyou";
     private static final String ROLE_CLAIM_KEY = "role";
+    private static final String NAME_CLAIM_KEY = "name";
 
     private JwtUtils() {
         throw new AssertionError("유틸 클래스입니다. 생성할 수 없습니다.");
@@ -18,6 +19,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(user.getId().toString())
                 .claim(ROLE_CLAIM_KEY, user.getRoleAsString())
+                .claim(NAME_CLAIM_KEY, user.getName())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
@@ -48,6 +50,21 @@ public class JwtUtils {
                     .parseSignedClaims(token)
                     .getPayload()
                     .get(ROLE_CLAIM_KEY, String.class));
+        } catch (Exception e) {
+            throw new AuthenticationFailureException();
+        }
+    }
+
+    public static String decodeName(String token) {
+        try {
+            token = token.replace("token=", "");
+
+            return Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get(NAME_CLAIM_KEY, String.class);
         } catch (Exception e) {
             throw new AuthenticationFailureException();
         }

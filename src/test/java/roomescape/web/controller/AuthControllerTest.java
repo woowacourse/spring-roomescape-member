@@ -21,13 +21,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.service.MemberService;
+import roomescape.service.security.JwtUtils;
 import roomescape.web.dto.request.LoginRequest;
 import roomescape.web.dto.response.MemberResponse;
 
 
-@WebMvcTest(controllers = LoginController.class)
-class LoginControllerTest {
+@WebMvcTest(controllers = AuthController.class)
+class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -91,17 +94,13 @@ class LoginControllerTest {
     @DisplayName("토큰의 사용자 이름을 반환한다")
     void findAuthenticatedMember_ShouldReturnMemberName() throws Exception {
         // given
-        LoginRequest request = new LoginRequest("aaa@bbb.cc", "password");
-        ObjectMapper objectMapper = new ObjectMapper();
-        MemberResponse response = new MemberResponse("arbitraryMember");
-        Mockito.when(memberService.findMemberByToken("arbitraryToken"))
-                .thenReturn(response);
+        Member member = new Member(1L, "name", "email@email.com", "password", Role.NORMAL);
+        String token = JwtUtils.encode(member);
+        MemberResponse response = new MemberResponse(member.getName());
 
         // when & then
         mockMvc.perform(get("/login/check")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .cookie(new Cookie("token", "arbitraryToken"))
-                        .content(objectMapper.writeValueAsString(request)))
+                        .cookie(new Cookie("token", token)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));

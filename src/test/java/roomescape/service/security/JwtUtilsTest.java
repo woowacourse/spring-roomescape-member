@@ -40,4 +40,18 @@ class JwtUtilsTest {
         Assertions.assertThat(role).isSameAs(Role.ADMIN);
     }
 
+    @Test
+    @DisplayName("토큰에서 사용자 이름을 추출할 수 있다")
+    void decodeName_ShouldExtractMemberName() {
+        // given
+        Member member = new Member(1L, "name", "email", "password", Role.ADMIN);
+        String encoded = JwtUtils.encode(member);
+
+        // when
+        String name = JwtUtils.decodeName(encoded);
+
+        // then
+        Assertions.assertThat(name).isEqualTo(member.getName());
+    }
+
 }

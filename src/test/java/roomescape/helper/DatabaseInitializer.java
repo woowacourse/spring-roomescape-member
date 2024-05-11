@@ -26,12 +26,13 @@ public class DatabaseInitializer {
     public void execute() {
         theme = createTheme();
         time = createInitTime();
+        member = createMember();
         reservation = createInitReservation(time, theme, member);
     }
 
     private Member createMember() {
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES (?, ?, ?)", "이름",
-                "email@email.com, password");
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", "이름",
+                "email@email.com", "password", "admin");
         return new Member(1L, "이름", "email@email.com", "password");
     }
 
