@@ -29,7 +29,7 @@ class ReservationDaoTest {
     @Test
     @DisplayName("데이터를 정상적으로 저장한다.")
     void saveReservation() {
-        Reservation reservation = Reservation.saveReservationOf("범블비", TODAY, 1L, 1L);
+        Reservation reservation = Reservation.saveReservationOf(TODAY, 1L, 1L, 1L);
         reservationDao.save(reservation);
 
         Assertions.assertThat(reservation.getId()).isEqualTo(3);

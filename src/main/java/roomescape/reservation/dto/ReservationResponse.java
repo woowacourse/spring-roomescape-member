@@ -6,13 +6,13 @@ import roomescape.reservation.domain.Reservation;
 
 public record ReservationResponse(
         long id,
-        String reservationName,
+        String memberName,
         LocalDate date,
         LocalTime startAt,
         String themeName
 ) {
     public static ReservationResponse fromReservation(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
+        return new ReservationResponse(reservation.getId(), reservation.getMember().getName(), reservation.getDate(),
                 reservation.getReservationTime().getStartAt(), reservation.getTheme().getName());
     }
 }

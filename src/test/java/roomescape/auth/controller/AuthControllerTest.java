@@ -19,7 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.auth.domain.Token;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.provider.model.TokenProvider;
 import roomescape.auth.service.AuthService;
+import roomescape.member.service.MemberService;
 
 @WebMvcTest(AuthController.class)
 class AuthControllerTest {
@@ -29,6 +31,12 @@ class AuthControllerTest {
 
     @MockBean
     private AuthService authService;
+
+    @MockBean
+    private MemberService memberService;
+
+    @MockBean
+    private TokenProvider tokenProvider;
 
     @Test
     @DisplayName("쿠키를 잘 저장하는지 확인한다.")

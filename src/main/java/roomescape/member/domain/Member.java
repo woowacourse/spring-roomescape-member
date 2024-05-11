@@ -11,23 +11,27 @@ public class Member {
     private final Email email;
     private final Password password;
 
-    private Member(long id, String name, String email, String password) {
+    private Member(long id, String name, Email email, Password password) {
         this.id = id;
         this.name = new Name(DEFAULT_NAME);
-        this.email = new Email(email);
-        this.password = new Password(password);
+        this.email = email;
+        this.password = password;
     }
 
-    private Member(String name, String email, String password) {
+    private Member(String name, Email email, Password password) {
         this(0, name, email, password);
     }
 
+    public static Member saveMemberFrom(long id) {
+        return new Member(id, null, Email.saveEmailFrom(null), Password.savePasswordFrom(null));
+    }
+
     public static Member memberOf(long id, String name, String email, String password) {
-        return new Member(id, name, email, password);
+        return new Member(id, name, Email.emailFrom(email), Password.passwordFrom(password));
     }
 
     public static Member saveMemberOf(String email, String password, String name) {
-        return new Member(name, email, password);
+        return new Member(name, Email.emailFrom(email), Password.passwordFrom(password));
     }
 
     public long getId() {

@@ -32,8 +32,8 @@ public class ReservationRepository {
         Theme theme = themeDao.findById(reservation.getTheme().getId())
                 .orElseThrow(() -> new RoomEscapeException(ThemeExceptionCode.FOUND_THEME_IS_NULL_EXCEPTION));
 
-        Reservation saveReservation = Reservation.saveReservationOf(reservation.getName(), reservation.getDate(), time,
-                theme);
+        Reservation saveReservation = Reservation.saveReservationOf(reservation.getDate(), time,
+                theme, reservation.getMember());
         return reservationDao.save(saveReservation);
     }
 

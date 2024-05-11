@@ -22,8 +22,8 @@ public class ReservationService {
         this.timeRepository = timeRepository;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationRequest.fromRequest();
+    public ReservationResponse addReservation(ReservationRequest reservationRequest, long memberId) {
+        Reservation reservation = reservationRequest.fromRequest(memberId);
         return ReservationResponse.fromReservation(reservationRepository.save(reservation));
     }
 

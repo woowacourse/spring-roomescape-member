@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.model.RoomEscapeException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.exception.ReservationExceptionCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
@@ -24,13 +25,14 @@ class ReservationTest {
     void constructReservation() {
         Theme theme = Theme.themeOf(1, "미르", "미르 방탈출", "썸네일 Url");
         Time time = new Time(1, TIME);
-        Reservation reservation = Reservation.reservationOf(1L, "폴라", TOMORROW, time, theme);
+        Member member = Member.memberOf(1, "polla", "polla@gmail.com", "polla99");
+        Reservation reservation = Reservation.reservationOf(1L, TOMORROW, time, theme, member);
 
         assertAll(
                 () -> assertEquals(reservation.getTheme(), theme),
                 () -> assertEquals(reservation.getReservationTime(), time),
                 () -> assertEquals(reservation.getId(), 1),
-                () -> assertEquals(reservation.getName(), "폴라"),
+                () -> assertEquals(reservation.getMember().getName(), "어드민"),
                 () -> assertEquals(reservation.getDate(), TOMORROW)
         );
     }
@@ -39,7 +41,7 @@ class ReservationTest {
     @DisplayName("과거의 날짜를 예약하려고 시도하는 경우 에러를 발생한다.")
     void validation_ShouldThrowException_WhenReservationDateIsPast() {
         Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                () -> Reservation.saveReservationOf("pollari", BEFORE, 1L, 1L));
+                () -> Reservation.saveReservationOf(BEFORE, 1L, 1L, 1L));
 
         assertEquals(ReservationExceptionCode.RESERVATION_DATE_IS_PAST_EXCEPTION.getMessage(),
                 pastDateReservation.getMessage());

@@ -5,11 +5,10 @@ import roomescape.reservation.domain.Reservation;
 
 public record ReservationRequest(
         LocalDate date,
-        String name,
         long timeId,
         long themeId
 ) {
-    public Reservation fromRequest() {
-        return Reservation.saveReservationOf(name, date, timeId, themeId);
+    public Reservation fromRequest(long memberId) {
+        return Reservation.saveReservationOf(date, timeId, themeId, memberId);
     }
 }
