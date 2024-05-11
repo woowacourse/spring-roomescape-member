@@ -47,7 +47,7 @@ public class ReservationTimeService {
         final boolean isTimeExist = reservationTimeRepository.existByStartAt(reservationTime.getStartAt());
 
         if (isTimeExist) {
-            throw new IllegalArgumentException("이미 저장된 예약 시간입니다.");
+            throw new IllegalArgumentException(String.format("이미 저장된 예약 시간입니다. (%s)", reservationTime.getStartAt()));
         }
     }
 
@@ -58,11 +58,11 @@ public class ReservationTimeService {
 
     private void validateDeleteTime(final Long id) {
         reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 예약 시간입니다. (%d)", id)));
 
         final boolean existByTimeId = reservationRepository.existByTimeId(id);
         if (existByTimeId) {
-            throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new IllegalArgumentException(String.format("예약이 존재하는 시간은 삭제할 수 없습니다. (%d)", id));
         }
     }
 

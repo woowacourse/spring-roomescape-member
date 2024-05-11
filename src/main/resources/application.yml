@@ -4,3 +4,5 @@ spring:
       enabled: true
   datasource:
     url: jdbc:h2:mem:database
+token-provider:
+  secret-key: yN3s9scWZKLZ4cF+2Ngh3TmplPYTlGzV9WIs5Vb5x4=eyJhbGciOiJIUsdfs1YiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.ih1aovtQSg3qLWiB8Kt59Lno

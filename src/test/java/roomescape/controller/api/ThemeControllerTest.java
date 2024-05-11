@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.*;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -38,6 +37,9 @@ class ThemeControllerTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void initPort() {
@@ -87,10 +89,11 @@ class ThemeControllerTest {
     @DisplayName("인기 테마 조회")
     @Test
     void getPopularThemes() {
+        final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
         final LocalDate localDate = LocalDate.now().minusDays(1);
-        reservationRepository.save(new Reservation("이름1", localDate, reservationTime, theme));
+        reservationRepository.save(new Reservation(member, localDate, reservationTime, theme));
 
         RestAssured.given().log().all()
                 .when().get("/themes/popular?date=" + localDate)

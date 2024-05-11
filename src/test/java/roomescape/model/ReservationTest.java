@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ class ReservationTest {
     @Test
     void emptyDate() {
         assertThatThrownBy(() ->
-                new Reservation("감자", null, new ReservationTime(LocalTime.parse("10:00")), new Theme("이름", "설명", "썸네일")))
+                new Reservation(null, null, new ReservationTime(LocalTime.parse("10:00")), new Theme("이름", "설명", "썸네일")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("날짜가 비어 있습니다.");
     }
@@ -25,8 +26,8 @@ class ReservationTest {
     void isBeforeNowWithPastDate() {
         final Theme theme = new Theme("테마 이름", "테마 설명", "테마 썸네일");
         final ReservationTime time = new ReservationTime(LocalTime.of(14, 0));
-        final Reservation reservation = new Reservation("예약자 이름", LocalDate.now().minusDays(1), time, theme);
-        assertTrue(reservation.isBeforeNow());
+        final Reservation reservation = new Reservation(null, LocalDate.now().minusDays(1), time, theme);
+        assertTrue(reservation.isBefore(LocalDateTime.now()));
     }
 
     @Test
@@ -34,7 +35,7 @@ class ReservationTest {
     void isBeforeNowWithFutureDate() {
         final Theme theme = new Theme("테마 이름", "테마 설명", "테마 썸네일");
         final ReservationTime time = new ReservationTime(LocalTime.of(14, 0));
-        final Reservation reservation = new Reservation("예약자 이름", LocalDate.now().plusDays(1), time, theme);
-        assertFalse(reservation.isBeforeNow());
+        final Reservation reservation = new Reservation(null, LocalDate.now().plusDays(1), time, theme);
+        assertFalse(reservation.isBefore(LocalDateTime.now()));
     }
 }

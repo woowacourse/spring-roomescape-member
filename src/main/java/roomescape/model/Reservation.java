@@ -6,22 +6,30 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     private final Long id;
-    private final ReservationName name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDate(date);
         this.id = id;
-        this.name = new ReservationName(name);
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation createIfFuture(final LocalDateTime thresholdDateTime, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+        final LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(thresholdDateTime)) {
+            throw new IllegalArgumentException(String.format("지나간 시간에 대한 예약은 생성할 수 없습니다. (%s)", reservationDateTime));
+        }
+        return new Reservation(member, date, time, theme);
     }
 
     private static void validateDate(final LocalDate date) {
@@ -30,9 +38,9 @@ public class Reservation {
         }
     }
 
-    public boolean isBeforeNow() {
+    public boolean isBefore(final LocalDateTime dateTime) {
         final LocalDateTime reservationDateTime = getDateTime();
-        return reservationDateTime.isBefore(LocalDateTime.now());
+        return reservationDateTime.isBefore(dateTime);
     }
 
     private LocalDateTime getDateTime() {
@@ -51,8 +59,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name.getValue();
+    public Long getMemberId() {
+        return member.getId();
     }
 
     public LocalDate getDate() {
@@ -65,5 +73,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

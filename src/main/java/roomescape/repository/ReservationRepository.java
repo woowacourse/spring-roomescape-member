@@ -1,18 +1,19 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.dto.ReservationFilterRequest;
+import roomescape.model.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationRepository {
@@ -29,9 +30,16 @@ public class ReservationRepository {
                 selectedReservation.getString("thumbnail")
         );
 
+        final Member member = new Member(
+                selectedReservation.getLong("member_id"),
+                selectedReservation.getString("member_name"),
+                Role.from(selectedReservation.getString("role")),
+                selectedReservation.getString("email")
+        );
+
         return new Reservation(
                 selectedReservation.getLong("id"),
-                selectedReservation.getString("name"),
+                member,
                 LocalDate.parse(selectedReservation.getString("date")),
                 time,
                 theme
@@ -58,55 +66,83 @@ public class ReservationRepository {
         final Long savedReservationId = reservationInsert.executeAndReturnKey(reservationParameters).longValue();
         return new Reservation(
                 savedReservationId,
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
         );
     }
 
-    public List<Reservation> findAll() {
-        final String selectQuery = """
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                rt.id as time_id,
-                rt.start_at,
-                t.id as theme_id,
-                t.name as theme_name,
-                t.description,
-                t.thumbnail
-            FROM reservation as r
-            INNER JOIN reservation_time as rt
-            ON r.time_id = rt.id
-            INNER JOIN theme as t
-            ON r.theme_id = t.id
-        """;
-        return jdbcTemplate.query(selectQuery, ROW_MAPPER)
-                .stream()
-                .toList();
+    public List<Reservation> findByFilter(final ReservationFilterRequest filterRequest) {
+        final List<Object> filters = new ArrayList<>();
+        final StringBuilder selectQuery = new StringBuilder("""
+                            SELECT
+                                r.id as reservation_id,
+                                r.date,
+                                rt.id as time_id,
+                                rt.start_at,
+                                t.id as theme_id,
+                                t.name as theme_name,
+                                t.description,
+                                t.thumbnail,
+                                m.id as member_id,
+                                m.name as member_name,
+                                m.role,
+                                m.email
+                            FROM reservation as r
+                            INNER JOIN reservation_time as rt
+                            ON r.time_id = rt.id
+                            INNER JOIN theme as t
+                            ON r.theme_id = t.id 
+                            INNER JOIN member as m 
+                            ON r.member_id = m.id 
+                            WHERE 1 = 1 
+                """);
+
+        if (filterRequest.themeId() != null) {
+            selectQuery.append(" AND theme_id = ?");
+            filters.add(filterRequest.themeId());
+        }
+        if (filterRequest.memberId() != null) {
+            selectQuery.append(" AND member_id = ?");
+            filters.add(filterRequest.memberId());
+        }
+        if (filterRequest.dateFrom() != null) {
+            selectQuery.append(" AND date >= ?");
+            filters.add(filterRequest.dateFrom());
+        }
+        if (filterRequest.dateTo() != null) {
+            selectQuery.append(" AND date <= ?");
+            filters.add(filterRequest.dateTo());
+        }
+
+        return jdbcTemplate.query(selectQuery.toString(), filters.toArray(), ROW_MAPPER);
     }
 
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themId) {
         final String selectQuery = """
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                rt.id as time_id,
-                rt.start_at,
-                t.id as theme_id,
-                t.name as theme_name,
-                t.description,
-                t.thumbnail
-            FROM reservation as r
-            INNER JOIN reservation_time as rt
-            ON r.time_id = rt.id
-            INNER JOIN theme as t
-            ON r.theme_id = t.id
-            WHERE r.date = ? AND r.theme_id = ?
-        """;
+                    SELECT
+                        r.id as reservation_id,
+                        r.date,
+                        rt.id as time_id,
+                        rt.start_at,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description,
+                        t.thumbnail,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.role,
+                        m.email
+                    FROM reservation as r
+                    INNER JOIN reservation_time as rt
+                    ON r.time_id = rt.id
+                    INNER JOIN theme as t
+                    ON r.theme_id = t.id 
+                    INNER JOIN member as m 
+                    ON r.member_id = m.id 
+                    WHERE r.date = ? AND r.theme_id = ?
+                """;
         return jdbcTemplate.query(selectQuery, ROW_MAPPER, date, themId)
                 .stream()
                 .toList();
@@ -133,24 +169,29 @@ public class ReservationRepository {
 
     public Optional<Reservation> findById(final Long id) {
         final String selectQuery = """
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                rt.id as time_id,
-                rt.start_at,
-                t.id as theme_id,
-                t.name as theme_name,
-                t.description,
-                t.thumbnail
-            FROM reservation as r
-            INNER JOIN reservation_time as rt
-            ON r.time_id = rt.id
-            INNER JOIN theme as t
-            ON r.theme_id = t.id
-            WHERE r.id = ?
-            LIMIT 1
-        """;
+                    SELECT
+                        r.id as reservation_id,
+                        r.date,
+                        rt.id as time_id,
+                        rt.start_at,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description,
+                        t.thumbnail,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.role,
+                        m.email
+                    FROM reservation as r
+                    INNER JOIN reservation_time as rt
+                    ON r.time_id = rt.id
+                    INNER JOIN theme as t
+                    ON r.theme_id = t.id
+                    INNER JOIN member as m 
+                    ON r.member_id = m.id
+                    WHERE r.id = ?
+                    LIMIT 1
+                """;
 
         try {
             final Reservation reservation = jdbcTemplate.queryForObject(selectQuery, ROW_MAPPER, id);

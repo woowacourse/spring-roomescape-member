@@ -16,9 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.*;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -38,6 +37,9 @@ class ThemeServiceTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("테마 저장")
     @Test
@@ -76,24 +78,26 @@ class ThemeServiceTest {
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .hasMessage(String.format("존재하지 않는 테마입니다. (%d)", 1L));
     }
 
     @DisplayName("예약이 존재하는 테마 삭제 시 예외 발생")
     @Test
     void deleteReservationExistTheme() {
+        final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
         final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "섬네일1"));
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        reservationRepository.save(new Reservation("이름", LocalDate.now().plusMonths(1), reservationTime, theme));
+        reservationRepository.save(new Reservation(member, LocalDate.now().plusMonths(1), reservationTime, theme));
 
         assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다.");
+                .hasMessage(String.format("예약이 존재하는 테마는 삭제할 수 없습니다. (%d)", 1L));
     }
 
     @DisplayName("인기 테마 조회")
     @Test
     void getPopularThemes() {
+        final Member member = memberRepository.save(new Member("감자", Role.USER, "111@aaa.com", "abc1234"));
         final List<Theme> themes = Stream.of(
                     new Theme("이름1", "설명1", "섬네일1"),
                     new Theme("이름2", "설명2", "섬네일2"),
@@ -103,12 +107,12 @@ class ThemeServiceTest {
                 .toList();
         final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         final LocalDate localDate = LocalDate.now().plusWeeks(1);
-        reservationRepository.save(new Reservation("이름1", localDate, reservationTime, themes.get(2)));
-        reservationRepository.save(new Reservation("이름1", localDate.minusDays(1), reservationTime, themes.get(2)));
-        reservationRepository.save(new Reservation("이름1", localDate.minusDays(2), reservationTime, themes.get(2)));
-        reservationRepository.save(new Reservation("이름1", localDate, reservationTime, themes.get(1)));
-        reservationRepository.save(new Reservation("이름1", localDate.minusDays(1), reservationTime, themes.get(1)));
-        reservationRepository.save(new Reservation("이름1", localDate, reservationTime, themes.get(0)));
+        reservationRepository.save(new Reservation(member, localDate, reservationTime, themes.get(2)));
+        reservationRepository.save(new Reservation(member, localDate.minusDays(1), reservationTime, themes.get(2)));
+        reservationRepository.save(new Reservation(member, localDate.minusDays(2), reservationTime, themes.get(2)));
+        reservationRepository.save(new Reservation(member, localDate, reservationTime, themes.get(1)));
+        reservationRepository.save(new Reservation(member, localDate.minusDays(1), reservationTime, themes.get(1)));
+        reservationRepository.save(new Reservation(member, localDate, reservationTime, themes.get(0)));
 
         final List<ThemeResponse> themeResponses = themeService.getPopularThemes(localDate);
         assertThat(themeResponses)
