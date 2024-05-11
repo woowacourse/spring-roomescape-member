@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -25,12 +26,15 @@ public class QueryStringArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
+    public Object resolveArgument(@Nullable MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest,
+                                  @Nullable NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
+        if (parameter == null || webRequest == null) {
+            return null;
+        }
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        
+
         try {
             String json = convertQueryToJson(request.getQueryString());
             return objectMapper.readValue(json, parameter.getParameterType());

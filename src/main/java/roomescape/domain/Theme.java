@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Theme {
 
-    public static String DEFAULT_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
+    private static final String DEFAULT_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
 
     private final Long id;
     private final String name;

@@ -1,6 +1,7 @@
 package roomescape.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,12 @@ public class VerifyAdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(@Nullable HttpServletRequest request,
+                             @Nullable HttpServletResponse response,
+                             @Nullable Object handler) {
+        if (request == null || response == null) {
+            return false;
+        }
         String token = authorizationExtractor.extract(request);
 
         Member member;
