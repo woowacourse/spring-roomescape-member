@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.controller.login.LoginMember;
 import roomescape.controller.login.MemberCheckResponse;
 import roomescape.controller.reservation.CreateReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
@@ -136,13 +137,14 @@ class ReservationServiceTest {
     void deleteReservation() {
         // given
         CreateReservationRequest createReservationRequest = sampleReservations.get(0);
+        LoginMember member = new LoginMember(createReservationRequest.memberId(), null, null, null);
 
         // when
         ReservationResponse actual = reservationService.addReservation(createReservationRequest);
 
         // then
-        assertThat(reservationService.deleteReservation(actual.id())).isOne();
-        assertThatThrownBy(() -> reservationService.deleteReservation(actual.id()))
+        assertThat(reservationService.deleteReservation(actual.id(), member)).isOne();
+        assertThatThrownBy(() -> reservationService.deleteReservation(actual.id(), member))
                 .isInstanceOf(ReservationNotFoundException.class);
     }
 

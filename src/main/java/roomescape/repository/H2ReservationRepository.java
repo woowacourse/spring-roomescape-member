@@ -164,4 +164,11 @@ public class H2ReservationRepository implements ReservationRepository {
 
         return jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public int deleteByMemberId(long id, long memberId) {
+        String sql = "DELETE FROM RESERVATION WHERE ID = ? AND MEMBER_ID = ?";
+
+        return jdbcTemplate.update(sql, id, memberId);
+    }
 }

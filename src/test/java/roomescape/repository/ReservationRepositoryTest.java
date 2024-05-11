@@ -275,4 +275,19 @@ class ReservationRepositoryTest {
         assertThat(reservationRepository.findById(nonExistId)).isEmpty();
         assertThat(reservationRepository.delete(nonExistId)).isZero();
     }
+
+    @Test
+    @DisplayName("등록된 예약 번호와 멤버 아이디로 삭제한다.")
+    void deleteByMemberIdPresent() {
+        // given
+        Reservation reservation = sampleReservations.get(0);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        Long existId = savedReservation.getId();
+        Long memberId = reservation.getMember().getId();
+
+        // when & then
+        assertThat(reservationRepository.findById(existId)).isPresent();
+        assertThat(reservationRepository.deleteByMemberId(existId, memberId)).isNotZero();
+        assertThat(reservationRepository.findById(existId)).isEmpty();
+    }
 }

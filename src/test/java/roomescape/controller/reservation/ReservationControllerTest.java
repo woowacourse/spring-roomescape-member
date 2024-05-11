@@ -192,8 +192,9 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("존재하는 예약을 삭제하면 204 를 응답한다.")
-    void deleteReservations204() {
+    void deleteReservation204() {
         RestAssured.given().log().all()
+                .cookie(token)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -201,9 +202,20 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("존재하지 않는 예약을 삭제하면 404 를 응답한다.")
-    void deleteReservations404() {
+    void deleteReservation404() {
         RestAssured.given().log().all()
+                .cookie(token)
                 .when().delete("/reservations/0")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("다른 유저의 예약을 삭제하면 404 를 응답한다.")
+    void deleteOtherReservation404() {
+        RestAssured.given().log().all()
+                .cookie(token)
+                .when().delete("/reservations/3")
                 .then().log().all()
                 .statusCode(404);
     }
