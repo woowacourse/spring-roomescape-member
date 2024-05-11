@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.request.ReservationCreationRequest;
+import roomescape.application.dto.request.ReservationFilteringRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
@@ -71,6 +72,15 @@ public class ReservationService {
 
     public List<ReservationResponse> findReservations() {
         return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findReservations(ReservationFilteringRequest request) {
+        List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndDateRange(
+                request.themeId(), request.memberId(), request.dateFrom(), request.dateTo());
+        return reservations
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

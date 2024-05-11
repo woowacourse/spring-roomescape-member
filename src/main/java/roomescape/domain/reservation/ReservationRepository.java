@@ -14,5 +14,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findAllByThemeIdAndMemberIdAndDateRange(long themeId, long memberId, LocalDate dateFrom,
+                                                              LocalDate dateTo);
+
     boolean deleteById(long id);
 }

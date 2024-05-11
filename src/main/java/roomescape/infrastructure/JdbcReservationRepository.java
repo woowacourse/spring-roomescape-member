@@ -113,6 +113,26 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByThemeIdAndMemberIdAndDateRange(long themeId, long memberId,
+                                                                     LocalDate dateFrom, LocalDate dateTo) {
+        String query = """
+                SELECT r.id, r.reservation_date, 
+                r.time_id, t.start_at, 
+                r.theme_id, th.name, th.description, th.thumbnail, 
+                r.member_id, m.name, m.email, m.password, m.role
+                FROM reservation AS r
+                JOIN reservation_time AS t
+                ON r.time_id = t.id
+                JOIN theme AS th
+                On r.theme_id = th.id
+                JOIN member AS m
+                ON r.member_id = m.id
+                WHERE r.theme_id = ? AND r.member_id = ? AND r.reservation_date <= ? AND r.reservation_date >= ?
+                """;
+        return jdbcTemplate.query(query, ROW_MAPPER, themeId, memberId, dateFrom, dateTo);
+    }
+
+    @Override
     public boolean deleteById(long id) {
         String query = "DELETE FROM reservation WHERE id = ?";
         int deletedRowCount = jdbcTemplate.update(query, id);
