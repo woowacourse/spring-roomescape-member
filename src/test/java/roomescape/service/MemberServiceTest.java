@@ -19,6 +19,7 @@ import roomescape.domain.Member;
 import roomescape.dto.MemberModel;
 import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.request.MemberFindRequest;
+import roomescape.dto.response.MemberResponse;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -47,8 +48,8 @@ class MemberServiceTest {
         when(memberDao.readMemberById(any(Long.class)))
                 .thenReturn(Optional.of(member));
 
-        MemberModel actual = memberService.readMember(1L);
-        assertThat(actual).isEqualTo(MemberModel.from(member));
+        MemberResponse actual = memberService.readMember(1L);
+        assertThat(actual).isEqualTo(new MemberResponse(member.name()));
     }
 
     @DisplayName("멤버를 추가할 수 있다.")

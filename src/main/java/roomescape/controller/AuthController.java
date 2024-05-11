@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.exception.AuthFailException;
 import roomescape.dto.MemberModel;
 import roomescape.dto.request.MemberFindRequest;
+import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
 import roomescape.service.MemberService;
 import roomescape.service.TokenService;
@@ -41,9 +42,9 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberModel> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Long id = tokenService.findTokenId(request.getCookies());
-        MemberModel response = memberService.readMember(id);
+        MemberResponse response = memberService.readMember(id);
         return ResponseEntity.ok(response);
     }
 

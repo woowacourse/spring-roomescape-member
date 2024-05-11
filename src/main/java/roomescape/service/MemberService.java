@@ -8,6 +8,7 @@ import roomescape.domain.exception.AuthFailException;
 import roomescape.dto.MemberModel;
 import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.request.MemberFindRequest;
+import roomescape.dto.response.MemberResponse;
 
 @Service
 public class MemberService {
@@ -24,11 +25,11 @@ public class MemberService {
         return MemberModel.from(member);
     }
 
-    public MemberModel readMember(Long id) {
+    public MemberResponse readMember(Long id) {
         Member member = memberDao.readMemberById(id)
                 .orElseThrow(AuthFailException::new);
 
-        return MemberModel.from(member);
+        return new MemberResponse(member.name());
     }
 
     public void createMember(MemberCreateRequest request) {
