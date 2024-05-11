@@ -1,7 +1,7 @@
+INSERT INTO member (name, email, password, role) values ('어드민', 'admin@email.com', 'password', 'ADMIN');
 INSERT INTO member (name, email, password, role) values ('사용자1', 'member1@email.com', 'password1', 'MEMBER');
 INSERT INTO member (name, email, password, role) values ('사용자2', 'member2@email.com', 'password2', 'MEMBER');
 INSERT INTO member (name, email, password, role) values ('사용자3', 'member3@email.com', 'password3', 'MEMBER');
-INSERT INTO member (name, email, password, role) values ('어드민', 'admin@email.com', 'password', 'ADMIN');
 
 INSERT INTO reservation_time (start_at) VALUES ('09:00');
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
