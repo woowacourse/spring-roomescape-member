@@ -22,13 +22,12 @@ public class MemberDao {
         this.rowMapper = (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
-                resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("email")
         );
     }
 
     public Optional<Member> readMemberById(Long id) {
-        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        String sql = "SELECT id, name, email FROM member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException exception) {
@@ -37,7 +36,7 @@ public class MemberDao {
     }
 
     public Optional<Member> readMemberByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?";
+        String sql = "SELECT id, name, email FROM member WHERE email = ? AND password = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
         } catch (EmptyResultDataAccessException exception) {
@@ -45,7 +44,7 @@ public class MemberDao {
         }
     }
 
-    public Member createMember(Member member) {
+    public Member createMember(Member member, String password) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO member(name, email, password) VALUES (?, ?, ?)";
 
@@ -53,7 +52,7 @@ public class MemberDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, member.name());
             preparedStatement.setString(2, member.email());
-            preparedStatement.setString(3, member.password());
+            preparedStatement.setString(3, password);
             return preparedStatement;
         }, keyHolder);
 

@@ -14,7 +14,7 @@ import roomescape.domain.exception.IllegalNullArgumentException;
 
 class ReservationTest {
     private final LocalDate date = LocalDate.of(2050, 10, 10);
-    private final Member member = new Member(1L, "켬미", "aaa@naver.com", "1111");
+    private final Member member = new Member(1L, "켬미", "aaa@naver.com");
     private final ReservationTime time = new ReservationTime(LocalTime.of(9, 0));
     private final Theme theme = new Theme("테마1", "설명1", "https://image.jpg");
 

@@ -33,6 +33,6 @@ public class MemberService {
 
     public void createMember(MemberCreateRequest request) {
         Member member = request.createMember();
-        memberDao.createMember(member);
+        memberDao.createMember(member, request.password());
     }
 }

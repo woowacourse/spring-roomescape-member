@@ -31,7 +31,7 @@ class MemberServiceTest {
     @DisplayName("해당 이메일과 password인 멤버를 읽을 수 있다.")
     @Test
     void readMember_byEmailAndPassword() {
-        Member member = new Member(1L, "켬미", "aaa@naver.com", "1111");
+        Member member = new Member(1L, "켬미", "aaa@naver.com");
         when(memberDao.readMemberByEmailAndPassword(any(String.class), any(String.class)))
                 .thenReturn(Optional.of(member));
 
@@ -42,7 +42,7 @@ class MemberServiceTest {
     @DisplayName("해당 id인 멤버를 읽을 수 있다.")
     @Test
     void readMember_byId() {
-        Member member = new Member(1L, "켬미", "aaa@naver.com", "1111");
+        Member member = new Member(1L, "켬미", "aaa@naver.com");
         when(memberDao.readMemberById(any(Long.class)))
                 .thenReturn(Optional.of(member));
 
@@ -53,8 +53,8 @@ class MemberServiceTest {
     @DisplayName("멤버를 추가할 수 있다.")
     @Test
     void createMember() {
-        Member member = new Member(1L, "켬미", "aaa@naver.com", "1111");
-        when(memberDao.createMember(any(Member.class)))
+        Member member = new Member(1L, "켬미", "aaa@naver.com");
+        when(memberDao.createMember(any(Member.class), any(String.class)))
                 .thenReturn(member);
 
         MemberCreateRequest request = new MemberCreateRequest("켬미", "aaa@naver.com", "1111");
