@@ -2,6 +2,7 @@ package roomescape;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,5 +37,23 @@ public class JwtTokenProvider {
                 .getSubject();
 
         return Long.parseLong(payload);
+    }
+
+    public String getRoleFromToken(String token) {
+        return (String) Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role");
+    }
+
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        return "";
     }
 }
