@@ -3,10 +3,13 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
+import roomescape.domain.Role;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.LoginException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.member.MemberRepository;
+import roomescape.repository.role.RoleRepository;
 import roomescape.service.dto.member.MemberLoginRequest;
 import roomescape.service.dto.member.MemberResponse;
 import roomescape.service.dto.member.MemberSignUpRequest;
@@ -17,10 +20,12 @@ import roomescape.utils.TokenManager;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final TokenManager tokenManager;
+    private final RoleRepository roleRepository;
 
-    public MemberService(MemberRepository memberRepository, TokenManager tokenManager) {
+    public MemberService(MemberRepository memberRepository, TokenManager tokenManager, RoleRepository roleRepository) {
         this.memberRepository = memberRepository;
         this.tokenManager = tokenManager;
+        this.roleRepository = roleRepository;
     }
 
     public MemberResponse signUp(MemberSignUpRequest request) {
@@ -54,5 +59,11 @@ public class MemberService {
                 .stream()
                 .map(MemberResponse::from)
                 .toList();
+    }
+
+    public boolean checkAdmin(long memberId) {
+        return roleRepository.findByMemberId(memberId)
+                .map(MemberRole::isAdmin)
+                .orElse(Boolean.FALSE);
     }
 }
