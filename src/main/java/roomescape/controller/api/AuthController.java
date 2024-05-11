@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.exception.UnauthorizedException;
 import roomescape.dto.request.LoginRequest;
-import roomescape.dto.response.LoginedMemberResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
@@ -32,9 +31,8 @@ public class AuthController {
             @RequestBody @Valid LoginRequest loginRequest,
             HttpServletResponse response
     ) {
-        LoginedMemberResponse loginedMemberResponse = authService.createToken(loginRequest);
-        String token = loginedMemberResponse.token();
-        MemberResponse memberResponse = loginedMemberResponse.memberResponse();
+        MemberResponse memberResponse = authService.validatePassword(loginRequest);
+        String token = authService.createToken(memberResponse.id());
 
         CookieUtil.setTokenCookie(response, token);
 

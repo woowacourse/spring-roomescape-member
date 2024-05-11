@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.dto.request.LoginRequest;
-import roomescape.dto.response.LoginedMemberResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.security.JwtTokenProvider;
 
@@ -27,20 +26,21 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public LoginedMemberResponse createToken(LoginRequest loginRequest) {
+    public String createToken(Long memberId) {
+        return jwtTokenProvider.createToken(memberId.toString());
+    }
+
+    public Long getMemberIdByToken(String token) {
+        return jwtTokenProvider.getMemberId(token);
+    }
+
+    public MemberResponse validatePassword(LoginRequest loginRequest) {
         Member member = memberRepository.getByEmail(loginRequest.email());
 
         if (!passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        String token = jwtTokenProvider.createToken(member.getId().toString());
-        MemberResponse memberResponse = MemberResponse.from(member);
-
-        return new LoginedMemberResponse(memberResponse, token);
-    }
-
-    public Long getMemberIdByToken(String token) {
-        return jwtTokenProvider.getMemberId(token);
+        return MemberResponse.from(member);
     }
 }

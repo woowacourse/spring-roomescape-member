@@ -5,7 +5,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-import java.util.NoSuchElementException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,9 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.config.TestConfig;
+import roomescape.domain.member.Role;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.SignupRequest;
-import roomescape.dto.response.LoginedMemberResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.security.JwtTokenProvider;
 
@@ -49,37 +48,35 @@ class AuthServiceTest {
     void createToken() {
         doReturn("created_token").when(jwtTokenProvider).createToken(any());
 
-        LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
-
-        LoginedMemberResponse loginedMemberResponse = authService.createToken(request);
-        String token = loginedMemberResponse.token();
-        MemberResponse memberResponse = loginedMemberResponse.memberResponse();
+        String token = authService.createToken(1L);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(token).isEqualTo("created_token");
-            softly.assertThat(memberResponse.email()).isEqualTo(EMAIL);
-            softly.assertThat(memberResponse.name()).isEqualTo(NICKNAME);
         });
     }
 
     @Test
-    @DisplayName("비밀번호가 일치하지 않을 경우 토큰을 생성할 수 없다.")
-    void createToken_fail_when_password_not_matched() {
-        LoginRequest request = new LoginRequest(EMAIL, "wrong_password");
+    @DisplayName("비밀번호가 일치하는지 검증한다.")
+    void validatePassword() {
+        LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
 
-        assertThatThrownBy(() -> authService.createToken(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("비밀번호가 일치하지 않습니다.");
+        MemberResponse response = authService.validatePassword(request);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.email()).isEqualTo(EMAIL);
+            softly.assertThat(response.name()).isEqualTo(NICKNAME);
+            softly.assertThat(response.role()).isEqualTo(Role.USER);
+        });
     }
 
     @Test
-    @DisplayName("이메일이 존재하지 않을 경우 토큰을 생성할 수 없다.")
-    void createToken_fail_when_email_not_matched() {
-        LoginRequest request = new LoginRequest("not_exist_email", PASSWORD);
+    @DisplayName("비밀번호가 일치하지 않을 경우 예외를 발생시킨다.")
+    void validatePassword_fail_when_password_not_matched() {
+        LoginRequest request = new LoginRequest(EMAIL, "wrong_password");
 
-        assertThatThrownBy(() -> authService.createToken(request))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당 이메일의 회원이 존재하지 않습니다.");
+        assertThatThrownBy(() -> authService.validatePassword(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("비밀번호가 일치하지 않습니다.");
     }
 
     @Test
