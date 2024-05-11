@@ -12,7 +12,7 @@ import org.springframework.web.util.WebUtils;
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
     private static final String AUTHENTICATION_INFO_KEY_NAME = "token";
 
-    public final TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
 
     public AuthenticationPrincipalArgumentResolver(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
