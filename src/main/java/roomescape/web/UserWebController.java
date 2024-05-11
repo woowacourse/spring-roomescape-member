@@ -11,6 +11,11 @@ public class UserWebController {
         return "/login";
     }
 
+    @GetMapping("/signup")
+    public String getSingUpPage() {
+        return "/signup";
+    }
+
     @GetMapping
     public String getPopularThemePage() {
         return "/index";

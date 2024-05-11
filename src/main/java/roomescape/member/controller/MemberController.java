@@ -1,8 +1,12 @@
 package roomescape.member.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.dto.MemberResponse;
+import roomescape.member.dto.SaveMemberRequest;
+import roomescape.member.model.Member;
 import roomescape.member.service.MemberService;
 
 import java.util.List;
@@ -22,5 +26,11 @@ public class MemberController {
                 .stream()
                 .map(MemberResponse::from)
                 .toList();
+    }
+
+    @PostMapping("/members")
+    public MemberResponse saveMember(@RequestBody final SaveMemberRequest request) {
+        final Member savedMember = memberService.saveUser(request);
+        return MemberResponse.from(savedMember);
     }
 }

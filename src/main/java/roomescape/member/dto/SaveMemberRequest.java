@@ -4,14 +4,14 @@ import roomescape.member.model.Member;
 import roomescape.member.model.MemberRole;
 
 public record SaveMemberRequest(
-        MemberRole role,
         String email,
+        String password,
         String name,
-        String password
+        MemberRole role
 ) {
     public Member toMember(final String encodedPassword) {
         return Member.createMemberWithoutId(
-                role, encodedPassword, name, email
+                MemberRole.USER, encodedPassword, name, email
         );
     }
 }
