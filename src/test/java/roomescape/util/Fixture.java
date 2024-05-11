@@ -25,6 +25,10 @@ public class Fixture {
     public static final Long ID = 1L;
     public static final String DATE = "2024-05-06";
 
+    public static final String YESTERDAY = LocalDate.now()
+            .minusDays(1)
+            .format(DateTimeFormatter.ISO_DATE);
+
     public static final String TODAY = LocalDate.now()
             .format(DateTimeFormatter.ISO_DATE);
 
