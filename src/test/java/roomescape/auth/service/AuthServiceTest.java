@@ -13,17 +13,20 @@ import roomescape.global.exception.model.NotFoundException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.service.MemberService;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
-@Import({AuthService.class, MemberDao.class, JwtHandler.class})
+@Import({AuthService.class, MemberDao.class, JwtHandler.class, MemberService.class})
 class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
     @Autowired
     private MemberDao memberDao;
+    @Autowired
+    private MemberService memberService;
     @Autowired
     private JwtHandler jwtHandler;
 
