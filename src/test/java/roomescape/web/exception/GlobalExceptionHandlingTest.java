@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.service.auth.AuthService;
+import roomescape.service.auth.UnauthorizedException;
 import roomescape.web.security.CookieTokenExtractor;
 
 @WebMvcTest(GlobalExceptionHandlingTest.TestHandler.class)
@@ -86,9 +87,19 @@ class GlobalExceptionHandlingTest {
     }
 
     @Test
+    @DisplayName("인가 예외를 처리한다.")
+    void unauthorized() throws Exception {
+        when(target.get()).thenThrow(new UnauthorizedException());
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("유효한 인가 정보를 입력해주세요."));
+    }
+
+    @Test
     @DisplayName("예기치 못한 예외를 처리한다.")
     void unExpectedException() throws Exception {
-        when(target.get()).thenThrow(new UnExpectedException());
+        when(target.get()).thenThrow(new UnexpectedException());
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isInternalServerError())
@@ -103,7 +114,7 @@ class GlobalExceptionHandlingTest {
         );
     }
 
-    private static class UnExpectedException extends RuntimeException {
+    private static class UnexpectedException extends RuntimeException {
     }
 
     @Controller
