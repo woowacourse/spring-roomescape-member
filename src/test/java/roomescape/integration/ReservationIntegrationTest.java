@@ -106,6 +106,29 @@ class ReservationIntegrationTest extends IntegrationTest {
     }
 
     @Nested
+    @DisplayName("관리자 예약 추가 API")
+    class SaveAdminReservation {
+        @Test
+        void 관리자는_선택한_사용자_id로_예약을_추가할_수_있다() {
+            Map<String, String> params = new HashMap<>();
+            params.put("themeId", "1");
+            params.put("timeId", "1");
+            params.put("memberId", "1");
+            params.put("date", "2023-08-06");
+
+            RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/admin/reservations")
+                    .then().log().all()
+                    .statusCode(201)
+                    .header("Location", "/reservations/2")
+                    .body("id", is(2));
+        }
+    }
+
+    @Nested
     @DisplayName("예약 삭제 API")
     class DeleteReservation {
         @Test
