@@ -36,7 +36,7 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원을 가입한다.")
     void signup() {
-        final Map<String, Object> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "jojo");
         params.put("email", "jojo@gmail.com");
         params.put("password", "11111");
@@ -47,6 +47,22 @@ class MemberControllerTest {
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("회원가입 시, 이메일이 중복되면 예외가 발생한다.")
+    void signupWithDuplicatedEmail() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", "jojojo");
+        params.put("email", "imjojo@gmail.com");
+        params.put("password", "11111");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
