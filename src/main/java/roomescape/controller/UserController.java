@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserController {
 
     @GetMapping
-    public String showPopularTheme() {
+    public String showHomePage() {
         return "/index";
     }
 
     @GetMapping("/reservation")
-    public String showUserPage() {
+    public String showReservationPage() {
         return "/reservation";
     }
 

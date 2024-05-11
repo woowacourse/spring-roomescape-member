@@ -29,10 +29,10 @@ class AdminReservationControllerTest {
             "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZXlhbmdAdGVzdC5jb20iLCJpYXQiOjE3MTU0MDgxNTMsImV4cCI6MTcxNTQxMTc1M30.hI6q3I9Jx2-ShVo3J-H2f_m9WirL5HyPcFLvWk0nn_8"
     ).build();
 
+    Cookie tokenAdmin, tokenNonAdmin;
+
     @LocalServerPort
     int port;
-
-    Cookie tokenAdmin, tokenNonAdmin;
 
     @BeforeEach
     void setUpEach() {
