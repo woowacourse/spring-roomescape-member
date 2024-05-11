@@ -1,6 +1,5 @@
 package roomescape.config.deserializer;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -14,7 +13,7 @@ import java.time.format.DateTimeParseException;
 
 public class LocalTimeDeserializerWithValidation extends JsonDeserializer<LocalTime> {
     @Override
-    public LocalTime deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException, JacksonException {
+    public LocalTime deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
         String fieldName = p.getParsingContext().getCurrentName();
         String value = node.asText();

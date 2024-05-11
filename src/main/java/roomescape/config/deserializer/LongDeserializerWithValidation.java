@@ -1,6 +1,5 @@
 package roomescape.config.deserializer;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -12,7 +11,7 @@ import java.io.IOException;
 
 public class LongDeserializerWithValidation extends JsonDeserializer<Long> {
     @Override
-    public Long deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException, JacksonException {
+    public Long deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
         String fieldName = p.getParsingContext().getCurrentName();
         String value = node.asText();
