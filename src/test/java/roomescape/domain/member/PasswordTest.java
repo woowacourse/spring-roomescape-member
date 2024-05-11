@@ -31,7 +31,7 @@ class PasswordTest {
         String password = "1234567";
         assertThatThrownBy(() -> new Password(password))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("비밀번호는 8글자 이상, 20글자 이하여야 합니다.");
+                .hasMessageContaining("비밀번호는 8글자 이상이어야 합니다.");
     }
 
     @Test
@@ -39,7 +39,7 @@ class PasswordTest {
         String password = "123456789012345678901";
         assertThatThrownBy(() -> new Password(password))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("비밀번호는 8글자 이상, 20글자 이하여야 합니다.");
+                .hasMessageContaining("비밀번호는 20글자 이하여야 합니다.");
     }
 
     @Test
