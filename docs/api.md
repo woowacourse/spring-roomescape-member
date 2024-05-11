@@ -53,20 +53,34 @@ Content-Type: application/json
 [
     {
         "id": 1,
-        "name": "브라운",
-        "date": "2023-01-01",
+        "date": "2024-05-09",
         "time": {
-            "id": 1,
-            "startAt": "10:00"
+            "id": 2,
+            "startAt": "09:10",
+            "booked": false
+        },
+        "theme": {
+            "id": 2,
+            "name": "백투더 씬"
+        },
+        "member": {
+            "name": "새양"
         }
     },
     {
         "id": 2,
-        "name": "브라운",
-        "date": "2023-01-02",
+        "date": "2024-05-09",
         "time": {
-            "id": 1,
-            "startAt": "10:00"
+            "id": 4,
+            "startAt": "11:30",
+            "booked": false
+        },
+        "theme": {
+            "id": 2,
+            "name": "백투더 씬"
+        },
+        "member": {
+            "name": "새양"
         }
     }
 ]
@@ -80,14 +94,13 @@ Content-Type: application/json
 
 ```http request
 POST /reservations HTTP/1.1
-content-type: application/json
-cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
-host: localhost:8080
+Content-Type: application/json
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZXlhbmdAdGVzdC5jb20iLCJpYXQiOjE3MTU0NDA4OTUsImV4cCI6MTcxNTQ0NDQ5NX0.7UkhFKYFLjrjRK9LL-pIM-ozBiohDAV5RMQfr_wCu6o
 
 {
-    "date": "2024-03-01",
+    "date": "2024-05-13",
+    "timeId": 1,
     "themeId": 1,
-    "timeId": 1
 }
 
 ```
@@ -102,18 +115,19 @@ Location: reservations/{id}
 Content-Type: application/json
 
 {
-    "id": 1,
-    "name": "브라운",
-    "date": "2023-08-05",
+    "id": 9,
+    "date": "2024-05-13",
     "time": {
         "id": 1,
-        "startAt": "10:00"
+        "startAt": "08:00",
+        "booked": false
     },
     "theme": {
         "id": 1,
-        "name": "레벨2 탈출",
-        "description": "우테코 레벨2를 탈출하는 내용입니다.",
-        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        "name": "젠틀 먼데이"
+    },
+    "member": {
+        "name": "새양"
     }
 }
 
