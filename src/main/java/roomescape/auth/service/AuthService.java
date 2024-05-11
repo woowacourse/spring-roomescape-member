@@ -10,7 +10,6 @@ import roomescape.member.service.MemberService;
 
 @Service
 public class AuthService {
-
     private final MemberService memberService;
     private final JwtHandler jwtHandler;
 

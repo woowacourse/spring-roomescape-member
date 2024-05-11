@@ -5,7 +5,6 @@ import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.ValidateException;
 
 public class Theme {
-
     private final Long id;
     private final String name;
     private final String description;

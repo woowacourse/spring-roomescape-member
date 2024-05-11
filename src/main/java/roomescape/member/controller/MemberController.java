@@ -10,7 +10,6 @@ import roomescape.member.service.MemberService;
 
 @RestController
 public class MemberController {
-
     private final MemberService memberService;
 
     public MemberController(final MemberService memberService) {

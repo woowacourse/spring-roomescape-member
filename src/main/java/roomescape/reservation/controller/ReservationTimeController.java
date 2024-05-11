@@ -18,7 +18,6 @@ import roomescape.reservation.service.ReservationTimeService;
 
 @RestController
 public class ReservationTimeController {
-
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(final ReservationTimeService reservationTimeService) {

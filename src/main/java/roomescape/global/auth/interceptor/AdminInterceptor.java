@@ -3,7 +3,6 @@ package roomescape.global.auth.interceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -23,11 +22,14 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     private static final String TOKEN_COOKIE_NAME = "token";
 
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
 
-    @Autowired
-    private JwtHandler jwtHandler;
+    public AdminInterceptor(final MemberService memberService, final JwtHandler jwtHandler) {
+        this.memberService = memberService;
+        this.jwtHandler = jwtHandler;
+    }
+
+    private final JwtHandler jwtHandler;
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {

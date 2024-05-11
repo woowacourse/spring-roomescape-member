@@ -16,7 +16,6 @@ import java.util.List;
 
 @Service
 public class ReservationTimeService {
-
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationDao reservationDao;
 

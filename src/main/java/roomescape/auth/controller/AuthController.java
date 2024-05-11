@@ -15,7 +15,6 @@ import roomescape.global.dto.response.ApiResponse;
 
 @RestController
 public class AuthController {
-
     private final AuthService authService;
 
     public AuthController(final AuthService authService) {

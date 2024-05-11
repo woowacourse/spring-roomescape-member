@@ -21,7 +21,6 @@ import java.time.LocalDate;
 
 @RestController
 public class ThemeController {
-
     private final ThemeService themeService;
 
     public ThemeController(final ThemeService themeService) {

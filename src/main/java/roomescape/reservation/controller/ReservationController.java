@@ -23,7 +23,6 @@ import java.time.LocalDate;
 
 @RestController
 public class ReservationController {
-
     private final ReservationService reservationService;
 
     public ReservationController(final ReservationService reservationService) {

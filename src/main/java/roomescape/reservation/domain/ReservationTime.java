@@ -6,7 +6,6 @@ import roomescape.global.exception.model.ValidateException;
 import java.time.LocalTime;
 
 public class ReservationTime {
-
     private final Long id;
     private final LocalTime startAt;
 

@@ -8,7 +8,6 @@ import roomescape.theme.domain.Theme;
 import java.time.LocalDate;
 
 public class Reservation {
-
     private final Long id;
     private final LocalDate date;
     private final ReservationTime reservationTime;

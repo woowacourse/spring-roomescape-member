@@ -12,7 +12,6 @@ import java.util.List;
 
 @Service
 public class ThemeService {
-
     private final ThemeDao themeDao;
 
     public ThemeService(final ThemeDao themeDao) {

@@ -1,6 +1,5 @@
 package roomescape.global.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -12,12 +11,13 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+    private final MemberIdResolver memberIdResolver;
+    private final AdminInterceptor adminInterceptor;
 
-    @Autowired
-    private MemberIdResolver memberIdResolver;
-
-    @Autowired
-    private AdminInterceptor adminInterceptor;
+    public WebMvcConfig(final MemberIdResolver memberIdResolver, final AdminInterceptor adminInterceptor) {
+        this.memberIdResolver = memberIdResolver;
+        this.adminInterceptor = adminInterceptor;
+    }
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
