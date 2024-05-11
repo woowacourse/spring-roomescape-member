@@ -56,6 +56,7 @@ class MemberControllerTest {
     @Test
     void given_when_signupFail_then_statusCodeIsBadRequest() {
         Map<String, Object> params = new HashMap<>();
+        // 이미 있는 계정
         params.put("email", "poke@test.com");
         params.put("password", "1q2w3e4r!");
         params.put("name", "poke");
@@ -73,6 +74,7 @@ class MemberControllerTest {
     void given_when_loginFailed_then_statusCodeForbidden() {
         Map<String, Object> params = new HashMap<>();
         params.put("email", "poke@test.com");
+        // 비밀번호 불일치
         params.put("password", "1q2w3e4r!");
 
         RestAssured.given().log().all()
