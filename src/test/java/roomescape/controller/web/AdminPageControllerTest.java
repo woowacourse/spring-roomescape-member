@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class AdminControllerTest {
+class AdminPageControllerTest {
 
     @DisplayName("성공: 관리자가 /admin 페이지 접속 -> 200")
     @Test

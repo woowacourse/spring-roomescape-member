@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class UserControllerTest {
+class UserPageControllerTest {
 
     @DisplayName("메인 페이지 응답 -> 200")
     @Test
