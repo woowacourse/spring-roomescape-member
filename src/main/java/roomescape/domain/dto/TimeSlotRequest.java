@@ -1,13 +1,12 @@
 package roomescape.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.domain.TimeSlot;
 import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 import java.time.LocalTime;
 
 
-public record TimeSlotRequest(@JsonFormat(pattern = "HH:mm") LocalTime startAt) {
+public record TimeSlotRequest(LocalTime startAt) {
     public TimeSlotRequest {
         isValid(startAt);
     }
