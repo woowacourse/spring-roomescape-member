@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.login.LoginMember;
@@ -25,14 +26,25 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    // TODO: RequestParams, QueryStringArgumentResolver 만들기 (https://growing-up-constantly.tistory.com/53)
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        return ResponseEntity.ok(reservationService.getReservations());
+    public ResponseEntity<List<ReservationResponse>> getReservations(
+            @RequestParam(value = "themeId", required = false) final Long themeId,
+            @RequestParam(value = "memberId", required = false) final Long memberId,
+            @RequestParam(value = "dateFrom", required = false) final String dateFrom,
+            @RequestParam(value = "dateTo", required = false) final String dateTo
+    ) {
+        final SearchReservationRequest request = new SearchReservationRequest(themeId, memberId, dateFrom, dateTo);
+
+        if (request.existNull()) {
+            return ResponseEntity.ok(reservationService.getReservations());
+        }
+        return ResponseEntity.ok(reservationService.getReservations(request));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody final ReservationRequest request, LoginMember member) {
-        final ReservationRequest assignedMemberRequest = request.assignMemberId(member.id());
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody final CreateReservationRequest request, LoginMember member) {
+        final CreateReservationRequest assignedMemberRequest = request.assignMemberId(member.id());
         final ReservationResponse reservation = reservationService.addReservation(assignedMemberRequest);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())

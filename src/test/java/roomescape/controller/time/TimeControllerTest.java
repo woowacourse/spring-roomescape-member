@@ -46,7 +46,7 @@ class TimeControllerTest {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
+                .contentType(ContentType.URLENC)
                 .param("date", tomorrow)
                 .param("themeId", 1)
                 .when().get("/times")

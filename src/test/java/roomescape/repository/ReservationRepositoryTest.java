@@ -81,7 +81,7 @@ class ReservationRepositoryTest {
         sampleReservations.forEach(reservationRepository::save);
 
         // when
-        final var actual = reservationRepository.findAll();
+        final List<Reservation> actual = reservationRepository.findAll();
         final List<Reservation> expected = IntStream.range(0, sampleReservations.size())
                 .mapToObj(i -> sampleReservations.get(i).assignId(actual.get(i).getId()))
                 .toList();

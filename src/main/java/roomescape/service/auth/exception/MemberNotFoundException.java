@@ -1,8 +1,8 @@
 package roomescape.service.auth.exception;
 
-import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedException;
 
-public class MemberNotFoundException extends NotFoundException {
+public class MemberNotFoundException extends UnauthorizedException {
 
     public MemberNotFoundException(final String message) {
         super(message);

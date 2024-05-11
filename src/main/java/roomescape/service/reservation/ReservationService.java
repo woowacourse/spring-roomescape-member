@@ -1,8 +1,9 @@
 package roomescape.service.reservation;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.reservation.ReservationRequest;
+import roomescape.controller.reservation.CreateReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
+import roomescape.controller.reservation.SearchReservationRequest;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -42,31 +43,28 @@ public class ReservationService {
 
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll().stream()
-                .map(this::assignTime)
-                .map(this::assignTheme)
                 .map(ReservationResponse::from)
                 .toList();
     }
 
-    private Reservation assignTime(final Reservation reservation) {
-        final ReservationTime time = reservationTimeRepository.findById(reservation.getTime().getId())
-                .orElse(reservation.getTime());
+    public List<ReservationResponse> getReservations(SearchReservationRequest request) {
+        final List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndDateRange(
+                request.themeId(),
+                request.memberId(),
+                request.dateFrom(),
+                request.dateTo()
+        );
 
-        return reservation.assignTime(time);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
-    private Reservation assignTheme(final Reservation reservation) {
-        final Theme theme = themeRepository.findById(reservation.getTheme().getId())
-                .orElse(reservation.getTheme());
-
-        return reservation.assignTheme(theme);
-    }
-
-    public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
-        final Reservation reservation = reservationRequest.toDomain()
-                .assignTime(findTimeOrElseThrow(reservationRequest.timeId()))
-                .assignTheme(findThemeOrElseThrow(reservationRequest.themeId()))
-                .assignMember(findMemberOrElseThrow(reservationRequest.memberId()));
+    public ReservationResponse addReservation(final CreateReservationRequest createReservationRequest) {
+        final Reservation reservation = createReservationRequest.toDomain()
+                .assignTime(findTimeOrElseThrow(createReservationRequest.timeId()))
+                .assignTheme(findThemeOrElseThrow(createReservationRequest.themeId()))
+                .assignMember(findMemberOrElseThrow(createReservationRequest.memberId()));
 
         validateReservationDuplicated(
                 reservation.getDate(),

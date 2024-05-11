@@ -100,6 +100,20 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByThemeIdAndMemberIdAndDateRange(Long themeId, Long memberId, String dateFrom, String dateTo) {
+        final String sql = """
+                SELECT * FROM RESERVATION AS R
+                LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                LEFT JOIN THEME T ON T.ID = R.THEME_ID
+                LEFT JOIN MEMBER M ON M.ID = R.MEMBER_ID
+                WHERE T.ID = ? AND M.ID = ?
+                    AND R.DATE BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(sql, this::mapRowFull, themeId, memberId, dateFrom, dateTo);
+    }
+
+    @Override
     public Optional<Reservation> findById(final long id) {
         final String sql = "SELECT * FROM reservation WHERE id = ?";
 

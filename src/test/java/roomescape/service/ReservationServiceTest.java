@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.controller.login.MemberCheckResponse;
-import roomescape.controller.reservation.ReservationRequest;
+import roomescape.controller.reservation.CreateReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.theme.ReservationThemeResponse;
 import roomescape.controller.time.TimeResponse;
@@ -60,9 +60,9 @@ class ReservationServiceTest {
             new Member(null, "User", "a@b.c", "pw", Role.USER),
             new Member(null, "Admin", "admin@b.c", "pw", Role.ADMIN)
     );
-    List<ReservationRequest> sampleReservations = List.of(
-            new ReservationRequest(tomorrow, null, null, null),
-            new ReservationRequest(tomorrow, null, null, null)
+    List<CreateReservationRequest> sampleReservations = List.of(
+            new CreateReservationRequest(tomorrow, null, null, null),
+            new CreateReservationRequest(tomorrow, null, null, null)
     );
 
     @Autowired
@@ -86,7 +86,7 @@ class ReservationServiceTest {
                 .map(memberRepository::save)
                 .toList();
         sampleReservations = IntStream.range(0, sampleReservations.size())
-                .mapToObj(i -> new ReservationRequest(
+                .mapToObj(i -> new CreateReservationRequest(
                         sampleReservations.get(i).date(),
                         sampleTimes.get(i % sampleTimes.size()).getId(),
                         sampleThemes.get(i % sampleThemes.size()).getId(),
@@ -113,21 +113,21 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void addReservation() {
         // given
-        final ReservationRequest reservationRequest = sampleReservations.get(0);
+        final CreateReservationRequest createReservationRequest = sampleReservations.get(0);
 
         // when
-        final ReservationResponse actual = reservationService.addReservation(reservationRequest);
+        final ReservationResponse actual = reservationService.addReservation(createReservationRequest);
 
-        final Optional<ReservationTime> timeOptional = sampleTimes.stream().filter(time -> time.getId().equals(reservationRequest.timeId())).findAny();
-        final Optional<Theme> themeOptional = sampleThemes.stream().filter(theme -> theme.getId().equals(reservationRequest.themeId())).findAny();
-        final Optional<Member> memberOptional = sampleMembers.stream().filter(member -> member.getId().equals(reservationRequest.memberId())).findAny();
+        final Optional<ReservationTime> timeOptional = sampleTimes.stream().filter(time -> time.getId().equals(createReservationRequest.timeId())).findAny();
+        final Optional<Theme> themeOptional = sampleThemes.stream().filter(theme -> theme.getId().equals(createReservationRequest.themeId())).findAny();
+        final Optional<Member> memberOptional = sampleMembers.stream().filter(member -> member.getId().equals(createReservationRequest.memberId())).findAny();
         assertThat(timeOptional).isPresent();
         assertThat(themeOptional).isPresent();
         assertThat(memberOptional).isPresent();
 
         final ReservationResponse expected = new ReservationResponse(
                 actual.id(),
-                reservationRequest.date(),
+                createReservationRequest.date(),
                 TimeResponse.from(timeOptional.get(), false),
                 ReservationThemeResponse.from(themeOptional.get()),
                 new MemberCheckResponse(memberOptional.get().getName())
@@ -141,10 +141,10 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제한다.")
     void deleteReservation() {
         // given
-        final ReservationRequest reservationRequest = sampleReservations.get(0);
+        final CreateReservationRequest createReservationRequest = sampleReservations.get(0);
 
         // when
-        final ReservationResponse actual = reservationService.addReservation(reservationRequest);
+        final ReservationResponse actual = reservationService.addReservation(createReservationRequest);
 
         // then
         assertThat(reservationService.deleteReservation(actual.id())).isOne();
@@ -164,7 +164,7 @@ class ReservationServiceTest {
                 .orElseThrow() + 1;
         final Long themeId = sampleThemes.get(0).getId();
         final Long memberId = sampleMembers.get(0).getId();
-        final ReservationRequest request = new ReservationRequest(tomorrow, notExistTimeId, themeId, memberId);
+        final CreateReservationRequest request = new CreateReservationRequest(tomorrow, notExistTimeId, themeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
@@ -183,7 +183,7 @@ class ReservationServiceTest {
                 .findAny()
                 .orElseThrow() + 1;
         final Long memberId = sampleMembers.get(0).getId();
-        final ReservationRequest request = new ReservationRequest(tomorrow, timeId, notExistThemeId, memberId);
+        final CreateReservationRequest request = new CreateReservationRequest(tomorrow, timeId, notExistThemeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
@@ -200,10 +200,10 @@ class ReservationServiceTest {
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, oneMinAgo));
         final Long themeId = sampleThemes.get(0).getId();
         final Long memberId = sampleMembers.get(0).getId();
-        final ReservationRequest reservationRequest = new ReservationRequest(today, time.getId(), themeId, memberId);
+        final CreateReservationRequest createReservationRequest = new CreateReservationRequest(today, time.getId(), themeId, memberId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.addReservation(reservationRequest))
+        assertThatThrownBy(() -> reservationService.addReservation(createReservationRequest))
                 .isInstanceOf(PreviousTimeException.class);
     }
 
@@ -211,7 +211,7 @@ class ReservationServiceTest {
     @DisplayName("중복된 시간으로 예약을 할 때 예외가 발생한다.")
     void duplicateDateTimeReservation() {
         // given
-        final ReservationRequest request = sampleReservations.get(0);
+        final CreateReservationRequest request = sampleReservations.get(0);
         reservationService.addReservation(request);
 
 

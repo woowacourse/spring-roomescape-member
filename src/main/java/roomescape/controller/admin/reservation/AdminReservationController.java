@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import roomescape.controller.reservation.ReservationRequest;
+import roomescape.controller.reservation.CreateReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.service.reservation.ReservationService;
 
@@ -23,7 +23,7 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody CreateReservationRequest request) {
         final ReservationResponse reservation = reservationService.addReservation(request);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())

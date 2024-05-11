@@ -19,6 +19,7 @@ ALTER TABLE MEMBER
 INSERT INTO MEMBER (NAME, EMAIL, PASSWORD, ROLE)
 VALUES ('어드민', 'admin@test.com', 'admin', 'ADMIN'),
        ('새양', 'seyang@test.com', 'seyang', 'USER'),
+       ('피케이', 'pk@test.com', 'pk', 'USER'),
        ('더미', 'dummy@test.com', 'dummy', 'USER');
 
 INSERT INTO RESERVATION_TIME (START_AT)
@@ -38,8 +39,8 @@ INSERT INTO RESERVATION (DATE, THEME_ID, TIME_ID, MEMBER_ID)
 VALUES (DATEADD(D, -3, CURRENT_DATE), 2, 2, 2),
        (DATEADD(D, -3, CURRENT_DATE), 2, 4, 2),
 
-       (DATEADD(D, -3, CURRENT_DATE), 3, 2, 2),
-       (DATEADD(D, -2, CURRENT_DATE), 3, 3, 2),
+       (DATEADD(D, -3, CURRENT_DATE), 3, 2, 3),
+       (DATEADD(D, -2, CURRENT_DATE), 3, 3, 3),
        (DATEADD(D, -2, CURRENT_DATE), 3, 4, 2),
 
        (DATEADD(D, -2, CURRENT_DATE), 5, 3, 2),

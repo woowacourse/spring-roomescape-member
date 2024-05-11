@@ -82,12 +82,9 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-  fetch('/times?' + new URLSearchParams({date, themeId}), { // 예약 가능 시간 조회 API endpoint
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-
+  const params = new URLSearchParams({date, themeId});
+  fetch(`${THEME_API_ENDPOINT}?${params}`, { // 예약 가능 시간 조회 API endpoint
+    method: 'GET'
   }).then(response => {
     if (response.status === 200) return response.json();
     throw new Error('Read failed');
