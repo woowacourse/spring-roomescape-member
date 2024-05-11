@@ -65,8 +65,7 @@
       }
   ]
   ```
-
-### 예약 추가
+### 예약 추가 - 어드민
 - http method: POST
 - uri: /reservations
 - request
@@ -79,6 +78,23 @@
       "timeId": 1,
       "themeId": 1,
       "memberId": 1,
+  }
+  ```
+  
+### 예약 추가 - 사용자
+- http method: POST
+- uri: /reservations
+- request
+  ```
+  POST /reservations HTTP/1.1
+  content-type: application/json
+  cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+  host: localhost:8080
+
+  {
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1
   }
   ```
 - response
@@ -116,15 +132,7 @@
       "message": "선택하신 테마와 일정은 이미 예약이 존재합니다."
     }
     ```
-  - 추가 실패 : 이름 길이 오류
-    ```
-    HTTP/1.1 400 
-    Content-Type: application/json
-  
-    {
-      "message": "이름은 1자 이상, 20자 이하여야 합니다."
-    }  
-    ```
+
   - 추가 실패 : 일정 오류
     ```
     HTTP/1.1 400 
@@ -400,6 +408,15 @@
       "message": "이미 가입된 이메일입니다."
     }
     ``` 
+  - 추가 실패 : 이름 길이 오류
+    ```
+    HTTP/1.1 400 
+    Content-Type: application/json
+  
+    {
+      "message": "이름은 1자 이상, 20자 이하여야 합니다."
+    }  
+    ```
 - response
   ```
   HTTP/1.1 201 OK
@@ -476,6 +493,23 @@
   }
   ```
 
+### 사용자 조회
+- http method: GET
+- uri: /members
+- response
+  ```
+  HTTP/1.1 200 
+  Content-Type: application/json
+  [
+    {
+      "id": 1,
+      "name": "lini",
+      "email": "lini@email.com",
+      "role": "GUEST"
+    }
+  ]
+  ```
+
 ## 기능 명세서
 
 ### 예약
@@ -498,7 +532,7 @@
   - [x] 이름은 빈칸이나 공백일 수 없다.
 
 ### 사용자
-- [ ] 사용자는 이름, 이메일, 비밀번호로 이뤄져있다.
-  - [ ] 이름은 1자 이상, 20자 이하여야 한다.
-  - [ ] 이메일은 중복될 수 없다.
-  - [ ] 비밀번호는 숫자와 문자 포함 형태의 6~12자리 이내이어야 한다.
+- [ ] 사용자는 식별자, 이름, 이메일, 비밀번호, 역할로 이뤄져있다.
+  - [x] 이름은 1자 이상, 20자 이하여야 한다.
+  - [x] 이메일은 중복될 수 없다.
+  - [ ] 비밀번호는 6~12자리 이내이어야 한다.
