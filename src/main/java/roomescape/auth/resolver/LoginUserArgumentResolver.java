@@ -1,7 +1,6 @@
 package roomescape.auth.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,12 +14,16 @@ import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 
 @Component
-@RequiredArgsConstructor
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
 
     private final AuthService authService;
+
+    public LoginUserArgumentResolver(MemberService memberService, AuthService authService) {
+        this.memberService = memberService;
+        this.authService = authService;
+    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

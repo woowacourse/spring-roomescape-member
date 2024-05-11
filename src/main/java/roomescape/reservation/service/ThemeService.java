@@ -2,7 +2,6 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
@@ -13,10 +12,14 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 
 @Service
-@RequiredArgsConstructor
 public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
+
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+        this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
+    }
 
     public List<ThemeResponse> findAllThemes() {
         return themeRepository.findAll()

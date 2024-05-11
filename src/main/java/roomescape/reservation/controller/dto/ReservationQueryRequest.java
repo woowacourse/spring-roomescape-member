@@ -1,9 +1,7 @@
 package roomescape.reservation.controller.dto;
 
 import java.time.LocalDate;
-import lombok.Getter;
 
-@Getter
 public class ReservationQueryRequest {
     private final Long themeId;
     private final Long memberId;
@@ -17,4 +15,19 @@ public class ReservationQueryRequest {
         this.endDate = endDate == null ? LocalDate.now().plusMonths(2) : endDate;
     }
 
+    public Long getThemeId() {
+        return themeId;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
 }

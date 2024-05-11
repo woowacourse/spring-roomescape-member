@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,11 +19,15 @@ import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
     private final ReservationService reservationService;
     private final MemberService memberService;
+
+    public AdminController(ReservationService reservationService, MemberService memberService) {
+        this.reservationService = reservationService;
+        this.memberService = memberService;
+    }
 
     @GetMapping
     public String admin() {

@@ -1,6 +1,5 @@
 package roomescape.auth.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.SignUpRequest;
@@ -14,11 +13,15 @@ import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
+
+    public AuthService(MemberRepository memberRepository, TokenProvider tokenProvider) {
+        this.memberRepository = memberRepository;
+        this.tokenProvider = tokenProvider;
+    }
 
     public void authenticate(LoginRequest loginRequest) {
         if (!memberRepository.existsBy(loginRequest.email(), loginRequest.password())) {

@@ -1,7 +1,6 @@
 package roomescape.member.service;
 
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.exception.BusinessException;
@@ -13,9 +12,12 @@ import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Service
-@RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     public List<MemberResponse> findAll() {
         return memberRepository.findAll().stream()
