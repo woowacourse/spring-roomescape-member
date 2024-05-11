@@ -45,6 +45,12 @@
     - [x] 존재하지 않는 아이디를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
 - [X] `/themes/rank` `GET` 요청 시 예약 순서로 인기 테마 결과를 API 명세에 맞게 반환한다.
 
+### login
+
+- [x] `/login` `GET` 요청 시 로그인 폼이 있는 페이지를 응답한다.
+- [x] `/login` `POST` 요청 시 멤버를 조회하고 쿠키를 만들어 응답한다.
+- [x] 로그인이 성공하면 우측 상단의 login 버튼이 사용자 이름으로 변경된다.
+
 # API 명세
 
 ## reservations
@@ -260,4 +266,47 @@ DELETE /themes/1 HTTP/1.1
 
 ```http
 HTTP/1.1 204
+```
+
+## login
+
+### Get
+
+```http
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+```
+
+```http
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+    "name": "어드민"
+}
+```
+
+### Post
+
+```http
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
 ```
