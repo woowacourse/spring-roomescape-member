@@ -95,4 +95,28 @@ public class ReservationDao {
         String sql = "select count(*) from reservation where theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, themeId) != 0;
     }
+
+    public List<Reservation> find(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        String sql = """
+                SELECT
+                r.id as reservation_id,
+                m.id as member_id,
+                m.email as email,
+                m.name as name,
+                m.role as role,
+                r.date,
+                t.id as time_id,
+                t.start_at as time_value,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description as theme_description,
+                th.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                INNER JOIN member as m ON r.member_id = m.id
+                WHERE theme_id = ? AND member_id = ? AND r.date BETWEEN ? AND ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
+    }
 }

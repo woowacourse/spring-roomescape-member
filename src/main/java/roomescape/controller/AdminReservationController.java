@@ -8,6 +8,7 @@ import roomescape.domain.dto.ReservationResponses;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 @RestController
 public class AdminReservationController {
@@ -20,6 +21,11 @@ public class AdminReservationController {
     @GetMapping("/reservations")
     public ResponseEntity<ReservationResponses> read() {
         return ResponseEntity.ok(reservationService.findEntireReservationList());
+    }
+
+    @GetMapping("/reservations/search")
+    public ResponseEntity<ReservationResponses> search(@RequestParam Long themeId, @RequestParam Long memberId, @RequestParam LocalDate dateFrom, @RequestParam LocalDate dateTo) {
+        return ResponseEntity.ok(reservationService.findReservations(themeId, memberId, dateFrom, dateTo));
     }
 
     @PostMapping("/admin/reservations")

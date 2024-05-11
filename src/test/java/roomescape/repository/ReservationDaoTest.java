@@ -12,6 +12,7 @@ import roomescape.domain.TimeSlot;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,5 +80,18 @@ class ReservationDaoTest {
     void given_when_isExistThemeId_then_getExistResult() {
         //given, when, then
         assertThat(reservationDao.isExistsThemeId(1L)).isTrue();
+    }
+
+    @Test
+    @DisplayName("memberId, themeId, 기간을 이용하여 예약을 조회할 수 있다.")
+    void given_memberIdThemeIdAndPeriod_when_find_then_Reservations() {
+        //given
+        Long themeId = 2L;
+        Long memberId = 1L;
+        LocalDate dateFrom = LocalDate.parse("2024-04-30");
+        LocalDate dateTo = LocalDate.parse("2024-05-01");
+        //when, then
+        final List<Reservation> reservations = reservationDao.find(themeId, memberId, dateFrom, dateTo);
+        assertThat(reservations.size()).isEqualTo(3);
     }
 }

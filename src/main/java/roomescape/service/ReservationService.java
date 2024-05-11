@@ -13,6 +13,7 @@ import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 import roomescape.repository.TimeDao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -71,5 +72,13 @@ public class ReservationService {
 
     public void delete(final Long id) {
         reservationDao.delete(id);
+    }
+
+    public ReservationResponses findReservations(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        final List<ReservationResponse> reservationResponses = reservationDao.find(themeId, memberId, dateFrom, dateTo)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return new ReservationResponses(reservationResponses);
     }
 }

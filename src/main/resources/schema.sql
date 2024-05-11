@@ -39,4 +39,4 @@ CREATE TABLE reservation
 );
 
 INSERT INTO member(email, password, salt, name, role)
-VALUES ('wedge@master.com', 'yAD5RFQKSwFkOImAX+hDr1RSlsR7MBBSFr/xni5sGOE=', 'SZj5iqlnmc4cLvpOAS0a1g==', 'wedge', 'ADMIN');
+VALUES ('wedge@master.com', 'hH5Xu3igv3QByebq/DxB7NKX2oCiNWfFZWvvBXw2rT8=', 'i3KEDenFJ+FBs+7gHYqUSQ==', '웨지', 'ADMIN');
