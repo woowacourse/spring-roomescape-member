@@ -37,4 +37,16 @@ class MemberServiceTest {
         assertThat(memberResponses).hasSize(3);
     }
 
+    @DisplayName("id로 사용자를 조회한다.")
+    @Test
+    void findById() {
+        //given
+        Member member = memberRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
+
+        //when
+        Member result = memberService.findById(member.getId());
+
+        //then
+        assertThat(result.getEmail()).isEqualTo(member.getEmail());
+    }
 }
