@@ -3,7 +3,6 @@ package roomescape.controller;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,32 +44,13 @@ public class LoginApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
+    public ResponseEntity<MemberResponse> checkLogin(Member member) {
+        if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        String token = extractTokenFromCookie(cookies);
 
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-
-        MemberResponse response = loginService.findMemberById(memberId);
+        MemberResponse response = new MemberResponse(member.getName().getValue());
 
         return ResponseEntity.ok(response);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
     }
 }
