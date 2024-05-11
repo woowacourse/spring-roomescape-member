@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class Member {
     private static final String ADMIN_ROLE = "ADMIN";
-    private static Pattern EMAIL_REGEX = Pattern.compile("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$'");
+    private static Pattern EMAIL_REGEX = Pattern.compile("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$");
     private final Long id;
     private final String email;
     private final String name;
