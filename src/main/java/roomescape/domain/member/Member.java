@@ -26,6 +26,10 @@ public class Member {
         this.role = role;
     }
 
+    public boolean isIncorrectPassword(final String otherPassword) {
+        return !Objects.equals(this.getPassword(), otherPassword);
+    }
+
     public Long getId() {
         return id;
     }
