@@ -45,9 +45,9 @@ public class ThemeController {
     public ResponseEntity<ThemeResponses> findHotThemesByDurationAndCount(
             @RequestParam LocalDate start,
             @RequestParam LocalDate end,
-            @RequestParam Integer limit,
-            @RequestParam Integer offset) {
-        ThemeResponses themeResponses = themeService.findHotThemesByDurationAndCount(start, end, limit, offset);
+            @RequestParam Integer page,
+            @RequestParam Integer size) {
+        ThemeResponses themeResponses = themeService.findHotThemesByDurationAndCount(start, end, page, size);
         return ResponseEntity.ok()
                 .body(themeResponses);
     }

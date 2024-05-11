@@ -12,7 +12,7 @@ public interface ThemeRepository {
 
     Theme findByThemeId(Long themeId);
 
-    List<Theme> findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer limit, Integer offset);
+    List<Theme> findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer page, Integer size);
 
     Theme save(Theme theme);
 

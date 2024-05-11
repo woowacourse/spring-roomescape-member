@@ -34,10 +34,10 @@ public class ThemeService {
 
     public ThemeResponses findHotThemesByDurationAndCount(LocalDate start,
                                                           LocalDate end,
-                                                          Integer limit,
-                                                          Integer offset
+                                                          Integer page,
+                                                          Integer size
     ) {
-        List<ThemeResponse> themeResponses = themeRepository.findHotThemesByDurationAndCount(start, end, limit, offset)
+        List<ThemeResponse> themeResponses = themeRepository.findHotThemesByDurationAndCount(start, end, page, size)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
