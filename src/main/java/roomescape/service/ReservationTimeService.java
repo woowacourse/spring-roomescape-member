@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.infrastructure.persistence.ReservationRepository;
 import roomescape.infrastructure.persistence.ReservationTimeRepository;
+import roomescape.infrastructure.persistence.dynamic.ReservationQueryConditions;
 import roomescape.service.request.ReservationTimeRequest;
 import roomescape.service.response.AvailableReservationTimeResponse;
 import roomescape.service.response.ReservationTimeResponse;
@@ -35,7 +36,11 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        if (reservationRepository.hasByTimeId(id)) {
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .timeId(id)
+                .build();
+
+        if (reservationRepository.hasBy(conditions)) {
             throw new IllegalStateException("해당 시간을 사용하고 있는 예약이 존재합니다.");
         }
 

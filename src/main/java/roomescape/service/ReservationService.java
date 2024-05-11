@@ -11,6 +11,7 @@ import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.infrastructure.persistence.ReservationRepository;
 import roomescape.infrastructure.persistence.ReservationTimeRepository;
 import roomescape.infrastructure.persistence.ThemeRepository;
+import roomescape.infrastructure.persistence.dynamic.ReservationQueryConditions;
 import roomescape.service.request.ReservationRequest;
 import roomescape.service.response.ReservationResponse;
 
@@ -38,13 +39,23 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
-        Reservation reservation = toDomain(request);
-        if (reservationRepository.hasDuplicateReservation(reservation)) {
-            throw new IllegalStateException("중복된 예약이 존재합니다.");
-        }
+        validateDuplication(request);
 
+        Reservation reservation = toDomain(request);
         Reservation createdReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(createdReservation);
+    }
+
+    private void validateDuplication(ReservationRequest request) {
+        ReservationQueryConditions duplicatedConditions = ReservationQueryConditions.builder()
+                .timeId(request.timeId())
+                .themeId(request.themeId())
+                .date(request.date())
+                .build();
+
+        if (reservationRepository.hasBy(duplicatedConditions)) {
+            throw new IllegalStateException("중복된 예약이 존재합니다.");
+        }
     }
 
     private Reservation toDomain(ReservationRequest request) {

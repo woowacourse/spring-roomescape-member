@@ -12,33 +12,51 @@ public class ReservationQueryConditionsBuilder {
     private final List<Integer> argTypes = new ArrayList<>();
 
     public ReservationQueryConditionsBuilder themeId(Long id) {
-        if (id == null) {
-            return this;
+        if (id != null) {
+            appendBigIntSimpleCondition(id, "theme_id");
         }
 
-        SimpleCondition simpleCondition = new SimpleCondition("theme_id");
-        conditions.add(simpleCondition);
-        args.add(id);
-        argTypes.add(Types.BIGINT);
+        return this;
+    }
+
+    public ReservationQueryConditionsBuilder timeId(Long id) {
+        if (id != null) {
+            appendBigIntSimpleCondition(id, "time_id");
+        }
 
         return this;
     }
 
     public ReservationQueryConditionsBuilder memberId(Long id) {
-        if (id == null) {
-            return this;
+        if (id != null) {
+            appendBigIntSimpleCondition(id, "member_id");
         }
 
-        SimpleCondition simpleCondition = new SimpleCondition("member_id");
+        return this;
+    }
+
+    private void appendBigIntSimpleCondition(Long id, String memberId) {
+        SimpleCondition simpleCondition = new SimpleCondition(memberId);
         conditions.add(simpleCondition);
         args.add(id);
         argTypes.add(Types.BIGINT);
+    }
+
+    public ReservationQueryConditionsBuilder date(String date) {
+        if (date == null) {
+            return this;
+        }
+
+        SimpleCondition simpleCondition = new SimpleCondition("date");
+        conditions.add(simpleCondition);
+        args.add(date);
+        argTypes.add(Types.VARCHAR);
 
         return this;
     }
 
     public ReservationQueryConditionsBuilder period(String from, String end) {
-        if (from == null && end == null) {
+        if (from == null || end == null) {
             return this;
         }
 

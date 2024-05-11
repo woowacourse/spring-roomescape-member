@@ -40,7 +40,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 테마 id를 사용하고 있는 예약 데이터가 존재하는지 검증한다.")
     void hasByThemeId() {
-        boolean result = target.hasByThemeId(1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .themeId(1L)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isTrue();
     }
@@ -48,7 +52,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 테마 id를 사용하고 있는 예약 데이터가 존재하지 않는지 검증한다.")
     void noHasByThemeId() {
-        boolean result = target.hasByThemeId(2L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .themeId(2L)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isFalse();
     }
@@ -56,7 +64,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 시간 id를 사용하고 있는 예약 데이터가 존재하는지 검증한다.")
     void hasByTimeId() {
-        boolean result = target.hasByTimeId(1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .timeId(1L)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isTrue();
     }
@@ -64,7 +76,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 시간 id를 사용하고 있는 예약 데이터가 존재하지 않는지 검증한다.")
     void noHasByTimeId() {
-        boolean result = target.hasByTimeId(3L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .timeId(3L)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isFalse();
     }
@@ -92,9 +108,13 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 있는지 확인한다.")
     void hasDuplicateDateTimeThemeReservation() {
-        Reservation reservation = createReservation("2023-05-04", 1L, 1L, 1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .date("2023-05-04")
+                .timeId(1L)
+                .themeId(1L)
+                .build();
 
-        boolean result = target.hasDuplicateReservation(reservation);
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isTrue();
     }
@@ -102,9 +122,14 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 없는지 확인한다.")
     void noHasDuplicateDateTimeThemeReservation() {
-        Reservation reservation = createReservation("2023-06-04", 1L, 2L, 1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .date("2023-06-04")
+                .memberId(1L)
+                .timeId(2L)
+                .themeId(1L)
+                .build();
 
-        boolean result = target.hasDuplicateReservation(reservation);
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isFalse();
     }

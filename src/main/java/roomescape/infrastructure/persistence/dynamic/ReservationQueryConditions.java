@@ -32,21 +32,21 @@ public class ReservationQueryConditions {
     }
 
     private String createQuery(String base) {
-        StringBuilder sb = new StringBuilder(base);
-        sb.append(" WHERE");
+        StringBuilder sql = new StringBuilder(base);
+        sql.append(" WHERE");
 
         int conditionSize = conditions.size();
         while (conditionSize > 0) {
             Condition condition = conditions.get(conditions.size() - conditionSize);
-            sb.append(" ");
-            sb.append(condition.getCondition());
+            sql.append(" ");
+            sql.append(condition.getCondition());
             conditionSize--;
             if (conditionSize >= 1) {
-                sb.append(" AND");
+                sql.append(" AND");
             }
         }
 
-        return sb.toString();
+        return sql.toString();
     }
 
     public Object[] getArgs() {

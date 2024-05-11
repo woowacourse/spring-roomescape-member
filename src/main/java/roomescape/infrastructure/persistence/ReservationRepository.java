@@ -51,43 +51,18 @@ public class ReservationRepository {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public boolean hasDuplicateReservation(Reservation reservation) {
+    public boolean hasBy(ReservationQueryConditions conditions) {
         String sql = """
                 SELECT count(*)
                 FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
                 """;
 
-        int duplicatedCount = jdbcTemplate.queryForObject(
-                sql,
-                Integer.class, reservation.getDate(),
-                reservation.getTimeId(),
-                reservation.getThemeId()
+        int hasCount = jdbcTemplate.queryForObject(
+                conditions.createDynamicQuery(sql),
+                conditions.getArgs(),
+                conditions.getArgTypes(),
+                Integer.class
         );
-
-        return duplicatedCount > 0;
-    }
-
-    public boolean hasByTimeId(Long id) {
-        String sql = """
-                SELECT count(*)
-                FROM reservation
-                WHERE time_id = ?
-                """;
-
-        int hasCount = jdbcTemplate.queryForObject(sql, Integer.class, id);
-
-        return hasCount > 0;
-    }
-
-    public boolean hasByThemeId(Long id) {
-        String sql = """
-                SELECT count(*)
-                FROM reservation
-                WHERE theme_id = ?
-                """;
-
-        int hasCount = jdbcTemplate.queryForObject(sql, Integer.class, id);
 
         return hasCount > 0;
     }
@@ -135,7 +110,7 @@ public class ReservationRepository {
                             new Name(resultSet.getString("name")),
                             resultSet.getString("email"),
                             resultSet.getString("password"),
-                            MemberRole.NORMAL
+                            MemberRole.from(resultSet.getString("role"))
                     ),
                     new ReservationTime(resultSet.getLong("time_id"), startAt),
                     new Theme(
