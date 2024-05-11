@@ -1,20 +1,4 @@
-CREATE TABLE reservation_time
-(
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE theme
-(
-    id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255) NOT NULL UNIQUE,
-    description VARCHAR(255) NOT NULL,
-    thumbnail   VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE member
+CREATE TABLE IF NOT EXISTS member
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
@@ -24,7 +8,23 @@ CREATE TABLE member
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation
+CREATE TABLE IF NOT EXISTS reservation_time
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    start_at VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS theme
+(
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255) NOT NULL,
+    thumbnail   VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     member_id BIGINT       NOT NULL,

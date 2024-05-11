@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+  sql:
+    init:
+      data-locations:
+
+security:
+  jwt:
+    secret-key: eyJhbGciOiJIeyJzdWIilowafgfaoTazAGa
+    expiration-time: 36000000

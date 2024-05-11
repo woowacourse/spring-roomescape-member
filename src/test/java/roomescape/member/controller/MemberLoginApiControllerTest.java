@@ -9,13 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberSignUpRequest;
 import roomescape.util.CookieUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("test")
 class MemberLoginApiControllerTest {
 
     @LocalServerPort
