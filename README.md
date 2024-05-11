@@ -56,9 +56,9 @@
 
 ## 5단계
 
-- [ ] Cookie의 인증 정보로 사용자 객체 만드는 로직을 분리한다
-    - [ ] HandlerMethodArgumentResolver 이용해 사용자 객체를 컨트롤러 메서드에 주입
-    - [ ] 인증 정보 조회 로직 리팩토링
+- [x] Cookie의 인증 정보로 사용자 객체 만드는 로직을 분리한다
+    - [x] HandlerMethodArgumentResolver 이용해 사용자 객체를 컨트롤러 메서드에 주입
+    - [x] 인증 정보 조회 로직 리팩토링
 - [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보 이용하도록 리팩토링한다
     - [ ] 로그인 안한 사용자는 예외 발생
     - [ ] reservation.html, user-reservation.js 파일을 변경된 명세에 맞게 수정

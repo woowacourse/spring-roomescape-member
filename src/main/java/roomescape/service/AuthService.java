@@ -5,7 +5,6 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.exception.auth.UnauthorizedEmailException;
 import roomescape.exception.auth.UnauthorizedPasswordException;
-import roomescape.exception.auth.UnauthorizedTokenException;
 import roomescape.service.dto.LoginCheckResponse;
 import roomescape.service.dto.LoginRequest;
 import roomescape.service.helper.JwtTokenProvider;
@@ -29,10 +28,7 @@ public class AuthService {
         return jwtTokenProvider.createToken(member.getEmail());
     }
 
-    public LoginCheckResponse loginCheck(String token) {
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(UnauthorizedTokenException::new);
+    public LoginCheckResponse loginCheck(Member member) {
         return new LoginCheckResponse(member);
     }
 }

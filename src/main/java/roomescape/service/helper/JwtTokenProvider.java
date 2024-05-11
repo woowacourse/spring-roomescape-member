@@ -39,6 +39,6 @@ public class JwtTokenProvider {
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject(); // TODO: 예외 터지는 에지 케이스 있는지 확인하기
+                .getSubject(); // TODO: 토큰 올바르지 않을 때 발생하는 예외 처리하기
     }
 }
