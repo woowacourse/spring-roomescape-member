@@ -32,7 +32,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody final ReservationRequest request, LoginMember member) {
-        final ReservationResponse reservation = reservationService.addReservation(request);
+        final ReservationRequest assignedMemberRequest = request.assignMemberId(member.id());
+        final ReservationResponse reservation = reservationService.addReservation(assignedMemberRequest);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())
                 .toUri();

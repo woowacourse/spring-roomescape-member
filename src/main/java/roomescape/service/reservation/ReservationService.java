@@ -63,9 +63,9 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime time = findTimeOrElseThrow(reservationRequest);
-        final Theme theme = findThemeOrElseThrow(reservationRequest);
-        final Member member = findMemberOrElseThrow(reservationRequest);
+        final ReservationTime time = findTimeOrElseThrow(reservationRequest.timeId());
+        final Theme theme = findThemeOrElseThrow(reservationRequest.themeId());
+        final Member member = findMemberOrElseThrow(reservationRequest.memberId());
         final Reservation parsedReservation = reservationRequest.toDomain()
                 .assignTime(time)
                 .assignTheme(theme)
@@ -78,18 +78,18 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private ReservationTime findTimeOrElseThrow(ReservationRequest reservationRequest) {
-        return reservationTimeRepository.findById(reservationRequest.timeId())
+    private ReservationTime findTimeOrElseThrow(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new TimeNotFoundException("존재 하지 않는 시간 입니다."));
     }
 
-    private Theme findThemeOrElseThrow(ReservationRequest reservationRequest) {
-        return themeRepository.findById(reservationRequest.themeId())
+    private Theme findThemeOrElseThrow(Long themeId) {
+        return themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeNotFoundException("존재 하지 않는 테마 입니다."));
     }
 
-    private Member findMemberOrElseThrow(ReservationRequest reservationRequest) {
-        return memberRepository.findById(reservationRequest.memberId())
+    private Member findMemberOrElseThrow(Long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 멤버 입니다."));
     }
 

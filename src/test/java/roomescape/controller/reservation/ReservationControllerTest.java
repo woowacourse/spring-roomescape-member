@@ -54,10 +54,25 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("토큰 없이 요청할 경우 400 을 반환한다.")
+    void reqeustWithoutToken() {
+        final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        final ReservationRequest request = new ReservationRequest(tomorrow, 1L, 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", containsString("토큰"));
+    }
+
+    @Test
     @DisplayName("예약을 추가하면 201 과 예약 정보를 응답한다.")
     void addReservation201AndReservation() {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final ReservationRequest request = new ReservationRequest(tomorrow, 1L, 1L, 2L);
+        final ReservationRequest request = new ReservationRequest(tomorrow, 1L, 1L);
 
         RestAssured.given().log().all()
                 .cookie(token)
@@ -77,9 +92,10 @@ class ReservationControllerTest {
     @DisplayName("존재하지 않는 시간으로 예약을 추가하면 404 을 응답한다.")
     void addReservation404TimeNotFound() {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final ReservationRequest request = new ReservationRequest(tomorrow, 0L, 1L, 2L);
+        final ReservationRequest request = new ReservationRequest(tomorrow, 0L, 1L);
 
         RestAssured.given().log().all()
+                .cookie(token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
@@ -93,9 +109,10 @@ class ReservationControllerTest {
     @DisplayName("존재하지 않는 테마로 예약을 추가하면 404 을 응답한다.")
     void addReservation400ThemeNotFound() {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final ReservationRequest request = new ReservationRequest(tomorrow, 1L, 0L, 2L);
+        final ReservationRequest request = new ReservationRequest(tomorrow, 1L, 0L);
 
         RestAssured.given().log().all()
+                .cookie(token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
@@ -109,9 +126,10 @@ class ReservationControllerTest {
     @DisplayName("이미 예약이 된 테마와 날짜 및 시간으로 예약을 추가하면 409을 응답한다.")
     void addReservation400Duplicated() {
         final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final ReservationRequest request = new ReservationRequest(tomorrow, 2L, 2L, 2L);
+        final ReservationRequest request = new ReservationRequest(tomorrow, 2L, 2L);
 
         RestAssured.given().log().all()
+                .cookie(token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
@@ -124,9 +142,10 @@ class ReservationControllerTest {
     @DisplayName("지난 시간으로 예약을 추가하면 400 을 응답한다.")
     void aadReservation400PreviousTime() {
         final String yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final ReservationRequest request = new ReservationRequest(yesterday, 2L, 2L, 2L);
+        final ReservationRequest request = new ReservationRequest(yesterday, 2L, 2L);
 
         RestAssured.given().log().all()
+                .cookie(token)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
