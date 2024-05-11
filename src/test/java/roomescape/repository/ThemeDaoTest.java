@@ -4,13 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.test.context.jdbc.Sql;
+import roomescape.RepositoryTest;
 import roomescape.domain.reservation.Theme;
 import roomescape.repository.rowmapper.ThemeRowMapper;
 
@@ -22,10 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
-@JdbcTest
-@Sql("/truncate.sql")
-@ExtendWith(MockitoExtension.class)
-class ThemeDaoTest {
+class ThemeDaoTest extends RepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
