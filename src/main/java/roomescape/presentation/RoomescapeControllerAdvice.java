@@ -15,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.auth.AuthenticationException;
 
 @RestControllerAdvice
 public class RoomescapeControllerAdvice {
@@ -54,6 +55,12 @@ public class RoomescapeControllerAdvice {
     public ProblemDetail handleIllegalArgumentException(RuntimeException exception) {
         logger.error(exception.getMessage(), exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException(AuthenticationException exception) {
+        logger.error(exception.getMessage(), exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

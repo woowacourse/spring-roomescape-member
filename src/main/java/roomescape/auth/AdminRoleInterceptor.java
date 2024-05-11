@@ -23,7 +23,6 @@ public class AdminRoleInterceptor implements HandlerInterceptor {
         if (roleRepository.isAdminByMemberId(memberId)) {
             return true;
         }
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return false;
+        throw new AuthenticationException();
     }
 }

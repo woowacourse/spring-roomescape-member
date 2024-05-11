@@ -1,7 +1,7 @@
 package roomescape.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -37,11 +37,8 @@ class AdminRoleInterceptorTest {
         Cookie cookie = new Cookie("token", "invalid-token");
         request.setCookies(cookie);
 
-        boolean actual = interceptor.preHandle(request, response, null);
-        assertAll(
-                () -> assertThat(actual).isFalse(),
-                () -> assertThat(response.getStatus()).isEqualTo(401)
-        );
+        assertThatCode(() -> interceptor.preHandle(request, response, null))
+                .isInstanceOf(AuthenticationException.class);
     }
 
     @Test
