@@ -6,7 +6,7 @@ spring:
 
 # DB URL
   datasource:
-    url: jdbc:h2:mem:database;NON_KEYWORDS=USER
+    url: jdbc:h2:mem:database;
 
 
 # data.sql

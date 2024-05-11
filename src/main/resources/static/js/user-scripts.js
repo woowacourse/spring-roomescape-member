@@ -134,7 +134,7 @@ function register(event) {
           alert('Signup request failed');
           throw new Error('Signup request failed');
         }
-        // return response.json(); // 여기서 응답을 JSON 형태로 변환
+        return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
         // 성공적인 응답 처리

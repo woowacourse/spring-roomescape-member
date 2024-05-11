@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 public record Name(String name) {
     private static final Pattern format = Pattern.compile("^[a-zA-Zㄱ-ㅎ가-힣]*$");
+
     private static final int MIN_LENGTH = 2;
     private static final int MAX_LENGTH = 10;
 

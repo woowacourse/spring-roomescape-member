@@ -1,14 +1,12 @@
 package roomescape;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.controller.AdminInterceptor;
-import roomescape.controller.LoginMemberArgumentResolver;
+import roomescape.controller.intereceptor.AdminInterceptor;
+import roomescape.controller.resolver.LoginMemberArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

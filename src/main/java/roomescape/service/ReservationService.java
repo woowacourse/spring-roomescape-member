@@ -84,15 +84,16 @@ public class ReservationService {
         }
     }
 
-    public void addReservation(final AdminReservationRequest adminReservationRequest, final Member member) {
-        if (!member.getRole().equals("admin")) {
+    public Long addReservation(final AdminReservationRequest adminReservationRequest, final Member member) {
+        if (!member.isAdmin()) {
             throw new IllegalArgumentException("관리자가 아닙니다.");
         }
         Member user = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
         Theme theme = themeRepository.findById(adminReservationRequest.themeId()).orElseThrow();
         LocalDate date = adminReservationRequest.date();
         ReservationTime time = timeRepository.findById(adminReservationRequest.timeId()).orElseThrow();
-        reservationRepository.save(new Reservation(user, date, time, theme));
+        Long savedId = reservationRepository.save(new Reservation(user, date, time, theme));
+        return savedId;
     }
 
     public List<ReservationResponse> getFilteredReservations(final Long themeId, final Long memberId,

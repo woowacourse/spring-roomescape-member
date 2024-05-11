@@ -36,7 +36,6 @@ class ReservationApiTest {
                 .statusCode(201)
                 .header("Location", "/reservations/1")
                 .body("id", equalTo(1))
-                .body("name", equalTo(reservationRequest.name()))
                 .body("date", equalTo(reservationRequest.date().toString()))
                 .body("time.id", equalTo(reservationRequest.timeId().intValue()))
                 .body("theme.id", equalTo(reservationRequest.themeId().intValue()));
@@ -88,7 +87,7 @@ class ReservationApiTest {
     }
 
     private ReservationRequest createReservationRequest() {
-        return new ReservationRequest("ted", LocalDate.now().plusDays(1), 1L, 1L);
+        return new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
     }
 
     private void addReservation(final ReservationRequest reservationRequest) {

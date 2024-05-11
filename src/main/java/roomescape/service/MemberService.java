@@ -3,7 +3,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.MemberResponse;
+import roomescape.dto.MemberResponse;
 import roomescape.domain.member.Member;
 import roomescape.dto.SignUpRequest;
 import roomescape.repository.JdbcMemberRepository;
