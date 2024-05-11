@@ -105,9 +105,43 @@ Content-Type: application/json
       "time": {
         "id": 1,
         "startAt": "10:00"
+      },
+      "theme": {
+        "id": 1,
+        "name": "테마명01",
+        "description": "테마 설명01",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
       }
     }
   ]
+}
+```
+
+### 예약 단건 조회
+- Request
+```http request
+GET /reservations/1 HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+```
+```json
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2024-08-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "테마명01",
+    "description": "테마 설명01",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
 }
 ```
 
@@ -179,6 +213,23 @@ Content-Type: application/json
 }
 ```
 
+### 예약 시간 단건 조회
+- Request
+```http request
+GET /times/1 HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+```
+```json
+{
+  "id": 1,
+  "startAt": "10:00"
+}
+```
+
 ### 예약 시간 추가
 - Request
 ```http request
@@ -232,6 +283,25 @@ Content-Type: application/json
       "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     }
   ]
+}
+```
+
+### 테마 단건 조회
+- Request
+```http request
+GET /themes/1 HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+```
+```json
+{
+  "id": 1,
+  "name": "레벨2 탈출",
+  "description": "우테코 레벨2를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
 }
 ```
 
