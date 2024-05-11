@@ -26,14 +26,14 @@ class ThemeControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
     }
 
     @DisplayName("테마 목록을 읽을 수 있다.")
     @Test
     void readReservations() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-
         int size = RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -49,9 +49,7 @@ class ThemeControllerTest {
     @Test
     void createTime() {
         ThemeCreateRequest params = new ThemeCreateRequest(
-                "오리와 호랑이",
-                "오리들과 호랑이들 사이에서 살아남기",
-                "https://image.jpg");
+                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -62,15 +60,12 @@ class ThemeControllerTest {
                 .header("Location", "/themes/1");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(2);
     }
 
     @DisplayName("삭제할 id를 받아서 DB에서 해당 테마를 삭제 할 수 있다.")
     @Test
     void deleteTime() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-
         RestAssured.given().log().all()
                 .when().delete("/themes/1")
                 .then().log().all()

@@ -23,16 +23,13 @@ import roomescape.dto.response.ThemeResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
+    private final Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
     @Mock
     ThemeDao themeDao;
-
     @Mock
     ReservationDao reservationDao;
-
     @InjectMocks
     ThemeService themeService;
-
-    private final Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
 
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test

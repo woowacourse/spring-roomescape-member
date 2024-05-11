@@ -25,17 +25,14 @@ import roomescape.dto.response.TimeResponse;
 
 @ExtendWith(MockitoExtension.class)
 class TimeServiceTest {
-    @Mock
-    TimeDao timeDao;
-
-    @Mock
-    ReservationDao reservationDao;
-
-    @InjectMocks
-    TimeService timeService;
-
     private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
     private final ReservationTime time2 = new ReservationTime(1L, LocalTime.of(11, 0));
+    @Mock
+    TimeDao timeDao;
+    @Mock
+    ReservationDao reservationDao;
+    @InjectMocks
+    TimeService timeService;
 
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
