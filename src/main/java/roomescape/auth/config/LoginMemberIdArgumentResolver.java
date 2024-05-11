@@ -9,35 +9,32 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.service.AuthService;
+import roomescape.auth.service.TokenProvider;
 import roomescape.exception.UnauthorizedException;
-import roomescape.member.service.MemberService;
 
 import java.util.Arrays;
 
 @Component
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
     private final static String KEY = "token";
-    private final MemberService memberService;
-    private final AuthService authService;
+
+    private final TokenProvider tokenProvider;
 
     @Autowired
-    public LoginMemberArgumentResolver(MemberService memberService, AuthService authService) {
-        this.memberService = memberService;
-        this.authService = authService;
+    public LoginMemberIdArgumentResolver(TokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameter().equals(LoginMember.class);
+        return parameter.hasParameterAnnotation(LoginMemberId.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractTokenFromCookie(request.getCookies());
-        long id = authService.extractId(token);
-        return memberService.findById(id);
+        return tokenProvider.extractMemberId(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

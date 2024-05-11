@@ -39,7 +39,7 @@ public class TokenProvider {
 
     public long extractMemberId(String token) {
         Claims claims = getPayload(token);
-        return (Long) claims.get("id");
+        return claims.get("id", Long.class);
     }
 
     public Claims getPayload(String token) {

@@ -16,7 +16,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
-import roomescape.reservation.service.dto.ReservationRequest;
+import roomescape.reservation.service.dto.AdminReservationRequest;
 import roomescape.reservation.service.dto.ReservationResponse;
 
 import java.time.LocalDate;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate-with-guest.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
@@ -57,10 +57,10 @@ class ReservationServiceTest {
     void create() {
         //given
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), reservationTime.getId(), theme.getId());
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, member.getId(), reservationTime.getId(), theme.getId());
 
         //when
-        ReservationResponse result = reservationService.create(reservationRequest);
+        ReservationResponse result = reservationService.create(adminReservationRequest);
 
         //then
         assertAll(
@@ -106,10 +106,10 @@ class ReservationServiceTest {
         Reservation reservation = new Reservation(date, member, reservationTime, theme);
         reservationRepository.save(reservation);
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), reservationTime.getId(), theme.getId());
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, member.getId(), reservationTime.getId(), theme.getId());
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(adminReservationRequest))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("선택하신 테마와 일정은 이미 예약이 존재합니다.");
     }
@@ -119,10 +119,10 @@ class ReservationServiceTest {
     void cannotCreateByUnknownTime() {
         //given
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), 0, theme.getId());
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, member.getId(), 0, theme.getId());
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(adminReservationRequest))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("더이상 존재하지 않는 시간입니다.");
     }
@@ -133,10 +133,10 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(date, member.getId(), reservationTime.getId(), 0);
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, member.getId(), reservationTime.getId(), 0);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(adminReservationRequest))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("더이상 존재하지 않는 테마입니다.");
     }

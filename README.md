@@ -65,11 +65,26 @@
       }
   ]
   ```
-  
-### 예약 추가
+### 예약 추가 - 어드민
 - http method: POST
 - uri: /reservations
-- request - 사용자
+- request
+  ```
+  POST /admin/reservations HTTP/1.1
+  content-type: application/json
+  
+  {
+      "date": "2023-08-05",
+      "timeId": 1,
+      "themeId": 1,
+      "memberId": 1,
+  }
+  ```
+  
+### 예약 추가 - 사용자
+- http method: POST
+- uri: /reservations
+- request
   ```
   POST /reservations HTTP/1.1
   content-type: application/json
@@ -80,18 +95,6 @@
     "date": "2024-03-01",
     "themeId": 1,
     "timeId": 1
-  }
-  ```
-- request - 어드민
-  ```
-  POST /reservations HTTP/1.1
-  content-type: application/json
-  
-  {
-      "date": "2023-08-05",
-      "timeId": 1,
-      "themeId": 1,
-      "memberId": 1,
   }
   ```
 - response

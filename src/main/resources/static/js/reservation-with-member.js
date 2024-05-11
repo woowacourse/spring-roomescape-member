@@ -32,7 +32,7 @@ function render(data) {
           예약 목록 조회 API 응답에 맞게 적용
     */
     row.insertCell(0).textContent = item.id;              // 예약 id
-    row.insertCell(1).textContent = item.member.name;     // 사용자 name
+    row.insertCell(1).textContent = item.name;     // 사용자 name
     row.insertCell(2).textContent = item.theme.name;      // 테마 name
     row.insertCell(3).textContent = item.date;            // date
     row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
@@ -206,8 +206,9 @@ function applyFilter(event) {
       'Content-Type': 'application/json'
     },
   }).then(response => {
-    if (response.status === 200) return response.json();
-    throw new Error('Read failed');
+    if (response.status === 200) return response.json().then(data => {
+      throw new Error(data.message || 'Read failed');
+    });
   }).then(render)
       .catch(error => console.error("Error fetching available times:", error));
 }

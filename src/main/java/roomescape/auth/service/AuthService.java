@@ -52,8 +52,4 @@ public class AuthService {
         Member member = memberRepository.getByEmail(email);
         return new LoginCheckResponse(member);
     }
-
-    public long extractId(String token) {
-        return tokenProvider.extractMemberId(token);
-    }
 }

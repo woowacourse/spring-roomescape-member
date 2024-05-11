@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
-@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate-with-guest.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeControllerTest {
     @LocalServerPort
     private int port;

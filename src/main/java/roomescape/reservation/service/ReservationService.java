@@ -11,6 +11,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
+import roomescape.reservation.service.dto.AdminReservationRequest;
 import roomescape.reservation.service.dto.ReservationRequest;
 import roomescape.reservation.service.dto.ReservationResponse;
 
@@ -34,14 +35,22 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse create(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
-        Theme theme = findThemeById(reservationRequest.themeId());
-        Member member = findMemberById(reservationRequest.memberId());
+    public ReservationResponse create(AdminReservationRequest adminReservationRequest) {
+        return createReservation(adminReservationRequest.timeId(), adminReservationRequest.themeId(), adminReservationRequest.memberId(), adminReservationRequest.date());
+    }
 
-        validate(reservationRequest.date(), reservationTime, theme);
+    public ReservationResponse create(ReservationRequest reservationRequest, long memberId) {
+        return createReservation(reservationRequest.timeId(), reservationRequest.themeId(), memberId, reservationRequest.date());
+    }
 
-        Reservation reservation = new Reservation(reservationRequest.date(), member, reservationTime, theme);
+    private ReservationResponse createReservation(long timeId, long themeId, long memberId, String date) {
+        ReservationTime reservationTime = findTimeById(timeId);
+        Theme theme = findThemeById(themeId);
+        Member member = findMemberById(memberId);
+
+        validate(date, reservationTime, theme);
+
+        Reservation reservation = new Reservation(date, member, reservationTime, theme);
 
         return new ReservationResponse(reservationRepository.save(reservation));
     }
