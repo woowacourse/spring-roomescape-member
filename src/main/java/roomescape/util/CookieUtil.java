@@ -9,14 +9,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 public class CookieUtil {
 
     private static final String TOKEN = "token";
-    private static final int TOKEN_MAX_AGE = 60 * 60; // 1 hour
+    private static final int COOKIE_MAX_AGE_ONE_HOUR = 60 * 60;
 
     private CookieUtil() {
     }
 
     public static void setTokenCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie(TOKEN, token);
-        cookie.setMaxAge(TOKEN_MAX_AGE);
+        cookie.setMaxAge(COOKIE_MAX_AGE_ONE_HOUR);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
 
