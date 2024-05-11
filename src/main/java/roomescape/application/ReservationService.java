@@ -1,8 +1,11 @@
 package roomescape.application;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.application.dto.LoginMember;
+import roomescape.application.dto.ReservationCriteria;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.domain.Reservation;
@@ -27,8 +30,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest request) {
-        Reservation reservation = reservationFactory.create(request);
+    public ReservationResponse create(LoginMember member, ReservationRequest request) {
+        Reservation reservation = reservationFactory.create(member.id(), request);
         return ReservationResponse.from(reservationCommandRepository.create(reservation));
     }
 
@@ -46,6 +49,16 @@ public class ReservationService {
 
     private List<ReservationResponse> convertToReservationResponses(List<Reservation> reservations) {
         return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findByCriteria(ReservationCriteria reservationCriteria) {
+        Long themeId = reservationCriteria.themeId();
+        Long memberId = reservationCriteria.memberId();
+        LocalDate dateFrom = reservationCriteria.dateFrom();
+        LocalDate dateTo = reservationCriteria.dateTo();
+        return reservationQueryRepository.findByCriteria(themeId, memberId, dateFrom, dateTo).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
