@@ -13,8 +13,8 @@ public record ReservationAdminCreateRequest(@JsonFormat(pattern = "yyyy-MM-dd") 
                                             Long memberId,
                                             Long timeId,
                                             Long themeId) {
-    public static ReservationAdminCreateRequest of(ReservationMemberCreateRequest dto, Long memberId) {
-        return new ReservationAdminCreateRequest(dto.date(), memberId, dto.timeId(), dto.themeId());
+    public static ReservationAdminCreateRequest of(ReservationAdminCreateRequest dto, Long member_id) {
+        return new ReservationAdminCreateRequest(dto.date(), member_id, dto.timeId(), dto.themeId());
     }
 
     public Reservation createReservation(Member member, ReservationTime time, Theme theme) {

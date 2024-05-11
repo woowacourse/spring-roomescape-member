@@ -88,8 +88,8 @@
 
 ## 5단계 기능 요구 사항
 
-- [ ] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
-  - [ ] HandlerMethodArgumentResolver을 활용해 회원정보를 객체를 컨트롤러 메서드에 주입
+- [x] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+  - [x] HandlerMethodArgumentResolver을 활용해 회원정보를 객체를 컨트롤러 메서드에 주입
 
 - [x] `reservation` 테이블 변경
   - 이름(name) -> member id

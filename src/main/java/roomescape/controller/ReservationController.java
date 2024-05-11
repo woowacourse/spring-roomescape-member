@@ -3,8 +3,6 @@ package roomescape.controller;
 import java.net.URI;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,21 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.dto.request.LoginMember;
 import roomescape.dto.request.ReservationAdminCreateRequest;
-import roomescape.dto.request.ReservationMemberCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
-import roomescape.service.TokenService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
-    private final TokenService tokenService;
 
-    public ReservationController(ReservationService reservationService, TokenService tokenService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.tokenService = tokenService;
     }
 
     @GetMapping
@@ -38,11 +33,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation
-            (@RequestBody ReservationMemberCreateRequest dto, HttpServletRequest servletRequest) {
-        Long memberId = tokenService.findTokenId(servletRequest.getCookies());
-        ReservationAdminCreateRequest request = ReservationAdminCreateRequest.of(dto, memberId);
-
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationAdminCreateRequest dto, LoginMember member) {
+        ReservationAdminCreateRequest request = ReservationAdminCreateRequest.of(dto, member.id());
         ReservationResponse response = reservationService.createReservation(request);
 
         URI location = URI.create("/reservations/" + response.id());
