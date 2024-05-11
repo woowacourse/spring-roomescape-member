@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -22,7 +22,7 @@ public class AdminController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationCreateRequest dto) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationAdminCreateRequest dto) {
         ReservationResponse response = service.createReservation(dto);
 
         URI location = URI.create("/admin/reservations/" + response.id());

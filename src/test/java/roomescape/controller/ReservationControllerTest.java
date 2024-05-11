@@ -3,6 +3,7 @@ package roomescape.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationMemberCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -54,11 +55,26 @@ class ReservationControllerTest {
     @DisplayName("예약을 DB에 추가할 수 있다.")
     @Test
     void createReservation() {
-        ReservationCreateRequest params = new ReservationCreateRequest
-                (LocalDate.of(2040, 8, 5), 1L, 1L, 1L);
+
+        Map<String, String> loginParam = Map.of(
+                "email", "aaa@naver.com",
+                "password", "1111"
+        );
+
+        String cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginParam)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        ReservationMemberCreateRequest params = new ReservationMemberCreateRequest
+                (LocalDate.of(2040, 8, 5), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header("cookie", cookie)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -67,20 +83,6 @@ class ReservationControllerTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(2);
-    }
-
-    @DisplayName("예약 추가 시 인자 중 null이 있을 경우, 예약을 추가할 수 없다.")
-    @Test
-    void createReservation_whenNameIsNull() {
-        ReservationCreateRequest params = new ReservationCreateRequest
-                (LocalDate.of(2040, 8, 5), null, 1L, 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
     }
 
     @DisplayName("삭제할 id를 받아서 DB에서 해당 예약을 삭제 할 수 있다.")

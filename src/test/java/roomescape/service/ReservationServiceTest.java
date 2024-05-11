@@ -28,7 +28,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.MemberModel;
-import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.dto.response.TimeResponse;
@@ -86,8 +86,8 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(theme));
 
 
-        ReservationCreateRequest request =
-                new ReservationCreateRequest(date, 1L, 1L, 1L);
+        ReservationAdminCreateRequest request =
+                new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatCode(() -> service.createReservation(request))
                 .doesNotThrowAnyException();
@@ -114,8 +114,8 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(theme));
 
 
-        ReservationCreateRequest request =
-                new ReservationCreateRequest(date, 1L, 1L, 1L);
+        ReservationAdminCreateRequest request =
+                new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -138,8 +138,8 @@ class ReservationServiceTest {
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
-        ReservationCreateRequest request =
-                new ReservationCreateRequest(date, 1L, 1L, 1L);
+        ReservationAdminCreateRequest request =
+                new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -162,8 +162,8 @@ class ReservationServiceTest {
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
-        ReservationCreateRequest request =
-                new ReservationCreateRequest(date, 1L, 1L, 1L);
+        ReservationAdminCreateRequest request =
+                new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -186,8 +186,8 @@ class ReservationServiceTest {
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
-        ReservationCreateRequest request =
-                new ReservationCreateRequest(date, 1L, 1L, 1L);
+        ReservationAdminCreateRequest request =
+                new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -210,8 +210,8 @@ class ReservationServiceTest {
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.empty());
 
-        ReservationCreateRequest request =
-                new ReservationCreateRequest(date, 1L, 1L, 1L);
+        ReservationAdminCreateRequest request =
+                new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)

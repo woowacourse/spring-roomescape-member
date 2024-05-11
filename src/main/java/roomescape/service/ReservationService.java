@@ -13,7 +13,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeProvider.TimeProvider;
-import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 
 @Service
@@ -38,14 +38,14 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationCreateRequest dto) {
+    public ReservationResponse createReservation(ReservationAdminCreateRequest dto) {
         Reservation reservation = createReservationFromDto(dto);
 
         Reservation createdReservation = reservationDao.createReservation(reservation);
         return ReservationResponse.from(createdReservation);
     }
 
-    private Reservation createReservationFromDto(ReservationCreateRequest dto) {
+    private Reservation createReservationFromDto(ReservationAdminCreateRequest dto) {
         ReservationTime time = timeDao.readTimeById(dto.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
         Theme theme = themeDao.readThemeById(dto.themeId())

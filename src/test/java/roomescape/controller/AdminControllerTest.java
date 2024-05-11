@@ -15,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.request.ReservationAdminCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -38,7 +38,7 @@ class AdminControllerTest {
     @DisplayName("예약을 DB에 추가할 수 있다.")
     @Test
     void createReservation() {
-        ReservationCreateRequest params = new ReservationCreateRequest
+        ReservationAdminCreateRequest params = new ReservationAdminCreateRequest
                 (LocalDate.of(2040, 8, 5), 1L, 1L, 1L);
 
         RestAssured.given().log().all()
