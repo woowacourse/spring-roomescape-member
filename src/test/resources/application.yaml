@@ -10,3 +10,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+security:
+  jwt:
+    token:
+      secret-key: dobbyismakingjavaspringroomescapemember
+      expire-length: 3600000  # 1시간
