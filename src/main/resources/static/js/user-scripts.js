@@ -34,14 +34,14 @@ function updateUIBasedOnLogin() {
         // 응답에서 사용자 이름을 추출하여 UI 업데이트
         document.getElementById('profile-name').textContent = data.name; // 프로필 이름 설정
         document.querySelector('.nav-item.dropdown').style.display = 'block'; // 드롭다운 메뉴 표시
-        document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
+        document.querySelector('.nav-item a[href="/member/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
       })
       .catch(error => {
         // 에러 처리 또는 로그아웃 상태일 때 UI 업데이트
         console.error('Error:', error);
         document.getElementById('profile-name').textContent = 'Profile'; // 기본 텍스트로 재설정
         document.querySelector('.nav-item.dropdown').style.display = 'none'; // 드롭다운 메뉴 숨김
-        document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'block'; // 로그인 버튼 표시
+        document.querySelector('.nav-item a[href="/member/login"]').parentElement.style.display = 'block'; // 로그인 버튼 표시
       });
 }
 
