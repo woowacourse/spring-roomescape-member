@@ -24,6 +24,10 @@ public class Member {
         this(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
+    public boolean isAdminMember() {
+        return role == Role.ADMIN;
+    }
+
     public Long getId() {
         return id;
     }

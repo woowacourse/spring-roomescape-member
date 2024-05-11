@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.Role;
 import roomescape.member.service.MemberService;
 
 @Component
@@ -22,12 +21,8 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-
         String accessToken = jwtTokenProvider.parseToken(request);
         Member findMember = memberService.findById(Long.valueOf(jwtTokenProvider.getPayload(accessToken)));
-        if (findMember.getRole() != Role.ADMIN) {
-            return false;
-        }
-        return true;
+        return findMember.isAdminMember();
     }
 }
