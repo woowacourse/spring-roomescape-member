@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.global.AdminHandlerInterceptor;
 import roomescape.global.AuthenticatedMemberArgumentResolver;
 
 @WebMvcTest(ClientViewController.class)
@@ -20,6 +21,9 @@ class ClientViewControllerTest {
 
     @MockBean
     private AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
+
+    @MockBean
+    private AdminHandlerInterceptor adminHandlerInterceptor;
 
     @DisplayName("메인 페이지 요청을 처리할 수 있다")
     @Test

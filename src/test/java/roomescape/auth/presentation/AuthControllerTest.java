@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.service.AuthService;
+import roomescape.global.AdminHandlerInterceptor;
 import roomescape.global.AuthenticatedMemberArgumentResolver;
 
 @WebMvcTest(AuthController.class)
@@ -37,6 +38,9 @@ class AuthControllerTest {
 
     @MockBean
     private AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
+
+    @MockBean
+    private AdminHandlerInterceptor adminHandlerInterceptor;
 
     @DisplayName("로그인 요청 성공 시 응답 쿠키에 토큰을 포함시킨다")
     @Test
