@@ -1,14 +1,14 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.model.Member;
 
+@ConfigurationProperties(prefix = "token-provider")
 @Component
 public class JwtTokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
     private String secretKey;
 
     public String createToken(final Member member) {
@@ -27,5 +27,9 @@ public class JwtTokenProvider {
                 .getBody()
                 .getSubject();
         return Long.valueOf(tokenSubject);
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
     }
 }
