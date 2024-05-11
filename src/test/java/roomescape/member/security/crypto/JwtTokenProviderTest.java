@@ -4,29 +4,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Date;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.AFTER_TEST_CLASS)
+@TestPropertySource(properties = {
+        "security.jwt.token.secret-key=test_secret_key",
+        "security.jwt.token.expire-length=3600000"
+})
 class JwtTokenProviderTest {
 
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
     @Autowired
-    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private JwtTokenProvider jwtTokenProvider;
 
     private static final String USER_TEST_COM ="user@test.com";
     private static final String USER_NAME = "도비";
+
+    @BeforeEach
+    void setUp() {
+        jwtTokenProvider = new JwtTokenProvider();
+        setField(jwtTokenProvider, "secretKey", "your_secret_key");
+        setField(jwtTokenProvider, "validityInMilliseconds", 3600000); // 1시간
+    }
+
 
     @Test
     @DisplayName("토큰을 생성하고, 토큰의 유효성을 검증하며, 페이로드를 반환한다")
