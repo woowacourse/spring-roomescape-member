@@ -2,10 +2,10 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationFilterRequest;
-import roomescape.dto.ReservationWithMemberSaveRequest;
-import roomescape.model.*;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
+import roomescape.dto.ReservationWithMemberSaveRequest;
+import roomescape.model.*;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -71,7 +71,7 @@ public class ReservationService {
         final boolean isReservationExist = reservationRepository.existByDateAndTimeIdAndThemeId(reservation.getDate(),
                 reservation.getTimeId(), reservation.getThemeId());
         if (isReservationExist) {
-            throw new IllegalArgumentException(String.format("동일한 날짜, 시간, 테마에 대한 예약이 이미 존재합니다."));
+            throw new IllegalArgumentException("동일한 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
         }
     }
 

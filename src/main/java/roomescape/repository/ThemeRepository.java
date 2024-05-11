@@ -1,7 +1,5 @@
 package roomescape.repository;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,14 +8,17 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public class ThemeRepository {
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (selectedTheme, rowNum) -> new Theme(
-                selectedTheme.getLong("id"),
-                selectedTheme.getString("name"),
-                selectedTheme.getString("description"),
-                selectedTheme.getString("thumbnail"));
+            selectedTheme.getLong("id"),
+            selectedTheme.getString("name"),
+            selectedTheme.getString("description"),
+            selectedTheme.getString("thumbnail"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInsert;

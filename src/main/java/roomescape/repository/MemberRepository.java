@@ -17,11 +17,11 @@ public class MemberRepository {
 
     private static final RowMapper<Member> ROW_MAPPER = (selectedMember, rowNum) ->
             new Member(
-                selectedMember.getLong("id"),
-                selectedMember.getString("name"),
-                Role.from(selectedMember.getString("role")),
-                selectedMember.getString("email"),
-                selectedMember.getString("password"));
+                    selectedMember.getLong("id"),
+                    selectedMember.getString("name"),
+                    Role.from(selectedMember.getString("role")),
+                    selectedMember.getString("email"),
+                    selectedMember.getString("password"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert memberInsert;
@@ -35,14 +35,14 @@ public class MemberRepository {
 
     public List<Member> findAll() {
         final String selectQuery = """
-            SELECT
-                id,
-                name,
-                email,
-                password,
-                role
-            FROM member
-        """;
+                    SELECT
+                        id,
+                        name,
+                        email,
+                        password,
+                        role
+                    FROM member
+                """;
         return jdbcTemplate.query(selectQuery, ROW_MAPPER)
                 .stream()
                 .toList();
@@ -50,16 +50,16 @@ public class MemberRepository {
 
     public Optional<Member> findByEmail(final String email) {
         final String selectQuery = """
-            SELECT
-                id,
-                name,
-                email,
-                password,
-                role
-            FROM member
-            WHERE email = ?
-            LIMIT 1
-        """;
+                    SELECT
+                        id,
+                        name,
+                        email,
+                        password,
+                        role
+                    FROM member
+                    WHERE email = ?
+                    LIMIT 1
+                """;
         try {
             final Member member = jdbcTemplate.queryForObject(selectQuery, ROW_MAPPER, email);
             return Optional.ofNullable(member);
@@ -70,16 +70,16 @@ public class MemberRepository {
 
     public Optional<Member> findById(final Long memberId) {
         final String selectQuery = """
-            SELECT
-                id,
-                name,
-                email,
-                password,
-                role
-            FROM member
-            WHERE id = ?
-            LIMIT 1
-        """;
+                    SELECT
+                        id,
+                        name,
+                        email,
+                        password,
+                        role
+                    FROM member
+                    WHERE id = ?
+                    LIMIT 1
+                """;
         try {
             final Member member = jdbcTemplate.queryForObject(selectQuery, ROW_MAPPER, memberId);
             return Optional.ofNullable(member);

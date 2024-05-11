@@ -11,5 +11,5 @@ public record ReservationFilterRequest(
         LocalDate dateFrom,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         LocalDate dateTo
-        ) {
+) {
 }
