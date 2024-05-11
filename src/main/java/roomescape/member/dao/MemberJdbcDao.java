@@ -1,5 +1,6 @@
 package roomescape.member.dao;
 
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -49,5 +50,16 @@ public class MemberJdbcDao implements MemberDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<String> findAllNames() {
+        String findNameByIdSql = """
+                SELECT name
+                FROM member
+                """;
+
+        return jdbcTemplate.query(findNameByIdSql,
+                (resultSet, rowNum) -> resultSet.getString("name"));
     }
 }
