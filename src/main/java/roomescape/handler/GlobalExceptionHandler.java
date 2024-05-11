@@ -8,8 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.AuthorizationException;
+import roomescape.exception.AuthorizationMismatchException;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
+import roomescape.exception.IllegalAuthorizationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -49,6 +52,24 @@ public class GlobalExceptionHandler {
         logger.error(exception.getMessage());
         return ResponseEntity.internalServerError()
                 .body("데이터 저장 중 문제가 발생하였습니다.");
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String> handleAuthorizationException(AuthorizationException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationMismatchException.class)
+    public ResponseEntity<String> handleIllegalAuthorizationException(AuthorizationMismatchException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(IllegalAuthorizationException.class)
+    public ResponseEntity<String> handleIllegalAuthorizationException(IllegalAuthorizationException exception) {
+        return ResponseEntity.badRequest()
+                .body(exception.getMessage());
     }
 
 }
