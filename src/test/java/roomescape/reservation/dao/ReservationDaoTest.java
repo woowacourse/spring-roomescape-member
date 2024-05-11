@@ -7,7 +7,6 @@ import javax.sql.DataSource;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.jdbc.Sql;
@@ -30,7 +29,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("데이터를 정상적으로 저장한다.")
     void saveReservation() {
-        Reservation reservation = new Reservation("범블비", LocalDate.now(), new Time(1L, LocalTime.of(12,0)), new Theme(1L));
+        Reservation reservation = new Reservation("범블비", LocalDate.now(), new Time(1L, LocalTime.of(12, 0)),
+                new Theme(1L));
         reservationDao.save(reservation);
 
         Assertions.assertThat(reservation.getId())
