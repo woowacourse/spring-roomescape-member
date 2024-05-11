@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.auth.TokenProvider;
-import roomescape.domain.member.Member;
 import roomescape.service.MemberService;
 import roomescape.web.exception.AuthorizationException;
 
@@ -24,9 +23,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Member member = memberService.findByEmail(request.email());
-
-        String token = tokenProvider.createToken(member);
+        String token = memberService.login(request.email(), request.password());
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .path("/")
