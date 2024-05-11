@@ -27,19 +27,19 @@ public class InitialDataFixture {
             1L,
             new ThemeName("레벨1 탈출"),
             "우테코 레벨1를 탈출하는 내용입니다.",
-            "아무 내용 없음"
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     );
     public static final Theme THEME_2 = new Theme(
             2L,
             new ThemeName("레벨2 탈출"),
             "우테코 레벨2를 탈출하는 내용입니다.",
-            "아무 내용 없음"
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     );
     public static final Theme NOT_RESERVATION_THEME = new Theme(
             3L,
             new ThemeName("레벨3 탈출"),
             "우테코 레벨3를 탈출하는 내용입니다.",
-            "아무 내용 없음"
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     );
 
     public static final Reservation RESERVATION_1 = new Reservation(
