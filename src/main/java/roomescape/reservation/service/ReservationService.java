@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.domain.MemberInfo;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationThemeDao;
 import roomescape.reservation.dao.ReservationTimeDao;
@@ -36,21 +37,21 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse insertReservation(ReservationRequest request) {
-        Reservation reservation = getReservation(request);
-        Reservation inserted = reservationDao.insert(reservation);
+    public ReservationResponse insertReservation(ReservationRequest request, MemberInfo member) {
+        Reservation reservation = getReservation(request, member);
+        Reservation inserted = reservationDao.insert(reservation, member);
 
         return new ReservationResponse(inserted);
     }
 
-    private Reservation getReservation(ReservationRequest request) {
+    private Reservation getReservation(ReservationRequest request, MemberInfo member) {
         validateDuplicate(request);
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         ReservationTheme theme = reservationThemeDao.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        return reservationFactory.createForAdd(request.name(), request.date(), time, theme);
+        return reservationFactory.createForAdd(request.name(), request.date(), time, theme, member);
     }
 
     private void validateDuplicate(ReservationRequest request) {

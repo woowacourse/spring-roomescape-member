@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.member.domain.MemberInfo;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTheme;
 import roomescape.reservation.domain.ReservationTime;
@@ -35,27 +36,32 @@ public class ReservationDao {
                             tm.id as theme_id, 
                             tm.name as theme_name, 
                             tm.description,     
-                            tm.thumbnail 
+                            tm.thumbnail,
+                            r.member_id as member_id,
+                            m.name as member_name
                         FROM reservation AS r 
                         INNER JOIN reservation_time AS t 
                         ON r.time_id = t.id 
                         INNER JOIN theme AS tm 
                         ON r.theme_id = tm.id
+                        INNER JOIN member AS m
+                        ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(findAllSql, getReservationRowMapper());
     }
 
-    public Reservation insert(Reservation reservation) {
+    public Reservation insert(Reservation reservation, MemberInfo member) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate().toString())
                 .addValue("time_id", reservation.getTimeId())
-                .addValue("theme_id", reservation.getThemeId());
+                .addValue("theme_id", reservation.getThemeId())
+                .addValue("member_id", member.getId());
 
         Long id = insertActor.executeAndReturnKey(parameters).longValue();
 
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+                reservation.getTheme(), member);
     }
 
     public void deleteById(Long id) {
@@ -92,6 +98,10 @@ public class ReservationDao {
                         resultSet.getString("theme_name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
+                ),
+                new MemberInfo(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("member_name")
                 )
         );
     }

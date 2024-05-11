@@ -4,13 +4,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.springframework.stereotype.Component;
+import roomescape.member.domain.MemberInfo;
 
 @Component
 public class ReservationFactory {
 
-    public Reservation createForAdd(String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
+    public Reservation createForAdd(String name, LocalDate date, ReservationTime time, ReservationTheme theme, MemberInfo member) {
         validateIsPast(date, time.getStartAt());
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(null, name, date, time, theme, member);
     }
 
     private void validateIsPast(LocalDate date, LocalTime time) {
