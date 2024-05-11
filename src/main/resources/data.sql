@@ -20,24 +20,31 @@ INSERT INTO reservation_time (start_at) VALUES
 ('16:00'),
 ('18:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES
-('테드', CURRENT_DATE() - INTERVAL '1' DAY, 1, 1),
-('테드', CURRENT_DATE() - INTERVAL '3' DAY, 2, 1),
-('테드', CURRENT_DATE() - INTERVAL '7' DAY, 3, 1),
-('종이', CURRENT_DATE() - INTERVAL '1' DAY, 1, 2),
-('종이', CURRENT_DATE() - INTERVAL '3' DAY, 2, 2),
-('종이', CURRENT_DATE() - INTERVAL '7' DAY, 3, 3),
-('범블비', CURRENT_DATE() - INTERVAL '1' DAY, 1, 3),
-('범블비', CURRENT_DATE() - INTERVAL '3' DAY, 2, 4),
-('범블비', CURRENT_DATE() - INTERVAL '7' DAY, 3, 5),
-('제이', CURRENT_DATE() - INTERVAL '1' DAY, 1, 6),
-('제이', CURRENT_DATE() - INTERVAL '2' DAY, 2, 7),
-('제이', CURRENT_DATE() - INTERVAL '3' DAY, 3, 8),
-('제이', CURRENT_DATE() - INTERVAL '4' DAY, 1, 9),
-('제이', CURRENT_DATE() - INTERVAL '5' DAY, 2, 10),
-('제이', CURRENT_DATE() - INTERVAL '7' DAY, 3, 11),
+INSERT INTO member (name, email, password, role) VALUES
+('어드민', 'admin@admin.com', 'adminadmin', 'admin'),
+('테드', 'ted@admin.com', 'adminadmin', 'member'),
+('종이', 'jonge@admin.com', 'adminadmin', 'member'),
+('호돌', 'hodol@admin.com', 'adminadmin', 'member'),
+('제이', 'jay@admin.com', 'adminadmin', 'member');
 
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES
+(2, CURRENT_DATE() - INTERVAL '1' DAY, 1, 1),
+(2, CURRENT_DATE() - INTERVAL '3' DAY, 2, 1),
+(2, CURRENT_DATE() - INTERVAL '7' DAY, 3, 1),
+(2, CURRENT_DATE() - INTERVAL '1' DAY, 1, 2),
+(2, CURRENT_DATE() - INTERVAL '3' DAY, 2, 2),
+(2, CURRENT_DATE() - INTERVAL '7' DAY, 3, 3),
+(3, CURRENT_DATE() - INTERVAL '1' DAY, 1, 3),
+(3, CURRENT_DATE() - INTERVAL '3' DAY, 2, 4),
+(3, CURRENT_DATE() - INTERVAL '7' DAY, 3, 5),
+(4, CURRENT_DATE() - INTERVAL '1' DAY, 1, 6),
+(4, CURRENT_DATE() - INTERVAL '2' DAY, 2, 7),
+(4, CURRENT_DATE() - INTERVAL '3' DAY, 3, 8),
+(5, CURRENT_DATE() - INTERVAL '4' DAY, 1, 9),
+(5, CURRENT_DATE() - INTERVAL '5' DAY, 2, 10),
+(5, CURRENT_DATE() - INTERVAL '7' DAY, 3, 11),
+
+(3, CURRENT_DATE() - INTERVAL '8' DAY, 3, 2),
+(3, CURRENT_DATE() - INTERVAL '8' DAY, 3, 2),
+(3, CURRENT_DATE() - INTERVAL '8' DAY, 3, 2),
+(3, CURRENT_DATE() - INTERVAL '8' DAY, 3, 2);
