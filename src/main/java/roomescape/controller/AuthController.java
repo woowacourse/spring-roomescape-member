@@ -39,8 +39,10 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@LoginMember Member member) {
-        authService.loginCheck(member); // TODO: 해당 검증 로직의 필요 여부 판단해보기(댜른 곳에서?)
+    public ResponseEntity<Void> logout(@LoginMember Member member,
+                                       HttpServletResponse response) { // TODO: 기존 토큰 검증 로직 위치 개선하기
+        Cookie cookie = cookieExtractor.deleteCookie();
+        response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 }
