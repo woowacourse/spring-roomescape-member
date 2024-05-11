@@ -23,7 +23,7 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
     @Override
     public Long resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                 NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = AuthInformationExtractor.extractToken(request);
         MemberRole memberRole = tokenManager.extract(token);
         return memberRole.getMemberId();
