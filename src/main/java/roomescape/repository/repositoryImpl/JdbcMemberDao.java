@@ -1,6 +1,8 @@
 package roomescape.repository.repositoryImpl;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -33,12 +35,20 @@ public class JdbcMemberDao implements MemberDao {
     @Override
     public Member findByEmail(final String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
+        try {
+            return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 사용자입니다.");
+        }
     }
 
     @Override
     public Member findById(final Long id) {
         String sql = "SELECT * FROM member WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 사용자입니다.");
+        }
     }
 }

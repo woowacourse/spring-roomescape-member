@@ -165,7 +165,6 @@ Content-Type: application/json
 - [ ] 4,5 단계 테스트 추가하기
 - [ ] dao 테스트 제거
 - [ ] 테스트 mock 적용
-- [ ] 테스트 추가 getAll_member
 - [ ] URLSearchParams 적용
 - [ ] 필터 옵션 없는 경우 적용
 - [ ] data.sql

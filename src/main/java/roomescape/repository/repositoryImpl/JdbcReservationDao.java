@@ -3,6 +3,8 @@ package roomescape.repository.repositoryImpl;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -114,8 +116,11 @@ public class JdbcReservationDao implements ReservationDao {
                 INNER JOIN member as m on r.member_id = m.id
                 WHERE r.id = ?
                 """;
-
-        return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 예약입니다.");
+        }
     }
 
     @Override
