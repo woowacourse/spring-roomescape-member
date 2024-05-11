@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import java.net.URI;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.config.LoggedIn;
 import roomescape.domain.AuthenticatedMember;
@@ -10,35 +12,40 @@ import roomescape.service.ReservationService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
-
     private final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping("/reservations")
     public List<ReservationResponse> readReservations() {
         return reservationService.readReservations();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/reservations/{id}")
     public ReservationResponse readReservation(@PathVariable Long id) {
         return reservationService.readReservation(id);
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ReservationResponse createReservation(
             @RequestBody ReservationCreateRequest request,
             @LoggedIn AuthenticatedMember member
     ) {
-        ReservationCreateRequest requestOfMember = request.withMemberId(member.getId());
-        return reservationService.createReservation(requestOfMember);
+        ReservationCreateRequest requestByMember = request.withMemberId(member.getId());
+        return reservationService.createReservation(requestByMember);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createReservationByAdmin(@RequestBody ReservationCreateRequest requestByAdmin) {
+        ReservationResponse response = reservationService.createReservation(requestByAdmin);
+        URI location = URI.create("/reservations/" + response.id());
+        return ResponseEntity.created(location).body(response);
+    }
+
+    @DeleteMapping("/reservations/{id}")
     public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
     }
