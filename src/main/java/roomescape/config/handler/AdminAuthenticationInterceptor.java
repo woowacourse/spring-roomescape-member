@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AdminAuthenticationException;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.domain.Member;
 import roomescape.member.service.AuthService;
@@ -26,7 +27,7 @@ public class AdminAuthenticationInterceptor implements HandlerInterceptor {
             if (member.isAdmin()) {
                 return true;
             }
-        } catch (Exception ignored) {
+        } catch (IllegalArgumentException | AuthenticationException ignored) {
         }
 
         response.setStatus(401);
