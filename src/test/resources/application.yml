@@ -1,0 +1,8 @@
+spring:
+  sql:
+    init:
+      data-locations:
+
+jwt:
+  secret: testroomescapetestroomescapetestroomescapetestroomescapetestroomescape
+  expiration: 10000
