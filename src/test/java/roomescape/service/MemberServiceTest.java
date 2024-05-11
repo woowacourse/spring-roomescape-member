@@ -49,7 +49,7 @@ class MemberServiceTest {
                 .thenReturn(Optional.of(member));
 
         MemberResponse actual = memberService.readMember(1L);
-        assertThat(actual).isEqualTo(new MemberResponse(member.name()));
+        assertThat(actual).isEqualTo(MemberResponse.from(member));
     }
 
     @DisplayName("멤버를 추가할 수 있다.")

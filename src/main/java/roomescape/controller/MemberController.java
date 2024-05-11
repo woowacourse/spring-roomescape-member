@@ -1,14 +1,20 @@
 package roomescape.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.dto.request.MemberCreateRequest;
+import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
 
 @RestController
+@RequestMapping("/members")
 public class MemberController {
     private final MemberService service;
 
@@ -16,10 +22,16 @@ public class MemberController {
         this.service = service;
     }
 
-    @PostMapping("/members")
+    @GetMapping
+    public ResponseEntity<List<MemberResponse>> readMembers() {
+        List<MemberResponse> response = service.readMember();
+        return ResponseEntity.ok(response);
+
+    }
+
+    @PostMapping
     public ResponseEntity<Void> createMember(@RequestBody MemberCreateRequest request) {
         service.createMember(request);
-
         return ResponseEntity.noContent().build();
     }
 }

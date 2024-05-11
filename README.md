@@ -100,9 +100,9 @@
    - 사용자 식별은 이름이 아닌, id로 하도록 구현
 
 - [ ] 관리자 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
-  - [ ] date, themeId, timeId, memberId를 입력
-  - [ ] GET /members 요청 시 member 정보를 읽어서 반환한다.
+  - [ ] date, themeId, timeId, memberId를 입력받아 예약을 생성한다.
+  - [x] GET /members 요청 시 member 정보를 읽어서 반환한다.
 
 - [ ] `reservation.html`, `user-reservation.js` 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경
-- [ ] `admin/reservation-new.html` 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경
+- [x] `admin/reservation-new.html` 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경
 

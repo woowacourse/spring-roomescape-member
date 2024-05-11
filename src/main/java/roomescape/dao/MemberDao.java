@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,6 +25,11 @@ public class MemberDao {
                 resultSet.getString("name"),
                 resultSet.getString("email")
         );
+    }
+
+    public List<Member> readMember() {
+        String sql = "SELECT id, name, email FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Optional<Member> readMemberById(Long id) {

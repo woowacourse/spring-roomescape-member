@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import roomescape.dao.MemberDao;
@@ -25,11 +27,18 @@ public class MemberService {
         return MemberModel.from(member);
     }
 
+    public List<MemberResponse> readMember() {
+        return memberDao.readMember()
+                .stream()
+                .map(MemberResponse::from)
+                .toList();
+    }
+
     public MemberResponse readMember(Long id) {
         Member member = memberDao.readMemberById(id)
                 .orElseThrow(AuthFailException::new);
 
-        return new MemberResponse(member.name());
+        return MemberResponse.from(member);
     }
 
     public void createMember(MemberCreateRequest request) {
