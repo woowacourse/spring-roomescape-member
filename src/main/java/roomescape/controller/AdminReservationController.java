@@ -3,23 +3,20 @@ package roomescape.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import roomescape.annotation.AuthenticationPrincipal;
-import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.dto.AdminReservationRequestDto;
 import roomescape.dto.FilterConditionDto;
-import roomescape.dto.ReservationRequestDto;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationController {
+public class AdminReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public AdminReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
@@ -27,13 +24,6 @@ public class ReservationController {
     public ResponseEntity<List<Reservation>> getReservations() {
         List<Reservation> reservations = reservationService.getAllReservations();
         return ResponseEntity.ok().body(reservations);
-    }
-
-    @PostMapping("/reservations")
-    public ResponseEntity<Reservation> createReservation(@AuthenticationPrincipal Member member, @RequestBody ReservationRequestDto reservationRequestDto) {
-        AdminReservationRequestDto adminReservationRequestDto = new AdminReservationRequestDto(reservationRequestDto.date(), reservationRequestDto.timeId(), reservationRequestDto.themeId(), member.getId());
-        Reservation reservation = reservationService.insertReservation(adminReservationRequestDto);
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")

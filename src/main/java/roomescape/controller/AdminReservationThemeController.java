@@ -11,11 +11,11 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationThemeController {
+public class AdminReservationThemeController {
 
     private final ReservationThemeService reservationThemeService;
 
-    public ReservationThemeController(ReservationThemeService reservationThemeService) {
+    public AdminReservationThemeController(ReservationThemeService reservationThemeService) {
         this.reservationThemeService = reservationThemeService;
     }
 
@@ -35,11 +35,5 @@ public class ReservationThemeController {
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationThemeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/best-themes")
-    public ResponseEntity<List<ReservationTheme>> getBestThemes() {
-        List<ReservationTheme> reservationThemes = reservationThemeService.getBestThemes();
-        return ResponseEntity.ok().body(reservationThemes);
     }
 }

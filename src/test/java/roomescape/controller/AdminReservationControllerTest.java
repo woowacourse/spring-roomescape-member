@@ -21,7 +21,7 @@ import java.util.Map;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationControllerTest {
+public class AdminReservationControllerTest {
 
     @LocalServerPort
     int port;
@@ -38,32 +38,6 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200);
-    }
-
-    @DisplayName("정상적인 예약 추가 요청 시 201으로 응답한다.")
-    @Test
-    void insertTest() {
-        ZoneId kst = ZoneId.of("Asia/Seoul");
-        Map<String, Object> params = new HashMap<>();
-
-        params.put("date", LocalDate.now(kst).plusDays(2).toString());
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        String accessToken = RestAssured
-                .given().log().all()
-                .body(new LoginRequestDto("email@email.com", "password"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all().statusCode(200)
-                .extract().header("Set-Cookie").split("=")[1];
-
-        RestAssured.given().contentType("application/json").body(params).log().all()
-                .cookie("token", accessToken)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
     }
 
     @DisplayName("예약 삭제 요청 시 204로 응답한다.")

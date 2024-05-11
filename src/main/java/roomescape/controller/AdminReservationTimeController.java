@@ -13,11 +13,11 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationTimeController {
+public class AdminReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
