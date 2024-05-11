@@ -24,13 +24,6 @@ class MemberRestControllerTest {
         RestAssured.port = port;
     }
 
-    private static List<MemberResponse> memberDatas = List.of(
-            new MemberResponse(1L, "어드민"),
-            new MemberResponse(2L, "사용자1"),
-            new MemberResponse(3L, "사용자2"),
-            new MemberResponse(4L, "사용자3")
-    );
-
     @Test
     @DisplayName("모든 회원을 조회한다.")
     void getAll() {
@@ -42,6 +35,10 @@ class MemberRestControllerTest {
                 .jsonPath().getList(".", MemberResponse.class);
 
         // then
-        assertThat(members).isEqualTo(memberDatas);
+        assertThat(members).containsExactly(
+                new MemberResponse(1L, "어드민"),
+                new MemberResponse(2L, "사용자1"),
+                new MemberResponse(3L, "사용자2"),
+                new MemberResponse(4L, "사용자3"));
     }
 }
