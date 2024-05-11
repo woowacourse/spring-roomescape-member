@@ -4,11 +4,11 @@ public class Member {
 
     private final Long id;
     private final MemberName name;
-    private final String email;
+    private final MemberEmail email;
     private final String password;
     private final Role role;
 
-    public Member(Long id, MemberName name, String email, String password, Role role) {
+    public Member(Long id, MemberName name, MemberEmail email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -28,7 +28,7 @@ public class Member {
         return name;
     }
 
-    public String getEmail() {
+    public MemberEmail getEmail() {
         return email;
     }
 
