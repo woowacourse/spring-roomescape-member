@@ -86,7 +86,21 @@ class MissionStepTest {
 
     @Test
     void 일단계() {
+        final Map<String, Object> loginParams = new HashMap<>();
+        loginParams.put("email", "planet@gmail.com");
+        loginParams.put("password", "1111");
+
+        final String adminTokenCookie = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
         RestAssured.given().log().all()
+                .header("Cookie", adminTokenCookie)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -100,7 +114,21 @@ class MissionStepTest {
 
     @Test
     void 이단계() {
+        final Map<String, Object> loginParams = new HashMap<>();
+        loginParams.put("email", "planet@gmail.com");
+        loginParams.put("password", "1111");
+
+        final String adminTokenCookie = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
         RestAssured.given().log().all()
+                .header("Cookie", adminTokenCookie)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
