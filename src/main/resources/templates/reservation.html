@@ -36,16 +36,16 @@
         <a class="nav-link" href="/login">Login</a>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" themeId="navbarDropdown" role="button"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
            data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
           <img class="profile-image" src="/image/default-profile.png" alt="Profile">
-          <span themeId="profile-name">Profile</span> <!-- 프로필 이름을 넣을 span 추가 -->
+          <span id="profile-name">Profile</span> <!-- 프로필 이름을 넣을 span 추가 -->
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/reservation-mine">My Reservation</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" themeId="logout-btn">Logout</a>
+          <a class="dropdown-item" href="#" id="logout-btn">Logout</a>
         </div>
       </li>
     </ul>
@@ -86,11 +86,11 @@
         적용 후 아래에 있는 User Name Input 삭제
   -->
   <!-- User Name Input -->
-  <div class="input-group mb-3 mt-4">
-    <span class="input-group-text" id="name">예약자명</span>
-    <input id="user-name" type="text" class="form-control" aria-label="Username"
-           aria-describedby="name">
-  </div>
+  <!--  <div class="input-group mb-3 mt-4">-->
+  <!--    <span class="input-group-text" id="name">예약자명</span>-->
+  <!--    <input id="user-name" type="text" class="form-control" aria-label="Username"-->
+  <!--           aria-describedby="name">-->
+  <!--  </div>-->
 
   <!-- Reservation Button -->
   <div class="button-group float-right">
