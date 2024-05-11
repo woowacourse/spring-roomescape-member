@@ -3,10 +3,6 @@ package roomescape.dto.request;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-
 public record ReservationAddRequest(LocalDate date, Long timeId, Long themeId) {
 
     public ReservationAddRequest {
@@ -20,6 +16,6 @@ public record ReservationAddRequest(LocalDate date, Long timeId, Long themeId) {
     }
 
     public String getStringDate() {
-        return date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return date().format(DateTimeFormatter.ISO_DATE);
     }
 }

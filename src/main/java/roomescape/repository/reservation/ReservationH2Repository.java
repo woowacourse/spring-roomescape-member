@@ -90,10 +90,10 @@ public class ReservationH2Repository implements ReservationRepository {
             conditions.add("theme_id = " + themeId);
         }
         if (dateFrom != null) {
-            conditions.add("date >= '" + dateFrom.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "'");
+            conditions.add("date >= '" + dateFrom.format(DateTimeFormatter.ISO_DATE) + "'");
         }
         if (dateTo != null) {
-            conditions.add("date <= '" + dateTo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "'");
+            conditions.add("date <= '" + dateTo.format(DateTimeFormatter.ISO_DATE) + "'");
         }
         return "WHERE " + String.join(" AND ", conditions);
     }

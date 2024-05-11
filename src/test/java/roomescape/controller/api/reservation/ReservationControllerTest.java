@@ -2,21 +2,20 @@ package roomescape.controller.api.reservation;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Email;
-import roomescape.domain.Member;
-import roomescape.domain.Name;
-import roomescape.domain.Role;
+import roomescape.LoginUtils;
+import roomescape.domain.Reservation;
 import roomescape.repository.member.MemberRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -25,37 +24,36 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.InitialDataFixture.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Sql("/initial_test_data.sql")
 class ReservationControllerTest {
 
     @Autowired
     private ReservationController reservationController;
     @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private ThemeRepository themeRepository;
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
     private String token;
 
     @BeforeEach
     void beforeEach() {
-        Member member = new Member(new Name("testA"), new Email("email@email.com"), Role.USER, "password");
+        memberRepository.save(USER_1);
+        themeRepository.save(THEME_1);
+        reservationTimeRepository.save(RESERVATION_TIME_1);
+        token = LoginUtils.loginAndGetToken(USER_1);
+    }
 
-        memberRepository.save(member);
-
-        Map<String, String> params = new HashMap<>();
-        params.put("email", member.getEmail().getEmail());
-        params.put("password", member.getPassword());
-
-        Response response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().response();
-
-        token = response.getCookie("token");
+    @AfterEach
+    void afterEach() {
+        LoginUtils.logout(USER_1);
     }
 
     @Test
@@ -76,11 +74,13 @@ class ReservationControllerTest {
     @Test
     @DisplayName("저장된 reservation을 모두 반환한다.")
     void getReservations() {
+        reservationRepository.save(RESERVATION_1);
+
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(1));
     }
 
     @Test
@@ -101,24 +101,27 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(3))
-                .header("Location", "/reservations/3");
+                .body("id", is(1))
+                .header("Location", "/reservations/1");
     }
 
     @Test
     @DisplayName("Reservation을 삭제한다.")
     void deleteReservation() {
-        //when
+        Reservation saved = reservationRepository.save(RESERVATION_1);
+        int size = reservationRepository.findAll().size();
+        System.out.println("reservationRepository.findAll() = " + reservationRepository.findAll());
+        System.out.println("size = " + size);
+
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + saved.getId())
                 .then().log().all()
                 .statusCode(204);
 
-        //then
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(size - 1));
     }
 }

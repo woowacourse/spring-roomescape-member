@@ -81,8 +81,8 @@ public class ThemeH2Repository implements ThemeRepository{
                 "GROUP BY t.id " +
                 "ORDER BY COUNT " +
                 "DESC LIMIT ?";
-        String from = LocalDate.now().minusDays(beforeDays).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String to = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String from = LocalDate.now().minusDays(beforeDays).format(DateTimeFormatter.ISO_DATE);
+        String to = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
         return jdbcTemplate.query(sql, getThemeRowMapper(), from, to, count);
     }
 

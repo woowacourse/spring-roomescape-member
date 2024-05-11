@@ -64,10 +64,10 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("최근 인기 테마를 가져온다.")
     void findPopularThemes() {
-        reservationRepository.save(new Reservation(MEMBER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_1, THEME_5));
-        reservationRepository.save(new Reservation(MEMBER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_2, THEME_5));
-        reservationRepository.save(new Reservation(MEMBER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_3, THEME_5));
-        reservationRepository.save(new Reservation(MEMBER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_2, THEME_4));
+        reservationRepository.save(new Reservation(USER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_1, THEME_5));
+        reservationRepository.save(new Reservation(USER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_2, THEME_5));
+        reservationRepository.save(new Reservation(USER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_3, THEME_5));
+        reservationRepository.save(new Reservation(USER_1, LocalDate.now().minusDays(1), RESERVATION_TIME_2, THEME_4));
 
         List<Theme> popularTheme = themeH2Repository.findPopularThemes(3, 10);
 

@@ -9,7 +9,7 @@ public class Reservation {
 
     private final Long id;
     private final Member member;
-    private final LocalDate date;
+    private final LocalDate date; // TODO 도메인화 고려
     private final ReservationTime time;
     private final Theme theme;
 

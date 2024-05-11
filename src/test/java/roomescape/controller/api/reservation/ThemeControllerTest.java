@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.is;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ThemeControllerTest {
+
     @Test
     @DisplayName("테마를 추가한다.")
     void addTheme() {

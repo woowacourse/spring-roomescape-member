@@ -28,7 +28,7 @@ class ReservationH2RepositoryTest {
     @DisplayName("Reservation을 저장하면 id가 포함된 Reservation이 반환된다.")
     void save() {
         Reservation reservation = new Reservation(
-                MEMBER_1,
+                USER_1,
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime(),
                 THEME_2
@@ -42,11 +42,13 @@ class ReservationH2RepositoryTest {
     @Test
     @DisplayName("Reservation을 제거한다.")
     void delete() {
-        reservationH2Repository.delete(RESERVATION_1.getId());
+        Reservation saved = reservationH2Repository.save(RESERVATION_1);
+        Integer beforeCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
+        reservationH2Repository.delete(saved.getId());
+        Integer afterCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
-        assertThat(count).isOne();
+        assertThat(afterCount).isEqualTo(beforeCount - 1);
     }
 
     @Test
