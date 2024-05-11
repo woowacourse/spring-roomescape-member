@@ -80,8 +80,7 @@ public class ReservationService {
     public List<ReservationResponse> findReservations(ReservationFilteringRequest request) {
         List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndDateRange(
                 request.themeId(), request.memberId(), request.dateFrom(), request.dateTo());
-        return reservations
-                .stream()
+        return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

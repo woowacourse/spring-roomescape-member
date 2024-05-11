@@ -62,6 +62,7 @@ class JdbcThemeRepositoryTest {
     @Sql("/reservation.sql")
     void 일주일_기준_예약이_많은_순서대로_테마를_반환한다() {
         List<Theme> popularThemes = themeRepository.findPopularThemesForWeekLimit10(LocalDate.parse("2024-05-02"));
+
         assertAll(
                 () -> assertThat(popularThemes).hasSize(3),
                 () -> assertThat(popularThemes.get(0).getId()).isEqualTo(1),
