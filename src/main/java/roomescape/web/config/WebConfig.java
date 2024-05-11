@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.service.auth.AuthService;
 import roomescape.web.security.AuthorizeAdminInterceptor;
 import roomescape.web.security.CookieTokenExtractor;
-import roomescape.web.security.MemberIdArgumentResolver;
+import roomescape.web.security.MemberProfileArgumentResolver;
 
 @Configuration
 class WebConfig implements WebMvcConfigurer {
@@ -24,7 +24,7 @@ class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new MemberIdArgumentResolver(authService, extractor));
+        resolvers.add(new MemberProfileArgumentResolver(authService, extractor));
     }
 
     @Override

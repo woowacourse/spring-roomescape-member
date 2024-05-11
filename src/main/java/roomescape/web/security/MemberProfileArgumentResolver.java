@@ -7,22 +7,21 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.service.auth.AuthService;
-import roomescape.service.auth.AuthenticatedMemberProfile;
 import roomescape.service.auth.UnauthorizedException;
 
-public class MemberIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class MemberProfileArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
     private final CookieTokenExtractor extractor;
 
-    public MemberIdArgumentResolver(AuthService authService, CookieTokenExtractor extractor) {
+    public MemberProfileArgumentResolver(AuthService authService, CookieTokenExtractor extractor) {
         this.authService = authService;
         this.extractor = extractor;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticatedMemberId.class);
+        return parameter.hasParameterAnnotation(Authenticated.class);
     }
 
     @Override
@@ -38,8 +37,6 @@ public class MemberIdArgumentResolver implements HandlerMethodArgumentResolver {
             throw new UnauthorizedException();
         }
 
-        AuthenticatedMemberProfile profile = authService.authorize(cookieToken);
-
-        return profile.id();
+        return authService.authorize(cookieToken);
     }
 }
