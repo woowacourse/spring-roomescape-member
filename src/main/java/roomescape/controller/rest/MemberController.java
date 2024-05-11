@@ -46,8 +46,13 @@ public class MemberController { // TODO: 이름 고민해보기. member? login? 
     @GetMapping("/check")
     public ResponseEntity<LoginResponse> readLoggedInMemberInfo(HttpServletRequest request) {
         // TODO: 책임 소재 고민
-        // TODO: 요청에 cookie가 존재하지 않는 경우 request.getCookies() array가 null이 되어 NPE 발생..
-        String token = Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            // TODO: 409 Conflict 터뜨리면 안될듯?
+            throw new ApplicationException("쿠키가 존재하지 않습니다.");
+        }
+
+        String token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException("쿠키에 토큰 정보가 존재하지 않습니다."))
