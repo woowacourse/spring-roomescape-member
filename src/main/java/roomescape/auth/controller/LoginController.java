@@ -11,15 +11,18 @@ import roomescape.auth.dto.AuthInformationResponse;
 import roomescape.auth.dto.CreateTokenRequest;
 import roomescape.auth.dto.CreateTokenResponse;
 import roomescape.auth.service.AuthService;
-import roomescape.ui.LoginMemberArgumentResolver.LoginMemberName;
+import roomescape.member.service.MemberService;
+import roomescape.ui.LoginMemberArgumentResolver.LoginMemberId;
 
 @RestController
 public class LoginController {
 
     private final AuthService authService;
+    private final MemberService memberService;
 
-    public LoginController(AuthService authService) {
+    public LoginController(AuthService authService, MemberService memberService) {
         this.authService = authService;
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
@@ -33,7 +36,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<AuthInformationResponse> checkLogin(@LoginMemberName String name) {
+    public ResponseEntity<AuthInformationResponse> checkLogin(@LoginMemberId Long id) {
+        String name = memberService.getMemberNameById(id).name();
         return ResponseEntity.ok().body(new AuthInformationResponse(name));
     }
 }

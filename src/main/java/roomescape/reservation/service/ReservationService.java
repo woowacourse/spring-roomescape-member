@@ -6,6 +6,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import roomescape.member.model.Member;
+import roomescape.member.repositoy.JdbcMemberRepository;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -23,26 +25,32 @@ public class ReservationService {
     private final JdbcReservationRepository reservationRepository;
     private final JdbcReservationTimeRepository reservationTimeRepository;
     private final JdbcThemeRepository themeRepository;
+    private final JdbcMemberRepository memberRepository;
 
     public ReservationService(
             final JdbcReservationRepository reservationRepository,
             final JdbcReservationTimeRepository reservationTimeRepository,
-            final JdbcThemeRepository themeRepository
+            final JdbcThemeRepository themeRepository,
+            final JdbcMemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public CreateReservationResponse createReservation(final CreateReservationRequest createReservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(createReservationRequest.timeId())
+    public CreateReservationResponse createReservation(final CreateReservationRequest request, Long memberId) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
 
-        Theme theme = themeRepository.findById(createReservationRequest.themeId())
+        Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
 
-        validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
-        Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다."));
+
+        validateReservationDateTime(request.date(), reservationTime.getTime());
+        Reservation reservation = new Reservation(null, member, request.date(), reservationTime, theme);
 
         if (reservationRepository.existsByDateAndTimeAndTheme(
                 reservation.getDate(), reservationTime.getId(), theme.getId())) {

@@ -23,7 +23,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginMemberName.class);
+        return parameter.hasParameterAnnotation(LoginMemberId.class);
     }
 
     @Override
@@ -35,11 +35,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     ) {
         JwtTokenExtractor jwtTokenExtractor = new JwtTokenExtractor((HttpServletRequest) webRequest.getNativeRequest());
         String token = jwtTokenExtractor.extractTokenFromCookie();
-        return jwtTokenProvider.getPayloadClaim(token, "name");
+        return jwtTokenProvider.getPayloadClaim(token, "memberId", Long.class);
     }
 
     @Target(ElementType.PARAMETER)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface LoginMemberName {
+    public @interface LoginMemberId {
     }
 }
