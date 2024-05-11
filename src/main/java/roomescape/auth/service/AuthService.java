@@ -7,7 +7,6 @@ import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.LoginResponse;
 import roomescape.auth.service.dto.SignUpRequest;
 import roomescape.exception.InvalidMemberException;
-import roomescape.exception.InvalidReservationException;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -43,7 +42,7 @@ public class AuthService {
     }
 
     private void validateEmail(String email) {
-        if(memberRepository.existsByEmail(email)){
+        if (memberRepository.existsByEmail(email)) {
             throw new InvalidMemberException("이미 가입된 이메일입니다.");
         }
     }

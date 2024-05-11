@@ -40,7 +40,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public LoginCheckResponse check(HttpServletRequest httpServletRequest){
+    public LoginCheckResponse check(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
         String token = extractTokenFromCookie(cookies);
         return authService.check(token);

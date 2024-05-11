@@ -5,11 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.InvalidReservationException;
-import roomescape.member.domain.Member;
-import roomescape.member.domain.Role;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 

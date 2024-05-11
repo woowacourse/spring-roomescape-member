@@ -12,7 +12,6 @@ import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.SignUpRequest;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -21,7 +20,7 @@ class AuthControllerTest {
     private int port;
 
     @BeforeEach
-    void init(){
+    void init() {
         RestAssured.port = port;
     }
 
@@ -31,14 +30,14 @@ class AuthControllerTest {
         //given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new SignUpRequest("lini","lini@email.com","lini123"))
+                .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
                 .when().post("/signup")
                 .then().log().all();
 
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new LoginRequest("lini123","lini@email.com"))
+                .body(new LoginRequest("lini123", "lini@email.com"))
                 .when().post("/login")
                 .then().log().all()
                 .assertThat().statusCode(200);
@@ -49,10 +48,10 @@ class AuthControllerTest {
     void signUp() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new SignUpRequest("lini","lini@email.com","lini123"))
+                .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
                 .when().post("/signup")
                 .then().log().all()
-                .assertThat().statusCode(201).header("location","/login");
+                .assertThat().statusCode(201).header("location", "/login");
     }
 
     @DisplayName("인증 조회 성공 테스트")
@@ -61,7 +60,7 @@ class AuthControllerTest {
         //given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new SignUpRequest("lini","lini@email.com","lini123"))
+                .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
                 .when().post("/signup")
                 .then().log().all();
 
@@ -76,6 +75,6 @@ class AuthControllerTest {
                 .cookie(token)
                 .when().get("/login/check")
                 .then().log().all()
-                .assertThat().statusCode(200).body("name",is("lini"));
+                .assertThat().statusCode(200).body("name", is("lini"));
     }
 }

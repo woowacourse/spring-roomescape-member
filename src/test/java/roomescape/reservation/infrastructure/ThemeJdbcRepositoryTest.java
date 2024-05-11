@@ -17,9 +17,6 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
-import roomescape.reservation.infrastructure.ReservationJdbcRepository;
-import roomescape.reservation.infrastructure.ReservationTimeJdbcRepository;
-import roomescape.reservation.infrastructure.ThemeJdbcRepository;
 
 import java.util.List;
 

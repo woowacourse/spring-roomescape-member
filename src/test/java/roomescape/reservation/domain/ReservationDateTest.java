@@ -3,7 +3,6 @@ package roomescape.reservation.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.InvalidReservationException;
-import roomescape.reservation.domain.ReservationDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 

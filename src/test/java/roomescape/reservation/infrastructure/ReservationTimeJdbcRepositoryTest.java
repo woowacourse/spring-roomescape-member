@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.exception.InvalidReservationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
@@ -16,10 +17,6 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
-import roomescape.exception.InvalidReservationException;
-import roomescape.reservation.infrastructure.ReservationJdbcRepository;
-import roomescape.reservation.infrastructure.ReservationTimeJdbcRepository;
-import roomescape.reservation.infrastructure.ThemeJdbcRepository;
 
 import java.util.List;
 
