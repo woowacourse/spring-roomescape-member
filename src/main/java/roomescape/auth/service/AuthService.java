@@ -16,9 +16,9 @@ import roomescape.member.domain.repository.MemberRepository;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final TokenProvider tokenProvider;
+    private final TokenProvider<String> tokenProvider;
 
-    public AuthService(MemberRepository memberRepository, TokenProvider tokenProvider) {
+    public AuthService(MemberRepository memberRepository, TokenProvider<String> tokenProvider) {
         this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
     }
@@ -34,10 +34,7 @@ public class AuthService {
     }
 
     public AuthInfo fetchByToken(String token) {
-        if (!tokenProvider.isToken(token)) {
-            throw new BusinessException(ErrorType.INVALID_TOKEN);
-        }
-        Member member = memberRepository.findBy(tokenProvider.getPayload(token))
+        Member member = memberRepository.findBy(tokenProvider.getPayload(token).getValue())
                 .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_NOT_FOUND));
         return AuthInfo.of(member);
     }

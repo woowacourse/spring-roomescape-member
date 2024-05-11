@@ -1,9 +1,11 @@
 package roomescape.auth.service;
 
-public interface TokenProvider {
-    String createAccessToken(String payload);
+import roomescape.auth.domain.Payload;
 
-    String getPayload(String token);
+public interface TokenProvider<T> {
+    String createAccessToken(T payload);
+
+    Payload<T> getPayload(String token);
 
     boolean isToken(String token);
 }

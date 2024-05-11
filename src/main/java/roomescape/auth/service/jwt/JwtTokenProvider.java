@@ -7,10 +7,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.stereotype.Component;
+import roomescape.auth.domain.Payload;
 import roomescape.auth.service.TokenProvider;
 
 @Component
-public class JwtTokenProvider implements TokenProvider {
+public class JwtTokenProvider implements TokenProvider<String> {
 
     private final JwtProperties jwtProperties;
 
@@ -18,6 +19,7 @@ public class JwtTokenProvider implements TokenProvider {
         this.jwtProperties = jwtProperties;
     }
 
+    @Override
     public String createAccessToken(String payload) {
         Claims claims = Jwts.claims().setSubject(payload);
         Date now = new Date();
@@ -31,14 +33,18 @@ public class JwtTokenProvider implements TokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token) {
-        return Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token).getBody().getSubject();
+    @Override
+    public Payload<String> getPayload(String token) {
+        return new Payload<>(
+                Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token).getBody().getSubject(),
+                () -> isToken(token)
+        );
     }
 
+    @Override
     public boolean isToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token);
-
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;

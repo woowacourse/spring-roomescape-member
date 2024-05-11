@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.auth.domain.Payload;
 import roomescape.auth.service.TokenProvider;
 
 @DisplayName("JWT 제공 유틸 테스트")
@@ -24,10 +25,10 @@ class JwtTokenProviderTest {
         String accessToken = tokenProvider.createAccessToken(email);
 
         //when
-        String payload = tokenProvider.getPayload(accessToken);
+        Payload payload = tokenProvider.getPayload(accessToken);
 
         //then
-        assertThat(payload).isEqualTo(email);
+        assertThat(payload.getValue()).isEqualTo(email);
     }
 
     @DisplayName("토큰 검증에 성공한다.")

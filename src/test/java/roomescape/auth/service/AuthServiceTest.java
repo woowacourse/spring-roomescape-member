@@ -25,7 +25,7 @@ import roomescape.reservation.dao.FakeMemberDao;
 class AuthServiceTest {
 
     MemberRepository memberRepository;
-    TokenProvider tokenProvider;
+    TokenProvider<String> tokenProvider;
     AuthService authService;
 
     @BeforeEach
@@ -49,7 +49,7 @@ class AuthServiceTest {
 
         //then
         assertThat(tokenProvider.isToken(token.accessToken())).isTrue();
-        assertThat(tokenProvider.getPayload(token.accessToken())).isEqualTo(member.getEmail());
+        assertThat(tokenProvider.getPayload(token.accessToken()).getValue()).isEqualTo(member.getEmail());
     }
 
     @DisplayName("토큰으로 사용자 정보 조회에 성공한다.")
@@ -78,7 +78,7 @@ class AuthServiceTest {
         //when & then
         assertThatThrownBy(() -> authService.fetchByToken(invalidToken))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+                .hasMessage(ErrorType.SECURITY_EXCEPTION.getMessage());
     }
 
     @DisplayName("사용자 회원가입에 성공한다.")

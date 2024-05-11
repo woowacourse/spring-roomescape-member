@@ -4,9 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import roomescape.auth.domain.Payload;
 import roomescape.auth.service.TokenProvider;
 
-public class FakeTokenProvider implements TokenProvider {
+public class FakeTokenProvider implements TokenProvider<String> {
     Map<String, String> tokens = new HashMap<>();
 
     @Override
@@ -23,8 +24,8 @@ public class FakeTokenProvider implements TokenProvider {
     }
 
     @Override
-    public String getPayload(String token) {
-        return tokens.get(token);
+    public Payload<String> getPayload(String token) {
+        return new Payload<>(tokens.get(token), () -> isToken(token));
     }
 
     @Override
