@@ -11,7 +11,7 @@ import roomescape.controller.member.dto.LoginMember;
 public class UserPageController {
 
     @GetMapping
-    public String showPopularTheme() {
+    public String showPopularThemePage() {
         return "/index";
     }
 
@@ -23,7 +23,7 @@ public class UserPageController {
     @GetMapping("/login")
     public String showLoginPage(final LoginMember loginMember) {
         if (loginMember != null) {
-            return showPopularTheme();
+            return showPopularThemePage();
         }
         return "/login";
     }
@@ -33,6 +33,6 @@ public class UserPageController {
         final Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
-        return "/index";
+        return showPopularThemePage();
     }
 }
