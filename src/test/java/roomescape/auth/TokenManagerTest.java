@@ -38,4 +38,13 @@ class TokenManagerTest {
         long memberId = tokenManager.getMemberIdFromCookies(cookies);
         assertThat(memberId).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("쿠키에 토큰 값이 없는 경우, 예외를 발생한다.")
+    void cookieWithoutTokenTest() {
+        Cookie[] cookies = {};
+        assertThatCode(() -> tokenManager.getMemberIdFromCookies(cookies))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("토큰 값이 없습니다.");
+    }
 }

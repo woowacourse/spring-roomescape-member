@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,16 +16,16 @@ import roomescape.domain.member.Member;
 public class TokenManager {
     private static final String TOKEN_COOKIE_NAME = "token";
 
-    private final String secret;
+    private final SecretKey secretKey;
 
     public TokenManager(@Value("${jwt.secret}") String secret) {
-        this.secret = secret;
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public TokenResponse createToken(Member member) {
         String token = Jwts.builder()
                 .claim("memberId", member.getId())
-                .signWith(getSecretKey())
+                .signWith(secretKey)
                 .compact();
         return new TokenResponse(token);
     }
@@ -34,7 +35,7 @@ public class TokenManager {
             throw new IllegalArgumentException("토큰 값이 없습니다.");
         }
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSecretKey())
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -47,15 +48,10 @@ public class TokenManager {
     }
 
     private String extractTokenFromCookies(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
-                return cookie.getValue();
-            }
-        }
-        return "";
-    }
-
-    private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        Cookie tokenCookie = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(TOKEN_COOKIE_NAME))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("토큰 값이 없습니다."));
+        return tokenCookie.getValue();
     }
 }
