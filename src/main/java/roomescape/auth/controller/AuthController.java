@@ -1,11 +1,15 @@
 package roomescape.auth.controller;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.domain.Token;
+import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.service.AuthService;
 
@@ -28,9 +32,14 @@ public class AuthController {
                 .build();
     }
 
+    @GetMapping("/login/check")
+    public LoginCheckResponse loginCheck(@CookieValue(name = "token", required = false) Cookie cookie) {
+        return authService.checkLogin(cookie);
+    }
+
     private ResponseCookie setCookie(Token token) {
         return ResponseCookie.from("token", token.getToken())
-                .path("/reservation")
+                .path("/")
                 .sameSite("Strict")
                 .httpOnly(true)
                 .maxAge(60 * 60 * 24)
