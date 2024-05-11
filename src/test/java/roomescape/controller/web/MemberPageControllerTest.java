@@ -38,4 +38,13 @@ class MemberPageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("회원가입 페이지로 이동한다.")
+    void moveToSignupPage() {
+        RestAssured.given().log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
