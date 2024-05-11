@@ -42,6 +42,10 @@ public class Member {
         return this.password.equals(password);
     }
 
+    public boolean isAdmin() {
+        return role.isAdmin();
+    }
+
     public Long getId() {
         return id;
     }

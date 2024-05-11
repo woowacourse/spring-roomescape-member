@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.auth.AccessDeniedException;
 import roomescape.auth.AuthorizationException;
 import roomescape.global.dto.ErrorResponse;
 
@@ -56,6 +57,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleAuthorizationException(AuthorizationException e) {
+        logger.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleForbiddenException(AccessDeniedException e) {
         logger.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
