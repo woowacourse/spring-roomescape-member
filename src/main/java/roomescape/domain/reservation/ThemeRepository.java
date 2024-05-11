@@ -11,10 +11,6 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    default Theme getById(long id) {
-        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
-    }
-
     List<Theme> findAll();
 
     void deleteById(long id);
@@ -22,4 +18,8 @@ public interface ThemeRepository {
     List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, int limit);
 
     boolean existsByTimeId(long id);
+
+    default Theme getById(long id) {
+        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
+    }
 }

@@ -11,10 +11,6 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(long id);
 
-    default Reservation getById(long id) {
-        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약입니다."));
-    }
-
     List<Reservation> findAll();
 
     void deleteById(long id);
@@ -25,4 +21,8 @@ public interface ReservationRepository {
 
     List<Reservation> findByMemberAndThemeBetweenDates(long memberId, long themeId,
                                                        LocalDate startDate, LocalDate endDate);
+
+    default Reservation getById(long id) {
+        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약입니다."));
+    }
 }
