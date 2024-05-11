@@ -3,7 +3,6 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.AuthResponse;
-import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
 import roomescape.infrastructure.JwtTokenProvider;
 

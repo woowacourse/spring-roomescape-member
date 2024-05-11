@@ -13,7 +13,6 @@ import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {

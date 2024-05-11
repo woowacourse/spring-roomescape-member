@@ -15,12 +15,15 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    @Autowired
-    private AuthenticatedUserArgumentResolver authenticatedUserArgumentResolver;
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private MemberService memberService;
+    private final AuthenticatedUserArgumentResolver authenticatedUserArgumentResolver;
+    private final AuthService authService;
+    private final MemberService memberService;
+
+    public WebMvcConfiguration(AuthenticatedUserArgumentResolver authenticatedUserArgumentResolver, AuthService authService, MemberService memberService) {
+        this.authenticatedUserArgumentResolver = authenticatedUserArgumentResolver;
+        this.authService = authService;
+        this.memberService = memberService;
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
