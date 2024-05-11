@@ -10,7 +10,7 @@ import roomescape.domain.member.Member;
 import java.util.Date;
 
 @Component
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.properties") // TODO 불필요한 propertysource 제거
 public class TokenManager {
     private final long expirationTime;
     private final String secretKey;
@@ -37,7 +37,7 @@ public class TokenManager {
                         .setSubject(member.getId().toString())
                         .setIssuedAt(now)
                         .setExpiration(expiration)
-                        .claim("name", member.getName())
+                        .claim("name", member.getName()) // TODO 토큰에 이름, role, email을 넣는 이유 생각해보기
                         .claim("role", member.getRole())
                         .claim("email", member.getEmail())
                         .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))

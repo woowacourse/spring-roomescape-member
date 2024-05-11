@@ -9,6 +9,7 @@ public record MemberResponse(long id, String name) {
         this(member.getId(), member.getName());
     }
 
+    // TODO 응답객체 listOf 제거
     public static List<MemberResponse> listOf(List<Member> members) {
         return members.stream().map(MemberResponse::new).toList();
     }

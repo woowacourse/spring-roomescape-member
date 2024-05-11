@@ -14,9 +14,9 @@ import roomescape.service.LoginService;
 import roomescape.service.MemberService;
 
 @RestController
-@RequestMapping
+@RequestMapping // TODO 불필요한 로그인 매핑 삭제
 public class LoginController {
-    private final CookieManager cookieManager;
+    private final CookieManager cookieManager; // TODO 세가지 객체를 감싸는 하나의 서비스 생각해보기
     private final LoginService loginService;
     private final MemberService memberService;
 
