@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.reservation.dto.request.ReservationFilterRequest;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
+import roomescape.auth.exception.AuthenticationException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
@@ -16,6 +17,7 @@ import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
 import roomescape.domain.reservation.Theme;
 import roomescape.domain.reservation.ThemeRepository;
+import roomescape.domain.role.RoleRepository;
 
 
 @Service
@@ -24,17 +26,20 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final RoleRepository roleRepository;
     private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
                               ThemeRepository themeRepository,
                               MemberRepository memberRepository,
+                              RoleRepository roleRepository,
                               Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.roleRepository = roleRepository;
         this.clock = clock;
     }
 
@@ -67,8 +72,12 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteById(long id) {
+    public void deleteById(long memberId, long id) {
         Reservation reservation = reservationRepository.getById(id);
-        reservationRepository.deleteById(reservation.getId());
+        if (roleRepository.isAdminByMemberId(memberId) || reservation.isOwnedBy(memberId)) {
+            reservationRepository.deleteById(reservation.getId());
+            return;
+        }
+        throw new AuthenticationException();
     }
 }

@@ -21,6 +21,10 @@ public class Member {
         return new Member(id, name, email, password);
     }
 
+    public boolean hasId(long memberId) {
+        return id.equals(memberId);
+    }
+
     public Long getId() {
         return id;
     }

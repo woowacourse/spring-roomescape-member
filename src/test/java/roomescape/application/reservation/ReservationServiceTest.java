@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.ServiceTest;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
+import roomescape.auth.exception.AuthenticationException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberFixture;
 import roomescape.domain.member.MemberRepository;
@@ -24,6 +25,9 @@ import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
 import roomescape.domain.reservation.Theme;
 import roomescape.domain.reservation.ThemeRepository;
+import roomescape.domain.role.MemberRole;
+import roomescape.domain.role.Role;
+import roomescape.domain.role.RoleRepository;
 
 @ServiceTest
 class ReservationServiceTest {
@@ -41,6 +45,9 @@ class ReservationServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private Clock clock;
@@ -146,7 +153,29 @@ class ReservationServiceTest {
     @Test
     void shouldDeleteReservationWhenReservationExist() {
         Reservation reservation = saveReservation();
-        reservationService.deleteById(reservation.getId());
+        Member member = reservation.getMember();
+        reservationService.deleteById(member.getId(), reservation.getId());
+
+        List<Reservation> reservations = reservationRepository.findAll();
+        assertThat(reservations).isEmpty();
+    }
+
+    @DisplayName("다른 사람의 예약을 삭제하는 경우, 예외를 반환한다.")
+    @Test
+    void shouldThrowExceptionWhenDeleteOtherMemberReservation() {
+        Reservation reservation = saveReservation();
+        Member otherMember = memberRepository.save(MemberFixture.createMember("other"));
+        assertThatCode(() -> reservationService.deleteById(otherMember.getId(), reservation.getId()))
+                .isInstanceOf(AuthenticationException.class);
+    }
+
+    @DisplayName("관리자가 다른 사람의 예약을 삭제하는 경우, 예약이 삭제된다.")
+    @Test
+    void shouldDeleteReservationWhenAdmin() {
+        Reservation reservation = saveReservation();
+        Member admin = memberRepository.save(new Member("admin", "admin@admin.com", "12341234"));
+        roleRepository.save(new MemberRole(admin, Role.ADMIN));
+        reservationService.deleteById(admin.getId(), reservation.getId());
 
         List<Reservation> reservations = reservationRepository.findAll();
         assertThat(reservations).isEmpty();
@@ -155,7 +184,7 @@ class ReservationServiceTest {
     @DisplayName("예약 삭제 요청시 예약이 존재하지 않으면 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDoesNotExist() {
-        assertThatCode(() -> reservationService.deleteById(99L))
+        assertThatCode(() -> reservationService.deleteById(1L, 99L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
     }
