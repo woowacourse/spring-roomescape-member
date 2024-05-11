@@ -1,0 +1,26 @@
+# RESERVATION
+
+### GET
+GET http://localhost:8080/reservations
+
+### POST
+POST http://localhost:8080/reservations
+Content-Type: application/json
+
+{
+  "name": "pond",
+  "date": "2021-03-01",
+  "timeId": 1
+}
+
+
+### GET
+GET http://localhost:8080/times
+
+### POST
+POST http://localhost:8080/times
+Content-Type: application/json
+
+{
+  "startAt": "10:00"
+}
