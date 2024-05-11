@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.request.MemberRegisterRequest;
-import roomescape.application.member.dto.response.MemberResponse;
 
 class AuthAcceptanceTest extends AcceptanceTest {
 
@@ -13,10 +12,7 @@ class AuthAcceptanceTest extends AcceptanceTest {
     @DisplayName("사용자가 로그인한다.")
     void loginTest() {
         MemberRegisterRequest request = new MemberRegisterRequest("aru", "aru@test.com", "12341234");
-        long memberId = fixture.registerMember(request)
-                .body()
-                .as(MemberResponse.class)
-                .id();
+        fixture.registerMember(request);
 
         RestAssured.given().log().all()
                 .contentType("application/json")
