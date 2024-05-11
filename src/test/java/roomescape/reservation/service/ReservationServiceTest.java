@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidDateException;
+import roomescape.exception.InvalidTimeException;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
@@ -43,11 +44,21 @@ public class ReservationServiceTest {
     @Test
     @DisplayName("지난 날짜에 대한 예약은 할 수 없다.")
     void validateFutureDateReservationTest() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.MIN);
         Reservation reservation = new Reservation(1L, member, LocalDate.of(2000, 1, 1), reservationTime, theme);
 
         assertThatThrownBy(() -> reservationService.create(reservation))
                 .isInstanceOf(InvalidDateException.class);
+    }
+
+    @Test
+    @DisplayName("지난 시간에 대한 예약은 할 수 없다.")
+    void validateFutureTimeReservationTest() {
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.MIN);
+        Reservation reservation = new Reservation(1L, member, LocalDate.of(2024, 5, 11), reservationTime, theme);
+
+        assertThatThrownBy(() -> reservationService.create(reservation))
+                .isInstanceOf(InvalidTimeException.class);
     }
 
     @Test

@@ -1,5 +1,5 @@
 INSERT INTO reservation_time (start_at)
-VALUES ('09:00'),
+VALUES ('00:00'),
        ('10:00'),
        ('11:00'),
        ('12:00'),
