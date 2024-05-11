@@ -147,7 +147,7 @@ function register(event) {
       });
 
   // 폼 제출에 의한 페이지 리로드 방지
-  // event.preventDefault();
+  event.preventDefault();
 }
 
 function base64DecodeUnicode(str) {
