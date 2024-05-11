@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,9 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<Void> createMember(@RequestBody MemberCreateRequest request) {
-        service.createMember(request);
-        return ResponseEntity.noContent().build();
+        MemberResponse response = service.createMember(request);
+
+        URI location = URI.create("/members/" + response.id());
+        return ResponseEntity.created(location).build();
     }
 }

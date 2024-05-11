@@ -41,8 +41,10 @@ public class MemberService {
         return MemberResponse.from(member);
     }
 
-    public void createMember(MemberCreateRequest request) {
+    public MemberResponse createMember(MemberCreateRequest request) {
         Member member = request.createMember();
-        memberDao.createMember(member, request.password());
+        member = memberDao.createMember(member, request.password());
+
+        return MemberResponse.from(member);
     }
 }
