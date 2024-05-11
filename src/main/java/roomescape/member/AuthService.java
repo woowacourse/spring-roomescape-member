@@ -8,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberDao;
 import roomescape.member.request.LoginRequest;
-import roomescape.member.response.LoginResponse;
 import roomescape.member.response.MemberResponse;
 
 @Service
@@ -30,14 +29,12 @@ public class AuthService {
         return memberDao.findMemberByEmail(email);
     }
 
-    public LoginResponse createToken(LoginRequest loginRequest) {
+    public String createToken(LoginRequest loginRequest) {
         if (checkInvalidLogin(loginRequest.email(), loginRequest.password())) {
             throw new IllegalArgumentException("login failed");
         }
         Member member = findMemberByEmail(loginRequest.email());
-        String accessToken = jwtTokenProvider.createToken(member);
-
-        return new LoginResponse(accessToken);
+        return jwtTokenProvider.createToken(member);
     }
 
     public MemberResponse findMemberNameByToken(String token) {
