@@ -41,6 +41,7 @@ public class ReservationTimeController {
             .body(new CreateTimeResponse(id, newReservationTime.getStartAt()));
     }
 
+    // TODO: 일반 사용자는 시간을 삭제할 수 없도록 수정
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationTimeService.delete(id);

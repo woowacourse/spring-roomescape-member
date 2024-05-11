@@ -164,6 +164,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        // TODO: 동적 쿼리 구성
+
         String sql = """
             SELECT
                 r.id AS reservation_id,
