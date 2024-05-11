@@ -45,6 +45,11 @@ public class ReservationService {
         return new ReservationResponses(reservationResponses);
     }
 
+    public ReservationResponse findByReservationId(Long id) {
+        Reservation reservation = reservationRepository.findByReservationId(id);
+        return ReservationResponse.from(reservation);
+    }
+
     public AvailableTimeResponses findByDateAndThemeId(LocalDate date, Long themeId) {
         List<Long> foundReservations = reservationRepository
                 .findByDateAndThemeId(date, themeId)

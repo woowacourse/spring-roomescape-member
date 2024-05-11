@@ -34,6 +34,13 @@ public class ReservationController {
                 .body(reservationResponses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationResponse> findByReservationId(@PathVariable Long id) {
+        ReservationResponse reservationResponse = reservationService.findByReservationId(id);
+        return ResponseEntity.ok()
+                .body(reservationResponse);
+    }
+
     @GetMapping("/available")
     public ResponseEntity<AvailableTimeResponses> findAllAvailableTimes(
             @RequestParam LocalDate date, @RequestParam String themeId) {
