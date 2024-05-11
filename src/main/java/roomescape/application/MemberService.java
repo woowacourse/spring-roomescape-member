@@ -2,32 +2,30 @@ package roomescape.application;
 
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.request.TokenCreationRequest;
-import roomescape.application.dto.response.MemberNameResponse;
+import roomescape.application.dto.response.MemberResponse;
+import roomescape.application.dto.response.TokenResponse;
+import roomescape.auth.TokenProvider;
 import roomescape.domain.user.User;
 import roomescape.domain.user.repository.UserRepository;
-import roomescape.infrastructure.JwtProvider;
 
 @Service
-public class AuthService {
+public class MemberService {
     private static final String WRONG_EMAIL_OR_PASSWORD_MESSAGE = "등록되지 않은 이메일이거나 비밀번호가 틀렸습니다.";
 
-    private final JwtProvider jwtProvider;
+    private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
 
-    public AuthService(JwtProvider jwtProvider, UserRepository userRepository) {
-        this.jwtProvider = jwtProvider;
+    public MemberService(TokenProvider tokenProvider, UserRepository userRepository) {
+        this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
     }
 
-    public String createToken(TokenCreationRequest request) {
-        User user = getUser(request);
-        validatePassword(user, request.password());
-        return jwtProvider.createToken(user.getId());
-    }
-
-    private User getUser(TokenCreationRequest request) {
-        return userRepository.findByEmail(request.email())
+    public TokenResponse authenticateMember(TokenCreationRequest request) {
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException(WRONG_EMAIL_OR_PASSWORD_MESSAGE));
+        validatePassword(user, request.password());
+        String token = tokenProvider.createToken(user.getId());
+        return new TokenResponse(token);
     }
 
     private void validatePassword(User user, String password) {
@@ -36,10 +34,9 @@ public class AuthService {
         }
     }
 
-    public MemberNameResponse getMemberName(String token) {
-        long memberId = jwtProvider.parseToken(token);
-        User member = userRepository.findById(memberId)
+    public MemberResponse getMemberById(long id) {
+        User member = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        return new MemberNameResponse(member.getName());
+        return new MemberResponse(member.getName());
     }
 }
