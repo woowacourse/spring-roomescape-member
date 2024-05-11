@@ -7,3 +7,6 @@ spring:
       platform: h2
       schema-locations: classpath:/schema.sql
       data-locations: classpath:/data.sql
+
+jwt:
+  secret: Idontcareifthekeyisstolen

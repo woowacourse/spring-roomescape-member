@@ -1,5 +1,6 @@
 package roomescape.web.exception;
 
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleAuthorizationException(AuthorizationException e) {
         String errorMessage = "로그인이 필요합니다.";
+        return new ResponseEntity<>(new ErrorResponse(errorMessage), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleSignatureException(SignatureException e) {
+        String errorMessage = "유효하지 않은 토큰입니다.";
         return new ResponseEntity<>(new ErrorResponse(errorMessage), HttpStatus.UNAUTHORIZED);
     }
 
