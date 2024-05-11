@@ -10,15 +10,17 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.service.exception.UnauthorizedException;
+import roomescape.utils.CookieUtils;
 
 @Service
 public class JwtService {
 
     private static final String SECRET_KEY = "011070243be2a70035923d1cf8b65cf39a32a4eb8ae053f31b0f157d0a45bfa8";
+    private static final String TOKEN = "token";
 
     public String generateToken(Member member) {
         return Jwts.builder()
@@ -30,16 +32,12 @@ public class JwtService {
     }
 
     public String extractToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
+        Optional<Cookie> cookie = CookieUtils.findCookie(request, TOKEN);
+        if (cookie.isEmpty()) {
             throw new UnauthorizedException("권한이 없습니다. 로그인을 다시 시도해주세요.");
         }
 
-        return Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
-                .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("권한이 없습니다. 로그인을 다시 시도해주세요."))
-                .getValue();
+        return cookie.get().getValue();
     }
 
     public Claims verifyToken(String token) {

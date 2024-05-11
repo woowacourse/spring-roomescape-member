@@ -5,13 +5,18 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Role;
 import roomescape.service.JwtService;
+import roomescape.utils.CookieUtils;
 
 @Component
 public class JwtAuthInterceptor implements HandlerInterceptor {
+
+    private static final String AUTHORITY = "role";
+    private static final String TOKEN = "token";
 
     private final JwtService jwtService;
 
@@ -22,21 +27,20 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
-        Cookie[] cookies = request.getCookies();
+        Optional<Cookie> cookie = CookieUtils.findCookie(request, TOKEN);
 
-        if (cookies == null) {
+        if (cookie.isEmpty()) {
             response.sendRedirect("/login");
             return false;
         }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                Claims claims = jwtService.verifyToken(cookie.getValue());
-                String role = claims.get("role", String.class);
-                if (Role.getRole(role) == Role.ADMIN) {
-                    return true;
-                }
-            }
+
+        Claims claims = jwtService.verifyToken(cookie.get().getValue());
+        String role = claims.get(AUTHORITY, String.class);
+
+        if (Role.getRole(role) == Role.ADMIN) {
+            return true;
         }
+
         response.sendRedirect("/");
         return false;
     }
