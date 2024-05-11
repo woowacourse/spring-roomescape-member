@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.web;
 
 import static roomescape.TokenTestFixture.ADMIN_TOKEN;
 import static roomescape.TokenTestFixture.USER_TOKEN;

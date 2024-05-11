@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
