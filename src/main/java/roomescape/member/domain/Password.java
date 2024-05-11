@@ -10,16 +10,24 @@ public class Password {
 
     private final String password;
 
-    public Password(String password) {
-        validation(password);
+    private Password(String password) {
         this.password = password;
+    }
+
+    public static Password passwordFrom(String password) {
+        validation(password);
+        return new Password(password);
+    }
+
+    public static Password savePasswordFrom(String password) {
+        return new Password(password);
     }
 
     public String getPassword() {
         return password;
     }
 
-    private void validation(String password) {
+    private static void validation(String password) {
         if (!PASSWORD_FORM.matcher(password).matches()) {
             throw new RoomEscapeException(MemberExceptionCode.ILLEGAL_PASSWORD_FORM_EXCEPTION);
         }
