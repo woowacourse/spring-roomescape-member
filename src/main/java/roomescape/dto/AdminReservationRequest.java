@@ -8,4 +8,7 @@ public record AdminReservationRequest(
         Long timeId,
         Long memberId
 ) {
+    public AdminReservationRequest {
+        InputValidator.validateNotNull(date, themeId, timeId, memberId);
+    }
 }
