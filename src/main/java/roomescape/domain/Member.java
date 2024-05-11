@@ -18,10 +18,6 @@ public class Member {
         this.role = role;
     }
 
-    public boolean isCorrectPassword(final String target) {
-        return password.equals(target);
-    }
-
     public Long getId() {
         return id;
     }

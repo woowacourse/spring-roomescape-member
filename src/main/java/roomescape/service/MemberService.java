@@ -20,10 +20,12 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EncryptionService encryptionService;
 
-    public MemberService(final MemberRepository memberRepository, final JwtTokenProvider jwtTokenProvider) {
+    public MemberService(final MemberRepository memberRepository, final JwtTokenProvider jwtTokenProvider, final EncryptionService encryptionService) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.encryptionService = encryptionService;
     }
 
     public Member save(final SignupRequest request) {
@@ -31,17 +33,19 @@ public class MemberService {
         if (findMember.isPresent()) {
             throw new DuplicateEmailException("해당 email로 사용자가 존재합니다.");
         }
-        final Member member = new Member(null, request.name(), request.email(), request.password(), Role.USER);
+        final String encryptedPassword = encryptionService.getPassword(request.password());
+        final Member member = new Member(null, request.name(), request.email(), encryptedPassword, Role.USER);
         return memberRepository.save(member);
     }
 
-    public boolean checkInvalidLogin(final String email, final String password) {
-        final Member member = memberRepository.fetchByEmail(email);
-        return !member.isCorrectPassword(password);
+    public boolean invalidPassword(final String email, final String rawPassword) {
+        final Member findMember = memberRepository.fetchByEmail(email);
+        final String encryptedPassword = encryptionService.getPassword(rawPassword);
+        return !encryptedPassword.equals(findMember.getPassword());
     }
 
     public TokenResponse createToken(final MemberLoginRequest request) {
-        if (checkInvalidLogin(request.email(), request.password())) {
+        if (invalidPassword(request.email(), request.password())) {
             throw new InvalidRequestException("Invalid email or password");
         }
         final Member member = memberRepository.fetchByEmail(request.email());
