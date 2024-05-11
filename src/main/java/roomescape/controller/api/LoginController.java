@@ -5,7 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.infrastructure.CookieManager;
@@ -14,7 +17,6 @@ import roomescape.service.LoginService;
 import roomescape.service.MemberService;
 
 @RestController
-@RequestMapping // TODO 불필요한 로그인 매핑 삭제
 public class LoginController {
     private final CookieManager cookieManager; // TODO 세가지 객체를 감싸는 하나의 서비스 생각해보기
     private final LoginService loginService;
