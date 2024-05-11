@@ -1,10 +1,14 @@
 package roomescape.member.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.AccessToken;
@@ -16,8 +20,14 @@ public class AuthService {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
+    @Autowired
     public AuthService(MemberDao memberDao) {
         this.memberDao = memberDao;
+    }
+
+    public AuthService(MemberDao memberDao, String secretKey) {
+        this.memberDao = memberDao;
+        this.secretKey = secretKey;
     }
 
     public String makeToken(LoginRequest request) {
@@ -47,10 +57,14 @@ public class AuthService {
     }
 
     private Claims getPayload(String token) {
-        return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException exception) {
+            throw new MemberAuthenticationException();
+        }
     }
 }
