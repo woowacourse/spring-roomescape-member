@@ -1,6 +1,10 @@
 package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.Fixture.VALID_MEMBER_EMAIL;
+import static roomescape.Fixture.VALID_MEMBER_NAME;
+import static roomescape.Fixture.VALID_MEMBER_PASSWORD;
+import static roomescape.Fixture.VALID_MEMBER_ROLE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -16,8 +20,9 @@ class ReservationControllerTest extends ControllerTest {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "12:00");
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", "방탈출1", "설명1",
             "https://url1");
-        jdbcTemplate.update("INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)", MEMBER_NAME, EMAIL,
-            PASSWORD, "USER");
+        jdbcTemplate.update("INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
+            VALID_MEMBER_NAME.getValue(), VALID_MEMBER_EMAIL.getValue(),
+            VALID_MEMBER_PASSWORD.getValue(), VALID_MEMBER_ROLE.getValue());
         jdbcTemplate.update("INSERT INTO reservation(date,time_id,theme_id,member_id) VALUES (?,?,?,?)",
             "2026-02-01", 1L, 1L, 1L);
     }
@@ -34,7 +39,7 @@ class ReservationControllerTest extends ControllerTest {
             .when().post("/reservations")
             .then().log().all()
             .statusCode(201)
-            .body("name", is(MEMBER_NAME));
+            .body("name", is(VALID_MEMBER_NAME.getValue()));
     }
 
     @DisplayName("예약을 삭제한다. -> 204")

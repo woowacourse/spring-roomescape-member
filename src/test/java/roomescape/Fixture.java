@@ -19,12 +19,11 @@ public class Fixture {
     public static final MemberName VALID_MEMBER_NAME = new MemberName("wiib");
     public static final MemberEmail VALID_MEMBER_EMAIL = new MemberEmail("repday0609@gmail.com");
     public static final MemberPassword VALID_MEMBER_PASSWORD = new MemberPassword("1!2@3#");
+    public static final MemberRole VALID_MEMBER_ROLE = new MemberRole("USER");
     public static final Member VALID_MEMBER = new Member(VALID_MEMBER_NAME, VALID_MEMBER_EMAIL,
         VALID_MEMBER_PASSWORD,
-        new MemberRole("USER"));
+        VALID_MEMBER_ROLE);
     public static final Reservation VALID_RESERVATION = new Reservation(VALID_MEMBER, VALID_RESERVATION_DATE,
         VALID_RESERVATION_TIME, VALID_THEME);
 
-    public static final String EMAIL = "test@test.com";
-    public static final String PASSWORD = "test123";
 }
