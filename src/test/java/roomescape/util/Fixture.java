@@ -1,9 +1,9 @@
 package roomescape.util;
 
-import roomescape.core.domain.Member;
-import roomescape.core.domain.ReservationTime;
-import roomescape.core.domain.Role;
-import roomescape.core.domain.Theme;
+import roomescape.domain.Member;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
+import roomescape.domain.Theme;
 
 public class Fixture {
     public static final String MEMBER_NAME = "jojo";
