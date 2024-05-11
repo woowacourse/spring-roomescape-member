@@ -25,12 +25,13 @@ CREATE TABLE theme
 
 CREATE TABLE reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
-    date     DATE         NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    date      DATE         NOT NULL,
+    member_id BIGINT       NOT NULL,
+    time_id   BIGINT       NOT NULL,
+    theme_id  BIGINT       NOT NULL,
     PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
@@ -54,11 +55,11 @@ INSERT INTO theme(name, description, thumbnail)
 VALUES ('우테코 살아남기', '우테코는 어떤 곳인가 과연.. 그곳에 찾아간...',
         'https://techblog.woowahan.com/wp-content/uploads/img/2019-02-08/techcourse_poster.jpeg');
 
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 5, 1, 4);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 5, 2, 4);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 4, 2, 4);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 3, 1, 2);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 3, 2, 2);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 2, 1, 3);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 2, 2, 3);
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('켬미', CURRENT_DATE - 1, 1, 1);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 5, 1, 1, 4);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 4, 1, 2, 4);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 5, 1, 2, 4);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 3, 1, 1, 2);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 3, 1, 2, 2);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 2, 1, 1, 3);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 2, 1, 2, 3);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 1, 1, 1, 1);

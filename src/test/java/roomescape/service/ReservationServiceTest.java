@@ -19,12 +19,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.MemberModel;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ThemeResponse;
@@ -36,25 +39,29 @@ class ReservationServiceTest {
     ReservationDao reservationDao;
 
     @Mock
+    MemberDao memberDao;
+
+    @Mock
     TimeDao timeDao;
 
     @Mock
     ThemeDao themeDao;
 
+    private final LocalDate date = LocalDate.of(2023, 8, 5);
+    private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+    private final Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
+    private final Member member = new Member(1L, "켬미", "aaa@naver.com", "1111");
+
     @DisplayName("예약 정보를 읽을 수 있다.")
     @Test
     void readReservations() {
-        ReservationService service = new ReservationService(null, reservationDao, timeDao, themeDao);
+        ReservationService service = new ReservationService(null, reservationDao, memberDao, timeDao, themeDao);
 
-        LocalDate date = LocalDate.of(2023, 8, 5);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
-
-        List<Reservation> reservations = List.of(new Reservation(1L, "브라운", date, time, theme));
+        List<Reservation> reservations = List.of(new Reservation(1L, date, member, time, theme));
         when(reservationDao.readReservations()).thenReturn(reservations);
 
         List<ReservationResponse> expected = List.of(new ReservationResponse(
-                1L, "브라운", date, TimeResponse.from(time), ThemeResponse.from(theme)
+                1L, date, MemberModel.from(member), TimeResponse.from(time), ThemeResponse.from(theme)
         ));
         assertThat(service.readReservations()).isEqualTo(expected);
     }
@@ -64,17 +71,15 @@ class ReservationServiceTest {
     void createReservation() {
         ReservationService service = new ReservationService(
                 () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
-
-        LocalDate date = LocalDate.of(2023, 8, 5);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
-        Reservation reservation = new Reservation(1L, "브라운", date, time, theme);
+                reservationDao, memberDao, timeDao, themeDao);
+        Reservation reservation = new Reservation(1L, date, member, time, theme);
 
         lenient().when(reservationDao.createReservation(any(Reservation.class)))
                 .thenReturn(reservation);
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(false);
+        lenient().when(memberDao.readMemberById(any(Long.class)))
+                .thenReturn(Optional.of(member));
         lenient().when(timeDao.readTimeById(any(Long.class)))
                 .thenReturn(Optional.of(time));
         lenient().when(themeDao.readThemeById(any(Long.class)))
@@ -82,7 +87,7 @@ class ReservationServiceTest {
 
 
         ReservationCreateRequest request =
-                new ReservationCreateRequest("브라운", date, 1L, 1L);
+                new ReservationCreateRequest(date, 1L, 1L, 1L);
 
         assertThatCode(() -> service.createReservation(request))
                 .doesNotThrowAnyException();
@@ -93,17 +98,16 @@ class ReservationServiceTest {
     void createReservation_whenReservationDateTimeBeforeCurrentTime() {
         ReservationService service = new ReservationService(
                 () -> LocalDateTime.of(2023, 8, 5, 10, 1),
-                reservationDao, timeDao, themeDao);
+                reservationDao, memberDao, timeDao, themeDao);
 
-        LocalDate date = LocalDate.of(2023, 8, 5);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
-        Reservation reservation = new Reservation(1L, "브라운", date, time, theme);
+        Reservation reservation = new Reservation(1L, date, member, time, theme);
 
         lenient().when(reservationDao.createReservation(any(Reservation.class)))
                 .thenReturn(reservation);
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(false);
+        lenient().when(memberDao.readMemberById(any(Long.class)))
+                .thenReturn(Optional.of(member));
         lenient().when(timeDao.readTimeById(any(Long.class)))
                 .thenReturn(Optional.of(time));
         lenient().when(themeDao.readThemeById(any(Long.class)))
@@ -111,7 +115,7 @@ class ReservationServiceTest {
 
 
         ReservationCreateRequest request =
-                new ReservationCreateRequest("브라운", date, 1L, 1L);
+                new ReservationCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -123,26 +127,47 @@ class ReservationServiceTest {
     void createReservation_whenAlreadyBookedReservation() {
         ReservationService service = new ReservationService(
                 () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
-
-        LocalDate date = LocalDate.of(2023, 8, 5);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
+                reservationDao, memberDao, timeDao, themeDao);
 
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(true);
+        lenient().when(memberDao.readMemberById(any(Long.class)))
+                .thenReturn(Optional.of(member));
         lenient().when(timeDao.readTimeById(any(Long.class)))
                 .thenReturn(Optional.of(time));
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
-
         ReservationCreateRequest request =
-                new ReservationCreateRequest("브라운", date, 1L, 1L);
+                new ReservationCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간대 해당 테마 예약은 이미 존재합니다.");
+    }
+
+    @DisplayName("없는 사용자인 경우 예외를 던진다.")
+    @Test
+    void createReservation_whenNotExistsMember() {
+        ReservationService service = new ReservationService(
+                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
+                reservationDao, memberDao, timeDao, themeDao);
+
+        lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
+                .thenReturn(false);
+        lenient().when(memberDao.readMemberById(any(Long.class)))
+                .thenReturn(Optional.empty());
+        lenient().when(timeDao.readTimeById(any(Long.class)))
+                .thenReturn(Optional.of(time));
+        lenient().when(themeDao.readThemeById(any(Long.class)))
+                .thenReturn(Optional.of(theme));
+
+        ReservationCreateRequest request =
+                new ReservationCreateRequest(date, 1L, 1L, 1L);
+
+        assertThatThrownBy(() -> service.createReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 사용자는 존재하지 않습니다.");
     }
 
     @DisplayName("없는 예약 시간인 경우 예외를 던진다.")
@@ -150,20 +175,19 @@ class ReservationServiceTest {
     void createReservation_whenNotExistsTime() {
         ReservationService service = new ReservationService(
                 () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
-
-        LocalDate date = LocalDate.of(2023, 8, 5);
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
+                reservationDao, memberDao, timeDao, themeDao);
 
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(false);
+        lenient().when(memberDao.readMemberById(any(Long.class)))
+                .thenReturn(Optional.of(member));
         lenient().when(timeDao.readTimeById(any(Long.class)))
                 .thenReturn(Optional.empty());
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
         ReservationCreateRequest request =
-                new ReservationCreateRequest("브라운", date, 1L, 1L);
+                new ReservationCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -175,20 +199,19 @@ class ReservationServiceTest {
     void createReservation_whenNotExistsTheme() {
         ReservationService service = new ReservationService(
                 () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
-
-        LocalDate date = LocalDate.of(2023, 8, 5);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+                reservationDao, memberDao, timeDao, themeDao);
 
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(false);
+        lenient().when(memberDao.readMemberById(any(Long.class)))
+                .thenReturn(Optional.of(member));
         lenient().when(timeDao.readTimeById(any(Long.class)))
                 .thenReturn(Optional.of(time));
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.empty());
 
         ReservationCreateRequest request =
-                new ReservationCreateRequest("브라운", date, 1L, 1L);
+                new ReservationCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -198,7 +221,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제할 수 있다.")
     @Test
     void deleteReservation() {
-        ReservationService service = new ReservationService(null, reservationDao, timeDao, themeDao);
+        ReservationService service = new ReservationService(null, reservationDao, memberDao, timeDao, themeDao);
         assertThatCode(() -> service.deleteReservation(1L))
                 .doesNotThrowAnyException();
         ;

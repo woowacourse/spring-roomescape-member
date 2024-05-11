@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -26,8 +27,12 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
         this.rowMapper = (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
                 resultSet.getObject("date", LocalDate.class),
+                new Member(
+                        resultSet.getLong("member_id"),
+                        resultSet.getString("member_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
                         resultSet.getObject("start_at", LocalTime.class)),
@@ -41,25 +46,29 @@ public class ReservationDao {
 
     public List<Reservation> readReservations() {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
-                        reservation_time.start_at,
-                        theme.name AS theme_name, theme.description, theme.thumbnail
+                SELECT reservation.id, reservation.date,
+                        reservation.member_id, member.name AS member_name, member.email, member.password,
+                        reservation.time_id, reservation_time.start_at,
+                        reservation.theme_id, theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
+                JOIN member ON reservation.member_id = member.id
                 JOIN reservation_time ON reservation.time_id = reservation_time.id
-                JOIN theme ON reservation.theme_id = theme.id;
+                JOIN theme ON reservation.theme_id = theme.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     private Optional<Reservation> readReservationById(Long id) {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
-                        reservation_time.start_at,
-                        theme.name AS theme_name, theme.description, theme.thumbnail
+                SELECT reservation.id, reservation.date,
+                        reservation.member_id, member.name AS member_name, member.email, member.password,
+                        reservation.time_id, reservation_time.start_at,
+                        reservation.theme_id, theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
+                JOIN member ON reservation.member_id = member.id
                 JOIN reservation_time ON reservation.time_id = reservation_time.id
                 JOIN theme ON reservation.theme_id = theme.id
-                WHERE reservation.id = ?
+                WHERE reservation.id = ?;
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
@@ -103,12 +112,12 @@ public class ReservationDao {
 
     public Reservation createReservation(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (date, member_id, time_id, theme_id) values (?, ?, ?, ?)";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, reservation.name());
-            preparedStatement.setObject(2, reservation.date());
+            preparedStatement.setObject(1, reservation.date());
+            preparedStatement.setLong(2, reservation.getMemberId());
             preparedStatement.setLong(3, reservation.getTimeId());
             preparedStatement.setLong(4, reservation.getThemeId());
             return preparedStatement;

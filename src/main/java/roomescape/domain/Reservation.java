@@ -5,18 +5,14 @@ import java.time.LocalDateTime;
 
 import roomescape.domain.util.Validator;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+public record Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
 
-    public static final int MAX_STRING_LENGTH = 255;
-
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(LocalDate date, Member member, ReservationTime time, Theme theme) {
+        this(null, date, member, time, theme);
     }
 
     public Reservation {
-        Validator.nonNull(name, date, time, theme);
-        Validator.notEmpty(name);
-        Validator.overSize(MAX_STRING_LENGTH, name);
+        Validator.nonNull(date, member, time, theme);
     }
 
     public boolean isBefore(LocalDateTime currentDateTime) {
@@ -28,6 +24,10 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
             return false;
         }
         return time.isBefore(currentDateTime.toLocalTime());
+    }
+
+    public Long getMemberId() {
+        return member.id();
     }
 
     public Long getTimeId() {

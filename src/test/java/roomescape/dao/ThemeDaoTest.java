@@ -66,17 +66,18 @@ class ThemeDaoTest {
     @DisplayName("주어진 두 날짜 사이에 있는 예약을 기준으로 테마 랭킹을 읽을 수 있다.")
     @Test
     void readThemesRankingOfReservation() {
+        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마2", "설명2", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-05-01", 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-04-30", 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-04-30", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
+                , "2024-05-01", 1, 1, 2);
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
+                , "2024-04-30", 1, 1, 2);
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
+                , "2024-04-30", 1, 1, 1);
 
         List<Theme> actual = themeDao.readThemesRankingOfReservation("2024-04-29", "2024-05-02");
         List<Theme> expected = List.of(

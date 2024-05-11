@@ -43,12 +43,13 @@ class TimeDaoTest {
     @DisplayName("해당 날짜에 해당 테마인 시간 목록을 읽을 수 있다.")
     @Test
     void readTimesExistsReservation() {
+        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2023-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
+                , "2023-08-05", 1, 1, 1);
 
         List<ReservationTime> actual = timeDao.readTimesExistsReservation("2023-08-05", 1L);
         List<ReservationTime> expected = List.of(new ReservationTime(1L, LocalTime.of(10, 0)));

@@ -91,7 +91,7 @@
 - [ ] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
   - [ ] HandlerMethodArgumentResolver을 활용해 회원정보를 객체를 컨트롤러 메서드에 주입
 
-- [ ] `reservation` 테이블 변경
+- [x] `reservation` 테이블 변경
   - 이름(name) -> member id
 
 - [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
