@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.reservation.ReservationService;
 import roomescape.application.reservation.dto.request.AdminReservationRequest;
@@ -58,11 +59,11 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/admin/reservations?memberId={memberId}&themeId={themeId}&startDate={startDate}&endDate={endDate}")
-    public ResponseEntity<List<ReservationResponse>> findByFilter(@PathVariable(required = true) long memberId,
-                                                                  @PathVariable(required = true) long themeId,
-                                                                  @PathVariable(required = true) LocalDate startDate,
-                                                                  @PathVariable(required = true) LocalDate endDate) {
+    @GetMapping("/admin/reservations")
+    public ResponseEntity<List<ReservationResponse>> findByFilter(@RequestParam(required = false) Long memberId,
+                                                                  @RequestParam(required = false) Long themeId,
+                                                                  @RequestParam(required = false) LocalDate startDate,
+                                                                  @RequestParam(required = false) LocalDate endDate) {
         ReservationFilterRequest request = new ReservationFilterRequest(memberId, themeId, startDate, endDate);
         List<ReservationResponse> responses = service.findByFilter(request);
         return ResponseEntity.ok(responses);

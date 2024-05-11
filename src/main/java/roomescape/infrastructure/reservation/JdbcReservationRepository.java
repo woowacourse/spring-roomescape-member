@@ -3,6 +3,7 @@ package roomescape.infrastructure.reservation;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -92,13 +93,29 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByMemberAndThemeBetweenDates(long memberId, long themeId,
+    public List<Reservation> findByMemberAndThemeBetweenDates(Long memberId, Long themeId,
                                                               LocalDate startDate, LocalDate endDate) {
-        String whereClause = "where member_id = ? and theme_id = ? and date between ? and ?";
-        return jdbcTemplate.query(
-                FIND_ALL_SQL + whereClause,
-                (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs),
-                memberId, themeId, startDate, endDate
-        );
+        String sql = FIND_ALL_SQL + buildWhereClause(memberId, themeId, startDate, endDate);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs));
+    }
+
+    private String buildWhereClause(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate) {
+        if (memberId == null && themeId == null && startDate == null && endDate == null) {
+            return "";
+        }
+        StringJoiner joiner = new StringJoiner(" and ");
+        if (memberId != null) {
+            joiner.add("member_id = " + memberId);
+        }
+        if (themeId != null) {
+            joiner.add("theme_id = " + themeId);
+        }
+        if (startDate != null) {
+            joiner.add("date >= '" + startDate + "'");
+        }
+        if (endDate != null) {
+            joiner.add("date <= '" + endDate + "'");
+        }
+        return " where " + joiner.toString();
     }
 }
