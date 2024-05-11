@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 
 @Component
 public class MemberRowMapper implements RowMapper<Member> {
@@ -14,7 +15,8 @@ public class MemberRowMapper implements RowMapper<Member> {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                MemberRole.findByName(resultSet.getString("role"))
         );
     }
 }
