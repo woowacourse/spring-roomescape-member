@@ -8,11 +8,7 @@ public class Member {
     private final String role;
 
     public Member(Long id, String name, String email, String password, String role) {
-        this.id = id;
-        this.name = new MemberName(name);
-        this.email = new Email(email);
-        this.password = new Password(password);
-        this.role = role;
+        this(id, new MemberName(name), new Email(email), new Password(password), role);
     }
 
     public Member(Long id, MemberName name, Email email, Password password, String role) {
