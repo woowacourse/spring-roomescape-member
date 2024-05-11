@@ -1,5 +1,6 @@
 package roomescape.member.dao;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,21 +10,27 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberInfo;
 
 @Repository
-public class MemberRepository {
+public class MemberDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
 
-    public MemberRepository(JdbcTemplate jdbcTemplate) {
+    public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Member addMember(Member member) {
+    public List<MemberInfo> findAll() {
+        String findAllSql = "SELECT id, name FROM member";
+        return jdbcTemplate.query(findAllSql, memberInfoRowMapper());
+    }
+
+    public MemberInfo addMember(Member member) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
@@ -31,14 +38,24 @@ public class MemberRepository {
 
         long id = insertActor.executeAndReturnKey(parameterSource).longValue();
 
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new MemberInfo(id, member.getName());
     }
 
-    public Optional<Member> findByEmail(String email) {
-        String sql = "SELECT * FROM member WHERE email = ? LIMIT 1";
+    public Optional<MemberInfo> findByEmail(String email) {
+        String sql = "SELECT id, name FROM member WHERE email = ? LIMIT 1";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberRowMapper(), email));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberInfoRowMapper(), email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<MemberInfo> findById(Long id) {
+        String sql = "SELECT id, name FROM member WHERE id = ? LIMIT 1";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberInfoRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -50,13 +67,10 @@ public class MemberRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, email, password);
     }
 
-
-    public RowMapper<Member> memberRowMapper() {
-        return (rs, rowNum) -> new Member(
+    public RowMapper<MemberInfo> memberInfoRowMapper() {
+        return (rs, rowNum) -> new MemberInfo(
                 rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("password")
+                rs.getString("name")
         );
     }
 }
