@@ -67,7 +67,7 @@ class TimeServiceTest {
         // given
         TimeResponse timeResponse = timeService.addTime(sampleTimes.get(0));
         Theme theme = new Theme(null, "Theme 1", "Description 1", "Thumbnail 1");
-        Member member = new Member(null, "User", "a@b.c", "pw", Role.USER);
+        Member member = new Member(null, "User", "user@test.com", "user", Role.USER);
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         Reservation reservation = new Reservation(
                 null,
@@ -155,7 +155,7 @@ class TimeServiceTest {
         TimeResponse timeResponse = timeService.addTime(sampleTimes.get(0));
         Long timeId = timeResponse.id();
         Theme theme = new Theme(null, "Theme 1", "Description 1", "Thumbnail 1");
-        Member member = new Member(null, "User", "a@b.c", "pw", Role.USER);
+        Member member = new Member(null, "User", "user@test.com", "user", Role.USER);
         Reservation reservation = new Reservation(
                 null,
                 LocalDate.now().plusDays(1),

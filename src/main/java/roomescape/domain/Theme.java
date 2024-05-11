@@ -14,7 +14,10 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id) {
-        this(id, null, null, null);
+        this.id = id;
+        this.name = null;
+        this.description = null;
+        this.thumbnail = null;
     }
 
     public Theme(Long id, String name, String description, String thumbnail) {

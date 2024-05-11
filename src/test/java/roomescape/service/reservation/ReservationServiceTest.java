@@ -51,8 +51,8 @@ class ReservationServiceTest {
             new Theme(null, "Theme 2", "Description 2", "Thumbnail 2")
     );
     List<Member> sampleMembers = List.of(
-            new Member(null, "User", "a@b.c", "pw", Role.USER),
-            new Member(null, "Admin", "admin@b.c", "pw", Role.ADMIN)
+            new Member(null, "User", "user@test.com", "user", Role.USER),
+            new Member(null, "Admin", "admin@test.com", "admin", Role.ADMIN)
     );
     List<CreateReservationRequest> sampleReservations = List.of(
             new CreateReservationRequest(tomorrow, null, null, null),

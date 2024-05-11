@@ -29,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AuthServiceTest {
 
     final List<Member> sampleMembers = List.of(
-            new Member(null, "User", "a@b.c", "pw", Role.USER),
-            new Member(null, "Admin", "admin@b.c", "pw", Role.ADMIN)
+            new Member(null, "User", "user@test.com", "user", Role.USER),
+            new Member(null, "Admin", "admin@test.com", "admin", Role.ADMIN)
     );
 
     @Autowired

@@ -19,7 +19,11 @@ public class Member {
     private final Role role;
 
     public Member(Long id) {
-        this(id, null, null, null, null);
+        this.id = id;
+        this.name = null;
+        this.email = null;
+        this.password = null;
+        this.role = null;
     }
 
     public Member(Long id, String name, String email, String password, Role role) {
