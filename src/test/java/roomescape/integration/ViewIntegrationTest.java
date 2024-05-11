@@ -45,4 +45,13 @@ class ViewIntegrationTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("회원가입 페이지를 요청하면 200 OK를 응답한다.")
+    void signupPageTest() throws Exception {
+        RestAssured.given().log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

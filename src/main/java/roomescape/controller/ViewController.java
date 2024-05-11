@@ -27,4 +27,9 @@ public class ViewController {
         }
         return popularThemePage();
     }
+
+    @GetMapping("/signup")
+    public String signupPage(Member member) {
+        return "signup";
+    }
 }
