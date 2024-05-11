@@ -51,7 +51,7 @@ class PageAccessAcceptanceTest extends BaseAcceptanceTest {
         @ParameterizedTest
         @ValueSource(strings = {ADMIN_MAIN, ADMIN_RESERVATION, ADMIN_TIME, ADMIN_THEME})
         void adminPageAccess_guest_fail(String path) {
-            CustomExceptionResponse response = sendGetRequestWithToken(path, null)
+            CustomExceptionResponse response = sendGetRequestWithoutToken(path)
                     .statusCode(HttpStatus.FORBIDDEN.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -65,6 +65,12 @@ class PageAccessAcceptanceTest extends BaseAcceptanceTest {
     private ValidatableResponse sendGetRequestWithToken(String path, String token) {
         return RestAssured.given().log().all()
                 .cookie("token", token)
+                .when().get(path)
+                .then().log().all();
+    }
+
+    private ValidatableResponse sendGetRequestWithoutToken(String path) {
+        return RestAssured.given().log().all()
                 .when().get(path)
                 .then().log().all();
     }
