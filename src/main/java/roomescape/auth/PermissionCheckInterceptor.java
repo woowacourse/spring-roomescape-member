@@ -5,15 +5,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.exception.UnAuthorizedException;
-import roomescape.domain.role.MemberRole;
 import roomescape.domain.role.Role;
 
 public class PermissionCheckInterceptor implements HandlerInterceptor {
-    private final TokenManager tokenManager;
+    private final AuthService authService;
 
-    public PermissionCheckInterceptor(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
+    public PermissionCheckInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -25,11 +23,8 @@ public class PermissionCheckInterceptor implements HandlerInterceptor {
         }
         PermissionRequired permissionRequired = method.getAnnotation(PermissionRequired.class);
         Role requiredRole = permissionRequired.value();
-        String requestToken = AuthInformationExtractor.extractToken(request);
-        MemberRole memberRole = tokenManager.extract(requestToken);
-        if (!memberRole.hasRoleOf(requiredRole)) {
-            throw new UnAuthorizedException();
-        }
+        String token = AuthInformationExtractor.extractToken(request);
+        authService.validatePermission(token, requiredRole);
         return true;
     }
 }

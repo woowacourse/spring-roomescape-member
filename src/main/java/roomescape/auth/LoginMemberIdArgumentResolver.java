@@ -6,13 +6,12 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.role.MemberRole;
 
 public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
-    private final TokenManager tokenManager;
+    private final AuthService authService;
 
-    public LoginMemberIdArgumentResolver(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
+    public LoginMemberIdArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -25,7 +24,6 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
                                 NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = AuthInformationExtractor.extractToken(request);
-        MemberRole memberRole = tokenManager.extract(token);
-        return memberRole.getMemberId();
+        return authService.getMemberId(token);
     }
 }
