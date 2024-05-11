@@ -16,9 +16,13 @@ import roomescape.web.api.resolver.MemberAuthValidateInterceptor;
 
 import java.time.LocalDate;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ReservationControllerTest extends ControllerTest {
@@ -101,5 +105,38 @@ public class ReservationControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestReservation))
                 .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("예약을 조회한다")
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
+    @Test
+    void when_findAllReservations_then_ok() throws Exception {
+        // setting
+        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
+        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
+        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+
+        // when, then
+        mockMvc.perform(get("/reservations"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reservations", hasSize(5)));
+    }
+
+    @DisplayName("예약을 삭제한다")
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
+    @Test
+    void when_deleteReservation_then_noContent() throws Exception {
+        // setting
+        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
+        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
+        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+
+        // when, then
+        mockMvc.perform(delete("/reservations/1"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/reservations"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reservations", hasSize(4)));
     }
 }
