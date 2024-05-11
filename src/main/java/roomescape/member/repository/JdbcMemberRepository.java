@@ -30,7 +30,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public List<Member> findAll() {
         String sql = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member;
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
@@ -38,7 +38,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        String sql = "SELECT m.id, m.name, m.email, m.password FROM member AS m WHERE m.id = ?";
+        String sql = "SELECT m.id, m.name, m.email, m.password, m.role FROM member AS m WHERE m.id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
@@ -48,7 +48,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        String sql = "SELECT m.id, m.name, m.email, m.password FROM member AS m WHERE m.email = ?";
+        String sql = "SELECT m.id, m.name, m.email, m.password, m.role FROM member AS m WHERE m.email = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email));
         } catch (EmptyResultDataAccessException e) {
