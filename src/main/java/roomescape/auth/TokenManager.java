@@ -60,9 +60,9 @@ public class TokenManager {
                     Role.from(claims.get("role", String.class))
             );
         } catch (ExpiredJwtException e) {
-            throw new ExpiredTokenException();
+            throw new ExpiredTokenException(e);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new InvalidTokenException();
+            throw new InvalidTokenException(e);
         }
     }
 }
