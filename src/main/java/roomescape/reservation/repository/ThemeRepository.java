@@ -64,6 +64,18 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, createThemeRowMapper());
     }
 
+    public List<Theme> findThemesThatReservationReferById(Long id) {
+        String sql = """
+                select *
+                from theme t
+                join reservation r
+                on r.theme_id = t.id
+                where t.id = ?
+                """;
+
+        return jdbcTemplate.query(sql, createThemeRowMapper(), id);
+    }
+
     public List<Theme> findPopularThemesDescOfLastWeekForLimit(int limitCount) {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(*) as cnt

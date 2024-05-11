@@ -68,6 +68,30 @@ class ThemeRepositoryTest {
         assertThat(themes.size()).isEqualTo(2);
     }
 
+    @DisplayName("테마 ID로 예약이 참조된 테마들을 찾는다.")
+    @Test
+    void findReservationInSameIdTest() {
+        Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
+
+        Long themeId = themeRepository.save(
+                new Theme(
+                        new ThemeName("공포"),
+                        new Description("무서운 테마"),
+                        "https://i.pinimg.com/236x.jpg"
+                )
+        );
+        Theme theme = themeRepository.findById(themeId).get();
+
+        Long memberId = memberRepository.save(new Member(new MemberName("카키"), "hogi@email.com", "1234"));
+        Member member = memberRepository.findById(memberId).get();
+
+        reservationRepository.save(new Reservation(member, LocalDate.now(), theme, reservationTime));
+        boolean exist = !themeRepository.findThemesThatReservationReferById(timeId).isEmpty();
+
+        assertThat(exist).isTrue();
+    }
+
     @Test
     @DisplayName("최근 1주일을 기준하여 예약이 많은 순으로 10개의 테마를 조회한다.")
     void findTopTenThemesDescendingOfLastWeekTest() {
@@ -113,7 +137,7 @@ class ThemeRepositoryTest {
 
         Long member4Id = memberRepository.save(new Member(new MemberName("네오"), "neo@email.com", "1234"));
         Member member4 = memberRepository.findById(member4Id).get();
-        
+
         reservationRepository.save(new Reservation(member1, LocalDate.now(), theme1, reservationTime));
         reservationRepository.save(new Reservation(member2, LocalDate.now(), theme2, reservationTime));
         reservationRepository.save(new Reservation(member3, LocalDate.now(), theme2, reservationTime));
