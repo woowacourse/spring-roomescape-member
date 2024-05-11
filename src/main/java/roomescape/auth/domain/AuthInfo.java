@@ -1,5 +1,6 @@
 package roomescape.auth.domain;
 
+import java.util.Objects;
 import roomescape.member.domain.MemberRole;
 
 public class AuthInfo {
@@ -23,5 +24,23 @@ public class AuthInfo {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuthInfo authInfo = (AuthInfo) o;
+        return Objects.equals(memberId, authInfo.memberId) && Objects.equals(name, authInfo.name)
+                && memberRole == authInfo.memberRole;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(memberId, name, memberRole);
     }
 }

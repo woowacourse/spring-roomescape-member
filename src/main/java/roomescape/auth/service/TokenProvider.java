@@ -1,8 +1,12 @@
 package roomescape.auth.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -47,8 +51,18 @@ public class TokenProvider {
     }
 
     private Claims getClaims(final String token) {
-        return Jwts.parser().setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser().setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (MalformedJwtException e) {
+            throw new SecurityException("토큰의 형식이 유효하지 않습니다. 다시 로그인해주세요.");
+        } catch (SignatureException e) {
+            throw new SecurityException("토큰의 값을 인증할 수 없습니다. 다시 로그인해주세요.");
+        } catch (ExpiredJwtException e) {
+            throw new SecurityException("토큰이 만료되었습니다. 다시 로그인해주세요.");
+        } catch (JwtException e) {
+            throw new SecurityException("토큰 오류입니다. 다시 로그인해주세요.");
+        }
     }
 }
