@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.helper.CookieProvider;
 import roomescape.helper.DatabaseCleaner;
 import roomescape.helper.DatabaseInitializer;
 
@@ -32,6 +33,9 @@ public abstract class IntegrationTest {
     @Autowired
     protected DatabaseInitializer databaseInitializer;
 
+    @Autowired
+    protected CookieProvider cookieProvider;
+
     @MockBean
     protected Clock clock;
 
@@ -40,6 +44,7 @@ public abstract class IntegrationTest {
         RestAssured.port = port;
         databaseCleaner.execute();
         databaseInitializer.execute();
+        cookieProvider.execute();
         given(clock.instant()).willReturn(Instant.parse("1999-09-19T19:19:00Z"));
         given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
     }

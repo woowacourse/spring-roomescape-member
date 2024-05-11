@@ -59,9 +59,9 @@
 - [x] Cookie의 인증 정보로 사용자 객체 만드는 로직을 분리한다
     - [x] HandlerMethodArgumentResolver 이용해 사용자 객체를 컨트롤러 메서드에 주입
     - [x] 인증 정보 조회 로직 리팩토링
-- [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보 이용하도록 리팩토링한다
-    - [ ] 로그인 안한 사용자는 예외 발생
-    - [ ] reservation.html, user-reservation.js 파일을 변경된 명세에 맞게 수정
+- [x] 사용자가 예약 생성 시, 로그인한 사용자 정보 이용하도록 리팩토링한다
+    - [x] 로그인 안한 사용자는 예외 발생
+    - [x] reservation.html, user-reservation.js 파일을 변경된 명세에 맞게 수정
 - [ ] 관리자가 예약 생성 시, 유저 조회해 선택하도록 리팩토링한다
     - [ ] memberId 인자로 전달한 정보로 예약 생성
     - [ ] admin/reservation-new.html 파일에서 로딩하는 js 파일을 변경
@@ -201,8 +201,7 @@ Content-Type: application/json
 {
     "date": "2023-08-05",
     "themeId": 1,
-    "timeId": 1,
-    "name": "브라운"
+    "timeId": 1
 }
 ```
 

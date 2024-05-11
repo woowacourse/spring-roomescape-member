@@ -27,22 +27,22 @@ class ReservationIntegrationTest extends IntegrationTest {
     }
 
     @Nested
-    @DisplayName("예약 추가 API")
+    @DisplayName("사용자 예약 추가 API")
     class SaveReservation {
         Map<String, String> params = new HashMap<>();
 
         @BeforeEach
         void setUp() {
-            params.put("name", "브라운");
             params.put("themeId", "1");
             params.put("timeId", "1");
         }
 
         @Test
-        void 예약을_추가할_수_있다() {
+        void 로그인한_사용자_이름으로_예약을_추가할_수_있다() {
             params.put("date", "2023-08-06");
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie()) // TODO: 인증 테스트 따로 진행하고 mock 쓸지 고민해보기
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
@@ -57,6 +57,7 @@ class ReservationIntegrationTest extends IntegrationTest {
             params.put("date", null);
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
@@ -69,6 +70,7 @@ class ReservationIntegrationTest extends IntegrationTest {
             params.put("date", "2023-13-05");
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
@@ -81,6 +83,7 @@ class ReservationIntegrationTest extends IntegrationTest {
             params.put("date", "2024-08-05");
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
@@ -93,6 +96,7 @@ class ReservationIntegrationTest extends IntegrationTest {
             params.put("date", "1998-12-11");
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
