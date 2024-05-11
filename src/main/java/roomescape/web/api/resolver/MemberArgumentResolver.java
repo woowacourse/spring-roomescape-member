@@ -10,6 +10,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.service.MemberService;
+import roomescape.web.exception.AuthorizationException;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -31,12 +32,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        String token = tokenProvider.extractToken(cookies);
+        String token = tokenProvider.extractToken(cookies)
+                .orElseThrow(AuthorizationException::new);
+
         String email = tokenProvider.getEmail(token);
-        try {
-            return memberService.findByEmail(email);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("인증 정보가 유효하지 않습니다.");
-        }
+        return memberService.findByEmail(email);
     }
 }

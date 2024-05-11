@@ -8,8 +8,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.web.exception.AuthorizationException;
 
-import java.util.Objects;
-
 @Component
 public class MemberAuthValidateInterceptor implements HandlerInterceptor {
     private final TokenProvider tokenProvider;
@@ -21,10 +19,8 @@ public class MemberAuthValidateInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
-        String accessToken = tokenProvider.extractToken(cookies);
-        if (Objects.equals(accessToken, "")) {
-            throw new AuthorizationException();
-        }
+        String accessToken = tokenProvider.extractToken(cookies)
+                .orElseThrow(AuthorizationException::new);
 
         String role = tokenProvider.getRole(accessToken);
         return role.equals("MEMBER");

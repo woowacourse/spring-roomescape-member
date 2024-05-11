@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.domain.member.Member;
 import roomescape.service.MemberService;
+import roomescape.web.exception.AuthorizationException;
 
 @RestController
 public class AuthController {
@@ -40,7 +41,8 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        String token = tokenProvider.extractToken(request.getCookies());
+        String token = tokenProvider.extractToken(request.getCookies())
+                .orElseThrow(AuthorizationException::new);
 
         String payload = tokenProvider.getEmail(token);
 

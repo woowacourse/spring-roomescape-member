@@ -7,16 +7,17 @@ import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 
 @Component
 public class TokenProvider {
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
-
     private static final String EMAIL_FIELD = "email";
     private static final String ROLE_FIELD = "role";
+
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
 
     public String createToken(Member member) {
         return Jwts.builder()
@@ -39,16 +40,17 @@ public class TokenProvider {
                 .get(ROLE_FIELD, String.class);
     }
 
-    public String extractToken(Cookie[] cookies) {
+    public Optional<String> extractToken(Cookie[] cookies) {
         if (cookies == null) {
-            return "";
+            return Optional.empty();
         }
 
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                return cookie.getValue();
+                return Optional.of(cookie.getValue());
             }
         }
-        return "";
+
+        return Optional.empty();
     }
 }
