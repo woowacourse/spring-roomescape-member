@@ -12,10 +12,9 @@
         - [x] `templates/login.html` 파일을 이용한다.
     - [x] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
     - [x] 응답 Cookie에 "token" 값으로 토큰이 포함되도록 한다.
-- [ ] 검증 로직을 추가한다.
-    - [ ] 사용자 도메인
-    - [ ] 로그인 요청 dto
-    - [ ] 
+- [x] 검증 로직을 추가한다.
+    - [x] 토큰 dto
+    - [x] Member domain
 
 ```
 POST /login HTTP/1.1
