@@ -6,7 +6,7 @@ import static java.util.Objects.isNull;
 
 public record Name(String value) {
     private static final int NAME_LENGTH_MIN = 2;
-    private static final int NAME_LENGTH_MAX = 10;
+    private static final int NAME_LENGTH_MAX = 30;
 
     public Name {
         if (isNull(value)) {
