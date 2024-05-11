@@ -9,9 +9,23 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.service.dto.ReservationSearchParamsDto;
 
 @Repository
 public class JdbcReservationRepository {
+
+    private static final String RESERVATION_TABLE = """
+                    SELECT 
+                    r.id AS reservation_id, r.date AS reservation_date, 
+                    m.id AS member_id, m.email AS member_email, m.password AS member_password, m.name AS member_name,
+                    m.role AS member_role, th.id AS theme_id, th.name AS theme_name, th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail, t.id AS time_id, t.start_at AS time_value 
+                    FROM reservation AS r 
+                    INNER JOIN member AS m ON m.id = r.member_id
+                    INNER JOIN reservation_time AS t ON r.time_id = t.id
+                    INNER JOIN theme AS th ON r.theme_id = th.id
+                    WHERE 1=1 
+            """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -25,28 +39,28 @@ public class JdbcReservationRepository {
         this.rowMapper = rowMapper;
     }
 
-    public List<Reservation> findAllReservations() {
-        String sql = """
-                SELECT 
-                r.id AS reservation_id, 
-                m.id AS member_id,
-                m.email AS member_email,
-                m.password AS member_password,
-                m.name AS member_name,
-                m.role AS member_role,
-                th.id AS theme_id,
-                th.name AS theme_name,
-                th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail,
-                r.date, 
-                t.id AS time_id, 
-                t.start_at AS time_value 
-                FROM reservation AS r 
-                INNER JOIN member AS m ON m.id = r.member_id
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id;
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
+    public List<Reservation> findReservationsWithParams(ReservationSearchParamsDto requestDto) {
+        String sql = RESERVATION_TABLE;
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+
+        if (requestDto.memberId() != null) {
+            sql += "AND r.member_id = :memberId ";
+            parameterSource.addValue("memberId", requestDto.memberId());
+        }
+        if (requestDto.themeId() != null) {
+            sql += "AND r.theme_id = :themeId ";
+            parameterSource.addValue("themeId", requestDto.themeId());
+        }
+        if (requestDto.dateFrom() != null) {
+            sql += "AND r.date >= :dateFrom ";
+            parameterSource.addValue("dateFrom", requestDto.dateFrom());
+        }
+        if (requestDto.dateTo() != null) {
+            sql += "AND r.date <= :dateTo ";
+            parameterSource.addValue("dateTo", requestDto.dateTo());
+        }
+        sql += ';';
+        return jdbcTemplate.query(sql, parameterSource, rowMapper);
     }
 
     public Reservation insertReservation(Reservation reservation) {
@@ -101,27 +115,8 @@ public class JdbcReservationRepository {
     }
 
     private Reservation findReservationById(long savedId) {
-        String sql = """
-                SELECT 
-                r.id AS reservation_id, 
-                m.id AS member_id,
-                m.email AS member_email,
-                m.password AS member_password,
-                m.name AS member_name,
-                m.role AS member_role,
-                th.id AS theme_id,
-                th.name AS theme_name,
-                th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail,
-                r.date, 
-                t.id AS time_id, 
-                t.start_at AS time_value 
-                FROM reservation AS r 
-                INNER JOIN member AS m ON m.id = r.member_id
-                INNER JOIN reservation_time AS t ON r.time_id = t.id 
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.id = :savedId;
-                """;
+        String sql = RESERVATION_TABLE;
+        sql += "AND r.id = :savedId;";
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("savedId", savedId);
         return jdbcTemplate.query(sql, paramMap, rowMapper).get(0);
     }

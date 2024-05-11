@@ -9,6 +9,7 @@ import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.service.dto.CreateReservationDto;
 import roomescape.service.dto.ReservationResponseDto;
+import roomescape.service.dto.ReservationSearchParamsDto;
 
 @Service
 public class ReservationService {
@@ -22,8 +23,8 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationResponseDto> findAllReservations() {
-        return reservationRepository.findAllReservations()
+    public List<ReservationResponseDto> findAllReservations(ReservationSearchParamsDto requestDto) {
+        return reservationRepository.findReservationsWithParams(requestDto)
                 .stream()
                 .map(ReservationResponseDto::new)
                 .toList();

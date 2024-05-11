@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
@@ -23,6 +24,7 @@ import roomescape.repository.rowmapper.MemberRowMapper;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 import roomescape.repository.rowmapper.ThemeRowMapper;
+import roomescape.service.dto.ReservationSearchParamsDto;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -82,14 +84,26 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("저장된 모든 예약 정보를 가져온다")
+    @DisplayName("검색 조건에 따라 저장된 예약 정보를 가져온다")
     void find_all_reservations() {
         reservationRepository.insertReservation(reservation1);
         reservationRepository.insertReservation(reservation2);
 
-        List<Reservation> allReservations = reservationRepository.findAllReservations();
+        ReservationSearchParamsDto params1 = new ReservationSearchParamsDto(null, null, null, null);
+        List<Reservation> reservations1 = reservationRepository.findReservationsWithParams(params1);
 
-        assertThat(allReservations.size()).isEqualTo(2);
+        ReservationSearchParamsDto params2 = new ReservationSearchParamsDto(1L, null, null, null);
+        List<Reservation> reservations2 = reservationRepository.findReservationsWithParams(params2);
+
+        LocalDate from = LocalDate.of(2024, 04, 25);
+        ReservationSearchParamsDto params3 = new ReservationSearchParamsDto(null, null, from, null);
+        List<Reservation> reservations3 = reservationRepository.findReservationsWithParams(params3);
+
+        assertAll(
+                () -> assertThat(reservations1.size()).isEqualTo(2),
+                () -> assertThat(reservations2.size()).isEqualTo(1),
+                () -> assertThat(reservations3.size()).isEqualTo(0)
+        );
     }
 
     @Test
@@ -112,11 +126,13 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("예약을 id로 삭제한다.")
     void delete_reservation_by_id() {
+        ReservationSearchParamsDto params = new ReservationSearchParamsDto(null, null, null, null);
+
         reservationRepository.insertReservation(reservation1);
-        int beforeSize = reservationRepository.findAllReservations().size();
+        int beforeSize = reservationRepository.findReservationsWithParams(params).size();
 
         reservationRepository.deleteReservationById(1L);
-        int afterSize = reservationRepository.findAllReservations().size();
+        int afterSize = reservationRepository.findReservationsWithParams(params).size();
 
         assertAll(
                 () -> assertThat(beforeSize).isEqualTo(1),

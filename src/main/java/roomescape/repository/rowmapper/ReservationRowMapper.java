@@ -22,7 +22,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
                 resultSet.getString("theme_name"),
                 resultSet.getString("theme_description"),
                 resultSet.getString("theme_thumbnail"),
-                resultSet.getString("date"),
+                resultSet.getString("reservation_date"),
                 resultSet.getLong("time_id"),
                 resultSet.getString("time_value")
         );
