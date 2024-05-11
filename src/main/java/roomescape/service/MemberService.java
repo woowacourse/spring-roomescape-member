@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class MemberService {
 
-    @Value("${jwt.secret-key}")
+    @Value("${jwt.secret-key.prod}")
     private String secretKey;
 
     private final MemberRepository memberRepository;

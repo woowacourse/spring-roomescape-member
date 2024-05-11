@@ -5,10 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import roomescape.acceptance.BaseAcceptanceTest;
@@ -21,7 +19,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-import static roomescape.acceptance.Fixture.customerToken;
 import static roomescape.acceptance.Fixture.secretKey;
 import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_CUSTOMER_1;
 
@@ -58,6 +55,7 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
                 )
         );
     }
+
     private String sendLoginRequest(LogInRequest requestBody) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

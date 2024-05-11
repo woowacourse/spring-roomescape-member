@@ -139,24 +139,24 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = BASIC_SELECT_QUERY;
         List<String> wherePhrase = new LinkedList<>();
 
-        if(themeId != null) {
+        if (themeId != null) {
             wherePhrase.add(" th.id = " + themeId);
         }
-        if(memberId != null) {
+        if (memberId != null) {
             wherePhrase.add(" m.id = " + memberId);
         }
-        if(dateFrom != null) {
+        if (dateFrom != null) {
             wherePhrase.add(" r.date >= '" + dateFrom + "'");
         }
-        if(dateTo != null) {
+        if (dateTo != null) {
             wherePhrase.add(" r.date <= '" + dateTo + "'");
         }
 
-        if(wherePhrase.isEmpty()) {
+        if (wherePhrase.isEmpty()) {
             return sql;
         }
 
-        String hi = sql + " WHERE "+ String.join(" AND ", wherePhrase);
+        String hi = sql + " WHERE " + String.join(" AND ", wherePhrase);
         System.out.println("무야호" + hi);
 
         return hi;

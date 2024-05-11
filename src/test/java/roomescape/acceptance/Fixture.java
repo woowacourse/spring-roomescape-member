@@ -8,7 +8,7 @@ import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_CUSTOMER_1;
 
 public class Fixture {
 
-    public static final String secretKey = "testTestTestTestTestTestTestTestTestTestTest";
+    public static final String secretKey = "pumExiFixehC65FymaHwN/FDue8U48AORoZFXkzoM7E=";
 
     public static final String adminToken = Jwts.builder()
             .subject(PRE_INSERTED_ADMIN.getId().toString())
