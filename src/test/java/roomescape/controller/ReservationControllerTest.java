@@ -28,18 +28,18 @@ class ReservationControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
 
-    @DisplayName("예약 목록을 읽을 수 있다.")
-    @Test
-    void readReservations() {
         jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
                 , "2023-08-05", 1, 1, 1);
+    }
 
+    @DisplayName("예약 목록을 읽을 수 있다.")
+    @Test
+    void readReservations() {
         int size = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -54,10 +54,6 @@ class ReservationControllerTest {
     @DisplayName("예약을 DB에 추가할 수 있다.")
     @Test
     void createReservation() {
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         ReservationCreateRequest params = new ReservationCreateRequest
                 (LocalDate.of(2040, 8, 5), 1L, 1L, 1L);
 
@@ -67,19 +63,15 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/reservations/1");
+                .header("Location", "/reservations/2");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(2);
     }
 
     @DisplayName("예약 추가 시 인자 중 null이 있을 경우, 예약을 추가할 수 없다.")
     @Test
     void createReservation_whenNameIsNull() {
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         ReservationCreateRequest params = new ReservationCreateRequest
                 (LocalDate.of(2040, 8, 5), null, 1L, 1L);
 
@@ -94,13 +86,6 @@ class ReservationControllerTest {
     @DisplayName("삭제할 id를 받아서 DB에서 해당 예약을 삭제 할 수 있다.")
     @Test
     void deleteReservation() {
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "2040-08-05", 1, 1, 1);
-
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()

@@ -30,13 +30,13 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
     }
 
     @DisplayName("DB에 저장된 이메일과 비밀번호로 로그인 시도하면 토큰으로 쿠키에 저장할 수 있다.")
     @Test
     void login() {
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
-
         Map<String, String> params = Map.of(
                 "email", "aaa@naver.com",
                 "password", "1111"
@@ -78,8 +78,6 @@ class AuthControllerTest {
     @DisplayName("로그인 이후에 로그인 정보와 관련된 이름을 받을 수 있다.")
     @Test
     void checkLogin() {
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
-
         Map<String, String> params = Map.of(
                 "email", "aaa@naver.com",
                 "password", "1111"
