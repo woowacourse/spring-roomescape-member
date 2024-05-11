@@ -25,7 +25,7 @@ public class Member {
             final String password,
             final String role
     ) {
-        this(id, name, email, password, Role.valueOf(role));
+        this(id, name, email, password, Role.from(role));
     }
 
     public Member(
