@@ -127,7 +127,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 On r.theme_id = th.id
                 JOIN member AS m
                 ON r.member_id = m.id
-                WHERE r.theme_id = ? AND r.member_id = ? AND r.reservation_date <= ? AND r.reservation_date >= ?
+                WHERE r.theme_id = ? AND r.member_id = ? AND r.reservation_date >= ? AND r.reservation_date <= ?
                 """;
         return jdbcTemplate.query(query, ROW_MAPPER, themeId, memberId, dateFrom, dateTo);
     }
