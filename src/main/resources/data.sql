@@ -38,11 +38,11 @@ VALUES ('레벨1 탈출',
         '우테코 레벨11를 탈출하는 내용입니다.',
         'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO member (name, email, password)
-VALUES ('어드민', 'admin@production.com', 'password'),
-       ('엘라', 'ella@production.com', 'password'),
-       ('호돌', 'hodol@production.com', 'password'),
-       ('아톰', 'atom@production.com', 'password');
+INSERT INTO member (name, role, email, password)
+VALUES ('어드민', 'ADMIN', 'admin@production.com', 'password'),
+       ('엘라', 'ADMIN', 'ella@production.com', 'password'),
+       ('호돌', 'ADMIN', 'hodol@production.com', 'password'),
+       ('아톰', 'NORMAL', 'atom@production.com', 'password');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id)
 VALUES (2, DATEADD(DAY, -7, current_date), 1, 8),

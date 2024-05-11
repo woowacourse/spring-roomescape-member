@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS member
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
+    role     VARCHAR(255) NOT NULL CHECK (role IN ('ADMIN', 'NORMAL')),
     email    VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)

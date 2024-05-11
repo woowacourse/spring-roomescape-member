@@ -24,6 +24,7 @@ public class MemberRepository {
                 SELECT 
                     id,
                     name,
+                    role,
                     email,
                     password
                 FROM member
@@ -41,6 +42,7 @@ public class MemberRepository {
                 SELECT 
                     id,
                     name,
+                    role,
                     email,
                     password
                 FROM member
@@ -54,7 +56,7 @@ public class MemberRepository {
     }
 
     public List<Member> findAll() {
-        return jdbcTemplate.query("SELECT id, name, email, password FROM member", getMemberRowMapper());
+        return jdbcTemplate.query("SELECT id, name, role, email, password FROM member", getMemberRowMapper());
     }
 
     private RowMapper<Member> getMemberRowMapper() {
@@ -63,7 +65,7 @@ public class MemberRepository {
                 new Name(resultSet.getString("name")),
                 resultSet.getString("email"),
                 resultSet.getString("password"),
-                MemberRole.NORMAL
+                MemberRole.from(resultSet.getString("role"))
         );
     }
 }
