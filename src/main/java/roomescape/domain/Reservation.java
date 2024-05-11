@@ -22,14 +22,14 @@ public class Reservation {
     }
 
     public Reservation(Long id, String date, ReservationTime time, Theme theme, Member member) {
-        this(id, validateDateFormatAndReturn(date), time, theme, member);
+        this(id, validateDateAndParse(date), time, theme, member);
     }
 
     public Reservation(Long id, String date, long timeId, long themeId, long memberId) {
         this(id, date, new ReservationTime(timeId), new Theme(themeId), new Member(memberId));
     }
 
-    private static LocalDate validateDateFormatAndReturn(String date) {
+    private static LocalDate validateDateAndParse(String date) {
         try {
             return LocalDate.parse(date);
         } catch (DateTimeParseException exception) {

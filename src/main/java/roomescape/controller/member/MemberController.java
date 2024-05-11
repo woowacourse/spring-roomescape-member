@@ -19,7 +19,7 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberResponse>> getMember() {
+    public ResponseEntity<List<MemberResponse>> getMembers() {
         return ResponseEntity.ok(authService.getMembers());
     }
 }

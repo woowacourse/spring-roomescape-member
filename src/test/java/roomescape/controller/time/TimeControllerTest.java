@@ -56,6 +56,20 @@ class TimeControllerTest {
     }
 
     @Test
+    @DisplayName("날짜는 있지만 테마 없이 예약 가능한 시간 리스트를 요청하면 200 과 필터가 되지 않은 모든 예약 시간 리스트를 응답한다.")
+    void getTimesDesireFilter200AndTimes() {
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.URLENC)
+                .param("date", tomorrow)
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(4));
+    }
+
+    @Test
     @DisplayName("예약 시간 추가하면 201 을 응답한다.")
     void addTime201AndLocation() {
         TimeRequest request = new TimeRequest("12:40");

@@ -25,6 +25,9 @@ class AdminReservationControllerTest {
 
     final TokenRequest requestAdmin = new TokenRequest("admin@test.com", "admin");
     final TokenRequest requestNonAdmin = new TokenRequest("seyang@test.com", "seyang");
+    final Cookie tokenExpired = new Cookie.Builder("token",
+            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZXlhbmdAdGVzdC5jb20iLCJpYXQiOjE3MTU0MDgxNTMsImV4cCI6MTcxNTQxMTc1M30.hI6q3I9Jx2-ShVo3J-H2f_m9WirL5HyPcFLvWk0nn_8"
+    ).build();
 
     @LocalServerPort
     int port;
@@ -81,6 +84,22 @@ class AdminReservationControllerTest {
                 .then().log().all()
                 .statusCode(403)
                 .body("message", containsString("권한"));
+    }
+
+    @Test
+    @DisplayName("만료된 토큰으로 요청 시 401 을 응답한다.")
+    void requestWithExpiredToken401() {
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        CreateReservationRequest request = new CreateReservationRequest(tomorrow, 1L, 1L, 2L);
+
+        RestAssured.given().log().all()
+                .cookie(tokenExpired)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(401)
+                .body("message", containsString("토큰"));
     }
 
     @Test

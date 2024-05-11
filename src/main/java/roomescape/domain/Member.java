@@ -1,8 +1,16 @@
 package roomescape.domain;
 
+import roomescape.domain.exception.InvalidEmailException;
+import roomescape.domain.exception.InvalidNameException;
+import roomescape.domain.exception.InvalidPasswordException;
+
 import java.util.Objects;
 
 public class Member {
+
+    private static final String EMAIL_REGEX =
+            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" +
+                    "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
     private final Long id;
     private final String name;
@@ -11,19 +19,40 @@ public class Member {
     private final Role role;
 
     public Member(Long id) {
-        this.id = id;
-        this.name = null;
-        this.email = null;
-        this.password = null;
-        this.role = null;
+        this(id, null, null, null, null);
     }
 
     public Member(Long id, String name, String email, String password, Role role) {
+        validateName(name);
+        validateEmail(email);
+        validatePassword(password);
+
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    private void validatePassword(String password) {
+        if (password == null || password.isBlank()) {
+            throw new InvalidPasswordException("비밀번호는 공백일 수 없습니다.");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new InvalidEmailException("이메일은 공백일 수 없습니다.");
+        }
+        if (!email.matches(EMAIL_REGEX)) {
+            throw new InvalidEmailException("이메일이 형식에 맞지 않습니다.");
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidNameException("이름은 공백일 수 없습니다.");
+        }
     }
 
     public Member assignId(Long id) {

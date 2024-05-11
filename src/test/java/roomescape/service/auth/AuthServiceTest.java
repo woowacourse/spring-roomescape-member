@@ -14,8 +14,8 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.repository.H2MemberRepository;
 import roomescape.repository.MemberRepository;
+import roomescape.service.auth.exception.InvalidTokenException;
 import roomescape.service.auth.exception.MemberNotFoundException;
-import roomescape.service.auth.exception.TokenNotFoundException;
 
 import java.util.List;
 
@@ -98,7 +98,7 @@ class AuthServiceTest {
     @DisplayName("토큰이 공백일 경우 예외가 발생한다.")
     void getMemberByTokenEmpty(String token) {
         assertThatThrownBy(() -> authService.getMemberByToken(token))
-                .isInstanceOf(TokenNotFoundException.class);
+                .isInstanceOf(InvalidTokenException.class);
     }
 
     @Test

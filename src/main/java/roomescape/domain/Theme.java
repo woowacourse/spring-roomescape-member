@@ -8,21 +8,17 @@ public class Theme {
 
     public static String DEFAULT_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
 
-    // TODO: 모든 도메인 검증 추가
     private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
     public Theme(Long id) {
-        this.id = id;
-        this.name = null;
-        this.description = null;
-        this.thumbnail = null;
+        this(id, null, null, null);
     }
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        validateNameNull(name);
+        validateName(name);
 
         this.id = id;
         this.name = name;
@@ -30,17 +26,17 @@ public class Theme {
         this.thumbnail = getDefaultThumbnailIfNotExists(thumbnail);
     }
 
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidNameException("이름은 공백일 수 없습니다.");
+        }
+    }
+
     private String getDefaultThumbnailIfNotExists(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             return DEFAULT_THUMBNAIL;
         }
         return thumbnail;
-    }
-
-    private void validateNameNull(String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidNameException("이름은 공백일 수 없습니다.");
-        }
     }
 
     public Theme assignId(Long id) {

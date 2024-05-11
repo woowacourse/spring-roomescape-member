@@ -130,6 +130,7 @@ class ThemeServiceTest {
                 .isInstanceOf(ThemeUsedException.class);
     }
 
+    // TODO: MethodParams 써서 random 하지 않은 테스트로 변경
     @ParameterizedTest
     @CsvSource(value = {"7:10"}, delimiter = ':')
     @DisplayName("인기 테마를 조회한다.")

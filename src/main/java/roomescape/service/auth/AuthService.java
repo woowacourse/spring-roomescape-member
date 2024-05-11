@@ -6,8 +6,8 @@ import roomescape.controller.login.TokenResponse;
 import roomescape.controller.member.MemberResponse;
 import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
+import roomescape.service.auth.exception.InvalidTokenException;
 import roomescape.service.auth.exception.MemberNotFoundException;
-import roomescape.service.auth.exception.TokenNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class AuthService {
     public Member getMemberByToken(String token) {
         String payload = jwtTokenProvider.getPayloadOrElseThrow(
                 token,
-                () -> new TokenNotFoundException("토큰이 존재 하지 않습니다.")
+                () -> new InvalidTokenException("유효하지 않은 토큰입니다.")
         );
 
         return getMemberByEmail(payload);

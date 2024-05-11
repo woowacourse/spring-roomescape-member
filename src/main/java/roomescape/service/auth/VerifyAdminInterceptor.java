@@ -1,7 +1,6 @@
 package roomescape.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -10,8 +9,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.exception.ErrorResponse;
+import roomescape.service.auth.exception.InvalidTokenException;
 import roomescape.service.auth.exception.MemberNotFoundException;
-import roomescape.service.auth.exception.TokenNotFoundException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -35,11 +34,11 @@ public class VerifyAdminInterceptor implements HandlerInterceptor {
         Member member;
         try {
             member = authService.getMemberByToken(token);
-        } catch (TokenNotFoundException e) {
-            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "토큰이 존재 하지 않습니다.");
-            return false;
-        } catch (MemberNotFoundException | ExpiredJwtException e) {
+        } catch (MemberNotFoundException | InvalidTokenException e) {
             setErrorResponse(response, HttpStatus.UNAUTHORIZED, "유효 하지 않은 토큰 입니다.");
+            return false;
+        } catch (Exception e) {
+            setErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "토큰 인증에 실패 하였습니다.");
             return false;
         }
 

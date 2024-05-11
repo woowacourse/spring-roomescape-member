@@ -11,8 +11,7 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id) {
-        this.id = id;
-        this.startAt = null;
+        this(id, (LocalTime) null);
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
@@ -21,22 +20,12 @@ public class ReservationTime {
     }
 
     public ReservationTime(Long id, String startAt) {
-        validateTimeBlank(startAt);
-        validateTimeFormat(startAt);
-
-        this.id = id;
-        this.startAt = LocalTime.parse(startAt);
+        this(id, validateTimeAndParse(startAt));
     }
 
-    private void validateTimeBlank(String startAt) {
-        if (startAt == null || startAt.isBlank()) {
-            throw new InvalidTimeException("시간은 공백일 수 없습니다.");
-        }
-    }
-
-    private void validateTimeFormat(String startAt) {
+    private static LocalTime validateTimeAndParse(String startAt) {
         try {
-            LocalTime.parse(startAt);
+            return LocalTime.parse(startAt);
         } catch (DateTimeParseException e) {
             throw new InvalidTimeException("시간 형식이 올바르지 않습니다.");
         }
