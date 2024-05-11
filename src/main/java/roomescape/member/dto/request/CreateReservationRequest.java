@@ -11,14 +11,14 @@ public record CreateReservationRequest(
         LocalDate date,
 
         @Positive(message = "예약하고자 하는 회원 식별자는 양수만 가능합니다.")
-        @NotNull(message = "예약하고자 하는 회원 식별자는 필수입니다.")
+        @NotNull(message = "예약 등록 시 회원은 필수입니다.")
         Long memberId,
 
-        @Positive(message = "예약 시간 식별자는 양수만 가능합니다.")
+        @Positive(message = "예약 등록 시 시간 식별자는 양수만 가능합니다.")
         @NotNull(message = "예약 등록 시 시간은 필수입니다.")
         Long timeId,
 
-        @Positive(message = "예약 테마 식별자는 양수만 가능합니다.")
+        @Positive(message = "예약 등록 시 테마 식별자는 양수만 가능합니다.")
         @NotNull(message = "예약 등록 시 테마는 필수입니다.")
         Long themeId) {
 }
