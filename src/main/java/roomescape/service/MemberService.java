@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.exception.DuplicatedException;
@@ -46,5 +47,12 @@ public class MemberService {
     public Member get(long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당하는 사용자가 없습니다."));
+    }
+
+    public List<MemberResponse> findAll() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }
