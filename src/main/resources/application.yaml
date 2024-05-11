@@ -1,0 +1,18 @@
+# h2-console
+spring:
+  h2:
+    console:
+      enabled: true
+
+# DB URL
+  datasource:
+    url: jdbc:h2:mem:database;NON_KEYWORDS=USER
+
+
+# data.sql
+  jpa:
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
