@@ -18,6 +18,7 @@ import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.dao.FakeMemberDao;
 
@@ -41,7 +42,8 @@ class AuthServiceTest {
         //given
         String password = "1234";
         Member member = memberRepository.save(
-                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password, getMemberChoco().getRole()));
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password,
+                        getMemberChoco().getRole()));
         LoginRequest loginRequest = new LoginRequest(member.getEmail(), password);
 
         //when
@@ -105,10 +107,15 @@ class AuthServiceTest {
     @Test
     void createDuplicatedEmail() {
         //given
+        String password = "1234";
+        memberRepository.save(
+                new MemberSignUp(getMemberChoco().getName(), getMemberChoco().getEmail(), password, Role.USER));
+        SignUpRequest signUpRequest =
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), password);
 
-        //when
-
-        //then
-
+        //when & then
+        assertThatThrownBy(() -> authService.signUp(signUpRequest))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.DUPLICATED_EMAIL_ERROR.getMessage());
     }
 }
