@@ -27,7 +27,7 @@ public class Theme {
         return new Theme(name, description, thumbnail);
     }
 
-    public static Theme getThemeFrom(long id) {
+    public static Theme saveThemeFrom(long id) {
         return new Theme(id, null, null, null);
     }
 
