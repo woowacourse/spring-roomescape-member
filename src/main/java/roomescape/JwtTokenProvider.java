@@ -26,4 +26,14 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+
+    public long getPayload(String token) {
+        String payload = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+        
+        return Long.parseLong(payload);
+    }
 }

@@ -22,12 +22,23 @@ public class JdbcMemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        List<Member> members = jdbcTemplate.query(sql, memberRowMapper, id);
+        if (members.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(members.get(0));
+    }
+
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
         List<Member> members = jdbcTemplate.query(sql, memberRowMapper, email, password);
         if (members.isEmpty()) {
             return Optional.empty();
         }
+        
         return Optional.of(members.get(0));
     }
 }

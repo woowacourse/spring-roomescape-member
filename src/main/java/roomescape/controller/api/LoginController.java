@@ -1,14 +1,17 @@
 package roomescape.controller.api;
 
 import jakarta.servlet.http.Cookie;
-import org.springframework.http.HttpHeaders;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.MemberResponse;
 import roomescape.service.MemberService;
 
 @RestController
@@ -23,7 +26,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> tokenLogin(@RequestBody LoginRequest request) {
+    public void tokenLogin(@RequestBody LoginRequest request, HttpServletResponse response) {
         Member member = memberService.getMemberByLogin(request);
         String accessToken = jwtTokenProvider.createToken(member);
 
@@ -31,10 +34,25 @@ public class LoginController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addCookie(cookie);
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+        String token = extractTokenFromCookie(request.getCookies());
+        MemberResponse member = memberService.findMemberByToken(token);
+
         return ResponseEntity.ok()
-                .headers(headers)
-                .build();
+                .body(member);
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        return "";
     }
 }
