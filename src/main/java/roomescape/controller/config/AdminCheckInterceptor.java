@@ -25,16 +25,12 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        Member foundMember = findMember(request);
+        Member foundMember = loginService.check(request.getCookies());
         if (Role.mapTo(foundMember.getRole()) == ADMIN) {
             return true;
         }
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return false;
-    }
-
-    private Member findMember(HttpServletRequest request) {
-        return loginService.check(request.getCookies());
     }
 }
