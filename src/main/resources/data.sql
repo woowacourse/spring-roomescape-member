@@ -12,27 +12,27 @@ INSERT INTO theme(name, description, thumbnail) VALUES('test3', 'desc3', 'https:
 INSERT INTO theme(name, description, thumbnail) VALUES('test4', 'desc4', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 -- 테스트용 유저 정보 등록
-INSERT INTO member(name, email, password) VALUES ('test_name1', 'test1@email.com', 'test_password1');
-INSERT INTO member(name, email, password) VALUES ('test_name2', 'test2@email.com', 'test_password2');
-INSERT INTO member(name, email, password) VALUES ('test_name3', 'test3@email.com', 'test_password3');
+INSERT INTO member(name, email, password) VALUES ('test_member1', 'test1@email.com', 'test_password1');
+INSERT INTO member(name, email, password) VALUES ('test_member2', 'test2@email.com', 'test_password2');
+INSERT INTO member(name, email, password) VALUES ('test_member3', 'test3@email.com', 'test_password3');
 
 -- 가장 많이 예약된 테마가 3 -> 2 -> 1 -> 4 순으로 되도록 설정
 -- 1번 테마
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name1', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '1', '1', '1');
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name4', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '5', '1', '1');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '1', '1', '1');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '5', '1', '1');
 
 -- 2번 테마
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name2', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '2', '2', '1');
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name3', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '1', '2', '2');
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name4', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '5', '2', '3');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '2', '2', '1');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '1', '2', '2');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '5', '2', '3');
 
 -- 3번 테마
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name1', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '1', '3', '1');
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name1', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '2', '3', '2');
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name1', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '3', '3', '3');
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name1', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '5', '3', '1');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '1', '3', '1');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '2', '3', '2');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '3', '3', '3');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '5', '3', '1');
 
 -- 4번 테마
-INSERT INTO reservation(name, date, time_id, theme_id, member_id) VALUES ('name1', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '4', '4', '1');
+INSERT INTO reservation(date, time_id, theme_id, member_id) VALUES (FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '4', '4', '1');
 
 
