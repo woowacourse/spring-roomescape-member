@@ -1,5 +1,6 @@
 package roomescape.member.application;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.NotFoundException;
@@ -21,7 +22,11 @@ public class MemberService {
     @Transactional
     public Member create(Member member) {
         validateDuplicatedEmail(member);
-        return memberRepository.save(member);
+        try {
+            return memberRepository.save(member);
+        } catch (DuplicateKeyException e) {
+            throw new ViolationException("중복된 이메일입니다.");
+        }
     }
 
     private void validateDuplicatedEmail(Member member) {
