@@ -17,7 +17,7 @@ CREATE TABLE theme
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     VARCHAR(255) NOT NULL,
+    date     DATE NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,                             -- 컬럼 추가
     PRIMARY KEY (id),
