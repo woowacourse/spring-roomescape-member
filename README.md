@@ -158,3 +158,25 @@ Content-Type: application/json
 - [x] 구현체에 대한 infrastructure 패키지 분리
 - [x] 테스트용 db 분리하기
 - [x] 주석 삭제
+
+
+## 추가로 고민할 부분
+- [ ] 컨트롤러 네이밍 고민
+- [ ] 4,5 단계 테스트 추가하기
+- [ ] dao 테스트 제거
+- [ ] 테스트 mock 적용
+- [ ] 테스트 추가 getAll_member
+- [ ] URLSearchParams 적용
+- [ ] 필터 옵션 없는 경우 적용
+- [ ] data.sql
+- configuration 의존성 memberService -> authService로 바꿔보기
+- [ ] TimeCreateRequest: @NotNull illegal? method exception?
+- [ ] Long memberId = Long.valueOf(Jwts.parserBuilder() 중복 제거
+- [ ] extractTokenFromCookie(final Cookie[] cookies) {  중복 제거
+- [ ] 테스트 httpStatus 통일
+- [ ] /times/member -> /times/available
+- [ ] exception 핸들러 컨트롤러 어드바이스 이해하기
+- [ ] 상수화
+- [ ] class IllegalReservationException extends IllegalArgumentException {
+- [ ] findIds sql문 in으로 수정
+- [ ] flatpkr url로 수2정
