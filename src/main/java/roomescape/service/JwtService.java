@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
+import roomescape.service.exception.UnauthorizedException;
 
 @Service
 public class JwtService {
@@ -31,13 +32,13 @@ public class JwtService {
     public String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new IllegalStateException("쿠키가 존재하지 않습니다.");
+            throw new UnauthorizedException("권한이 없습니다. 로그인을 다시 시도해주세요.");
         }
 
         return Arrays.stream(cookies)
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("토큰이 존재하지 않습니다."))
+                .orElseThrow(() -> new UnauthorizedException("권한이 없습니다. 로그인을 다시 시도해주세요."))
                 .getValue();
     }
 
