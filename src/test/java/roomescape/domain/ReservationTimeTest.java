@@ -1,10 +1,13 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.util.Fixture.ID;
 import static roomescape.util.Fixture.START_AT;
 
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BadRequestException;
@@ -31,5 +34,26 @@ class ReservationTimeTest {
         assertThatThrownBy(() -> new ReservationTime(ID, "1시"))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("시간 형식이 잘못되었습니다.");
+    }
+
+    @Test
+    @DisplayName("예약 시간이 과거인지 여부를 반환한다.")
+    void isPast() {
+        final LocalTime pastTime = LocalTime.now().minusSeconds(1);
+        final LocalTime futureTime = LocalTime.now().plusMinutes(1);
+
+        assertAll(
+                () -> assertThat(new ReservationTime(ID, pastTime).isPast()).isTrue(),
+                () -> assertThat(new ReservationTime(ID, futureTime).isPast()).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("예약 시간을 HH:mm 형식으로 반환한다.")
+    void getStartAtString() {
+        final LocalTime time = LocalTime.of(8, 1);
+        final ReservationTime reservationTime = new ReservationTime(ID, time);
+
+        assertThat(reservationTime.getStartAtString()).isEqualTo("08:01");
     }
 }
