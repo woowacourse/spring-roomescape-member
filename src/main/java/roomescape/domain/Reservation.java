@@ -47,11 +47,6 @@ public class Reservation {
         return new Reservation(id, member, ReservationDate.from(date), time, theme);
     }
 
-//    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time,
-//                                   final Theme theme) {
-//        return new Reservation(id, new Name(name), ReservationDate.from(date), time, theme);
-//    }
-
     public Long getId() {
         return id;
     }
@@ -59,10 +54,6 @@ public class Reservation {
     public Member getMember() {
         return member;
     }
-
-//    public String getNameAsString() {
-//        return member.asString();
-//    }
 
     public ReservationDate getDate() {
         return date;
@@ -78,10 +69,6 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public String getDateAndTimeFormat() {
-        return this.date.asString() + " " + this.time.getStartAtAsString();
     }
 
     public boolean isBefore(final LocalDate localDate, final LocalTime localTime) {
@@ -109,5 +96,16 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", member=" + member +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                '}';
     }
 }

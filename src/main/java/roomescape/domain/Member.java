@@ -19,6 +19,6 @@ public record Member(Long id, Name name, Email email, Password password, Role ro
     }
 
     public String nameAsString() {
-        return name.asString();
+        return name.value();
     }
 }

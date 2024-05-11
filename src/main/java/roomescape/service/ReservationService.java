@@ -64,4 +64,12 @@ public class ReservationService {
         }
         reservationDao.delete(id);
     }
+
+    public List<ReservationOutput> filterReservations(final Long themeId,
+                                     final Long memberId,
+                                     final String dateFrom,
+                                     final String dateTo) {
+        final var reservations = reservationDao.filter(themeId, memberId, dateFrom, dateTo);
+        return ReservationOutput.list(reservations);
+    }
 }

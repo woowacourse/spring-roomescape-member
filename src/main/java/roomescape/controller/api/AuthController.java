@@ -44,7 +44,7 @@ public class AuthController {
 
     @GetMapping("/check")
     public ResponseEntity<SomeResponse> findAuthInfo(@AuthenticationPrincipal final Member member) {
-        final var response = new SomeResponse(member.name().name());
+        final var response = new SomeResponse(member.name().value());
         return ResponseEntity.ok(response);
     }
 }

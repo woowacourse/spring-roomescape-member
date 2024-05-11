@@ -94,4 +94,45 @@ public class ReservationDao {
         final String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public List<Reservation> filter(final Long themeId,
+                                    final Long memberId,
+                                    final String dateFrom,
+                                    final String dateTo) {
+        System.out.println(themeId + ", " + memberId + ", " + dateFrom + ", " + dateTo);
+        final var sql = """
+                        SELECT 
+                        r.id AS reservation_id,
+                        r.date, 
+                        t.id AS time_id,
+                        t.start_at,
+                        th.id AS theme_id,
+                        th.name AS theme_name,
+                        th.description AS theme_description,
+                        th.thumbnail AS theme_thumbnail,
+                        m.id AS member_id,
+                        m.name AS member_name,
+                        m.role AS member_role
+                        FROM reservation AS r
+                        INNER JOIN reservation_time AS t 
+                        ON r.time_id = t.id 
+                        INNER JOIN theme AS th 
+                        ON r.theme_id = th.id 
+                        INNER JOIN member AS m
+                        ON r.member_id = m.id
+                        WHERE (? IS NULL OR theme_id = ?)
+                        AND (? IS NULL OR member_id = ?)
+                        AND (
+                            (? IS NULL AND ? IS NULL)
+                            OR (? IS NULL AND date <= ?)
+                            OR (? IS NULL AND date >= ?)
+                            OR (date BETWEEN ? AND ?)
+                        );
+                        """;
+        return jdbcTemplate.query(sql, rowMapper, themeId, themeId, memberId, memberId,
+                dateFrom, dateTo,
+                dateFrom, dateTo,
+                dateTo, dateFrom,
+                dateFrom, dateTo);
+    }
 }

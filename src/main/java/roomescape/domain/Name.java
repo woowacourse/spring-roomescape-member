@@ -2,19 +2,15 @@ package roomescape.domain;
 
 import roomescape.exception.InvalidInputException;
 
-public record Name(String name) {
+public record Name(String value) {
 
     public Name {
-        validate(name);
+        validate(value);
     }
 
     private void validate(final String name) {
         if (name.isBlank()) {
             throw InvalidInputException.of("name", name);
         }
-    }
-
-    public String asString() {
-        return name;
     }
 }

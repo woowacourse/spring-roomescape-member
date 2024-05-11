@@ -30,7 +30,7 @@ public class MemberDao {
 
     public Member create(final Member member) {
         final var params = new MapSqlParameterSource()
-                .addValue("name", member.name())
+                .addValue("name", member.nameAsString())
                 .addValue("email", member.email())
                 .addValue("password", member.password())
                 .addValue("role", member.role());

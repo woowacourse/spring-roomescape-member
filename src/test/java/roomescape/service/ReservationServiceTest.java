@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -14,6 +15,7 @@ import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Reservation;
 import roomescape.exception.CustomException2;
 import roomescape.exception.NotExistsException;
 import roomescape.fixture.MemberFixture;
@@ -21,6 +23,7 @@ import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
+import roomescape.service.dto.output.ReservationOutput;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -91,5 +94,66 @@ class ReservationServiceTest {
         final ReservationInput input = ReservationInput.of("2024-01-01", timeId, themeId, memberId);
         assertThatThrownBy(() -> reservationService.createReservation(input))
                 .isInstanceOf(CustomException2.class);
+    }
+
+    @DisplayName("dateFrom이 없고 dateTo가 없는 경우 전체 날짜를 조회한다.")
+    @Test
+    void get_all_date_reservations() {
+        final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
+
+        final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));
+        final var reservation2 = reservationDao.create(Reservation.of(null, member, "2024-06-03", time, theme));
+
+        final var outputs = reservationService.filterReservations(null, null, null, null);
+
+        assertThat(outputs).containsExactly(ReservationOutput.from(reservation1), ReservationOutput.from(reservation2));
+    }
+
+    @DisplayName("dateFrom이 없고 dateTo가 있는 경우 dateTo까지의 날짜를 조회한다.")
+    @Test
+    void get_until_dateTo_reservations() {
+        final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
+
+        final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));
+        final var reservation2 = reservationDao.create(Reservation.of(null, member, "2024-06-03", time, theme));
+
+        final var outputs = reservationService.filterReservations(null, null, null, "2024-06-02");
+
+        assertThat(outputs).containsExactly(ReservationOutput.from(reservation1));
+    }
+
+    @DisplayName("dateFrom이 있고 dateTo가 없는 경우 dateFrom부터의 날짜를 조회한다.")
+    @Test
+    void get_after_dateFrom_reservations() {
+        final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
+
+        final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));
+        final var reservation2 = reservationDao.create(Reservation.of(null, member, "2024-06-03", time, theme));
+
+        final var outputs = reservationService.filterReservations(null, null, "2024-06-03", null);
+
+        assertThat(outputs).containsExactly(ReservationOutput.from(reservation2));
+    }
+
+    @DisplayName("dateFrom이 있고 dateTo가 있는 경우 dateFrom부터 dateTo까지의 날짜를 조회한다.")
+    @Test
+    void get_after_dateFrom_and_until_dateTo_reservations() {
+        final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
+
+        final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));
+        final var reservation2 = reservationDao.create(Reservation.of(null, member, "2024-06-03", time, theme));
+        final var reservation3 = reservationDao.create(Reservation.of(null, member, "2024-06-04", time, theme));
+
+        final var outputs = reservationService.filterReservations(null, null, "2024-06-03", "2024-06-04");
+
+        assertThat(outputs).containsExactly(ReservationOutput.from(reservation2), ReservationOutput.from(reservation3));
     }
 }
