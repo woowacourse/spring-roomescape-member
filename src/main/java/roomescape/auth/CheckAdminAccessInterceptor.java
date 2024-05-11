@@ -23,14 +23,14 @@ public class CheckAdminAccessInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie adminInfo = WebUtils.getCookie(request, ADMIN_INFO_KEY_NAME);
         if (adminInfo == null) {
-            throw new AccessDeniedException("잘못된 접근");
+            throw new AccessDeniedException();
         }
         String token = adminInfo.getValue();
         long memberId = tokenProvider.extractMemberId(token);
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new AccessDeniedException("잘못된 접근"));
+                .orElseThrow(AccessDeniedException::new);
         if (!member.isAdmin()) {
-            throw new AccessDeniedException("잘못된 접근");
+            throw new AccessDeniedException();
         }
         return true;
     }
