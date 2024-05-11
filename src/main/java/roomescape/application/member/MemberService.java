@@ -11,6 +11,7 @@ import roomescape.auth.TokenManager;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.domain.role.MemberRole;
+import roomescape.domain.role.Role;
 import roomescape.domain.role.RoleRepository;
 
 @Service
@@ -31,17 +32,19 @@ public class MemberService {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
         Member member = memberRepository.save(request.toMember());
-        MemberRole role = new MemberRole(member.getId());
+        MemberRole role = new MemberRole(member, Role.MEMBER);
         roleRepository.save(role);
         return MemberResponse.from(member);
     }
 
+    @Transactional
     public TokenResponse login(MemberLoginRequest request) {
         Member member = memberRepository.getByEmail(request.email());
         if (!member.matchPassword(request.password())) {
             throw new IllegalArgumentException("이메일 / 비밀번호를 확인해 주세요.");
         }
-        String token = tokenManager.createToken(member.getId());
+        MemberRole memberRole = roleRepository.getByMemberId(member.getId());
+        String token = tokenManager.createToken(memberRole);
         return new TokenResponse(token);
     }
 

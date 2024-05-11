@@ -31,7 +31,7 @@ class JdbcRoleRepositoryTest {
     void saveRoleTest() {
         Member member = new Member("name", "email@test.com", "12341234");
         Member savedMember = jdbcMemberRepository.save(member);
-        MemberRole role = new MemberRole(savedMember.getId(), Role.ADMIN);
+        MemberRole role = new MemberRole(savedMember, Role.ADMIN);
         jdbcRoleRepository.save(role);
         assertThat(getRowCount()).isEqualTo(1);
     }

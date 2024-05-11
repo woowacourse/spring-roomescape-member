@@ -14,6 +14,9 @@ import roomescape.application.member.dto.response.TokenResponse;
 import roomescape.auth.TokenManager;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
+import roomescape.domain.role.MemberRole;
+import roomescape.domain.role.Role;
+import roomescape.domain.role.RoleRepository;
 
 @ServiceTest
 class MemberServiceTest {
@@ -23,6 +26,9 @@ class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private TokenManager tokenManager;
@@ -67,8 +73,10 @@ class MemberServiceTest {
         String mail = "email@mail.com";
         Member member = memberRepository.save(new Member("name", mail, "12341234"));
         MemberLoginRequest request = new MemberLoginRequest(mail, "12341234");
+        roleRepository.save(new MemberRole(member, Role.MEMBER));
+
         TokenResponse response = memberService.login(request);
-        long id = tokenManager.getMemberIdFrom(response.token());
+        long id = tokenManager.extract(response.token()).getMemberId();
         assertThat(id).isEqualTo(member.getId());
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.infrastructure.role;
 
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -33,12 +34,27 @@ public class JdbcRoleRepository implements RoleRepository {
 
     @Override
     public boolean isAdminByMemberId(long memberId) {
-        String sql = "select member_id, role from role where member_id = ?";
+        String sql = "select exists(select 1 from role where member_id = ? and role = 'admin')";
         try {
-            MemberRole role = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> RoleRowMapper.mapRow(rs), memberId);
-            return role != null && role.isAdmin();
+            Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, memberId);
+            return Boolean.TRUE.equals(result);
         } catch (EmptyResultDataAccessException e) {
             return false;
+        }
+    }
+
+    @Override
+    public Optional<MemberRole> findByMemberId(long id) {
+        String sql = """
+                select member_id, m.name, role from role
+                left join member m on role.member_id = m.id
+                where member_id = ?
+                """;
+        try {
+            MemberRole role = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> RoleRowMapper.mapRow(rs), id);
+            return Optional.ofNullable(role);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 }

@@ -8,16 +8,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AdminRoleInterceptor;
 import roomescape.auth.LoginMemberIdArgumentResolver;
 import roomescape.auth.TokenManager;
-import roomescape.domain.role.RoleRepository;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     private final TokenManager tokenManager;
-    private final RoleRepository roleRepository;
 
-    public WebConfig(TokenManager tokenManager, RoleRepository roleRepository) {
+    public WebConfig(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
-        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -27,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminRoleInterceptor(tokenManager, roleRepository))
+        registry.addInterceptor(new AdminRoleInterceptor(tokenManager))
                 .addPathPatterns("/admin/**");
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.exception.ExpiredTokenException;
 import roomescape.auth.exception.InvalidTokenException;
+import roomescape.domain.role.MemberRole;
+import roomescape.domain.role.Role;
 
 @Component
 public class TokenManager {
@@ -34,23 +36,29 @@ public class TokenManager {
                 .build();
     }
 
-    public String createToken(long memberId) {
+    public String createToken(MemberRole memberRole) {
         Date now = Date.from(clock.instant());
         Date expiresAt = new Date(now.getTime() + tokenExpirationMills);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(memberId))
+                .setSubject(String.valueOf(memberRole.getMemberId()))
+                .claim("name", memberRole.getMemberName())
+                .claim("role", memberRole.getRoleName())
                 .setIssuedAt(now)
                 .setExpiration(expiresAt)
                 .signWith(secretKey)
                 .compact();
     }
 
-    public long getMemberIdFrom(String token) {
+    public MemberRole extract(String token) {
         try {
             Claims claims = jwtParser.parseClaimsJws(token)
                     .getBody();
-            return Long.parseLong(claims.getSubject());
+            return new MemberRole(
+                    Long.parseLong(claims.getSubject()),
+                    claims.get("name", String.class),
+                    Role.from(claims.get("role", String.class))
+            );
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (JwtException | IllegalArgumentException e) {

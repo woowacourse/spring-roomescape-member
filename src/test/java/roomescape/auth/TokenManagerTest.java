@@ -16,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import roomescape.auth.exception.ExpiredTokenException;
 import roomescape.auth.exception.InvalidTokenException;
+import roomescape.domain.role.MemberRole;
 
 class TokenManagerTest {
     private static final String TEST_TOKEN_SECRET = "test-secret".repeat(10);
@@ -28,7 +29,7 @@ class TokenManagerTest {
     @NullAndEmptySource
     @DisplayName("토큰이 비어있는 경우, 예외를 발생한다.")
     void invalidTokenOnBlankOrNull(String token) {
-        assertThatCode(() -> tokenManager.getMemberIdFrom(token))
+        assertThatCode(() -> tokenManager.extract(token))
                 .isInstanceOf(InvalidTokenException.class);
     }
 
@@ -37,10 +38,12 @@ class TokenManagerTest {
     void extractFromCookiesTest() {
         String token = Jwts.builder()
                 .setSubject("1")
+                .claim("name", "test")
+                .claim("role", "member")
                 .signWith(Keys.hmacShaKeyFor(TEST_TOKEN_SECRET.getBytes(StandardCharsets.UTF_8)))
                 .compact();
-        long memberId = tokenManager.getMemberIdFrom(token);
-        assertThat(memberId).isEqualTo(1);
+        MemberRole memberToken = tokenManager.extract(token);
+        assertThat(memberToken.getMemberId()).isEqualTo(1);
     }
 
     @Test
@@ -49,10 +52,12 @@ class TokenManagerTest {
         Date expireDate = Date.from(clock.instant().minusMillis(millis + 1));
         String token = Jwts.builder()
                 .setSubject("1")
+                .claim("name", "test")
+                .claim("role", "member")
                 .signWith(Keys.hmacShaKeyFor(TEST_TOKEN_SECRET.getBytes(StandardCharsets.UTF_8)))
                 .setExpiration(expireDate)
                 .compact();
-        assertThatCode(() -> tokenManager.getMemberIdFrom(token))
+        assertThatCode(() -> tokenManager.extract(token))
                 .isInstanceOf(ExpiredTokenException.class);
     }
 }
