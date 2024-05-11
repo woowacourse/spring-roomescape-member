@@ -47,7 +47,7 @@ public class ReservationApiController {
     @PostMapping(path = {"/reservations", "/admin/reservations"})
     public ResponseEntity<ReservationResponse> createMemberReservation(
             @Valid @RequestBody ReservationSaveRequest reservationSaveRequest,
-            @Login LoginMember loginMember
+            LoginMember loginMember
     ) {
         Long id = reservationService.save(reservationSaveRequest, loginMember);
         ReservationResponse reservationResponse = reservationService.findById(id);

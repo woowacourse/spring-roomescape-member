@@ -31,7 +31,7 @@ public class MemberLoginApiController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> loginCheck(@Login LoginMember loginMember) {
+    public ResponseEntity<MemberResponse> loginCheck(LoginMember loginMember) {
         MemberResponse memberResponse = memberLoginService.findMemberNameByLoginMember(loginMember);
 
         return ResponseEntity.ok(memberResponse);
