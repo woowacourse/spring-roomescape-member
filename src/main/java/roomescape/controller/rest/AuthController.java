@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.auth.LoginRequest;
 import roomescape.dto.auth.LoginResponse;
 import roomescape.global.exception.ApplicationException;
+import roomescape.global.exception.ExceptionType;
 import roomescape.service.AuthService;
 
 import java.util.Arrays;
@@ -49,14 +50,13 @@ public class AuthController {
 
     private String extractToken(Cookie[] cookies) {
         if (cookies == null) {
-            // TODO: 409 Conflict 터뜨리면 안될듯?
-            throw new ApplicationException("쿠키가 존재하지 않습니다.");
+            throw new ApplicationException(ExceptionType.NO_COOKIE_EXIST);
         }
 
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(() -> new ApplicationException("쿠키에 토큰 정보가 존재하지 않습니다."))
+                .orElseThrow(() -> new ApplicationException(ExceptionType.NO_TOKEN_EXIST))
                 .getValue();
     }
 }

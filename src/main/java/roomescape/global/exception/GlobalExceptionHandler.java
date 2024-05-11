@@ -2,7 +2,6 @@ package roomescape.global.exception;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.jsonwebtoken.security.SignatureException;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,7 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-// TODO: 예외 ENUM으로 분리 및 처리 로직 통합
+import java.util.List;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handle(ApplicationException e) {
         logger.warn(e.getMessage());
 
-        return new ResponseEntity(new ExceptionResponse(e.getMessage()), HttpStatus.CONFLICT);
+        return new ResponseEntity(new ExceptionResponse(e.getMessage()), e.getStatus());
     }
 
     @ExceptionHandler(value = EmptyResultDataAccessException.class)
