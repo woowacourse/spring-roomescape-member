@@ -1,4 +1,4 @@
-###
+### 예약 생성
 POST http://localhost:8080/reservations
 Content-Type: application/json
 
@@ -9,14 +9,17 @@ Content-Type: application/json
   "themeId": 1
 }
 
-###
+### 모든 예약 조회
 GET http://localhost:8080/reservations
 
-###
+### 예약 id 조회
 GET http://localhost:8080/reservations/1
 
-###
+### 예약 조건부 조회
+GET /reservations?memberId=1&themeId=1&dateFrom=2020-01-01&dateTo=2025-01-01
+
+### 예약 가능 시간 조회
 GET http://localhost:8080/reservations/times
 
-###
+### 예약 id 삭제
 DELETE http://localhost:8080/reservations/2

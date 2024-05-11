@@ -104,6 +104,11 @@ Content-Type: application/json
     }
 }
 ```
+### 예약 조건부 조회
+#### Request
+```
+GET /reservations?memberId={memberId}&themeId={themeId}&dateFrom={dateFrom}&dateTo={dateTo}  HTTP/1.1
+```
 
 ### 쿠키를 이용한 예약 생성
 #### Request
@@ -336,13 +341,11 @@ GET /themes/popular HTTP/1.1
 ### 예약 가능 시간 조회
 
 #### Request
-
 ```http request
 GET /reservations/times HTTP/1.1
 ```
 
 #### Response
-
 ```http request
 HTTP/1.1 200 
 Content-Type: application/json
