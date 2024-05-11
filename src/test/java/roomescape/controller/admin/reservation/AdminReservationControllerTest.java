@@ -55,8 +55,8 @@ class AdminReservationControllerTest {
     @Test
     @DisplayName("토큰 없이 요청할 경우 401 을 응답한다.")
     void requestWithoutToken() {
-        final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final CreateReservationRequest request = new CreateReservationRequest(tomorrow, 1L, 1L, 2L);
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        CreateReservationRequest request = new CreateReservationRequest(tomorrow, 1L, 1L, 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -70,8 +70,8 @@ class AdminReservationControllerTest {
     @Test
     @DisplayName("어드민 권한이 없는 토큰으로 요청 시 403 을 응답한다.")
     void requestWithNonAdminToken() {
-        final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final CreateReservationRequest request = new CreateReservationRequest(tomorrow, 1L, 1L, 2L);
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        CreateReservationRequest request = new CreateReservationRequest(tomorrow, 1L, 1L, 2L);
 
         RestAssured.given().log().all()
                 .cookie(tokenNonAdmin)
@@ -86,8 +86,8 @@ class AdminReservationControllerTest {
     @Test
     @DisplayName("예약을 추가 하면 201과 예약 정보를 응답 한다.")
     void addReservation201AndReservation() {
-        final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final CreateReservationRequest request = new CreateReservationRequest(tomorrow, 1L, 1L, 2L);
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        CreateReservationRequest request = new CreateReservationRequest(tomorrow, 1L, 1L, 2L);
 
         RestAssured.given().log().all()
                 .cookie(tokenAdmin)

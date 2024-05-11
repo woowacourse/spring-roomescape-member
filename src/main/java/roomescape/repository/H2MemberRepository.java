@@ -20,14 +20,14 @@ public class H2MemberRepository implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public H2MemberRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public H2MemberRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("MEMBER")
                 .usingGeneratedKeyColumns("ID");
     }
 
-    private Member mapRowMember(final ResultSet rs, final int rowNum) throws SQLException {
+    private Member mapRowMember(ResultSet rs, int rowNum) throws SQLException {
         return new Member(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
@@ -39,14 +39,14 @@ public class H2MemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        final String sql = "SELECT * FROM MEMBER";
+        String sql = "SELECT * FROM MEMBER";
 
         return jdbcTemplate.query(sql, this::mapRowMember);
     }
 
     @Override
-    public Optional<Member> findById(final long id) {
-        final String sql = "SELECT * FROM MEMBER WHERE ID = ?";
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT * FROM MEMBER WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowMember, id)
                 .stream()
@@ -54,8 +54,8 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmail(final String email) {
-        final String sql = "SELECT * FROM MEMBER WHERE EMAIL = ?";
+    public Optional<Member> findByEmail(String email) {
+        String sql = "SELECT * FROM MEMBER WHERE EMAIL = ?";
 
         return jdbcTemplate.query(sql, this::mapRowMember, email)
                 .stream()
@@ -63,14 +63,14 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     @Override
-    public void fetchById(final long id) {
+    public void fetchById(long id) {
         findById(id).orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 멤버 입니다."));
     }
 
     @Override
-    public Member save(final Member member) {
-        final BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(member);
-        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    public Member save(Member member) {
+        BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(member);
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         return member.assignId(id);
     }

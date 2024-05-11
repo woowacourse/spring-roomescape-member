@@ -13,11 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 @Sql(value = "/insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,7 +36,7 @@ class LoginControllerTest {
     @Test
     @DisplayName("존재하는 사용자 이메일과 비밀번호로 로그인을 하면 토큰을 응답한다.")
     void postLogin200PresentCredential() {
-        final TokenRequest request = new TokenRequest("seyang@test.com", "seyang");
+        TokenRequest request = new TokenRequest("seyang@test.com", "seyang");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -58,7 +54,7 @@ class LoginControllerTest {
     @Test
     @DisplayName("존재하지 않는 사용자의 이메일로 로그인을 하면 401 을 응답한다.")
     void postLogin401NotExistEmail() {
-        final TokenRequest request = new TokenRequest("no@test.com", "no");
+        TokenRequest request = new TokenRequest("no@test.com", "no");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -72,16 +68,16 @@ class LoginControllerTest {
     @Test
     @DisplayName("토큰으로 정보를 요청하면 200 과 권한을 응답한다.")
     void getInfo200Authorization() {
-        final TokenRequest request = new TokenRequest("seyang@test.com", "seyang");
+        TokenRequest request = new TokenRequest("seyang@test.com", "seyang");
 
-        final ExtractableResponse<Response> extract = RestAssured.given().log().all()
+        ExtractableResponse<Response> extract = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
                 .extract();
-        final Cookie token = extract.detailedCookie("token");
+        Cookie token = extract.detailedCookie("token");
 
         RestAssured.given().log().all()
                 .cookie(token)
@@ -95,7 +91,7 @@ class LoginControllerTest {
     @Test
     @DisplayName("만료된 토큰과 존재하는 사용자 정보 함께 요청 시 200과 새로운 토큰을 응답한다.")
     void postLoginExpiredTokenExistInfo200NewToken() {
-        final TokenRequest request = new TokenRequest("seyang@test.com", "seyang");
+        TokenRequest request = new TokenRequest("seyang@test.com", "seyang");
 
         RestAssured.given().log().all()
                 .cookie(expiredToken)

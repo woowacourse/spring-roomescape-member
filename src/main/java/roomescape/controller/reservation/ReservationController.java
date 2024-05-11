@@ -29,12 +29,12 @@ public class ReservationController {
     // TODO: RequestParams, QueryStringArgumentResolver 만들기 (https://growing-up-constantly.tistory.com/53)
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(
-            @RequestParam(value = "themeId", required = false) final Long themeId,
-            @RequestParam(value = "memberId", required = false) final Long memberId,
-            @RequestParam(value = "dateFrom", required = false) final String dateFrom,
-            @RequestParam(value = "dateTo", required = false) final String dateTo
+            @RequestParam(value = "themeId", required = false) Long themeId,
+            @RequestParam(value = "memberId", required = false) Long memberId,
+            @RequestParam(value = "dateFrom", required = false) String dateFrom,
+            @RequestParam(value = "dateTo", required = false) String dateTo
     ) {
-        final SearchReservationRequest request = new SearchReservationRequest(themeId, memberId, dateFrom, dateTo);
+        SearchReservationRequest request = new SearchReservationRequest(themeId, memberId, dateFrom, dateTo);
 
         if (request.existNull()) {
             return ResponseEntity.ok(reservationService.getReservations());
@@ -43,10 +43,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody final CreateReservationRequest request, LoginMember member) {
-        final CreateReservationRequest assignedMemberRequest = request.assignMemberId(member.id());
-        final ReservationResponse reservation = reservationService.addReservation(assignedMemberRequest);
-        final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody CreateReservationRequest request, LoginMember member) {
+        CreateReservationRequest assignedMemberRequest = request.assignMemberId(member.id());
+        ReservationResponse reservation = reservationService.addReservation(assignedMemberRequest);
+        URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())
                 .toUri();
 
@@ -55,7 +55,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservations(@PathVariable final Long id) {
+    public ResponseEntity<Void> deleteReservations(@PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }

@@ -23,14 +23,14 @@ public class H2ThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public H2ThemeRepository(final DataSource dataSource) {
+    public H2ThemeRepository(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns("ID");
     }
 
-    private Theme mapRowTheme(final ResultSet rs, final int rowNum) throws SQLException {
+    private Theme mapRowTheme(ResultSet rs, int rowNum) throws SQLException {
         return new Theme(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
@@ -39,7 +39,7 @@ public class H2ThemeRepository implements ThemeRepository {
         );
     }
 
-    private Theme mapRowThemeWithTableName(final ResultSet rs, final int rowNum) throws SQLException {
+    private Theme mapRowThemeWithTableName(ResultSet rs, int rowNum) throws SQLException {
         return new Theme(
                 rs.getLong(TABLE_NAME + ".ID"),
                 rs.getString(TABLE_NAME + ".NAME"),
@@ -50,14 +50,14 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        final String sql = "SELECT * FROM THEME";
+        String sql = "SELECT * FROM THEME";
 
         return jdbcTemplate.query(sql, this::mapRowTheme);
     }
 
     @Override
-    public Optional<Theme> findById(final long id) {
-        final String sql = "SELECT * FROM THEME WHERE ID = ?";
+    public Optional<Theme> findById(long id) {
+        String sql = "SELECT * FROM THEME WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTheme, id)
                 .stream()
@@ -65,17 +65,17 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void fetchById(final long id) {
+    public void fetchById(long id) {
         findById(id).orElseThrow(() -> new ThemeNotFoundException("존재 하지 않는 테마 입니다."));
     }
 
     @Override
     public List<Theme> findPopularThemes(
-            final LocalDate from,
-            final LocalDate to,
-            final int limit
+            LocalDate from,
+            LocalDate to,
+            int limit
     ) {
-        final String sql = """
+        String sql = """
                 SELECT T.ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS FREQUENCY
                 FROM THEME AS T
                 INNER JOIN RESERVATION R ON R.THEME_ID = T.ID
@@ -89,16 +89,16 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(final Theme theme) {
-        final SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
-        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    public Theme save(Theme theme) {
+        SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         return theme.assignId(id);
     }
 
     @Override
-    public int delete(final long id) {
-        final String sql = "DELETE FROM THEME WHERE ID = ?";
+    public int delete(long id) {
+        String sql = "DELETE FROM THEME WHERE ID = ?";
 
         return jdbcTemplate.update(sql, id);
     }

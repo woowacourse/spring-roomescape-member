@@ -43,7 +43,7 @@ class TimeControllerTest {
     @Test
     @DisplayName("해당 날짜와 테마에 예약 가능한 시간 리스트를 요청하면 200 과 예약 시간 리스트를 응답한다.")
     void getTimes200AndTimesWithBooked() {
-        final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.URLENC)
@@ -58,7 +58,7 @@ class TimeControllerTest {
     @Test
     @DisplayName("예약 시간 추가하면 201 을 응답한다.")
     void addTime201AndLocation() {
-        final TimeRequest request = new TimeRequest("12:40");
+        TimeRequest request = new TimeRequest("12:40");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -73,7 +73,7 @@ class TimeControllerTest {
     @Test
     @DisplayName("존재하는 예약 시간을 추가 하면 409 를 응답한다.")
     void addTime409() {
-        final TimeRequest request = new TimeRequest("08:00");
+        TimeRequest request = new TimeRequest("08:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

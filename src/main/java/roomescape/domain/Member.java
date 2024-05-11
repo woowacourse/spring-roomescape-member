@@ -10,7 +10,7 @@ public class Member {
     private final String password;
     private final Role role;
 
-    public Member(final Long id) {
+    public Member(Long id) {
         this.id = id;
         this.name = null;
         this.email = null;
@@ -18,7 +18,7 @@ public class Member {
         this.role = null;
     }
 
-    public Member(final Long id, final String name, final String email, final String password, final Role role) {
+    public Member(Long id, String name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -26,7 +26,7 @@ public class Member {
         this.role = role;
     }
 
-    public Member assignId(final Long id) {
+    public Member assignId(Long id) {
         return new Member(id, name, email, password, role);
     }
 
@@ -51,11 +51,11 @@ public class Member {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final Member member = (Member) o;
+        Member member = (Member) o;
         return Objects.equals(id, member.id) &&
                 Objects.equals(name, member.name) &&
                 Objects.equals(email, member.email) &&

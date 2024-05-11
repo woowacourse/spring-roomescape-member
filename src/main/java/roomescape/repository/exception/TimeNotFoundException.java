@@ -4,7 +4,7 @@ import roomescape.exception.NotFoundException;
 
 public class TimeNotFoundException extends NotFoundException {
 
-    public TimeNotFoundException(final String message) {
+    public TimeNotFoundException(String message) {
         super(message);
     }
 }

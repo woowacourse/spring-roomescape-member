@@ -4,7 +4,7 @@ import roomescape.exception.UnauthorizedException;
 
 public class TokenNotFoundException extends UnauthorizedException {
 
-    public TokenNotFoundException(final String message) {
+    public TokenNotFoundException(String message) {
         super(message);
     }
 }

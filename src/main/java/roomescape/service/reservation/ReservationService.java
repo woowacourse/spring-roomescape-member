@@ -31,10 +31,10 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final MemberRepository memberRepository,
-                              final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              MemberRepository memberRepository,
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -48,7 +48,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getReservations(SearchReservationRequest request) {
-        final List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndDateRange(
+        List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndDateRange(
                 request.themeId(),
                 request.memberId(),
                 request.dateFrom(),
@@ -60,8 +60,8 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse addReservation(final CreateReservationRequest createReservationRequest) {
-        final Reservation reservation = createReservationRequest.toDomain()
+    public ReservationResponse addReservation(CreateReservationRequest createReservationRequest) {
+        Reservation reservation = createReservationRequest.toDomain()
                 .assignTime(findTimeOrElseThrow(createReservationRequest.timeId()))
                 .assignTheme(findThemeOrElseThrow(createReservationRequest.themeId()))
                 .assignMember(findMemberOrElseThrow(createReservationRequest.memberId()));
@@ -73,7 +73,7 @@ public class ReservationService {
         );
         validateDateTimeFuture(reservation.getDate(), reservation.getTime());
 
-        final Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
 
@@ -104,14 +104,14 @@ public class ReservationService {
         }
     }
 
-    public int deleteReservation(final Long id) {
-        final int deletedCount = reservationRepository.delete(id);
+    public int deleteReservation(Long id) {
+        int deletedCount = reservationRepository.delete(id);
         validateNotFound(deletedCount);
 
         return deletedCount;
     }
 
-    private void validateNotFound(final int deletedCount) {
+    private void validateNotFound(int deletedCount) {
         if (deletedCount == 0) {
             throw new ReservationNotFoundException("존재하지 않는 예약 입니다.");
         }

@@ -40,7 +40,7 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마를 추가하면 201 과 테마와 위치를 응답한다.")
     void addTheme201AndThemeAndLocation() {
-        final CreateThemeRequest request = new CreateThemeRequest("New theme", "New desc", "New thumb");
+        CreateThemeRequest request = new CreateThemeRequest("New theme", "New desc", "New thumb");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

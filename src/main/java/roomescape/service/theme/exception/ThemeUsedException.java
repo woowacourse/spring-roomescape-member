@@ -4,7 +4,7 @@ import roomescape.exception.BadRequestException;
 
 public class ThemeUsedException extends BadRequestException {
 
-    public ThemeUsedException(final String message) {
+    public ThemeUsedException(String message) {
         super(message);
     }
 }

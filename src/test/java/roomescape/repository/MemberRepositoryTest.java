@@ -31,12 +31,12 @@ class MemberRepositoryTest {
     @DisplayName("아이디를 통해 멤버 정보를 찾는다.")
     void findById() {
         // given
-        final Member member = sampleMembers.get(0);
-        final Long id = memberRepository.save(member).getId();
+        Member member = sampleMembers.get(0);
+        Long id = memberRepository.save(member).getId();
 
         // when
-        final Member expected = member.assignId(id);
-        final Optional<Member> actual = memberRepository.findById(id);
+        Member expected = member.assignId(id);
+        Optional<Member> actual = memberRepository.findById(id);
 
         // then
         assertThat(actual).hasValue(expected);
@@ -46,12 +46,12 @@ class MemberRepositoryTest {
     @DisplayName("이메일을 통해 멤버 정보를 찾는다.")
     void findByEmail() {
         // given
-        final Member member = sampleMembers.get(0);
-        final Long id = memberRepository.save(sampleMembers.get(0)).getId();
+        Member member = sampleMembers.get(0);
+        Long id = memberRepository.save(sampleMembers.get(0)).getId();
 
         // when
-        final Member expected = member.assignId(id);
-        final Optional<Member> actual = memberRepository.findByEmail(member.getEmail());
+        Member expected = member.assignId(id);
+        Optional<Member> actual = memberRepository.findByEmail(member.getEmail());
 
         // then
         assertThat(actual).hasValue(expected);

@@ -15,13 +15,7 @@ import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.repository.H2MemberRepository;
-import roomescape.repository.H2ReservationRepository;
-import roomescape.repository.H2ReservationTimeRepository;
-import roomescape.repository.H2ThemeRepository;
-import roomescape.repository.MemberRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.*;
 import roomescape.repository.exception.ThemeNotFoundException;
 import roomescape.repository.exception.TimeNotFoundException;
 import roomescape.service.reservation.ReservationService;
@@ -48,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ReservationServiceTest {
 
     final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+
     List<ReservationTime> sampleTimes = List.of(
             new ReservationTime(null, "08:00"),
             new ReservationTime(null, "09:10")
@@ -98,12 +93,12 @@ class ReservationServiceTest {
     @DisplayName("예약 목록을 조회한다.")
     void getReservations() {
         // given
-        final List<ReservationResponse> expected = sampleReservations.stream()
+        List<ReservationResponse> expected = sampleReservations.stream()
                 .map(reservationService::addReservation)
                 .toList();
 
         // given & when
-        final List<ReservationResponse> actual = reservationService.getReservations();
+        List<ReservationResponse> actual = reservationService.getReservations();
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -113,19 +108,19 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void addReservation() {
         // given
-        final CreateReservationRequest createReservationRequest = sampleReservations.get(0);
+        CreateReservationRequest createReservationRequest = sampleReservations.get(0);
 
         // when
-        final ReservationResponse actual = reservationService.addReservation(createReservationRequest);
+        ReservationResponse actual = reservationService.addReservation(createReservationRequest);
 
-        final Optional<ReservationTime> timeOptional = sampleTimes.stream().filter(time -> time.getId().equals(createReservationRequest.timeId())).findAny();
-        final Optional<Theme> themeOptional = sampleThemes.stream().filter(theme -> theme.getId().equals(createReservationRequest.themeId())).findAny();
-        final Optional<Member> memberOptional = sampleMembers.stream().filter(member -> member.getId().equals(createReservationRequest.memberId())).findAny();
+        Optional<ReservationTime> timeOptional = sampleTimes.stream().filter(time -> time.getId().equals(createReservationRequest.timeId())).findAny();
+        Optional<Theme> themeOptional = sampleThemes.stream().filter(theme -> theme.getId().equals(createReservationRequest.themeId())).findAny();
+        Optional<Member> memberOptional = sampleMembers.stream().filter(member -> member.getId().equals(createReservationRequest.memberId())).findAny();
         assertThat(timeOptional).isPresent();
         assertThat(themeOptional).isPresent();
         assertThat(memberOptional).isPresent();
 
-        final ReservationResponse expected = new ReservationResponse(
+        ReservationResponse expected = new ReservationResponse(
                 actual.id(),
                 createReservationRequest.date(),
                 TimeResponse.from(timeOptional.get(), false),
@@ -141,10 +136,10 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제한다.")
     void deleteReservation() {
         // given
-        final CreateReservationRequest createReservationRequest = sampleReservations.get(0);
+        CreateReservationRequest createReservationRequest = sampleReservations.get(0);
 
         // when
-        final ReservationResponse actual = reservationService.addReservation(createReservationRequest);
+        ReservationResponse actual = reservationService.addReservation(createReservationRequest);
 
         // then
         assertThat(reservationService.deleteReservation(actual.id())).isOne();
@@ -156,15 +151,15 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 시간으로 예약을 할 때 예외가 발생한다.")
     void exceptionOnAddingReservationWithNonExistTime() {
         // given
-        final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final Long notExistTimeId = sampleTimes.stream()
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        Long notExistTimeId = sampleTimes.stream()
                 .map(ReservationTime::getId)
                 .max(Long::compare).stream()
                 .findAny()
                 .orElseThrow() + 1;
-        final Long themeId = sampleThemes.get(0).getId();
-        final Long memberId = sampleMembers.get(0).getId();
-        final CreateReservationRequest request = new CreateReservationRequest(tomorrow, notExistTimeId, themeId, memberId);
+        Long themeId = sampleThemes.get(0).getId();
+        Long memberId = sampleMembers.get(0).getId();
+        CreateReservationRequest request = new CreateReservationRequest(tomorrow, notExistTimeId, themeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
@@ -175,15 +170,15 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 테마로 예약을 할 때 예외가 발생한다.")
     void exceptionOnAddingReservationWithNonExistTheme() {
         // given
-        final String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final Long timeId = sampleTimes.get(0).getId();
-        final Long notExistThemeId = sampleThemes.stream()
+        String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        Long timeId = sampleTimes.get(0).getId();
+        Long notExistThemeId = sampleThemes.stream()
                 .map(Theme::getId)
                 .max(Long::compare).stream()
                 .findAny()
                 .orElseThrow() + 1;
-        final Long memberId = sampleMembers.get(0).getId();
-        final CreateReservationRequest request = new CreateReservationRequest(tomorrow, timeId, notExistThemeId, memberId);
+        Long memberId = sampleMembers.get(0).getId();
+        CreateReservationRequest request = new CreateReservationRequest(tomorrow, timeId, notExistThemeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))
@@ -194,13 +189,13 @@ class ReservationServiceTest {
     @DisplayName("예약 하려는 일정이 오늘 1분 전일 경우 예외가 발생한다.")
     void validateReservationTimeAfterThanNow() {
         // given
-        final String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final String oneMinAgo = LocalTime.now().minusMinutes(1).format(DateTimeFormatter.ofPattern("HH:mm"));
+        String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String oneMinAgo = LocalTime.now().minusMinutes(1).format(DateTimeFormatter.ofPattern("HH:mm"));
 
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, oneMinAgo));
-        final Long themeId = sampleThemes.get(0).getId();
-        final Long memberId = sampleMembers.get(0).getId();
-        final CreateReservationRequest createReservationRequest = new CreateReservationRequest(today, time.getId(), themeId, memberId);
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, oneMinAgo));
+        Long themeId = sampleThemes.get(0).getId();
+        Long memberId = sampleMembers.get(0).getId();
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(today, time.getId(), themeId, memberId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(createReservationRequest))
@@ -211,7 +206,7 @@ class ReservationServiceTest {
     @DisplayName("중복된 시간으로 예약을 할 때 예외가 발생한다.")
     void duplicateDateTimeReservation() {
         // given
-        final CreateReservationRequest request = sampleReservations.get(0);
+        CreateReservationRequest request = sampleReservations.get(0);
         reservationService.addReservation(request);
 
 

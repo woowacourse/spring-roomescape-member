@@ -4,7 +4,7 @@ import roomescape.exception.NotFoundException;
 
 public class ReservationNotFoundException extends NotFoundException {
 
-    public ReservationNotFoundException(final String message) {
+    public ReservationNotFoundException(String message) {
         super(message);
     }
 }

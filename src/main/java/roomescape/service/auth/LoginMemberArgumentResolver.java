@@ -14,25 +14,25 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     private final AuthorizationExtractor<String> authorizationExtractor;
     private final AuthService authService;
 
-    public LoginMemberArgumentResolver(final AuthService authService) {
+    public LoginMemberArgumentResolver(AuthService authService) {
         this.authorizationExtractor = new CookieAuthorizationExtractor();
         this.authService = authService;
     }
 
     @Override
-    public boolean supportsParameter(final MethodParameter parameter) {
+    public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(LoginMember.class);
     }
 
     @Override
     public Object resolveArgument(
-            final MethodParameter parameter,
-            final ModelAndViewContainer mavContainer,
-            final NativeWebRequest webRequest,
-            final WebDataBinderFactory binderFactory) {
-        final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        final String token = authorizationExtractor.extract(request);
-        final Member member = authService.getMemberByToken(token);
+            MethodParameter parameter,
+            ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory) {
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        String token = authorizationExtractor.extract(request);
+        Member member = authService.getMemberByToken(token);
 
         return LoginMember.from(member);
     }

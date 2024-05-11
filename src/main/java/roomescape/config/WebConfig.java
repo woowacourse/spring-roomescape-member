@@ -15,12 +15,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AuthService authService;
 
-    public WebConfig(final AuthService authService) {
+    public WebConfig(AuthService authService) {
         this.authService = authService;
     }
 
     @Override
-    public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver(authService));
     }
 

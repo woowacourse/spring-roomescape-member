@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(final BadRequestException e) {
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
         return createErrorResponse(HttpStatus.BAD_REQUEST, e);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorizedException(final UnauthorizedException e) {
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
         return createErrorResponse(HttpStatus.UNAUTHORIZED, e);
     }
 
@@ -27,21 +27,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(final NotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         return createErrorResponse(HttpStatus.NOT_FOUND, e);
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflictException(final ConflictException e) {
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
         return createErrorResponse(HttpStatus.CONFLICT, e);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorResponse> handleException(final Exception e) {
-//        return ResponseEntity.internalServerError().build();
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        return ResponseEntity.internalServerError().build();
+    }
 
-    public ResponseEntity<ErrorResponse> createErrorResponse(final HttpStatus httpStatus, final Exception e) {
+    public ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus httpStatus, Exception e) {
         return ResponseEntity.status(httpStatus)
                 .body(new ErrorResponse(e.getMessage()));
     }

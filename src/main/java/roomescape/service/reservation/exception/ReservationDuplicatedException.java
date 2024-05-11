@@ -4,7 +4,7 @@ import roomescape.exception.ConflictException;
 
 public class ReservationDuplicatedException extends ConflictException {
 
-    public ReservationDuplicatedException(final String message) {
+    public ReservationDuplicatedException(String message) {
         super(message);
     }
 }

@@ -21,7 +21,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(final ThemeService themeService) {
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -32,8 +32,8 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody final CreateThemeRequest createThemeRequest) {
-        final ThemeResponse theme = themeService.addTheme(createThemeRequest);
-        final URI uri = UriComponentsBuilder.fromPath("/themes/{id}")
+        ThemeResponse theme = themeService.addTheme(createThemeRequest);
+        URI uri = UriComponentsBuilder.fromPath("/themes/{id}")
                 .buildAndExpand(theme.id())
                 .toUri();
 
@@ -42,15 +42,15 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable final Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
     public ResponseEntity<List<PopularThemeResponse>> getPopularThemes(
-            @RequestParam(defaultValue = "7") final int days,
-            @RequestParam(defaultValue = "10") final int limit
+            @RequestParam(defaultValue = "7") int days,
+            @RequestParam(defaultValue = "10") int limit
     ) {
         return ResponseEntity.ok(themeService.getPopularThemes(new PopularThemeRequest(days, limit)));
     }

@@ -10,17 +10,17 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(final Long id) {
+    public ReservationTime(Long id) {
         this.id = id;
         this.startAt = null;
     }
 
-    public ReservationTime(final Long id, final LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime(final Long id, final String startAt) {
+    public ReservationTime(Long id, String startAt) {
         validateTimeBlank(startAt);
         validateTimeFormat(startAt);
 
@@ -28,13 +28,13 @@ public class ReservationTime {
         this.startAt = LocalTime.parse(startAt);
     }
 
-    private void validateTimeBlank(final String startAt) {
+    private void validateTimeBlank(String startAt) {
         if (startAt == null || startAt.isBlank()) {
             throw new InvalidTimeException("시간은 공백일 수 없습니다.");
         }
     }
 
-    private void validateTimeFormat(final String startAt) {
+    private void validateTimeFormat(String startAt) {
         try {
             LocalTime.parse(startAt);
         } catch (DateTimeParseException e) {
@@ -42,7 +42,7 @@ public class ReservationTime {
         }
     }
 
-    public ReservationTime assignId(final Long id) {
+    public ReservationTime assignId(Long id) {
         return new ReservationTime(id, startAt);
     }
 
@@ -55,7 +55,7 @@ public class ReservationTime {
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (ReservationTime) obj;

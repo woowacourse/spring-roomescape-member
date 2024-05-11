@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 public record ReservationResponse(Long id, String date, TimeResponse time,
                                   ReservationThemeResponse theme, MemberCheckResponse member) {
 
-    public static ReservationResponse from(final Reservation reservation) {
+    public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),

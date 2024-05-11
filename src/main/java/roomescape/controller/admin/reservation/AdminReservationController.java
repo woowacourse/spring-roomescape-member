@@ -24,8 +24,8 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody CreateReservationRequest request) {
-        final ReservationResponse reservation = reservationService.addReservation(request);
-        final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+        ReservationResponse reservation = reservationService.addReservation(request);
+        URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())
                 .toUri();
 

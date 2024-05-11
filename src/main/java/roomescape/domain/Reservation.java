@@ -13,7 +13,7 @@ public class Reservation {
     private final Theme theme;
     private final Member member;
 
-    public Reservation(final Long id, final LocalDate date, final ReservationTime time, final Theme theme, final Member member) {
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, Member member) {
         this.id = id;
         this.date = date;
         this.time = time;
@@ -21,15 +21,15 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(final Long id, final String date, final ReservationTime time, final Theme theme, final Member member) {
+    public Reservation(Long id, String date, ReservationTime time, Theme theme, Member member) {
         this(id, validateDateFormatAndReturn(date), time, theme, member);
     }
 
-    public Reservation(final Long id, final String date, final long timeId, long themeId, long memberId) {
+    public Reservation(Long id, String date, long timeId, long themeId, long memberId) {
         this(id, date, new ReservationTime(timeId), new Theme(themeId), new Member(memberId));
     }
 
-    private static LocalDate validateDateFormatAndReturn(final String date) {
+    private static LocalDate validateDateFormatAndReturn(String date) {
         try {
             return LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
@@ -37,19 +37,19 @@ public class Reservation {
         }
     }
 
-    public Reservation assignId(final Long id) {
+    public Reservation assignId(Long id) {
         return new Reservation(id, date, time, theme, member);
     }
 
-    public Reservation assignTime(final ReservationTime time) {
+    public Reservation assignTime(ReservationTime time) {
         return new Reservation(id, date, time, theme, member);
     }
 
-    public Reservation assignTheme(final Theme theme) {
+    public Reservation assignTheme(Theme theme) {
         return new Reservation(id, date, time, theme, member);
     }
 
-    public Reservation assignMember(final Member member) {
+    public Reservation assignMember(Member member) {
         return new Reservation(id, date, time, theme, member);
     }
 
@@ -74,11 +74,11 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final Reservation that = (Reservation) o;
+        Reservation that = (Reservation) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(date, that.date) &&
                 Objects.equals(time, that.time) &&

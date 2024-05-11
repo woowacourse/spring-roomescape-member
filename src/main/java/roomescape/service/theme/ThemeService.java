@@ -19,17 +19,17 @@ import java.util.List;
 @Service
 public class ThemeService {
 
-    public static final int DAYS_LIMIT = 30;
+    private static final int DAYS_LIMIT = 30;
     private static final int ROWS_LIMIT = 100;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ThemeService(final ReservationRepository reservationRepository, final ThemeRepository themeRepository) {
+    public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
     }
 
-    private static void validateNotFound(final int deletedCount) {
+    private static void validateNotFound(int deletedCount) {
         if (deletedCount == 0) {
             throw new ThemeNotFoundException("테마가 존재하지 않습니다.");
         }
@@ -41,53 +41,53 @@ public class ThemeService {
                 .toList();
     }
 
-    public ThemeResponse addTheme(final CreateThemeRequest createThemeRequest) {
-        final Theme theme = createThemeRequest.toDomain();
-        final Theme savedTheme = themeRepository.save(theme);
+    public ThemeResponse addTheme(CreateThemeRequest createThemeRequest) {
+        Theme theme = createThemeRequest.toDomain();
+        Theme savedTheme = themeRepository.save(theme);
 
         return ThemeResponse.from(savedTheme);
     }
 
-    public int deleteTheme(final Long id) {
+    public int deleteTheme(Long id) {
         validateUsed(id);
 
-        final int deletedCount = themeRepository.delete(id);
+        int deletedCount = themeRepository.delete(id);
         validateNotFound(deletedCount);
 
         return deletedCount;
     }
 
-    private void validateUsed(final Long id) {
+    private void validateUsed(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new ThemeUsedException("예약된 테마는 삭제할 수 없습니다.");
         }
     }
 
-    public List<PopularThemeResponse> getPopularThemes(final PopularThemeRequest popularThemeRequest) {
+    public List<PopularThemeResponse> getPopularThemes(PopularThemeRequest popularThemeRequest) {
         validateDaysLimit(popularThemeRequest.days());
         validateRowsLimit(popularThemeRequest.limit());
-        final LocalDate fromDate = getFromDate(popularThemeRequest.days());
-        final LocalDate toDate = getToDate();
-        final List<Theme> popularThemes = findPopularThemes(popularThemeRequest, fromDate, toDate);
+        LocalDate fromDate = getFromDate(popularThemeRequest.days());
+        LocalDate toDate = getToDate();
+        List<Theme> popularThemes = findPopularThemes(popularThemeRequest, fromDate, toDate);
 
         return popularThemes.stream()
                 .map(PopularThemeResponse::from)
                 .toList();
     }
 
-    private void validateDaysLimit(final int days) {
+    private void validateDaysLimit(int days) {
         if (days > DAYS_LIMIT) {
             throw new DaysLimitException("기간은 " + DAYS_LIMIT + "일을 넘을 수 없습니다.");
         }
     }
 
-    private void validateRowsLimit(final int limit) {
+    private void validateRowsLimit(int limit) {
         if (limit > ROWS_LIMIT) {
             throw new RowsLimitException("조회할 최대 개수는 " + ROWS_LIMIT + "개를 넘을 수 없습니다.");
         }
     }
 
-    private LocalDate getFromDate(final int days) {
+    private LocalDate getFromDate(int days) {
         return LocalDate.now().minusDays(days);
     }
 

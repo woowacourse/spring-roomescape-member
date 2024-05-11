@@ -20,9 +20,9 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> loginCredential(@RequestBody final TokenRequest request) {
-        final TokenResponse token = authService.createToken(request);
-        final ResponseCookie cookie = ResponseCookie.from("token", token.token())
+    public ResponseEntity<Void> loginCredential(@RequestBody TokenRequest request) {
+        TokenResponse token = authService.createToken(request);
+        ResponseCookie cookie = ResponseCookie.from("token", token.token())
                 .path("/")
                 .httpOnly(true)
                 .build();
@@ -44,7 +44,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        final ResponseCookie cookie = ResponseCookie.from("token")
+        ResponseCookie cookie = ResponseCookie.from("token")
                 .build();
 
         return ResponseEntity.noContent()

@@ -4,7 +4,7 @@ import roomescape.exception.UnauthorizedException;
 
 public class MemberNotFoundException extends UnauthorizedException {
 
-    public MemberNotFoundException(final String message) {
+    public MemberNotFoundException(String message) {
         super(message);
     }
 }

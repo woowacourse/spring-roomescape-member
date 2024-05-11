@@ -4,7 +4,7 @@ import roomescape.exception.BadRequestException;
 
 public class PreviousTimeException extends BadRequestException {
 
-    public PreviousTimeException(final String message) {
+    public PreviousTimeException(String message) {
         super(message);
     }
 }

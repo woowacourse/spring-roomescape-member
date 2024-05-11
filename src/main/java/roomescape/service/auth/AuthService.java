@@ -19,7 +19,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
-    public AuthService(final JwtTokenProvider jwtTokenProvider, final MemberRepository memberRepository) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.memberRepository = memberRepository;
     }
@@ -30,12 +30,12 @@ public class AuthService {
                 .toList();
     }
 
-    public Member getMemberByEmail(final String email) {
+    public Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 로그인 정보 입니다."));
     }
 
-    public Member getMemberByToken(final String token) {
+    public Member getMemberByToken(String token) {
         validateTokenBlank(token);
         String payload = jwtTokenProvider.getPayload(token);
 
@@ -48,15 +48,15 @@ public class AuthService {
         }
     }
 
-    public TokenResponse createToken(final TokenRequest request) {
+    public TokenResponse createToken(TokenRequest request) {
         validateInformation(request);
-        final String accessToken = jwtTokenProvider.createToken(request.email());
+        String accessToken = jwtTokenProvider.createToken(request.email());
 
         return new TokenResponse(accessToken);
     }
 
-    private void validateInformation(final TokenRequest request) {
-        final Optional<Member> member = memberRepository.findByEmail(request.email());
+    private void validateInformation(TokenRequest request) {
+        Optional<Member> member = memberRepository.findByEmail(request.email());
         if (member.isEmpty() || !member.get().getPassword().equals(request.password())) {
             throw new UnauthorizedException("로그인 정보가 일치하지 않습니다.");
         }

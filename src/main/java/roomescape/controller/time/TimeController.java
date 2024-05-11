@@ -22,14 +22,14 @@ public class TimeController {
 
     private final TimeService timeService;
 
-    public TimeController(final TimeService timeService) {
+    public TimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 
     @GetMapping
     public ResponseEntity<List<TimeResponse>> getTimes(
-            @RequestParam(value = "date", required = false) final String date,
-            @RequestParam(value = "themeId", required = false) final Long themeId) {
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "themeId", required = false) Long themeId) {
         if (Objects.isNull(date) || Objects.isNull(themeId)) {
             return ResponseEntity.ok(timeService.getTimes());
         }
@@ -37,9 +37,9 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
-        final TimeResponse time = timeService.addTime(timeRequest);
-        final URI uri = UriComponentsBuilder.fromPath("/times/{id}")
+    public ResponseEntity<TimeResponse> addTime(@RequestBody TimeRequest timeRequest) {
+        TimeResponse time = timeService.addTime(timeRequest);
+        URI uri = UriComponentsBuilder.fromPath("/times/{id}")
                 .buildAndExpand(time.id())
                 .toUri();
 
@@ -47,7 +47,7 @@ public class TimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable final Long id) {
+    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         timeService.deleteTime(id);
         return ResponseEntity.noContent().build();
     }

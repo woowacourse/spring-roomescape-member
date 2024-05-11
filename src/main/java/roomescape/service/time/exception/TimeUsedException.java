@@ -4,7 +4,7 @@ import roomescape.exception.BadRequestException;
 
 public class TimeUsedException extends BadRequestException {
 
-    public TimeUsedException(final String message) {
+    public TimeUsedException(String message) {
         super(message);
     }
 }

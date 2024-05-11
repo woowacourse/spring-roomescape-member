@@ -25,12 +25,12 @@ public class TimeService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
 
-    public TimeService(final ReservationRepository reservationRepository, final ReservationTimeRepository timeRepository) {
+    public TimeService(ReservationRepository reservationRepository, ReservationTimeRepository timeRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
     }
 
-    private static void validateNotFound(final int deletedCount) {
+    private static void validateNotFound(int deletedCount) {
         if (deletedCount == 0) {
             throw new TimeNotFoundException("예약 시간이 존재하지 않습니다.");
         }
@@ -42,11 +42,11 @@ public class TimeService {
                 .toList();
     }
 
-    public List<TimeResponse> getTimesWithBooked(final String date, final Long themeId) {
+    public List<TimeResponse> getTimesWithBooked(String date, Long themeId) {
         validateDateFormat(date);
 
-        final List<ReservationTime> times = findAllTimes();
-        final Set<ReservationTime> bookedTimes = findAllBookedTimes(date, themeId);
+        List<ReservationTime> times = findAllTimes();
+        Set<ReservationTime> bookedTimes = findAllBookedTimes(date, themeId);
 
         return times.stream()
                 .map(time -> TimeResponse.from(time, bookedTimes.contains(time)))
@@ -67,7 +67,7 @@ public class TimeService {
                 .toList();
     }
 
-    private Set<ReservationTime> findAllBookedTimes(final String date, final Long themeId) {
+    private Set<ReservationTime> findAllBookedTimes(String date, Long themeId) {
         return reservationRepository
                 .findAllByDateAndThemeId(LocalDate.parse(date), themeId)
                 .stream()
@@ -75,31 +75,31 @@ public class TimeService {
                 .collect(Collectors.toSet());
     }
 
-    public TimeResponse addTime(final TimeRequest timeRequest) {
-        final ReservationTime parsedTime = timeRequest.toDomain();
+    public TimeResponse addTime(TimeRequest timeRequest) {
+        ReservationTime parsedTime = timeRequest.toDomain();
         validateDuplicate(parsedTime.getStartAt());
 
-        final ReservationTime savedTime = timeRepository.save(parsedTime);
+        ReservationTime savedTime = timeRepository.save(parsedTime);
 
         return TimeResponse.from(savedTime, false);
     }
 
-    private void validateDuplicate(final LocalTime startAt) {
+    private void validateDuplicate(LocalTime startAt) {
         if (timeRepository.existByStartAt(startAt)) {
             throw new TimeDuplicatedException("이미 존재하는 예약 시간 입니다.");
         }
     }
 
-    public int deleteTime(final Long id) {
+    public int deleteTime(Long id) {
         validateUsed(id);
 
-        final int deletedCount = timeRepository.delete(id);
+        int deletedCount = timeRepository.delete(id);
         validateNotFound(deletedCount);
 
         return deletedCount;
     }
 
-    private void validateUsed(final Long id) {
+    private void validateUsed(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
         }

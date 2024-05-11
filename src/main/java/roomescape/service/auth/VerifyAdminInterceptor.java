@@ -30,7 +30,7 @@ public class VerifyAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        final String token = authorizationExtractor.extract(request);
+        String token = authorizationExtractor.extract(request);
 
         Member member;
         try {
@@ -57,7 +57,7 @@ public class VerifyAdminInterceptor implements HandlerInterceptor {
         response.setStatus(httpStatus.value());
 
         try {
-            final String errorJson = objectMapper.writeValueAsString(new ErrorResponse(message));
+            String errorJson = objectMapper.writeValueAsString(new ErrorResponse(message));
             response.getWriter().write(errorJson);
         } catch (IOException ignored) {
         }
