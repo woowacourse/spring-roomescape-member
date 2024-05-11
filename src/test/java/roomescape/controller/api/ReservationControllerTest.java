@@ -174,17 +174,18 @@ class ReservationControllerTest {
         final Map<String, String> params = new HashMap<>();
         params.put("startAt", PAST_TIME);
 
-        RestAssured.given().log().all()
+        final long savedTimeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201).extract()
+                .jsonPath().getLong("id");
 
         final String memberToken = getMemberToken();
         final Map<String, Object> reservationParams = new HashMap<>();
         reservationParams.put("date", TODAY);
-        reservationParams.put("timeId", findLastIdOfReservationTime());
+        reservationParams.put("timeId", savedTimeId);
         reservationParams.put("themeId", 1);
 
         RestAssured.given().log().all()
@@ -220,7 +221,7 @@ class ReservationControllerTest {
         final String memberToken = getMemberToken();
         final Map<String, Object> params = new HashMap<>();
         params.put("date", TOMORROW);
-        params.put("timeId", findLastIdOfReservationTime() + 1);
+        params.put("timeId", -1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
@@ -257,7 +258,7 @@ class ReservationControllerTest {
         final Map<String, Object> params = new HashMap<>();
         params.put("date", TOMORROW);
         params.put("timeId", 1);
-        params.put("themeId", findLastIdOfTheme() + 1);
+        params.put("themeId", -1);
 
         RestAssured.given().log().all()
                 .header("Cookie", memberToken)
@@ -353,19 +354,20 @@ class ReservationControllerTest {
         params.put("timeId", 1);
         params.put("themeId", 1);
 
-        RestAssured.given().log().all()
+        final long savedReservationId = RestAssured.given().log().all()
                 .header("Cookie", memberToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         final int beforeSize = countReservation();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/reservations/" + findLastIdOfReservation())
+                .when().delete("/reservations/" + savedReservationId)
                 .then().log().all()
                 .statusCode(204);
 
@@ -395,18 +397,6 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .extract().header("Set-Cookie").split(";")[0];
-    }
-
-    private int findLastIdOfReservationTime() {
-        return jdbcTemplate.queryForObject("SELECT max(id) FROM reservation_time", Integer.class);
-    }
-
-    private int findLastIdOfTheme() {
-        return jdbcTemplate.queryForObject("SELECT max(id) FROM theme", Integer.class);
-    }
-
-    private int findLastIdOfReservation() {
-        return jdbcTemplate.queryForObject("SELECT max(id) FROM reservation", Integer.class);
     }
 
     private int countReservation() {
