@@ -2,65 +2,68 @@ package roomescape.controller;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static roomescape.TokenTestFixture.USER_TOKEN;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.controller.dto.CreateTimeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@Sql(scripts = "/data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class ReservationTimeControllerTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    // TODO: 사용자의 role 별로 검증 로직 추가, 프로덕션에 admin이 아니면 예약 시간 추가/삭제 못하도록 로직 추가
 
     @DisplayName("성공: 예약 시간 저장 -> 201")
     @Test
     void save() {
-        CreateTimeRequest request = new CreateTimeRequest("10:00");
+        CreateTimeRequest request = new CreateTimeRequest("00:00");
 
         RestAssured.given().log().all()
+            .cookie("token", USER_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
             .when().post("/times")
             .then().log().all()
             .statusCode(201)
-            .body("id", is(1))
-            .body("startAt", is("10:00"));
+            .body("id", is(3))
+            .body("startAt", is("00:00"));
     }
 
     @DisplayName("성공: 예약 시간 삭제 -> 204")
     @Test
     void delete() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
-
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .when().delete("/times/1")
+            .when().delete("/times/2")
             .then().log().all()
             .statusCode(204);
-    }
-
-    @DisplayName("성공: 예약 시간 조회 -> 200")
-    @Test
-    void findAll() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00'), ('11:00')");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .when().get("/times")
             .then().log().all()
             .statusCode(200)
+            .body("id", contains(1));
+    }
+
+    @DisplayName("성공: 예약 시간 조회 -> 200")
+    @Test
+    void findAll() {
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .when().get("/times")
+            .then().log().all()
+            .statusCode(200)
             .body("id", contains(1, 2))
-            .body("startAt", contains("10:00", "11:00"));
+            .body("startAt", contains("10:00", "23:00"));
     }
 
     @DisplayName("실패: 잘못된 포맷의 예약 시간 저장 -> 400")
@@ -73,30 +76,24 @@ class ReservationTimeControllerTest {
             .body(request)
             .when().post("/times")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(400)
+            .body("message", is("잘못된 시간 형식입니다."));
     }
 
     @DisplayName("예약이 존재하는 시간 삭제 -> 400")
     @Test
     void delete_ReservationExists() {
-        jdbcTemplate.update("""
-            INSERT INTO reservation_time (start_at) VALUES ('10:00');
-            INSERT INTO theme (name, description, thumbnail) VALUES ('n', 'd', 'https://');
-            INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('n', '2060-01-01', 1, 1);
-            """);
-
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .when().delete("/times/1")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(400)
+            .body("message", is("해당 시간을 사용하는 예약이 존재하여 삭제할 수 없습니다."));
     }
 
     @DisplayName("실패: 이미 존재하는 시간을 저장 -> 400")
     @Test
     void save_Duplicate() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
-
         CreateTimeRequest request = new CreateTimeRequest("10:00");
 
         RestAssured.given().log().all()
@@ -104,7 +101,8 @@ class ReservationTimeControllerTest {
             .body(request)
             .when().post("/times")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(400)
+            .body("message", is("이미 존재하는 시간은 추가할 수 없습니다."));
     }
 }
 

@@ -78,16 +78,16 @@ class JdbcThemeRepositoryTest {
 
     @DisplayName("최근 일주일 내의 인기 테마를 찾는다.")
     @Test
-    @Sql("/popularTestData.sql")
+    @Sql(value = "/data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void findPopular() {
-        List<Theme> popular = themeRepository.findPopular(8, 1, 10);
-
         List<Theme> expected = List.of(
             new Theme(1L, "theme1", "desc1", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
             new Theme(3L, "theme3", "desc3", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
             new Theme(2L, "theme2", "desc2", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
 
-        assertThat(popular).containsExactlyElementsOf(expected);
+        assertThat(
+            themeRepository.findPopular(8, 1, 10)
+        ).containsExactlyElementsOf(expected);
     }
 }

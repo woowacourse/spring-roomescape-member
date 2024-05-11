@@ -12,8 +12,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.domain.member.LoginMember;
+import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -34,6 +37,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private final String rawTime = "10:00";
 
@@ -74,8 +80,14 @@ class ReservationTimeServiceTest {
             new Theme("themeName", "themeDesc", "https://")
         );
 
-        reservationRepository.save(
-            new Reservation("name", "2060-01-01", savedTime, savedTheme)
+        jdbcTemplate.update(
+            "INSERT INTO member(name, email, password, role) VALUES ('admin', 'admin@a.com', '123a!', 'ADMIN')");
+
+        reservationRepository.save(new Reservation(
+            new LoginMember(1L, "admin@a.com", "admin", Role.ADMIN),
+            "2060-01-01",
+            savedTime,
+            savedTheme)
         );
 
         assertThatThrownBy(

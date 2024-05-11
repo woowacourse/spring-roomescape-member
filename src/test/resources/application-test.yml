@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.h2.Driver
   sql:
     init:
-      data-locations: classpath:data.sql
+      data-locations:
 
 security:
   jwt:

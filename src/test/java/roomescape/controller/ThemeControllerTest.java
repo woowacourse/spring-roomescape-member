@@ -1,43 +1,27 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.controller.dto.CreateThemeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@Sql(scripts = "/data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class ThemeControllerTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void addInitialData() {
-        jdbcTemplate.update("""
-            INSERT INTO theme(name, description, thumbnail)
-            VALUES
-            ('방탈출1', '설명1', 'https://url1'),
-            ('방탈출2', '설명2', 'https://url2')
-            """);
-    }
 
     @DisplayName("성공: 테마 생성 -> 201")
     @Test
     void save() {
-        CreateThemeRequest request = new CreateThemeRequest("방탈출3", "설명3", "https://url3");
+        CreateThemeRequest request = new CreateThemeRequest("theme4", "desc4", "https://url4");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -45,23 +29,25 @@ class ThemeControllerTest {
             .when().post("/themes")
             .then().log().all()
             .statusCode(201)
-            .body("id", is(3))
-            .body("name", is("방탈출3"))
-            .body("description", is("설명3"))
-            .body("thumbnail", is("https://url3"));
+            .body("id", is(4))
+            .body("name", is("theme4"))
+            .body("description", is("desc4"))
+            .body("thumbnail", is("https://url4"));
     }
 
     @DisplayName("성공: 테마 삭제 -> 204")
     @Test
     void delete() {
         RestAssured.given().log().all()
-            .when().delete("/themes/1")
+            .when().delete("/themes/2")
             .then().log().all()
             .statusCode(204);
 
-        assertThat(
-            jdbcTemplate.queryForObject("SELECT COUNT(id) FROM theme", Long.class)
-        ).isEqualTo(1L);
+        RestAssured.given().log().all()
+            .when().get("/themes")
+            .then().log().all()
+            .statusCode(200)
+            .body("id", contains(1, 3));
     }
 
     @DisplayName("성공: 테마 조회 -> 200")
@@ -72,61 +58,56 @@ class ThemeControllerTest {
             .when().get("/themes")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(2))
-            .body("id", contains(1, 2))
-            .body("name", contains("방탈출1", "방탈출2"))
-            .body("description", contains("설명1", "설명2"))
-            .body("thumbnail", contains("https://url1", "https://url2"));
+            .body("id", contains(1, 2, 3))
+            .body("name", contains("theme1", "theme2", "theme3"))
+            .body("description", contains("desc1", "desc2", "desc3"));
     }
 
     @DisplayName("실패: 잘못된 포맷으로 테마 생성 -> 400")
     @Test
     void save_IllegalTheme() {
-        CreateThemeRequest request = new CreateThemeRequest("방탈출3", "설명3", "ftp://url3");
+        CreateThemeRequest request = new CreateThemeRequest("theme4", "desc4", "hello.jpg");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(request)
             .when().post("/themes")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(400)
+            .body("message", is("썸네일 URL은 https://로 시작해야 합니다."));
     }
 
     @DisplayName("실패: 중복 테마 추가 -> 400")
     @Test
     void save_Duplicate() {
-        CreateThemeRequest request = new CreateThemeRequest("방탈출1", "설명1", "https://url1");
+        CreateThemeRequest request = new CreateThemeRequest("theme1", "It's so fun", "https://url1");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(request)
             .when().post("/themes")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(400)
+            .body("message", is("같은 이름의 테마가 이미 존재합니다."));
     }
 
     @DisplayName("실패: 예약에서 사용되는 테마 삭제 -> 400")
     @Test
     void delete_ReservationExists() {
-        jdbcTemplate.update("""
-            INSERT INTO reservation_time(start_at) VALUES ('12:00');
-            INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('brown', '2026-01-01', 1, 1);
-            """);
-
         RestAssured.given().log().all()
             .when().delete("/themes/1")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(400)
+            .body("message", is("해당 테마를 사용하는 예약이 존재하여 삭제할 수 없습니다."));
     }
 
     @DisplayName("성공: 상위 10개의 인기 테마 조회 -> 200")
     @Test
-    @Sql("/popularTestData.sql")
     void findPopular() {
         RestAssured.given().log().all()
             .when().get("/themes/popular")
             .then().log().all()
             .statusCode(200)
-            .body("id", contains(1, 3, 2, 4, 5));
+            .body("id", contains(1, 3, 2));
     }
 }
