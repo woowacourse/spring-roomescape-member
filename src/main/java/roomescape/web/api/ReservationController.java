@@ -40,17 +40,6 @@ public class ReservationController {
                 .body(reservationResponse);
     }
 
-    @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> saveAdmin(@RequestBody @Valid ReservationAdminRequest request) {
-        ReservationRequest reservationRequest = new ReservationRequest(request.name(), request.date(),
-                request.timeId(), request.themeId());
-
-        ReservationResponse reservationResponse = reservationService.save(reservationRequest);
-
-        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
-                .body(reservationResponse);
-    }
-
     @GetMapping("/reservations")
     public ResponseEntity<ReservationListResponse> findAll() {
         List<ReservationResponse> reservationResponses = reservationService.findAll();
@@ -63,5 +52,16 @@ public class ReservationController {
         reservationService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> save(@RequestBody @Valid ReservationAdminRequest request) {
+        ReservationRequest reservationRequest = new ReservationRequest(request.name(), request.date(),
+                request.timeId(), request.themeId());
+
+        ReservationResponse reservationResponse = reservationService.save(reservationRequest);
+
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
+                .body(reservationResponse);
     }
 }
