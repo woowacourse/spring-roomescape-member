@@ -37,7 +37,7 @@ public class ThemeController {
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<ThemeResponses> read(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Long count) {
-        return ResponseEntity.ok(themeService.getPopularThemeList(startDate, endDate, count));
+    public ResponseEntity<ThemeResponses> read(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Long size) {
+        return ResponseEntity.ok(themeService.getPopularThemeList(startDate, endDate, size));
     }
 }
