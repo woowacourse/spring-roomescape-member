@@ -14,14 +14,14 @@ import roomescape.service.MemberService;
 
 import static roomescape.domain.member.Role.ADMIN;
 
-@Component // TODO 네이밍 컨벤션을 지켜 renaming
-public class CheckAdminInterceptor implements HandlerInterceptor {
+@Component
+public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private final CookieManager cookieManager;
     private final MemberService memberService;
     private final LoginService loginService;
 
-    public CheckAdminInterceptor(
+    public AdminCheckInterceptor(
             final CookieManager cookieManager,
             final MemberService memberService,
             final LoginService loginService

@@ -12,13 +12,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
 
     private final MemberArgumentResolver memberArgumentResolver;
-    private final CheckAdminInterceptor checkAdminInterceptor;
+    private final AdminCheckInterceptor adminCheckInterceptor;
 
     public WebMvcConfiguration(
             MemberArgumentResolver memberArgumentResolver,
-            CheckAdminInterceptor checkAdminInterceptor) {
+            AdminCheckInterceptor adminCheckInterceptor) {
         this.memberArgumentResolver = memberArgumentResolver;
-        this.checkAdminInterceptor = checkAdminInterceptor;
+        this.adminCheckInterceptor = adminCheckInterceptor;
     }
 
     @Override
@@ -28,6 +28,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(checkAdminInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(adminCheckInterceptor).addPathPatterns("/admin/**");
     }
 }
