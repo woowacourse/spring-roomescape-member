@@ -6,7 +6,7 @@ import roomescape.theme.model.Theme;
 
 public record CreateThemeRequest(
         @NotBlank(message = "테마 명은 공백 문자가 불가능합니다.")
-        @Size(message = "테마명은 최대 255자까지 입력이 가능합니다.", max = 255)
+        @Size(message = "테마 명은 최대 255자까지 입력이 가능합니다.", max = 255)
         String name,
 
         @NotBlank(message = "테마 설명은 공백 문자가 불가능합니다.")
