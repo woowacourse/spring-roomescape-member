@@ -1,7 +1,9 @@
 package roomescape.controller;
 
-import static roomescape.Fixture.VALID_MEMBER_EMAIL;
-import static roomescape.Fixture.VALID_MEMBER_PASSWORD;
+import static roomescape.Fixture.VALID_ADMIN_EMAIL;
+import static roomescape.Fixture.VALID_ADMIN_PASSWORD;
+import static roomescape.Fixture.VALID_USER_EMAIL;
+import static roomescape.Fixture.VALID_USER_PASSWORD;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,8 +32,13 @@ public class ControllerTest {
         RestAssured.port = port;
     }
 
-    String getMemberToken() {
+    String getUserToken() {
         return jwtProvider.createToken(
-            new TokenAppRequest(VALID_MEMBER_EMAIL.getValue(), VALID_MEMBER_PASSWORD.getValue()));
+            new TokenAppRequest(VALID_USER_EMAIL.getValue(), VALID_USER_PASSWORD.getValue()));
+    }
+
+    String getAdminToken() {
+        return jwtProvider.createToken(
+            new TokenAppRequest(VALID_ADMIN_EMAIL.getValue(), VALID_ADMIN_PASSWORD.getValue()));
     }
 }

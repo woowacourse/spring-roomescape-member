@@ -1,9 +1,9 @@
 package roomescape.controller;
 
-import static roomescape.Fixture.VALID_MEMBER_EMAIL;
-import static roomescape.Fixture.VALID_MEMBER_NAME;
-import static roomescape.Fixture.VALID_MEMBER_PASSWORD;
-import static roomescape.Fixture.VALID_MEMBER_ROLE;
+import static roomescape.Fixture.VALID_USER_EMAIL;
+import static roomescape.Fixture.VALID_USER_NAME;
+import static roomescape.Fixture.VALID_USER_PASSWORD;
+import static roomescape.Fixture.VALID_USER_ROLE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -22,17 +22,17 @@ class MemberAuthControllerTest extends ControllerTest {
     void setInitialData() {
         jdbcTemplate.update(
             "INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
-            VALID_MEMBER_NAME.getValue(),
-            VALID_MEMBER_EMAIL.getValue(),
-            VALID_MEMBER_PASSWORD.getValue(),
-            VALID_MEMBER_ROLE.getValue());
+            VALID_USER_NAME.getValue(),
+            VALID_USER_EMAIL.getValue(),
+            VALID_USER_PASSWORD.getValue(),
+            VALID_USER_ROLE.getValue());
     }
 
     @DisplayName("로그인을 한다. -> 200")
     @Test
     void login() {
-        TokenWebRequest request = new TokenWebRequest(VALID_MEMBER_EMAIL.getValue(),
-            VALID_MEMBER_PASSWORD.getValue());
+        TokenWebRequest request = new TokenWebRequest(VALID_USER_EMAIL.getValue(),
+            VALID_USER_PASSWORD.getValue());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -46,7 +46,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @Test
     void login_NotMemberEmail() {
         TokenWebRequest request = new TokenWebRequest("회원아님@naver.com",
-            VALID_MEMBER_PASSWORD.getValue());
+            VALID_USER_PASSWORD.getValue());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -62,7 +62,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @ValueSource(strings = {"이메일"})
     void login_IllegalEmail(String illegalEmail) {
         TokenWebRequest request = new TokenWebRequest(illegalEmail,
-            VALID_MEMBER_PASSWORD.getValue());
+            VALID_USER_PASSWORD.getValue());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -76,7 +76,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @ParameterizedTest
     @NullAndEmptySource
     void login_IllegalPassword(String illegalPassword) {
-        TokenWebRequest request = new TokenWebRequest(VALID_MEMBER_EMAIL.getValue(),
+        TokenWebRequest request = new TokenWebRequest(VALID_USER_EMAIL.getValue(),
             illegalPassword);
 
         RestAssured.given().log().all()
@@ -90,18 +90,8 @@ class MemberAuthControllerTest extends ControllerTest {
     @DisplayName("로그인 되어 있는 회원을 조회한다. -> 200")
     @Test
     void findLoginMember() {
-        TokenWebRequest request = new TokenWebRequest(VALID_MEMBER_EMAIL.getValue(),
-            VALID_MEMBER_PASSWORD.getValue());
-
-        String token = RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/login")
-            .then().log().all()
-            .extract().cookie(COOKIE_NAME);
-
         RestAssured.given().log().all()
-            .cookie(COOKIE_NAME, token)
+            .cookie(COOKIE_NAME, getUserToken())
             .when().get("/login/check")
             .then().log().all()
             .statusCode(200);
@@ -120,7 +110,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @Test
     void findMember_expiredToken() {
         RestAssured.given().log().all()
-            .cookie(COOKIE_NAME, VALID_MEMBER_EMAIL.getValue())
+            .cookie(COOKIE_NAME, VALID_USER_EMAIL.getValue())
             .when().get("/login/check")
             .then().log().all()
             .statusCode(401);
@@ -143,8 +133,8 @@ class MemberAuthControllerTest extends ControllerTest {
     @DisplayName("이미 존재하는 이메일로 회원 가입을 한다. -> 401")
     @Test
     void signUp_ExistsEmail() {
-        MemberSignUpWebRequest request = new MemberSignUpWebRequest(VALID_MEMBER_NAME.getValue(),
-            VALID_MEMBER_EMAIL.getValue(), VALID_MEMBER_PASSWORD.getValue());
+        MemberSignUpWebRequest request = new MemberSignUpWebRequest(VALID_USER_NAME.getValue(),
+            VALID_USER_EMAIL.getValue(), VALID_USER_PASSWORD.getValue());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -203,18 +193,8 @@ class MemberAuthControllerTest extends ControllerTest {
     @DisplayName("로그아웃 한다. -> 200")
     @Test
     void logout() {
-        TokenWebRequest request = new TokenWebRequest(VALID_MEMBER_EMAIL.getValue(),
-            VALID_MEMBER_PASSWORD.getValue());
-
-        String token = RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/login")
-            .then().log().all()
-            .extract().cookie(COOKIE_NAME);
-
         RestAssured.given().log().all()
-            .cookie(COOKIE_NAME, token)
+            .cookie(COOKIE_NAME, getUserToken())
             .when().post("/logout")
             .then().log().all()
             .statusCode(200);

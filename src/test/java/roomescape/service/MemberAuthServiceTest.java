@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static roomescape.Fixture.VALID_MEMBER_EMAIL;
-import static roomescape.Fixture.VALID_MEMBER_NAME;
-import static roomescape.Fixture.VALID_MEMBER_PASSWORD;
-import static roomescape.Fixture.VALID_MEMBER_ROLE;
+import static roomescape.Fixture.VALID_USER_EMAIL;
+import static roomescape.Fixture.VALID_USER_NAME;
+import static roomescape.Fixture.VALID_USER_PASSWORD;
+import static roomescape.Fixture.VALID_USER_ROLE;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -39,16 +39,16 @@ class MemberAuthServiceTest {
     @DisplayName("회원을 저장한다.")
     @Test
     void signUp() {
-        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_MEMBER_NAME.getValue(),
-            VALID_MEMBER_EMAIL.getValue(), VALID_MEMBER_PASSWORD.getValue());
+        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_USER_NAME.getValue(),
+            VALID_USER_EMAIL.getValue(), VALID_USER_PASSWORD.getValue());
 
         when(memberRepository.save(any(Member.class)))
             .thenReturn(
-                new Member(1L, VALID_MEMBER_NAME, VALID_MEMBER_EMAIL, VALID_MEMBER_PASSWORD, VALID_MEMBER_ROLE));
+                new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, VALID_USER_ROLE));
 
         MemberAppResponse actual = memberAuthService.signUp(request);
-        MemberAppResponse expected = new MemberAppResponse(1L, VALID_MEMBER_NAME.getValue(),
-            VALID_MEMBER_ROLE.getValue());
+        MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getValue(),
+            VALID_USER_ROLE.getValue());
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -56,10 +56,10 @@ class MemberAuthServiceTest {
     @DisplayName("같은 이메일로 중복 회원가입을 시도하면 예외가 발생한다.")
     @Test
     void signUp_duplicatedEmail() {
-        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_MEMBER_NAME.getValue(),
-            VALID_MEMBER_EMAIL.getValue(), VALID_MEMBER_PASSWORD.getValue());
+        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_USER_NAME.getValue(),
+            VALID_USER_EMAIL.getValue(), VALID_USER_PASSWORD.getValue());
 
-        when(memberRepository.isExistsByEmail(VALID_MEMBER_EMAIL.getValue()))
+        when(memberRepository.isExistsByEmail(VALID_USER_EMAIL.getValue()))
             .thenReturn(true);
 
         assertThatThrownBy(() -> memberAuthService.signUp(request))
@@ -69,13 +69,13 @@ class MemberAuthServiceTest {
     @DisplayName("이메일을 통해 회원을 조회한다.")
     @Test
     void findMemberByEmail() {
-        when(memberRepository.findByEmail(VALID_MEMBER_EMAIL.getValue()))
+        when(memberRepository.findByEmail(VALID_USER_EMAIL.getValue()))
             .thenReturn(Optional.of(
-                new Member(1L, VALID_MEMBER_NAME, VALID_MEMBER_EMAIL, VALID_MEMBER_PASSWORD, VALID_MEMBER_ROLE)));
+                new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, VALID_USER_ROLE)));
 
-        MemberAppResponse actual = memberAuthService.findMemberByEmail(VALID_MEMBER_EMAIL.getValue());
-        MemberAppResponse expected = new MemberAppResponse(1L, VALID_MEMBER_NAME.getValue(),
-            VALID_MEMBER_ROLE.getValue());
+        MemberAppResponse actual = memberAuthService.findMemberByEmail(VALID_USER_EMAIL.getValue());
+        MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getValue(),
+            VALID_USER_ROLE.getValue());
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -83,10 +83,10 @@ class MemberAuthServiceTest {
     @DisplayName("이메일의 회원이 없을 경우 예외가 발생한다.")
     @Test
     void findMemberByEmail_NoSuch() {
-        when(memberRepository.findByEmail(VALID_MEMBER_EMAIL.getValue()))
+        when(memberRepository.findByEmail(VALID_USER_EMAIL.getValue()))
             .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> memberAuthService.findMemberByEmail(VALID_MEMBER_EMAIL.getValue()))
+        assertThatThrownBy(() -> memberAuthService.findMemberByEmail(VALID_USER_EMAIL.getValue()))
             .isInstanceOf(NoSuchElementException.class);
     }
 

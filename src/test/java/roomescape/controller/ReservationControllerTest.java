@@ -1,10 +1,10 @@
 package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
-import static roomescape.Fixture.VALID_MEMBER_EMAIL;
-import static roomescape.Fixture.VALID_MEMBER_NAME;
-import static roomescape.Fixture.VALID_MEMBER_PASSWORD;
-import static roomescape.Fixture.VALID_MEMBER_ROLE;
+import static roomescape.Fixture.VALID_USER_EMAIL;
+import static roomescape.Fixture.VALID_USER_NAME;
+import static roomescape.Fixture.VALID_USER_PASSWORD;
+import static roomescape.Fixture.VALID_USER_ROLE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,8 +21,8 @@ class ReservationControllerTest extends ControllerTest {
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", "방탈출1", "설명1",
             "https://url1");
         jdbcTemplate.update("INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
-            VALID_MEMBER_NAME.getValue(), VALID_MEMBER_EMAIL.getValue(),
-            VALID_MEMBER_PASSWORD.getValue(), VALID_MEMBER_ROLE.getValue());
+            VALID_USER_NAME.getValue(), VALID_USER_EMAIL.getValue(),
+            VALID_USER_PASSWORD.getValue(), VALID_USER_ROLE.getValue());
         jdbcTemplate.update("INSERT INTO reservation(date,time_id,theme_id,member_id) VALUES (?,?,?,?)",
             "2026-02-01", 1L, 1L, 1L);
     }
@@ -34,12 +34,12 @@ class ReservationControllerTest extends ControllerTest {
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .cookie("token", getMemberToken())
+            .cookie("token", getUserToken())
             .body(request)
             .when().post("/reservations")
             .then().log().all()
             .statusCode(201)
-            .body("name", is(VALID_MEMBER_NAME.getValue()));
+            .body("name", is(VALID_USER_NAME.getValue()));
     }
 
     @DisplayName("예약을 삭제한다. -> 204")
@@ -68,7 +68,7 @@ class ReservationControllerTest extends ControllerTest {
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .cookie(COOKIE_NAME, getMemberToken())
+            .cookie(COOKIE_NAME, getUserToken())
             .body(request)
             .when().post("/reservations")
             .then().log().all()
@@ -82,7 +82,7 @@ class ReservationControllerTest extends ControllerTest {
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .cookie(COOKIE_NAME, getMemberToken())
+            .cookie(COOKIE_NAME, getUserToken())
             .body(request)
             .when().post("/reservations")
             .then().log().all()
@@ -96,7 +96,7 @@ class ReservationControllerTest extends ControllerTest {
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .cookie(COOKIE_NAME, getMemberToken())
+            .cookie(COOKIE_NAME, getUserToken())
             .body(request)
             .when().post("/reservations")
             .then().log().all()
@@ -110,7 +110,7 @@ class ReservationControllerTest extends ControllerTest {
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .cookie(COOKIE_NAME, getMemberToken())
+            .cookie(COOKIE_NAME, getUserToken())
             .body(request)
             .when().post("/reservations")
             .then().log().all()
