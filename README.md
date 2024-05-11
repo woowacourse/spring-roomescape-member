@@ -11,6 +11,10 @@
     - 사용자의 정보를 조회하는 로직을 리팩터링 합니다.
     - 예약 생성 API 및 기능을 리팩터링 합니다.
 
+- **6단계**
+    - 어드민 페이지 진입은 admin권한이 있는 사람만 할 수 있다.
+    - 관리자가 조건에 따라 예약을 검색할 수 있다.
+
 ### 세부 요구 사항
 
 #### 로그인 기능
@@ -26,6 +30,11 @@
 ### 관리자 기능
 
 - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성한다.
+- [ ] 관리자 만이, 관리자 페이지에 접속이 가능하다.
+
+### 예약 검색 기능
+
+- [ ] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가한다.
 
 ## 추가 API 명세서
 
@@ -137,7 +146,7 @@ token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOI
 
 ### Response
 
-> HTTP/1.1 200
+> HTTP/1.1 201
 >
 > Content-Type: application/json
 
@@ -151,4 +160,31 @@ token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOI
 }
 ```
 
+- 멤버 아이디 리스트 조회
 
+### Request
+
+> GET /members HTTP/1.1
+>
+> content-type: application/json <br>
+> cookie: token=??? <br>
+> host: localhost:8080
+
+<br>
+
+### Response
+
+> HTTP/1.1 200
+>
+> Content-Type: application/json
+
+```json
+[
+  {
+    "id": 1
+  },
+  {
+    "id": 2
+  }
+]
+```
