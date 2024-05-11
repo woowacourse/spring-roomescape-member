@@ -3,7 +3,6 @@ package roomescape.web.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -12,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import jakarta.servlet.http.Cookie;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import roomescape.service.security.JwtUtils;
 import roomescape.web.dto.request.MemberInfo;
 import roomescape.web.dto.request.ReservationRequest;
 import roomescape.web.dto.request.UserReservationRequest;
+import roomescape.web.dto.response.MemberResponse;
 import roomescape.web.dto.response.ReservationResponse;
 import roomescape.web.dto.response.ReservationTimeResponse;
 import roomescape.web.dto.response.ThemeResponse;
@@ -46,19 +48,22 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 201Created를 반환한다.")
     void saveReservation_ShouldReturn201StatusCode_WhenInsertAllValidateField() throws Exception {
         // given
-        String token = JwtUtils.encode(new Member(1L, "name", "email", "password"));
+        Member member = new Member(1L, "name", "email", "password");
+        String token = JwtUtils.encode(member);
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class), any(MemberInfo.class)))
                 .thenReturn(
                         new ReservationResponse(1L, LocalDate.now(), new ReservationTimeResponse(1L, LocalTime.now()),
-                                new ThemeResponse(1L, "n", "d", "t"))
+                                new ThemeResponse(1L, "n", "d", "t"),
+                                new MemberResponse(member.getName())
+                        )
                 );
 
         // when & then
         mockMvc.perform(
                         post("/reservations")
                                 .content(objectMapper.writeValueAsString(request))
-                                .header(SET_COOKIE, "token=" + token)
+                                .cookie(new Cookie("token", token))
                                 .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated());
@@ -68,17 +73,20 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 location 헤더가 추가된다.")
     void saveReservation_ShouldRedirect_WhenInsertAllValidateField() throws Exception {
         // given
+        String token = JwtUtils.encode(new Member(1L, "a", "b", "c"));
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class), any(MemberInfo.class)))
                 .thenReturn(
                         new ReservationResponse(1L, LocalDate.now(),
                                 new ReservationTimeResponse(1L, LocalTime.now()),
-                                new ThemeResponse(1L, "n", "d", "t"))
+                                new ThemeResponse(1L, "n", "d", "t"),
+                                new MemberResponse("aa"))
                 );
 
         // when & then
         mockMvc.perform(
                         post("/reservations")
+                                .cookie(new Cookie("token", token))
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(APPLICATION_JSON)
                 )

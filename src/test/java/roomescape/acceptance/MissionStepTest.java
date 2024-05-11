@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,8 +23,11 @@ import roomescape.web.controller.ReservationController;
 import roomescape.web.dto.response.ReservationResponse;
 
 class MissionStepTest extends AcceptanceTest {
+    private static final String TOKEN = JwtUtils.encode(new Member(1L, "a", "B", "c"));
+
     @Autowired
     private ReservationController reservationController;
+
 
     @Test
     void 일단계() {
@@ -36,7 +38,6 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
-    @Disabled
     void 이단계() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")
@@ -51,7 +52,6 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
-    @Disabled
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -62,7 +62,7 @@ class MissionStepTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .cookie("token=" + JwtUtils.encode(new Member(1L, "a", "B", "c")))
+                .cookie("token", TOKEN)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -100,12 +100,12 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
-    @Disabled
     void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id) VALUES (?, ?, ?)",
-                "2023-08-05", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                "2023-08-05", "1", "1", "1");
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", TOKEN)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -117,17 +117,18 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
-    @Disabled
     void 육단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
+        params.put("memberId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", TOKEN)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -174,17 +175,18 @@ class MissionStepTest extends AcceptanceTest {
     }
 
     @Test
-    @Disabled
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
+                .cookie("token", TOKEN)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);

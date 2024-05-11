@@ -36,3 +36,5 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
+insert into member (name, email, password)
+VALUES ('aa', 'aa@bb.cc', 'aa');

@@ -11,7 +11,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import lombok.RequiredArgsConstructor;
-import roomescape.domain.Member;
 import roomescape.service.MemberService;
 import roomescape.service.security.JwtUtils;
 import roomescape.web.dto.request.MemberInfo;
@@ -22,7 +21,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(MemberInfo.class);
     }
 
     @Override

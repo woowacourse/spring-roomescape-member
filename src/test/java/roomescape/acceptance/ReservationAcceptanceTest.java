@@ -7,20 +7,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.domain.Member;
+import roomescape.service.security.JwtUtils;
 
 class ReservationAcceptanceTest extends AcceptanceTest {
     @Nested
     @DisplayName("예약 목록 조회 API")
     class FindAllReservations {
         @Test
-        @Disabled
         void 예약_목록을_조회할_수_있다() {
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -73,6 +73,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
+                    .cookie("token", JwtUtils.encode(new Member(1L, "a", "b", "c")))
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
@@ -97,7 +98,6 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     class DeleteReservation {
 
         @Test
-        @Disabled
         void 예약을_삭제할_수_있다() {
             RestAssured.given().log().all()
                     .when().delete("/reservations/1")

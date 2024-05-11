@@ -9,7 +9,6 @@ import roomescape.domain.Member;
 
 @Slf4j
 class JwtUtilsTest {
-    private static final String SECRET_KEY = "hellowootecoworldhihowareyouiamfinethankyouandyou";
 
     @Test
     @DisplayName("사용자 정보를 바탕으로 Jwt 토큰을 발행한다")
