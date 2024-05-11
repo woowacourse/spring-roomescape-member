@@ -13,7 +13,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member findByEmail(String email) { // TODO: id로 할지 결정하기
+    public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(UnauthorizedTokenException::new);
     }

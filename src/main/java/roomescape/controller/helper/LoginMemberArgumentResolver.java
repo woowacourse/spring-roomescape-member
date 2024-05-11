@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = cookieExtractor.getToken(request.getCookies());
-        String email = jwtTokenProvider.getPayload(token);
+        String email = jwtTokenProvider.getMemberEmail(token);
         return memberService.findByEmail(email); // TODO: 조회 로직의 필요 여부 판단해보기(지연 로딩 안되지 않나?)
     }
 }
