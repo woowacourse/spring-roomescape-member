@@ -9,14 +9,19 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestConfig;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 
-class ReservationTimeServiceTest extends BaseServiceTest {
+@SpringBootTest(classes = TestConfig.class)
+@Transactional
+class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;

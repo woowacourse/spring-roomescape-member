@@ -11,14 +11,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestConfig;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.LoginedMemberResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.security.JwtTokenProvider;
 
-class AuthServiceTest extends BaseServiceTest {
+@SpringBootTest(classes = TestConfig.class)
+@Transactional
+class AuthServiceTest {
 
     private static final String EMAIL = "auth@gmail.com";
     private static final String PASSWORD = "password";

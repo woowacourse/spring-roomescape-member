@@ -32,7 +32,8 @@ public class AuthController {
             @RequestBody @Valid LoginRequest loginRequest,
             HttpServletResponse response
     ) {
-        LoginedMemberResponse loginedMemberResponse = authService.createToken(loginRequest);
+        MemberResponse memberResponse = memberService.getByEmail(loginRequest.email());
+        LoginedMemberResponse loginedMemberResponse = authService.createToken(memberResponse);
         String token = loginedMemberResponse.token();
         MemberResponse memberResponse = loginedMemberResponse.memberResponse();
 

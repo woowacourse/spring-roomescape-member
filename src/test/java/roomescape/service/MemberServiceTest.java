@@ -5,13 +5,18 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestConfig;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.domain.member.Role;
 import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.MemberResponse;
 
-class MemberServiceTest extends BaseServiceTest {
+@SpringBootTest(classes = TestConfig.class)
+@Transactional
+class MemberServiceTest {
 
     @Autowired
     private MemberService memberService;

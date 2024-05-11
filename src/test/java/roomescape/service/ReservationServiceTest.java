@@ -8,8 +8,11 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestConfig;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.domain.member.Role;
@@ -24,7 +27,9 @@ import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.security.Accessor;
 
-class ReservationServiceTest extends BaseServiceTest {
+@SpringBootTest(classes = TestConfig.class)
+@Transactional
+class ReservationServiceTest {
 
     @Autowired
     private ReservationService reservationService;
