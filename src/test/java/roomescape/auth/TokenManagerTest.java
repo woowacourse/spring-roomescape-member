@@ -7,23 +7,32 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import roomescape.application.ServiceTest;
 import roomescape.auth.exception.ExpiredTokenException;
 import roomescape.auth.exception.InvalidTokenException;
 import roomescape.domain.role.MemberRole;
 
+@ServiceTest
 class TokenManagerTest {
-    private static final String TEST_TOKEN_SECRET = "test-secret".repeat(10);
-    private static final long millis = 1000L * 60;
-    private final Clock clock = Clock.fixed(Instant.parse("2000-01-01T00:00:00Z"), ZoneId.systemDefault());
 
-    private final TokenManager tokenManager = new TokenManager(TEST_TOKEN_SECRET, millis, clock);
+    @Autowired
+    private TokenManager tokenManager;
+
+    @Autowired
+    private Clock clock;
+
+    @Value("${jwt.secret}")
+    private String TEST_TOKEN_SECRET;
+
+    @Value("${jwt.expire-in-millis}")
+    private long millis;
 
     @ParameterizedTest
     @NullAndEmptySource
