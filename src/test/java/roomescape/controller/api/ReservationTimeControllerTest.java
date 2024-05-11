@@ -135,17 +135,18 @@ class ReservationTimeControllerTest {
         final Map<String, Object> params = new HashMap<>();
         params.put("startAt", "10:10");
 
-        RestAssured.given().log().all()
+        final long savedTimeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/" + savedTimeId)
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(204);
     }
 
     private String getLoginToken(final String email, final String password) {
