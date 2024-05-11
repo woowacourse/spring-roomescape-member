@@ -7,27 +7,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
-import roomescape.infrastructure.CookieManager;
-import roomescape.infrastructure.auth.Token;
 import roomescape.service.LoginService;
-import roomescape.service.MemberService;
 
 import static roomescape.domain.member.Role.ADMIN;
 
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
-
-    private final CookieManager cookieManager;
-    private final MemberService memberService;
     private final LoginService loginService;
 
-    public AdminCheckInterceptor(
-            final CookieManager cookieManager,
-            final MemberService memberService,
-            final LoginService loginService
-    ) {
-        this.cookieManager = cookieManager;
-        this.memberService = memberService;
+    public AdminCheckInterceptor(final LoginService loginService) {
         this.loginService = loginService;
     }
 
@@ -47,8 +35,6 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
     }
 
     private Member findMember(HttpServletRequest request) {
-        Token token = cookieManager.getToken(request.getCookies());
-        Long memberId = loginService.findMemberIdByToken(token);
-        return memberService.findMemberById(memberId);
+        return loginService.check(request.getCookies());
     }
 }
