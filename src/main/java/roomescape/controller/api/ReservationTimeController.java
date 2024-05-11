@@ -34,8 +34,7 @@ public class ReservationTimeController {
     ) {
         final ReservationTime time = reservationTimeService.create(request);
         final ReservationTimeResponseDto response = new ReservationTimeResponseDto(time);
-        return ResponseEntity.created(URI.create("/times/" + response.getId()))
-                .body(response);
+        return ResponseEntity.created(URI.create("/times/" + response.getId())).body(response);
     }
 
     @GetMapping("/times")
@@ -57,7 +56,6 @@ public class ReservationTimeController {
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable("id") final long id) {
         reservationTimeService.delete(id);
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }

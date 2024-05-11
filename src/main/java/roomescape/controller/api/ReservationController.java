@@ -37,8 +37,7 @@ public class ReservationController {
     ) {
         final Reservation reservation = reservationService.create(request, loginMember);
         final ReservationResponseDto response = new ReservationResponseDto(reservation);
-        return ResponseEntity.created(URI.create("/reservations/" + response.getId()))
-                .body(response);
+        return ResponseEntity.created(URI.create("/reservations/" + response.getId())).body(response);
     }
 
     @PostMapping("/admin/reservations")
@@ -47,8 +46,7 @@ public class ReservationController {
     ) {
         final Reservation reservation = reservationService.createByAdmin(request);
         final ReservationResponseDto response = new ReservationResponseDto(reservation);
-        return ResponseEntity.created(URI.create("/admin/reservations" + response.getId()))
-                .body(response);
+        return ResponseEntity.created(URI.create("/admin/reservations" + response.getId())).body(response);
     }
 
     @GetMapping("/reservations")
@@ -67,7 +65,6 @@ public class ReservationController {
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("id") final long id) {
         reservationService.delete(id);
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }

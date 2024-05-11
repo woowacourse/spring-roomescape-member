@@ -28,8 +28,7 @@ public class MemberController {
     public ResponseEntity<MemberResponseDto> signUp(@RequestBody @Valid final SignUpRequestDto request) {
         final Member member = memberService.create(request);
         final MemberResponseDto response = new MemberResponseDto(member);
-        return ResponseEntity.created(URI.create("/members/" + response.getId()))
-                .body(response);
+        return ResponseEntity.created(URI.create("/members/" + response.getId())).body(response);
     }
 
     @GetMapping("/members")
