@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.helper.LoginMember;
 import roomescape.domain.Member;
@@ -25,8 +27,12 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> findAllReservation() {
-        List<ReservationResponse> response = reservationService.findAllReservation();
+    public ResponseEntity<List<ReservationResponse>> findAllReservation(
+            @RequestParam(required = false, name = "member-id") Long memberId,
+            @RequestParam(required = false, name = "theme-id") Long themeId,
+            @RequestParam(required = false, name = "date-from") LocalDate dateFrom,
+            @RequestParam(required = false, name = "date-to") LocalDate dateTo) {
+        List<ReservationResponse> response = reservationService.findAllReservation(memberId, themeId, dateFrom, dateTo);
         return ResponseEntity.ok().body(response);
     }
 

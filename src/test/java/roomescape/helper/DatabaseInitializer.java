@@ -48,7 +48,7 @@ public class DatabaseInitializer {
 
     private Reservation createInitReservation(ReservationTime time, Theme theme) {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2024-08-05", "1", "1");
-        return new Reservation(1L, "브라운", LocalDate.of(2024, 8, 5), time, theme);
+                "어드민", "2024-08-05", "1", "1");
+        return new Reservation(1L, "어드민", LocalDate.of(2024, 8, 5), time, theme);
     }
 }

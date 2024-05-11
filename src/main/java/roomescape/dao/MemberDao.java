@@ -42,4 +42,15 @@ public class MemberDao implements MemberRepository {
         List<Member> member = jdbcTemplate.query(sql, memberRowMapper, email);
         return DataAccessUtils.optionalResult(member);
     }
+
+    @Override
+    public String findNameById(Long id) {
+        String sql = """
+                SELECT member.name
+                FROM member
+                WHERE id = ?
+                """;
+        List<String> name = jdbcTemplate.queryForList(sql, String.class, id);
+        return DataAccessUtils.singleResult(name);
+    }
 }

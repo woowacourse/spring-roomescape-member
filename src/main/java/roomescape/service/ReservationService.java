@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -40,8 +41,10 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public List<ReservationResponse> findAllReservation() {
-        List<Reservation> reservations = reservationRepository.findAll();
+    public List<ReservationResponse> findAllReservation(
+            Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String name = memberRepository.findNameById(memberId);
+        List<Reservation> reservations = reservationRepository.findAll(name, themeId, dateFrom, dateTo);
         return reservations.stream()
                 .map(ReservationResponse::new)
                 .toList();

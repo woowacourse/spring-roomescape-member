@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(String name, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
                 SELECT reservation.id, reservation.name, reservation.date, 
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
@@ -45,7 +46,28 @@ public class ReservationDao implements ReservationRepository {
                 INNER JOIN reservation_time AS `time` ON reservation.time_id = `time`.id 
                 INNER JOIN theme ON reservation.theme_id = theme.id
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        String whereClause = buildWhereClause(name, themeId, dateFrom, dateTo);
+        return jdbcTemplate.query(sql + whereClause, reservationRowMapper);
+    }
+
+    private String buildWhereClause(String name, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        List<String> conditions = new ArrayList<>();
+        if (name != null) {
+            conditions.add("reservation.name = '" + name + "'");
+        }
+        if (themeId != null) {
+            conditions.add("reservation.theme_id = " + themeId);
+        }
+        if (dateFrom != null) {
+            conditions.add("reservation.date >= '" + dateFrom + "'");
+        }
+        if (dateTo != null) {
+            conditions.add("reservation.date <= '" + dateTo + "'");
+        }
+        if (conditions.isEmpty()) {
+            return "";
+        }
+        return "WHERE " + String.join(" AND ", conditions);
     }
 
     @Override
