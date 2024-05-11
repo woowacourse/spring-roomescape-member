@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class NotRemovableByConstraintException extends RuntimeException{
+public class NotRemovableByConstraintException extends BadRequestException{
 
     public NotRemovableByConstraintException() {}
 

@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class NullRequestParameterException extends RuntimeException{
+public class NullRequestParameterException extends BadRequestException{
 
     public NullRequestParameterException() {}
 

@@ -4,25 +4,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.exception.NotRemovableByConstraintException;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.NullRequestParameterException;
-import roomescape.exception.WrongStateException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = NullRequestParameterException.class)
-    public ResponseEntity<String> handleNullRequestParameterException(NullRequestParameterException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(value = NotRemovableByConstraintException.class)
-    public ResponseEntity<String> handleNotRemovableByConstraintException(NotRemovableByConstraintException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(value = WrongStateException.class)
-    public ResponseEntity<String> handleWrongStateException(WrongStateException e) {
+    @ExceptionHandler(value = BadRequestException.class)
+    public ResponseEntity<String> handleBadRequestException(BadRequestException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

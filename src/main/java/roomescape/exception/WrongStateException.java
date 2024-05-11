@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class WrongStateException extends RuntimeException{
+public class WrongStateException extends BadRequestException{
 
     public WrongStateException () {}
 
