@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS reservation
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
     member_id BIGINT,
-    date VARCHAR(255) NOT NULL,
+    date DATE NOT NULL,
     time_id BIGINT,
     theme_id BIGINT,
     PRIMARY KEY (id),

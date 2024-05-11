@@ -21,5 +21,5 @@ INSERT INTO member (name, email, password) VALUES ('러너덕','email2@woowa.com
 INSERT INTO member (name, email, password) VALUES ('포비', 'email3@woowa.com', 'password');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2025-01-01', 1, 1);
-INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2025-01-02', 2, 2);
-INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2025-01-03', 3, 3);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 2, '2025-01-02', 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 3, '2025-01-03', 3, 3);
