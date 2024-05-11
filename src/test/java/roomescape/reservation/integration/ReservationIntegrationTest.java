@@ -4,30 +4,12 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseCookie;
-import roomescape.auth.domain.Token;
-import roomescape.auth.provider.CookieProvider;
-import roomescape.auth.provider.model.TokenProvider;
 import roomescape.model.IntegrationTest;
 import roomescape.reservation.dto.ReservationRequest;
 
 class ReservationIntegrationTest extends IntegrationTest {
-
-    private Token token;
-    private ResponseCookie cookie;
-
-    @Autowired
-    private TokenProvider tokenProvider;
-
-    @BeforeEach
-    void setUp() {
-        this.token = tokenProvider.getAccessToken(1);
-        this.cookie = CookieProvider.setCookieFrom(token);
-    }
 
     @Test
     @DisplayName("정상적인 요청에 대하여 예약을 정상적으로 등록, 조회, 삭제한다.")
