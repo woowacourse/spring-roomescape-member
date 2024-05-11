@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberResponse;
 import roomescape.repository.JdbcMemberRepository;
 
 @Service
@@ -19,6 +18,7 @@ public class MemberService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    // TODO: 예외처리 통일하기
     public Member getMemberByLogin(LoginRequest request) {
         Optional<Member> member = memberRepository.findByEmailAndPassword(request.email(), request.password());
         if (member.isEmpty()) {
@@ -28,13 +28,10 @@ public class MemberService {
         return member.get();
     }
 
-    public MemberResponse findMemberByToken(String token) {
+    public Member getMemberByToken(String token) {
         long id = jwtTokenProvider.getIdFromToken(token);
-        Optional<Member> member = memberRepository.findById(id);
-        if (member.isEmpty()) {
-            throw new AuthorizationException("등록되지 않은 사용자입니다.");
-        }
+        Member member = memberRepository.findById(id);
 
-        return MemberResponse.from(member.get());
+        return member;
     }
 }

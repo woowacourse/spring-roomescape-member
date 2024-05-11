@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.MemberReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
@@ -62,7 +62,7 @@ public class ReservationEndPointTest {
     @Test
     void addReservation() {
         LocalDate date = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest(
+        MemberReservationRequest request = new MemberReservationRequest(
                 "알파카",
                 date,
                 2L,
@@ -102,7 +102,7 @@ public class ReservationEndPointTest {
     @DisplayName("과거의 시간으로 예약을 추가하면 상태 코드 400을 반환한다.")
     @Test
     void validateReservationTimeIsFutureFail() {
-        ReservationRequest past = new ReservationRequest(
+        MemberReservationRequest past = new MemberReservationRequest(
                 "알파카",
                 LocalDate.now().minusDays(1),
                 2L,
@@ -120,7 +120,7 @@ public class ReservationEndPointTest {
     @DisplayName("중복된 시간으로 예약을 추가하면 상태 코드 400을 반환한다.")
     @Test
     void validateReservationIsDuplicatedFail() {
-        ReservationRequest duplicated = new ReservationRequest(
+        MemberReservationRequest duplicated = new MemberReservationRequest(
                 "알파카",
                 LocalDate.now().plusDays(1),
                 2L,

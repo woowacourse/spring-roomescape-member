@@ -22,6 +22,7 @@ public class Member {
         this.password = password;
     }
 
+    // TODO: 유효성 검사 추가
     private void validate(String name, String email, String password) {
     }
 

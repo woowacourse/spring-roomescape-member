@@ -9,7 +9,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.MemberResponse;
 import roomescape.service.MemberService;
 
 @Component
@@ -31,9 +30,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) {
         HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = extractTokenFromCookie(servletRequest.getCookies());
-        MemberResponse member = memberService.findMemberByToken(token);
 
-        return member;
+        return memberService.getMemberByToken(token);
     }
 
 

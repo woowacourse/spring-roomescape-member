@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.ReservationRequest;
+import roomescape.controller.LoginMemberArgument;
+import roomescape.domain.Member;
+import roomescape.dto.AdminReservationRequest;
+import roomescape.dto.MemberReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -31,9 +34,19 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.addReservation(request);
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody MemberReservationRequest request,
+                                                              @LoginMemberArgument Member member) {
+        ReservationResponse response = reservationService.addReservation(request, member);
         URI location = URI.create("/reservations/" + response.id());
+
+        return ResponseEntity.created(location)
+                .body(response);
+    }
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> addAdminReservation(@RequestBody AdminReservationRequest request) {
+        ReservationResponse response = reservationService.addAdminReservation(request);
+        URI location = URI.create("/admin/reservations/" + response.id());
 
         return ResponseEntity.created(location)
                 .body(response);

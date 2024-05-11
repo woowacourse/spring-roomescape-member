@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -21,7 +22,12 @@ public class JdbcReservationRepository {
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
+            new Member(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("member_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password")
+            ),
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -37,9 +43,12 @@ public class JdbcReservationRepository {
     );
     private final String basicSelectQuery = "SELECT " +
             "r.id AS reservation_id, " +
-            "r.name, " +
             "r.date, " +
             "r.created_at, " +
+            "m.id AS member_id, " +
+            "m.name AS member_name, " +
+            "m.email AS email, " +
+            "m.password AS password, " +
             "t.id AS time_id, " +
             "t.start_at AS time_value, " +
             "th.id AS theme_id, " +
@@ -48,7 +57,8 @@ public class JdbcReservationRepository {
             "th.thumbnail AS theme_thumbnail " +
             "FROM reservation AS r " +
             "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
-            "INNER JOIN theme AS th ON r.theme_id = th.id ";
+            "INNER JOIN theme AS th ON r.theme_id = th.id " +
+            "INNER JOIN member AS m ON r.member_id = m.id ";
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -75,7 +85,7 @@ public class JdbcReservationRepository {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
-                "name", reservation.getName(),
+                "member_id", reservation.getMember().getId(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId(),
@@ -83,7 +93,7 @@ public class JdbcReservationRepository {
         );
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return new Reservation(id, reservation.getMember(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme(), reservation.getCreatedAt());
     }
 

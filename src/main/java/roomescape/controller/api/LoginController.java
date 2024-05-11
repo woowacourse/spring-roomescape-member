@@ -38,8 +38,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(@LoginMemberArgument MemberResponse response) {
+    public ResponseEntity<MemberResponse> checkLogin(@LoginMemberArgument Member member) {
         return ResponseEntity.ok()
-                .body(response);
+                .body(MemberResponse.from(member));
     }
 }
