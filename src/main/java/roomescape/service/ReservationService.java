@@ -5,9 +5,6 @@ import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
-import roomescape.dto.request.AdminReservationRequest;
-import roomescape.dto.request.MemberRequest;
-import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.repository.MemberDao;
@@ -38,25 +35,8 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public ReservationResponse save(
-            final UserReservationRequest userReservationRequest,
-            final MemberRequest memberRequest) {
-        Reservation reservation = userReservationRequest.toEntity(
-                findReservationTimeById(userReservationRequest.timeId()),
-                findThemeById(userReservationRequest.themeId()),
-                memberRequest.toEntity()
-        );
-
-        validateCreatedReservation(reservation);
-        return new ReservationResponse(reservationDao.save(reservation));
-    }
-
-    // TODO 중복코드 줄일 수 있는지 고려해보기
-    public ReservationResponse save(AdminReservationRequest reservationRequest) {
-        ReservationTime reservationTime = findReservationTimeById(reservationRequest.timeId());
-        Theme theme = findThemeById(reservationRequest.themeId());
-        Member member = findMemberById(reservationRequest.memberId());
-        Reservation reservation = reservationRequest.toEntity(reservationTime, theme, member);
+    public ReservationResponse save(LocalDate date, long timeId, long themeId, long memberId) {
+        Reservation reservation = makeReservationBy(date, timeId, themeId, findMemberById(memberId));
         validateCreatedReservation(reservation);
         return new ReservationResponse(reservationDao.save(reservation));
     }
@@ -79,6 +59,16 @@ public class ReservationService {
     public List<ReservationResponse> findReservationBy(long themeId, long memberId, LocalDate start, LocalDate end) {
         List<Reservation> filteredReservations = reservationDao.findByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
         return mapToReservationTimeResponses(filteredReservations);
+    }
+
+    private Reservation makeReservationBy(LocalDate date, long timeId, long themeId, Member member) {
+        return new Reservation(
+                null,
+                date,
+                findReservationTimeById(timeId),
+                findThemeById(themeId),
+                member
+        );
     }
 
     private List<Long> findUsedTimeId(LocalDate date, long themeId) {

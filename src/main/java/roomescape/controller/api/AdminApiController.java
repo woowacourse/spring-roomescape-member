@@ -22,7 +22,12 @@ public class AdminApiController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> saveAdminReservation(@RequestBody @Valid AdminReservationRequest reservationRequest) {
-        ReservationResponse reservationResponse = reservationService.save(reservationRequest);
+        ReservationResponse reservationResponse = reservationService.save(
+                reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId(),
+                reservationRequest.memberId()
+        );
         return ResponseEntity.created(URI.create("/admin/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
     }
