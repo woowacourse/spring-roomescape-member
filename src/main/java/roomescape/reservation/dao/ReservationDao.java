@@ -71,13 +71,13 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public List<CompletedReservation> findAll() {
         String sql = """
-                SELECT r.id as reservation_id, r.date,
-                t.id as time_id, t.start_at as time_value,
-                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
-                m.id as member_id, m.name as member_name, m.email, m.password, m.role
-                FROM reservation as r 
-                INNER JOIN reservation_time as t on r.time_id = t.id 
-                INNER JOIN theme as th on r.theme_id = th.id
+                SELECT r.id AS reservation_id, r.date,
+                t.id AS time_id, t.start_at AS time_value,
+                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail,
+                m.id AS member_id, m.name AS member_name, m.email, m.password, m.role
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
                 INNER JOIN member AS m ON m.id = mr.member_id
                 """;
@@ -88,13 +88,13 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public List<CompletedReservation> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
-                SELECT r.id as reservation_id, r.date,
-                t.id as time_id, t.start_at as time_value,
-                th.id as theme_id, th.name as theme_name, th.description, th.thumbnail,
-                m.id as member_id, m.name as member_name, m.email, m.password, m.role
-                FROM reservation as r 
-                INNER JOIN reservation_time as t on r.time_id = t.id 
-                INNER JOIN theme as th on r.theme_id = th.id
+                SELECT r.id AS reservation_id, r.date,
+                t.id AS time_id, t.start_at AS time_value,
+                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail,
+                m.id AS member_id, m.name AS member_name, m.email, m.password, m.role
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
                 INNER JOIN member AS m ON m.id = mr.member_id
                 """;
@@ -133,9 +133,9 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public boolean existByTimeId(long timeId) {
         String sql = """
-                SELECT COUNT(*) FROM reservation as r
-                INNER JOIN reservation_time as t on r.time_id = t.id
-                INNER JOIN theme as th on r.theme_id = th.id
+                SELECT COUNT(*) FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE t.id = ?
                 """;
 
