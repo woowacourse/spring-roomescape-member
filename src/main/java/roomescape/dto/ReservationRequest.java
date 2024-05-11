@@ -4,18 +4,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 
 public record ReservationRequest(
-        String name,
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         Long timeId,
         Long themeId
 ) {
 
     public ReservationRequest {
-        validateNameNonNull(name);
         validateDateNonNull(date);
         validateTimeIdNonNull(timeId);
         validateThemeIdNonNull(themeId);
@@ -39,15 +38,9 @@ public record ReservationRequest(
         }
     }
 
-    private void validateNameNonNull(String name) {
-        if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("이름은 null 값이 될 수 없습니다.");
-        }
-    }
-
-    public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(
-                name,
+    public Reservation toEntity(Member member, ReservationTime reservationTime, Theme theme) {
+         return new Reservation(
+                member,
                 date,
                 reservationTime,
                 theme
