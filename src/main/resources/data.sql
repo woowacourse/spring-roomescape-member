@@ -16,30 +16,10 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('오락', '재밌어', 
 INSERT INTO theme (name, description, thumbnail) VALUES ('판타지', '말이 안돼', 'https://i.postimg.cc/8k2PQ4yv/theme.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('감성', '감동적', 'https://sherlock-holmes.co.kr/attach/theme/16788523411.jpg');
 
-INSERT INTO member (name, email, password) VALUES ('아서', 'email1@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('몰리', 'email2@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('마크', 'email3@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('비밥', 'email4@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('러너덕','email5@woowa.com', 'password' );
-INSERT INTO member (name, email, password) VALUES ('현구막','email6@woowa.com', 'password' );
-INSERT INTO member (name, email, password) VALUES ('찰리', 'email7@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('네오', 'email8@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('포비', 'email9@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('솔라', 'email10@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('브리', 'email11@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('리사', 'email12@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('왼손', 'email13@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('마크', 'email1@woowa.com', 'password');
+INSERT INTO member (name, email, password) VALUES ('러너덕','email2@woowa.com', 'password' );
+INSERT INTO member (name, email, password) VALUES ('포비', 'email3@woowa.com', 'password');
 
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '아서', '2024-04-23', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '몰리', '2024-04-24', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '마크', '2024-04-25', 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '비밥', '2024-04-26', 4, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '러너덕', '2024-04-27', 5, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '현구막', '2024-04-28', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '찰리', '2024-04-29', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '네오', '2024-04-30', 3, 3);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '포비', '2024-05-01', 4, 3);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '솔라', '2024-05-02', 5, 4);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '브리', '2024-05-03', 1, 4);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '리사', '2024-05-04', 2, 5);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '왼손', '2024-05-05', 3, 6);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2025-01-01', 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2025-01-02', 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2025-01-03', 3, 3);

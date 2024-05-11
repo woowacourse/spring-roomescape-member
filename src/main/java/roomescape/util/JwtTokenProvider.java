@@ -24,18 +24,16 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .claim("id", member.getId())
-                .claim("email", member.getEmail())
-                .claim("name", member.getName())
+                .claim("memberId", member.getId())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    public String getPayloadClaim(String token, String claimName) {
+    public <T> T getPayloadClaim(String token, String claimName, Class<T> returnType) {
         validateToken(token);
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(claimName, String.class);
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(claimName, returnType);
     }
 
     private void validateToken(String token) {

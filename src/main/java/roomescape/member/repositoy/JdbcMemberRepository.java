@@ -48,4 +48,13 @@ public class JdbcMemberRepository {
             return Optional.empty();
         }
     }
+
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
+    }
 }
