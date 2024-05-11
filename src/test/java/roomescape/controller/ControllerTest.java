@@ -16,7 +16,7 @@ import roomescape.service.JwtProvider;
 import roomescape.service.request.TokenAppRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/truncate.sql")
+@Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ControllerTest {
     public static final String COOKIE_NAME = "token";
     @Autowired
