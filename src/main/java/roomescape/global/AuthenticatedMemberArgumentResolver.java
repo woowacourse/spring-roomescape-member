@@ -30,8 +30,8 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
     public Object resolveArgument(MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) throws Exception {
-        String accessToken = jwtTokenProvider.parseToken((HttpServletRequest) webRequest);
+                                  WebDataBinderFactory binderFactory) {
+        String accessToken = jwtTokenProvider.parseToken((HttpServletRequest) webRequest.getNativeRequest());
         Long id = Long.valueOf(jwtTokenProvider.getPayload(accessToken));
         return memberService.findById(id);
     }
