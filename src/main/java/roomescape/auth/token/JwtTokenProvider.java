@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.token;
 
 import io.jsonwebtoken.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;

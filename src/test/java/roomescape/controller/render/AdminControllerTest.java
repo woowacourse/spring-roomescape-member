@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.auth.TokenProvider;
+import roomescape.auth.token.TokenProvider;
 import roomescape.model.Member;
 import roomescape.model.Role;
 import roomescape.repository.MemberRepository;

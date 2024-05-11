@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.token;
 
 import roomescape.model.Member;
 
