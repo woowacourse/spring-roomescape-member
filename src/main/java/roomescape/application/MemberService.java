@@ -1,5 +1,6 @@
 package roomescape.application;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.request.TokenCreationRequest;
 import roomescape.application.dto.response.MemberResponse;
@@ -38,5 +39,12 @@ public class MemberService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         return new MemberResponse(member.getName());
+    }
+
+    public List<MemberResponse> findMembers() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }

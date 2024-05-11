@@ -1,5 +1,6 @@
 package roomescape.infrastructure;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -49,5 +50,13 @@ public class JdbcMemberRepository implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String query = """
+                SELECT id, name, email, password, role FROM member
+                """;
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 }
