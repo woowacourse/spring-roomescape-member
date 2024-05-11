@@ -44,7 +44,6 @@ class AuthIntegrationTest extends IntegrationTest {
         void 토큰으로_로그인한_사용자_정보를_조회할_수_있다() {
             LoginCheckResponse response = RestAssured.given().log().all()
                     .header("Cookie", cookieProvider.getCookie())
-                    .accept(MediaType.APPLICATION_JSON_VALUE) // TODO: 통일성 맞춰주기
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value()).extract().as(LoginCheckResponse.class);
@@ -55,7 +54,6 @@ class AuthIntegrationTest extends IntegrationTest {
         @Test
         void 토큰이_존재하지_않으면_예외가_발생한다() {
             RestAssured.given().log().all()
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(HttpStatus.UNAUTHORIZED.value());
@@ -67,7 +65,6 @@ class AuthIntegrationTest extends IntegrationTest {
         void 토큰이_유효하지_않으면_예외가_발생한다() {
             RestAssured.given().log().all()
                     .header("Cookie", "token=asdfadsfcx.safsdf.scdsafd")
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(HttpStatus.UNAUTHORIZED.value());
@@ -83,7 +80,6 @@ class AuthIntegrationTest extends IntegrationTest {
         void 토큰으로_로그아웃_할_수_있다() {
             RestAssured.given().log().all()
                     .header("Cookie", cookieProvider.getCookie())
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/logout")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value());
