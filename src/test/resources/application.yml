@@ -1,7 +1,7 @@
 spring:
   sql:
     init:
-      data-locations:
+      data-locations: null
 
 jwt:
   secret: testroomescapetestroomescapetestroomescapetestroomescapetestroomescape
