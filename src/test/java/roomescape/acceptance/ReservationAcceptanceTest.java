@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.acceptance;
 
 
 import io.restassured.RestAssured;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.doReturn;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationControllerTest {
+public class ReservationAcceptanceTest {
 
     @LocalServerPort
     private int port;
