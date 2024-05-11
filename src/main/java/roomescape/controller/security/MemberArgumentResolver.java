@@ -8,7 +8,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.member.Member;
 import roomescape.infrastructure.TokenExtractor;
-import roomescape.service.AuthService;
+import roomescape.service.security.AuthService;
 
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 

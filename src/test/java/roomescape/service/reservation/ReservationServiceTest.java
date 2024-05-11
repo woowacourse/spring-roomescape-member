@@ -7,12 +7,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.exception.IllegalUserRequestException;
-import roomescape.repository.MemberRepository;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
-import roomescape.service.ReservationService;
-import roomescape.service.dto.AdminReservationSaveRequest;
+import roomescape.repository.member.MemberRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservation.ReservationTimeRepository;
+import roomescape.repository.reservation.ThemeRepository;
+import roomescape.service.dto.reservation.AdminReservationSaveRequest;
 
 import java.time.LocalDate;
 

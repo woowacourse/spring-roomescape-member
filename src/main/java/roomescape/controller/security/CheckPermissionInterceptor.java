@@ -8,7 +8,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.exception.ForbiddenException;
 import roomescape.infrastructure.TokenExtractor;
-import roomescape.service.AuthService;
+import roomescape.service.security.AuthService;
 
 public class CheckPermissionInterceptor implements HandlerInterceptor {
 

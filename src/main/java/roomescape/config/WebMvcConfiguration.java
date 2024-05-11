@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.controller.security.CheckPermissionInterceptor;
 import roomescape.controller.security.MemberArgumentResolver;
-import roomescape.service.AuthService;
+import roomescape.service.security.AuthService;
 
 import java.util.List;
 

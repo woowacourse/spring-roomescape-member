@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.infrastructure.TokenExtractor;
-import roomescape.service.AuthService;
 import roomescape.service.dto.login.LoginRequest;
 import roomescape.service.dto.login.MemberNameResponse;
+import roomescape.service.security.AuthService;
 
 import java.util.Date;
 
