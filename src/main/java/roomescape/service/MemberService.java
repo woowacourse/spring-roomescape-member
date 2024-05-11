@@ -24,7 +24,7 @@ public class MemberService {
 
     public boolean checkInvalidLogin(final String email, final String password) {
         final Member member = memberRepository.fetchByEmail(email);
-        return !member.hasValidPassword(password);
+        return !member.isCorrectPassword(password);
     }
 
     public TokenResponse createToken(final MemberLoginRequest request) {

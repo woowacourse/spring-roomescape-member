@@ -18,7 +18,7 @@ public class Member {
         this.role = role;
     }
 
-    public boolean hasValidPassword(final String target) {
+    public boolean isCorrectPassword(final String target) {
         return password.equals(target);
     }
 
