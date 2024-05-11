@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import roomescape.controller.request.UserLoginRequest;
@@ -31,5 +33,9 @@ public class UserService {
     public User findUserById(Long id) {
         return userDao.findUserById(id)
                 .orElseThrow(() -> new NotFoundException("id가 %s인 사용자가 존재하지 않습니다."));
+    }
+
+    public List<User> findAllUsers() {
+        return userDao.findAllUsers();
     }
 }

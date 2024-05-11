@@ -84,11 +84,11 @@ public class JdbcReservationDao implements ReservationDao {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("date", String.valueOf(reservation.getDate()));
         parameters.put("time_id", String.valueOf(reservation.getTime().getId()));
-        parameters.put("theme_id", String.valueOf(reservation.getTheme().getThemeId()));
-        parameters.put("user_id", String.valueOf(reservation.getUser().getId()));
+        parameters.put("theme_id", String.valueOf(reservation.getTheme().getId()));
+        parameters.put("user_id", String.valueOf(reservation.getMember().getId()));
         Number newId = insertActor.executeAndReturnKey(parameters);
         return new Reservation(newId.longValue(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme(), reservation.getUser());
+                reservation.getTheme(), reservation.getMember());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import roomescape.model.User;
@@ -10,4 +11,6 @@ public interface UserDao {
     Optional<String> findUserNameByUserId(Long userId);
 
     Optional<User> findUserById(Long userId);
+
+    List<User> findAllUsers();
 }

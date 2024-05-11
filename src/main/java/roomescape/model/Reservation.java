@@ -9,17 +9,17 @@ public class Reservation {
     private LocalDate date;
     private ReservationTime time;
     private Theme theme;
-    private User user;
+    private User member;
 
     private Reservation() {
     }
 
-    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, User user) {
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, User member) {
         this.id = id;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.user = user;
+        this.member = member;
     }
 
     public Reservation(LocalDate date, ReservationTime time, Theme theme, User user) {
@@ -42,8 +42,8 @@ public class Reservation {
         return theme;
     }
 
-    public User getUser() {
-        return user;
+    public User getMember() {
+        return member;
     }
 
     @Override
@@ -57,12 +57,12 @@ public class Reservation {
         Reservation that = (Reservation) object;
         return Objects.equals(getId(), that.getId()) && Objects.equals(getDate(), that.getDate())
                 && Objects.equals(getTime(), that.getTime()) && Objects.equals(getTheme(),
-                that.getTheme()) && Objects.equals(getUser(), that.getUser());
+                that.getTheme()) && Objects.equals(getMember(), that.getMember());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDate(), getTime(), getTheme(), getUser());
+        return Objects.hash(getId(), getDate(), getTime(), getTheme(), getMember());
     }
 
     @Override
@@ -72,7 +72,7 @@ public class Reservation {
                 ", date=" + date +
                 ", time=" + time +
                 ", theme=" + theme +
-                ", user=" + user +
+                ", member=" + member +
                 '}';
     }
 }

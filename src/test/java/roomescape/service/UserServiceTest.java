@@ -3,6 +3,8 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,5 +82,16 @@ class UserServiceTest {
     void should_not_find_user_and_throw_exception_when_user_id_not_exist() {
         assertThatThrownBy(() -> userService.findUserById(1L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("모든 사용자를 조회한다.")
+    @Test
+    void should_find_all_users() {
+        userDao.addUser(new User(1L, "썬", "sun@email.com", "1111"));
+        userDao.addUser(new User(2L, "배키", "dmsgml@email.com", "2222"));
+
+        List<User> users = userService.findAllUsers();
+
+        assertThat(users).hasSize(2);
     }
 }

@@ -6,7 +6,7 @@ import roomescape.exception.BadRequestException;
 
 public class Theme {
 
-    private Long themeId;
+    private Long id;
     private String name;
     private String description;
     private String thumbnail;
@@ -14,11 +14,11 @@ public class Theme {
     private Theme() {
     }
 
-    public Theme(Long themeId, String name, String description, String thumbnail) {
+    public Theme(Long id, String name, String description, String thumbnail) {
         validateNullOrBlank(name, "name");
         validateNullOrBlank(description, "description");
         validateNullOrBlank(thumbnail, "thumbnail");
-        this.themeId = themeId;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
@@ -34,8 +34,8 @@ public class Theme {
         }
     }
 
-    public long getThemeId() {
-        return themeId;
+    public long getId() {
+        return id;
     }
 
     public String getName() {
@@ -59,7 +59,7 @@ public class Theme {
             return false;
         }
         Theme theme = (Theme) o;
-        return themeId.equals(theme.themeId)
+        return id.equals(theme.id)
                 && Objects.equals(name, theme.name)
                 && Objects.equals(description, theme.description)
                 && Objects.equals(thumbnail, theme.thumbnail);
@@ -67,13 +67,13 @@ public class Theme {
 
     @Override
     public int hashCode() {
-        return Objects.hash(themeId, name, description, thumbnail);
+        return Objects.hash(id, name, description, thumbnail);
     }
 
     @Override
     public String toString() {
         return "Theme{" +
-                "themeId=" + themeId +
+                "themeId=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +

@@ -37,6 +37,11 @@ public class FakeUserDao implements UserDao {
                 .findAny();
     }
 
+    @Override
+    public List<User> findAllUsers() {
+        return users;
+    }
+
     public void addUser(User user) {
         users.add(user);
     }

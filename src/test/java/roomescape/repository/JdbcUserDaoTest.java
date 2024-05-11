@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -77,6 +78,20 @@ class JdbcUserDaoTest {
 
         assertThat(userById).contains(user);
     }
+
+    @DisplayName("모든 사용자를 조회한다.")
+    @Test
+    void should_find_all_user() {
+        User user1 = new User(1L, "썬", "sun@email.com", "1111");
+        User user2 = new User(2L, "배키", "dmsgml@email.com", "2222");
+        insertUser(user1);
+        insertUser(user2);
+
+        List<User> allUsers = userDao.findAllUsers();
+
+        assertThat(allUsers).contains(user1, user2);
+    }
+
 
 
     private void insertUser(User user) {

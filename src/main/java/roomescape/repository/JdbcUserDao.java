@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -48,5 +49,11 @@ public class JdbcUserDao implements UserDao {
     public Optional<User> findUserById(Long userId) {
         String sql = "SELECT id, name, email, password FROM users WHERE id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, userId));
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        String sql = "SELECT id, name, email, password FROM users";
+        return jdbcTemplate.query(sql, userRowMapper);
     }
 }

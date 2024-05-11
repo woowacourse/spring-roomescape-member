@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import java.util.List;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -38,5 +40,11 @@ public class UserController {
     @GetMapping("/login/check")
     public ResponseEntity<UserNameResponse> login(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(new UserNameResponse(user.getName()));
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.findAllUsers();
+        return ResponseEntity.ok(users);
     }
 }

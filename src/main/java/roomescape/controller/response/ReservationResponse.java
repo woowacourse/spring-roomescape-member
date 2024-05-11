@@ -18,7 +18,7 @@ public class ReservationResponse {
 
     public ReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
-        this.name = reservation.getUser().getName();
+        this.name = reservation.getMember().getName();
         this.date = reservation.getDate();
         this.time = ReservationTimeResponse.of(reservation.getTime());
         this.theme = reservation.getTheme();
