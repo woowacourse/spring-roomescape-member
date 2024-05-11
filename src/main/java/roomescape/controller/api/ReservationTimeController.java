@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
@@ -22,7 +21,6 @@ import roomescape.dto.response.ReservationTimeWithStateDto;
 import roomescape.service.ReservationTimeService;
 
 @RestController
-@RequestMapping("/times")
 public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
@@ -30,7 +28,7 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @PostMapping
+    @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponseDto> createTime(
             @RequestBody @Valid final ReservationTimeRequestDto request
     ) {
@@ -40,7 +38,7 @@ public class ReservationTimeController {
                 .body(response);
     }
 
-    @GetMapping
+    @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponseDto>> findAllTimes() {
         return reservationTimeService.findAll()
                 .stream()
@@ -48,7 +46,7 @@ public class ReservationTimeController {
                 .collect(collectingAndThen(toList(), ResponseEntity::ok));
     }
 
-    @GetMapping("/available")
+    @GetMapping("/times/available")
     public ResponseEntity<List<ReservationTimeWithStateDto>> findAvailableTimes(
             @RequestParam("date") final String date,
             @RequestParam("theme-id") final Long themeId
@@ -56,7 +54,7 @@ public class ReservationTimeController {
         return ResponseEntity.ok(reservationTimeService.findAllWithReservationState(date, themeId));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable("id") final long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent()

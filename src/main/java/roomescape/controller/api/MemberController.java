@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.dto.request.SignUpRequestDto;
@@ -18,7 +17,6 @@ import roomescape.dto.response.MemberResponseDto;
 import roomescape.service.MemberService;
 
 @RestController
-@RequestMapping("/members")
 public class MemberController {
     private final MemberService memberService;
 
@@ -26,7 +24,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping
+    @PostMapping("/members")
     public ResponseEntity<MemberResponseDto> signUp(@RequestBody @Valid final SignUpRequestDto request) {
         final Member member = memberService.create(request);
         final MemberResponseDto response = new MemberResponseDto(member);
@@ -34,7 +32,7 @@ public class MemberController {
                 .body(response);
     }
 
-    @GetMapping
+    @GetMapping("/members")
     public ResponseEntity<List<MemberResponseDto>> findAllRoleMembers() {
         return memberService.findAllRoleMembers()
                 .stream()

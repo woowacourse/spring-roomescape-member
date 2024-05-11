@@ -27,7 +27,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
 
     @Override
     public Long save(final ReservationTime reservationTime) {
-        SqlParameterSource parameters = new MapSqlParameterSource()
+        final SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAtString());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
@@ -55,7 +55,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         try {
             final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
             return jdbcTemplate.queryForObject(query, getReservationTimeRowMapper(), id);
-        } catch (DataAccessException e) {
+        } catch (final DataAccessException e) {
             throw new NotFoundException("예약을 찾을 수 없습니다.");
         }
     }

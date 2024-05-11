@@ -42,8 +42,8 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTimeWithStateDto> findAllWithReservationState(final String date, final long themeId) {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-        Set<Long> reservedTimeIds = reservationRepository.findAllByDateAndThemeId(date, themeId)
+        final List<ReservationTime> times = reservationTimeRepository.findAll();
+        final Set<Long> reservedTimeIds = reservationRepository.findAllByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getTimeId)
                 .collect(toSet());

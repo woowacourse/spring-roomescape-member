@@ -27,7 +27,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
     @Override
     public Long save(final Theme theme) {
-        SqlParameterSource parameters = new MapSqlParameterSource()
+        final SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
@@ -63,7 +63,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         try {
             final String query = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
             return jdbcTemplate.queryForObject(query, getThemeRowMapper(), id);
-        } catch (DataAccessException e) {
+        } catch (final DataAccessException e) {
             throw new NotFoundException("테마를 찾을 수 없습니다.");
         }
     }
