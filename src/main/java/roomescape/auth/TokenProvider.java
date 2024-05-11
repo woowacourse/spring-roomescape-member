@@ -1,10 +1,10 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,11 +23,11 @@ public class TokenProvider {
         this.expirationMilliseconds = expirationMilliseconds;
     }
 
-    public String createToken(long id) {
+    public String createToken(String subject) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + expirationMilliseconds);
         return Jwts.builder()
-                .subject(Long.toString(id))
+                .subject(subject)
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(key)
@@ -44,8 +44,10 @@ public class TokenProvider {
                     .getSubject();
         } catch (ExpiredJwtException e) {
             throw new AuthorizationException("만료된 토큰입니다.");
-        } catch (SignatureException e) {
-            throw new AuthorizationException("잘못된 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            throw new AuthorizationException("토큰이 비어있습니다.");
+        } catch (JwtException e) {
+            throw new AuthorizationException("올바르지 않은 토큰입니다.");
         }
     }
 }

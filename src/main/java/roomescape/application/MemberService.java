@@ -25,7 +25,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException(WRONG_EMAIL_OR_PASSWORD_MESSAGE));
         validatePassword(member, request.password());
-        String token = tokenProvider.createToken(member.getId());
+        String token = tokenProvider.createToken(Long.toString(member.getId()));
         return new TokenResponse(token);
     }
 
