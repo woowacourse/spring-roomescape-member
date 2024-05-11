@@ -73,7 +73,6 @@ class JdbcMemberRepositoryTest {
     }
 
 
-
     private int getTotalRowCount() {
         String sql = "select count(*) from member";
         return jdbcTemplate.queryForObject(sql, Integer.class);

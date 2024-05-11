@@ -53,7 +53,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findByFilter(ReservationFilterRequest request) {
         return reservationRepository.findByMemberAndThemeBetweenDates(
-                request.memberId(), request.themeId(), request.startDate(), request.endDate())
+                        request.memberId(), request.themeId(), request.startDate(), request.endDate())
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
