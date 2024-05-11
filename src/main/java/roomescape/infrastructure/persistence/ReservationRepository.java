@@ -80,6 +80,7 @@ public class ReservationRepository {
                     th.thumbnail,
                     m.id AS member_id,
                     m.name,
+                    m.role,
                     m.email,
                     m.password
                 FROM reservation AS r
