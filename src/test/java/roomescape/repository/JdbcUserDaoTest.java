@@ -93,7 +93,6 @@ class JdbcUserDaoTest {
     }
 
 
-
     private void insertUser(User user) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(user);
         insertActor.execute(parameters);
