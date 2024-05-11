@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.dto.response.ApiResponse;
@@ -33,15 +32,12 @@ public class ThemeController {
         return ApiResponse.success(themeService.findAllThemes());
     }
 
-    // TODO: defaultValue에 제한을 걸던지, 특정 동작만 수행하게 하던지 둘 중 하나로 변경
     @GetMapping("/themes/top")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ThemesResponse> getTopNThemesBetweenDate(
-            @RequestParam(required = false, defaultValue = "10") final int count,
-            @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDate).now().minusDays(7)}") final LocalDate startAt,
-            @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDate).now().minusDays(1)}") final LocalDate endAt
+    public ApiResponse<ThemesResponse> getTop10Themes(
+            final LocalDate today
     ) {
-        return ApiResponse.success(themeService.findTopNThemesBetweenDate(count, startAt, endAt));
+        return ApiResponse.success(themeService.getTop10Themes(today));
     }
 
     @PostMapping("/themes")

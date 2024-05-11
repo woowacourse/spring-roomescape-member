@@ -27,10 +27,12 @@ public class ThemeService {
         return new ThemesResponse(response);
     }
 
-    public ThemesResponse findTopNThemesBetweenDate(
-            final int count, final LocalDate startDate, final LocalDate endDate) {
+    public ThemesResponse getTop10Themes(final LocalDate today) {
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today.minusDays(1);
+        int limit = 10;
 
-        List<ThemeResponse> response = themeDao.findByStartDateAndEndDateWithLimit(startDate, endDate, count)
+        List<ThemeResponse> response = themeDao.findByStartDateAndEndDateWithLimit(startDate, endDate, limit)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

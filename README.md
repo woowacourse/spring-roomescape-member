@@ -22,7 +22,7 @@
 |          | DELETE | `/reservationTimes/{id}`                                | 예약 시간 추가              |                                        | `@RestController` |
 |          | POST   | `/reservationTimes`                                     | 예약 시간 삭제              |                                        | `@RestController` |
 |          | GET    | `/themes`                                               | 테마 정보 조회              |                                        | `@RestController` |
-|          | GET    | `/themes/top?count&startAt&endAt`                       | 특정 기간의 인기 테마 조회       |                                        | `@RestController` |
+|          | GET    | `/themes/top?today`                                     | 특정 기간의 인기 테마 조회       |                                        | `@RestController` |
 |          | POST   | `/themes`                                               | 테마 추가                 |                                        | `@RestController` |
 |          | DELETE | `/themes/{id}`                                          | 테마 삭제                 |                                        | `@RestController` |
 
@@ -318,7 +318,7 @@ Content-Type: application/json
 - Request
 
 ```
-GET /themes/top?count=10&startAt=2024-01-01&endAt=2024-01-07 HTTP/1.1
+GET /themes/top?today=2024-01-01 HTTP/1.1
 ```
 
 - response

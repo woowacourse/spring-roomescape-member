@@ -94,19 +94,17 @@ class ThemeControllerTest {
     @DisplayName("예약 수 상위 10개 테마를 조회했을 때 내림차순으로 정렬된다. 만약 예약 수가 같다면, id 순으로 오름차순 정렬된다.")
     @Sql(scripts = "/reservationData.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void readTop10ThemesDescOrder() {
-        LocalDate startAt = LocalDate.now().minusDays(7);
-        LocalDate endAt = LocalDate.now().minusDays(1);
+        LocalDate today = LocalDate.now();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
-                .when().get("/themes/top?count=10&startAt=" + startAt + "&endAt=" + endAt)
+                .when().get("/themes/top?today=" + today)
                 .then().log().all()
                 .statusCode(200)
                 .body("data.themes.size()", is(10))
                 .body("data.themes.id", contains(1, 4, 2, 6, 3, 5, 7, 8, 9, 10));
     }
-
 
     @ParameterizedTest
     @MethodSource("requestValidateSource")
