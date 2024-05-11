@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
-import roomescape.domain.Role;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.LoginException;
 import roomescape.exception.ResourceNotFoundException;
@@ -33,6 +32,8 @@ public class MemberService {
             throw new DuplicatedException("이미 가입되어 있는 이메일 주소입니다.");
         }
         Member member = memberRepository.save(request.toMember());
+        MemberRole role = new MemberRole(member.getId());
+        roleRepository.save(role);
         return MemberResponse.from(member);
     }
 
