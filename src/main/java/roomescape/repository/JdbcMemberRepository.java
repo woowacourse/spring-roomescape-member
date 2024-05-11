@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -46,15 +45,14 @@ public class JdbcMemberRepository {
         return member;
     }
 
-    // TODO: 예외 처리 통일하기
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
+    public Member findByEmailAndPassword(String email, String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
-        List<Member> members = jdbcTemplate.query(sql, memberRowMapper, email, password);
-        if (members.isEmpty()) {
-            return Optional.empty();
+        Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
+        if (member == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다");
         }
 
-        return Optional.of(members.get(0));
+        return member;
     }
 
     public Member save(Member member) {
