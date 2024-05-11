@@ -72,6 +72,24 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("조건이 하나라도 잘못 될 경우 200 과 전체 예약 리스트를 응답한다.")
+    void getReservationsSomeConditions200AllReservations() {
+        String twoDaysAgo = LocalDate.now().minusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String weirdDate = "2024-05-123";
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.URLENC)
+                .param("themeId", 3)
+                .param("memberId", 2)
+                .param("dateFrom", twoDaysAgo)
+                .param("dateTo", weirdDate)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(8));
+    }
+
+    @Test
     @DisplayName("토큰 없이 요청할 경우 401 을 반환한다.")
     void reqeustWithoutToken() {
         String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);

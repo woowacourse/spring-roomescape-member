@@ -6,16 +6,16 @@ import java.time.format.DateTimeParseException;
 public record SearchReservationRequest(Long themeId, Long memberId, String dateFrom, String dateTo) {
 
     public boolean isValid() {
-        return themeId == null || memberId == null || dateFrom == null || dateTo == null ||
-                isNotValidDate(dateFrom) || isNotValidDate(dateTo);
+        return themeId != null && memberId != null && dateFrom != null && dateTo != null &&
+                isValidDate(dateFrom) && isValidDate(dateTo);
     }
 
-    private boolean isNotValidDate(String date) {
+    private boolean isValidDate(String date) {
         try {
             LocalDate.parse(date);
-            return false;
-        } catch (DateTimeParseException e) {
             return true;
+        } catch (DateTimeParseException e) {
+            return false;
         }
     }
 }
