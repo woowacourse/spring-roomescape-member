@@ -1,6 +1,10 @@
 package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.Fixture.VALID_MEMBER;
+import static roomescape.Fixture.VALID_RESERVATION_DATE;
+import static roomescape.Fixture.VALID_RESERVATION_TIME;
+import static roomescape.Fixture.VALID_THEME;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,13 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.domain.vo.ReservationTime;
 
 @JdbcTest
 class JdbcReservationRepositoryImplTest {
@@ -23,30 +28,31 @@ class JdbcReservationRepositoryImplTest {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-
-    private ReservationDate reservationDate = new ReservationDate("2040-01-01");
+    private final MemberRepository memberRepository;
     private ReservationTime reservationTime;
     private Theme theme;
+    private Member member;
 
     @Autowired
     JdbcReservationRepositoryImplTest(JdbcTemplate jdbcTemplate) {
         this.reservationRepository = new JdbcReservationRepositoryImpl(jdbcTemplate);
         this.reservationTimeRepository = new JdbcReservationTimeRepositoryImpl(jdbcTemplate);
         this.themeRepository = new JdbcThemeRepositoryImpl(jdbcTemplate);
+        this.memberRepository = new JdbcMemberRepositoryImpl(jdbcTemplate);
     }
 
     @BeforeEach
     void setUp() {
-        reservationTime = reservationTimeRepository.save(new ReservationTime("05:30"));
-        theme = themeRepository.save(
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        reservationTime = reservationTimeRepository.save(VALID_RESERVATION_TIME);
+        theme = themeRepository.save(VALID_THEME);
+        member = memberRepository.save(VALID_MEMBER);
     }
 
     @DisplayName("time_id값을 통해 예약이 존재하는지를 구한다.")
     @Test
     void isTimeIdExists() {
-        Reservation reservation1 = new Reservation("brown1", new ReservationDate("2040-01-01"), reservationTime, theme);
-        Reservation reservation2 = new Reservation("brown2", new ReservationDate("2050-02-02"), reservationTime, theme);
+        Reservation reservation1 = new Reservation(member, VALID_RESERVATION_DATE, reservationTime, theme);
+        Reservation reservation2 = new Reservation(member, VALID_RESERVATION_DATE, reservationTime, theme);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
 
@@ -58,9 +64,9 @@ class JdbcReservationRepositoryImplTest {
     @DisplayName("date, time_id, theme_id로 중복 예약이 존재하는지를 구한다.")
     @Test
     void isDuplication() {
-        Reservation reservation = new Reservation("brown1", reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(member, VALID_RESERVATION_DATE, reservationTime, theme);
         reservationRepository.save(reservation);
-        boolean actual = reservationRepository.isDuplicated(reservationDate.getDate(), reservationTime.getId(),
+        boolean actual = reservationRepository.isDuplicated(VALID_RESERVATION_DATE.getDate(), reservationTime.getId(),
             theme.getId());
 
         assertThat(actual).isTrue();

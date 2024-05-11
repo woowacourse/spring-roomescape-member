@@ -8,30 +8,14 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.request.ThemeWebRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeControllerTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @LocalServerPort
-    private int port;
+class ThemeControllerTest extends ControllerTest {
 
     @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
-
-    @BeforeEach
-    void addInitialData() {
+    void setInitialData() {
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", "방탈출1", "설명1",
             "https://url1");
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", "방탈출2", "설명2",
@@ -119,8 +103,10 @@ class ThemeControllerTest {
     @Test
     void delete_ReservationExists() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "12:00");
-        jdbcTemplate.update("INSERT INTO reservation(name,date,time_id,theme_id) VALUES (?,?,?,?)", "brown",
-            "2026-02-01", 1L, 1L);
+        jdbcTemplate.update("INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)", "wiib", "asd@naver.com",
+            "123asd", "ADMIN");
+        jdbcTemplate.update("INSERT INTO reservation(date,time_id,theme_id,member_id) VALUES (?,?,?,?)",
+            "2026-02-01", 1L, 1L, 1L);
 
         RestAssured.given().log().all()
             .when().delete("/themes/1")
@@ -130,7 +116,7 @@ class ThemeControllerTest {
 
     @DisplayName("상위 10개 인기 테마를 조회 한다. -> 200")
     @Test
-    @Sql("/popularTestData.sql")
+    @Sql({"/truncate.sql", "/popularTestData.sql"})
     void findPopularTheme() {
         RestAssured.given().log().all()
             .when().get("/themes/popular")

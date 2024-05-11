@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
-import roomescape.domain.MemberEmail;
-import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
+import roomescape.domain.vo.MemberEmail;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.MemberPassword;
+import roomescape.domain.vo.MemberRole;
 
 @JdbcTest
 class JdbcMemberRepositoryImplTest {
@@ -26,7 +28,8 @@ class JdbcMemberRepositoryImplTest {
     @DisplayName("email, password로 해당되는 멤버 정보를 조회한다.")
     @Test
     void findByEmailAndPassword() {
-        Member newMember = new Member("asd", new MemberEmail("hihi@hello.com"), new MemberPassword("zzz123"));
+        Member newMember = new Member(new MemberName("zay"), new MemberEmail("hihi@hello.com"),
+            new MemberPassword("zzz123"), new MemberRole("USER"));
 
         Member expected = memberRepository.save(newMember);
         Member actual = memberRepository.findByEmailAndPassword("hihi@hello.com", "zzz123").get();

@@ -1,6 +1,11 @@
-ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
-ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
-ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_time
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE theme
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE member
+    ALTER COLUMN id RESTART WITH 1;
 
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('theme1', 'desc1',
@@ -15,11 +20,14 @@ VALUES ('theme3', 'desc3',
 INSERT INTO reservation_time(start_at)
 VALUES ('10:00');
 
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown1', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown2', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown3', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown4', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 3);
+INSERT INTO member(name, email, password, role)
+VALUES ('wiib', 'asd@gmail.com', '1!2@3#', 'ADMIN');
+
+INSERT INTO reservation(date, time_id, theme_id, member_id)
+VALUES (TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1, 1);
+INSERT INTO reservation(date, time_id, theme_id, member_id)
+VALUES (TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1, 1);
+INSERT INTO reservation(date, time_id, theme_id, member_id)
+VALUES (TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1, 1);
+INSERT INTO reservation(date, time_id, theme_id, member_id)
+VALUES (TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 3, 1);
