@@ -96,14 +96,16 @@ public class ReservationService {
                 .toList();
     }
 
-    // TODO: repository가 처리하는게 좋을까 findAll을 호출한 다음에 Service에서 처리하는게 좋을까?
     public List<ReservationResponse> findReservations(
-            Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
         return reservationRepository.findAll()
                 .stream()
-                .filter(reservation ->
-                        reservation.isSameThemeAndMember(themeId, memberId)
-                                && reservation.isBetweenInclusive(dateFrom, dateTo))
+                .filter(reservation -> reservation.isSameThemeAndMember(themeId, memberId)
+                        && reservation.isBetweenInclusive(dateFrom, dateTo))
                 .map(ReservationResponse::new)
                 .toList();
     }

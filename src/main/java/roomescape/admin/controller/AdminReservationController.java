@@ -47,7 +47,6 @@ public class AdminReservationController {
             @RequestParam LocalDate dateFrom,
             @RequestParam LocalDate dateTo
     ) {
-        // TODO: 시작, 끝 날짜에 대한 검증은 controller와 service 중 누가 하는게 좋은가?
         validateDateRange(dateFrom, dateTo);
         return reservationService.findReservations(themeId, memberId, dateFrom, dateTo);
     }

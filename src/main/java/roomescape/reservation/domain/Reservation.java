@@ -40,8 +40,7 @@ public class Reservation {
     }
 
     public boolean isSameThemeAndMember(Long themeId, Long memberId) {
-        // TODO: id를 getter로 빼와서 비교 vs theme와 loginMember에게 직접 아이디가 같은지 물어보는 것중에 뭐가 더 좋을까?
-        return theme.getId().equals(themeId) && loginMember.getId().equals(memberId);
+        return theme.isId(themeId) && loginMember.isId(memberId);
     }
 
     public Long getId() {
