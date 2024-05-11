@@ -107,3 +107,11 @@
   - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가
     - themeId, memberId, startDate, endDate 값을 사용 
   - [x] `reservation-with-member.js`를 요청 형식에 맞게 수정
+
+## 로그인 계정
+- 로그인 가능한 계정
+  - 관리자 계정 - id : admin@abc.com / pw : 아무거나 입력 가능 / name : 관리자
+  - 일반 유저 계정 - id : bri@abc.com / pw : 아무거나 입력 가능 / name : 브리
+  - 일반 유저 계정 - id : brown@abc.com / pw : 아무거나 입력 가능 / name : 브라운
+  - 일반 유저 계정 - id : duck@abc.com / pw : 아무거나 입력 가능 / name : 오리
+- 추후 패스워드 확인 기능 추가 예정
