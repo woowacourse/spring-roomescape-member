@@ -1,7 +1,8 @@
-package roomescape.integration;
+package roomescape.integration.view;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
+import roomescape.integration.IntegrationTest;
 
 public class AdminIntegrationTest extends IntegrationTest {
     @Test
