@@ -39,7 +39,7 @@ public class ReservationService {
 
     public CreateReservationResponse createReservation(final AuthInfo authInfo,
                                                        final CreateReservationRequest createReservationRequest) {
-        validateAlreadyExistReservation(createReservationRequest);
+        checkAlreadyExistReservation(createReservationRequest);
 
         ReservationTime reservationTime = findReservationTime(createReservationRequest.timeId());
         checkDateTimeToCreateIsPast(createReservationRequest.date(), reservationTime);
@@ -51,7 +51,7 @@ public class ReservationService {
         return CreateReservationResponse.from(reservationRepository.save(reservation));
     }
 
-    private void validateAlreadyExistReservation(final CreateReservationRequest createReservationRequest) {
+    private void checkAlreadyExistReservation(final CreateReservationRequest createReservationRequest) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
                 createReservationRequest.date(),
                 createReservationRequest.timeId(),
@@ -143,7 +143,7 @@ public class ReservationService {
 
     private void validateExistReservation(final Long id) {
         if (!reservationRepository.existsById(id)) {
-            throw new NoSuchElementException("삭제하려는 예약이 존재하지 않습니다.");
+            throw new NoSuchElementException("삭제하려는 예약이 존재하지 않습니다. 삭제가 불가능합니다.");
         }
     }
 }

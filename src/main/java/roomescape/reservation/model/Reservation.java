@@ -64,36 +64,8 @@ public class Reservation {
         }
     }
 
-    public boolean isSameId(Long id) {
-        return Objects.equals(this.id, id);
-    }
-
     public boolean isSameTime(final ReservationTime reservationTime) {
         return this.reservationTime.isSameTo(reservationTime.getId());
-    }
-
-    public boolean isSameTimeId(final Long timeId) {
-        return this.reservationTime.isSameTo(timeId);
-    }
-
-    public boolean isSameTheme(final Long themeId) {
-        return this.theme.isSameTo(themeId);
-    }
-
-    public boolean isSameDate(final LocalDate date) {
-        return Objects.equals(this.date, date);
-    }
-
-    public boolean isSameMemberId(final Long memberId) {
-        return this.member.isSameId(memberId);
-    }
-
-    public boolean isAfterOrNow(final LocalDate date) {
-        return this.date.isAfter(date) || this.date.isEqual(date);
-    }
-
-    public boolean isBeforeOrNow(final LocalDate date) {
-        return this.date.isBefore(date) || this.date.isEqual(date);
     }
 
     public Long getId() {
