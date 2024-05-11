@@ -4,11 +4,11 @@ import java.net.URI;
 import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.config.LoggedIn;
-import roomescape.domain.AuthenticatedMember;
-import roomescape.service.dto.reservation.ReservationCreateRequest;
-import roomescape.service.dto.reservation.ReservationResponse;
-import roomescape.service.ReservationService;
+import roomescape.auth.LoggedIn;
+import roomescape.domain.member.AuthenticatedMember;
+import roomescape.service.reservation.dto.ReservationCreateRequest;
+import roomescape.service.reservation.dto.ReservationResponse;
+import roomescape.service.reservation.ReservationService;
 
 import java.util.List;
 

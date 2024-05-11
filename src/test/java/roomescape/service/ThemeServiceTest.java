@@ -11,10 +11,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.ReferencedReservationExistException;
-import roomescape.service.dto.theme.ThemeCreateRequest;
-import roomescape.service.dto.theme.ThemeResponse;
-import roomescape.repository.theme.ThemeRepository;
-import roomescape.repository.reservation.ReservationRepository;
+import roomescape.service.theme.ThemeService;
+import roomescape.service.theme.dto.ThemeCreateRequest;
+import roomescape.service.theme.dto.ThemeResponse;
+import roomescape.domain.theme.ThemeRepository;
+import roomescape.domain.reservation.ReservationRepository;
 
 import java.util.List;
 

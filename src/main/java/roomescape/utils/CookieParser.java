@@ -10,7 +10,7 @@ public class CookieParser {
 
     public static String searchValueFromKey(Cookie[] cookies, String key) {
         if (cookies == null) {
-            throw new EmptyParameterException("쿠키가 존재하지 않습니다.");
+            throw new EmptyParameterException(key + " 에 해당하는 쿠키가 존재하지 않습니다.");
         }
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(key))

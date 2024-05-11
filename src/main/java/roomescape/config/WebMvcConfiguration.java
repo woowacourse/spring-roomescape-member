@@ -5,8 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.service.MemberService;
-import roomescape.utils.TokenManager;
+import roomescape.auth.CheckAdminInterceptor;
+import roomescape.auth.LoginMemberArgumentResolver;
+import roomescape.service.member.MemberService;
+import roomescape.auth.TokenManager;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {

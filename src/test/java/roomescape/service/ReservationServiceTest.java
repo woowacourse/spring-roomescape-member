@@ -12,12 +12,13 @@ import roomescape.Fixtures;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.IllegalTimeException;
 import roomescape.exception.ResourceNotFoundException;
-import roomescape.repository.member.MemberRepository;
-import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.reservationtime.ReservationTimeRepository;
-import roomescape.repository.theme.ThemeRepository;
-import roomescape.service.dto.reservation.ReservationCreateRequest;
-import roomescape.service.dto.reservation.ReservationResponse;
+import roomescape.domain.member.MemberRepository;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
+import roomescape.domain.theme.ThemeRepository;
+import roomescape.service.reservation.ReservationService;
+import roomescape.service.reservation.dto.ReservationCreateRequest;
+import roomescape.service.reservation.dto.ReservationResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -69,7 +70,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(Fixtures.DATE_AFTER_6_MONTH_LATER);
-        softAssertions.assertThat(reservation.member().getId()).isEqualTo(1L);
+        softAssertions.assertThat(reservation.member().id()).isEqualTo(1L);
         softAssertions.assertAll();
     }
 
@@ -95,8 +96,8 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(Fixtures.DATE_AFTER_6_MONTH_LATER);
-        softAssertions.assertThat(reservation.member().getId()).isEqualTo(1L);
-        softAssertions.assertThat(reservation.time().getStartAt()).isEqualTo(LocalTime.of(10, 10));
+        softAssertions.assertThat(reservation.member().id()).isEqualTo(1L);
+        softAssertions.assertThat(reservation.time().startAt()).isEqualTo(LocalTime.of(10, 10));
         softAssertions.assertAll();
     }
 

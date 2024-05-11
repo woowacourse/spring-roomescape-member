@@ -8,12 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.config.LoggedIn;
-import roomescape.domain.AuthenticatedMember;
-import roomescape.service.MemberService;
-import roomescape.service.dto.member.MemberLoginRequest;
-import roomescape.service.dto.member.MemberResponse;
-import roomescape.service.dto.member.MemberTokenResponse;
+import roomescape.auth.LoggedIn;
+import roomescape.domain.member.AuthenticatedMember;
+import roomescape.service.member.MemberService;
+import roomescape.service.member.dto.MemberLoginRequest;
+import roomescape.service.member.dto.MemberResponse;
+import roomescape.service.member.dto.MemberTokenResponse;
 
 @Controller
 public class AuthController {
