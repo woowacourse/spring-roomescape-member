@@ -84,6 +84,18 @@ public class Reservation {
         return Objects.equals(this.date, date);
     }
 
+    public boolean isSameMemberId(final Long memberId) {
+        return this.member.isSameId(memberId);
+    }
+
+    public boolean isAfterOrNow(final LocalDate date) {
+        return this.date.isAfter(date) || this.date.isEqual(date);
+    }
+
+    public boolean isBeforeOrNow(final LocalDate date) {
+        return this.date.isBefore(date) || this.date.isEqual(date);
+    }
+
     public Long getId() {
         return id;
     }

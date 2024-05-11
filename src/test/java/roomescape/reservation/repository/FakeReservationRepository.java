@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.stereotype.Repository;
 import roomescape.reservation.model.Reservation;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -41,7 +40,18 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
+    public List<Reservation> searchBy(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                      final LocalDate dateTo) {
+        return reservations.stream()
+                .filter(reservation -> themeId != null && reservation.isSameTheme(themeId))
+                .filter(reservation -> memberId != null && reservation.isSameMemberId(memberId))
+                .filter(reservation -> dateFrom != null && reservation.isBeforeOrNow(dateFrom))
+                .filter(reservation -> dateTo != null && reservation.isAfterOrNow(dateTo))
+                .toList();
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.isSameDate(date)
                         && reservation.isSameTimeId(timeId)
