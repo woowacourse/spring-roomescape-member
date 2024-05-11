@@ -10,12 +10,20 @@ public class Email {
 
     private final String email;
 
-    public Email(String email) {
-        validate(email);
+    private Email(String email) {
         this.email = email;
     }
 
-    private void validate(String email) {
+    public static Email saveEmailFrom(String email) {
+        return new Email(email);
+    }
+
+    public static Email emailFrom(String email) {
+        validate(email);
+        return new Email(email);
+    }
+
+    private static void validate(String email) {
         if (!EMAIL_FORM.matcher(email).matches()) {
             throw new RoomEscapeException(MemberExceptionCode.ILLEGAL_EMAIL_FORM_EXCEPTION);
         }
