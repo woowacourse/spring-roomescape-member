@@ -21,7 +21,8 @@ public class MemberDao {
             (resultSet, rowNum) -> new Member(
                     resultSet.getLong("id"),
                     resultSet.getString("email"),
-                    resultSet.getString("name")
+                    resultSet.getString("name"),
+                    resultSet.getString("role")
             ) {
             };
 
@@ -39,17 +40,17 @@ public class MemberDao {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
-                .usingColumns("email", "password", "salt", "name")
+                .usingColumns("email", "password", "salt", "name", "role")
                 .usingGeneratedKeyColumns("id");
     }
 
     public List<Member> findAll() {
-        String sql = "select id, email, name from member";
+        String sql = "select id, email, name, role from member";
         return jdbcTemplate.query(sql, memberRowMapper);
     }
 
     public Optional<Member> findByEmail(final String email) {
-        String sql = "select id, email, name from member where email = ?";
+        String sql = "select id, email, name, role from member where email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberRowMapper, email));
         } catch (DataAccessException e) {
@@ -58,7 +59,7 @@ public class MemberDao {
     }
 
     public Optional<Member> findById(final Long memberId) {
-        String sql = "select id, email, name from member where id = ?";
+        String sql = "select id, email, name, role from member where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberRowMapper, memberId));
         } catch (DataAccessException e) {
@@ -71,7 +72,8 @@ public class MemberDao {
                 .addValue("email", signupRequest.email())
                 .addValue("password", password.getHashValue())
                 .addValue("salt", password.getSalt())
-                .addValue("name", signupRequest.name());
+                .addValue("name", signupRequest.name())
+                .addValue("role", "USER");
         return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 

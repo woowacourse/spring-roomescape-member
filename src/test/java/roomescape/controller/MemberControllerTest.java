@@ -68,7 +68,7 @@ class MemberControllerTest {
                 .statusCode(400);
     }
 
-    @DisplayName("로그인 실패 시 403을 응답한다.")
+    @DisplayName("로그인 실패 시 401을 응답한다.")
     @Test
     void given_when_loginFailed_then_statusCodeForbidden() {
         Map<String, Object> params = new HashMap<>();
@@ -80,7 +80,7 @@ class MemberControllerTest {
                 .body(params)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(403);
+                .statusCode(401);
     }
 
     @DisplayName("로그인 성공 시 200 응답하고 cookie 를 설정한다.")

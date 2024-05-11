@@ -24,7 +24,7 @@ class MemberDaoTest {
     @Test
     void given_when_findAll_then_returnReservations() {
         //given, when, then
-        assertThat(memberDao.findAll().size()).isEqualTo(2);
+        assertThat(memberDao.findAll().size()).isEqualTo(3);
     }
 
     @DisplayName("Db에 회원 정보를 저장한다.")
@@ -33,7 +33,7 @@ class MemberDaoTest {
         //given
         SignupRequest signupRequest = new SignupRequest("ash@test.com", "123456", "ash");
         //when, then
-        assertThat(memberDao.create(signupRequest, new Password("hashvalue", "salt"))).isEqualTo(3);
+        assertThat(memberDao.create(signupRequest, new Password("hashvalue", "salt"))).isEqualTo(4);
     }
 
 

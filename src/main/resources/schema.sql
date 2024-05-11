@@ -21,6 +21,7 @@ CREATE TABLE member
     password VARCHAR(255) NOT NULL,
     salt VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -36,3 +37,6 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
+
+INSERT INTO member(email, password, salt, name, role)
+VALUES ('wedge@master.com', 'yAD5RFQKSwFkOImAX+hDr1RSlsR7MBBSFr/xni5sGOE=', 'SZj5iqlnmc4cLvpOAS0a1g==', 'wedge', 'ADMIN');

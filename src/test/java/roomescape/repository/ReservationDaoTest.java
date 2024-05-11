@@ -40,7 +40,7 @@ class ReservationDaoTest {
     void given_reservation_when_create_then_returnCreatedReservationId() {
         //given
         Reservation reservation = new Reservation(
-                new Member(1L, "poke@test.com", "poke"),
+                new Member(1L, "poke@test.com", "poke", "role"),
                 LocalDate.parse("2099-01-11"),
                 new TimeSlot(1L, LocalTime.parse("10:00")),
                 new Theme(1L, "name", "description", "thumbnail"));

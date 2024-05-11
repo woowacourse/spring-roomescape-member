@@ -30,18 +30,16 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
-        final SignupResponse response = memberService.createUser(signupRequest);
-        return ResponseEntity.ok(response);
+    ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest, HttpServletResponse response) {
+        final SignupResponse signupResponse = memberService.createUser(signupRequest);
+        setCookie(response, signupResponse.accessToken());
+        return ResponseEntity.ok(signupResponse);
     }
 
     @PostMapping("/login")
     ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         final TokenResponse tokenResponse = memberService.login(loginRequest);
-        Cookie cookie = new Cookie(authorizationExtractor.TOKEN_NAME, tokenResponse.accessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        setCookie(response, tokenResponse.accessToken());
         return ResponseEntity.ok().build();
     }
 
@@ -50,5 +48,12 @@ public class MemberController {
         String accessToken = authorizationExtractor.extract(request);
         final LoginResponse loginResponse = LoginResponse.from(memberService.getMemberInfo(accessToken));
         return ResponseEntity.ok(loginResponse);
+    }
+
+    private void setCookie(final HttpServletResponse response, final String accessToken) {
+        Cookie cookie = new Cookie(authorizationExtractor.TOKEN_NAME, accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.preprocessor.CheckAdminRoleInterceptor;
 import roomescape.preprocessor.MemberArgumentResolver;
 
 import java.util.List;
@@ -11,14 +12,16 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final MemberArgumentResolver memberArgumentResolver;
+    private final CheckAdminRoleInterceptor checkAdminRoleInterceptor;
 
-    public WebMvcConfiguration(final MemberArgumentResolver memberArgumentResolver) {
+    public WebMvcConfiguration(final MemberArgumentResolver memberArgumentResolver, final CheckAdminRoleInterceptor checkAdminRoleInterceptor) {
         this.memberArgumentResolver = memberArgumentResolver;
+        this.checkAdminRoleInterceptor = checkAdminRoleInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
+        registry.addInterceptor(checkAdminRoleInterceptor).addPathPatterns("/admin/**");
     }
 
     @Override

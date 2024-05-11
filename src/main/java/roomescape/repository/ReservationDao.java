@@ -21,7 +21,8 @@ public class ReservationDao {
                     resultSet.getLong("id"),
                     new Member(resultSet.getLong("member_id"),
                             resultSet.getString("email"),
-                            resultSet.getString("name")),
+                            resultSet.getString("name"),
+                            resultSet.getString("role")),
                     LocalDate.parse(resultSet.getString("date")),
                     new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
                     new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
@@ -40,23 +41,24 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         String sql = """
-                    SELECT
-                    r.id as reservation_id,
-                    m.id as member_id,
-                    m.email as email,
-                    m.name as name,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as theme_description,
-                    th.thumbnail as theme_thumbnail
+                SELECT
+                r.id as reservation_id,
+                m.id as member_id,
+                m.email as email,
+                m.name as name,
+                m.role as role,
+                r.date,
+                t.id as time_id,
+                t.start_at as time_value,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description as theme_description,
+                th.thumbnail as theme_thumbnail
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id
                 INNER JOIN theme as th ON r.theme_id = th.id
                 INNER JOIN member as m ON r.member_id = m.id
-                """;
+                                """;
         return jdbcTemplate.query(sql, rowMapper);
     }
 
