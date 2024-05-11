@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
     const endDate = new Date();
-    const startDate = new Date(endDate.getDate() - 7);
+    const startDate = new Date(endDate.getTime() - (7 * 24 * 60 * 60 * 1000));
 
     const start = dateFormat(startDate);
     const end = dateFormat(endDate);
-    const limit = 10;
-    let offset = 0;
+    const page = 10;
+    let size = 0;
 
-    requestRead(`/themes/hot?start=${start}&end=${end}&limit=${limit}&offset=${offset}`) // 인기 테마 목록 조회 API endpoint
+    requestRead(`/themes/hot?start=${start}&end=${end}&page=${page}&size=${size}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });
