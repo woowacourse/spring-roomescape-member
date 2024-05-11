@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.member.Member;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
-import roomescape.web.api.resolver.Auth;
 import roomescape.web.api.dto.ReservationAdminRequest;
 import roomescape.web.api.dto.ReservationListResponse;
 import roomescape.web.api.dto.ReservationMemberRequest;
+import roomescape.web.api.resolver.Auth;
 
 import java.net.URI;
 import java.util.List;
@@ -63,5 +63,18 @@ public class ReservationController {
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
+    }
+
+    @GetMapping("/admin/reservations")
+    public ResponseEntity<ReservationListResponse> findByCondition(
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "themeId") Long themeId,
+            @RequestParam(value = "dateFrom") String dateFrom,
+            @RequestParam(value = "dateTo") String dateTo
+    ) {
+        List<ReservationResponse> reservationResponses = reservationService.findByCondition(name, themeId, dateFrom,
+                dateTo);
+
+        return ResponseEntity.ok(new ReservationListResponse(reservationResponses));
     }
 }

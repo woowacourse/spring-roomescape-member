@@ -89,6 +89,13 @@ public class H2ReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, theme.getId(), date.getStartAt(), time.getId());
     }
 
+    @Override
+    public List<Reservation> findByCondition(String name, Long themeId, String from, String to) {
+        String conditionQuery = " where r.name = ? and tm.id = ? and r.date between ? and ?";
+        String sql = getBasicSelectQuery() + conditionQuery;
+        return jdbcTemplate.query(sql, rowMapper, name, themeId, from, to);
+    }
+
     private String getBasicSelectQuery() {
         return """
                     select 

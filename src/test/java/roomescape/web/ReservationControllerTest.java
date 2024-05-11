@@ -122,6 +122,21 @@ public class ReservationControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.reservations", hasSize(5)));
     }
 
+    @DisplayName("조건에 맞는 예약을 조회한다")
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
+    @Test
+    void when_findByCondition_then_ok() throws Exception {
+        // setting
+        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
+        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
+        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+
+        // when, then
+        mockMvc.perform(get("/admin/reservations?name=피케이&themeId=1&dateFrom=2099-07-01&dateTo=2099-07-01"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reservations", hasSize(2)));
+    }
+
     @DisplayName("예약을 삭제한다")
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
     @Test
