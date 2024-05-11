@@ -33,12 +33,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token, String claimName) {
+    public String getPayloadClaim(String token, String claimName) {
         validateToken(token);
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(claimName, String.class);
     }
 
-    public void validateToken(String token) {
+    private void validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
