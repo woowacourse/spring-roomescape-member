@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.dto.LoginMember;
+import roomescape.member.domain.Member;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.application.ThemeService;
@@ -34,10 +34,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationSaveRequest request,
-                                                                 LoginMember loginMember) {
+                                                                 Member loginMember) {
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
         Theme theme = themeService.findById(request.themeId());
-        Reservation newReservation = request.toModel(theme, reservationTime, loginMember.toModel());
+        Reservation newReservation = request.toModel(theme, reservationTime, loginMember);
         Reservation createReservation = reservationService.create(newReservation);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ReservationResponse.from(createReservation));

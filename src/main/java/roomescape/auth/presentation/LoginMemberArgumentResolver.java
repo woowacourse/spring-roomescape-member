@@ -8,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.application.AuthService;
-import roomescape.auth.dto.LoginMember;
 import roomescape.member.domain.Member;
 
 @Component
@@ -22,7 +21,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(LoginMember.class);
+        return parameter.getParameterType().equals(Member.class);
     }
 
     @Override
@@ -30,8 +29,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = TokenExtractor.extract(servletRequest);
-        Member member = authService.extractMember(token);
-        return new LoginMember(member.getId(), member.getEmail(), member.getName(),
-                member.getPassword(), member.getRole());
+        return authService.extractMember(token);
     }
 }
