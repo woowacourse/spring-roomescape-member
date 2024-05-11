@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -42,14 +43,14 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationRequest request) {
+    public ReservationResponse saveReservation(ReservationRequest request, Member member) {
         ReservationTime time = findReservationTimeById(request.getTimeId());
         Theme theme = findThemeById(request.getThemeId());
 
         validateDateTimeReservation(request, time);
         validateDuplicateReservation(request);
 
-        Reservation reservation = request.toReservation(time, theme);
+        Reservation reservation = request.toReservation(member, time, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
         return new ReservationResponse(savedReservation);
     }
