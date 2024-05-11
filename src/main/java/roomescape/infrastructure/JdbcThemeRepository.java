@@ -73,7 +73,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         Map<String, String> params = Map.of(
-                "member", theme.getName(),
+                "name", theme.getName(),
                 "description", theme.getDescription(),
                 "thumbnail", theme.getThumbnail()
         );

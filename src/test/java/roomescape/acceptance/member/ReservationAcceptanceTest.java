@@ -5,7 +5,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
-import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.BaseAcceptanceTest;
 import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.MemberReservationRequest;
@@ -18,10 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.acceptance.Fixture.customerToken;
-import static roomescape.acceptance.PreInsertedData.preInsertedReservationTime1;
-import static roomescape.acceptance.PreInsertedData.preInsertedTheme1;
+import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_RESERVATION_TIME_1;
+import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_THEME_1;
 
-class ReservationAcceptanceTest extends AcceptanceTest {
+class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("고객이 예약을 추가한다.")
     @Nested
@@ -84,8 +84,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         private MemberReservationRequest getRequestBody(LocalDate date) {
             return new MemberReservationRequest(
                     date,
-                    preInsertedReservationTime1.getId(),
-                    preInsertedTheme1.getId()
+                    PRE_INSERTED_RESERVATION_TIME_1.getId(),
+                    PRE_INSERTED_THEME_1.getId()
             );
         }
 

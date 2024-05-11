@@ -6,7 +6,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
-import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.BaseAcceptanceTest;
 import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.AdminReservationRequest;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.acceptance.Fixture.adminToken;
 import static roomescape.acceptance.PreInsertedData.*;
 
-class ReservationAcceptanceTest extends AcceptanceTest {
+class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자가 예약 목록을 조회한다.")
     @Test
@@ -102,10 +102,10 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
         private AdminReservationRequest getRequestBody(LocalDate date) {
             return new AdminReservationRequest(
-                    preInsertedCustomer1.getId(),
+                    PRE_INSERTED_CUSTOMER_1.getId(),
                     date,
-                    preInsertedReservationTime1.getId(),
-                    preInsertedTheme1.getId()
+                    PRE_INSERTED_RESERVATION_TIME_1.getId(),
+                    PRE_INSERTED_THEME_1.getId()
             );
         }
 
@@ -126,7 +126,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         @DisplayName("정상 작동")
         @Test
         void deleteReservation_forExist_success() {
-            Long existReservationId = preInsertedReservation1.getId();
+            Long existReservationId = PRE_INSERTED_RESERVATION_1.getId();
 
             sendDeleteRequest(existReservationId)
                     .statusCode(HttpStatus.NO_CONTENT.value());

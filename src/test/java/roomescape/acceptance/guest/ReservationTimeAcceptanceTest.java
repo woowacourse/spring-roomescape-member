@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.BaseAcceptanceTest;
 import roomescape.dto.AvailableReservationTimeResponse;
 
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import java.util.List;
 
 import static roomescape.acceptance.PreInsertedData.*;
 
-class ReservationTimeAcceptanceTest extends AcceptanceTest {
+class ReservationTimeAcceptanceTest extends BaseAcceptanceTest {
 
     @LocalServerPort
     private int port;
@@ -29,8 +29,8 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     @DisplayName("날짜와 테마에 해당하는 예약 시간 목록 조회")
     @Test
     void getAvailableTimes_success() {
-        LocalDate date = preInsertedReservation1.getDate();
-        long themeId = preInsertedReservation1.getTheme().getId();
+        LocalDate date = PRE_INSERTED_RESERVATION_1.getDate();
+        long themeId = PRE_INSERTED_RESERVATION_1.getTheme().getId();
 
         TypeRef<List<AvailableReservationTimeResponse>> availableTimesFormat = new TypeRef<>() {
         };
@@ -41,8 +41,9 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
                 .extract().as(availableTimesFormat);
 
         Assertions.assertThat(availableReservationTimeResponses).containsExactlyInAnyOrder(
-                AvailableReservationTimeResponse.from(preInsertedReservationTime1, false),
-                AvailableReservationTimeResponse.from(preInsertedReservationTime2, true)
+                AvailableReservationTimeResponse.from(PRE_INSERTED_RESERVATION_TIME_1, false),
+                AvailableReservationTimeResponse.from(PRE_INSERTED_RESERVATION_TIME_2, true),
+                AvailableReservationTimeResponse.from(PRE_INSERTED_RESERVATION_TIME_3, true)
         );
     }
 }

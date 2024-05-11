@@ -5,9 +5,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpStatus;
 
-class PageLanderTest extends AcceptanceTest {
+class PageLanderTest extends BaseAcceptanceTest {
 
-    @ParameterizedTest(name = "{0} ,{1}")
+    @ParameterizedTest(name = "{0} ,{1}") //TODO: ADMIN 페이지 접속 제한 걸어야 함
     @CsvSource(value = {
             "/admin:관리자 메인 페이지",
             "/admin/reservation:예약 관리 페이지",

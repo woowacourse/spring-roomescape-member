@@ -5,12 +5,12 @@ import io.restassured.common.mapper.TypeRef;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.BaseAcceptanceTest;
 import roomescape.dto.ThemeResponse;
 
 import java.util.List;
 
-class ThemeAcceptanceTest extends AcceptanceTest {
+class ThemeAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("테마 목록을 조회한다.")
     @Test
