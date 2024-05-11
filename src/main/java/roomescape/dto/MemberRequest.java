@@ -1,5 +1,6 @@
 package roomescape.dto;
 
+import roomescape.Role;
 import roomescape.domain.Member;
 
 public record MemberRequest(String name, String email, String password) {
@@ -10,6 +11,6 @@ public record MemberRequest(String name, String email, String password) {
     }
 
     public Member toMember() {
-        return new Member(name, email, password);
+        return new Member(name, email, password, Role.USER);
     }
 }

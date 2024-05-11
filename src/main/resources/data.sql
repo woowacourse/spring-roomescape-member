@@ -19,13 +19,13 @@ VALUES ('우테코 수료 대장정',
         '자고 있는 사이에 캠퍼스 문이 닫혀버렸다! 잠실 캠퍼스 탈출기',
         'https://velog.velcdn.com/images/jangws/post/7199f6ba-b3a8-4e2f-b86a-e5406b166bcd/image.jpeg');
 
-INSERT INTO member (name, email, password)
-VALUES ('어드민', 'admin@email.com', 'password'),
-       ('알파카', 'alpaca@email.com', 'password'),
-       ('산초', 'sancho@email.com', 'password'),
-       ('알파고', 'alpago@email.com', 'password'),
-       ('키자루', 'monkey@email.com', 'password'),
-       ('고죠사토루', 'beomboo@email.com', 'password');
+INSERT INTO member (name, email, password, role)
+VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
+       ('알파카', 'alpaca@email.com', 'password', 'USER'),
+       ('산초', 'sancho@email.com', 'password', 'USER'),
+       ('알파고', 'alpago@email.com', 'password', 'USER'),
+       ('키자루', 'monkey@email.com', 'password', 'USER'),
+       ('고죠사토루', 'beomboo@email.com', 'password', 'USER');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id, created_at)
 VALUES (1, FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 1, 1, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),

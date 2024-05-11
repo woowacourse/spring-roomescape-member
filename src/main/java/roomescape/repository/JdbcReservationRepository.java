@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.Role;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -26,7 +27,8 @@ public class JdbcReservationRepository {
                     resultSet.getLong("member_id"),
                     resultSet.getString("member_name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password")
+                    resultSet.getString("password"),
+                    Role.valueOf(resultSet.getString("role"))
             ),
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
@@ -49,6 +51,7 @@ public class JdbcReservationRepository {
             "m.name AS member_name, " +
             "m.email AS email, " +
             "m.password AS password, " +
+            "m.role AS role, " +
             "t.id AS time_id, " +
             "t.start_at AS time_value, " +
             "th.id AS theme_id, " +

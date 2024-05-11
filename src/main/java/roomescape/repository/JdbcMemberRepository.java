@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.Role;
 import roomescape.domain.Member;
 
 @Repository
@@ -18,7 +19,8 @@ public class JdbcMemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            Role.valueOf(resultSet.getString("role"))
     );
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
@@ -59,11 +61,12 @@ public class JdbcMemberRepository {
         Map<String, Object> params = Map.of(
                 "name", member.getName(),
                 "email", member.getEmail(),
-                "password", member.getEmail()
+                "password", member.getEmail(),
+                "role", member.getRole().name()
         );
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     public void deleteById(Long id) {
