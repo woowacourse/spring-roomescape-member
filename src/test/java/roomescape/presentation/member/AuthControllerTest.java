@@ -17,8 +17,6 @@ import roomescape.application.member.MemberService;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.response.TokenResponse;
 import roomescape.auth.AuthService;
-import roomescape.auth.TokenManager;
-import roomescape.domain.role.RoleRepository;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(AuthController.class)
@@ -26,12 +24,6 @@ class AuthControllerTest extends ControllerTest {
 
     @MockBean
     private MemberService memberService;
-
-    @MockBean
-    private TokenManager tokenManager;
-
-    @MockBean
-    private RoleRepository roleRepository;
 
     @MockBean
     private AuthService authService;

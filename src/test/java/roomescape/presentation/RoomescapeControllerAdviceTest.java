@@ -17,8 +17,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import roomescape.auth.AuthService;
-import roomescape.auth.TokenManager;
-import roomescape.domain.role.RoleRepository;
 import roomescape.presentation.view.AdminController;
 
 @WebMvcTest(AdminController.class)
@@ -28,12 +26,6 @@ class RoomescapeControllerAdviceTest {
 
     @MockBean
     private AdminController controller;
-
-    @MockBean
-    private TokenManager tokenManager;
-
-    @MockBean
-    private RoleRepository roleRepository;
 
     @MockBean
     private AuthService authService;
