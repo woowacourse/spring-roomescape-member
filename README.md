@@ -172,18 +172,15 @@ Content-Type: application/json
 [
     {
         "id": 1,
-        "member": {
-            "id": 1,
-            "name": "브라운"
-        },
-        "theme": {
-            "id": 1,
-            "name": "레벨2 탈출"
-        },
+        "name": "브라운",
         "date": "2023-08-05",
         "time": {
             "id": 1,
             "startAt": "10:00"
+        },
+        "theme": {
+            "id": 1,
+            "name": "레벨2 탈출"
         }
     }
 ]
@@ -213,18 +210,15 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "member": {
-        "id": 1,
-        "name": "브라운"
-    },
-    "theme": {
-        "id": 1,
-        "name": "레벨2 탈출"
-    },
+    "name": "브라운",
     "date": "2023-08-05",
     "time": {
         "id": 1,
         "startAt": "10:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출"
     }
 }
 ```
@@ -254,18 +248,15 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "member": {
-        "id": 1,
-        "name": "브라운"
-    },
-    "theme": {
-        "id": 1,
-        "name": "레벨2 탈출"
-    },
+    "name": "브라운",
     "date": "2023-08-05",
     "time": {
         "id": 1,
         "startAt": "10:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출"
     }
 }
 ```

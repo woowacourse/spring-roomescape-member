@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Reservation {
     private Long id;
-    private String name;
+    private String name; // TODO: 외래키 관계 x, member 삭제 시 soft delete 할 예정
     private LocalDate date;
     private ReservationTime time;
     private Theme theme;
