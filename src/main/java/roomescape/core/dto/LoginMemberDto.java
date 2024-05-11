@@ -35,10 +35,6 @@ public class LoginMemberDto {
         return new Member(id, name, email, password, role);
     }
 
-    public boolean isNotAdmin() {
-        return role != Role.ADMIN;
-    }
-
     public Long getId() {
         return id;
     }

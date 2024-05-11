@@ -25,12 +25,11 @@ public class ReservationTime {
     }
 
     private static LocalTime parseStartAt(final String startAt) {
-        if (startAt == null) {
-            throw new BadRequestException("시간은 null일 수 없습니다.");
-        }
         try {
             return LocalTime.parse(startAt);
-        } catch (DateTimeParseException e) {
+        } catch (final NullPointerException e) {
+            throw new BadRequestException("시간은 null일 수 없습니다.");
+        } catch (final DateTimeParseException e) {
             throw new BadRequestException("시간 형식이 잘못되었습니다.");
         }
     }
