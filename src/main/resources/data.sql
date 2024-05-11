@@ -28,3 +28,9 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('name1', FORMATDA
 
 -- 4번 테마
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('name1', FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'), '4', '4');
+
+
+-- 테스트용 유저 정보 등록
+INSERT INTO member(name, email, password) VALUES ('test_name1', 'test1@email.com', 'test_password1');
+INSERT INTO member(name, email, password) VALUES ('test_name2', 'test2@email.com', 'test_password2');
+INSERT INTO member(name, email, password) VALUES ('test_name3', 'test3@email.com', 'test_password3');
