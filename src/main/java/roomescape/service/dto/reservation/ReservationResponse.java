@@ -1,21 +1,19 @@
 package roomescape.service.dto.reservation;
 
-import roomescape.domain.Member;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
+import roomescape.service.dto.member.MemberResponse;
+import roomescape.service.dto.reservationtime.ReservationTimeResponse;
 
-// TODO: 세부 응답을 ResponseDTO로 응답하도록 변경
-public record ReservationResponse(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
-
+public record ReservationResponse(Long id, MemberResponse member, LocalDate date, ReservationTimeResponse time, Theme theme) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getMember(),
+                MemberResponse.from(reservation.getMember()),
                 reservation.getDate(),
-                reservation.getTime(),
+                ReservationTimeResponse.from(reservation.getTime()),
                 reservation.getTheme()
         );
     }
