@@ -27,13 +27,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public long getPayload(String token) {
+    public long getIdFromToken(String token) {
         String payload = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-        
+
         return Long.parseLong(payload);
     }
 }

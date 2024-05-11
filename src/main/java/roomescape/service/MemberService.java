@@ -29,12 +29,12 @@ public class MemberService {
     }
 
     public MemberResponse findMemberByToken(String token) {
-        long id = jwtTokenProvider.getPayload(token);
+        long id = jwtTokenProvider.getIdFromToken(token);
         Optional<Member> member = memberRepository.findById(id);
         if (member.isEmpty()) {
             throw new AuthorizationException("등록되지 않은 사용자입니다.");
         }
-        
+
         return MemberResponse.from(member.get());
     }
 }
