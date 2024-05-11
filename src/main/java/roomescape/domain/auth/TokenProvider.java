@@ -17,24 +17,24 @@ public class TokenProvider {
     private static final String ROLE_FIELD = "role";
 
     @Value("${jwt.secret}")
-    private String SECRET_KEY;
+    private String secretKey;
 
     public String createToken(Member member) {
         return Jwts.builder()
                 .setClaims(Map.of(EMAIL_FIELD, member.getEmail(), ROLE_FIELD, member.getRole()))
-                .signWith(HS256, SECRET_KEY.getBytes())
+                .signWith(HS256, secretKey.getBytes())
                 .compact();
     }
 
     public String getEmail(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY.getBytes())
+        return Jwts.parser().setSigningKey(secretKey.getBytes())
                 .parseClaimsJws(token)
                 .getBody()
                 .get(EMAIL_FIELD, String.class);
     }
 
     public String getRole(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY.getBytes())
+        return Jwts.parser().setSigningKey(secretKey.getBytes())
                 .parseClaimsJws(token)
                 .getBody()
                 .get(ROLE_FIELD, String.class);

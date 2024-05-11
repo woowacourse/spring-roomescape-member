@@ -25,7 +25,7 @@ public class Theme {
         this(id, new ThemeName(name), new Description(description), new Thumbnail(thumbnail));
     }
 
-    public Theme(Long id, ThemeName name, Description description, Thumbnail thumbnail) {
+    private Theme(Long id, ThemeName name, Description description, Thumbnail thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
