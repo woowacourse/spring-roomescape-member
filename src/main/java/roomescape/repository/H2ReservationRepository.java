@@ -17,6 +17,7 @@ import roomescape.service.exception.ReservationNotFoundException;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 LEFT JOIN MEMBER M ON M.ID = R.MEMBER_ID
                 """;
 
-        return jdbcTemplate.query(sql, getReservationRowMapper());
+        return jdbcTemplate.query(sql, getReservation());
     }
 
     @Override
@@ -118,42 +119,17 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> searchReservations(final ReservationSearchCondition condition) {
-        String sql = """
+        final String selectSql = """
                 SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, M.NAME
                 FROM RESERVATION AS R
                 JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 JOIN THEME T ON T.ID = R.THEME_ID
                 JOIN MEMBER M ON M.ID = R.MEMBER_ID
                 """;
-        final String themeSql = "(R.THEME_ID = ?)";
-        final String memberSql = "(R.MEMBER_ID = ?)";
-        final String timeSql = "(R.DATE BETWEEN ? AND ?)";
 
-        if (condition.themeId() != null && condition.memberId() != null && condition.dateFrom() != null && condition.dateTo() != null) {
-            sql = sql + "WHERE " + themeSql + " AND " + memberSql + " AND " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), condition.themeId(), condition.memberId(),
-                    condition.dateFrom(), condition.dateTo());
-        }
+        final String whereSql = selectSql + generateDynamicSql(condition);
 
-        if (condition.memberId() != null && condition.dateFrom() != null && condition.dateTo() != null) {
-            sql = sql + "WHERE " + memberSql + " AND " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), condition.memberId(), condition.dateFrom(),
-                    condition.dateTo());
-        }
-
-        if (condition.themeId() != null && condition.dateFrom() != null && condition.dateTo() != null) {
-            sql = sql + "WHERE " + themeSql + " AND " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), condition.themeId(),
-                    condition.dateFrom(), condition.dateTo());
-        }
-
-        if (condition.dateFrom() != null && condition.dateTo() != null) {
-            sql = sql + "WHERE " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), condition.dateFrom(), condition.dateTo());
-        }
-
-        return jdbcTemplate.query(sql, getFilterReservation(), condition.themeId(), condition.memberId(),
-                condition.dateFrom(), condition.dateTo());
+        return jdbcTemplate.query(whereSql, getSearchReservation());
     }
 
     @Override
@@ -168,15 +144,10 @@ public class H2ReservationRepository implements ReservationRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Theme(
-                rs.getLong("THEME_ID"),
-                rs.getString("THEME.NAME"),
-                rs.getString("THEME.DESCRIPTION"),
-                rs.getString("THEME.THUMBNAIL")
-        )), from, until, limit);
+        return jdbcTemplate.query(sql, getTheme(), from, until, limit);
     }
 
-    private RowMapper<Reservation> getReservationRowMapper() {
+    private RowMapper<Reservation> getReservation() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("ID"),
                 new Member(
@@ -196,7 +167,33 @@ public class H2ReservationRepository implements ReservationRepository {
                         rs.getString("THEME.NAME"),
                         rs.getString("THEME.DESCRIPTION"),
                         rs.getString("THEME.THUMBNAIL")
-                ));
+                )
+        );
+    }
+
+    private String generateDynamicSql(final ReservationSearchCondition condition) {
+        final List<String> result = new ArrayList<>();
+        addCondition(result, "R.THEME_ID = ", condition.themeId());
+        addCondition(result, "R.MEMBER_ID = ", condition.memberId());
+        addCondition(result, "R.DATE >= ", formatDate(condition.dateFrom()));
+        addCondition(result, "R.DATE <= ", formatDate(condition.dateTo()));
+        if (result.isEmpty()) {
+            return "";
+        }
+        return "WHERE " + String.join(" AND ", result);
+    }
+
+    private String formatDate(final LocalDate date) {
+        if (date == null) {
+            return null;
+        }
+        return String.format("'%s'", date);
+    }
+
+    private void addCondition(final List<String> result, final String sql, final Object target) {
+        if (target != null) {
+            result.add(sql + target);
+        }
     }
 
     private RowMapper<Reservation> getReservationExceptTimeAndTheme() {
@@ -209,13 +206,22 @@ public class H2ReservationRepository implements ReservationRepository {
         );
     }
 
-    private RowMapper<Reservation> getFilterReservation() {
+    private RowMapper<Reservation> getSearchReservation() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("ID"),
                 new Member(rs.getLong("RESERVATION.MEMBER_ID"), rs.getString("MEMBER.NAME"), null, null, null),
                 rs.getDate("DATE").toLocalDate(),
                 new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), rs.getTime("RESERVATION_TIME.START_AT").toLocalTime()),
                 new Theme(rs.getLong("RESERVATION.THEME_ID"), rs.getString("THEME.NAME"), null, null)
+        );
+    }
+
+    private RowMapper<Theme> getTheme() {
+        return (rs, rowNum) -> new Theme(
+                rs.getLong("THEME_ID"),
+                rs.getString("THEME.NAME"),
+                rs.getString("THEME.DESCRIPTION"),
+                rs.getString("THEME.THUMBNAIL")
         );
     }
 }
