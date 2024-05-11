@@ -5,7 +5,6 @@ import roomescape.controller.login.TokenRequest;
 import roomescape.controller.login.TokenResponse;
 import roomescape.controller.member.MemberResponse;
 import roomescape.domain.Member;
-import roomescape.exception.UnauthorizedException;
 import roomescape.repository.MemberRepository;
 import roomescape.service.auth.exception.MemberNotFoundException;
 import roomescape.service.auth.exception.TokenNotFoundException;
@@ -36,16 +35,12 @@ public class AuthService {
     }
 
     public Member getMemberByToken(String token) {
-        validateTokenBlank(token);
-        String payload = jwtTokenProvider.getPayload(token);
+        String payload = jwtTokenProvider.getPayloadOrElseThrow(
+                token,
+                () -> new TokenNotFoundException("토큰이 존재 하지 않습니다.")
+        );
 
         return getMemberByEmail(payload);
-    }
-
-    private void validateTokenBlank(String token) {
-        if (token == null || token.isBlank()) {
-            throw new TokenNotFoundException("토큰이 존재 하지 않습니다.");
-        }
     }
 
     public TokenResponse createToken(TokenRequest request) {
@@ -58,7 +53,7 @@ public class AuthService {
     private void validateInformation(TokenRequest request) {
         Optional<Member> member = memberRepository.findByEmail(request.email());
         if (member.isEmpty() || !member.get().getPassword().equals(request.password())) {
-            throw new UnauthorizedException("로그인 정보가 일치하지 않습니다.");
+            throw new MemberNotFoundException("로그인 정보가 일치하지 않습니다.");
         }
     }
 }

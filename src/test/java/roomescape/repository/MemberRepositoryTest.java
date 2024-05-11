@@ -11,6 +11,7 @@ import roomescape.service.auth.exception.MemberNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,6 +27,22 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Test
+    @DisplayName("모든 멤버 목록을 조회한다.")
+    void findAll() {
+        // given
+        sampleMembers.forEach(memberRepository::save);
+
+        // when
+        final List<Member> actual = memberRepository.findAll();
+        final List<Member> expected = IntStream.range(0, sampleMembers.size())
+                .mapToObj(i -> sampleMembers.get(i).assignId(actual.get(i).getId()))
+                .toList();
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
 
     @Test
     @DisplayName("아이디를 통해 멤버 정보를 찾는다.")

@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.time;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Import;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 import roomescape.domain.*;
+import roomescape.domain.exception.InvalidDateException;
 import roomescape.repository.*;
 import roomescape.repository.exception.TimeNotFoundException;
-import roomescape.service.time.TimeService;
 import roomescape.service.time.exception.TimeDuplicatedException;
 import roomescape.service.time.exception.TimeUsedException;
 
@@ -94,6 +94,13 @@ class TimeServiceTest {
         // then
         assertThat(timesWithBooked).hasSize(1);
         assertThat(timesWithBooked.get(0).booked()).isTrue();
+    }
+
+    @Test
+    @DisplayName("유효하지 않는 날짜 형식으로 시간 목록의 예약 여부를 요청할 경우 예외가 발생한다.")
+    void getTimesWithBookedInvalidDate() {
+        assertThatThrownBy(() -> timeService.getTimesWithBooked("2024-05-111", 1L))
+                .isInstanceOf(InvalidDateException.class);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.reservation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,6 @@ import roomescape.domain.Theme;
 import roomescape.repository.*;
 import roomescape.repository.exception.ThemeNotFoundException;
 import roomescape.repository.exception.TimeNotFoundException;
-import roomescape.service.reservation.ReservationService;
 import roomescape.service.reservation.exception.PreviousTimeException;
 import roomescape.service.reservation.exception.ReservationDuplicatedException;
 import roomescape.service.reservation.exception.ReservationNotFoundException;

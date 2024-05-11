@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.theme;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import roomescape.controller.theme.ThemeResponse;
 import roomescape.domain.*;
 import roomescape.repository.*;
 import roomescape.repository.exception.ThemeNotFoundException;
-import roomescape.service.theme.ThemeService;
 import roomescape.service.theme.exception.DaysLimitException;
 import roomescape.service.theme.exception.RowsLimitException;
 import roomescape.service.theme.exception.ThemeUsedException;

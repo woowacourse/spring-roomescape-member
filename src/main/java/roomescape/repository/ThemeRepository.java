@@ -12,8 +12,6 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    void fetchById(long id);
-
     List<Theme> findPopularThemes(LocalDate from, LocalDate to, int limit);
 
     Theme save(Theme theme);

@@ -1,14 +1,11 @@
 package roomescape.service.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.function.Supplier;
 
 @Component
 public class JwtTokenProvider {
@@ -31,7 +28,11 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token) {
+    public String getPayloadOrElseThrow(String token, Supplier<RuntimeException> invalidException) {
+        if (!validateToken(token)) {
+            throw invalidException.get();
+        }
+
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
