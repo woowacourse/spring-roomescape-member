@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -19,23 +20,25 @@ public class MemberDAO {
     }
 
     public Member insert(final Member member) {
-        final String sql = "INSERT INTO member (name, email, password) VALUES (?, ?, ?)";
+        final String sql = "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         final String name = member.getName();
         final String email = member.getEmail();
         final String password = member.getPassword();
+        final Role role = member.getRole();
 
         jdbcTemplate.update(con -> {
             final PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, email);
             preparedStatement.setString(3, password);
+            preparedStatement.setString(4, role.name().toLowerCase());
             return preparedStatement;
         }, keyHolder);
 
         final long key = keyHolder.getKey().longValue();
-        return new Member(key, name, email, password);
+        return new Member(key, name, email, password, role);
     }
 
     public Boolean existMember(final String email, final String password) {
@@ -69,7 +72,8 @@ public class MemberDAO {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                Role.from(resultSet.getString("role"))
         );
     }
 }

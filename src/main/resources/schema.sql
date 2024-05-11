@@ -20,6 +20,7 @@ CREATE TABLE member
     name     VARCHAR(5)  NOT NULL,
     email    VARCHAR(20) NOT NULL,
     password VARCHAR(20) NOT NULL,
+    role     VARCHAR(5)  NOT NULL,
     PRIMARY KEY (id)
 );
 
