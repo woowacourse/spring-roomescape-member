@@ -14,19 +14,9 @@ import roomescape.member.dto.MemberRegistrationInfo;
 @Repository
 public class MemberJdbcDao implements MemberDao {
 
-    public static final RowMapper<MemberRegistrationInfo> MEMBER_REGISTRATION_INFO_ROW_MAPPER = (resultSet, rowNum)
-            -> new MemberRegistrationInfo(
-            resultSet.getString("name"),
-            resultSet.getString("email"),
+    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (resultSet, rowNum) -> new Member(
+            resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("email"),
             resultSet.getString("password")
-    );
-
-    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (resultSet, rowNum)
-            -> new Member(
-            resultSet.getLong("id"),
-            resultSet.getString("email"),
-            resultSet.getString("password"),
-            resultSet.getString("name")
 
     );
 
@@ -40,11 +30,12 @@ public class MemberJdbcDao implements MemberDao {
     }
 
     @Override
-    public Member save(Member member) {
-        SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(member);
+    public Member save(MemberRegistrationInfo memberRegistrationInfo) {
+        SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(memberRegistrationInfo);
         long id = jdbcInsert.executeAndReturnKey(sqlParameterSource)
                 .longValue();
-        return member.toIdAssigned(id);
+        return new Member(id, memberRegistrationInfo.name(), memberRegistrationInfo.email(),
+                memberRegistrationInfo.password());
     }
 
     @Override
@@ -54,9 +45,9 @@ public class MemberJdbcDao implements MemberDao {
     }
 
     @Override
-    public MemberRegistrationInfo findRegistrationInfoByEmail(String email) {
+    public Member findByEmail(String email) {
         String findRegistrationInfSql = "SELECT * FROM registration WHERE email = ?";
-        return jdbcTemplate.queryForObject(findRegistrationInfSql, MEMBER_REGISTRATION_INFO_ROW_MAPPER, email);
+        return jdbcTemplate.queryForObject(findRegistrationInfSql, MEMBER_ROW_MAPPER, email);
     }
 
     @Override

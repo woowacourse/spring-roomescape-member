@@ -6,11 +6,11 @@ import roomescape.member.dto.MemberRegistrationInfo;
 
 public interface MemberDao {
 
+    Member save(MemberRegistrationInfo memberRegistrationInfo);
+
     List<Member> findAll();
 
-    MemberRegistrationInfo findRegistrationInfoByEmail(String email);
-
-    Member save(Member member);
+    Member findByEmail(String email);
 
     void delete(long id);
 

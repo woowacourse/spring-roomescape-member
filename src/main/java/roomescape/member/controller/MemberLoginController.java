@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberLoginResponse;
-import roomescape.member.dto.MemberRegistrationInfo;
 import roomescape.member.security.service.MemberAuthService;
 import roomescape.member.service.MemberLoginService;
 
@@ -29,10 +29,10 @@ public class MemberLoginController {
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody MemberLoginRequest memberRequest, HttpServletResponse response) {
-        MemberRegistrationInfo memberRegistrationInfo = memberLoginService.findRegistrationInfo(memberRequest);
+        Member member = memberLoginService.findMember(memberRequest);
 
-        memberAuthService.validateAuthentication(memberRegistrationInfo, memberRequest);
-        String token = memberAuthService.publishToken(memberRegistrationInfo);
+        memberAuthService.validateAuthentication(member, memberRequest);
+        String token = memberAuthService.publishToken(member);
         Cookie cookie = new Cookie("token", token);
 
         cookie.setHttpOnly(true);

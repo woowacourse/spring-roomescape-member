@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.exception.AuthorizationMismatchException;
 import roomescape.exception.IllegalAuthorizationException;
+import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
-import roomescape.member.dto.MemberRegistrationInfo;
 import roomescape.member.security.crypto.PasswordEncoder;
 import roomescape.member.security.crypto.TokenProvider;
 
@@ -23,16 +23,16 @@ public class MemberAuthService {
         this.tokenProvider = tokenProvider;
     }
 
-    public void validateAuthentication(MemberRegistrationInfo memberRegistrationInfo,
+    public void validateAuthentication(Member member,
             MemberLoginRequest memberLoginRequest) throws AuthorizationMismatchException {
-        if (!passwordEncoder.matches(memberLoginRequest.password(), memberRegistrationInfo.password())) {
+        if (!passwordEncoder.matches(memberLoginRequest.password(), member.getPassword())) {
             throw new AuthorizationMismatchException("비밀번호가 일치하지 않습니다.");
         }
     }
 
-    public String publishToken(MemberRegistrationInfo memberRegistrationInfo) {
+    public String publishToken(Member member) {
         Date now = new Date();
-        return tokenProvider.createToken(memberRegistrationInfo.email(), memberRegistrationInfo.name(), now);
+        return tokenProvider.createToken(member.getEmail(), member.getName(), now);
     }
 
     public String extractNameFromPayload(Cookie[] cookies) {

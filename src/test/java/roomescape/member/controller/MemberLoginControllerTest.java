@@ -18,9 +18,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberLoginResponse;
-import roomescape.member.dto.MemberRegistrationInfo;
 import roomescape.member.security.service.MemberAuthService;
 import roomescape.member.service.MemberLoginService;
 
@@ -40,10 +40,10 @@ public class MemberLoginControllerTest {
     @DisplayName("로그인 프로세스가 정상적으로 수행되는지 확인한다")
     void loginProcess() throws Exception {
         MemberLoginRequest memberRequest = new MemberLoginRequest("user@example.com", "password");
-        MemberRegistrationInfo memberInfo = new MemberRegistrationInfo("User", "user@example.com", "password");
+        Member memberInfo = new Member("User", "user@example.com", "password");
         String token = "mocked-token";
 
-        when(memberLoginService.findRegistrationInfo(any())).thenReturn(memberInfo);
+        when(memberLoginService.findMember(any())).thenReturn(memberInfo);
         when(memberAuthService.publishToken(any())).thenReturn(token);
 
         mockMvc.perform(post("/login")

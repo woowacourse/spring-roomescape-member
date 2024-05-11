@@ -34,16 +34,16 @@ class MemberJdbcDaoTest {
     @DisplayName("완전한 회원정보를 정상적으로 저장한다.")
     void save_ShouldRegisterSignUpData_WhenMemberRegisterInfoGiven() {
         // Given
-        Member member = new Member("new@memeber.com", "password", "newbie");
+        MemberRegistrationInfo memberRegistrationInfo = new MemberRegistrationInfo("newbie","new@memeber.com", "password");
 
         // When
-        Member registeredMember = memberDao.save(member);
+        Member registeredMember = memberDao.save(memberRegistrationInfo);
 
         // Then
         assertAll(() -> {
             assertNotEquals(0, registeredMember.getId());
-            assertEquals("new@memeber.com", registeredMember.getEmail());
             assertEquals("newbie", registeredMember.getName());
+            assertEquals("new@memeber.com", registeredMember.getEmail());
             assertEquals("password", registeredMember.getPassword());
         });
     }
@@ -53,10 +53,10 @@ class MemberJdbcDaoTest {
     void findAll_ShouldReturnAllRegistration_WhenCalled() {
         // Given
         List<Member> expectedMembers = List.of(
-                new Member(1, "kimdobby@wootaeco.com", "pass1", "도비"),
-                new Member(2, "pke@best.com", "pass2", "피케이"),
-                new Member(3, "admin@admin.com", "1234", "어드민"),
-                new Member(4, "test@test.com", "test", "테스트")
+                new Member(1, "도비", "kimdobby@wootaeco.com", "pass1"),
+                new Member(2, "피케이", "pke@best.com", "pass2"),
+                new Member(3, "어드민", "admin@admin.com", "1234"),
+                new Member(4, "테스트", "test@test.com", "test")
         );
 
         // When
@@ -73,14 +73,14 @@ class MemberJdbcDaoTest {
         String email = "test@test.com";
 
         // When
-        MemberRegistrationInfo registrationInfo = memberDao.findRegistrationInfoByEmail(email);
+        Member registrationInfo = memberDao.findByEmail(email);
 
         // Then
         assertAll(() -> {
             assertNotNull(registrationInfo);
-            assertEquals("테스트", registrationInfo.name());
-            assertEquals("test@test.com", registrationInfo.email());
-            assertEquals("test", registrationInfo.password());
+            assertEquals("테스트", registrationInfo.getName());
+            assertEquals("test@test.com", registrationInfo.getEmail());
+            assertEquals("test", registrationInfo.getPassword());
         });
     }
 

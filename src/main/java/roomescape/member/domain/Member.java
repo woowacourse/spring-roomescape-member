@@ -9,14 +9,14 @@ public class Member {
     private final String password;
     private final String name;
 
-    public Member(long id, String email, String password, String name) {
-        this.email = email;
+    public Member(long id, String name, String email, String password) {
         this.id = id;
-        this.password = password;
         this.name = name;
+        this.email = email;
+        this.password = password;
     }
 
-    public Member (String email, String password, String name) {
+    public Member(String name, String email, String password) {
         this(0, email, password, name);
     }
 
@@ -48,8 +48,8 @@ public class Member {
         if (!(o instanceof Member member)) {
             return false;
         }
-        return id == member.id && Objects.equals(email, member.email) && Objects.equals(password,
-                member.password) && Objects.equals(name, member.name);
+        return id == member.id && Objects.equals(email, member.email) && Objects.equals(password, member.password)
+                && Objects.equals(name, member.name);
     }
 
     @Override
@@ -59,11 +59,7 @@ public class Member {
 
     @Override
     public String toString() {
-        return "Member{" +
-                "email='" + email + '\'' +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "Member{" + "email='" + email + '\'' + ", id=" + id + ", name='" + name + '\'' + '}';
     }
 
 }

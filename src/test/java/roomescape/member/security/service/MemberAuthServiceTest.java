@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.AuthorizationMismatchException;
 import roomescape.exception.IllegalAuthorizationException;
+import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
-import roomescape.member.dto.MemberRegistrationInfo;
 import roomescape.member.security.crypto.JwtTokenProvider;
 import roomescape.member.security.crypto.PasswordBcryptEncoder;
 
@@ -34,30 +34,30 @@ class MemberAuthServiceTest {
     @DisplayName("비밀번호 불일치시 인증 예외를 발생시킨다")
     void validateAuthentication_ShouldThrowException_WhenPasswordDoesNotMatch() {
         // Given
-        MemberRegistrationInfo registrationInfo = new MemberRegistrationInfo("user@example.com", "name",
+        Member member = new Member("name","user@example.com",
                 "encodedPassword");
         MemberLoginRequest loginRequest = new MemberLoginRequest("user@example.com", "wrongPassword");
 
         // Expectations
-        when(passwordBcryptEncoder.matches(loginRequest.password(), registrationInfo.password())).thenReturn(false);
+        when(passwordBcryptEncoder.matches(loginRequest.password(), member.getPassword())).thenReturn(false);
 
         // When & Then
         assertThrows(AuthorizationMismatchException.class,
-                () -> memberAuthService.validateAuthentication(registrationInfo, loginRequest));
+                () -> memberAuthService.validateAuthentication(member, loginRequest));
     }
 
     @Test
     @DisplayName("유효한 사용자 정보로 토큰을 발행한다")
     void publishToken_ShouldReturnToken_WhenGivenValidUserInfo() {
         // Given
-        MemberRegistrationInfo registrationInfo = new MemberRegistrationInfo("name", "user@example.com", "password");
+        Member member = new Member("name", "user@example.com", "password");
         String expectedToken = "token123";
 
         // Expectations
         when(jwtTokenProvider.createToken(any(), any(), any())).thenReturn(expectedToken);
 
         // When
-        String token = memberAuthService.publishToken(registrationInfo);
+        String token = memberAuthService.publishToken(member);
 
         // Then
         assertEquals(expectedToken, token);
