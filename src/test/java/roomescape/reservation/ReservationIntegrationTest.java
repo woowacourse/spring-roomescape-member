@@ -212,6 +212,50 @@ class ReservationIntegrationTest {
     }
 
     @Test
+    @DisplayName("예약 생성 시 해당하는 테마가 없는 경우 예외를 반환한다.")
+    void createReservation_WhenThemeNotExist() {
+        // jdbcTemplate.update("insert into theme (name, description, thumbnail) values ('테마이름', '설명', '썸네일')");
+        jdbcTemplate.update("insert into reservation_time (start_at) values ('20:00')");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2024-11-30");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", getTokenByLogin())
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+
+                .statusCode(404)
+                .body("detail", equalTo("해당하는 테마가 존재하지 않아 예약을 생성할 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("예약 생성 시 해당하는 시간이 없는 경우 예외를 반환한다.")
+    void createReservation_WhenTimeNotExist() {
+        jdbcTemplate.update("insert into theme (name, description, thumbnail) values ('테마이름', '설명', '썸네일')");
+        // jdbcTemplate.update("insert into reservation_time (start_at) values ('20:00')");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2024-11-30");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", getTokenByLogin())
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+
+                .statusCode(404)
+                .body("detail", equalTo("해당하는 시간이 존재하지 않아 예약을 생성할 수 없습니다."));
+    }
+
+    @Test
     @DisplayName("방탈출 예약 목록을 조회한다.")
     void getReservationTimes() {
         saveTimeThemeMemberForReservation();
