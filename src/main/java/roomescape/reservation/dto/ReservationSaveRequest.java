@@ -9,7 +9,6 @@ import roomescape.reservation.domain.Theme;
 
 public class ReservationSaveRequest {
 
-    @NotNull
     private Long memberId;
 
     @NotNull
