@@ -30,7 +30,7 @@ class ReservationControllerTest extends ControllerTest {
     void 예약을_생성한다() throws Exception {
         ReservationResponse response = ReservationResponse.from(ReservationFixture.DEFAULT_RESERVATION);
         when(reservationService.reserve(any())).thenReturn(response);
-        ReservationRequest request = new ReservationRequest(response.name(), response.date(), response.time().id(),
+        ReservationRequest request = new ReservationRequest(response.date(), response.time().id(),
                 response.theme().id());
         String content = objectMapper.writeValueAsString(request);
 
@@ -39,7 +39,6 @@ class ReservationControllerTest extends ControllerTest {
         result.andExpectAll(
                         status().isCreated(),
                         jsonPath("$.id").value(response.id()),
-                        jsonPath("$.name").value(response.name()),
                         jsonPath("$.date").value(response.date().toString()),
                         jsonPath("$.time.id").value(response.time().id()),
                         jsonPath("$.time.startAt").value(response.time().startAt().toString())
@@ -48,24 +47,8 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @Test
-    void 예약자명이_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
-        ReservationRequest request = new ReservationRequest(null, LocalDate.parse("2024-04-30"), 1L, 1L);
-        String content = objectMapper.writeValueAsString(request);
-
-        ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
-
-        result.andExpectAll(
-                        status().isBadRequest(),
-                        jsonPath("$.fieldErrors[0].field").value("name"),
-                        jsonPath("$.fieldErrors[0].rejectedValue").value(IsNull.nullValue()),
-                        jsonPath("$.fieldErrors[0].reason").value("예약자명은 필수입니다.")
-                )
-                .andDo(print());
-    }
-
-    @Test
     void 예약날짜가_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
-        ReservationRequest request = new ReservationRequest("prin", null, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(null, 1L, 1L);
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
@@ -82,7 +65,7 @@ class ReservationControllerTest extends ControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"2024_04_30", "2024-04-70"})
     void 예약날짜가_형식과_맞지_않으면_Bad_Request_상태를_반환한다(String date) throws Exception {
-        String content = "{\"name\":\"prin\", \"date\":" + date + ", \"timeId\":1, \"themeId\":1}";
+        String content = "{\"date\":" + date + ", \"timeId\":1, \"themeId\":1}";
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
 
@@ -95,7 +78,7 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 시간_아이디가_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
-        ReservationRequest request = new ReservationRequest("prin", LocalDate.parse("2024-04-30"), null, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.parse("2024-04-30"), null, 1L);
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
@@ -111,7 +94,7 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 시간_아이디가_양수가_아니면_Bad_Request_상태를_반환한다() throws Exception {
-        ReservationRequest request = new ReservationRequest("prin", LocalDate.parse("2024-04-30"), -1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.parse("2024-04-30"), -1L, 1L);
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
@@ -127,7 +110,7 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 테마_아이디가_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
-        ReservationRequest request = new ReservationRequest("prin", LocalDate.parse("2024-04-30"), 1L, null);
+        ReservationRequest request = new ReservationRequest(LocalDate.parse("2024-04-30"), 1L, null);
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
@@ -143,7 +126,7 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 테마_아이디가_양수가_아니면_Bad_Request_상태를_반환한다() throws Exception {
-        ReservationRequest request = new ReservationRequest("prin", LocalDate.parse("2024-04-30"), 1L, -1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.parse("2024-04-30"), 1L, -1L);
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
