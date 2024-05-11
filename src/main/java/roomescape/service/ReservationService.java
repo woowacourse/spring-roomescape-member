@@ -66,6 +66,10 @@ public class ReservationService {
         }
     }
 
+    public List<Reservation> findReservations(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        return reservationDAO.findReservations(themeId, memberId, dateFrom, dateTo);
+    }
+
     public List<Reservation> findAll() {
         return reservationDAO.selectAll();
     }

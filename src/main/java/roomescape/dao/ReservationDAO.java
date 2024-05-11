@@ -106,6 +106,33 @@ public class ReservationDAO {
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, time.getId());
     }
 
+    public List<Reservation> findReservations(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
+        final String sql = """
+                SELECT 
+                    r.id AS reservation_id,
+                    r.date,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email,
+                    m.password,
+                    rt.id AS time_id,
+                    rt.start_at AS time_value,
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS rt 
+                ON r.time_id = rt.id 
+                INNER JOIN theme AS t 
+                ON r.theme_id = t.id 
+                INNER JOIN member AS m 
+                ON r.member_id = m.id
+                WHERE theme_id = ? AND member_id = ? AND date BETWEEN ? AND ?;
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper(), themeId, memberId, dateFrom, dateTo);
+    }
+
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("id"),
@@ -128,5 +155,4 @@ public class ReservationDAO {
                 )
         );
     }
-
 }
