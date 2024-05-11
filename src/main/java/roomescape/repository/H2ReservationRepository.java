@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.controller.reservation.dto.ReservationSearch;
+import roomescape.controller.reservation.dto.ReservationSearchCondition;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -117,7 +117,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findFilter(final ReservationSearch search) {
+    public List<Reservation> searchReservations(final ReservationSearchCondition condition) {
         String sql = """
                 SELECT R.ID, R.MEMBER_ID, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, M.NAME
                 FROM RESERVATION AS R
@@ -129,31 +129,31 @@ public class H2ReservationRepository implements ReservationRepository {
         final String memberSql = "(R.MEMBER_ID = ?)";
         final String timeSql = "(R.DATE BETWEEN ? AND ?)";
 
-        if (search.themeId() != null && search.memberId() != null && search.dateFrom() != null && search.dateTo() != null) {
+        if (condition.themeId() != null && condition.memberId() != null && condition.dateFrom() != null && condition.dateTo() != null) {
             sql = sql + "WHERE " + themeSql + " AND " + memberSql + " AND " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), search.themeId(), search.memberId(),
-                    search.dateFrom(), search.dateTo());
+            return jdbcTemplate.query(sql, getFilterReservation(), condition.themeId(), condition.memberId(),
+                    condition.dateFrom(), condition.dateTo());
         }
 
-        if (search.memberId() != null && search.dateFrom() != null && search.dateTo() != null) {
+        if (condition.memberId() != null && condition.dateFrom() != null && condition.dateTo() != null) {
             sql = sql + "WHERE " + memberSql + " AND " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), search.memberId(), search.dateFrom(),
-                    search.dateTo());
+            return jdbcTemplate.query(sql, getFilterReservation(), condition.memberId(), condition.dateFrom(),
+                    condition.dateTo());
         }
 
-        if (search.themeId() != null && search.dateFrom() != null && search.dateTo() != null) {
+        if (condition.themeId() != null && condition.dateFrom() != null && condition.dateTo() != null) {
             sql = sql + "WHERE " + themeSql + " AND " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), search.themeId(),
-                    search.dateFrom(), search.dateTo());
+            return jdbcTemplate.query(sql, getFilterReservation(), condition.themeId(),
+                    condition.dateFrom(), condition.dateTo());
         }
 
-        if (search.dateFrom() != null && search.dateTo() != null) {
+        if (condition.dateFrom() != null && condition.dateTo() != null) {
             sql = sql + "WHERE " + timeSql;
-            return jdbcTemplate.query(sql, getFilterReservation(), search.dateFrom(), search.dateTo());
+            return jdbcTemplate.query(sql, getFilterReservation(), condition.dateFrom(), condition.dateTo());
         }
 
-        return jdbcTemplate.query(sql, getFilterReservation(), search.themeId(), search.memberId(),
-                search.dateFrom(), search.dateTo());
+        return jdbcTemplate.query(sql, getFilterReservation(), condition.themeId(), condition.memberId(),
+                condition.dateFrom(), condition.dateTo());
     }
 
     @Override

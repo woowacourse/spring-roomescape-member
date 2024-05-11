@@ -37,6 +37,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
         final Member member = memberService.findMemberByToken(token);
+        //TODO 여기에 invalidTokenException 올라올 때 어케 처리할지 고민하기
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
     }
 

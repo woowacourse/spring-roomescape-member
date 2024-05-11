@@ -14,7 +14,7 @@ import roomescape.controller.exception.AuthenticationException;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.CreateReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
-import roomescape.controller.reservation.dto.ReservationSearch;
+import roomescape.controller.reservation.dto.ReservationSearchCondition;
 import roomescape.controller.reservation.dto.UserCreateReservationRequest;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
@@ -59,10 +59,10 @@ public class ReservationController {
                 .body(ReservationResponse.from(reservation));
     }
 
-    @GetMapping(value = "/filter", params = {"themeId", "memberId", "dateFrom", "dateTo"})
-    public List<ReservationResponse> findFilter(
-            final ReservationSearch request) {
-        final List<Reservation> filter = reservationService.findFilter(request);
+    @GetMapping(value = "/search", params = {"themeId", "memberId", "dateFrom", "dateTo"})
+    public List<ReservationResponse> searchReservations(
+            final ReservationSearchCondition request) {
+        final List<Reservation> filter = reservationService.searchReservations(request);
         return filter.stream()
                 .map(ReservationResponse::from)
                 .toList();

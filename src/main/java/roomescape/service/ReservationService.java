@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.controller.reservation.dto.CreateReservationRequest;
-import roomescape.controller.reservation.dto.ReservationSearch;
+import roomescape.controller.reservation.dto.ReservationSearchCondition;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -42,9 +42,9 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<Reservation> findFilter(final ReservationSearch request) {
-        validateDateRange(request);
-        return reservationRepository.findFilter(request)
+    public List<Reservation> searchReservations(final ReservationSearchCondition condition) {
+        validateDateRange(condition);
+        return reservationRepository.searchReservations(condition)
                 .stream()
                 .toList();
     }
@@ -82,7 +82,7 @@ public class ReservationService {
         }
     }
 
-    private void validateDateRange(final ReservationSearch request) {
+    private void validateDateRange(final ReservationSearchCondition request) {
         if (request.dateFrom() == null || request.dateTo() == null) {
             throw new InvalidSearchDateException("유효하지 않는 데이터 반환입니다.");
         }

@@ -1,6 +1,6 @@
 package roomescape.repository;
 
-import roomescape.controller.reservation.dto.ReservationSearch;
+import roomescape.controller.reservation.dto.ReservationSearchCondition;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
@@ -30,5 +30,5 @@ public interface ReservationRepository {
 
     List<Theme> findPopularThemes(LocalDate from, LocalDate until, int limit);
 
-    List<Reservation> findFilter(ReservationSearch request);
+    List<Reservation> searchReservations(ReservationSearchCondition condition);
 }
