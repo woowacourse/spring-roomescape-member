@@ -24,7 +24,7 @@ function render(data) {
     const row = tableBody.insertRow();
 
     row.insertCell(0).textContent = item.id;
-    row.insertCell(1).textContent = item.reservationName;
+    row.insertCell(1).textContent = item.memberName;
     row.insertCell(2).textContent = item.themeName;
     row.insertCell(3).textContent = item.date;
     row.insertCell(4).textContent = item.startAt;
