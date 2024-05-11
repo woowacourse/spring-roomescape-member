@@ -19,11 +19,6 @@ public class AdminReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public List<ReservationResponse> findAllReservations() {
-        return reservationService.findAll();
-    }
-
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid AdminReservationRequest adminReservationRequest) {
         ReservationResponse reservationResponse = reservationService.create(adminReservationRequest);

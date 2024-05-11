@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.exception.InvalidReservationException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
@@ -94,5 +95,18 @@ public class ReservationService {
 
     public void deleteById(long id) {
         reservationRepository.deleteById(id);
+    }
+
+    public void deleteById(long reservationId, long memberId) {
+        validateAuthority(reservationId, memberId);
+    }
+
+    private void validateAuthority(long reservationId, long memberId) {
+        if(!reservationRepository.existsById(reservationId)){
+            return;
+        }
+        if(reservationRepository.getById(reservationId).getMember().getId() != memberId){
+            throw new UnauthorizedException("예약을 삭제할 권한이 없습니다.");
+        }
     }
 }
