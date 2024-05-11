@@ -15,12 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.member.domain.Member;
 
 @SpringBootTest
-@TestPropertySource(properties = {
-        "security.jwt.token.secret-key=test_secret_key",
-        "security.jwt.token.expire-length=3600000"
-})
+@TestPropertySource(properties = {"security.jwt.token.secret-key=test_secret_key",
+                                  "security.jwt.token.expire-length=3600000"})
 class JwtTokenProviderTest {
 
     @Value("${security.jwt.token.expire-length}")
@@ -29,8 +28,10 @@ class JwtTokenProviderTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    private static final String USER_TEST_COM ="user@test.com";
     private static final String USER_NAME = "도비";
+    private static final String USER_TEST_COM = "user@test.com";
+    private static final String USER_PASSWORD = "pass";
+    private static final Member TEST_MEMBER = new Member(1L, USER_NAME, USER_TEST_COM, USER_PASSWORD);
 
     @BeforeEach
     void setUp() {
@@ -39,13 +40,12 @@ class JwtTokenProviderTest {
         setField(jwtTokenProvider, "validityInMilliseconds", 3600000); // 1시간
     }
 
-
     @Test
     @DisplayName("토큰을 생성하고, 토큰의 유효성을 검증하며, 페이로드를 반환한다")
     void testTokenCreationValidationAndPayloadExtraction() {
         // 토큰 발행
         Date now = new Date();
-        String token = jwtTokenProvider.createToken(USER_TEST_COM, USER_NAME, now);
+        String token = jwtTokenProvider.createToken(TEST_MEMBER, now);
         assertNotNull(token);
 
         // 토큰 검증
@@ -57,6 +57,7 @@ class JwtTokenProviderTest {
         assertNotNull(payload);
         assertEquals(USER_TEST_COM, payload.get("email"));
         assertEquals(USER_NAME, payload.get("name"));
+        assertEquals("1", payload.get("id"));
     }
 
     @Test
@@ -65,7 +66,7 @@ class JwtTokenProviderTest {
         // 과거 토큰 발행
         Date now = new Date();
         Date past = new Date(now.getTime() - validityInMilliseconds - 1);
-        String expiredToken = jwtTokenProvider.createToken(USER_TEST_COM, USER_NAME, past);
+        String expiredToken = jwtTokenProvider.createToken(TEST_MEMBER, past);
 
         // 만료된 토큰 검증
         boolean isValid = jwtTokenProvider.validateToken(expiredToken);

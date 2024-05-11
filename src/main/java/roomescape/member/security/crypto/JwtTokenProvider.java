@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.domain.Member;
 
 @Component
 public class JwtTokenProvider implements TokenProvider {
@@ -19,10 +20,11 @@ public class JwtTokenProvider implements TokenProvider {
     private long validityInMilliseconds;
 
     @Override
-    public String createToken(String email, String name,Date issuedAt) {
+    public String createToken(Member member, Date issuedAt) {
         Claims claims = Jwts.claims()
-                .setSubject(email);
-        claims.put("name", name);
+                .setSubject(member.getEmail());
+        claims.put("name", member.getName());
+        claims.put("id", String.valueOf(member.getId()));
 
         Date validity = new Date(issuedAt.getTime() + validityInMilliseconds);
 
@@ -40,12 +42,16 @@ public class JwtTokenProvider implements TokenProvider {
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token);
 
-        String email = claims.getBody()
-                .getSubject();
-        String name = claims.getBody()
-                .get("name", String.class);
+        Claims claimsBody = claims.getBody();
+        String email = claimsBody.getSubject();
+        String name = claimsBody.get("name", String.class);
+        String id = claimsBody.get("id", String.class);
 
-        return Map.of("email", email, "name", name);
+        return Map.of(
+                "email", email,
+                "name", name,
+                "id", id
+        );
     }
 
     @Override
