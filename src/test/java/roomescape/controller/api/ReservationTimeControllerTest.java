@@ -2,11 +2,10 @@ package roomescape.controller.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.util.Fixture.TOMORROW;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,10 +28,6 @@ import roomescape.dto.response.ReservationTimeWithStateDto;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class ReservationTimeControllerTest {
-    private static final String TOMORROW_DATE = LocalDate.now()
-            .plusDays(1)
-            .format(DateTimeFormatter.ISO_DATE);
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -43,23 +39,10 @@ class ReservationTimeControllerTest {
         RestAssured.port = port;
     }
 
-    @Test
-    @DisplayName("시간 생성 시, startAt 값이 null이면 예외가 발생한다.")
-    void validateTimeCreateWithNullStartAt() {
-        final Map<String, Object> params = new HashMap<>();
-        params.put("startAt", null);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(400);
-    }
-
     @ParameterizedTest
-    @ValueSource(strings = {"", " ", "10:89"})
-    @DisplayName("시간 생성 시, startAt 값의 형식이 올바르지 않으면 예외가 발생한다.")
+    @DisplayName("시간 생성 시, startAt 값이 null이거나 형식이 올바르지 않으면 예외가 발생한다.")
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "10:89"})
     void validateTimeCreateWithStartAtFormat(final String startAt) {
         final Map<String, Object> params = new HashMap<>();
         params.put("startAt", startAt);
@@ -103,30 +86,17 @@ class ReservationTimeControllerTest {
                 .body("size()", is(countReservationTime()));
     }
 
-
     @Test
     @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
     void findAvailableTimes() {
-        final Map<String, Object> loginParams = new HashMap<>();
-        loginParams.put("email", "hong@gmail.com");
-        loginParams.put("password", "1234");
-
-        final String loginTokenCookie = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
-
+        final String memberToken = getLoginToken("imjojo@gmail.com", "qwer");
         final Map<String, Object> reservationParams = new HashMap<>();
-        reservationParams.put("date", TOMORROW_DATE);
+        reservationParams.put("date", TOMORROW);
         reservationParams.put("timeId", 1);
         reservationParams.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .header("Cookie", loginTokenCookie)
+                .header("Cookie", memberToken)
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
                 .when().post("/reservations")
@@ -134,7 +104,7 @@ class ReservationTimeControllerTest {
                 .statusCode(201);
 
         final List<ReservationTimeWithStateDto> times = RestAssured.given().log().all()
-                .when().get("/times/available?date=" + TOMORROW_DATE + "&theme-id=1")
+                .when().get("/times/available?date=" + TOMORROW + "&theme-id=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTimeWithStateDto.class);
@@ -176,6 +146,21 @@ class ReservationTimeControllerTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    private String getLoginToken(final String email, final String password) {
+        final Map<String, Object> loginParams = new HashMap<>();
+        loginParams.put("email", email);
+        loginParams.put("password", password);
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
     }
 
     private int countReservationTime() {
