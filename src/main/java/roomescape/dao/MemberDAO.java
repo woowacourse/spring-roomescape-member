@@ -35,4 +35,26 @@ public class MemberDAO {
         final long key = keyHolder.getKey().longValue();
         return new Member(key, name, email, password);
     }
+
+    public Boolean existMember(final String email, final String password) {
+        final String sql = """
+                SELECT CASE WHEN EXISTS (
+                    SELECT 1
+                    FROM member
+                    WHERE email = ? AND password = ?
+                ) THEN TRUE ELSE FALSE END;
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email, password);
+    }
+
+    public Member findByEmail(final String email) {
+        final String sql = "SELECT * FROM member WHERE email = ?;";
+
+        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> new Member(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("email"),
+                resultSet.getString("password")
+        ), email);
+    }
 }

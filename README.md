@@ -36,7 +36,7 @@
   - templates/signup.html
 - [x] `GET - /login` 요청 시 로그인 폼이 있는 페이지를 응답한다.
   - templates/login.html
-- [ ] `POST - /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
-  - [ ] 응답 Cookie에 "token"값으로 토큰이 포함한다.
-- [ ] `GET - /login/check` 요청 시 인증 정보를 조회하는 API를 만든다.
-  - [ ] Cookie에서 토큰 정보를 추출하여 멤버를 찾아 멤버 정보를 응답한다.
+- [x] `POST - /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
+  - [x] 응답 Cookie에 "token"값으로 토큰이 포함한다.
+- [x] `GET - /login/check` 요청 시 인증 정보를 조회하는 API를 만든다.
+  - [x] Cookie에서 토큰 정보를 추출하여 멤버를 찾아 멤버 정보를 응답한다.
