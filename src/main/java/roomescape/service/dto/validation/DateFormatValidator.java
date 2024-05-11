@@ -8,7 +8,7 @@ import java.time.format.DateTimeParseException;
 
 public class DateFormatValidator implements ConstraintValidator<DateFormat, String> {
     @Override
-    public boolean isValid(final String value, final ConstraintValidatorContext context) {
+    public boolean isValid(String value, ConstraintValidatorContext context) {
         try {
             LocalDate.parse(value);
             return true;

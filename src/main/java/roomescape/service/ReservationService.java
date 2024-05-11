@@ -36,8 +36,11 @@ public class ReservationService {
         ReservationTime requestedReservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
         Theme requestedTheme = themeRepository.getById(reservationRequest.themeId());
 
-        Reservation requestedReservation = reservationFactory.createReservation(reservationRequest.principal(),
-                reservationRequest.date(), requestedReservationTime, requestedTheme);
+        Reservation requestedReservation = reservationFactory.createReservation(
+                reservationRequest.principal(),
+                reservationRequest.date(),
+                requestedReservationTime,
+                requestedTheme);
 
         rejectDuplicateReservation(requestedReservation);
 
@@ -68,6 +71,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    // TODO: DTO로 감싸기
     public List<ReservationResponse> findByCondition(String name, Long themeId, String from, String to) {
         List<Reservation> reservations = reservationRepository.findByCondition(name, themeId, from, to);
 

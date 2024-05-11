@@ -27,10 +27,6 @@ public class MemberService {
         return tokenProvider.createToken(member);
     }
 
-    public Member findByEmail(String email) {
-        return memberRepository.getByEmail(email);
-    }
-
     public List<Member> findAll() {
         return memberRepository.findAll();
     }
