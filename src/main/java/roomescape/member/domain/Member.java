@@ -25,14 +25,6 @@ public class Member {
         return !this.password.equals(password);
     }
 
-    public boolean isSameId(final Long id) {
-        return Objects.equals(this.id, id);
-    }
-
-    public boolean isSameEmail(String email) {
-        return this.email.equals(email);
-    }
-
     public Long getId() {
         return id;
     }
