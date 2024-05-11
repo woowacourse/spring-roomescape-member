@@ -1,4 +1,4 @@
-package roomescape.infrastructure.persistence;
+package roomescape.infrastructure.persistence.rowmapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

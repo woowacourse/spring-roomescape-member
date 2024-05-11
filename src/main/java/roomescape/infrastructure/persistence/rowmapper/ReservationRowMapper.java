@@ -1,9 +1,8 @@
-package roomescape.infrastructure.persistence;
+package roomescape.infrastructure.persistence.rowmapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 
 public class ReservationRowMapper {
@@ -13,11 +12,10 @@ public class ReservationRowMapper {
 
     public static Reservation joinedMapRow(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("id");
-        String name = rs.getString("name");
         String date = rs.getString("date");
         return new Reservation(
                 id,
-                new PlayerName(name),
+                MemberRowMapper.joinedMapRow(rs),
                 LocalDate.parse(date),
                 ReservationTimeRowMapper.joinedMapRow(rs),
                 ThemeRowMapper.joinedMapRow(rs)

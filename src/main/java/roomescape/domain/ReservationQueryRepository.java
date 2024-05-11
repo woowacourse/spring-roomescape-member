@@ -18,4 +18,6 @@ public interface ReservationQueryRepository {
     List<AvailableTimeDto> findAvailableReservationTimes(LocalDate date, long themeId);
 
     List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, int limit);
+
+    List<Reservation> findByCriteria(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
 }

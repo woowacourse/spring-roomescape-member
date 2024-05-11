@@ -10,8 +10,13 @@ public enum RoomescapeErrorCode {
     NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
     NOT_FOUND_TIME(HttpStatus.NOT_FOUND, "존재하지 않는 예약 시간입니다."),
     NOT_FOUND_THEME(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
+    NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
     ALREADY_RESERVED(HttpStatus.CONFLICT, "이미 연관된 예약이 존재합니다."),
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),;
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "운영자만 접근할 수 있습니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "인증 유효기간이 만료되었습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;

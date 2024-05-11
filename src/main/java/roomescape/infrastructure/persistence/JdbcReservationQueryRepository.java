@@ -1,6 +1,7 @@
 package roomescape.infrastructure.persistence;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -11,6 +12,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.dto.AvailableTimeDto;
+import roomescape.infrastructure.persistence.rowmapper.ReservationRowMapper;
+import roomescape.infrastructure.persistence.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcReservationQueryRepository implements ReservationQueryRepository {
@@ -23,12 +26,28 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
     @Override
     public Optional<Reservation> findById(long id) {
         String sql = """
-                select r.id as id, r.name as reservation_name, date, time_id, start_at,
-                theme_id, t.name as theme_name, description, thumbnail from reservation as r
-                left join reservation_time as rt on time_id = rt.id
-                left join theme as t on theme_id = t.id
-                where r.id = ?
-                """;
+            select r.id as id,
+                   r.member_id as member_id,
+                   m.name as member_name,
+                   m.email as member_email,
+                   m.password as member_password,
+                   m.role as member_role,
+                   r.date as date, 
+                   r.time_id as time_id,
+                   rt.start_at as start_at, 
+                   r.theme_id as theme_id,
+                   t.name as theme_name,
+                   t.description as description, 
+                   t.thumbnail as thumbnail 
+            from reservation as r
+            left join reservation_time as rt
+            on r.time_id = rt.id
+            left join theme as t
+            on r.theme_id = t.id  
+            left join member as m
+            on r.member_id = m.id
+            where r.id = ?
+            """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper::joinedMapRow, id);
             return Optional.of(Objects.requireNonNull(reservation));
@@ -40,11 +59,27 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select r.id as id, r.name as reservation_name, date, time_id, start_at,
-                theme_id, t.name as theme_name, description, thumbnail from reservation as r
-                left join reservation_time as rt on time_id = rt.id
-                left join theme as t on theme_id = t.id
-                """;
+            select r.id as id,
+                   r.member_id as member_id,
+                   m.name as member_name,
+                   m.email as member_email,
+                   m.password as member_password,
+                   m.role as member_role,
+                   r.date as date, 
+                   r.time_id as time_id,
+                   rt.start_at as start_at, 
+                   r.theme_id as theme_id,
+                   t.name as theme_name,
+                   t.description as description, 
+                   t.thumbnail as thumbnail 
+            from reservation as r
+            left join reservation_time as rt
+            on r.time_id = rt.id
+            left join theme as t
+            on r.theme_id = t.id  
+            left join member as m
+            on r.member_id = m.id  
+            """;
         return jdbcTemplate.query(sql, ReservationRowMapper::joinedMapRow);
     }
 
@@ -100,5 +135,53 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                 """;
 
         return jdbcTemplate.query(sql, ThemeRowMapper::mapRow, startDate, endDate, limit);
+    }
+
+    @Override
+    public List<Reservation> findByCriteria(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Object> params = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
+
+        String sql = """
+                select r.id as id,
+                       r.member_id as member_id,
+                       m.name as member_name,
+                       m.email as member_email,
+                       m.password as member_password,
+                       m.role as member_role,
+                       r.date as date, 
+                       r.time_id as time_id,
+                       rt.start_at as start_at, 
+                       r.theme_id as theme_id,
+                       t.name as theme_name,
+                       t.description as description, 
+                       t.thumbnail as thumbnail 
+                from reservation as r
+                left join reservation_time as rt
+                on r.time_id = rt.id
+                left join theme as t
+                on r.theme_id = t.id  
+                left join member as m
+                on r.member_id = m.id  
+                """;
+
+        addCondition(themeId, conditions, "r.theme_id = ?", params);
+        addCondition(memberId, conditions, "r.member_id = ?", params);
+        addCondition(dateFrom, conditions, "r.date >= ?", params);
+        addCondition(dateTo, conditions, "r.date <= ?", params);
+
+        if (!conditions.isEmpty()) {
+            sql += " where " + String.join(" and ", conditions);
+        }
+
+        return jdbcTemplate.query(sql, ReservationRowMapper::joinedMapRow, params.toArray());
+    }
+
+    private void addCondition(Object param, List<String> conditions, String sql, List<Object> params) {
+        if (param == null) {
+            return;
+        }
+        conditions.add(sql);
+        params.add(param);
     }
 }

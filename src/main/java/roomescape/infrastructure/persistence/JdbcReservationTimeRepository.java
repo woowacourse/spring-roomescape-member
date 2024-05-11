@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.infrastructure.persistence.rowmapper.ReservationTimeRowMapper;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
