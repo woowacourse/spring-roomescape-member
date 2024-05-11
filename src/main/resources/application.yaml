@@ -9,5 +9,5 @@ spring:
       path: /h2-console
 
 jwt:
-  secret-key: gotjrgoeh2rjtdmsqufakfdldkslqslekgoehrgkwlaktpdy=
-  expiration: 1800
+  secret-key: gotjrgoeh2rjtdmsqufakfdldkslqslekgoehrgkwlaktpdydkwhaejrlfdjdigkskqhspdyrhldwkdglekdghkdtmfjq=
+  expiration: 1800000
