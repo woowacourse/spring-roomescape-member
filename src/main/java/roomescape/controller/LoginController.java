@@ -27,8 +27,8 @@ public class LoginController {
 
     @PostMapping("/login")
     public void login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        memberService.login(loginRequestDto.email(), loginRequestDto.password());
-        String token = authenticationService.createToken(loginRequestDto.email());
+        Member member = memberService.login(loginRequestDto.email(), loginRequestDto.password());
+        String token = authenticationService.createToken(member.getEmail());
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

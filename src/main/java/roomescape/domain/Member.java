@@ -28,11 +28,15 @@ public class Member {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getRole() {
         return role;
     }
 
-    public String getName() {
-        return name;
+    public String getEmail() {
+        return email;
     }
 }
