@@ -55,14 +55,12 @@ public class ReservationTimeService {
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, long themeId) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
         Set<ReservationTime> reservedTimes = reservationTimeRepository.findReservedTime(date, themeId);
-
-        List<AvailableTimeResponse> result = new ArrayList<>();
-        boolean alreadyBooked;
-
-        for (ReservationTime time : times) {
-            alreadyBooked = reservedTimes.contains(time);
-            result.add(new AvailableTimeResponse(time.getId(), time.getStartAt(), alreadyBooked));
-        }
-        return result;
+        return times.stream()
+                .map(time -> new AvailableTimeResponse(
+                        time.getId(),
+                        time.getStartAt(),
+                        reservedTimes.contains(time)
+                ))
+                .toList();
     }
 }
