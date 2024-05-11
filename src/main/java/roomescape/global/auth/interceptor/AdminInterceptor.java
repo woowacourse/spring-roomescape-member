@@ -11,11 +11,10 @@ import roomescape.global.auth.annotation.Admin;
 import roomescape.global.auth.jwt.JwtHandler;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.ForbiddenException;
-import roomescape.global.exception.model.NotFoundException;
 import roomescape.global.exception.model.UnauthorizedException;
-import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.service.MemberService;
 
 import java.util.Optional;
 
@@ -25,7 +24,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     private static final String TOKEN_COOKIE_NAME = "token";
 
     @Autowired
-    private MemberDao memberDao;
+    private MemberService memberService;
 
     @Autowired
     private JwtHandler jwtHandler;
@@ -47,10 +46,7 @@ public class AdminInterceptor implements HandlerInterceptor {
                     String accessToken = cookie.getValue();
                     Long memberId = jwtHandler.getMemberIdFromToken(accessToken);
 
-                    Member member = memberDao.findById(memberId)
-                            .orElseThrow(() -> new NotFoundException(ErrorType.MEMBER_NOT_FOUND,
-                                    String.format("회원 정보를 찾을 수 없습니다. [memberId: %d]", memberId)));
-
+                    Member member = memberService.findMemberById(memberId);
                     return checkRole(member, memberId);
                 }
             }

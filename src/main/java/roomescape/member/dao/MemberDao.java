@@ -63,8 +63,6 @@ public class MemberDao {
         }
     }
 
-    // WHY: 데이터 조회 시, 데이터가 존재하지 않는 부분에 대한 예외를 DAO에서 처리해주게 된다면, DAO가 여러 종류일 때 DB 벤더에 따른 예외처리를 각 DAO에 중복 작성해주어야 하기 때문에
-    // Optional로 return하고 Service 레이어에서 관련 처리를 수행하도록 작성하여
     public Optional<Member> findByEmailAndPassword(final String email, final String password) {
         String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
 

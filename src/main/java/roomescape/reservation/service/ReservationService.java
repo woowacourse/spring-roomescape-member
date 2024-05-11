@@ -3,10 +3,9 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.DataDuplicateException;
-import roomescape.global.exception.model.NotFoundException;
 import roomescape.global.exception.model.ValidateException;
-import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.Reservation;
@@ -29,16 +28,16 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
-    private final MemberDao memberDao;
+    private final MemberService memberService;
 
     public ReservationService(final ReservationDao reservationDao,
                               final ReservationTimeDao reservationTimeDao,
                               final ThemeDao themeDao,
-                              final MemberDao memberDao) {
+                              final MemberService memberService) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
-        this.memberDao = memberDao;
+        this.memberService = memberService;
     }
 
     public ReservationsResponse findAllReservations() {
@@ -64,10 +63,7 @@ public class ReservationService {
 
         ReservationTime requestReservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
-        // TODO: findById 로직 통일시키기
-        Member member = memberDao.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorType.MEMBER_NOT_FOUND,
-                        String.format("회원(Member) 정보가 존재하지 않습니다. [values: %s]", request)));
+        Member member = memberService.findMemberById(memberId);
 
         validateDateAndTime(requestDate, requestReservationTime, now);
         validateReservationDuplicate(request, theme);
@@ -109,7 +105,7 @@ public class ReservationService {
 
     public ReservationsResponse findReservationsByThemeIdAndMemberIdBetweenDate(
             final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
-        
+
         List<ReservationResponse> response = reservationDao.findByThemeIdAndMemberIdBetweenDate(themeId, memberId, dateFrom, dateTo).stream()
                 .map(ReservationResponse::from)
                 .toList();

@@ -13,6 +13,7 @@ import roomescape.global.exception.model.ValidateException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.ReservationTime;
@@ -28,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-@Import({ReservationTimeDao.class, ThemeDao.class, ReservationService.class, ReservationDao.class, MemberDao.class})
+@Import({ReservationTimeDao.class, ThemeDao.class, ReservationService.class, ReservationDao.class, MemberDao.class, MemberService.class})
 class ReservationServiceTest {
 
     @Autowired
