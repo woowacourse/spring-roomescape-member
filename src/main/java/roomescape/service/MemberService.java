@@ -38,27 +38,17 @@ public class MemberService {
                 .compact();
     }
 
-    public MemberPreviewResponse getNameIfLogIn(String token) { // todo: 나중에도 안쓰면 삭제
+    public Member getUserByToken(String token) {
         Long memberId = Long.valueOf(
                 Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes())).build()
                         .parseSignedClaims(token)
                         .getPayload()
                         .getSubject());
-        Member member = findValidatedSiteUserById(memberId);
 
-        return MemberPreviewResponse.from(member);
+        return findValidatedSiteUserById(memberId);
     }
 
-    public Member getUserGivenToken(String token) { //todo: 이름 수정 필요 & 위치가 정말로 여기가 맞는가?
-        Long memberId = Long.valueOf(
-                Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes())).build()
-                        .parseSignedClaims(token)
-                        .getPayload()
-                        .getSubject());
-        return findValidatedSiteUserById(memberId);
-    } //todo: 중복 코드 제거
-
-    private Member findValidatedSiteUserById(Long memberId) { //todo: findValidate~~ 이것도 인터셉터에서 처리할 수 있지 않을까?
+    private Member findValidatedSiteUserById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(
                 () -> new ResourceNotFoundException("아이디에 해당하는 사용자가 없습니다."));
     }

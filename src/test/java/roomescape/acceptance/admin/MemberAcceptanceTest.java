@@ -5,14 +5,14 @@ import io.restassured.common.mapper.TypeRef;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.BaseAcceptanceTest;
 import roomescape.dto.MemberPreviewResponse;
 
 import java.util.List;
 
 import static roomescape.acceptance.Fixture.adminToken;
 
-public class MemberAcceptanceTest extends AcceptanceTest {
+class MemberAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자가 간소화된 사용자 목록을 조회한다.")
     @Test

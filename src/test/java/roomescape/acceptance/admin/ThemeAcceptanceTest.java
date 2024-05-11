@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.BaseAcceptanceTest;
 import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.ThemeRequest;
@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.acceptance.Fixture.adminToken;
-import static roomescape.acceptance.PreInsertedData.preInsertedTheme1;
-import static roomescape.acceptance.PreInsertedData.preInsertedTheme2;
+import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_THEME_1;
+import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_THEME_2;
 
-class ThemeAcceptanceTest extends AcceptanceTest {
+class ThemeAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자가 테마 목록을 조회한다.")
     @Test
@@ -65,7 +65,7 @@ class ThemeAcceptanceTest extends AcceptanceTest {
         @DisplayName("정상 작동")
         @Test
         void deleteTheme_forExist_success() {
-            long existThemeId = preInsertedTheme1.getId();
+            long existThemeId = PRE_INSERTED_THEME_1.getId();
 
             sendDeleteRequest(existThemeId)
                     .statusCode(HttpStatus.NO_CONTENT.value());
@@ -89,7 +89,7 @@ class ThemeAcceptanceTest extends AcceptanceTest {
         @DisplayName("예외 발생 - 예약이 있는 테마를 삭제한다.") // todo: 어드민으로 변경
         @Test
         void deleteTheme_whenReservationExist_fail() {
-            long themeIdWhereReservationExist = preInsertedTheme2.getId();
+            long themeIdWhereReservationExist = PRE_INSERTED_THEME_2.getId();
 
             CustomExceptionResponse response = sendDeleteRequest(themeIdWhereReservationExist)
                     .statusCode(HttpStatus.BAD_REQUEST.value())

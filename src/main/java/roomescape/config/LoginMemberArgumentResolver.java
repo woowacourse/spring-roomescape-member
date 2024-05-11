@@ -27,7 +27,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String token = getToken(webRequest);
 
-        return memberService.getUserGivenToken(token);
+        return memberService.getUserByToken(token);
     }
 
     private String getToken(NativeWebRequest webRequest) {

@@ -2,11 +2,10 @@ package roomescape.acceptance.admin;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import roomescape.acceptance.AcceptanceTest;
+import roomescape.acceptance.BaseAcceptanceTest;
 import roomescape.dto.ReservationResponse;
 
 import java.util.List;
@@ -16,7 +15,7 @@ import static roomescape.acceptance.Fixture.adminToken;
 import static roomescape.acceptance.PreInsertedData.*;
 
 @DisplayName("관리자가 예약을 필터링해서 조회한다.")
-class ReservationFilterAcceptanceTest extends AcceptanceTest {
+class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
 
     @Test
     @DisplayName("필터링하지 않음")
@@ -24,10 +23,10 @@ class ReservationFilterAcceptanceTest extends AcceptanceTest {
         List<ReservationResponse> response = sendRequestFiltering("");
 
         assertThat(response).containsExactlyInAnyOrder(
-                ReservationResponse.from(preInsertedReservation1),
-                ReservationResponse.from(preInsertedReservation2),
-                ReservationResponse.from(preInsertedReservation3),
-                ReservationResponse.from(preInsertedReservation4)
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_2),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_3),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_4)
         );
     }
 
@@ -37,9 +36,9 @@ class ReservationFilterAcceptanceTest extends AcceptanceTest {
         List<ReservationResponse> response = sendRequestFiltering("?memberId=2");
 
         assertThat(response).containsExactlyInAnyOrder(
-                ReservationResponse.from(preInsertedReservation1),
-                ReservationResponse.from(preInsertedReservation2),
-                ReservationResponse.from(preInsertedReservation3)
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_2),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_3)
         );
     }
 
@@ -49,8 +48,8 @@ class ReservationFilterAcceptanceTest extends AcceptanceTest {
         List<ReservationResponse> response = sendRequestFiltering("?themeId=2");
 
         assertThat(response).containsExactlyInAnyOrder(
-                ReservationResponse.from(preInsertedReservation1),
-                ReservationResponse.from(preInsertedReservation3)
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_3)
         );
     }
 
@@ -60,8 +59,8 @@ class ReservationFilterAcceptanceTest extends AcceptanceTest {
         List<ReservationResponse> response = sendRequestFiltering("?dateFrom=2024-05-02");
 
         assertThat(response).containsExactlyInAnyOrder(
-                ReservationResponse.from(preInsertedReservation2),
-                ReservationResponse.from(preInsertedReservation4)
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_2),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_4)
         );
     }
 
@@ -71,8 +70,8 @@ class ReservationFilterAcceptanceTest extends AcceptanceTest {
         List<ReservationResponse> response = sendRequestFiltering("?dateTo=2024-05-01");
 
         assertThat(response).containsExactlyInAnyOrder(
-                ReservationResponse.from(preInsertedReservation1),
-                ReservationResponse.from(preInsertedReservation3)
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_3)
         );
     }
 
@@ -82,7 +81,7 @@ class ReservationFilterAcceptanceTest extends AcceptanceTest {
         List<ReservationResponse> response = sendRequestFiltering("?memberId=2&themeId=3&dateFrom=2024-05-02&dateTo=2024-05-02");
 
         assertThat(response).containsExactlyInAnyOrder(
-                ReservationResponse.from(preInsertedReservation2)
+                ReservationResponse.from(PRE_INSERTED_RESERVATION_2)
         );
     }
 
