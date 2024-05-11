@@ -32,7 +32,12 @@ public class MemberAuthService {
 
     public String publishToken(Member member) {
         Date now = new Date();
-        return tokenProvider.createToken(member.getEmail(), member.getName(), now);
+        return tokenProvider.createToken(member, now);
+    }
+
+    public Map<String, String> extractPayload(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        return tokenProvider.getPayload(token);
     }
 
     public String extractNameFromPayload(Cookie[] cookies) {

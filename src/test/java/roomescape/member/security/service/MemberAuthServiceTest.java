@@ -54,7 +54,7 @@ class MemberAuthServiceTest {
         String expectedToken = "token123";
 
         // Expectations
-        when(jwtTokenProvider.createToken(any(), any(), any())).thenReturn(expectedToken);
+        when(jwtTokenProvider.createToken(any(), any())).thenReturn(expectedToken);
 
         // When
         String token = memberAuthService.publishToken(member);
