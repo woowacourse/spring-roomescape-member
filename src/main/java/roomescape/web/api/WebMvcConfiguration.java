@@ -16,9 +16,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     private final AdminAuthValidateInterceptor adminAuthValidateInterceptor;
     private final MemberAuthValidateInterceptor memberAuthValidateInterceptor;
 
-    public WebMvcConfiguration(MemberArgumentResolver memberArgumentResolver,
-                               AdminAuthValidateInterceptor adminAuthValidateInterceptor,
-                               MemberAuthValidateInterceptor memberAuthValidateInterceptor) {
+    public WebMvcConfiguration(
+            MemberArgumentResolver memberArgumentResolver,
+            AdminAuthValidateInterceptor adminAuthValidateInterceptor,
+            MemberAuthValidateInterceptor memberAuthValidateInterceptor
+    ) {
         this.memberArgumentResolver = memberArgumentResolver;
         this.adminAuthValidateInterceptor = adminAuthValidateInterceptor;
         this.memberAuthValidateInterceptor = memberAuthValidateInterceptor;
@@ -29,6 +31,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         resolvers.add(memberArgumentResolver);
     }
 
+    // todo: admin은 /reservation 에 접근할 수 있어야 한다
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminAuthValidateInterceptor)

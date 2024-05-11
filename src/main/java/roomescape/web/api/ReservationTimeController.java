@@ -30,8 +30,8 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> save(@RequestBody @Valid ReservationTimeRequest reservationTimeRequest) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(reservationTimeRequest);
+    public ResponseEntity<ReservationTimeResponse> save(@RequestBody @Valid ReservationTimeRequest request) {
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeResponse);
     }
@@ -45,8 +45,8 @@ public class ReservationTimeController {
 
     @GetMapping("/times/available")
     public ResponseEntity<ReservationTimeListResponse> findAvailableByThemeAndDate(
-            @DateFormat @RequestParam("date") String date,
-            @Positive @RequestParam("themeId") Long themeId
+            @RequestParam("date") @DateFormat String date,
+            @RequestParam("themeId") @Positive Long themeId
     ) {
         List<AvailableReservationTimeResponse> reservationTimeResponses =
                 reservationTimeService.findAllWithAvailability(LocalDate.parse(date), themeId);

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.service.MemberService;
+import roomescape.web.api.dto.LoginRequest;
 import roomescape.web.exception.AuthorizationException;
 
 @RestController
@@ -27,7 +28,7 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .path("/")
-                .httpOnly(true)
+//                .httpOnly(true)
                 .maxAge(3600)
                 .build();
 
@@ -44,9 +45,6 @@ public class AuthController {
         String payload = tokenProvider.getEmail(token);
 
         return ResponseEntity.ok(new MemberResponse(payload));
-    }
-
-    public record LoginRequest(String email, String password) {
     }
 
     public record MemberResponse(String name) {
