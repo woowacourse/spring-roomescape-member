@@ -19,6 +19,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.auth.provider.model.TokenProvider;
+import roomescape.auth.resolver.TokenResolver;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRankResponse;
 import roomescape.theme.dto.ThemeRequest;
@@ -37,6 +39,12 @@ public class ThemeControllerTest {
 
     @MockBean
     private ThemeService themeService;
+
+    @MockBean
+    private TokenResolver tokenResolver;
+
+    @MockBean
+    private TokenProvider tokenProvider;
 
     @Test
     @DisplayName("테마 정보를 정상적으로 저장하는지 확인한다.")
