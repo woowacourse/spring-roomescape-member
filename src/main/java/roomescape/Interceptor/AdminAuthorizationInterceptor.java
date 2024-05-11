@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
-import roomescape.domain.Role;
 import roomescape.service.AuthenticationService;
 import roomescape.service.MemberService;
 import roomescape.util.CookieInterpreter;
@@ -27,7 +26,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         String email = authenticationService.getPayload(token);
         Member member = memberService.findByEmail(email);
 
-        if (Role.ADMIN.equals(member.getRole())) {
+        if (member.isAdmin()) {
             return true;
         }
         response.setStatus(401);

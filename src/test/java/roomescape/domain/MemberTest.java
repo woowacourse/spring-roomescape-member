@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -29,5 +30,14 @@ public class MemberTest {
         boolean actualMatches = member.isPasswordMatches(expectedPassword);
 
         assertThat(actualMatches).isEqualTo(expectedMatches);
+    }
+
+    @Test
+    void isAdminTest() {
+        Member admin = new Member(1L, "admin", Role.ADMIN, "email@email.com", "password");
+        Member user = new Member(1L, "user", Role.USER, "email@email.com", "password");
+
+        assertThat(admin.isAdmin()).isTrue();
+        assertThat(user.isAdmin()).isFalse();
     }
 }

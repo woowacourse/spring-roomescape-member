@@ -32,11 +32,11 @@ public class Member {
         return name;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
     public String getEmail() {
         return email;
+    }
+
+    public boolean isAdmin() {
+        return Role.ADMIN.equals(role);
     }
 }
