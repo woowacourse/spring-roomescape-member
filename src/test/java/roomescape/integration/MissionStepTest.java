@@ -46,12 +46,12 @@ class MissionStepTest extends IntegrationTest {
     @Test
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2023-08-06");
         params.put("timeId", "1");
         params.put("themeId", "1");
 
         RestAssured.given().log().all()
+                .header("Cookie", cookieProvider.getCookie())
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -109,12 +109,12 @@ class MissionStepTest extends IntegrationTest {
     @Test
     void 육단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "2023-08-06");
         params.put("timeId", "1");
         params.put("themeId", "1");
 
         RestAssured.given().log().all()
+                .header("Cookie", cookieProvider.getCookie())
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -165,12 +165,12 @@ class MissionStepTest extends IntegrationTest {
     @Test
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2023-08-06");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .header("Cookie", cookieProvider.getCookie())
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
