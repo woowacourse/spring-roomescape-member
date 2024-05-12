@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.AdminReservationRequest;
+import roomescape.reservation.service.dto.ReservationFindRequest;
 import roomescape.reservation.service.dto.ReservationResponse;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/reservations")
@@ -31,6 +33,9 @@ public class AdminReservationController {
         return ResponseEntity.noContent().build();
     }
 
-  /*  @GetMapping("/search")*/
+    @GetMapping("/search")
+    public List<ReservationResponse> findReservations(@ModelAttribute("ReservationFindRequest") ReservationFindRequest reservationFindRequest) {
+        return reservationService.findByCondition(reservationFindRequest);
+    }
 
 }

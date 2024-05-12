@@ -8,16 +8,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.reservation.service.dto.AdminReservationRequest;
 import roomescape.reservation.service.dto.ReservationRequest;
 import roomescape.reservation.service.dto.ReservationTimeCreateRequest;
 import roomescape.reservation.service.dto.ThemeRequest;
 
+import java.time.LocalDate;
+
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {"classpath:truncate-with-admin-and-guest.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class AdminReservationControllerTest {
     @LocalServerPort
@@ -26,7 +30,8 @@ class AdminReservationControllerTest {
     private String date;
     private long timeId;
     private long themeId;
-    private String token;
+    private String adminToken;
+    private String guestToken;
     private long memberId;
 
     @BeforeEach
@@ -45,9 +50,15 @@ class AdminReservationControllerTest {
                 .when().post("/themes")
                 .then().extract().response().jsonPath().get("id");
 
-        token = RestAssured.given().log().all()
+        adminToken = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new LoginRequest("admin123", "admin@email.com"))
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+
+        guestToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new LoginRequest("guest123", "guest@email.com"))
                 .when().post("/login")
                 .then().log().all().extract().cookie("token");
 
@@ -59,7 +70,7 @@ class AdminReservationControllerTest {
     void createReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie("token", adminToken)
                 .body(new AdminReservationRequest(date, memberId, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
@@ -71,22 +82,62 @@ class AdminReservationControllerTest {
     void deleteReservationSuccess() {
         //given
         var id = RestAssured.given().contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie("token", guestToken)
                 .body(new ReservationRequest(date, timeId, themeId))
                 .when().post("/reservations")
                 .then().extract().body().jsonPath().get("id");
 
         //when
         RestAssured.given().log().all()
-                .cookie("token", token)
-                .when().delete("/reservations/" + id)
+                .cookie("token", adminToken)
+                .when().delete("/admin/reservations/" + id)
                 .then().log().all()
                 .assertThat().statusCode(204);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .assertThat().body("size()", is(0));
+    }
+
+    @DisplayName("조건별 예약 내역 조회 테스트 - 사용자, 테마")
+    @Test
+    @Sql(scripts = {"classpath:insert-past-reservation.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void findByMemberAndTheme() {
+        //when & then
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .queryParam("memberId", 1)
+                .queryParam("themeId", 2)
+                .when().get("/admin/reservations/search")
+                .then().log().all()
+                .assertThat().statusCode(200).body("size()", is(0));
+    }
+
+    @DisplayName("조건별 예약 내역 조회 테스트 - 시작 날짜")
+    @Test
+    @Sql(scripts = {"classpath:insert-past-reservation.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void findByDateFrom() {
+        //when & then
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .queryParam("dateFrom", LocalDate.now().minusDays(7).toString())
+                .when().get("/admin/reservations/search")
+                .then().log().all()
+                .assertThat().statusCode(200).body("size()", is(2));
+    }
+
+    @DisplayName("조건별 예약 내역 조회 테스트 - 테마")
+    @Test
+    @Sql(scripts = {"classpath:insert-past-reservation.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void findByTheme() {
+        //when & then
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .queryParam("themeId", 1)
+                .when().get("/admin/reservations/search")
+                .then().log().all()
+                .assertThat().statusCode(200).body("size()", is(1));
     }
 }
