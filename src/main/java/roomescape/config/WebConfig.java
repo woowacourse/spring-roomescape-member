@@ -11,16 +11,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LoginArgumentResolver loginArgumentResolver;
     private final LoginCheckInterceptor loginCheckInterceptor;
-    private final RoleCheckInterceptor roleCheckInterceptor;
+    private final AdminCheckInterceptor adminCheckInterceptor;
 
     public WebConfig(
             LoginArgumentResolver loginArgumentResolver,
             LoginCheckInterceptor loginCheckInterceptor,
-            RoleCheckInterceptor roleCheckInterceptor
+            AdminCheckInterceptor adminCheckInterceptor
     ) {
         this.loginArgumentResolver = loginArgumentResolver;
         this.loginCheckInterceptor = loginCheckInterceptor;
-        this.roleCheckInterceptor = roleCheckInterceptor;
+        this.adminCheckInterceptor = adminCheckInterceptor;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/signup", "/members", "/login", "/logout", "/css/**", "/*.ico", "/error", "/js/**");
 
-        registry.addInterceptor(roleCheckInterceptor)
+        registry.addInterceptor(adminCheckInterceptor)
                 .order(2)
                 .addPathPatterns("/admin/**");
     }

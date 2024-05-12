@@ -11,11 +11,11 @@ import roomescape.member.dto.LoginMember;
 import roomescape.util.CookieUtils;
 
 @Component
-public class RoleCheckInterceptor implements HandlerInterceptor {
+public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public RoleCheckInterceptor(final JwtTokenProvider jwtTokenProvider) {
+    public AdminCheckInterceptor(final JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 

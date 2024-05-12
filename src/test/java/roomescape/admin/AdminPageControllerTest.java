@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import roomescape.auth.Role;
-import roomescape.config.RoleCheckInterceptor;
+import roomescape.config.AdminCheckInterceptor;
 import roomescape.config.WebMvcControllerTestConfig;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.ExceptionPageController;
@@ -38,7 +38,7 @@ class AdminPageControllerTest {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new AdminPageController())
                 .setControllerAdvice(new ExceptionPageController())
-                .addInterceptors(new RoleCheckInterceptor(jwtTokenProvider))
+                .addInterceptors(new AdminCheckInterceptor(jwtTokenProvider))
                 .build();
     }
 
