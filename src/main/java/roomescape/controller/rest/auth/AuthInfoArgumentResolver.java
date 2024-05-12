@@ -8,7 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.auth.LoginInfo;
+import roomescape.dto.auth.LoginMember;
 import roomescape.global.exception.ApplicationException;
 import roomescape.global.exception.ExceptionType;
 import roomescape.global.util.TokenManager;
@@ -24,8 +24,8 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public LoginInfo resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                     NativeWebRequest webRequest, WebDataBinderFactory binderFactory
+    public LoginMember resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                       NativeWebRequest webRequest, WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
@@ -33,8 +33,9 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
         Long memberId = Long.valueOf(TokenManager.extractSubject(token));
         String memberName = TokenManager.extractClaim(token, "name");
+        String memberRole = TokenManager.extractClaim(token, "role");
 
-        return new LoginInfo(memberId, memberName);
+        return new LoginMember(memberId, memberName, memberRole);
     }
 
     private String extractToken(Cookie[] cookies) {

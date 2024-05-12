@@ -72,7 +72,6 @@ Keep-Alive: timeout=60
 Transfer-Encoding: chunked
 
 {
-    "id": 1,
     "name": "어드민"
 }
 ```
