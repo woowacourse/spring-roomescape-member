@@ -48,15 +48,15 @@ public class JwtHandler {
         try {
             Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException(ErrorType.EXPIRED_TOKEN, "Expired JWT Token", e);
+            throw new UnauthorizedException(ErrorType.EXPIRED_TOKEN, ErrorType.EXPIRED_TOKEN.getDescription(), e);
         } catch (UnsupportedJwtException e) {
-            throw new UnauthorizedException(ErrorType.UNSUPPORTED_TOKEN, "Unsupported JWT Token", e);
+            throw new UnauthorizedException(ErrorType.UNSUPPORTED_TOKEN, ErrorType.UNSUPPORTED_TOKEN.getDescription(), e);
         } catch (MalformedJwtException e) {
-            throw new UnauthorizedException(ErrorType.MALFORMED_TOKEN, "Malformed JWT Token", e);
+            throw new UnauthorizedException(ErrorType.MALFORMED_TOKEN, ErrorType.MALFORMED_TOKEN.getDescription(), e);
         } catch (SignatureException e) {
-            throw new UnauthorizedException(ErrorType.INVALID_SIGNATURE_TOKEN, "Can not validate JWT Token Signature", e);
+            throw new UnauthorizedException(ErrorType.INVALID_SIGNATURE_TOKEN, ErrorType.INVALID_SIGNATURE_TOKEN.getDescription(), e);
         } catch (IllegalArgumentException e) {
-            throw new UnauthorizedException(ErrorType.ILLEGAL_TOKEN, "JWT claims string is empty", e);
+            throw new UnauthorizedException(ErrorType.ILLEGAL_TOKEN, ErrorType.ILLEGAL_TOKEN.getDescription(), e);
         }
     }
 }
