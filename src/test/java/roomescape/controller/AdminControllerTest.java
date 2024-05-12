@@ -3,6 +3,7 @@ package roomescape.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,15 +25,30 @@ class AdminControllerTest {
     private int port;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private String cookie;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
 
-        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) VALUES ('켬미', 'abc@naver.com', '2222', 'ADMIN')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+
+        Map<String, String> admin = Map.of(
+                "email", "abc@naver.com",
+                "password", "2222"
+        );
+
+        cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(admin)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
     }
 
     @DisplayName("예약을 DB에 추가할 수 있다.")
@@ -43,6 +59,7 @@ class AdminControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header("cookie", cookie)
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()

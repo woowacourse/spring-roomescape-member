@@ -30,5 +30,14 @@ public class JwtTokenProvider {
 
         return Long.valueOf(claims.getSubject());
     }
+    
+    public String findTokenRole(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("role", String.class);
+    }
 }
 

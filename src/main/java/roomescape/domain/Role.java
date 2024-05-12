@@ -13,4 +13,8 @@ public enum Role {
     public String role() {
         return role;
     }
+
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
 }

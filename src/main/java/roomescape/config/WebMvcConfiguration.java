@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import roomescape.intercepter.CheckAdminLoginInterceptor;
 import roomescape.resolver.LoginMemberArgumentResolver;
 import roomescape.service.TokenService;
 
@@ -16,6 +18,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     public WebMvcConfiguration(TokenService tokenService) {
         this.tokenService = tokenService;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new CheckAdminLoginInterceptor(tokenService))
+                .addPathPatterns("/admin/**");
     }
 
     @Override
