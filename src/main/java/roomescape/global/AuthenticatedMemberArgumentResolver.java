@@ -8,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.global.util.CookieUtils;
 import roomescape.member.service.MemberService;
 
 @Component
@@ -31,7 +32,7 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
-        String accessToken = jwtTokenProvider.parseToken((HttpServletRequest) webRequest.getNativeRequest());
+        String accessToken = CookieUtils.getToken((HttpServletRequest) webRequest.getNativeRequest());
         Long id = Long.valueOf(jwtTokenProvider.getPayload(accessToken));
         return memberService.findById(id);
     }

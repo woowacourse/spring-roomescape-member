@@ -4,13 +4,9 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.global.exception.IllegalRequestException;
 import roomescape.global.exception.auth.AuthenticationExpiredException;
 import roomescape.global.exception.auth.InvalidAuthenticationException;
 import roomescape.member.domain.Member;
@@ -51,17 +47,5 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             throw new InvalidAuthenticationException("유효하지 않은 로그인 정보입니다", e);
         }
-    }
-
-    public String parseToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new IllegalRequestException("요청에 쿠키가 담겨있지 않습니다.");
-        }
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
-                .map(Cookie::getValue)
-                .findAny()
-                .orElseThrow(() -> new IllegalRequestException("첨부된 쿠키 중 토큰을 찾을 수 없습니다"));
     }
 }
