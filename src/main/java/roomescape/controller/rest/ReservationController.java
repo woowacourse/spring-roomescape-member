@@ -21,6 +21,7 @@ import roomescape.service.ReservationService;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/reservations")
@@ -33,8 +34,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readReservations() {
-        return ResponseEntity.ok(reservationService.findAllReservations());
+    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Map<String, String> filterConditions) {
+        return ResponseEntity.ok(reservationService.findReservationsByCondition(filterConditions));
     }
 
     @GetMapping("/themes/{themeId}")

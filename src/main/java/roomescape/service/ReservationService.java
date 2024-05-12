@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,8 +40,8 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAll()
+    public List<ReservationResponse> findReservationsByCondition(Map<String, String> filterConditions) {
+        return reservationRepository.findByFilterConditions(filterConditions)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

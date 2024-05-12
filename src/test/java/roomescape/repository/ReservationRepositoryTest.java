@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,7 +61,7 @@ public class ReservationRepositoryTest {
         ));
 
         // when
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findByFilterConditions(Map.of());
         int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
 
         // then

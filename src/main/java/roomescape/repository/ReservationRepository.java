@@ -14,6 +14,8 @@ import roomescape.domain.time.Time;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class ReservationRepository {
@@ -94,7 +96,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findByFilterConditions(Map<String, String> filterConditions) {
         String sql = """
                 SELECT * FROM reservation r 
                 JOIN reservation_time rt ON r.time_id = rt.id
@@ -102,7 +104,26 @@ public class ReservationRepository {
                 JOIN member m ON r.member_id = m.id 
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        if (filterConditions.isEmpty()) {
+            return jdbcTemplate.query(sql, ROW_MAPPER);
+        }
+
+        List<String> conditions = filterConditions.entrySet()
+                .stream()
+                .map(entry -> {
+                    if ("dateFrom".equals(entry.getKey())) {
+                        return "date >= '" + entry.getValue() + "'";
+                    }
+                    if ("dateTo".equals(entry.getKey())) {
+                        return "date <= '" + entry.getValue() + "'";
+                    }
+                    return entry.getKey() + " = '" + entry.getValue() + "'";
+                }).collect(Collectors.toList());
+
+        StringBuilder whereClause = new StringBuilder(" WHERE ");
+        whereClause.append(String.join(" AND ", conditions));
+
+        return jdbcTemplate.query(sql + whereClause, ROW_MAPPER);
     }
 
     public Reservation save(Reservation requestReservation) {
