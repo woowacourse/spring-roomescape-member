@@ -12,8 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.MemberRequest;
+import roomescape.config.JwtTokenProvider;
 import roomescape.dto.MemberCheckResponse;
+import roomescape.dto.MemberRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -28,8 +29,8 @@ class LoginControllerTest {
     }
 
     @Test
-    @DisplayName("로그인이 정상적으로 되었는지 확인한다.")
-    void login() {
+    @DisplayName("사용자에 존재하는 아이디와 비밀번호를 입력하면 로그인이 정상적으로 된다.")
+    void login_existMember() {
         // given
         MemberRequest memberRequest = new MemberRequest("password1", "member1@email.com");
 
@@ -42,8 +43,31 @@ class LoginControllerTest {
                 .statusCode(200).extract()
                 .response().getDetailedCookies();
 
+        boolean doesCookieHasToken = cookies.hasCookieWithName(JwtTokenProvider.TOKEN_COOKIE_NAME);
+
         // then
-        assertThat(cookies).isNotEmpty();
+        assertThat(doesCookieHasToken).isTrue();
+    }
+
+    @Test
+    @DisplayName("사용자에 존재하지 않는 아이디와 비밀번호를 입력하면 로그인이 정상적으로 되지 않는다.")
+    void login_notExistMember_badRequest() {
+        // given
+        MemberRequest memberRequest = new MemberRequest("noPassword", "noEmail@email.com");
+
+        // when
+        Cookies cookies = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberRequest)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(400).extract()
+                .response().getDetailedCookies();
+
+        boolean doesCookieHasToken = cookies.hasCookieWithName(JwtTokenProvider.TOKEN_COOKIE_NAME);
+
+        // then
+        assertThat(doesCookieHasToken).isFalse();
     }
 
     @Test

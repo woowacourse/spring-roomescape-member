@@ -33,7 +33,7 @@ public class LoginController {
 
         String accessToken = jwtTokenProvider.createToken(memberResponse.id(), memberResponse.role());
 
-        Cookie cookie = new Cookie("token", accessToken);
+        Cookie cookie = new Cookie(JwtTokenProvider.TOKEN_COOKIE_NAME, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);

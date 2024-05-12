@@ -39,14 +39,16 @@ public class JwtTokenProvider {
     public Role extractRole(final HttpServletRequest request) {
         Claims claims = extractClaim(request);
         String role = claims.get("role", String.class);
-
         return Role.valueOf(role);
     }
 
     public Long extractMemberId(final HttpServletRequest request) {
         Claims claims = extractClaim(request);
-
         return Long.valueOf(claims.getSubject());
+    }
+
+    public boolean doesNotRequestHasCookie(final HttpServletRequest request) {
+        return request.getCookies() == null;
     }
 
     public boolean doesNotRequestHasToken(final HttpServletRequest request) {

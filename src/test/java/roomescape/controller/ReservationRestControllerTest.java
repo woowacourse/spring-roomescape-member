@@ -39,7 +39,7 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 모든 예약을 조회한다.")
     void getAll() {
         // given
-        setAdmin();
+        loginAdmin();
 
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -56,7 +56,7 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 필터 옵션을 적용한 모든 예약을 조회한다.")
     void getAll_filter() {
         // given
-        setAdmin();
+        loginAdmin();
 
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -78,7 +78,7 @@ class ReservationRestControllerTest {
     @DisplayName("사용자가 예약을 생성한다.")
     void create() {
         // given
-        setMemer();
+        loginMember();
         Map<String, String> params = Map.of(
                 "date", "2099-12-31",
                 "timeId", "1",
@@ -104,7 +104,7 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 예약을 생성한다.")
     void adminCreate() {
         // given
-        setAdmin();
+        loginAdmin();
         Map<String, String> params = Map.of(
                 "date", "2099-12-31",
                 "timeId", "1",
@@ -131,7 +131,7 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 예약을 같은 날짜, 테마, 시간에 중복된 예약을 생성하려고 하면 BAD_REQUEST를 반환한다.")
     void adminCreate_duplicate_badRequest() {
         // given
-        setAdmin();
+        loginAdmin();
         Map<String, String> params = Map.of(
                 "date", "2024-05-10",
                 "timeId", "1",
@@ -150,10 +150,10 @@ class ReservationRestControllerTest {
     }
 
     @Test
-    @DisplayName("해당 id의 예약을 삭제한다.")
+    @DisplayName("관리자가 해당 id의 예약을 삭제한다.")
     void delete() {
         // given
-        setAdmin();
+        loginAdmin();
 
         // when
         RestAssured.given().log().all()
@@ -167,7 +167,7 @@ class ReservationRestControllerTest {
         assertThat(reservations).hasSize(9);
     }
 
-    void setAdmin() {
+    void loginAdmin() {
         MemberRequest memberRequest = new MemberRequest("password", "admin@email.com");
 
         cookies = RestAssured.given().log().all()
@@ -180,7 +180,7 @@ class ReservationRestControllerTest {
                 .getDetailedCookies();
     }
 
-    void setMemer() {
+    void loginMember() {
         MemberRequest memberRequest = new MemberRequest("password1", "member1@email.com");
 
         cookies = RestAssured.given().log().all()

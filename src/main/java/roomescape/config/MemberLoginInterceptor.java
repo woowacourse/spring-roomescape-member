@@ -17,7 +17,7 @@ public class MemberLoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
-        if (jwtTokenProvider.doesNotRequestHasToken(request)) {
+        if (jwtTokenProvider.doesNotRequestHasCookie(request) || jwtTokenProvider.doesNotRequestHasToken(request)) {
             response.setStatus(401);
             return false;
         }
