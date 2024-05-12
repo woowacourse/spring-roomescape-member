@@ -1,8 +1,10 @@
 package roomescape.member.model;
 
+import java.util.regex.Pattern;
+
 public record MemberEmail(String value) {
 
-    private static final String REGEX_PATTERN = "^(.+)@(\\S+)$";
+    private static final Pattern REGEX_PATTERN = Pattern.compile("^(.+)@(\\S+)$");
 
     public MemberEmail {
         checkNullOrEmpty(value);
@@ -16,7 +18,7 @@ public record MemberEmail(String value) {
     }
 
     private void validateEmailRegex(final String email) {
-        if (!email.matches(REGEX_PATTERN)) {
+        if (!REGEX_PATTERN.matcher(email).matches()) {
             throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
         }
     }
