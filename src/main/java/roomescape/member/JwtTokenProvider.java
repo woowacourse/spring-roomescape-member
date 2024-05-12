@@ -18,6 +18,7 @@ public class JwtTokenProvider {
                 .setSubject(String.valueOf(member.id()))
                 .claim("email", member.email())
                 .claim("name", member.name())
+                .claim("isAdmin", String.valueOf(member.isAdmin()))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
