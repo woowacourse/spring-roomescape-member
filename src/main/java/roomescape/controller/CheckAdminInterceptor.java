@@ -17,6 +17,7 @@ import java.util.Arrays;
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
+    // TODO CookieService 추가
     private final AuthService authService;
     private final MemberService memberService;
 

@@ -9,7 +9,7 @@ import java.time.format.DateTimeParseException;
 
 @RestControllerAdvice
 public class GlobalExceptionRestHandler {
-
+    // TODO 예외 처리 방식 통일 고려
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleRuntimeException(RuntimeException e) {

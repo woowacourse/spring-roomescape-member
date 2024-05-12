@@ -33,7 +33,7 @@ public class MemberH2Repository implements MemberRepository{
     @Override
     public Member save(Member member) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", member.getName())
+                .addValue("name", member.getName().getName())
                 .addValue("email", member.getEmail().getEmail())
                 .addValue("role", member.getRole().name())
                 .addValue("password", member.getPassword());

@@ -22,7 +22,7 @@ class AuthenticatedUserArgumentResolverTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("쿠키가 없는 유저가 접근시 요청이 거부된다.")
+    @DisplayName("쿠키가 없는 유저가 접근 시 요청이 거부된다.")
     @Test
     void hasNoCookieUser() {
         RestAssured.get("/login/check")
@@ -31,7 +31,7 @@ class AuthenticatedUserArgumentResolverTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("잘못된 쿠키를 가진 유저가 접근시 요청이 거부된다.")
+    @DisplayName("잘못된 쿠키를 가진 유저가 접근 시 요청이 거부된다.")
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"invalidCookie", "     "})
@@ -43,7 +43,7 @@ class AuthenticatedUserArgumentResolverTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("쿠키가 있는 유저가 접근시 요청이 처리된다.")
+    @DisplayName("쿠키가 있는 유저가 접근 시 요청이 처리된다.")
     @Test
     void hasCookieUser() {
         Member member = memberRepository.save(USER_1);

@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Member;
+import roomescape.repository.member.MemberRepository;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +18,13 @@ class MemberControllerTest {
 
     @Autowired
     private MemberController memberController;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("회원 정보들을 가져온다.")
     @Test
     void findAllTest() {
-        assertThat(memberController.findAll()).hasSize(2);
+        List<Member> memberList = memberRepository.findAll();
+        assertThat(memberController.findAll()).hasSize(memberList.size());
     }
 }

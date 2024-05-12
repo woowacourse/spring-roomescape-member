@@ -1,8 +1,7 @@
 package roomescape.controller.api.reservation;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
 
@@ -21,5 +20,10 @@ public class MemberController {
     @GetMapping
     public List<MemberResponse> findAll() {
         return memberService.findAll();
+    }
+
+    @PostMapping
+    public MemberResponse signup(@RequestBody SignupRequest signupRequest) {
+        return memberService.create(signupRequest);
     }
 }

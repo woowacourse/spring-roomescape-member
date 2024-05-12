@@ -28,8 +28,8 @@ class MemberH2RepositoryTest {
     @DisplayName("회원을 추가한다.")
     void saveTest() {
         //given
-        Member memberA = new Member(new Name("userA"), new Email("test@test.com"), Role.USER, "password");
-        Member memberB = new Member(new Name("userB"), new Email("test@test.com"), Role.USER,"password");
+        Member memberA = new Member(new Name("userA"), new Email("onlytest@test.com"), Role.USER, "password");
+        Member memberB = new Member(new Name("userB"), new Email("onlytest@test.com"), Role.USER,"password");
 
         //when
         Member saveA = memberRepository.save(memberA);
@@ -43,7 +43,7 @@ class MemberH2RepositoryTest {
     @DisplayName("회원을 조회한다.")
     void findByEmailTest() {
         //given
-        Member memberA = new Member(new Name("userA"), new Email("test@test.com"), Role.USER, "password");
+        Member memberA = new Member(new Name("userA"), new Email("onlytest@test.com"), Role.USER, "password");
 
         //when
         Member saveA = memberRepository.save(memberA);
