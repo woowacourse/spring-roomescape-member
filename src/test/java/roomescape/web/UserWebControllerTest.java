@@ -54,7 +54,7 @@ class UserWebControllerTest {
                 .when().get("/reservation")
                 .then().log().all()
                 .statusCode(401)
-                .body("message", is("요청에 인증 쿠키가 존재하지 않습니다."));
+                .body("message", is("인증되지 않은 요청입니다."));
     }
 
     private String createUserAccessToken() {

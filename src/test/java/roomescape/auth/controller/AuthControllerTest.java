@@ -130,7 +130,7 @@ class AuthControllerTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(401)
-                .body("message", is("요청에 인증 쿠키가 존재하지 않습니다."));
+                .body("message", is("인증되지 않은 요청입니다."));
     }
 
     @DisplayName("쿠키를 포함하지 않고 로그인 확인 요청을 하면 에러 코드가 반환된다.")
@@ -141,7 +141,7 @@ class AuthControllerTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(401)
-                .body("message", is("요청에 인증 쿠키가 존재하지 않습니다."));
+                .body("message", is("인증되지 않은 요청입니다."));
     }
 
     @DisplayName("유효하지 않은 값의 인증 토큰으로 요청하면 에러 코드가 반환된다.")
