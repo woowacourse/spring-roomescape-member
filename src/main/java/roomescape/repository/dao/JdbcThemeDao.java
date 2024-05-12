@@ -1,5 +1,6 @@
 package roomescape.repository.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -48,8 +49,12 @@ public class JdbcThemeDao implements ThemeDao {
     @Override
     public Optional<Theme> findById(long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
-        Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
-        return Optional.ofNullable(theme);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

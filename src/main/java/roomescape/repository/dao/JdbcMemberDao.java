@@ -1,5 +1,6 @@
 package roomescape.repository.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -35,21 +36,33 @@ public class JdbcMemberDao implements MemberDao {
     @Override
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
-        Member member = jdbcTemplate.queryForObject(sql, rowMapper, email);
-        return Optional.ofNullable(member);
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, email);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Member> findById(long id) {
         String sql = "SELECT id, name, email, password, role FROM member WHERE id = ?";
-        Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
-        return Optional.ofNullable(member);
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = "select id, name, email, password, role from member where email = ? and password = ?";
-        Member member = jdbcTemplate.queryForObject(sql, rowMapper, email, password);
-        return Optional.ofNullable(member);
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, email, password);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

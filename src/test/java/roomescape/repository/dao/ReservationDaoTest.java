@@ -119,13 +119,20 @@ class ReservationDaoTest {
 
     @DisplayName("특정 id의 예약을 조회한다.")
     @Test
-    void should_find_reservation_by_id() { // TODO: test empty optional
+    void should_find_reservation_by_id() {
         ReservationRowDto expected = new ReservationRowDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L);
 
         Optional<ReservationRowDto> actual = reservationDao.findById(1L);
 
         assertThat(actual).isNotEmpty();
         assertThat(actual).hasValue(expected);
+    }
+
+    @DisplayName("존재하지 않는 id의 예약을 조회할 경우 빈 optional을 반환한다.")
+    @Test
+    void should_not_find_reservation_by_invalid_id() {
+        Optional<ReservationRowDto> actual = reservationDao.findById(999L);
+        assertThat(actual).isEmpty();
     }
 
     @DisplayName("특정 date 와 theme_id의 예약을 조회한다.")

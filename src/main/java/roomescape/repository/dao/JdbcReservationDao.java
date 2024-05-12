@@ -1,5 +1,6 @@
 package roomescape.repository.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -51,8 +52,12 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<ReservationRowDto> findById(long id) {
         String sql = "select id, date, time_id, theme_id, member_id from reservation where id = ?";
-        ReservationRowDto reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
-        return Optional.ofNullable(reservation);
+        try {
+            ReservationRowDto reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e){
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -72,8 +77,6 @@ public class JdbcReservationDao implements ReservationDao {
                 limit ?
                 """;
         return jdbcTemplate.queryForList(sql, Long.class, startDate, endDate, limit);
-//        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"),
-//                startDate, endDate, limit);
     }
 
     @Override

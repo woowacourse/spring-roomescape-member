@@ -1,5 +1,6 @@
 package roomescape.repository.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -45,8 +46,12 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     @Override
     public Optional<ReservationTime> findById(long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, rowMapper, id);
-        return Optional.ofNullable(reservationTime);
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
