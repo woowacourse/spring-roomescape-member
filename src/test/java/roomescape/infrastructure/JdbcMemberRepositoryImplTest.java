@@ -29,7 +29,7 @@ class JdbcMemberRepositoryImplTest {
     @Test
     void findByEmailAndPassword() {
         Member newMember = new Member(new MemberName("zay"), new MemberEmail("hihi@hello.com"),
-            new MemberPassword("zzz123"), new MemberRole("USER"));
+            new MemberPassword("zzz123"), MemberRole.USER);
 
         Member expected = memberRepository.save(newMember);
         Member actual = memberRepository.findByEmailAndPassword("hihi@hello.com", "zzz123").get();

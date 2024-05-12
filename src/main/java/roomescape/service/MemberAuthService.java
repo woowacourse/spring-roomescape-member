@@ -16,8 +16,6 @@ import roomescape.service.response.MemberAppResponse;
 @Service
 public class MemberAuthService {
 
-    public static final MemberRole USER_ROLE = new MemberRole("USER");
-
     private final MemberRepository memberRepository;
 
     public MemberAuthService(MemberRepository memberRepository) {
@@ -33,24 +31,24 @@ public class MemberAuthService {
             new MemberName(request.name()),
             new MemberEmail(request.email()),
             new MemberPassword(request.password()),
-            USER_ROLE);
+            MemberRole.USER);
 
         Member savedMember = memberRepository.save(newMember);
         return new MemberAppResponse(savedMember.getId(), savedMember.getName().getValue(),
-            savedMember.getRole().getValue());
+            savedMember.getRole().name());
     }
 
     public MemberAppResponse findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
             .map(member -> new MemberAppResponse(member.getId(), member.getName().getValue(),
-                member.getRole().getValue()))
+                member.getRole().name()))
             .orElseThrow(() -> new NoSuchElementException("회원 정보를 찾지 못했습니다. 다시 로그인 해주세요."));
     }
 
     public List<MemberAppResponse> findAll() {
         return memberRepository.findAll().stream()
             .map(member -> new MemberAppResponse(member.getId(), member.getName().getValue(),
-                member.getRole().getValue()))
+                member.getRole().name()))
             .toList();
     }
 }

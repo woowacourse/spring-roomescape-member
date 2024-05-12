@@ -4,17 +4,16 @@ import static roomescape.Fixture.COOKIE_NAME;
 import static roomescape.Fixture.VALID_ADMIN_EMAIL;
 import static roomescape.Fixture.VALID_ADMIN_NAME;
 import static roomescape.Fixture.VALID_ADMIN_PASSWORD;
-import static roomescape.Fixture.VALID_ADMIN_ROLE;
 import static roomescape.Fixture.VALID_USER_EMAIL;
 import static roomescape.Fixture.VALID_USER_NAME;
 import static roomescape.Fixture.VALID_USER_PASSWORD;
-import static roomescape.Fixture.VALID_USER_ROLE;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.domain.MemberRole;
 
 class AdminPageControllerTest extends ControllerTest {
     @BeforeEach
@@ -24,13 +23,13 @@ class AdminPageControllerTest extends ControllerTest {
             VALID_USER_NAME.getValue(),
             VALID_USER_EMAIL.getValue(),
             VALID_USER_PASSWORD.getValue(),
-            VALID_USER_ROLE.getValue());
+            MemberRole.USER.name());
         jdbcTemplate.update(
             "INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
             VALID_ADMIN_NAME.getValue(),
             VALID_ADMIN_EMAIL.getValue(),
             VALID_ADMIN_PASSWORD.getValue(),
-            VALID_ADMIN_ROLE.getValue());
+            MemberRole.ADMIN.name());
     }
 
     @DisplayName("admin 권한을 갖고 있으면 admin 페이지 접속이 가능하다. -> 200")

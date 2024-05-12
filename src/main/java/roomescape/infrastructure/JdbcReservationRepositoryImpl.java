@@ -165,7 +165,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
                 new MemberName(rs.getString("member_name")),
                 new MemberEmail(rs.getString("member_email")),
                 new MemberPassword(rs.getString("member_password")),
-                new MemberRole(rs.getString("member_role"))),
+                MemberRole.from(rs.getString("member_role"))),
             new ReservationDate(
                 rs.getString("reservation_date")),
             new ReservationTime(

@@ -14,7 +14,7 @@ import roomescape.service.response.MemberAppResponse;
 @Component
 public class CheckLoginInterceptor implements HandlerInterceptor {
 
-    public static final String ADMIN = "ADMIN";
+    private static final String ADMIN = "ADMIN";
 
     private final MemberAuthService memberAuthService;
     private final JwtProvider jwtProvider;

@@ -19,17 +19,14 @@ public class Fixture {
     public static final MemberName VALID_USER_NAME = new MemberName("wiib");
     public static final MemberEmail VALID_USER_EMAIL = new MemberEmail("repday0609@gmail.com");
     public static final MemberPassword VALID_USER_PASSWORD = new MemberPassword("1!2@3#");
-    public static final MemberRole VALID_USER_ROLE = new MemberRole("USER");
     public static final MemberName VALID_ADMIN_NAME = new MemberName("stitch");
     public static final MemberEmail VALID_ADMIN_EMAIL = new MemberEmail("stitch@gmail.com");
     public static final MemberPassword VALID_ADMIN_PASSWORD = new MemberPassword("admin123");
-    public static final MemberRole VALID_ADMIN_ROLE = new MemberRole("ADMIN");
     public static final Member VALID_MEMBER = new Member(VALID_USER_NAME, VALID_USER_EMAIL,
         VALID_USER_PASSWORD,
-        VALID_USER_ROLE);
+        MemberRole.USER);
     public static final Reservation VALID_RESERVATION = new Reservation(VALID_MEMBER, VALID_RESERVATION_DATE,
         VALID_RESERVATION_TIME, VALID_THEME);
-
     public static final String COOKIE_NAME = "token";
 
 }

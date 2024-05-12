@@ -35,7 +35,7 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
             Map.entry("name", member.getName().getValue()),
             Map.entry("email", member.getEmail().getValue()),
             Map.entry("password", member.getPassword().getValue()),
-            Map.entry("role", member.getRole().getValue())
+            Map.entry("role", member.getRole().name())
         );
 
         long id = simpleJdbcInsert
@@ -101,6 +101,6 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
             new MemberName(rs.getString("name")),
             new MemberEmail(rs.getString("email")),
             new MemberPassword(rs.getString("password")),
-            new MemberRole(rs.getString("role")));
+            MemberRole.from(rs.getString("role")));
     }
 }

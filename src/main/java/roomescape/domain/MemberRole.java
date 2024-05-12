@@ -1,42 +1,17 @@
 package roomescape.domain;
 
-import io.micrometer.common.util.StringUtils;
-import java.util.Objects;
+import java.util.Arrays;
 
-public class MemberRole {
+public enum MemberRole {
 
-    private static final int MAX_ROLE_SIZE = 10;
-    private final String value;
+    ADMIN,
+    USER,
+    ;
 
-    public MemberRole(String value) {
-        validate(value);
-        this.value = value;
-    }
-
-    private void validate(String value) {
-        if (StringUtils.isBlank(value) || value.length() > MAX_ROLE_SIZE) {
-            throw new IllegalArgumentException("사용자의 권한은 1글자 이상 10글자 이하 입니다.");
-        }
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MemberRole that = (MemberRole) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
+    public static MemberRole from(String role) {
+        return Arrays.stream(values())
+            .filter(memberRole -> memberRole.name().equals(role))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("올바른 Role을 입력해주세요."));
     }
 }

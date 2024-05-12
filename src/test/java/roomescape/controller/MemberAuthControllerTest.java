@@ -4,7 +4,6 @@ import static roomescape.Fixture.COOKIE_NAME;
 import static roomescape.Fixture.VALID_USER_EMAIL;
 import static roomescape.Fixture.VALID_USER_NAME;
 import static roomescape.Fixture.VALID_USER_PASSWORD;
-import static roomescape.Fixture.VALID_USER_ROLE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -16,6 +15,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.controller.request.MemberSignUpWebRequest;
 import roomescape.controller.request.TokenWebRequest;
+import roomescape.domain.MemberRole;
 
 class MemberAuthControllerTest extends ControllerTest {
 
@@ -26,7 +26,7 @@ class MemberAuthControllerTest extends ControllerTest {
             VALID_USER_NAME.getValue(),
             VALID_USER_EMAIL.getValue(),
             VALID_USER_PASSWORD.getValue(),
-            VALID_USER_ROLE.getValue());
+            MemberRole.USER.name());
     }
 
     @DisplayName("로그인을 한다. -> 200")

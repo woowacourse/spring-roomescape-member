@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import static roomescape.Fixture.VALID_USER_EMAIL;
 import static roomescape.Fixture.VALID_USER_NAME;
 import static roomescape.Fixture.VALID_USER_PASSWORD;
-import static roomescape.Fixture.VALID_USER_ROLE;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -44,11 +43,11 @@ class MemberAuthServiceTest {
 
         when(memberRepository.save(any(Member.class)))
             .thenReturn(
-                new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, VALID_USER_ROLE));
+                new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, MemberRole.USER));
 
         MemberAppResponse actual = memberAuthService.signUp(request);
         MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getValue(),
-            VALID_USER_ROLE.getValue());
+            MemberRole.USER.name());
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -71,11 +70,11 @@ class MemberAuthServiceTest {
     void findMemberByEmail() {
         when(memberRepository.findByEmail(VALID_USER_EMAIL.getValue()))
             .thenReturn(Optional.of(
-                new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, VALID_USER_ROLE)));
+                new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, MemberRole.USER)));
 
         MemberAppResponse actual = memberAuthService.findMemberByEmail(VALID_USER_EMAIL.getValue());
         MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getValue(),
-            VALID_USER_ROLE.getValue());
+            MemberRole.USER.name());
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -94,9 +93,9 @@ class MemberAuthServiceTest {
     @Test
     void findAll() {
         Member member1 = new Member(1L, new MemberName("회원1"), new MemberEmail("email1@gmail.com"),
-            new MemberPassword("123"), new MemberRole("USER"));
+            new MemberPassword("123"), MemberRole.USER);
         Member member2 = new Member(2L, new MemberName("관리자"), new MemberEmail("email2@gmail.com"),
-            new MemberPassword("123"), new MemberRole("ADMIN"));
+            new MemberPassword("123"), MemberRole.ADMIN);
         when(memberRepository.findAll())
             .thenReturn(List.of(member1, member2));
 

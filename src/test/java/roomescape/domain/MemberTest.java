@@ -15,7 +15,7 @@ class MemberTest {
     @Test
     void create() {
         assertThatCode(() -> new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD,
-            new MemberRole("USER")))
+            MemberRole.USER))
             .doesNotThrowAnyException();
     }
 
@@ -23,17 +23,17 @@ class MemberTest {
     @Test
     void create_ByBlankName() {
         assertThatThrownBy(
-            () -> new Member(1L, null, VALID_USER_EMAIL, VALID_USER_PASSWORD, new MemberRole("USER")))
+            () -> new Member(1L, null, VALID_USER_EMAIL, VALID_USER_PASSWORD, MemberRole.USER))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("이메일 또는 비밀 번호가 null이면 예외가 발생한다.")
     @Test
     void create_ByNullEmailOrPassword() {
-        assertThatThrownBy(() -> new Member(1L, VALID_USER_NAME, null, VALID_USER_PASSWORD, new MemberRole("USER")))
+        assertThatThrownBy(() -> new Member(1L, VALID_USER_NAME, null, VALID_USER_PASSWORD, MemberRole.USER))
             .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, null, new MemberRole("USER")))
+        assertThatThrownBy(() -> new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, null, MemberRole.USER))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

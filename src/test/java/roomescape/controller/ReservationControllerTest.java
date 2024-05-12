@@ -5,7 +5,6 @@ import static roomescape.Fixture.COOKIE_NAME;
 import static roomescape.Fixture.VALID_USER_EMAIL;
 import static roomescape.Fixture.VALID_USER_NAME;
 import static roomescape.Fixture.VALID_USER_PASSWORD;
-import static roomescape.Fixture.VALID_USER_ROLE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.request.MemberReservationWebRequest;
+import roomescape.domain.MemberRole;
 
 class ReservationControllerTest extends ControllerTest {
 
@@ -23,7 +23,7 @@ class ReservationControllerTest extends ControllerTest {
             "https://url1");
         jdbcTemplate.update("INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
             VALID_USER_NAME.getValue(), VALID_USER_EMAIL.getValue(),
-            VALID_USER_PASSWORD.getValue(), VALID_USER_ROLE.getValue());
+            VALID_USER_PASSWORD.getValue(), MemberRole.USER.name());
         jdbcTemplate.update("INSERT INTO reservation(date,time_id,theme_id,member_id) VALUES (?,?,?,?)",
             "2026-02-01", 1L, 1L, 1L);
     }
