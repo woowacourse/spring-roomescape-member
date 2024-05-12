@@ -5,6 +5,7 @@ import roomescape.application.dto.request.TokenCreationRequest;
 import roomescape.application.dto.response.TokenResponse;
 import roomescape.auth.Principal;
 import roomescape.auth.TokenProvider;
+import roomescape.auth.exception.AuthorizationException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 
@@ -32,7 +33,7 @@ public class AuthService {
         String subject = tokenProvider.extractSubject(token);
         long memberId = Long.parseLong(subject);
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new AuthorizationException("인증 정보가 올바르지 않습니다."));
         return Principal.from(member);
     }
 }
