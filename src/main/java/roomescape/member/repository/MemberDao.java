@@ -1,10 +1,13 @@
 package roomescape.member.repository;
 
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import roomescape.member.domain.Member;
+import roomescape.member.response.MemberReservationResponse;
 
 @Repository
 public class MemberDao {
@@ -15,6 +18,10 @@ public class MemberDao {
             resultSet.getString("email"),
             resultSet.getString("password"),
             resultSet.getBoolean("is_admin")
+    );
+    private final RowMapper<MemberReservationResponse> memberReservationResponseRowMapper = (resultSet, __) -> new MemberReservationResponse(
+            resultSet.getLong("id"),
+            resultSet.getString("name")
     );
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -41,7 +48,14 @@ public class MemberDao {
     }
 
     public Member findMemberById(long id) {
-        String query = "SELECT * FROM MEMBER WHERE ID = ?";
+        String query = "SELECT ID, NAME, EMAIL, PASSWORD, IS_ADMIN FROM MEMBER WHERE ID = ?";
         return jdbcTemplate.queryForObject(query, memberRowMapper, id);
+    }
+
+    public List<MemberReservationResponse> findAllReservationResponse() {
+        String query = "SELECT "
+                + "ID, NAME "
+                + "FROM MEMBER ";
+        return jdbcTemplate.query(query, memberReservationResponseRowMapper);
     }
 }
