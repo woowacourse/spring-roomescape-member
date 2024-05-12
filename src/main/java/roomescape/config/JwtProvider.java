@@ -6,22 +6,22 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.exception.AuthorizationException;
 
 @Component
+@ConfigurationProperties(prefix = "security.jwt.token")
 public class JwtProvider {
 
-    @Value("${security.jwt.token.secret-key}")
     private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private long expireLength;
+
 
     public String createToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + expireLength);
 
         return Jwts.builder()
             .setClaims(claims)
@@ -38,7 +38,7 @@ public class JwtProvider {
             return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(claims.getIssuedAt())
-                .setExpiration(new Date(claims.getIssuedAt().getTime() - validityInMilliseconds))
+                .setExpiration(new Date(claims.getIssuedAt().getTime() - expireLength))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
         }
@@ -70,5 +70,13 @@ public class JwtProvider {
             .setSigningKey(secretKey)
             .parseClaimsJws(token)
             .getBody();
+    }
+
+    public void setSecretKey(final String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setExpireLength(final long expireLength) {
+        this.expireLength = expireLength;
     }
 }
