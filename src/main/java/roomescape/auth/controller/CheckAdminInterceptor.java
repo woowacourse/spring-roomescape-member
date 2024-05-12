@@ -9,11 +9,11 @@ import roomescape.exception.AuthorizationException;
 
 import java.util.Arrays;
 
-public class CheckMemberInterceptor implements HandlerInterceptor {
+public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public CheckMemberInterceptor(JwtTokenProvider jwtTokenProvider) {
+    public CheckAdminInterceptor(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
