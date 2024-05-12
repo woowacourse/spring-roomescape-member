@@ -27,10 +27,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
-                                  final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
+    public LoginMember resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
+                                       final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        //TODO 쿠키 추출 로직 한곳으로 이동시키기
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
         if (token == null) {

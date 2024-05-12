@@ -26,14 +26,14 @@ public class AuthController {
     }
 
     @PostMapping
-    public ResponseEntity<TokenResponse> login(@RequestBody final MemberLoginRequest memberLoginRequest,
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid final MemberLoginRequest memberLoginRequest,
                                                final HttpServletResponse response) {
         final TokenResponse token = memberService.createToken(memberLoginRequest);
 
         final Cookie cookie = new Cookie("token", token.assessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(60); //TODO 설정은 했다. 적절한 유통기한은 언제일까?
+        cookie.setMaxAge(60);
         response.addCookie(cookie);
         response.setHeader("Keep-Alive", "timeout=60");
         return ResponseEntity.ok().body(token);
