@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.exception.UnauthenticatedUserException;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginMember;
 
@@ -39,8 +40,8 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public LoginMember getMember(String accessToken) {
-        Claims claims = getClaims(accessToken);
+    public LoginMember getMember(String token) {
+        Claims claims = getClaims(token);
         validateExpiredToken(claims);
 
         return new LoginMember(
@@ -52,10 +53,18 @@ public class JwtTokenProvider {
     }
 
     private Claims getClaims(String token) {
+        validateTokenIsNull(token);
+
         return Jwts.parser()
                 .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private void validateTokenIsNull(String token) {
+        if (token == null) {
+            throw new UnauthenticatedUserException("미인증 사용자 입니다.");
+        }
     }
 
     private void validateExpiredToken(Claims claims) {

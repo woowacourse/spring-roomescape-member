@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.exception.NotAllowRoleException;
+import roomescape.exception.UnauthenticatedUserException;
 import roomescape.member.dto.LoginMember;
 import roomescape.util.CookieUtils;
 
@@ -26,7 +26,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
 
         LoginMember loginMember = jwtTokenProvider.getMember(token);
         if (!loginMember.role().isAdmin()) {
-            throw new NotAllowRoleException("접근 권한이 없습니다.");
+            throw new UnauthenticatedUserException("접근 권한이 없습니다.");
         }
         return true;
     }
