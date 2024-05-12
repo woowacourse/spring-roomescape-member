@@ -6,14 +6,13 @@ import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.mapper.AvailableReservationTimeRowMapper;
 import roomescape.dao.mapper.ReservationTimeRowMapper;
+import roomescape.domain.AvailableReservationTime;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
-import roomescape.service.dto.output.AvailableReservationTimeOutput;
 
 @Repository
 public class ReservationTimeDao {
@@ -36,14 +35,14 @@ public class ReservationTimeDao {
     }
 
     public ReservationTime create(final ReservationTime reservationTime) {
-        final SqlParameterSource params = new MapSqlParameterSource()
+        final var params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAtAsString());
-        final long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final var id = jdbcInsert.executeAndReturnKey(params).longValue();
         return ReservationTime.of(id, reservationTime.getStartAtAsString());
     }
 
     public boolean existsByStartAt(final String startAt) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        final var sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
@@ -57,12 +56,12 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> getAll() {
-        final String sql = "SELECT id, start_at FROM reservation_time";
+        final var sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
-    public List<AvailableReservationTimeOutput> findAvailable(final ReservationDate date, final long themeId) {
-        final String sql = """
+    public List<AvailableReservationTime> findAvailable(final ReservationDate date, final long themeId) {
+        final var sql = """
                 SELECT
                 t.start_at AS start_at,
                 t.id AS time_id,
@@ -75,7 +74,7 @@ public class ReservationTimeDao {
     }
 
     public void delete(final long id) {
-        final String sql = "DELETE FROM reservation_time WHERE id = ?";
+        final var sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

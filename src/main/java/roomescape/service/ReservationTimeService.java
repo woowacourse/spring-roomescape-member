@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.AvailableReservationTimeOutput;
@@ -30,12 +29,13 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeOutput> getAllReservationTimes() {
-        final List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
+        final var reservationTimes = reservationTimeDao.getAll();
         return ReservationTimeOutput.list(reservationTimes);
     }
 
     public List<AvailableReservationTimeOutput> findAvailableReservationTimes(final String date, final long themeId) {
-        return reservationTimeDao.findAvailable(ReservationDate.from(date), themeId);
+        final var availableTimes = reservationTimeDao.findAvailable(ReservationDate.from(date), themeId);
+        return AvailableReservationTimeOutput.list(availableTimes);
     }
 
     public void deleteReservationTime(final long id) {

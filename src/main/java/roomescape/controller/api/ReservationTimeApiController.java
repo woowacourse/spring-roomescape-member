@@ -1,7 +1,6 @@
 package roomescape.controller.api;
 
 import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +15,6 @@ import roomescape.controller.api.dto.response.AvailableReservationTimesResponse;
 import roomescape.controller.api.dto.response.ReservationTimeResponse;
 import roomescape.controller.api.dto.response.ReservationTimesResponse;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.output.AvailableReservationTimeOutput;
-import roomescape.service.dto.output.ReservationTimeOutput;
 
 @RestController
 @RequestMapping("/times")
@@ -32,14 +29,14 @@ public class ReservationTimeApiController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @RequestBody final ReservationTimeCreateRequest request) {
-        final ReservationTimeOutput output = reservationTimeService.createReservationTime(request.toInput());
+        final var output = reservationTimeService.createReservationTime(request.toInput());
         return ResponseEntity.created(URI.create("/times/" + output.id()))
                 .body(ReservationTimeResponse.from(output));
     }
 
     @GetMapping
     public ResponseEntity<ReservationTimesResponse> getAllReservationTimes() {
-        final List<ReservationTimeOutput> outputs = reservationTimeService.getAllReservationTimes();
+        final var outputs = reservationTimeService.getAllReservationTimes();
         return ResponseEntity.ok(ReservationTimesResponse.from(outputs));
     }
 
@@ -47,8 +44,7 @@ public class ReservationTimeApiController {
     public ResponseEntity<AvailableReservationTimesResponse> findAvailableReservationTimes(
             @RequestParam final String date,
             @RequestParam final long themeId) {
-        final List<AvailableReservationTimeOutput> outputs =
-                reservationTimeService.findAvailableReservationTimes(date, themeId);
+        final var outputs = reservationTimeService.findAvailableReservationTimes(date, themeId);
         return ResponseEntity.ok(AvailableReservationTimesResponse.from(outputs));
     }
 
