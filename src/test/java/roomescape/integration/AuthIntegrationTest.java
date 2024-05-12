@@ -3,7 +3,6 @@ package roomescape.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -60,8 +59,6 @@ class AuthIntegrationTest extends IntegrationTest {
         }
 
         @Test
-        @Disabled
-            // TODO: 예외 처리 필요
         void 토큰이_유효하지_않으면_예외가_발생한다() {
             RestAssured.given().log().all()
                     .header("Cookie", "token=asdfadsfcx.safsdf.scdsafd")

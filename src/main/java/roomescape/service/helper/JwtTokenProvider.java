@@ -1,5 +1,8 @@
 package roomescape.service.helper;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -8,6 +11,8 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.MemberRole;
+import roomescape.exception.auth.ExpiredTokenException;
+import roomescape.exception.auth.InvalidTokenException;
 
 @Component
 public class JwtTokenProvider {
@@ -35,19 +40,24 @@ public class JwtTokenProvider {
     }
 
     public String getMemberEmail(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject(); // TODO: 토큰 올바르지 않을 때 발생하는 예외 처리하기
+        return getClaims(token).getSubject();
     }
 
     public MemberRole getMemberRole(String token) {
-        String role = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+        String role = getClaims(token).get("role", String.class);
         return MemberRole.findByName(role);
+    }
+
+    private Claims getClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (JwtException e) {
+            throw new InvalidTokenException();
+        }
     }
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
-import roomescape.exception.auth.UnauthorizedTokenException;
+import roomescape.exception.auth.InvalidTokenException;
 import roomescape.service.dto.MemberResponse;
 
 @Service
@@ -24,6 +24,6 @@ public class MemberService {
 
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(UnauthorizedTokenException::new);
+                .orElseThrow(InvalidTokenException::new);
     }
 }

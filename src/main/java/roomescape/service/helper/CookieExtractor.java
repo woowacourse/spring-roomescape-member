@@ -3,7 +3,7 @@ package roomescape.service.helper;
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import roomescape.exception.auth.UnauthorizedTokenException;
+import roomescape.exception.auth.InvalidTokenException;
 
 @Component
 public class CookieExtractor {
@@ -26,12 +26,12 @@ public class CookieExtractor {
 
     public String getToken(Cookie[] cookies) {
         if (cookies == null) {
-            throw new UnauthorizedTokenException();
+            throw new InvalidTokenException();
         }
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(UnauthorizedTokenException::new);
+                .orElseThrow(InvalidTokenException::new);
     }
 }

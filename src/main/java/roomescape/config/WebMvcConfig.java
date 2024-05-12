@@ -15,7 +15,7 @@ import roomescape.service.helper.JwtTokenProvider;
 public class WebMvcConfig implements WebMvcConfigurer {
     private final CookieExtractor cookieExtractor;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService; // TODO: 체이닝 줄이는 법 있나 찾아보기(LoginMemberArgumentResolver의 component화?)
+    private final MemberService memberService;
 
     public WebMvcConfig(CookieExtractor cookieExtractor,
                         JwtTokenProvider jwtTokenProvider,
