@@ -11,24 +11,25 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
-import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 public class LoginController {
     public static final String COOKIE_NAME = "token";
 
-    LoginService loginService;
+    MemberService memberService;
 
-    public LoginController(final LoginService loginService) {
-        this.loginService = loginService;
+    public LoginController(final MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody final TokenRequest tokenRequest,
                                                HttpServletResponse response) {
-        TokenResponse tokenResponse = loginService.createToken(tokenRequest);
+        TokenResponse tokenResponse = memberService.createToken(tokenRequest);
         response.addCookie(createCookie(tokenResponse));
         return ResponseEntity.ok(tokenResponse);
     }
@@ -41,7 +42,7 @@ public class LoginController {
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다"));
-        final MemberResponse response = loginService.findMemberByToken(token);
+        final MemberResponse response = memberService.findMemberByToken(token);
 
         return ResponseEntity.ok(response);
     }
@@ -51,6 +52,12 @@ public class LoginController {
         final Cookie cookie = createEmptyCookie();
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> readMembers() {
+        List<MemberResponse> members = memberService.findAll();
+        return ResponseEntity.ok(members);
     }
 
     private Cookie createCookie(final TokenResponse tokenResponse) {

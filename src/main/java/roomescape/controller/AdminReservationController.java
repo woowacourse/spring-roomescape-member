@@ -10,27 +10,26 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
 public class AdminReservationController {
     private final ReservationService reservationService;
 
-    public AdminReservationController(ReservationService reservationService) {
+    public AdminReservationController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> read() {
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createAdminReservation(@RequestBody final ReservationRequest request) {
+        ReservationResponse reservationResponse = reservationService.create(request);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> readReservations() {
         List<ReservationResponse> reservations = reservationService.findEntireReservationList();
         return ResponseEntity.ok(reservations);
     }
 
-    @PostMapping
-    public ResponseEntity<ReservationResponse> create(@RequestBody final ReservationRequest reservationRequest) {
-        ReservationResponse reservationResponse = reservationService.create(reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);
-    }
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();

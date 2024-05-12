@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
+import java.util.List;
+
 @Repository
 public class MemberDao {
     private final JdbcTemplate jdbcTemplate;
@@ -19,6 +21,11 @@ public class MemberDao {
 
     public MemberDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Member findById(final Long id) {
+        String sql = "select id, name, email, password from member where id =?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public Member findByEmail(final String email) {
@@ -37,5 +44,10 @@ public class MemberDao {
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("회원 가입이 되지 않은 사용자입니다");
         }
+    }
+
+    public List<Member> findAll() {
+        String sql = "select id, name, email, password from member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 }

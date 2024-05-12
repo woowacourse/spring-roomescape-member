@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
@@ -21,17 +22,20 @@ public class ReservationDao {
     private final RowMapper<Reservation> rowMapper =
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
+                            resultSet.getString("member_email"), resultSet.getString("member_password")),
                     LocalDate.parse(resultSet.getString("date")),
                     new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
-                    new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
+                    new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
             );
+
 
     public ReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingColumns("name", "date", "time_id", "theme_id")
+                .usingColumns("member_id", "date", "time_id", "theme_id")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -39,7 +43,10 @@ public class ReservationDao {
         String sql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
@@ -48,6 +55,7 @@ public class ReservationDao {
                     th.description as theme_description,
                     th.thumbnail as theme_thumbnail
                 FROM reservation as r
+                INNER JOIN member as m ON r.member_id = m.id
                 INNER JOIN reservation_time as t ON r.time_id = t.id
                 INNER JOIN theme as th ON r.theme_id = th.id;
                 """;
@@ -56,7 +64,7 @@ public class ReservationDao {
 
     public Long create(final ReservationRequest reservationRequest) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservationRequest.name())
+                .addValue("member_id", reservationRequest.memberId())
                 .addValue("date", reservationRequest.date())
                 .addValue("time_id", reservationRequest.timeId())
                 .addValue("theme_id", reservationRequest.themeId());
@@ -92,7 +100,10 @@ public class ReservationDao {
         String sql = """
                     SELECT
                     r.id as reservation_id,
-                    r.name,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
@@ -101,6 +112,7 @@ public class ReservationDao {
                     th.description as theme_description,
                     th.thumbnail as theme_thumbnail
                     FROM reservation as r
+                    INNER JOIN member as m ON r.member_id = m.id
                     INNER JOIN reservation_time as t ON r.time_id = t.id
                     INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
                 """;
