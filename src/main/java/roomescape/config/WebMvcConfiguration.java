@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.intercepter.CheckAdminLoginInterceptor;
 import roomescape.intercepter.CheckLoginInterceptor;
 import roomescape.resolver.LoginMemberArgumentResolver;
+import roomescape.resolver.ReservationDetailArgumentResolver;
 import roomescape.service.TokenService;
 
 @Configuration
@@ -36,5 +37,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver(tokenService));
+        resolvers.add(new ReservationDetailArgumentResolver());
     }
 }

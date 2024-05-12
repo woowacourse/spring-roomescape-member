@@ -18,6 +18,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.dto.request.ReservationDetailRequest;
 
 @Repository
 public class ReservationDao {
@@ -57,6 +58,21 @@ public class ReservationDao {
                 JOIN theme ON reservation.theme_id = theme.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<Reservation> readReservationsByDetails(ReservationDetailRequest request) {
+        String sql = """
+                SELECT reservation.id, reservation.date,
+                        reservation.member_id, member.name AS member_name, member.email, member.role,
+                        reservation.time_id, reservation_time.start_at,
+                        reservation.theme_id, theme.name AS theme_name, theme.description, theme.thumbnail
+                FROM reservation
+                JOIN member ON reservation.member_id = member.id
+                JOIN reservation_time ON reservation.time_id = reservation_time.id
+                JOIN theme ON reservation.theme_id = theme.id
+                WHERE reservation.theme_id = ? AND reservation.member_id = ? AND reservation.date >= ? AND reservation.date <= ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, request.themeId(), request.memberId(), request.dateFrom(), request.dateTo());
     }
 
     private Optional<Reservation> readReservationById(Long id) {

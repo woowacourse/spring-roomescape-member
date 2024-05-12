@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.dto.request.LoginMember;
 import roomescape.dto.request.ReservationAdminCreateRequest;
+import roomescape.dto.request.ReservationDetailRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -29,6 +30,12 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations() {
         List<ReservationResponse> response = reservationService.readReservations();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<List<ReservationResponse>> readDetailReservations(ReservationDetailRequest request) {
+        List<ReservationResponse> response = reservationService.readReservations(request);
         return ResponseEntity.ok(response);
     }
 

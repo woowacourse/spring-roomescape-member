@@ -36,6 +36,7 @@ class ReservationControllerTest {
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
                 , "2023-08-05", 1, 1, 1);
+
         Map<String, String> admin = Map.of(
                 "email", "aaa@naver.com",
                 "password", "1111"
@@ -63,6 +64,19 @@ class ReservationControllerTest {
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
         assertThat(size).isEqualTo(count);
+    }
+
+    @DisplayName("정보와 일치하는 예약 목록을 읽을 수 있다.")
+    @Test
+    void readDetailReservations() {
+        int size = RestAssured.given().log().all()
+                .header("cookie", cookie)
+                .when().get("/reservations/detail?themeId=1&memberId=1&dateFrom=2023-08-05&dateTo=2023-08-06")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getInt("size()");
+
+        assertThat(size).isEqualTo(1);
     }
 
     @DisplayName("예약을 DB에 추가할 수 있다.")

@@ -14,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeProvider.TimeProvider;
 import roomescape.dto.request.ReservationAdminCreateRequest;
+import roomescape.dto.request.ReservationDetailRequest;
 import roomescape.dto.response.ReservationResponse;
 
 @Service
@@ -33,7 +34,15 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> readReservations() {
-        return reservationDao.readReservations().stream()
+        return reservationDao.readReservations()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> readReservations(ReservationDetailRequest request) {
+        return reservationDao.readReservationsByDetails(request)
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
