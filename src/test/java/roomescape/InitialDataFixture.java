@@ -5,7 +5,7 @@ import roomescape.domain.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class InitialDataFixture {
+public class InitialDataFixture { // TODO ID 삭제?
     public static final ReservationTime RESERVATION_TIME_1 = new ReservationTime(1L, LocalTime.parse("09:33"));
     public static final ReservationTime RESERVATION_TIME_2 = new ReservationTime(2L, LocalTime.parse("10:33"));
     public static final ReservationTime RESERVATION_TIME_3 = new ReservationTime(3L, LocalTime.parse("11:33"));
