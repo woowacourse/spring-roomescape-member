@@ -1,3 +1,6 @@
--- 유저 목록 : 1개
-INSERT INTO member (name, email, password)
-VALUES ('user', 'ddang@google.com', 'password');
+-- 유저 목록 : 2개
+INSERT INTO member (name, role, email, password)
+VALUES ('ddang', 'user', 'ddang@google.com', 'password');
+
+INSERT INTO member (name, role, email, password)
+VALUES ('admin', 'admin', 'admin@google.com', 'password');

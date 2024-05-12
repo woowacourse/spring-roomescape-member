@@ -11,6 +11,7 @@ public class MemberRepository {
     private static final RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> new Member(
             resultSet.getLong("member.id"),
             resultSet.getString("member.name"),
+            resultSet.getString("member.role"),
             resultSet.getString("member.email"),
             resultSet.getString("member.password")
     );

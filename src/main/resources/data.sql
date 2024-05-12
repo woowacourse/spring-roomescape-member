@@ -122,6 +122,9 @@ VALUES ('예약11', DATEADD('DAY', -3, CURRENT_DATE), 1, 10);
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('예약15', DATEADD('DAY', -3, CURRENT_DATE), 5, 11);
 
--- 유저 목록 : 1개
-INSERT INTO member (name, email, password)
-VALUES ('ddang', 'ddang@google.com', 'password');
+-- 유저 목록 : 2개
+INSERT INTO member (name, role, email, password)
+VALUES ('ddang', 'user', 'ddang@google.com', 'password');
+
+INSERT INTO member (name, role, email, password)
+VALUES ('admin', 'admin', 'admin@google.com', 'password');

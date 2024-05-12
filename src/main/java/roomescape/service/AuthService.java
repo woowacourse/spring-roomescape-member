@@ -23,7 +23,8 @@ public class AuthService {
 
         String subject = member.getId().toString();
         Map<String, String> claims = Map.of(
-                "name", member.getName()
+                "name", member.getName(),
+                "role", member.getRole()
         );
 
         return TokenManager.generateToken(subject, claims);
