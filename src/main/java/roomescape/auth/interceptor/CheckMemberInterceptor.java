@@ -6,16 +6,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.AuthService;
+import roomescape.auth.handler.RequestHandler;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
-import roomescape.global.util.CookieUtil;
 
 @Component
 public class CheckMemberInterceptor implements HandlerInterceptor {
-
+    private final RequestHandler requestHandler;
     private final AuthService authService;
 
-    public CheckMemberInterceptor(AuthService authService) {
+    public CheckMemberInterceptor(RequestHandler requestHandler, AuthService authService) {
+        this.requestHandler = requestHandler;
         this.authService = authService;
     }
 
@@ -23,8 +24,7 @@ public class CheckMemberInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         AuthInfo authInfo = null;
         try {
-            String accessToken = CookieUtil.extractTokenFromCookie(request.getCookies());
-            authInfo = authService.fetchByToken(accessToken);
+            authInfo = authService.fetchByToken(requestHandler.extract(request));
         } catch (BusinessException | NullPointerException e) {
             throw new BusinessException(ErrorType.SECURITY_EXCEPTION);
         }

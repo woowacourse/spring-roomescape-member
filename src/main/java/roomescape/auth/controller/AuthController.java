@@ -13,15 +13,20 @@ import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.domain.AuthInfo;
 import roomescape.auth.service.AuthService;
-import roomescape.global.util.CookieUtil;
+import roomescape.auth.handler.RequestHandler;
+import roomescape.auth.handler.ResponseHandler;
 
 @Controller
 public class AuthController {
 
     private final AuthService authService;
+    private final RequestHandler requestHandler;
+    private final ResponseHandler responseHandler;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, RequestHandler requestHandler, ResponseHandler responseHandler) {
         this.authService = authService;
+        this.requestHandler = requestHandler;
+        this.responseHandler = responseHandler;
     }
 
     @GetMapping("/login")
@@ -32,19 +37,19 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(HttpServletResponse response, @RequestBody LoginRequest loginRequest) {
         authService.authenticate(loginRequest);
-        CookieUtil.setCookie(response, authService.createToken(loginRequest).accessToken());
+        responseHandler.set(response,  authService.createToken(loginRequest).accessToken());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<AuthInfo> checkLogin(HttpServletRequest request) {
-        AuthInfo authInfo = authService.fetchByToken(CookieUtil.extractTokenFromCookie(request.getCookies()));
+        AuthInfo authInfo = authService.fetchByToken(requestHandler.extract(request));
         return ResponseEntity.ok().body(authInfo);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        CookieUtil.expireToken(response);
+        responseHandler.expire(response);
         return ResponseEntity.ok().build();
     }
 
