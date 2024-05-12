@@ -11,6 +11,8 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repostiory.ReservationRepository;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -112,5 +114,39 @@ public class ReservationJdbcRepository implements ReservationRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Reservation> findBy(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = "SELECT r.id as reservation_id, r.date, "
+                + "rt.id as time_id, rt.start_at, "
+                + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail, "
+                + "m.id as member_id, m.name as member_name, m.email, m.password, m.role "
+                + "FROM reservation as r "
+                + "inner join reservation_time as rt on r.time_id = rt.id "
+                + "inner join theme as t on r.theme_id = t.id "
+                + "inner join member as m on r.member_id = m.id "
+                + "where 1 = 1";
+        List<Object> params = new ArrayList<>();
+
+        if (memberId != null) {
+            sql += " and r.member_id = ?";
+            params.add(memberId);
+        }
+        if (themeId != null) {
+            sql += " and r.theme_id = ?";
+            params.add(themeId);
+        }
+        if (dateFrom != null) {
+            sql += " and r.date >= ?";
+            params.add(dateFrom);
+        }
+        if (dateTo != null) {
+            sql += " and r.date <= ?";
+            params.add(dateTo);
+        }
+
+        List<Reservation> reservations = jdbcTemplate.query(sql, params.toArray(), rowMapper);
+        return reservations;
     }
 }

@@ -18,7 +18,6 @@ import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 class ReservationJdbcRepositoryTest {
     private ReservationRepository reservationRepository;
-    private String reservationDate;
-    private ReservationTime reservationTime;
-    private Theme theme;
-    private Member member;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -38,21 +36,16 @@ class ReservationJdbcRepositoryTest {
     @BeforeEach
     void setUp() {
         reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
-        ReservationTimeRepository reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
-        ThemeRepository themeRepository = new ThemeJdbcRepository(jdbcTemplate);
-        MemberRepository memberRepository = new MemberJdbcRepository(jdbcTemplate);
-
-        reservationDate = LocalDate.now().plusDays(1).toString();
-        reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.now().toString()));
-        theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        member = memberRepository.save(new Member("lini", "lini@email.com", "lini123", Role.GUEST));
+        reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
+        themeRepository = new ThemeJdbcRepository(jdbcTemplate);
+        memberRepository = new MemberJdbcRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 예약을 저장한다.")
     @Test
     void saveReservation() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
+        Reservation reservation = new Reservation(getReservationDatePlus(1), getMember("lini", Role.GUEST), getReservationTime("10:00"), getTheme("레벨2 탈출"));
 
         //when
         Reservation result = reservationRepository.save(reservation);
@@ -65,8 +58,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void findAllReservationTest() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        reservationRepository.save(reservation);
+        saveReservation(getReservationDatePlus(1), getReservationTime("10:00"), getTheme("레벨2 탈출"), getMember("lini", Role.GUEST));
         int expectedSize = 1;
 
         //when
@@ -80,8 +72,8 @@ class ReservationJdbcRepositoryTest {
     @Test
     void deleteReservationByIdTest() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        Reservation target = reservationRepository.save(reservation);
+        Reservation target = saveReservation(getReservationDatePlus(1), getReservationTime("10:00"), getTheme("레벨2 탈출"), getMember("lini", Role.GUEST));
+
         int expectedSize = 0;
 
         //when
@@ -95,8 +87,10 @@ class ReservationJdbcRepositoryTest {
     @Test
     void existsByDateAndTimeAndThemeTest() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        reservationRepository.save(reservation);
+        String reservationDate = getReservationDatePlus(1);
+        ReservationTime reservationTime = getReservationTime("10:00");
+        Theme theme = getTheme("레벨2 탈출");
+        saveReservation(reservationDate, reservationTime, theme, getMember("lini", Role.GUEST));
 
         //when
         boolean result = reservationRepository.existsByDateAndTimeAndTheme(reservationDate, reservationTime.getId(), theme.getId());
@@ -109,13 +103,14 @@ class ReservationJdbcRepositoryTest {
     @Test
     void notExistsByDateAndTimeAndThemeTest() {
         //given
-        String newDate = LocalDate.now().plusDays(2).toString();
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        reservationRepository.save(reservation);
+        ReservationTime reservationTime = getReservationTime("10:00");
+        Theme theme = getTheme("레벨2 탈출");
+        saveReservation(getReservationDatePlus(1), reservationTime, theme, getMember("lini", Role.GUEST));
+        String newDate = getReservationDatePlus(2);
+
 
         //when
-        boolean result = reservationRepository.existsByDateAndTimeAndTheme(newDate, reservationTime.getId(),
-                theme.getId());
+        boolean result = reservationRepository.existsByDateAndTimeAndTheme(newDate, reservationTime.getId(), theme.getId());
 
         //then
         assertThat(result).isFalse();
@@ -125,8 +120,8 @@ class ReservationJdbcRepositoryTest {
     @Test
     void existsByTimeIdTest() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        reservationRepository.save(reservation);
+        ReservationTime reservationTime = getReservationTime("10:00");
+        saveReservation(getReservationDatePlus(1), reservationTime, getTheme("레벨2 탈출"), getMember("lini", Role.GUEST));
 
         //when
         boolean result = reservationRepository.existsByTimeId(reservationTime.getId());
@@ -139,6 +134,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void notExistsByTimeIdTest() {
         //when
+        ReservationTime reservationTime = getReservationTime("10:00");
         boolean result = reservationRepository.existsByTimeId(reservationTime.getId());
 
         //then
@@ -149,8 +145,9 @@ class ReservationJdbcRepositoryTest {
     @Test
     void existsByThemeIdTest() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        reservationRepository.save(reservation);
+        Theme theme = getTheme("레벨2 탈출");
+        saveReservation(getReservationDatePlus(1), getReservationTime("10:00"), theme, getMember("lini", Role.GUEST));
+
 
         //when
         boolean result = reservationRepository.existsByThemeId(theme.getId());
@@ -163,6 +160,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void notExistsByThemeIdTest() {
         //when
+        Theme theme = getTheme("레벨2 탈출");
         boolean result = reservationRepository.existsByThemeId(theme.getId());
 
         //then
@@ -173,8 +171,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void existsByIdTest() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        Reservation target = reservationRepository.save(reservation);
+        Reservation target = saveReservation(getReservationDatePlus(1), getReservationTime("10:00"), getTheme("레벨2 탈출"), getMember("lini", Role.GUEST));
 
         //when
         boolean result = reservationRepository.existsById(target.getId());
@@ -197,8 +194,7 @@ class ReservationJdbcRepositoryTest {
     @Test
     void findById() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        Reservation target = reservationRepository.save(reservation);
+        Reservation target = saveReservation(getReservationDatePlus(1), getReservationTime("10:00"), getTheme("레벨2 탈출"), getMember("lini", Role.GUEST));
 
         //when
         Optional<Reservation> result = reservationRepository.findById(target.getId());
@@ -221,13 +217,143 @@ class ReservationJdbcRepositoryTest {
     @Test
     void getById() {
         //given
-        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
-        Reservation target = reservationRepository.save(reservation);
+        Reservation target = saveReservation(getReservationDatePlus(1), getReservationTime("10:00"), getTheme("레벨2 탈출"), getMember("lini", Role.GUEST));
 
         //when
         Reservation result = reservationRepository.getById(target.getId());
 
         //then
         assertThat(result.getId()).isEqualTo(target.getId());
+    }
+
+    @DisplayName("주어진 조건에 맞는 예약 목록을 찾는다. - DateFrom, DateTo")
+    @Test
+    void findByDateFromAndDateTo() {
+        //given
+        ReservationTime reservationTime = getReservationTime("10:00");
+        Member lini = getMember("lini", Role.GUEST);
+        Member lily = getMember("lily", Role.GUEST);
+        Theme level1 = getTheme("레벨1 탈출");
+        Theme level2 = getTheme("레벨2 탈출");
+        Theme level3 = getTheme("레벨3 탈출");
+        saveReservation(getReservationDatePlus(1), reservationTime, level1, lini);
+        saveReservation(getReservationDatePlus(2), reservationTime, level2, lini);
+        saveReservation(getReservationDatePlus(3), reservationTime, level2, lily);
+        saveReservation(getReservationDatePlus(4), reservationTime, level3, lini);
+
+        //when
+        List<Reservation> result = reservationRepository.findBy(null, null, LocalDate.now().plusDays(1), LocalDate.now().plusDays(3));
+
+        //then
+        assertThat(result).hasSize(3);
+    }
+
+    @DisplayName("주어진 조건에 맞는 예약 목록을 찾는다. - memberId")
+    @Test
+    void findByMemberId() {
+        //given
+        ReservationTime reservationTime = getReservationTime("10:00");
+        Member lini = getMember("lini", Role.GUEST);
+        Member lily = getMember("lily", Role.GUEST);
+        Theme level1 = getTheme("레벨1 탈출");
+        Theme level2 = getTheme("레벨2 탈출");
+        Theme level3 = getTheme("레벨3 탈출");
+        saveReservation(getReservationDatePlus(1), reservationTime, level1, lini);
+        saveReservation(getReservationDatePlus(2), reservationTime, level2, lini);
+        saveReservation(getReservationDatePlus(3), reservationTime, level2, lily);
+        saveReservation(getReservationDatePlus(4), reservationTime, level3, lini);
+
+        //when
+        List<Reservation> result = reservationRepository.findBy(lini.getId(), null, null, null);
+
+        //then
+        assertThat(result).hasSize(3);
+    }
+
+    @DisplayName("주어진 조건에 맞는 예약 목록을 찾는다. - themeId, DateFrom")
+    @Test
+    void findByThemeIdAndDateFrom() {
+        //given
+        ReservationTime reservationTime = getReservationTime("10:00");
+        Member lini = getMember("lini", Role.GUEST);
+        Member lily = getMember("lily", Role.GUEST);
+        Theme level1 = getTheme("레벨1 탈출");
+        Theme level2 = getTheme("레벨2 탈출");
+        Theme level3 = getTheme("레벨3 탈출");
+        saveReservation(getReservationDatePlus(1), reservationTime, level1, lini);
+        saveReservation(getReservationDatePlus(2), reservationTime, level2, lini);
+        saveReservation(getReservationDatePlus(3), reservationTime, level2, lily);
+        saveReservation(getReservationDatePlus(4), reservationTime, level3, lini);
+
+        //when
+        List<Reservation> result = reservationRepository.findBy(null, level2.getId(), LocalDate.now().plusDays(3), null);
+
+        //then
+        assertThat(result).hasSize(1);
+    }
+
+    @DisplayName("주어진 조건에 맞는 예약 목록을 찾는다. - memberId, DateTo, DateFrom")
+    @Test
+    void findByMemberIdAndDateToAndDateFrom() {
+        //given
+        ReservationTime reservationTime = getReservationTime("10:00");
+        Member lini = getMember("lini", Role.GUEST);
+        Member lily = getMember("lily", Role.GUEST);
+        Theme level1 = getTheme("레벨1 탈출");
+        Theme level2 = getTheme("레벨2 탈출");
+        Theme level3 = getTheme("레벨3 탈출");
+        saveReservation(getReservationDatePlus(1), reservationTime, level1, lini);
+        saveReservation(getReservationDatePlus(2), reservationTime, level2, lini);
+        saveReservation(getReservationDatePlus(3), reservationTime, level2, lily);
+        saveReservation(getReservationDatePlus(4), reservationTime, level3, lini);
+
+        //when
+        List<Reservation> result = reservationRepository.findBy(lini.getId(), null, LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
+
+        //then
+        assertThat(result).hasSize(2);
+    }
+
+    @DisplayName("주어진 조건에 맞는 예약 목록을 찾는다. - memberId, themeId, DateTo, DateFrom")
+    @Test
+    void findByMemberIdAndThemeIdAndDateToAndDateFrom() {
+        //given
+        ReservationTime reservationTime = getReservationTime("10:00");
+        Member lini = getMember("lini", Role.GUEST);
+        Member lily = getMember("lily", Role.GUEST);
+        Theme level1 = getTheme("레벨1 탈출");
+        Theme level2 = getTheme("레벨2 탈출");
+        Theme level3 = getTheme("레벨3 탈출");
+        saveReservation(getReservationDatePlus(1), reservationTime, level1, lini);
+        saveReservation(getReservationDatePlus(2), reservationTime, level2, lini);
+        saveReservation(getReservationDatePlus(3), reservationTime, level2, lily);
+        saveReservation(getReservationDatePlus(4), reservationTime, level3, lini);
+
+        //when
+        List<Reservation> result = reservationRepository.findBy(lini.getId(), level2.getId(), LocalDate.now().plusDays(3), LocalDate.now().plusDays(4));
+
+        //then
+        assertThat(result).hasSize(0);
+    }
+
+    private Reservation saveReservation(String reservationDate, ReservationTime reservationTime, Theme theme, Member member) {
+        Reservation reservation = new Reservation(reservationDate, member, reservationTime, theme);
+        return reservationRepository.save(reservation);
+    }
+
+    private Member getMember(String name, Role role) {
+        return memberRepository.save(new Member(name, name + "@email.com", name + "123", role));
+    }
+
+    private Theme getTheme(String name) {
+        return themeRepository.save(new Theme(name, "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+    }
+
+    private ReservationTime getReservationTime(String time) {
+        return reservationTimeRepository.save(new ReservationTime(time));
+    }
+
+    private String getReservationDatePlus(int days) {
+        return LocalDate.now().plusDays(days).toString();
     }
 }
