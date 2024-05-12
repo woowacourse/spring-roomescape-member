@@ -29,7 +29,7 @@ public class Member {
         return new Member(null, new MemberName(name), new Email(email), new Password(password), Role.from(role));
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

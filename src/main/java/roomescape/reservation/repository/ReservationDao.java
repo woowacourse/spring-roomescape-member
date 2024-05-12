@@ -8,7 +8,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -78,6 +77,24 @@ public class ReservationDao {
         }
     }
 
+
+    public List<Reservation> findByMemberId(final Long memberId) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
+                    r.date,
+                    time.id AS time_id, time.start_at AS time_value,
+                    theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 
+                FROM reservation AS r
+                INNER JOIN reservation_time AS time ON r.time_id = time.id
+                INNER JOIN theme ON r.theme_id = theme.id
+                INNER JOIN member AS m ON r.member_id = m.id
+                WHERE r.member_id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, memberId);
+    }
+
     public List<Reservation> findByTimeId(final long timeId) {
         String sql = """
                 SELECT
@@ -112,6 +129,22 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, themeId);
     }
 
+    public List<Reservation> findByDateBetween(final LocalDate dateFrom, final LocalDate dateTo) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
+                    r.date,
+                    time.id AS time_id, time.start_at AS time_value,
+                    theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 
+                FROM reservation AS r
+                INNER JOIN reservation_time AS time ON r.time_id = time.id
+                INNER JOIN theme ON r.theme_id = theme.id
+                INNER JOIN member AS m ON r.member_id = m.id
+                WHERE r.date BETWEEN ? AND ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, dateFrom, dateTo);
+    }
 
     public List<Long> findByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
         String sql = "SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
@@ -127,38 +160,6 @@ public class ReservationDao {
                 sql, (resultSet, rowNum) -> resultSet.getLong("id"),
                 date, themeId
         );
-    }
-
-    public List<Reservation> findByMemberIdAndThemeIdAndDateFromAndDateTo(
-            final Long memberId, final Long themeId, final LocalDate from, final LocalDate to
-    ) {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    m.id AS member_id, m.member_name, m.email, m.password, m.member_role,
-                    r.date,
-                    time.id AS time_id, time.start_at AS time_value,
-                    theme.id AS theme_id, theme.theme_name, theme.description, theme.thumbnail 
-                FROM reservation AS r
-                INNER JOIN reservation_time AS time ON r.time_id = time.id
-                INNER JOIN theme ON r.theme_id = theme.id
-                INNER JOIN member AS m ON r.member_id = m.id
-                WHERE (:member_id IS NULL AND :theme_id IS NULL AND :date_from IS NULL AND :date_to IS NULL)
-                OR ((:member_id IS NULL OR r.member_id = :member_id)
-                AND (:theme_id IS NULL OR r.theme_id = :theme_id)
-                AND (
-                    (:date_from IS NULL AND :date_to IS NULL)
-                    OR (:date_from IS NOT NULL AND :date_to IS NULL AND r.date > :date_from)
-                    OR (:date_from IS NULL AND :date_to IS NOT NULL AND r.date < :date_to)
-                    OR (:date_from IS NOT NULL AND :date_to IS NOT NULL AND r.date BETWEEN :date_from AND :date_to)
-                ))
-                """;
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("member_id", memberId);
-        params.addValue("theme_id", themeId);
-        params.addValue("date_from", from);
-        params.addValue("date_to", to);
-        return namedParameterJdbcTemplate.query(sql, params, reservationRowMapper);
     }
 
     public List<Long> findRanking(final LocalDate from, final LocalDate to, final int count) {

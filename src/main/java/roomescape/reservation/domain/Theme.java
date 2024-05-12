@@ -21,7 +21,7 @@ public class Theme {
         return new Theme(id, themeName, description, thumbnail);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

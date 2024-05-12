@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
@@ -58,15 +59,43 @@ public class AdminReservationService {
         return memberDao.findById(reservationSaveRequest.memberId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 회원 번호를 입력하였습니다."));
     }
-
+    
     public List<AdminReservationResponse> getByFilter(
             final Long memberId, final Long themeId,
             final LocalDate dateFrom, final LocalDate dateTo
     ) {
-        List<Reservation> reservations = reservationDao
-                .findByMemberIdAndThemeIdAndDateFromAndDateTo(memberId, themeId, dateFrom, dateTo);
-        return reservations.stream()
+        List<Reservation> reservations = new ArrayList<>();
+        if (memberId != null) {
+            reservations.addAll(reservationDao.findByMemberId(memberId));
+        }
+        if (themeId != null) {
+            reservations.addAll(reservationDao.findByThemeId(themeId));
+        }
+        if (dateFrom != null && dateFrom != null) {
+            reservations.addAll(reservationDao.findByDateBetween(dateFrom, dateTo));
+        }
+
+        return filterResults(reservations, memberId, themeId, dateFrom, dateTo)
+                .stream()
                 .map(AdminReservationResponse::from)
+                .toList();
+    }
+
+    private List<Reservation> filterResults(
+            final List<Reservation> reservations,
+            final Long memberId, final Long themeId,
+            final LocalDate from, final LocalDate to
+    ) {
+        return reservations.stream()
+                .filter(reservation ->
+                        (memberId == null || reservation.getMember().getId().equals(memberId)))
+                .filter(reservation ->
+                        (themeId == null || reservation.getTheme().getId().equals(themeId)))
+                .filter(reservation ->
+                        (from == null || (reservation.getDate().isEqual(from) || reservation.getDate().isAfter(from))))
+                .filter(reservation ->
+                        (to == null || (reservation.getDate().isEqual(to) || reservation.getDate().isBefore(to))))
+                .distinct()
                 .toList();
     }
 }
