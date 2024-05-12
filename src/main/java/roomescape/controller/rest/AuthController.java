@@ -3,7 +3,6 @@ package roomescape.controller.rest;
 import java.io.IOException;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
@@ -42,7 +41,7 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Void> logout(HttpServletResponse response) throws IOException {
         Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
