@@ -2,7 +2,7 @@ package roomescape.controller.api;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static roomescape.TokenTestFixture.USER_TOKEN;
+import static roomescape.TokenTestFixture.ADMIN_TOKEN;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -19,18 +19,16 @@ import roomescape.controller.dto.CreateTimeRequest;
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class AdminReservationTimeControllerTest {
 
-    // TODO: 사용자의 role 별로 검증 로직 추가, 프로덕션에 admin이 아니면 예약 시간 추가/삭제 못하도록 로직 추가
-
     @DisplayName("성공: 예약 시간 저장 -> 201")
     @Test
     void save() {
         CreateTimeRequest request = new CreateTimeRequest("00:00");
 
         RestAssured.given().log().all()
-            .cookie("token", USER_TOKEN)
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
-            .when().post("/times")
+            .when().post("/admin/times")
             .then().log().all()
             .statusCode(201)
             .body("id", is(3))
@@ -41,14 +39,16 @@ class AdminReservationTimeControllerTest {
     @Test
     void delete() {
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
-            .when().delete("/times/2")
+            .when().delete("/admin/times/2")
             .then().log().all()
             .statusCode(204);
 
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
-            .when().get("/times")
+            .when().get("/admin/times")
             .then().log().all()
             .statusCode(200)
             .body("id", contains(1));
@@ -58,8 +58,9 @@ class AdminReservationTimeControllerTest {
     @Test
     void findAll() {
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
-            .when().get("/times")
+            .when().get("/admin/times")
             .then().log().all()
             .statusCode(200)
             .body("id", contains(1, 2))
@@ -72,9 +73,10 @@ class AdminReservationTimeControllerTest {
         CreateTimeRequest request = new CreateTimeRequest("24:00");
 
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
-            .when().post("/times")
+            .when().post("/admin/times")
             .then().log().all()
             .statusCode(400)
             .body("message", is("잘못된 시간 형식입니다."));
@@ -84,8 +86,9 @@ class AdminReservationTimeControllerTest {
     @Test
     void delete_ReservationExists() {
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
-            .when().delete("/times/1")
+            .when().delete("/admin/times/1")
             .then().log().all()
             .statusCode(400)
             .body("message", is("해당 시간을 사용하는 예약이 존재하여 삭제할 수 없습니다."));
@@ -97,9 +100,10 @@ class AdminReservationTimeControllerTest {
         CreateTimeRequest request = new CreateTimeRequest("10:00");
 
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
-            .when().post("/times")
+            .when().post("/admin/times")
             .then().log().all()
             .statusCode(400)
             .body("message", is("이미 존재하는 시간은 추가할 수 없습니다."));

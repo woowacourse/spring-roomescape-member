@@ -2,6 +2,7 @@ package roomescape.controller.api;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static roomescape.TokenTestFixture.ADMIN_TOKEN;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -24,9 +25,10 @@ class AdminThemeControllerTest {
         CreateThemeRequest request = new CreateThemeRequest("theme4", "desc4", "https://url4");
 
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
-            .when().post("/themes")
+            .when().post("/admin/themes")
             .then().log().all()
             .statusCode(201)
             .body("id", is(4))
@@ -39,11 +41,13 @@ class AdminThemeControllerTest {
     @Test
     void delete() {
         RestAssured.given().log().all()
-            .when().delete("/themes/2")
+            .cookie("token", ADMIN_TOKEN)
+            .when().delete("/admin/themes/2")
             .then().log().all()
             .statusCode(204);
 
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .when().get("/themes")
             .then().log().all()
             .statusCode(200)
@@ -54,6 +58,7 @@ class AdminThemeControllerTest {
     @Test
     void findAll() {
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
             .when().get("/themes")
             .then().log().all()
@@ -69,9 +74,10 @@ class AdminThemeControllerTest {
         CreateThemeRequest request = new CreateThemeRequest("theme4", "desc4", "hello.jpg");
 
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
-            .when().post("/themes")
+            .when().post("/admin/themes")
             .then().log().all()
             .statusCode(400)
             .body("message", is("썸네일 URL은 https://로 시작해야 합니다."));
@@ -83,9 +89,10 @@ class AdminThemeControllerTest {
         CreateThemeRequest request = new CreateThemeRequest("theme1", "It's so fun", "https://url1");
 
         RestAssured.given().log().all()
+            .cookie("token", ADMIN_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
-            .when().post("/themes")
+            .when().post("/admin/themes")
             .then().log().all()
             .statusCode(400)
             .body("message", is("같은 이름의 테마가 이미 존재합니다."));
@@ -95,7 +102,8 @@ class AdminThemeControllerTest {
     @Test
     void delete_ReservationExists() {
         RestAssured.given().log().all()
-            .when().delete("/themes/1")
+            .cookie("token", ADMIN_TOKEN)
+            .when().delete("/admin/themes/1")
             .then().log().all()
             .statusCode(400)
             .body("message", is("해당 테마를 사용하는 예약이 존재하여 삭제할 수 없습니다."));
