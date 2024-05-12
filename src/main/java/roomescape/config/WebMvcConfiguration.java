@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.controller.auth.CheckRoleInterceptor;
 import roomescape.controller.auth.LoginMemberArgumentResolver;
+import roomescape.controller.reservation.ReservationFilterArgumentResolver;
 import roomescape.service.MemberService;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver(memberService));
+        resolvers.add(new ReservationFilterArgumentResolver());
     }
 
     @Override

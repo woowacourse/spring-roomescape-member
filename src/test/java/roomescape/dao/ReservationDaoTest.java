@@ -12,12 +12,13 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.member.Role;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.ReservationFilterParam;
 
 import java.time.LocalDate;
 import java.util.List;
 
 
-class ReservationJdbcDaoTest extends DaoTest {
+class ReservationDaoTest extends DaoTest {
 
     @Autowired
     private MemberDao memberDao;
@@ -78,10 +79,11 @@ class ReservationJdbcDaoTest extends DaoTest {
         reservationDao.save(reservation);
         final Reservation reservation2 = new Reservation(member, "2034-05-09", reservationTime, theme);
         reservationDao.save(reservation2);
+        final ReservationFilterParam reservationFilterParam = new ReservationFilterParam(
+                theme.getId(), member.getId(), LocalDate.parse("2034-05-08"), LocalDate.parse("2034-05-09"));
 
         // when
-        final List<Reservation> reservations = reservationDao.findAllByThemeAndMemberAndPeriod(
-                theme.getId(), member.getId(), LocalDate.parse("2034-05-08"), LocalDate.parse("2034-05-09"));
+        final List<Reservation> reservations = reservationDao.findAllByThemeAndMemberAndPeriod(reservationFilterParam);
 
         // then
         assertThat(reservations).hasSize(2);

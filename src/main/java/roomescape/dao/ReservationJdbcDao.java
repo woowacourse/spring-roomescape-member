@@ -1,8 +1,8 @@
 package roomescape.dao;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -12,6 +12,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.member.Role;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.ReservationFilterParam;
 
 import javax.sql.DataSource;
 import java.sql.Date;
@@ -23,7 +24,7 @@ import java.util.Objects;
 @Repository
 public class ReservationJdbcDao implements ReservationDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNumber) -> new Reservation(
             resultSet.getLong("reservation_id"),
@@ -46,8 +47,8 @@ public class ReservationJdbcDao implements ReservationDao {
                     resultSet.getString("theme_thumbnail")
             ));
 
-    public ReservationJdbcDao(final JdbcTemplate jdbcTemplate, final DataSource source) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ReservationJdbcDao(final DataSource source) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(source);
         this.jdbcInsert = new SimpleJdbcInsert(source)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -81,8 +82,8 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAllByThemeAndMemberAndPeriod(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
-        final String sql = """
+    public List<Reservation> findAllByThemeAndMemberAndPeriod(final ReservationFilterParam param) {
+        String sql = """
                 SELECT r.id AS reservation_id, r.member_id, r.date, 
                     t.id AS time_id, t.start_at AS time_value,
                     th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
@@ -91,9 +92,24 @@ public class ReservationJdbcDao implements ReservationDao {
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN member AS m ON r.member_id = m.id
-                WHERE th.id = ? AND m.id = ? AND (r.date BETWEEN ? AND ?);
+                WHERE 1=1 
                 """;
-        return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
+
+        final MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        if (param.themeId() != null) {
+            sql += "AND r.theme_id = :themeId " ;
+            parameterSource.addValue("themeId", param.themeId());
+        }
+        if (param.memberId() != null) {
+            sql += "AND r.member_id = :memberId " ;
+            parameterSource.addValue("memberId", param.memberId());
+        }
+        if (param.dateFrom() != null && param.dateTo() != null) {
+            sql += "AND (r.date BETWEEN :dateFrom AND :dateTo) " ;
+            parameterSource.addValue("dateFrom", param.dateFrom());
+            parameterSource.addValue("dateTo", param.dateTo());
+        }
+        return jdbcTemplate.query(sql, parameterSource, rowMapper);
     }
 
     @Override
@@ -108,35 +124,48 @@ public class ReservationJdbcDao implements ReservationDao {
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN member AS m ON r.member_id = m.id
-                WHERE `date` = ? AND t.start_at = ? AND th.id = ?
+                WHERE `date` = :date AND t.start_at = :startAt AND th.id = :themeId
                 """;
-        return jdbcTemplate.query(sql, rowMapper, Date.valueOf(date), Time.valueOf(time.getStartAt()), themeId);
+
+        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("date", Date.valueOf(date))
+                .addValue("startAt", Time.valueOf(time.getStartAt()))
+                .addValue("themeId", themeId);
+        return jdbcTemplate.query(sql, parameterSource, rowMapper);
     }
 
     @Override
     public boolean existById(final Long id) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?) AS is_exist";
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNumber) -> resultSet.getBoolean("is_exist"), id);
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = :id) AS is_exist";
+        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("id", id);
+        return jdbcTemplate.queryForObject(sql, parameterSource,
+                (resultSet, rowNumber) -> resultSet.getBoolean("is_exist"));
     }
 
     @Override
     public void deleteById(final Long id) {
-        final String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        final String sql = "DELETE FROM reservation WHERE id = :id";
+        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("id", id);
+        jdbcTemplate.update(sql, parameterSource);
     }
 
     @Override
     public int countByTimeId(final Long timeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        final String sql = "SELECT count(*) FROM reservation WHERE time_id = :timeId";
+        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("timeId", timeId);
+        return jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
     }
 
     @Override
     public List<Long> findAllTimeIdsByDateAndThemeId(final LocalDate date, final Long themeId) {
-        final String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
-        return jdbcTemplate.query(sql,
-                (resultSet, rowNumber) -> resultSet.getLong("time_id"),
-                Date.valueOf(date), themeId);
+        final String sql = "SELECT time_id FROM reservation WHERE date = :date AND theme_id = :themeId";
+        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("date", Date.valueOf(date))
+                .addValue("themeId", themeId);
+        return jdbcTemplate.query(sql, parameterSource,
+                (resultSet, rowNumber) -> resultSet.getLong("time_id"));
     }
 }

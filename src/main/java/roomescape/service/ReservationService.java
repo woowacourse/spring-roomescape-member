@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.reservation.Reservation;
+import roomescape.dto.reservation.ReservationFilterParam;
 import roomescape.dto.reservation.ReservationResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -43,8 +43,8 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> findAllByThemeAndMemberAndPeriod(final Long themeId, final Long memberId, final LocalDate dateFrom, final LocalDate dateTo) {
-        final List<Reservation> reservations = reservationDao.findAllByThemeAndMemberAndPeriod(themeId, memberId, dateFrom, dateTo);
+    public List<ReservationResponse> findAllByThemeAndMemberAndPeriod(final ReservationFilterParam reservationFilterParam) {
+        final List<Reservation> reservations = reservationDao.findAllByThemeAndMemberAndPeriod(reservationFilterParam);
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
