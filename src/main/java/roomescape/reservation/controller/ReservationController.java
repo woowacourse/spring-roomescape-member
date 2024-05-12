@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.domain.AuthInfo;
-import roomescape.common.AuthenticationPrincipal;
+import roomescape.auth.core.AuthenticationPrincipal;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;

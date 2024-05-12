@@ -6,9 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.auth.domain.AuthInfo;
-import roomescape.auth.token.JwtTokenProvider;
-import roomescape.auth.token.TokenProperties;
-import roomescape.auth.token.TokenProvider;
+import roomescape.auth.core.token.JwtTokenProvider;
+import roomescape.auth.core.token.TokenProperties;
+import roomescape.auth.core.token.TokenProvider;
 import roomescape.fixture.MemberFixture;
 import roomescape.member.domain.Member;
 

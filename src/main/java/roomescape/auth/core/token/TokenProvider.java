@@ -1,4 +1,4 @@
-package roomescape.auth.service;
+package roomescape.auth.core.token;
 
 import roomescape.auth.domain.AuthInfo;
 import roomescape.member.domain.Member;

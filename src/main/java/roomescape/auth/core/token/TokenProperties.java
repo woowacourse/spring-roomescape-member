@@ -1,4 +1,4 @@
-package roomescape.auth.token;
+package roomescape.auth.core.token;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
