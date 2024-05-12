@@ -40,4 +40,9 @@ public class ViewController {
     public String adminTheme() {
         return "/admin/theme";
     }
+
+    @GetMapping("/error/access-denied")
+    public String error() {
+        return "/error/access-denied";
+    }
 }

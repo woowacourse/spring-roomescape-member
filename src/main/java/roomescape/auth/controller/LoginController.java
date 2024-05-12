@@ -37,7 +37,6 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<AuthInformationResponse> checkLogin(@LoginMemberId Long id) {
-        String name = memberService.getMemberNameById(id).name();
-        return ResponseEntity.ok().body(new AuthInformationResponse(name));
+        return ResponseEntity.ok().body(memberService.getAuthInformation(id));
     }
 }

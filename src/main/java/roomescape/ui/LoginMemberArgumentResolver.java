@@ -10,15 +10,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.util.JwtTokenExtractor;
-import roomescape.util.JwtTokenProvider;
+import roomescape.util.JwtTokenHelper;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenHelper jwtTokenHelper;
 
-    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginMemberArgumentResolver(JwtTokenHelper jwtTokenHelper) {
+        this.jwtTokenHelper = jwtTokenHelper;
     }
 
     @Override
@@ -33,9 +32,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        JwtTokenExtractor jwtTokenExtractor = new JwtTokenExtractor((HttpServletRequest) webRequest.getNativeRequest());
-        String token = jwtTokenExtractor.extractTokenFromCookie();
-        return jwtTokenProvider.getPayloadClaim(token, "memberId", Long.class);
+        final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        return jwtTokenHelper.getPayloadClaimFromRequest(request, "memberId", Long.class);
     }
 
     @Target(ElementType.PARAMETER)

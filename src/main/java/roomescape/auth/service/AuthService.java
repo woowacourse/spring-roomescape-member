@@ -6,24 +6,24 @@ import roomescape.auth.dto.CreateTokenResponse;
 import roomescape.common.exception.AuthorizationException;
 import roomescape.member.model.Member;
 import roomescape.member.repositoy.JdbcMemberRepository;
-import roomescape.util.JwtTokenProvider;
+import roomescape.util.JwtTokenHelper;
 
 @Service
 public class AuthService {
 
     private final JdbcMemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenHelper jwtTokenHelper;
 
-    public AuthService(JdbcMemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(JdbcMemberRepository memberRepository, JwtTokenHelper jwtTokenHelper) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtTokenHelper = jwtTokenHelper;
     }
 
     public CreateTokenResponse createToken(CreateTokenRequest request) {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(AuthorizationException::new);
 
-        String accessToken = jwtTokenProvider.createToken(member);
+        String accessToken = jwtTokenHelper.createToken(member);
         return new CreateTokenResponse(accessToken);
     }
 }

@@ -104,7 +104,7 @@
 - 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한
 - Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근 가능
   - [x] Member 도메인에 Role 추가 
-  - [ ] HandlerInterceptor를 활용하여 권한을 확인, 권한이 없는 경우 요청에 대한 거부 응답
+  - [x] HandlerInterceptor를 활용하여 권한을 확인, 권한이 없는 경우 요청에 대한 거부 응답
 
 ### 예약 목록 검색
 
