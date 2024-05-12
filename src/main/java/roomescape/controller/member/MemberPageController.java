@@ -1,10 +1,10 @@
-package roomescape.controller.reservation;
+package roomescape.controller.member;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UserPageController {
+public class MemberPageController {
 
     @GetMapping
     public String index() {
