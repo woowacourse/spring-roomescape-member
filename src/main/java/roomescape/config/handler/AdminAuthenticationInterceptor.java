@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.dto.LoggedInMember;
+import roomescape.auth.service.AuthService;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.MemberAuthenticationException;
-import roomescape.member.dto.LoggedInMember;
-import roomescape.member.service.AuthService;
 
 @Component
 public class AdminAuthenticationInterceptor implements HandlerInterceptor {

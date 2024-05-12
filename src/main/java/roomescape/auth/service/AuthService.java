@@ -1,4 +1,4 @@
-package roomescape.member.service;
+package roomescape.auth.service;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -6,11 +6,11 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.LoggedInMember;
+import roomescape.auth.dto.LoginRequest;
 import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.LoggedInMember;
-import roomescape.member.dto.LoginRequest;
 
 @Service
 public class AuthService {

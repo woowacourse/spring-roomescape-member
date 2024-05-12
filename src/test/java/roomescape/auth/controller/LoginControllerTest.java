@@ -1,4 +1,4 @@
-package roomescape.member.controller;
+package roomescape.auth.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,8 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.member.dto.LoginRequest;
-import roomescape.member.dto.LoginResponse;
+import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.dto.LoginResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/init-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
