@@ -60,6 +60,6 @@ class ThemeControllerTest extends ControllerTest {
         // when, then
         mockMvc.perform(get("/themes/tops"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(10)));
+                .andExpect(jsonPath("$.themes", hasSize(10)));
     }
 }
