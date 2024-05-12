@@ -40,7 +40,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(AuthInfo authInfo) {
         if (authInfo == null) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
 
         MemberResponse memberResponse = MemberResponse.from(authInfo);
