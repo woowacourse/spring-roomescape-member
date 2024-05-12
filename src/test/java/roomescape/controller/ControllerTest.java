@@ -29,10 +29,10 @@ public class ControllerTest {
     }
 
     String getUserToken() {
-        return jwtProvider.createToken(VALID_USER_EMAIL.getValue());
+        return jwtProvider.createToken(VALID_USER_EMAIL.getEmail());
     }
 
     String getAdminToken() {
-        return jwtProvider.createToken(VALID_ADMIN_EMAIL.getValue());
+        return jwtProvider.createToken(VALID_ADMIN_EMAIL.getEmail());
     }
 }

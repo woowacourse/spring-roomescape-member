@@ -78,7 +78,7 @@ class ReservationServiceTest {
         ReservationAppResponse actual = reservationService.save(request);
         ReservationAppResponse expected = new ReservationAppResponse(
             reservationId,
-            reservation.getMember().getName().getValue(),
+            reservation.getMember().getName().getName(),
             reservation.getReservationDate(),
             ReservationTimeAppResponse.from(reservation.getReservationTime()),
             ThemeAppResponse.from(reservation.getTheme()));

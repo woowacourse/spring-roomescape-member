@@ -5,11 +5,11 @@ import java.util.Objects;
 
 public class MemberPassword {
 
-    private final String value;
+    private final String password;
 
-    public MemberPassword(String value) {
-        validate(value);
-        this.value = value;
+    public MemberPassword(String password) {
+        validate(password);
+        this.password = password;
     }
 
     private void validate(String value) {
@@ -18,8 +18,8 @@ public class MemberPassword {
         }
     }
 
-    public String getValue() {
-        return value;
+    public String getPassword() {
+        return password;
     }
 
     @Override
@@ -31,11 +31,11 @@ public class MemberPassword {
             return false;
         }
         MemberPassword that = (MemberPassword) o;
-        return Objects.equals(value, that.value);
+        return Objects.equals(password, that.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(password);
     }
 }

@@ -8,11 +8,11 @@ public class MemberEmail {
 
     private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
         Pattern.compile("^[A-z0-9]+@[A-z0-9.-]+\\.[A-z]{2,6}$");
-    private final String value;
+    private final String email;
 
-    public MemberEmail(String value) {
-        validate(value);
-        this.value = value;
+    public MemberEmail(String email) {
+        validate(email);
+        this.email = email;
     }
 
     private void validate(String value) {
@@ -21,8 +21,8 @@ public class MemberEmail {
         }
     }
 
-    public String getValue() {
-        return value;
+    public String getEmail() {
+        return email;
     }
 
     @Override
@@ -34,11 +34,11 @@ public class MemberEmail {
             return false;
         }
         MemberEmail memberEmail = (MemberEmail) o;
-        return Objects.equals(value, memberEmail.value);
+        return Objects.equals(email, memberEmail.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(email);
     }
 }

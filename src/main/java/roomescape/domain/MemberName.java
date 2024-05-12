@@ -6,11 +6,11 @@ import java.util.Objects;
 public class MemberName {
     private static final int MAX_NAME_SIZE = 10;
 
-    private final String value;
+    private final String name;
 
-    public MemberName(String value) {
-        validate(value);
-        this.value = value;
+    public MemberName(String name) {
+        validate(name);
+        this.name = name;
     }
 
     private void validate(String value) {
@@ -19,8 +19,8 @@ public class MemberName {
         }
     }
 
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -32,11 +32,11 @@ public class MemberName {
             return false;
         }
         MemberName that = (MemberName) o;
-        return Objects.equals(value, that.value);
+        return Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(name);
     }
 }

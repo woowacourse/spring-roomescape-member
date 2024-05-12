@@ -22,8 +22,8 @@ class ReservationControllerTest extends ControllerTest {
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", "방탈출1", "설명1",
             "https://url1");
         jdbcTemplate.update("INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
-            VALID_USER_NAME.getValue(), VALID_USER_EMAIL.getValue(),
-            VALID_USER_PASSWORD.getValue(), MemberRole.USER.name());
+            VALID_USER_NAME.getName(), VALID_USER_EMAIL.getEmail(),
+            VALID_USER_PASSWORD.getPassword(), MemberRole.USER.name());
         jdbcTemplate.update("INSERT INTO reservation(date,time_id,theme_id,member_id) VALUES (?,?,?,?)",
             "2026-02-01", 1L, 1L, 1L);
     }
@@ -40,7 +40,7 @@ class ReservationControllerTest extends ControllerTest {
             .when().post("/reservations")
             .then().log().all()
             .statusCode(201)
-            .body("name", is(VALID_USER_NAME.getValue()));
+            .body("name", is(VALID_USER_NAME.getName()));
     }
 
     @DisplayName("예약을 삭제한다. -> 204")

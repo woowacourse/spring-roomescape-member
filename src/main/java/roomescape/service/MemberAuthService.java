@@ -34,20 +34,20 @@ public class MemberAuthService {
             MemberRole.USER);
 
         Member savedMember = memberRepository.save(newMember);
-        return new MemberAppResponse(savedMember.getId(), savedMember.getName().getValue(),
+        return new MemberAppResponse(savedMember.getId(), savedMember.getName().getName(),
             savedMember.getRole().name());
     }
 
     public MemberAppResponse findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-            .map(member -> new MemberAppResponse(member.getId(), member.getName().getValue(),
+            .map(member -> new MemberAppResponse(member.getId(), member.getName().getName(),
                 member.getRole().name()))
             .orElseThrow(() -> new NoSuchElementException("회원 정보를 찾지 못했습니다. 다시 로그인 해주세요."));
     }
 
     public List<MemberAppResponse> findAll() {
         return memberRepository.findAll().stream()
-            .map(member -> new MemberAppResponse(member.getId(), member.getName().getValue(),
+            .map(member -> new MemberAppResponse(member.getId(), member.getName().getName(),
                 member.getRole().name()))
             .toList();
     }

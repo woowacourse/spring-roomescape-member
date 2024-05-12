@@ -20,15 +20,15 @@ class AdminPageControllerTest extends ControllerTest {
     void setInitialData() {
         jdbcTemplate.update(
             "INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
-            VALID_USER_NAME.getValue(),
-            VALID_USER_EMAIL.getValue(),
-            VALID_USER_PASSWORD.getValue(),
+            VALID_USER_NAME.getName(),
+            VALID_USER_EMAIL.getEmail(),
+            VALID_USER_PASSWORD.getPassword(),
             MemberRole.USER.name());
         jdbcTemplate.update(
             "INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
-            VALID_ADMIN_NAME.getValue(),
-            VALID_ADMIN_EMAIL.getValue(),
-            VALID_ADMIN_PASSWORD.getValue(),
+            VALID_ADMIN_NAME.getName(),
+            VALID_ADMIN_EMAIL.getEmail(),
+            VALID_ADMIN_PASSWORD.getPassword(),
             MemberRole.ADMIN.name());
     }
 

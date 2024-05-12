@@ -32,9 +32,9 @@ public class JdbcMemberRepositoryImpl implements MemberRepository {
     @Override
     public Member save(Member member) {
         Map<String, Object> saveSource = Map.ofEntries(
-            Map.entry("name", member.getName().getValue()),
-            Map.entry("email", member.getEmail().getValue()),
-            Map.entry("password", member.getPassword().getValue()),
+            Map.entry("name", member.getName().getName()),
+            Map.entry("email", member.getEmail().getEmail()),
+            Map.entry("password", member.getPassword().getPassword()),
             Map.entry("role", member.getRole().name())
         );
 

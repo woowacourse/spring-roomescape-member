@@ -23,17 +23,17 @@ class MemberAuthControllerTest extends ControllerTest {
     void setInitialData() {
         jdbcTemplate.update(
             "INSERT INTO member(name,email,password,role) VALUES (?,?,?,?)",
-            VALID_USER_NAME.getValue(),
-            VALID_USER_EMAIL.getValue(),
-            VALID_USER_PASSWORD.getValue(),
+            VALID_USER_NAME.getName(),
+            VALID_USER_EMAIL.getEmail(),
+            VALID_USER_PASSWORD.getPassword(),
             MemberRole.USER.name());
     }
 
     @DisplayName("로그인을 한다. -> 200")
     @Test
     void login() {
-        TokenWebRequest request = new TokenWebRequest(VALID_USER_EMAIL.getValue(),
-            VALID_USER_PASSWORD.getValue());
+        TokenWebRequest request = new TokenWebRequest(VALID_USER_EMAIL.getEmail(),
+            VALID_USER_PASSWORD.getPassword());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -47,7 +47,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @Test
     void login_NotMemberEmail() {
         TokenWebRequest request = new TokenWebRequest("회원아님@naver.com",
-            VALID_USER_PASSWORD.getValue());
+            VALID_USER_PASSWORD.getPassword());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -63,7 +63,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @ValueSource(strings = {"이메일"})
     void login_IllegalEmail(String illegalEmail) {
         TokenWebRequest request = new TokenWebRequest(illegalEmail,
-            VALID_USER_PASSWORD.getValue());
+            VALID_USER_PASSWORD.getPassword());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -77,7 +77,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @ParameterizedTest
     @NullAndEmptySource
     void login_IllegalPassword(String illegalPassword) {
-        TokenWebRequest request = new TokenWebRequest(VALID_USER_EMAIL.getValue(),
+        TokenWebRequest request = new TokenWebRequest(VALID_USER_EMAIL.getEmail(),
             illegalPassword);
 
         RestAssured.given().log().all()
@@ -111,7 +111,7 @@ class MemberAuthControllerTest extends ControllerTest {
     @Test
     void findMember_expiredToken() {
         RestAssured.given().log().all()
-            .cookie(COOKIE_NAME, VALID_USER_EMAIL.getValue())
+            .cookie(COOKIE_NAME, VALID_USER_EMAIL.getEmail())
             .when().get("/login/check")
             .then().log().all()
             .statusCode(401);
@@ -134,8 +134,8 @@ class MemberAuthControllerTest extends ControllerTest {
     @DisplayName("이미 존재하는 이메일로 회원 가입을 한다. -> 401")
     @Test
     void signUp_ExistsEmail() {
-        MemberSignUpWebRequest request = new MemberSignUpWebRequest(VALID_USER_NAME.getValue(),
-            VALID_USER_EMAIL.getValue(), VALID_USER_PASSWORD.getValue());
+        MemberSignUpWebRequest request = new MemberSignUpWebRequest(VALID_USER_NAME.getName(),
+            VALID_USER_EMAIL.getEmail(), VALID_USER_PASSWORD.getPassword());
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

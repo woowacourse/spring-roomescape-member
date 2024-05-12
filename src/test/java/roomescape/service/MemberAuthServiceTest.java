@@ -38,15 +38,15 @@ class MemberAuthServiceTest {
     @DisplayName("회원을 저장한다.")
     @Test
     void signUp() {
-        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_USER_NAME.getValue(),
-            VALID_USER_EMAIL.getValue(), VALID_USER_PASSWORD.getValue());
+        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_USER_NAME.getName(),
+            VALID_USER_EMAIL.getEmail(), VALID_USER_PASSWORD.getPassword());
 
         when(memberRepository.save(any(Member.class)))
             .thenReturn(
                 new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, MemberRole.USER));
 
         MemberAppResponse actual = memberAuthService.signUp(request);
-        MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getValue(),
+        MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getName(),
             MemberRole.USER.name());
 
         assertThat(actual).isEqualTo(expected);
@@ -55,10 +55,10 @@ class MemberAuthServiceTest {
     @DisplayName("같은 이메일로 중복 회원가입을 시도하면 예외가 발생한다.")
     @Test
     void signUp_duplicatedEmail() {
-        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_USER_NAME.getValue(),
-            VALID_USER_EMAIL.getValue(), VALID_USER_PASSWORD.getValue());
+        MemberSignUpAppRequest request = new MemberSignUpAppRequest(VALID_USER_NAME.getName(),
+            VALID_USER_EMAIL.getEmail(), VALID_USER_PASSWORD.getPassword());
 
-        when(memberRepository.isExistsByEmail(VALID_USER_EMAIL.getValue()))
+        when(memberRepository.isExistsByEmail(VALID_USER_EMAIL.getEmail()))
             .thenReturn(true);
 
         assertThatThrownBy(() -> memberAuthService.signUp(request))
@@ -68,12 +68,12 @@ class MemberAuthServiceTest {
     @DisplayName("이메일을 통해 회원을 조회한다.")
     @Test
     void findMemberByEmail() {
-        when(memberRepository.findByEmail(VALID_USER_EMAIL.getValue()))
+        when(memberRepository.findByEmail(VALID_USER_EMAIL.getEmail()))
             .thenReturn(Optional.of(
                 new Member(1L, VALID_USER_NAME, VALID_USER_EMAIL, VALID_USER_PASSWORD, MemberRole.USER)));
 
-        MemberAppResponse actual = memberAuthService.findMemberByEmail(VALID_USER_EMAIL.getValue());
-        MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getValue(),
+        MemberAppResponse actual = memberAuthService.findMemberByEmail(VALID_USER_EMAIL.getEmail());
+        MemberAppResponse expected = new MemberAppResponse(1L, VALID_USER_NAME.getName(),
             MemberRole.USER.name());
 
         assertThat(actual).isEqualTo(expected);
@@ -82,10 +82,10 @@ class MemberAuthServiceTest {
     @DisplayName("이메일의 회원이 없을 경우 예외가 발생한다.")
     @Test
     void findMemberByEmail_NoSuch() {
-        when(memberRepository.findByEmail(VALID_USER_EMAIL.getValue()))
+        when(memberRepository.findByEmail(VALID_USER_EMAIL.getEmail()))
             .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> memberAuthService.findMemberByEmail(VALID_USER_EMAIL.getValue()))
+        assertThatThrownBy(() -> memberAuthService.findMemberByEmail(VALID_USER_EMAIL.getEmail()))
             .isInstanceOf(NoSuchElementException.class);
     }
 
