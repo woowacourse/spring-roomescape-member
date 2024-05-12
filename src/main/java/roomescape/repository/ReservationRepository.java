@@ -61,6 +61,17 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId);
     }
 
+    public List<Reservation> findByThemeId(Long themeId) {
+        String sql = """
+                SELECT * FROM reservation r 
+                JOIN reservation_time rt ON r.time_id = rt.id 
+                JOIN theme t ON r.theme_id = t.id 
+                JOIN member m ON r.member_id = m.id 
+                WHERE r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, themeId);
+    }
+
     public List<Reservation> findByTimeIdAndDateThemeId(Long timeId, LocalDate date, Long themeId) {
         String sql = """
                 SELECT * FROM reservation r 

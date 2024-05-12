@@ -1,20 +1,27 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.global.exception.ApplicationException;
+import roomescape.global.exception.ExceptionType;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<ThemeResponse> findAllThemes() {
@@ -42,6 +49,11 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
+        List<Reservation> usingThemeReservations = reservationRepository.findByThemeId(id);
+        if (usingThemeReservations.size() > 0) {
+            throw new ApplicationException(ExceptionType.RESERVATION_EXIST_ON_THEME);
+        }
+
         themeRepository.delete(id);
     }
 }
