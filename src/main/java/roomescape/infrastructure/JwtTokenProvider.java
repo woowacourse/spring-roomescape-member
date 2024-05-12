@@ -7,8 +7,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Primary;
 
 @ConfigurationProperties(prefix = "security.jwt.token")
+@Primary
 public class JwtTokenProvider implements TokenProvider {
 
     private final String secretKey;

@@ -5,29 +5,29 @@ import roomescape.dao.member.MemberDao;
 import roomescape.domain.member.MemberInfo;
 import roomescape.dto.auth.LoginRequest;
 import roomescape.dto.auth.TokenResponse;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.TokenProvider;
 
 @Service
 public class AuthService {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
     private final MemberDao memberDao;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthService(TokenProvider tokenProvider, MemberDao memberDao) {
+        this.tokenProvider = tokenProvider;
         this.memberDao = memberDao;
     }
 
     public TokenResponse createToken(LoginRequest loginRequest) {
         if (!memberDao.isMemberExist(loginRequest.email(), loginRequest.password())) {
-            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+            throw new IllegalArgumentException("아이디, 비밀번호를 확인해주세요.");
         }
-        String accessToken = jwtTokenProvider.createToken(loginRequest.email());
+        String accessToken = tokenProvider.createToken(loginRequest.email());
         return new TokenResponse(accessToken);
     }
 
     public MemberInfo findMemberByToken(String token) {
-        String payload = jwtTokenProvider.getPayload(token);
+        String payload = tokenProvider.getPayload(token);
         return findMember(payload);
     }
 
