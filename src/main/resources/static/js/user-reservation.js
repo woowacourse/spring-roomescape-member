@@ -164,7 +164,11 @@ function onReservationButtonClick() {
       return response.json();
     })
     .then(data => {
-      alert("Reservation successful!");
+      alert("성공적으로 예약되었습니다."
+          + "\n테마명: " + data.themeName
+          + "\n예약자명: " + data.memberName
+          + "\n예약시간: " + data.date + " " + data.time
+      );
       location.reload();
     })
     .catch(error => {
