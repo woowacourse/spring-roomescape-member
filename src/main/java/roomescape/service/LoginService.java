@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.dto.LoginRequest;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.MemberRepository;
@@ -34,7 +35,8 @@ public class LoginService {
 
         return jwtGenerator.generateWith(Map.of(
                 "id", findMember.getId(),
-                "name", findMember.getName()
+                "name", findMember.getName(),
+                "role", findMember.getRole().toString()
         ));
     }
 
@@ -43,7 +45,8 @@ public class LoginService {
             Claims claims = jwtGenerator.getClaims(token);
             return new LoginMember(
                     claims.get("id", Long.class),
-                    claims.get("name", String.class)
+                    claims.get("name", String.class),
+                    Role.valueOf(claims.get("role", String.class))
             );
         } catch (ExpiredJwtException e) {
             throw new RoomescapeException(REQUIRED_LOGIN);

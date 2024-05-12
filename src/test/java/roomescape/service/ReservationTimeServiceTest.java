@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.LoginMember;
+import roomescape.Fixture;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -74,9 +74,9 @@ class ReservationTimeServiceTest {
         LocalDate selectedDate = LocalDate.of(2024, 1, 1);
 
         reservationRepository.save(new Reservation(selectedDate, reservationTime1, DEFUALT_THEME,
-                new LoginMember(1L, "name")));
+                Fixture.defaultLoginuser));
         reservationRepository.save(new Reservation(selectedDate, reservationTime3, DEFUALT_THEME,
-                new LoginMember(1L, "name")));
+                Fixture.defaultLoginuser));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findByThemeAndDate(selectedDate,
@@ -137,7 +137,7 @@ class ReservationTimeServiceTest {
                     LocalDate.now(),
                     new ReservationTime(1L, SAVED_TIME),
                     new Theme(1L, "name", "description", "thumbnail"),
-                    new LoginMember(1L, "name")
+                    Fixture.defaultLoginuser
             ));
 
             //when & then
