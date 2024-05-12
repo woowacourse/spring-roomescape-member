@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.fixture.MemberFixture.getMemberChoco;
 import static roomescape.fixture.MemberFixture.getMemberClover;
 
@@ -8,8 +9,12 @@ import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +49,15 @@ class ReservationControllerTest extends ControllerTest {
     @Autowired
     TokenProvider tokenProvider;
 
+    String token;
+
+    @BeforeEach
+    void setUp() {
+        memberService.create(
+                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+        token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
+    }
+
     @DisplayName("사용자 예약 생성 시 201을 반환한다.")
     @Test
     void create() {
@@ -51,9 +65,7 @@ class ReservationControllerTest extends ControllerTest {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
                 new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-        memberService.create(
-                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
-        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-08-05");
         reservation.put("timeId", reservationTimeResponse.id());
@@ -69,17 +81,13 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(201);
     }
 
-    @DisplayName("예약 삭제 시 204를 반환한다.")
-    @Test
-    void delete() {
-        //given
+    @DisplayName("예약을 삭제한다.")
+    @TestFactory
+    Stream<DynamicTest> delete() {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
                 new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-        memberService.create(
-                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
 
-        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
         ReservationResponse reservationResponse = reservationService.createMemberReservation(
                 getMemberChoco(),
                 new ReservationRequest(
@@ -88,24 +96,35 @@ class ReservationControllerTest extends ControllerTest {
                         themeResponse.id())
         );
 
-        //when &then
-        RestAssured.given().log().all()
-                .cookie("token", token)
-                .when().delete("/reservations/" + reservationResponse.memberReservationId())
-                .then().log().all()
-                .statusCode(204);
+        return Stream.of(
+                dynamicTest("타인의 예약 삭제 시, 403을 반환한다.", () -> {
+                    //given
+                    memberService.create(
+                            new SignUpRequest(getMemberClover().getName(), getMemberClover().getEmail(), "qwer"));
+
+                    String cloverToken = tokenProvider.createAccessToken(getMemberClover().getEmail());
+
+                    RestAssured.given().log().all()
+                            .cookie("token", cloverToken)
+                            .when().delete("/reservations/" + reservationResponse.memberReservationId())
+                            .then().log().all()
+                            .statusCode(403);
+                }),
+                dynamicTest("예약 삭제 시 204를 반환한다.", () -> {
+                    //given
+                    RestAssured.given().log().all()
+                            .cookie("token", token)
+                            .when().delete("/reservations/" + reservationResponse.memberReservationId())
+                            .then().log().all()
+                            .statusCode(204);
+                })
+        );
     }
 
     @DisplayName("예약 조회 시 200을 반환한다.")
     @Test
     void find() {
-        //given
-        memberService.create(
-                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
-
-        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
-
-        //when & then
+        //given & when & then
         RestAssured.given().log().all()
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
@@ -122,10 +141,7 @@ class ReservationControllerTest extends ControllerTest {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
                 new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-        memberService.create(
-                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
 
-        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", date);
         reservation.put("timeId", reservationTimeResponse.id());
@@ -148,10 +164,7 @@ class ReservationControllerTest extends ControllerTest {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
                 new ReservationTimeRequest("12:00"));
         ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-        memberService.create(
-                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
 
-        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", LocalDate.now().minusDays(2).toString());
         reservation.put("timeId", reservationTimeResponse.id());
@@ -165,34 +178,5 @@ class ReservationControllerTest extends ControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @DisplayName("타인의 예약 삭제 시, 403을 반환한다.")
-    @Test
-    void deleteNotDifferentReservation() {
-        //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
-                new ReservationTimeRequest("12:00"));
-        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-        memberService.create(
-                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
-        memberService.create(
-                new SignUpRequest(getMemberClover().getName(), getMemberClover().getEmail(), "qwer"));
-
-        String token = tokenProvider.createAccessToken(getMemberClover().getEmail());
-        ReservationResponse reservationResponse = reservationService.createMemberReservation(
-                getMemberChoco(),
-                new ReservationRequest(
-                        LocalDate.now().toString(),
-                        reservationTimeResponse.id(),
-                        themeResponse.id())
-        );
-
-        //when &then
-        RestAssured.given().log().all()
-                .cookie("token", token)
-                .when().delete("/reservations/" + reservationResponse.memberReservationId())
-                .then().log().all()
-                .statusCode(403);
     }
 }
