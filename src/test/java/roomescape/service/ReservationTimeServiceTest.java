@@ -48,9 +48,9 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 조회한다.")
     void getGetTime() {
-        ReservationTimeResponse timeResponse = reservationTimeService.getTime(1L);
+        ReservationTimeResponse timeResponse = reservationTimeService.getTime(RESERVATION_TIME_1.getId());
 
-        assertThat(timeResponse.startAt()).isEqualTo("09:00");
+        assertThat(timeResponse.startAt()).isEqualTo(RESERVATION_TIME_1.getStartAt().toString());
     }
 
     @Test

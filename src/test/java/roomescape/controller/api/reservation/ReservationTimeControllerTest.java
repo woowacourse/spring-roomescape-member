@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.InitialDataFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -52,7 +55,7 @@ class ReservationTimeControllerTest {
     @DisplayName("중복된 예약 가능한 시간을 추가하는 경우 bad request 상태코드를 반환한다.")
     void wrongGetStartAt() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "09:00");
+        params.put("startAt", InitialDataFixture.RESERVATION_TIME_1.getStartAt().format(DateTimeFormatter.ISO_TIME));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

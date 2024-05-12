@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.InitialDataFixture;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ class ThemeControllerTest {
     @DisplayName("중복된 테마 이름을 추가하는 경우 bad request 상태코드를 반환한다.")
     void duplicatedTheme() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "레벨2 탈출");
+        params.put("name", InitialDataFixture.THEME_1.getName().getName());
         params.put("description", "테마 설명");
         params.put("thumbnail", "테마 썸네일");
 
