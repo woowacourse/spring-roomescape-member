@@ -102,6 +102,7 @@ class UserReservationControllerTest {
         CreateReservationRequest request = new CreateReservationRequest(1L, "2000-01-01", 1L, 1L);
 
         RestAssured.given().log().all()
+            .cookie("token", USER_TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
             .when().post("/reservations")

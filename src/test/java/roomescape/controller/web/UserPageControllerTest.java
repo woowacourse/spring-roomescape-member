@@ -1,5 +1,7 @@
 package roomescape.controller.web;
 
+import static roomescape.TokenTestFixture.USER_TOKEN;
+
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ class UserPageControllerTest {
     @Test
     void getReservationPage() {
         RestAssured.given().log().all()
+            .cookie("token", USER_TOKEN)
             .when().get("/reservation")
             .then().log().all()
             .statusCode(200);
