@@ -24,7 +24,7 @@ public class MemberService {
     }
 
     // TODO : email 중복 검증 추가
-    public Member saveUser(final SaveMemberRequest request) {
+    public Member saveMember(final SaveMemberRequest request) {
         validatePlainPassword(request.password());
 
         final Member member = request.toMember(passwordEncoder.encode(request.password()));

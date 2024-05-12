@@ -30,7 +30,7 @@ public class MemberController {
 
     @PostMapping("/members")
     public MemberResponse saveMember(@RequestBody final SaveMemberRequest request) {
-        final Member savedMember = memberService.saveUser(request);
+        final Member savedMember = memberService.saveMember(request);
         return MemberResponse.from(savedMember);
     }
 }

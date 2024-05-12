@@ -36,7 +36,7 @@ class MemberServiceTest {
     
     @DisplayName("회원 정보를 저장한다.")
     @Test
-    void saveUserTest() {
+    void saveMemberTest() {
         // Given
         final MemberRole role = MemberRole.USER;
         final String password = "kellyPw1234";
@@ -45,7 +45,7 @@ class MemberServiceTest {
         final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(email, password, name, role);
 
         // When
-        final Member savedMember = memberService.saveUser(saveMemberRequest);
+        final Member savedMember = memberService.saveMember(saveMemberRequest);
 
         // Then
         assertAll(
