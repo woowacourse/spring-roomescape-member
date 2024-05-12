@@ -44,7 +44,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     private LoginMember extractLoginMemberByRequest(HttpServletRequest request) throws Exception {
         String token = authorizationExtractor.extractToken(request);
         TokenDto tokenDto = new TokenDto(token);
-        if (authService.isValidateToken(tokenDto)) {
+        if (!authService.isValidateToken(tokenDto)) {
             throw new IllegalArgumentException("[ERROR] 유효한 토큰이 아닙니다.");
         }
 

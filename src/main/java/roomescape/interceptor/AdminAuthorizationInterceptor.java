@@ -27,7 +27,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         String token = authorizationExtractor.extractToken(request);
         TokenDto tokenDto = new TokenDto(token);
 
-        if (authService.isValidateToken(tokenDto)) {
+        if (!authService.isValidateToken(tokenDto)) {
             return AuthorizationResponseHandler.redirectLogin(response);
         }
 
