@@ -4,6 +4,9 @@ import roomescape.global.exception.RoomEscapeException;
 
 import java.util.Objects;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static roomescape.global.exception.ExceptionMessage.NAME_CANNOT_NULL;
+
 public class ReservationMember {
 
     private Long id;
@@ -17,9 +20,9 @@ public class ReservationMember {
 
     private void checkNull(String name) {
         try {
-            Objects.requireNonNull(name, "[ERROR] 이름은 null일 수 없습니다.");
+            Objects.requireNonNull(name, NAME_CANNOT_NULL.getMessage());
         } catch (NullPointerException e) {
-            throw new RoomEscapeException(e.getMessage());
+            throw new RoomEscapeException(BAD_REQUEST, e.getMessage());
         }
     }
 

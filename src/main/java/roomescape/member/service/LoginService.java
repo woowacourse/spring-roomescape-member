@@ -1,11 +1,14 @@
 package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.dao.MemberDao;
-import roomescape.member.dto.LoginRequest;
 import roomescape.global.auth.AuthUser;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.global.jwt.JwtProvider;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.dto.LoginRequest;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static roomescape.global.exception.ExceptionMessage.MEMBER_NOT_FOUND;
 
 @Service
 public class LoginService {
@@ -20,7 +23,7 @@ public class LoginService {
 
     public String login(LoginRequest loginRequest) {
         AuthUser authUser = memberDao.findIdByEmailAndPassword(loginRequest.email(), loginRequest.password())
-                .orElseThrow(() -> new RoomEscapeException("[ERROR] 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RoomEscapeException(NOT_FOUND, MEMBER_NOT_FOUND.getMessage()));
 
         return jwtProvider.createAccessToken(authUser);
     }

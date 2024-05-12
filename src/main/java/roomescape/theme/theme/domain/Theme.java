@@ -4,6 +4,9 @@ import roomescape.global.exception.RoomEscapeException;
 
 import java.util.Objects;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static roomescape.global.exception.ExceptionMessage.*;
+
 public class Theme {
     private final Long id;
     private final String name;
@@ -20,11 +23,11 @@ public class Theme {
 
     private void checkNull(String name, String description, String thumbnail) {
         try {
-            Objects.requireNonNull(name, "[ERROR] 테마 이름은 null일 수 없습니다.");
-            Objects.requireNonNull(description, "[ERROR] 설명은 null일 수 없습니다.");
-            Objects.requireNonNull(thumbnail, "[ERROR] 썸네일은 null일 수 없습니다.");
+            Objects.requireNonNull(name, THEME_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(description, DESCRIPTION_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(thumbnail, THUMBNAIL_CANNOT_NULL.getMessage());
         } catch (NullPointerException e) {
-            throw new RoomEscapeException(e.getMessage());
+            throw new RoomEscapeException(BAD_REQUEST, e.getMessage());
         }
     }
 

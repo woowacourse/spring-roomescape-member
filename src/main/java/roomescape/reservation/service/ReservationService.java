@@ -2,6 +2,8 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.admin.dto.AdminReservationSaveRequest;
+import roomescape.global.auth.AuthUser;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.member.domain.ReservationMember;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
@@ -13,11 +15,13 @@ import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.mapper.ReservationMapper;
 import roomescape.theme.theme.dao.ThemeDao;
 import roomescape.theme.theme.domain.Theme;
-import roomescape.global.auth.AuthUser;
-import roomescape.global.exception.RoomEscapeException;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static roomescape.global.exception.ExceptionMessage.*;
 
 @Service
 public class ReservationService {
@@ -51,17 +55,17 @@ public class ReservationService {
 
     public ReservationResponse saveReservation(ReservationSaveRequest request, AuthUser authUser) {
         ReservationTime time = timeDao.findById(request.timeId())
-                .orElseThrow(() -> new RoomEscapeException("[ERROR] 예약 시간을 찾을 수 없습니다"));
+                .orElseThrow(() -> new RoomEscapeException(NOT_FOUND, RESERVATION_TIME_NOT_FOUND.getMessage()));
 
         if (checkPastTime(request.date(), time)) {
-            throw new RoomEscapeException("[ERROR] 이미 지난 시간입니다.");
+            throw new RoomEscapeException(BAD_REQUEST, TIME_ALREADY_PAST.getMessage());
         }
 
         if (reservationDao.existByDateTimeTheme(request.date(), time.getStartAt(), request.themeId())) {
-            throw new RoomEscapeException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
+            throw new RoomEscapeException(BAD_REQUEST, RESERVATION_ALREADY_EXIST.getMessage());
         }
         Theme theme = themeDao.findById(request.themeId())
-                .orElseThrow(() -> new RoomEscapeException("[ERROR] 테마를 찾을 수 없습니다"));
+                .orElseThrow(() -> new RoomEscapeException(NOT_FOUND, THEME_NOT_FOUND.getMessage()));
 
         ReservationMember member = new ReservationMember(authUser.id(), authUser.name());
         Reservation reservation = reservationMapper.mapToReservation(request, member, time, theme);
@@ -71,17 +75,17 @@ public class ReservationService {
 
     public ReservationResponse saveReservation(AdminReservationSaveRequest request) {
         ReservationTime time = timeDao.findById(request.timeId())
-                .orElseThrow(() -> new RoomEscapeException("[ERROR] 예약 시간을 찾을 수 없습니다"));
+                .orElseThrow(() -> new RoomEscapeException(NOT_FOUND, RESERVATION_TIME_NOT_FOUND.getMessage()));
 
         if (checkPastTime(request.date(), time)) {
-            throw new RoomEscapeException("[ERROR] 이미 지난 시간입니다.");
+            throw new RoomEscapeException(BAD_REQUEST, TIME_ALREADY_PAST.getMessage());
         }
 
         if (reservationDao.existByDateTimeTheme(request.date(), time.getStartAt(), request.themeId())) {
-            throw new RoomEscapeException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
+            throw new RoomEscapeException(BAD_REQUEST, RESERVATION_ALREADY_EXIST.getMessage());
         }
         Theme theme = themeDao.findById(request.themeId())
-                .orElseThrow(() -> new RoomEscapeException("[ERROR] 테마를 찾을 수 없습니다"));
+                .orElseThrow(() -> new RoomEscapeException(NOT_FOUND, THEME_NOT_FOUND.getMessage()));
 
         ReservationMember member = memberService.findById(request.memberId());
 

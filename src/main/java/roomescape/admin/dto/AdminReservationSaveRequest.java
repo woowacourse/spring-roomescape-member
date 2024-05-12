@@ -5,6 +5,9 @@ import roomescape.global.exception.RoomEscapeException;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static roomescape.global.exception.ExceptionMessage.*;
+
 public record AdminReservationSaveRequest(
         LocalDate date,
         Long timeId,
@@ -13,12 +16,12 @@ public record AdminReservationSaveRequest(
 ) {
     public AdminReservationSaveRequest {
         try {
-            Objects.requireNonNull(date, "[ERROR] 날짜는 null일 수 없습니다.");
-            Objects.requireNonNull(timeId, "[ERROR] 시간은 null일 수 없습니다.");
-            Objects.requireNonNull(themeId, "[ERROR] 테마는 null일 수 없습니다.");
-            Objects.requireNonNull(memberId, "[ERROR] 멤버는 null일 수 없습니다.");
+            Objects.requireNonNull(date, DATE_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(timeId, TIME_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(themeId, THEME_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(memberId, MEMBER_CANNOT_NULL.getMessage());
         } catch (NullPointerException e) {
-            throw new RoomEscapeException(e.getMessage());
+            throw new RoomEscapeException(BAD_REQUEST, e.getMessage());
         }
     }
 }

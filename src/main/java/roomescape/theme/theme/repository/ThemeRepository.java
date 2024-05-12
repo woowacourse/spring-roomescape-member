@@ -1,13 +1,16 @@
 package roomescape.theme.theme.repository;
 
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.theme.dao.ThemeDao;
 import roomescape.theme.theme.domain.Theme;
-import roomescape.global.exception.RoomEscapeException;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static roomescape.global.exception.ExceptionMessage.THEME_NOT_FOUND;
 
 @Repository
 public class ThemeRepository {
@@ -29,6 +32,6 @@ public class ThemeRepository {
 
     private Theme getTheme(Long id) {
         return themeDao.findById(id)
-                .orElseThrow(() -> new RoomEscapeException("[ERROR] 테마를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RoomEscapeException(NOT_FOUND, THEME_NOT_FOUND.getMessage()));
     }
 }

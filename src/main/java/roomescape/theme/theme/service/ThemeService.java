@@ -2,16 +2,19 @@ package roomescape.theme.theme.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.theme.theme.dao.ThemeDao;
 import roomescape.theme.theme.domain.Theme;
 import roomescape.theme.theme.dto.ThemeResponse;
 import roomescape.theme.theme.dto.ThemeSaveRequest;
 import roomescape.theme.theme.mapper.ThemeMapper;
 import roomescape.theme.theme.repository.ThemeRepository;
-import roomescape.global.exception.RoomEscapeException;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static roomescape.global.exception.ExceptionMessage.THEME_EXIST_RESERVATION_CANNOT_DELETE;
 
 @Service
 public class ThemeService {
@@ -54,7 +57,7 @@ public class ThemeService {
         try {
             themeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new RoomEscapeException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new RoomEscapeException(BAD_REQUEST, THEME_EXIST_RESERVATION_CANNOT_DELETE.getMessage());
         }
     }
 }

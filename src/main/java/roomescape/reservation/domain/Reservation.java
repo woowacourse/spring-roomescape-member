@@ -1,11 +1,14 @@
 package roomescape.reservation.domain;
 
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.member.domain.ReservationMember;
 import roomescape.theme.theme.domain.Theme;
-import roomescape.global.exception.RoomEscapeException;
 
 import java.time.LocalDate;
 import java.util.Objects;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static roomescape.global.exception.ExceptionMessage.*;
 
 public class Reservation {
     private final Long id;
@@ -25,12 +28,12 @@ public class Reservation {
 
     private void checkNull(ReservationMember member, LocalDate date, ReservationTime time, Theme theme) {
         try {
-            Objects.requireNonNull(member, "[ERROR] 멤버는 null일 수 없습니다.");
-            Objects.requireNonNull(date, "[ERROR] 날짜는 null일 수 없습니다.");
-            Objects.requireNonNull(time, "[ERROR] 시간은 null일 수 없습니다.");
-            Objects.requireNonNull(theme, "[ERROR] 테마는 null일 수 없습니다.");
+            Objects.requireNonNull(member, MEMBER_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(date, DATE_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(time, TIME_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(theme, THEME_CANNOT_NULL.getMessage());
         } catch (NullPointerException e) {
-            throw new RoomEscapeException(e.getMessage());
+            throw new RoomEscapeException(BAD_REQUEST, e.getMessage());
         }
     }
 

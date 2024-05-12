@@ -6,6 +6,10 @@ import roomescape.global.exception.RoomEscapeException;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static roomescape.global.exception.ExceptionMessage.*;
+
 public class CookieManager {
 
     private static final String AUTH_COOKIE_NAME = "token";
@@ -13,7 +17,7 @@ public class CookieManager {
     public List<Cookie> extractCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null || cookies.length == 0) {
-            throw new RoomEscapeException("[ERROR] 쿠키가 존재하지 않습니다");
+            throw new RoomEscapeException(NOT_FOUND, COOKIE_NOT_FOUND.getMessage());
         }
         return List.of(cookies);
     }
@@ -24,7 +28,7 @@ public class CookieManager {
                 return cookie.getValue();
             }
         }
-        throw new RoomEscapeException("[ERROR] 토큰이 존재하지 않습니다.");
+        throw new RoomEscapeException(UNAUTHORIZED, TOKEN_NOT_FOUND.getMessage());
     }
 
     public Cookie createCookie(String token) {
@@ -42,6 +46,6 @@ public class CookieManager {
                 return cookie;
             }
         }
-        throw new RoomEscapeException("[ERROR] 권한 정보가 없습니다");
+        throw new RoomEscapeException(UNAUTHORIZED, AUTHENTICATION_NOT_FOUND.getMessage());
     }
 }
