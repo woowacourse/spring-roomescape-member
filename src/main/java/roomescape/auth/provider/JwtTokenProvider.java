@@ -23,9 +23,7 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(member.getEmail())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .setSubject(member.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -40,20 +38,14 @@ public class JwtTokenProvider {
                 .orElseThrow(() -> new AuthorizationException("토큰이 없습니다."));
     }
 
-    public String getEmail(String token) {
-        return Jwts.parser()
+    public Long getId(String token) {
+        String id = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-    }
 
-    public String getRole(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role", String.class);
+        return Long.valueOf(id);
     }
 }
 

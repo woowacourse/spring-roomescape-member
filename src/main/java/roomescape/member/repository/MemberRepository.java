@@ -32,6 +32,16 @@ public class MemberRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
+
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
         try {

@@ -1,5 +1,6 @@
 package roomescape.auth.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.auth.provider.JwtTokenProvider;
 import roomescape.exception.InvalidPasswordException;
@@ -32,9 +33,11 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public Member findMemberByToken(String token) {
-        String email = jwtTokenProvider.getEmail(token);
-        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+    public Member findMemberByCookie(Cookie[] cookies) {
+        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
+
+        Long id = jwtTokenProvider.getId(token);
+        Optional<Member> memberOptional = memberRepository.findById(id);
 
         return memberOptional.orElseThrow(() -> new IllegalArgumentException("올바르지 않은 토큰입니다."));
     }
