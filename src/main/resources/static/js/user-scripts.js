@@ -11,7 +11,7 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       .then(response => {
         if(response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
-          window.location.replace('/login');
+          window.location.href = '/login';
         } else {
           // 로그아웃 실패 처리
           console.error('Logout failed');
@@ -128,8 +128,8 @@ function register(event) {
       })
       .then(data => {
         // 성공적인 응답 처리
-        console.log('Signup successful:', data);
-        window.location.replace('/login');
+          console.log('Signup successful:', data);
+          window.location.href = '/login';
       })
       .catch(error => {
           alert(error.message);
