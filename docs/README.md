@@ -45,6 +45,16 @@
 - [x] 로그인 후 토큰을 이용한 사용자 정보 조회 API 구현
 - [x] 로그아웃
 
+## 5단계
+
+- [ ] 템플릿 활성화
+  - [ ] `reservation.html`
+  - [ ] `user-reservation.html`
+  - [ ] `admin/reservation-new.html`
+- [ ] 사용자 정보 조회 로직 리팩터링
+  - [ ] `HandlerMethodArgumentResolver` 사용하여 쿠키를 `Member` 객체로 변환 
+- [ ] 예약 생성 API 리팩터링
+
 ### 리팩토링 목록
 
 - [ ] `findBy...()` 메서드 `try-catch` 구문으로 감싸기
