@@ -15,9 +15,9 @@ public class Email {
         this.value = value;
     }
 
-    private void validate(String email) {
+    private void validate(String value) {
         Pattern pattern = Pattern.compile(EMAIL_REGEX);
-        Matcher matcher = pattern.matcher(email);
+        Matcher matcher = pattern.matcher(value);
         if(!matcher.matches()){
             throw new InvalidMemberException("유효하지 않은 이메일입니다.");
         }
