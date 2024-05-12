@@ -14,23 +14,23 @@ import roomescape.dto.request.AdminReservationRequest;
 import roomescape.dto.request.AdminReservationSearchRequest;
 import roomescape.dto.response.AdminReservationResponse;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminService;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final ReservationService reservationService;
+    private final AdminService adminService;
 
-    public AdminController(ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     @PostMapping("/reservations")
     public ResponseEntity<AdminReservationResponse> addReservation(
             @RequestBody @Valid AdminReservationRequest adminReservationRequest
     ) {
-        AdminReservationResponse adminReservationResponse = reservationService.addReservation(adminReservationRequest);
+        AdminReservationResponse adminReservationResponse = adminService.addReservation(adminReservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + adminReservationResponse.id()))
                 .body(adminReservationResponse);
@@ -39,7 +39,7 @@ public class AdminController {
     @GetMapping("/reservations/search")
     public ResponseEntity<List<ReservationResponse>> getReservations(
             @ModelAttribute @Valid AdminReservationSearchRequest adminReservationSearchRequest) {
-        List<ReservationResponse> reservationResponses = reservationService.getReservations(
+        List<ReservationResponse> reservationResponses = adminService.getReservations(
                 adminReservationSearchRequest);
 
         return ResponseEntity.ok(reservationResponses);
