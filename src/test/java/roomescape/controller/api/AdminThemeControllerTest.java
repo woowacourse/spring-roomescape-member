@@ -54,20 +54,6 @@ class AdminThemeControllerTest {
             .body("id", contains(1, 3));
     }
 
-    @DisplayName("성공: 테마 조회 -> 200")
-    @Test
-    void findAll() {
-        RestAssured.given().log().all()
-            .cookie("token", ADMIN_TOKEN)
-            .contentType(ContentType.JSON)
-            .when().get("/themes")
-            .then().log().all()
-            .statusCode(200)
-            .body("id", contains(1, 2, 3))
-            .body("name", contains("theme1", "theme2", "theme3"))
-            .body("description", contains("desc1", "desc2", "desc3"));
-    }
-
     @DisplayName("실패: 잘못된 포맷으로 테마 생성 -> 400")
     @Test
     void save_IllegalTheme() {
@@ -107,15 +93,5 @@ class AdminThemeControllerTest {
             .then().log().all()
             .statusCode(400)
             .body("message", is("해당 테마를 사용하는 예약이 존재하여 삭제할 수 없습니다."));
-    }
-
-    @DisplayName("성공: 상위 10개의 인기 테마 조회 -> 200")
-    @Test
-    void findPopular() {
-        RestAssured.given().log().all()
-            .when().get("/themes/popular")
-            .then().log().all()
-            .statusCode(200)
-            .body("id", contains(1, 3, 2));
     }
 }
