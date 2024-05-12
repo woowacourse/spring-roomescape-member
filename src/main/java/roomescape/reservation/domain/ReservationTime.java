@@ -22,7 +22,7 @@ public class ReservationTime {
 
     private void validateNull() {
         if (startAt == null) {
-            throw new ValidateException(ErrorType.TIME_REQUEST_DATA_BLANK,
+            throw new ValidateException(ErrorType.REQUEST_DATA_BLANK,
                     String.format("예약 시간(Time) 생성에 유효하지 않은 값(null)이 입력되었습니다. [values: %s]", this));
         }
     }
