@@ -42,13 +42,14 @@ class ReservationControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private ReservationService reservationService;
+    private final JwtProvider jwtProvider = new JwtProvider();
 
     @Test
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 201Created를 반환한다.")
     void saveReservation_ShouldReturn201StatusCode_WhenInsertAllValidateField() throws Exception {
         // given
         Member member = new Member(1L, "name", "email", "password");
-        String token = JwtProvider.encode(member);
+        String token = jwtProvider.encode(member);
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
@@ -72,7 +73,7 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 location 헤더가 추가된다.")
     void saveReservation_ShouldRedirect_WhenInsertAllValidateField() throws Exception {
         // given
-        String token = JwtProvider.encode(new Member(1L, "a", "b", "c"));
+        String token = jwtProvider.encode(new Member(1L, "a", "b", "c"));
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(

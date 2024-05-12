@@ -2,6 +2,7 @@ package roomescape.web.controller;
 
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,7 +38,8 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private MemberService memberService;
-
+    @MockBean
+    private JwtProvider jwtProvider;
 
     @Test
     @DisplayName("로그인에 성공하면 200OK를 반환한다.")
@@ -95,8 +97,12 @@ class AuthControllerTest {
     void findAuthenticatedMember_ShouldReturnMemberName() throws Exception {
         // given
         Member member = new Member(1L, "name", "email@email.com", "password", Role.NORMAL);
-        String token = JwtProvider.encode(member);
         MemberResponse response = new MemberResponse(member.getId(), member.getName());
+        String token = new JwtProvider().encode(member);
+        Mockito.when(jwtProvider.extractName(any()))
+                .thenReturn("name");
+        Mockito.when(jwtProvider.extractId(any()))
+                .thenReturn(1L);
 
         // when & then
         mockMvc.perform(get("/login/check")

@@ -25,6 +25,7 @@ public class AuthController {
     private static final String TOKEN_COOKIE_KEY_NAME = "token";
 
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
@@ -38,7 +39,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkAuthenticated(
             @CookieValue(value = TOKEN_COOKIE_KEY_NAME, defaultValue = "") String token) {
-        MemberResponse response = new MemberResponse(JwtProvider.decodeId(token), JwtProvider.decodeName(token));
+        MemberResponse response = new MemberResponse(jwtProvider.extractId(token), jwtProvider.extractName(token));
 
         return ResponseEntity.ok()
                 .body(response);

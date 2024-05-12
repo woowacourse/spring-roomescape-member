@@ -1,15 +1,20 @@
 package roomescape.service.security;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import groovy.util.logging.Slf4j;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
 
-@Slf4j
 class JwtProviderTest {
+    private JwtProvider jwtProvider;
+
+    @BeforeEach
+    void setUp() {
+        jwtProvider = new JwtProvider();
+    }
 
     @Test
     @DisplayName("사용자 정보를 바탕으로 Jwt 토큰을 발행한다")
@@ -18,10 +23,10 @@ class JwtProviderTest {
         Member user = new Member(1L, "name", "email", "password");
 
         // when
-        String encodedToken = JwtProvider.encode(user);
+        String encodedToken = new JwtProvider().encode(user);
 
         //then
-        Long decode = JwtProvider.decodeId(encodedToken);
+        Long decode = new JwtProvider().extractId(encodedToken);
         Assertions.assertThat(decode)
                 .isOne();
     }
@@ -31,10 +36,10 @@ class JwtProviderTest {
     void decodeRole_ShouldExtractRole() {
         // given
         Member member = new Member(1L, "name", "email", "password", Role.ADMIN);
-        String encoded = JwtProvider.encode(member);
+        String encoded = new JwtProvider().encode(member);
 
         // when
-        Role role = JwtProvider.decodeRole(encoded);
+        Role role = new JwtProvider().extractRole(encoded);
 
         // then
         Assertions.assertThat(role).isSameAs(Role.ADMIN);
@@ -45,10 +50,10 @@ class JwtProviderTest {
     void decodeName_ShouldExtractMemberName() {
         // given
         Member member = new Member(1L, "name", "email", "password", Role.ADMIN);
-        String encoded = JwtProvider.encode(member);
+        String encoded = new JwtProvider().encode(member);
 
         // when
-        String name = JwtProvider.decodeName(encoded);
+        String name = jwtProvider.extractName(encoded);
 
         // then
         Assertions.assertThat(name).isEqualTo(member.getName());

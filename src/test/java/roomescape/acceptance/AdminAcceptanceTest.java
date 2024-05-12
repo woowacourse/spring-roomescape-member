@@ -8,7 +8,7 @@ import roomescape.domain.Role;
 import roomescape.service.security.JwtProvider;
 
 class AdminAcceptanceTest extends AcceptanceTest {
-    private static final String TOKEN = JwtProvider.encode(new Member(1L, "a", "b", "C", Role.ADMIN));
+    private static final String TOKEN = new JwtProvider().encode(new Member(1L, "a", "b", "C", Role.ADMIN));
 
     @Test
     void 어드민_메인_페이지를_응답할_수_있다() {

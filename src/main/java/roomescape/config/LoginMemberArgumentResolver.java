@@ -29,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractCookie(request.getCookies(), "token");
-        return new MemberInfo(JwtProvider.decodeId(token));
+        return new MemberInfo(new JwtProvider().extractId(token));
     }
 
     private String extractCookie(Cookie[] cookies, String targetCookie) {

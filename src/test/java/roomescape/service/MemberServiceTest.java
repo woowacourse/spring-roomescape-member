@@ -25,6 +25,8 @@ class MemberServiceTest {
     private MemberService memberService;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private JwtProvider jwtProvider;
     private Member dummyMember;
 
     @BeforeEach
@@ -49,7 +51,7 @@ class MemberServiceTest {
         String token = memberService.login(request);
 
         // then
-        Assertions.assertThat(JwtProvider.decodeId(token)).isEqualTo(savedMember.getId());
+        Assertions.assertThat(jwtProvider.extractId(token)).isEqualTo(savedMember.getId());
     }
 
     @Test

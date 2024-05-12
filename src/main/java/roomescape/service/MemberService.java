@@ -18,6 +18,7 @@ import roomescape.web.dto.response.member.MemberResponse;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
 
     public List<MemberResponse> findAllMember() {
         return memberRepository.findAll()
@@ -30,7 +31,7 @@ public class MemberService {
         Member findMember = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
                 .orElseThrow(AuthenticationFailureException::new);
 
-        return "token=" + JwtProvider.encode(findMember);
+        return "token=" + jwtProvider.encode(findMember);
     }
 
     public long signup(SignupRequest signupRequest) {

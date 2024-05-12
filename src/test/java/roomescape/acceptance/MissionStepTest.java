@@ -24,7 +24,7 @@ import roomescape.web.controller.ReservationController;
 import roomescape.web.dto.response.reservation.ReservationResponse;
 
 class MissionStepTest extends AcceptanceTest {
-    private static final String TOKEN = JwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN));
+    private static final String TOKEN = new JwtProvider().encode(new Member(1L, "a", "B", "c", Role.ADMIN));
 
     @Autowired
     private ReservationController reservationController;

@@ -73,7 +73,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .cookie("token", JwtProvider.encode(new Member(1L, "a", "b", "c")))
+                    .cookie("token", new JwtProvider().encode(new Member(1L, "a", "b", "c")))
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
