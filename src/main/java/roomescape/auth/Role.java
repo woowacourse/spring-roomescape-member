@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import java.util.Arrays;
+import roomescape.exception.UnauthenticatedUserException;
 
 public enum Role {
     MEMBER,
@@ -11,7 +12,7 @@ public enum Role {
         return Arrays.stream(values())
                 .filter(role -> role.name().equals(roleData))
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("일치하는 권한이 없습니다."));
+                .orElseThrow(() -> new UnauthenticatedUserException("일치하는 권한이 없습니다."));
     }
 
     public boolean isAdmin() {
