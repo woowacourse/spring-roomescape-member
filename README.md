@@ -105,3 +105,14 @@
 
 - [x] `admin/reservation-new.html` 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경
 
+## 6단계 기능 요구 사항
+
+- [ ] Member의 role이 ADMIN인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있다.
+  - [ ] HandlerInterceptor를 이용
+    - [ ] Cookie에 role 값을 넣어라
+    - [ ] 반환 값에 따라 처리되는 방식을 확인
+- [ ] 로그인이 되지 않은 경우, login, signUp 페이지에만 접근할 수 있다.
+
+- 예약 검색 기능
+  - [ ] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가
+  - [ ] `reservation-with-member.js`의 applyFilter() 함수를 수정
