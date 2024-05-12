@@ -1,8 +1,7 @@
 package roomescape.auth.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,24 +12,25 @@ import roomescape.auth.dto.request.LoginRequest;
 import roomescape.auth.dto.response.GetAuthInfoResponse;
 import roomescape.auth.dto.response.LoginResponse;
 import roomescape.auth.service.AuthService;
-import roomescape.common.AuthenticationPrincipal;
+import roomescape.auth.core.AuthenticationPrincipal;
+import roomescape.auth.core.AuthorizationManager;
 
 @RestController
 public class AuthController {
-    private static final String TOKEN_COOKIE_NAME = "token";
 
+    private final AuthorizationManager authorizationManager;
     private final AuthService authService;
 
-    public AuthController(final AuthService authService) {
+    public AuthController(final AuthorizationManager authorizationManager, final AuthService authService) {
+        this.authorizationManager = authorizationManager;
         this.authService = authService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginMemberRequest) {
+    public ResponseEntity<Void> login(HttpServletResponse httpServletResponse, @RequestBody @Valid LoginRequest loginMemberRequest) {
         LoginResponse loginResponse = authService.login(loginMemberRequest);
-        ResponseCookie responseCookie = ResponseCookie.from(TOKEN_COOKIE_NAME, loginResponse.token())
-                .build();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
+        authorizationManager.setAuthorization(httpServletResponse, loginResponse.token());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")

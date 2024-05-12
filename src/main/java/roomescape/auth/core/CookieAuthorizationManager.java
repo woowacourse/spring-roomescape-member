@@ -2,14 +2,27 @@ package roomescape.common;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthorizationExtractor {
+public class CookieAuthorizationManager implements AuthorizationManager {
+
     private final String TOKEN_COOKIE_NAME = "token";
 
-    public String extractToken(HttpServletRequest httpServletRequest) {
+    @Override
+    public void setAuthorization(final HttpServletResponse httpServletResponse,
+                                 final String token) {
+        ResponseCookie responseCookie = ResponseCookie.from(TOKEN_COOKIE_NAME, token)
+                .build();
+        httpServletResponse.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+    }
+
+    @Override
+    public String getAuthorization(final HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
         checkCookieExist(cookies);
 

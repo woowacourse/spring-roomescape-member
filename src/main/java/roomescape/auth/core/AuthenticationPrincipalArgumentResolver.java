@@ -11,12 +11,12 @@ import roomescape.auth.service.TokenProvider;
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final TokenProvider tokenProvider;
-    private final AuthorizationExtractor authorizationExtractor;
+    private final AuthorizationManager authorizationManager;
 
     public AuthenticationPrincipalArgumentResolver(final TokenProvider tokenProvider,
-                                                   final AuthorizationExtractor authorizationExtractor) {
+                                                   final AuthorizationManager authorizationManager) {
         this.tokenProvider = tokenProvider;
-        this.authorizationExtractor = authorizationExtractor;
+        this.authorizationManager = authorizationManager;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = authorizationExtractor.extractToken(httpServletRequest);
+        String token = authorizationManager.getAuthorization(httpServletRequest);
         return tokenProvider.extractAuthInfo(token);
     }
 }

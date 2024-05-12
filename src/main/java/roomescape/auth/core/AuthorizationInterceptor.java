@@ -8,17 +8,17 @@ import roomescape.auth.service.TokenProvider;
 
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
-    private final AuthorizationExtractor authorizationExtractor;
+    private final AuthorizationManager authorizationManager;
     private final TokenProvider tokenProvider;
 
-    public AuthorizationInterceptor(final AuthorizationExtractor authorizationExtractor, final TokenProvider tokenProvider) {
-        this.authorizationExtractor = authorizationExtractor;
+    public AuthorizationInterceptor(final AuthorizationManager authorizationManager, final TokenProvider tokenProvider) {
+        this.authorizationManager = authorizationManager;
         this.tokenProvider = tokenProvider;
     }
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
-        String token = authorizationExtractor.extractToken(request);
+        String token = authorizationManager.getAuthorization(request);
         validatedTokeIsBlank(token);
         checkAdminAuthorization(token);
         return true;
