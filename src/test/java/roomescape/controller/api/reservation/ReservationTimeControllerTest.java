@@ -7,20 +7,27 @@ import io.restassured.http.ContentType;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.InitialDataFixture;
+import roomescape.domain.ReservationTime;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ReservationTimeControllerTest {
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Test
     @DisplayName("예약 가능한 시간을 추가한다.")
@@ -68,18 +75,13 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("예약 가능한 시간을 조회한다.")
     void getTimes() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "15:00");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times");
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(reservationTimes.size()));
     }
 
     @Test

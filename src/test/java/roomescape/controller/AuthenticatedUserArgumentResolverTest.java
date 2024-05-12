@@ -16,7 +16,7 @@ import roomescape.repository.member.MemberRepository;
 import static roomescape.InitialDataFixture.USER_1;
 import static roomescape.service.CookieService.TOKEN;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT) //TODO 테스트와 프로덕션이 같은 port를 사용중
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT) //TODO 테스트와 프로덕션이 같은 port를 사용중인데 이 부분은 리팩터링하겠습니다!
 class AuthenticatedUserArgumentResolverTest {
 
     @Autowired

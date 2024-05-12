@@ -33,7 +33,7 @@ public class MemberService {
     public MemberResponse create(SignupRequest signupRequest) {
         Member member = new Member(new Name(signupRequest.name()), new Email(signupRequest.email()), Role.USER, signupRequest.password());
         if (memberRepository.findByEmail(member.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("중복된 이메일입니다. 다른 이메일을 입력해주세요."); // TODO 예외 메시지가 유저는 안보임
+            throw new IllegalArgumentException("중복된 이메일입니다. 다른 이메일을 입력해주세요."); // TODO 예외 메시지가 유저는 안보이는데 어떻게 해결하면 좋을지 감이 잘 안잡히네요ㅠㅠ
         }
         Member save = memberRepository.save(member);
         return MemberResponse.from(save);

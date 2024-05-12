@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Name;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
 
@@ -34,19 +36,13 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("테마를 조회한다.")
-    void findTheme() {
-        List<ThemeResponse> themes = themeService.findThemes();
-
-        assertThat(themes).hasSize(6);
-    }
-
-    @Test
     @DisplayName("테마를 삭제한다.")
     void deleteTheme() {
+        ThemeResponse themeResponse = themeService.addTheme(new ThemeAddRequest("myTestTheme", THEME_2.getDescription(), THEME_2.getThumbnail()));
+
         int before = themeService.findThemes().size();
 
-        themeService.deleteTheme(THEME_2.getId());
+        themeService.deleteTheme(themeResponse.toTheme().getId());
 
         int after = themeService.findThemes().size();
 

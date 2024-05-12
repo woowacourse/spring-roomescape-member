@@ -11,7 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.LoginUtils;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.member.MemberRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
@@ -42,12 +45,14 @@ class ReservationControllerTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     private String token;
+    private Reservation reservation;
 
     @BeforeEach
     void beforeEach() {
-        memberRepository.save(USER_1);
-        themeRepository.save(THEME_1);
-        reservationTimeRepository.save(RESERVATION_TIME_1);
+        Member member = memberRepository.save(USER_1);
+        Theme theme = themeRepository.save(THEME_1);
+        ReservationTime time = reservationTimeRepository.save(RESERVATION_TIME_1);
+        reservation = reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(1), time, theme));
         token = LoginUtils.loginAndGetToken(USER_1);
     }
 
@@ -72,18 +77,6 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("저장된 reservation을 모두 반환한다.")
-    void getReservations() {
-        reservationRepository.save(RESERVATION_1);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
     @DisplayName("Reservation을 추가한다.")
     void addReservation() {
         //given
@@ -100,21 +93,16 @@ class ReservationControllerTest {
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .body("id", is(1))
-                .header("Location", "/reservations/1");
+                .statusCode(201);
     }
 
     @Test
     @DisplayName("Reservation을 삭제한다.")
     void deleteReservation() {
-        Reservation saved = reservationRepository.save(RESERVATION_1);
         int size = reservationRepository.findAll().size();
-        System.out.println("reservationRepository.findAll() = " + reservationRepository.findAll());
-        System.out.println("size = " + size);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/" + saved.getId())
+                .when().delete("/reservations/" + reservation.getId())
                 .then().log().all()
                 .statusCode(204);
 

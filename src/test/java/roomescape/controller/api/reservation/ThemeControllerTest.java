@@ -4,12 +4,16 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.InitialDataFixture;
+import roomescape.domain.Theme;
+import roomescape.repository.theme.ThemeRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
@@ -18,6 +22,9 @@ import static org.hamcrest.Matchers.is;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ThemeControllerTest {
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     @DisplayName("테마를 추가한다.")
@@ -54,11 +61,12 @@ class ThemeControllerTest {
     @Test
     @DisplayName("모든 테마를 조회한다.")
     void getThemes() {
+        List<Theme> themes = themeRepository.findAll();
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(6));
+                .body("size()", is(themes.size()));
     }
 
     @Test
