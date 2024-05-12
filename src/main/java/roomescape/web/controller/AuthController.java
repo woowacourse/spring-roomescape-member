@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.service.MemberService;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.LoginRequest;
 import roomescape.web.dto.response.member.MemberResponse;
 
@@ -38,7 +38,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkAuthenticated(
             @CookieValue(value = TOKEN_COOKIE_KEY_NAME, defaultValue = "") String token) {
-        MemberResponse response = new MemberResponse(JwtUtils.decodeId(token), JwtUtils.decodeName(token));
+        MemberResponse response = new MemberResponse(JwtProvider.decodeId(token), JwtProvider.decodeName(token));
 
         return ResponseEntity.ok()
                 .body(response);

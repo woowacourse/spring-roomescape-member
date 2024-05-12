@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.domain.Member;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 
 class ReservationAcceptanceTest extends AcceptanceTest {
     @Nested
@@ -73,7 +73,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .cookie("token", JwtUtils.encode(new Member(1L, "a", "b", "c")))
+                    .cookie("token", JwtProvider.encode(new Member(1L, "a", "b", "c")))
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()

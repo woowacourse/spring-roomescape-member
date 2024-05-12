@@ -9,7 +9,7 @@ import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.member.DuplicatedEmailException;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.LoginRequest;
 import roomescape.web.dto.request.member.SignupRequest;
 import roomescape.web.dto.response.member.MemberResponse;
@@ -30,7 +30,7 @@ public class MemberService {
         Member findMember = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
                 .orElseThrow(AuthenticationFailureException::new);
 
-        return "token=" + JwtUtils.encode(findMember);
+        return "token=" + JwtProvider.encode(findMember);
     }
 
     public long signup(SignupRequest signupRequest) {

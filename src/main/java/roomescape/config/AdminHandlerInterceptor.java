@@ -11,7 +11,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Role;
 import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.member.AuthorizationFailureException;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 
 public class AdminHandlerInterceptor implements HandlerInterceptor {
     @Override
@@ -19,7 +19,7 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
             throws Exception {
         Cookie tokenCookie = extractCookie(request, "token");
         String token = tokenCookie.getValue();
-        Role role = JwtUtils.decodeRole(token);
+        Role role = JwtProvider.decodeRole(token);
         if (!role.isAdmin()) {
             throw new AuthorizationFailureException();
         }

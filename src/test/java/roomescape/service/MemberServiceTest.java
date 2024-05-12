@@ -14,7 +14,7 @@ import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.member.DuplicatedEmailException;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.LoginRequest;
 import roomescape.web.dto.request.member.SignupRequest;
 import roomescape.web.dto.response.member.MemberResponse;
@@ -49,7 +49,7 @@ class MemberServiceTest {
         String token = memberService.login(request);
 
         // then
-        Assertions.assertThat(JwtUtils.decodeId(token)).isEqualTo(savedMember.getId());
+        Assertions.assertThat(JwtProvider.decodeId(token)).isEqualTo(savedMember.getId());
     }
 
     @Test

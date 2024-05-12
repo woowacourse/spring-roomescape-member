@@ -9,7 +9,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 
 @Slf4j
-class JwtUtilsTest {
+class JwtProviderTest {
 
     @Test
     @DisplayName("사용자 정보를 바탕으로 Jwt 토큰을 발행한다")
@@ -18,10 +18,10 @@ class JwtUtilsTest {
         Member user = new Member(1L, "name", "email", "password");
 
         // when
-        String encodedToken = JwtUtils.encode(user);
+        String encodedToken = JwtProvider.encode(user);
 
         //then
-        Long decode = JwtUtils.decodeId(encodedToken);
+        Long decode = JwtProvider.decodeId(encodedToken);
         Assertions.assertThat(decode)
                 .isOne();
     }
@@ -31,10 +31,10 @@ class JwtUtilsTest {
     void decodeRole_ShouldExtractRole() {
         // given
         Member member = new Member(1L, "name", "email", "password", Role.ADMIN);
-        String encoded = JwtUtils.encode(member);
+        String encoded = JwtProvider.encode(member);
 
         // when
-        Role role = JwtUtils.decodeRole(encoded);
+        Role role = JwtProvider.decodeRole(encoded);
 
         // then
         Assertions.assertThat(role).isSameAs(Role.ADMIN);
@@ -45,10 +45,10 @@ class JwtUtilsTest {
     void decodeName_ShouldExtractMemberName() {
         // given
         Member member = new Member(1L, "name", "email", "password", Role.ADMIN);
-        String encoded = JwtUtils.encode(member);
+        String encoded = JwtProvider.encode(member);
 
         // when
-        String name = JwtUtils.decodeName(encoded);
+        String name = JwtProvider.decodeName(encoded);
 
         // then
         Assertions.assertThat(name).isEqualTo(member.getName());

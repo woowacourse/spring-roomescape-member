@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.service.MemberService;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.LoginRequest;
 import roomescape.web.dto.response.member.MemberResponse;
 
@@ -95,7 +95,7 @@ class AuthControllerTest {
     void findAuthenticatedMember_ShouldReturnMemberName() throws Exception {
         // given
         Member member = new Member(1L, "name", "email@email.com", "password", Role.NORMAL);
-        String token = JwtUtils.encode(member);
+        String token = JwtProvider.encode(member);
         MemberResponse response = new MemberResponse(member.getId(), member.getName());
 
         // when & then

@@ -13,7 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.exception.member.AuthenticationFailureException;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.MemberInfo;
 
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractCookie(request.getCookies(), "token");
-        return new MemberInfo(JwtUtils.decodeId(token));
+        return new MemberInfo(JwtProvider.decodeId(token));
     }
 
     private String extractCookie(Cookie[] cookies, String targetCookie) {

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import roomescape.domain.Member;
 import roomescape.service.ReservationService;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.reservation.ReservationRequest;
 import roomescape.web.dto.request.reservation.UserReservationRequest;
 import roomescape.web.dto.response.member.MemberResponse;
@@ -48,7 +48,7 @@ class ReservationControllerTest {
     void saveReservation_ShouldReturn201StatusCode_WhenInsertAllValidateField() throws Exception {
         // given
         Member member = new Member(1L, "name", "email", "password");
-        String token = JwtUtils.encode(member);
+        String token = JwtProvider.encode(member);
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
@@ -72,7 +72,7 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 location 헤더가 추가된다.")
     void saveReservation_ShouldRedirect_WhenInsertAllValidateField() throws Exception {
         // given
-        String token = JwtUtils.encode(new Member(1L, "a", "b", "c"));
+        String token = JwtProvider.encode(new Member(1L, "a", "b", "c"));
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(

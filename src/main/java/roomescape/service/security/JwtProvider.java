@@ -6,12 +6,12 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.exception.member.AuthenticationFailureException;
 
-public class JwtUtils {
+public class JwtProvider {
     private static final String SECRET_KEY = "hellowootecoworldhihowareyouiamfinethankyouandyou";
     private static final String ROLE_CLAIM_KEY = "role";
     private static final String NAME_CLAIM_KEY = "name";
 
-    private JwtUtils() {
+    private JwtProvider() {
         throw new AssertionError("유틸 클래스입니다. 생성할 수 없습니다.");
     }
 

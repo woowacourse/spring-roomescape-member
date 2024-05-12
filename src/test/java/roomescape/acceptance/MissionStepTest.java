@@ -19,12 +19,12 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
-import roomescape.service.security.JwtUtils;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.controller.ReservationController;
 import roomescape.web.dto.response.reservation.ReservationResponse;
 
 class MissionStepTest extends AcceptanceTest {
-    private static final String TOKEN = JwtUtils.encode(new Member(1L, "a", "B", "c", Role.ADMIN));
+    private static final String TOKEN = JwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN));
 
     @Autowired
     private ReservationController reservationController;
