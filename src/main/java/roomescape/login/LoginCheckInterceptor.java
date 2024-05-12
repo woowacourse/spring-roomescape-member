@@ -1,13 +1,12 @@
 package roomescape.login;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Objects;
 import javax.naming.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.service.MemberService;
+import roomescape.util.TokenExtractor;
 
 @Component
 public class LoginCheckInterceptor implements HandlerInterceptor {
@@ -21,21 +20,10 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws AuthenticationException {
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = TokenExtractor.extractTokenFromCookie(request.getCookies());
         if (memberService.isAdminToken(token)) {
             return true;
         }
         throw new AuthenticationException("접근 권한이 없습니다.");
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) throws AuthenticationException {
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (Objects.equals(cookie.getName(), "token")) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        throw new AuthenticationException("접근 권한 확인을 위한 쿠키가 없습니다.");
     }
 }
