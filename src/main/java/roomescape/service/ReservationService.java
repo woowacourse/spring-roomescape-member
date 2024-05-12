@@ -30,11 +30,11 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<Reservation> getAll() {
-        return reservationDao.getAll();
+    public List<Reservation> findAll() {
+        return reservationDao.findAll();
     }
 
-    public Reservation create(ReservationRequest request) {
+    public Reservation createByAdmin(ReservationRequest request) {
         requireExistsByAttributes(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());

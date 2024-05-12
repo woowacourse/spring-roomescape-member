@@ -22,9 +22,10 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("중복된 예약을 생성하면 예외가 발생한다.")
-    void createDuplicateException() {
+    void createByAdminDuplicateException() {
         assertThatThrownBy(
-                () -> reservationService.create(new ReservationRequest("User1", LocalDate.parse("2024-05-01"), 1L, 1L)))
+                () -> reservationService.createByAdmin(
+                        new ReservationRequest("User1", LocalDate.parse("2024-05-01"), 1L, 1L)))
                 .isInstanceOf(EntityExistsException.class);
     }
 }

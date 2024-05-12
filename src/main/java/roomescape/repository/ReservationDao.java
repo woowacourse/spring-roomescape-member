@@ -43,7 +43,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> getAll() {
+    public List<Reservation> findAll() {
         String query = "SELECT "
                 + "r.id, r.name, r.date, "
                 + "t.id AS time_id, t.start_at, "
