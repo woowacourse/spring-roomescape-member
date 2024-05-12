@@ -2,14 +2,14 @@ package roomescape.controller.api;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.FindMemberNameResponse;
 import roomescape.domain.member.LoginMember;
 import roomescape.service.MemberService;
 
-@Controller
+@RestController
 @RequestMapping("/members")
 public class MemberController {
 
