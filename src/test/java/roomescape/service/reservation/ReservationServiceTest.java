@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,10 +112,11 @@ public class ReservationServiceTest {
     @Test
     void insertPastTime() {
         // given
-        timeService.insertTime(new TimeRequest(LocalTime.now().minusHours(1)));
+        LocalDateTime input = LocalDateTime.now().minusMinutes(1);
+        timeService.insertTime(new TimeRequest(input.toLocalTime()));
 
         // when
-        ReservationRequest request = new ReservationRequest(LocalDate.now(), 2L, 1L);
+        ReservationRequest request = new ReservationRequest(input.toLocalDate(), 2L, 1L);
         MemberInfo member = new MemberInfo(1L, "name", Role.USER);
 
         // then
