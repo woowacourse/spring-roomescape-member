@@ -76,10 +76,10 @@ public class JdbcThemeRepository implements ThemeRepository {
         String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail FROM theme AS t
                 JOIN (
-                    SELECT theme_id, count(*) AS theme_count, reservation_date FROM reservation
+                    SELECT theme_id, count(*) AS theme_count FROM reservation
+                    WHERE reservation_date >= ? AND reservation_date < ?
                     GROUP BY theme_id) AS r
                 ON t.id = r.theme_id
-                WHERE r.reservation_date >= ? AND r.reservation_date < ?
                 ORDER BY r.theme_count DESC
                 LIMIT 10
                 """;
