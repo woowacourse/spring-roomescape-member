@@ -21,6 +21,7 @@ import roomescape.service.auth.UnauthorizedException;
 @EnableConfigurationProperties(JwtProperties.class)
 public class JwtAuthService implements AuthService {
 
+    private static final Long ONE_MILLI_SECOND = 1000L;
     private static final String NAME_CLAIM_KEY = "name";
     private static final String IS_ADMIN_CLAIM_KEY = "isAdmin";
 
@@ -66,7 +67,7 @@ public class JwtAuthService implements AuthService {
     }
 
     private Long getExpirationMillis() {
-        return System.currentTimeMillis() + (1000L * jwtProperties.tokenExpirationSecond());
+        return System.currentTimeMillis() + (ONE_MILLI_SECOND * jwtProperties.tokenExpirationSecond());
     }
 
     @Override
