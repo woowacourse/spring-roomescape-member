@@ -1,17 +1,14 @@
 package roomescape.service;
 
-import io.restassured.RestAssured;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.MemberDao;
 import roomescape.domain.user.Member;
-import roomescape.exception.NotExistEmailException;
+import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
 import roomescape.util.DatabaseCleaner;
@@ -48,7 +45,7 @@ class MemberServiceTest {
     void throw_exception_when_not_exist_email() {
         final var input = new MemberLoginInput("sample@naver.com", "password1234");
         Assertions.assertThatThrownBy(() -> sut.loginMember(input))
-                .isInstanceOf(NotExistEmailException.class);
+                .isInstanceOf(NotExistException.class);
     }
 
     @Test
