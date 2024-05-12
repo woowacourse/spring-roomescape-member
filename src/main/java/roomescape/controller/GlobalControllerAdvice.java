@@ -1,4 +1,4 @@
-package roomescape.controller.reservation;
+package roomescape.controller;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
