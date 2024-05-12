@@ -7,6 +7,10 @@ import java.util.Base64;
 
 public class Pbkdf2PasswordEncoder implements PasswordEncoder {
 
+    private static final int ITERATION_COUNT = 65536;
+    private static final int KEY_LENGTH = 256;
+    private static final String ENCODING_ALGORITHM = "PBKDF2WithHmacSHA256";
+
     private final byte[] salt;
     private final int iterationCount;
     private final int keyLength;
@@ -24,8 +28,8 @@ public class Pbkdf2PasswordEncoder implements PasswordEncoder {
     @Override
     public String encode(final String password) {
         try {
-            final KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256);
-            final SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            final KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);
+            final SecretKeyFactory factory = SecretKeyFactory.getInstance(ENCODING_ALGORITHM);
             final byte[] hash = factory.generateSecret(spec).getEncoded();
 
             return Base64.getEncoder().encodeToString(hash);
@@ -38,7 +42,7 @@ public class Pbkdf2PasswordEncoder implements PasswordEncoder {
     public boolean matches(final String plainPassword, final String encodedPassword) {
         try {
             final KeySpec spec = new PBEKeySpec(plainPassword.toCharArray(), salt, iterationCount, keyLength);
-            final SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            final SecretKeyFactory factory = SecretKeyFactory.getInstance(ENCODING_ALGORITHM);
             final byte[] hash = factory.generateSecret(spec).getEncoded();
             final String newHash = Base64.getEncoder().encodeToString(hash);
 
