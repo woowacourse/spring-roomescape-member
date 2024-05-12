@@ -6,9 +6,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.ReservationFactory;
-import roomescape.reservation.domain.ReservationTheme;
-import roomescape.reservation.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationFactory;
+import roomescape.domain.reservation.ReservationTheme;
+import roomescape.domain.reservation.ReservationTime;
 
 class ReservationFactoryTest {
 

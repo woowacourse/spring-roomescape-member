@@ -15,12 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.reservation.controller.ReservationController;
-import roomescape.reservation.controller.ReservationThemeController;
-import roomescape.reservation.controller.ReservationTimeController;
-import roomescape.reservation.dto.reservation.ReservationRequest;
-import roomescape.reservation.dto.theme.ThemeRequest;
-import roomescape.reservation.dto.time.TimeRequest;
+import roomescape.controller.reservation.ReservationController;
+import roomescape.controller.reservation.ReservationThemeController;
+import roomescape.controller.reservation.ReservationTimeController;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.time.TimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/test_schema.sql"})

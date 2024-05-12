@@ -3,8 +3,7 @@ package roomescape;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.auth.service.AuthService;
+import roomescape.infrastructure.JwtTokenProvider;
 
 @SpringBootApplication
 @EnableConfigurationProperties(JwtTokenProvider.class)

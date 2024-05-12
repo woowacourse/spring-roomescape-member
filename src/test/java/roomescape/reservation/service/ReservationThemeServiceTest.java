@@ -15,14 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.reservation.dto.reservation.ReservationRequest;
-import roomescape.reservation.dto.theme.ThemeRequest;
-import roomescape.reservation.dto.theme.ThemeResponse;
-import roomescape.reservation.dto.theme.WeeklyThemeResponse;
-import roomescape.reservation.dto.time.TimeRequest;
-import roomescape.reservation.service.ReservationService;
-import roomescape.reservation.service.ReservationThemeService;
-import roomescape.reservation.service.ReservationTimeService;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.WeeklyThemeResponse;
+import roomescape.dto.time.TimeRequest;
+import roomescape.service.reservation.ReservationService;
+import roomescape.service.reservation.ReservationThemeService;
+import roomescape.service.reservation.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/test_schema.sql"})
