@@ -19,8 +19,10 @@ public class Member {
         this(id, new MemberName(name), email, password, role);
     }
 
-    public boolean matchPassword(String rawPassword) {
-        return password.match(rawPassword);
+    public void validatePassword(String rawPassword) {
+        if (!password.match(rawPassword)) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public boolean isAdmin() {

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.application.MemberService;
+import roomescape.application.AuthService;
 import roomescape.application.dto.response.MemberResponse;
 import roomescape.application.dto.response.TokenResponse;
 import roomescape.ui.controller.dto.LoginRequest;
@@ -19,15 +19,15 @@ public class AuthController {
     private static final String TOKEN_KEY_NAME = "token";
     private static final String EMPTY_TOKEN = "";
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public AuthController(MemberService memberService) {
-        this.memberService = memberService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
-        TokenResponse response = memberService.authenticateMember(request.toTokenCreationRequest());
+        TokenResponse response = authService.authenticateMember(request.toTokenCreationRequest());
         ResponseCookie cookie = ResponseCookie.from(TOKEN_KEY_NAME, response.token())
                 .httpOnly(true)
                 .path("/")
@@ -39,7 +39,7 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public MemberResponse check(@AuthenticationPrincipal long memberId) {
-        return memberService.getMemberById(memberId);
+        return authService.getMemberById(memberId);
     }
 
     @PostMapping("/logout")
