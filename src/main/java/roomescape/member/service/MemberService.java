@@ -39,7 +39,7 @@ public class MemberService {
         return new LoginCheckResponse(member.getName());
     }
 
-    public Object findLoginMemberByToken(String token) {
+    public LoginMember findLoginMemberByToken(String token) {
         long memberId = Long.parseLong(tokenProvider.getPayload(token));
         Member member = memberRepository.findById(memberId);
         validateExistMember(member);
