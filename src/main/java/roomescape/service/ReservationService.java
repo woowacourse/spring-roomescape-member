@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AdminReservationCreateRequest;
 import roomescape.dto.ReservationCreateRequest;
+import roomescape.dto.ReservationFilterRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalReservationException;
@@ -38,8 +39,8 @@ public class ReservationService {
         return ReservationResponse.fromReservations(reservations);
     }
 
-    public List<ReservationResponse> findAll(final Long memberId, final Long themeId, final LocalDate dateFrom, final LocalDate dateTo) {
-        List<Reservation> reservations = reservationDao.findAll(memberId, themeId, dateFrom, dateTo);
+    public List<ReservationResponse> findAll(ReservationFilterRequest request) {
+        List<Reservation> reservations = reservationDao.findAll(request.memberId(), request.themeId(), request.dateFrom(), request.dateTo());
         return ReservationResponse.fromReservations(reservations);
     }
 

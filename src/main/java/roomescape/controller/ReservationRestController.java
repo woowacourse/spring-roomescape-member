@@ -2,19 +2,19 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.config.AuthenticationPrincipal;
 import roomescape.dto.AdminReservationCreateRequest;
 import roomescape.dto.ReservationCreateRequest;
+import roomescape.dto.ReservationFilterRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -60,8 +60,8 @@ public class ReservationRestController {
     }
 
     @GetMapping("/admin/reservations")
-    public ResponseEntity<List<ReservationResponse>> getAll(@RequestParam(required = false) Long memberId, @RequestParam(required = false) Long themeId, @RequestParam(required = false) LocalDate dateFrom, @RequestParam(required = false) LocalDate dateTo) {
-        List<ReservationResponse> reservationResponses = reservationService.findAll(memberId, themeId, dateFrom, dateTo);
+    public ResponseEntity<List<ReservationResponse>> getAll(@ModelAttribute ReservationFilterRequest reservationFilterRequest) {
+        List<ReservationResponse> reservationResponses = reservationService.findAll(reservationFilterRequest);
         return ResponseEntity.ok(reservationResponses);
     }
 }
