@@ -23,8 +23,7 @@ public class MemberController {
         List<Member> members = memberService.findAll();
 
         List<MemberResponse> memberResponses = members.stream()
-                .map(Member::getId)
-                .map(MemberResponse::new)
+                .map(member -> new MemberResponse(member.getId(), member.getName()))
                 .toList();
 
         return ResponseEntity.ok(new MemberListResponse(memberResponses));
