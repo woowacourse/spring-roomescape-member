@@ -29,7 +29,7 @@ class ReservationServiceTest {
 
     private final Reservation reservation = Reservation.reservationOf(1L, LocalDate.now().plusDays(1),
             new Time(1L, LocalTime.now()), Theme.themeOf(1L, "pollaBang", "폴라 방탈출", "thumbnail"),
-            Member.memberOf(1L, "polla", "kyunellroll@gmail.com", "polla99"));
+            Member.memberOf(1L, "polla", "kyunellroll@gmail.com", "polla99", "admin"));
 
     @InjectMocks
     private ReservationService reservationService;

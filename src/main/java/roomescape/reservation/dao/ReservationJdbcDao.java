@@ -32,7 +32,8 @@ public class ReservationJdbcDao implements ReservationDao {
             Member.memberOf(resultSet.getLong("memberId"),
                     resultSet.getString("memberName"),
                     resultSet.getString("email"),
-                    resultSet.getString("password")
+                    resultSet.getString("password"),
+                    resultSet.getString("role")
             )
     );
 
@@ -65,7 +66,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 SELECT r.id, r.date,
                     t.id AS timeId, t.start_at,
                     th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
-                    m.id AS memberId, m.name AS memberName, m.email, m.password
+                    m.id AS memberId, m.name AS memberName, m.email, m.password, m.role
                 FROM reservation r
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 INNER JOIN theme th ON r.theme_id = th.id
