@@ -77,8 +77,8 @@ public class ReservationDao {
                                     final Long memberId,
                                     final String dateFromValue,
                                     final String dateToValue) {
-        final var dateFrom = dateFromValue.isEmpty() ? null : dateFromValue;
-        final var dateTo = dateToValue.isEmpty() ? null : dateToValue;
+        final var dateFrom = dateFromValue == null || dateFromValue.isEmpty() ? null : dateFromValue;
+        final var dateTo = dateToValue == null || dateToValue.isEmpty() ? null : dateToValue;
         final var sql = BASE_SQL + """
                                     WHERE (? IS NULL OR theme_id = ?) AND (? IS NULL OR member_id = ?)
                                     AND (
