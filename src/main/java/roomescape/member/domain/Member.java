@@ -4,11 +4,11 @@ public class Member {
     private static final long NO_ID = 0;
     private final long id;
     private final MemberName memberName;
-    private final String email;
-    private final String password;
+    private final Email email;
+    private final Password password;
     private final Role role;
 
-    public Member(long id, MemberName memberName, String email, String password, Role role) {
+    public Member(long id, MemberName memberName, Email email, Password password, Role role) {
         this.id = id;
         this.memberName = memberName;
         this.email = email;
@@ -17,7 +17,7 @@ public class Member {
     }
 
     public Member(String name, String email, String password, Role role) {
-        this(NO_ID, new MemberName(name), email, password, role);
+        this(NO_ID, new MemberName(name), new Email(email), new Password(password), role);
     }
 
     public Member(long id, Member member) {
@@ -25,7 +25,7 @@ public class Member {
     }
 
     public Member(long id, String name, String email, String password, String role) {
-        this(id, new MemberName(name), email, password, Role.valueOf(role));
+        this(id, new MemberName(name), new Email(email), new Password(password), Role.valueOf(role));
     }
 
     public long getId() {
@@ -37,11 +37,11 @@ public class Member {
     }
 
     public String getEmail() {
-        return email;
+        return email.getValue();
     }
 
     public String getPassword() {
-        return password;
+        return password.getValue();
     }
 
     public String getRole() {

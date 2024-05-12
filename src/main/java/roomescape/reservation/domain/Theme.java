@@ -2,12 +2,12 @@ package roomescape.reservation.domain;
 
 public class Theme {
     private static final long NO_ID = 0;
+    private final long id;
     private final ThemeName name;
-    private final String description;
-    private final String thumbnail;
-    private long id;
+    private final Description description;
+    private final Thumbnail thumbnail;
 
-    public Theme(long id, ThemeName name, String description, String thumbnail) {
+    public Theme(long id, ThemeName name, Description description, Thumbnail thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -15,7 +15,7 @@ public class Theme {
     }
 
     public Theme(String name, String description, String thumbnail) {
-        this(NO_ID, new ThemeName(name), description, thumbnail);
+        this(NO_ID, new ThemeName(name), new Description(description), new Thumbnail(thumbnail));
     }
 
     public Theme(long id, Theme theme) {
@@ -23,7 +23,7 @@ public class Theme {
     }
 
     public Theme(long id, String name, String description, String thumbnail) {
-        this(id, new ThemeName(name), description, thumbnail);
+        this(id, new ThemeName(name), new Description(description), new Thumbnail(thumbnail));
     }
 
     public long getId() {
@@ -35,10 +35,10 @@ public class Theme {
     }
 
     public String getDescription() {
-        return description;
+        return description.getValue();
     }
 
     public String getThumbnail() {
-        return thumbnail;
+        return thumbnail.getValue();
     }
 }
