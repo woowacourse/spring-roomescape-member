@@ -44,16 +44,16 @@ HTTP/1.1 200
 Content-Type: application/json
 
 {
-  "reservationTimes": [
-    {
-      "id": 1,
-      "startAt": "10:00"
-    },
-    {
-      "id": 2,
-      "startAt": "11:00"
-    },
-  ]
+    "reservationTimes": [
+        {
+          "id": 1,
+          "startAt": "10:00"
+        },
+        {
+          "id": 2,
+          "startAt": "11:00"
+        },
+    ]
 }
 ```
 
@@ -72,18 +72,18 @@ HTTP/1.1 200
 Content-Type: application/json
 
 {
-  "reservationTimes": [
-    {
-      "id": 1,
-      "startAt": "10:00",
-      "alreadyBooked": false
-    },
-    {
-      "id": 2,
-      "startAt": "11:00",
-      "alreadyBooked": false
-    }
-  ]
+    "reservationTimes": [
+        {
+          "id": 1,
+          "startAt": "10:00",
+          "alreadyBooked": false
+        },
+        {
+          "id": 2,
+          "startAt": "11:00",
+          "alreadyBooked": false
+        }
+    ]
 }
 ```
 
@@ -160,22 +160,22 @@ HTTP/1.1 201
 Content-Type: application/json
 
 {
-  "reservations": [
-    {
-      "id": 1,
-      "name": "피케이",
-      "date": "2024-04-29",
-      "startAt": "10:00",
-      "name": "세렌디피티: 뜻밖의 행운",
-    },
-    {
-      "id": 2,
-      "name": "망쵸",
-      "date": "2024-04-30",
-      "startAt": "11:00",
-      "name": "세렌디피티: 뜻밖의 행운",
-    }
-  ]
+    "reservations": [
+        {
+          "id": 1,
+          "name": "피케이",
+          "date": "2024-04-29",
+          "startAt": "10:00",
+          "name": "세렌디피티: 뜻밖의 행운",
+        },
+        {
+          "id": 2,
+          "name": "망쵸",
+          "date": "2024-04-30",
+          "startAt": "11:00",
+          "name": "세렌디피티: 뜻밖의 행운",
+        }
+    ]
 }
 ```
 
@@ -202,15 +202,15 @@ HTTP/1.1 201
 Content-Type: application/json
 
 {
-  "reservations": [
-    {
-      "id": 1,
-      "name": "피케이",
-      "date": "2024-04-29",
-      "startAt": "10:00",
-      "name": "세렌디피티: 뜻밖의 행운",
-    }
-  ]
+    "reservations": [
+        {
+          "id": 1,
+          "name": "피케이",
+          "date": "2024-04-29",
+          "startAt": "10:00",
+          "name": "세렌디피티: 뜻밖의 행운",
+        }
+    ]
 }
 ```
 
@@ -241,15 +241,15 @@ HTTP/1.1 201
 Content-Type: application/json
 
 {
-  "reservations": [
-    {
-      "id": 1,
-      "name": "피케이",
-      "date": "2024-04-29",
-      "startAt": "10:00",
-      "name": "세렌디피티: 뜻밖의 행운",
-    }
-  ]
+    "reservations": [
+        {
+          "id": 1,
+          "name": "피케이",
+          "date": "2024-04-29",
+          "startAt": "10:00",
+          "name": "세렌디피티: 뜻밖의 행운",
+        }
+    ]
 }
 ```
 
@@ -312,20 +312,22 @@ GET /themes HTTP/1.1
 HTTP/1.1 200
 content-type: application/json
 
-[
-    {
-        "id": 1,
-        "name": "세렌디피티: 뜻밖의 행운",
-        "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
-        "thumbnail": "https://i.postimg.cc/T2Df9mR3/theme-PNG-SERENDIPITY.png"
-    },
-    {
-        "id": 2,
-        "name": "포레스트: 신비한 숲속의 비밀",
-        "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
-        "thumbnail": "https://i.postimg.cc/3xjvZz1Y/theme-PNG-FOREST.png"
-    }
-]
+{
+    "themes": [
+        {
+            "id": 1,
+            "name": "세렌디피티: 뜻밖의 행운",
+            "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
+            "thumbnail": "https://i.postimg.cc/T2Df9mR3/theme-PNG-SERENDIPITY.png"
+        },
+        {
+            "id": 2,
+            "name": "포레스트: 신비한 숲속의 비밀",
+            "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
+            "thumbnail": "https://i.postimg.cc/3xjvZz1Y/theme-PNG-FOREST.png"
+        }
+    ]
+}
 ```
 
 ### 인기 테마 조회 API
@@ -342,20 +344,22 @@ GET /themes/tops HTTP/1.1
 HTTP/1.1 200
 content-type: application/json
 
-[
-    {
-        "id": 1,
-        "name": "세렌디피티: 뜻밖의 행운",
-        "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
-        "thumbnail": "https://i.postimg.cc/T2Df9mR3/theme-PNG-SERENDIPITY.png"
-    },
-    {
-        "id": 2,
-        "name": "포레스트: 신비한 숲속의 비밀",
-        "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
-        "thumbnail": "https://i.postimg.cc/3xjvZz1Y/theme-PNG-FOREST.png"
-    }
-]
+{
+    "themes": [
+        {
+            "id": 1,
+            "name": "세렌디피티: 뜻밖의 행운",
+            "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
+            "thumbnail": "https://i.postimg.cc/T2Df9mR3/theme-PNG-SERENDIPITY.png"
+        },
+        {
+            "id": 2,
+            "name": "포레스트: 신비한 숲속의 비밀",
+            "description": "방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다.",
+            "thumbnail": "https://i.postimg.cc/3xjvZz1Y/theme-PNG-FOREST.png"
+        }
+    ]
+}
 ```
 
 ### 테마 삭제 API
@@ -435,15 +439,15 @@ HTTP/1.1 200
 Content-Type: application/json
 
 {
-  "members": [
-    {
-      "id": 1,
-      "name": "피케이"
-    },
-    {
-      "id": 2,
-      "name": "망쵸"
-    }
-  ]
+    "members": [
+        {
+            "id": 1,
+            "name": "피케이"
+        },
+        {
+            "id": 2,
+            "name": "망쵸"
+        }
+    ]
 }
 ```
