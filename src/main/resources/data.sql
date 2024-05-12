@@ -11,7 +11,7 @@ VALUES
 ('구구', 'googoo@email.com', '1234', default),
 ('토미', 'tomi@email.com', '1234', default),
 ('리사', 'risa@email.com', '1234', default);
-ALTER TABLE member ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE member ALTER COLUMN id RESTART WITH 11;
 
 -- 에약 시간
 INSERT INTO reservation_time (start_at)
