@@ -1,6 +1,5 @@
 package roomescape.member.service;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -35,27 +34,26 @@ public class AuthService {
         return Jwts.builder()
                 .claims()
                 .add("id", member.getId())
-                .add("email", member.getEmail())
-                .add("name", member.getName())
                 .and()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
     public LoggedInMember findLoggedInMember(String token) {
-        Long id = getClaims(token).get("id", Long.class);
+        Long id = getMemberId(token);
         Member member = memberDao.findMemberById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
         return LoggedInMember.from(member);
     }
 
-    private Claims getClaims(String token) {
+    private Long getMemberId(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
                     .parseSignedClaims(token)
-                    .getPayload();
+                    .getPayload()
+                    .get("id", Long.class);
         } catch (JwtException exception) {
             throw new MemberAuthenticationException();
         }
