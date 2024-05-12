@@ -25,7 +25,7 @@ import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.output.ReservationOutput;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
 class ReservationServiceTest {
 
