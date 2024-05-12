@@ -21,7 +21,7 @@ public class JwtTokenProvider implements TokenProvider {
     public String createToken(String payload) {
         Claims claims = Jwts.claims().setSubject(payload);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + jwtTokenProperties.getValidityInMilliseconds());
+        Date validity = new Date(now.getTime() + jwtTokenProperties.getExpireMinute());
 
         return Jwts.builder()
                 .setClaims(claims)
