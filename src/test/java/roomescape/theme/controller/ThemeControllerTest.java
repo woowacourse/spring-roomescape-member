@@ -25,7 +25,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void findAllTest() {
+    void findThemeListTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -36,7 +36,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void saveTest() {
+    void saveThemeTest() {
         ThemeRequest themeRequest = new ThemeRequest("정글 모험", "열대 정글의 심연을 탐험하세요.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
@@ -51,7 +51,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void deleteTest() {
+    void deleteThemeByIdTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -61,7 +61,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void findPopularTest() {
+    void findPopularThemeListTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

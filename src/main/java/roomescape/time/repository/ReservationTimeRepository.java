@@ -34,23 +34,23 @@ public class ReservationTimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationTime> readAll() {
+    public long save(ReservationTime reservationTime) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt().toString());
+
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
 
         return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
-    public ReservationTime find(long id) {
+    public ReservationTime findById(long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
-    }
-
-    public long create(ReservationTime reservationTime) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt().toString());
-
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     public int delete(long id) {
@@ -59,7 +59,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public List<ReservationTimeStatus> findAvailableTime(String date, long themeId) {
+    public List<ReservationTimeStatus> findByDateAndThemeId(String date, long themeId) {
         String sql = """
                 SELECT t.id, t.start_at,
                 EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?)

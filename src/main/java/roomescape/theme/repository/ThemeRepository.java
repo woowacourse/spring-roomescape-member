@@ -31,19 +31,7 @@ public class ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Theme> readAll() {
-        String sql = "SELECT * FROM theme";
-
-        return jdbcTemplate.query(sql, ROW_MAPPER);
-    }
-
-    public Theme read(long themeId) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, themeId);
-    }
-
-    public Long create(Theme theme) {
+    public Long save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
@@ -52,7 +40,19 @@ public class ThemeRepository {
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public Integer delete(long id) {
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    public Theme findById(long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+    }
+
+    public Integer deleteById(long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);

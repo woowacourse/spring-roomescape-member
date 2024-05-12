@@ -20,8 +20,8 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberResponse>> findAll() {
-        List<Member> members = memberService.readAll();
+    public ResponseEntity<List<MemberResponse>> findMemberList() {
+        List<Member> members = memberService.findMemberList();
 
         List<MemberResponse> memberResponse = changeToMemberResponses(members);
 

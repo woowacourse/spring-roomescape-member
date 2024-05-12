@@ -19,18 +19,9 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ThemeResponse>> findAll() {
-        List<Theme> themes = themeService.readAll();
-
-        List<ThemeResponse> themeResponses = changeToThemeResponses(themes);
-
-        return ResponseEntity.ok(themeResponses);
-    }
-
     @PostMapping
-    public ResponseEntity<ThemeResponse> save(@RequestBody ThemeRequest themeRequest) {
-        Theme theme = themeService.create(themeRequest.toTheme());
+    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest themeRequest) {
+        Theme theme = themeService.saveTheme(themeRequest.toTheme());
 
         ThemeResponse themeResponse = changeToThemeResponse(theme);
         String url = "/themes/" + themeResponse.id();
@@ -38,16 +29,25 @@ public class ThemeController {
         return ResponseEntity.created(URI.create(url)).body(themeResponse);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> findThemeList() {
+        List<Theme> themes = themeService.findThemeList();
+
+        List<ThemeResponse> themeResponses = changeToThemeResponses(themes);
+
+        return ResponseEntity.ok(themeResponses);
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-        themeService.delete(id);
+    public ResponseEntity<Void> deleteThemeById(@PathVariable("id") long id) {
+        themeService.deleteThemeById(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> findPopular() {
-        List<Theme> themes = themeService.findPopular();
+    public ResponseEntity<List<ThemeResponse>> findPopularThemeList() {
+        List<Theme> themes = themeService.findPopularThemeList();
 
         List<ThemeResponse> themeResponses = changeToThemeResponses(themes);
 

@@ -21,27 +21,9 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findAll() {
-        List<Reservation> reservations = reservationService.readAll();
-
-        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
-
-        return ResponseEntity.ok(reservationResponses);
-    }
-
-    @PostMapping("/search")
-    public ResponseEntity<List<ReservationResponse>> findBySearchInfo(@RequestBody SearchRequest searchRequest) {
-        List<Reservation> reservations = reservationService.readBySearchInfo(searchRequest.toSearchInfo());
-
-        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
-
-        return ResponseEntity.ok(reservationResponses);
-    }
-
     @PostMapping
-    public ResponseEntity<ReservationResponse> save(@RequestBody ReservationRequest reservationRequest, Member member) {
-        Reservation reservation = reservationService.create(reservationRequest.toReservation(member));
+    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest reservationRequest, Member member) {
+        Reservation reservation = reservationService.saveReservation(reservationRequest.toReservation(member));
 
         ReservationResponse reservationResponse = changeToReservationResponse(reservation);
         String url = "/reservations/" + reservationResponse.id();
@@ -49,9 +31,27 @@ public class ReservationController {
         return ResponseEntity.created(URI.create(url)).body(reservationResponse);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> findReservationList() {
+        List<Reservation> reservations = reservationService.findReservationList();
+
+        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
+
+        return ResponseEntity.ok(reservationResponses);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<ReservationResponse>> findReservationListBySearchInfo(@RequestBody SearchRequest searchRequest) {
+        List<Reservation> reservations = reservationService.findReservationListBySearchInfo(searchRequest.toSearchInfo());
+
+        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
+
+        return ResponseEntity.ok(reservationResponses);
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-        reservationService.delete(id);
+    public ResponseEntity<Void> deleteReservationById(@PathVariable("id") long id) {
+        reservationService.deleteReservationById(id);
 
         return ResponseEntity.noContent().build();
     }

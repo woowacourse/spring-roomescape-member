@@ -20,7 +20,7 @@ public class AuthService {
     }
 
     public String createToken(MemberRequest memberRequest) {
-        Optional<Member> memberOptional = memberRepository.readByEmail(memberRequest.email());
+        Optional<Member> memberOptional = memberRepository.findByEmail(memberRequest.email());
 
         if (memberOptional.isEmpty()) {
             throw new IllegalArgumentException("이메일 정보가 올바르지 않습니다.");
@@ -32,9 +32,9 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public Member readByToken(String token) {
+    public Member findMemberByToken(String token) {
         String email = jwtTokenProvider.getEmail(token);
-        Optional<Member> memberOptional = memberRepository.readByEmail(email);
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
         return memberOptional.orElseThrow(() -> new IllegalArgumentException("올바르지 않은 토큰입니다."));
     }

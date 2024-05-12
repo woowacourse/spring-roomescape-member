@@ -50,7 +50,18 @@ public class ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> readAll() {
+    public Long save(Reservation reservation) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.getMember().getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId())
+                .addValue("member_id", reservation.getMember().getId());
+
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
                 r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
@@ -62,7 +73,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation readByReservationId(long reservationId) {
+    public Reservation findByReservationId(long reservationId) {
         String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
                 r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
@@ -75,7 +86,7 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationId);
     }
 
-    public List<Reservation> readBySearchInfo(SearchInfo searchInfo) {
+    public List<Reservation> findBySearchInfo(SearchInfo searchInfo) {
         WhereQueryProvider whereQueryProvider = new WhereQueryProvider();
         String whereQuery = whereQueryProvider.makeQuery(searchInfo);
 
@@ -91,18 +102,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, whereQueryProvider.getParams());
     }
 
-    public Long create(Reservation reservation) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getMember().getName())
-                .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId())
-                .addValue("member_id", reservation.getMember().getId());
-
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
-    }
-
-    public Integer delete(long id) {
+    public Integer deleteById(long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);

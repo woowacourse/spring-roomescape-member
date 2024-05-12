@@ -27,7 +27,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    void findAllTest() {
+    void findTimeListTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -38,7 +38,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    void saveTest() {
+    void saveTimeTest() {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
 
         RestAssured.given()
@@ -52,7 +52,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    void deleteTest() {
+    void deleteTimeByIdTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 public class ReservationControllerTest extends BaseTest {
 
     @Test
-    void findAllTest() {
+    void findReservationListTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -30,7 +30,7 @@ public class ReservationControllerTest extends BaseTest {
     }
 
     @Test
-    void findBySearchInfo() {
+    void findReservationListBySearchInfo() {
         SearchRequest searchRequest = new SearchRequest(1L, 1L,
                 LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 6));
 
@@ -45,7 +45,7 @@ public class ReservationControllerTest extends BaseTest {
     }
 
     @Test
-    void saveTest() {
+    void saveReservationTest() {
         ReservationRequest reservationRequest = new ReservationRequest(
                 LocalDate.of(3000, 1, 1), 1L, 1L);
 
@@ -61,7 +61,7 @@ public class ReservationControllerTest extends BaseTest {
     }
 
     @Test
-    void deleteTest() {
+    void deleteReservationByIdTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

@@ -47,7 +47,7 @@ public class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.MIN);
         Reservation reservation = new Reservation(1L, member, LocalDate.of(2000, 1, 1), reservationTime, theme);
 
-        assertThatThrownBy(() -> reservationService.create(reservation))
+        assertThatThrownBy(() -> reservationService.saveReservation(reservation))
                 .isInstanceOf(InvalidDateException.class);
     }
 
@@ -57,7 +57,7 @@ public class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.MIN);
         Reservation reservation = new Reservation(1L, member, LocalDate.of(2024, 5, 11), reservationTime, theme);
 
-        assertThatThrownBy(() -> reservationService.create(reservation))
+        assertThatThrownBy(() -> reservationService.saveReservation(reservation))
                 .isInstanceOf(InvalidTimeException.class);
     }
 
@@ -67,9 +67,9 @@ public class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Reservation reservation = new Reservation(1L, member, LocalDate.of(3000, 1, 1), reservationTime, theme);
 
-        reservationService.create(reservation);
+        reservationService.saveReservation(reservation);
 
-        assertThatThrownBy(() -> reservationService.create(reservation))
+        assertThatThrownBy(() -> reservationService.saveReservation(reservation))
                 .isInstanceOf(DuplicateReservationException.class);
     }
 }

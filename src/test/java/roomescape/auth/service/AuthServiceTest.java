@@ -49,8 +49,8 @@ public class AuthServiceTest extends BaseTest {
 
     @Test
     @DisplayName("토큰을 해석해서 멤버 객체를 얻는다.")
-    void readByTokenTest() {
-        Member actualMember = authService.readByToken(memberToken);
+    void findMemberByTokenTest() {
+        Member actualMember = authService.findMemberByToken(memberToken);
 
         assertThat(actualMember).isEqualTo(member);
     }

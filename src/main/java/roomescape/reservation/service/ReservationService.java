@@ -26,34 +26,34 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<Reservation> readAll() {
-        return reservationRepository.readAll();
-    }
-
-    public List<Reservation> readBySearchInfo(SearchInfo searchInfo) {
-        return reservationRepository.readBySearchInfo(searchInfo);
-    }
-
-    public Reservation create(Reservation reservation) {
+    public Reservation saveReservation(Reservation reservation) {
         validateFutureReservation(reservation);
 
         boolean isExist = reservationRepository.checkExists(reservation);
         validateUniqueReservation(isExist);
 
-        long reservationId = reservationRepository.create(reservation);
+        long reservationId = reservationRepository.save(reservation);
 
-        return reservationRepository.readByReservationId(reservationId);
+        return reservationRepository.findByReservationId(reservationId);
     }
 
-    public void delete(long id) {
-        Integer deleteCount = reservationRepository.delete(id);
+    public List<Reservation> findReservationList() {
+        return reservationRepository.findAll();
+    }
+
+    public List<Reservation> findReservationListBySearchInfo(SearchInfo searchInfo) {
+        return reservationRepository.findBySearchInfo(searchInfo);
+    }
+
+    public void deleteReservationById(long id) {
+        Integer deleteCount = reservationRepository.deleteById(id);
 
         validateDeletionOccurred(deleteCount);
     }
 
     private void validateFutureReservation(Reservation reservation) {
         Long timeId = reservation.getTime().getId();
-        ReservationTime reservationTime = reservationTimeRepository.find(timeId);
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = currentDateTime.toLocalDate();

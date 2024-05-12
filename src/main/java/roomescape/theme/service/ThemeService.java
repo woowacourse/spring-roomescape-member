@@ -16,23 +16,23 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Theme> readAll() {
-        return themeRepository.readAll();
+    public Theme saveTheme(Theme theme) {
+        long themeId = themeRepository.save(theme);
+
+        return themeRepository.findById(themeId);
     }
 
-    public Theme create(Theme theme) {
-        long themeId = themeRepository.create(theme);
-
-        return themeRepository.read(themeId);
+    public List<Theme> findThemeList() {
+        return themeRepository.findAll();
     }
 
-    public void delete(long id) {
-        int deleteCount = themeRepository.delete(id);
+    public void deleteThemeById(long id) {
+        int deleteCount = themeRepository.deleteById(id);
 
         validateDeletionOccurred(deleteCount);
     }
 
-    public List<Theme> findPopular() {
+    public List<Theme> findPopularThemeList() {
         LocalDate today = LocalDate.now();
 
         return themeRepository.findPopular(today.minusWeeks(1), today.minusDays(1));

@@ -16,24 +16,24 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTime> readAll() {
-        return reservationTimeRepository.readAll();
+    public ReservationTime saveTime(ReservationTime reservationTime) {
+        long timeId = reservationTimeRepository.save(reservationTime);
+
+        return reservationTimeRepository.findById(timeId);
     }
 
-    public ReservationTime create(ReservationTime reservationTime) {
-        long timeId = reservationTimeRepository.create(reservationTime);
-
-        return reservationTimeRepository.find(timeId);
+    public List<ReservationTime> findTimeList() {
+        return reservationTimeRepository.findAll();
     }
 
-    public void delete(long id) {
+    public void deleteTimeById(long id) {
         int deleteCount = reservationTimeRepository.delete(id);
 
         validateDeletionOccurred(deleteCount);
     }
 
-    public List<ReservationTimeStatus> findAvailableTime(String date, long themeId) {
-        return reservationTimeRepository.findAvailableTime(date, themeId);
+    public List<ReservationTimeStatus> findTimeListByDateAndThemeId(String date, long themeId) {
+        return reservationTimeRepository.findByDateAndThemeId(date, themeId);
     }
 
     private static void validateDeletionOccurred(int deleteCount) {

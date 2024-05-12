@@ -25,7 +25,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    void findAllTest() {
+    void findMemberListTest() {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

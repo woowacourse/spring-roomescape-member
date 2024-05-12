@@ -21,18 +21,9 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        List<ReservationTime> reservationTimes = reservationTimeService.readAll();
-
-        List<ReservationTimeResponse> reservationTimeResponses = changeToReservationTimeResponses(reservationTimes);
-
-        return ResponseEntity.ok(reservationTimeResponses);
-    }
-
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> save(@RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeService.create(reservationTimeRequest.toReservationTime());
+    public ResponseEntity<ReservationTimeResponse> saveTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
+        ReservationTime reservationTime = reservationTimeService.saveTime(reservationTimeRequest.toReservationTime());
 
         ReservationTimeResponse reservationTimeResponse = changeToReservationTimeResponse(reservationTime);
         String url = "/times/" + reservationTimeResponse.id();
@@ -40,16 +31,25 @@ public class ReservationTimeController {
         return ResponseEntity.created(URI.create(url)).body(reservationTimeResponse);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ReservationTimeResponse>> findTimeList() {
+        List<ReservationTime> reservationTimes = reservationTimeService.findTimeList();
+
+        List<ReservationTimeResponse> reservationTimeResponses = changeToReservationTimeResponses(reservationTimes);
+
+        return ResponseEntity.ok(reservationTimeResponses);
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-        reservationTimeService.delete(id);
+    public ResponseEntity<Void> deleteTimeById(@PathVariable("id") long id) {
+        reservationTimeService.deleteTimeById(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<ReservationTimeStatusResponse>> findAvailableTime(@RequestParam("date") String date, @RequestParam("themeId") long themeId) {
-        List<ReservationTimeStatus> reservationTimeStatuses = reservationTimeService.findAvailableTime(date, themeId);
+    public ResponseEntity<List<ReservationTimeStatusResponse>> findTimeByDateAndThemeId(@RequestParam("date") String date, @RequestParam("themeId") long themeId) {
+        List<ReservationTimeStatus> reservationTimeStatuses = reservationTimeService.findTimeListByDateAndThemeId(date, themeId);
 
         List<ReservationTimeStatusResponse> reservationTimeStatusResponses = changeToReservationTimeStatusResponses(reservationTimeStatuses);
 

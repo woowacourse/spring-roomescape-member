@@ -25,13 +25,13 @@ public class MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Member> readAll() {
+    public List<Member> findAll() {
         String sql = "SELECT * FROM member";
 
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Optional<Member> readByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);

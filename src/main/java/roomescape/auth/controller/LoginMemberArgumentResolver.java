@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
 
-        return authService.readByToken(token);
+        return authService.findMemberByToken(token);
     }
 
     private void validateCookie(Cookie[] cookies) {

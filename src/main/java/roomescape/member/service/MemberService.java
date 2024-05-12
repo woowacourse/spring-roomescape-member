@@ -14,7 +14,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public List<Member> readAll() {
-        return memberRepository.readAll();
+    public List<Member> findMemberList() {
+        return memberRepository.findAll();
     }
 }
