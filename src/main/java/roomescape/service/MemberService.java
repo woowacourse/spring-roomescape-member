@@ -63,7 +63,7 @@ public class MemberService {
         }
         final String payload = jwtTokenProvider.getPayload(accessToken);
         final Member member = memberDao.findByEmail(payload)
-                .orElseThrow(() -> new AccessNotAllowException("로그인 정보가 부적절 합니다."));
+                .orElseThrow(() -> new AccessNotAllowException("회원 정보가 존재하지 않습니다."));
         return member;
     }
 }
