@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.theme;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
