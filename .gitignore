@@ -40,4 +40,4 @@ out/
 .DS_STORE
 
 ### properties ###
-/src/main/resources/application-jwt.properties
+application-jwt.properties
