@@ -27,8 +27,10 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
-        if (existsByStartAt(request.startAt())) {
-            throw new RoomescapeException(RoomescapeErrorCode.DUPLICATED_TIME);
+        LocalTime startAt = request.startAt();
+        if (existsByStartAt(startAt)) {
+            throw new RoomescapeException(RoomescapeErrorCode.DUPLICATED_TIME,
+                    String.format("중복된 예약 시간입니다. 요청 예약 시간:%s", startAt));
         }
 
         ReservationTime reservationTime = reservationTimesRepository.create(request.toReservationTime());

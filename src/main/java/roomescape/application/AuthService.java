@@ -26,12 +26,13 @@ public class AuthService {
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         String email = tokenRequest.email();
-        String accessToken = tokenProvider.createToken(email);
         Member member = memberQueryRepository.findByEmail(email)
-                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_MEMBER,
+                        String.format("존재하지 않는 회원입니다. 입력한 회원 email:%s", email)));
         if (!member.getPassword().equals(tokenRequest.password())) {
             throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "로그인 회원 정보가 일치하지 않습니다.");
         }
+        String accessToken = tokenProvider.createToken(email);
         return new TokenResponse(accessToken);
     }
 
@@ -46,6 +47,7 @@ public class AuthService {
     public MemberResponse findMemberByToken(String token) {
         String payload = tokenProvider.getPayload(token);
         return MemberResponse.from(memberQueryRepository.findByEmail(payload)
-                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_MEMBER)));
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_MEMBER,
+                        String.format("존재하지 않는 회원입니다. 입력한 회원 email:%s", payload))));
     }
 }
