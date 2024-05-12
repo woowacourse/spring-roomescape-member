@@ -1,4 +1,4 @@
-package roomescape.preprocessor;
+package roomescape.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
