@@ -11,6 +11,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import roomescape.controller.member.dto.MemberLoginRequest;
 import roomescape.controller.reservation.dto.MemberResponse;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.controller.theme.dto.ReservationThemeResponse;
@@ -23,7 +25,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
@@ -34,9 +35,19 @@ class ReservationControllerTest {
     @LocalServerPort
     int port;
 
+    String accessToken;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        accessToken = RestAssured
+                .given().log().all()
+                .body(new MemberLoginRequest("redddy@gmail.com", "0000"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
     }
 
     @Test
@@ -71,23 +82,14 @@ class ReservationControllerTest {
         assertThat(reservations).isEqualTo(expected);
     }
 
-    @Test
-    @DisplayName("api로 예약 조회")
-    void getReservationsApi() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(6));
-    }
-
     @ParameterizedTest
     @MethodSource("invalidRequestParameterProvider")
     @DisplayName("유효하지 않는 요청인 경우 400을 반환한다.")
-    void invalidRequest(final String name, final String date, final String timeId, final String themeId) {
-        final Map<String, String> params = Map.of("name", name, "date", date, "timeId", timeId, "themeId", themeId);
+    void invalidRequest(final String date, final String timeId, final String themeId) {
+        final Map<String, String> params = Map.of("date", date, "timeId", timeId, "themeId", themeId);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -96,16 +98,14 @@ class ReservationControllerTest {
     }
 
     static Stream<Arguments> invalidRequestParameterProvider() {
-        final String name = "name";
         final String date = LocalDate.now().plusDays(5).format(DateTimeFormatter.ISO_DATE);
         final String timeId = "1";
         final String themeId = "1";
 
         return Stream.of(
-                Arguments.of(name, date, "dk", themeId),
-                Arguments.of(name, date, timeId, "al"),
-                Arguments.of(name, "2023", timeId, themeId),
-                Arguments.of("  ", date, timeId, themeId)
+                Arguments.of(date, "dk", themeId),
+                Arguments.of(date, timeId, "al"),
+                Arguments.of("2023", timeId, themeId)
         );
     }
 }

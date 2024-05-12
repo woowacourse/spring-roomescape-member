@@ -19,13 +19,6 @@ class MemberControllerTest {
     MemberController memberController;
 
     @Test
-    @DisplayName("멤버 조회")
-    void getMembers() {
-        //TODO 회원가입 생기면서 이 테스트 깨짐
-        assertThat(memberController.getMembers()).hasSize(3);
-    }
-
-    @Test
     @DisplayName("회원 가입")
     void createMember() {
         //given

@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import roomescape.controller.member.dto.MemberLoginRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,15 +28,26 @@ class TimeControllerTest {
     @LocalServerPort
     int port;
 
+    String accessToken;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        accessToken = RestAssured
+                .given().log().all()
+                .body(new MemberLoginRequest("redddy@gmail.com", "0000"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
     }
 
     @Test
     @DisplayName("타임 조회")
     void getTimes() {
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
@@ -49,6 +62,7 @@ class TimeControllerTest {
         params.put("startAt", startAt);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
@@ -63,6 +77,7 @@ class TimeControllerTest {
         params.put("startAt", "00:00");
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
@@ -70,17 +85,20 @@ class TimeControllerTest {
                 .statusCode(201);
 
         final List<Object> values = RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList("$");
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().delete("/times/" + values.size())
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().delete("/times/" + values.size())
                 .then().log().all()
                 .statusCode(400);
@@ -89,10 +107,11 @@ class TimeControllerTest {
     @Test
     @DisplayName("예약 가능 시간 조회")
     void getAvailableTimes() {
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now().plusDays(10);
         long themeId = 1L;
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get("/times/availability?date=" + date.format(DateTimeFormatter.ISO_DATE) + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
