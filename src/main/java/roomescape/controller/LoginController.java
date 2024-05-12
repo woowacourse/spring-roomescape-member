@@ -30,18 +30,19 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String loginToken = loginService.getLoginToken(loginRequest);
-        Cookie cookie = new Cookie("token", loginToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        Cookie accessTokenCookie = new Cookie("token", loginToken);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath("/");
+        response.addCookie(accessTokenCookie);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie token = CookieExtractor.getTokenCookie(request);
-        token.setMaxAge(0);
-        response.addCookie(token);
+        Cookie accessTokenCookie = CookieExtractor.getTokenCookie(request);
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");
+        response.addCookie(accessTokenCookie);
 
         return ResponseEntity.ok().build();
     }
