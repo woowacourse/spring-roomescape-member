@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.repository.ReservationDao;
@@ -40,12 +41,12 @@ public class ReservationService {
         return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
     }
 
-    public Reservation validatePastAndSave(ReservationRequest request) {
+    public Reservation validatePastAndSave(ReservationRequest request, Member member) {
         validateDuplicate(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         new ReservationDateTime(request, reservationTime).validatePast(LocalDateTime.now());
         Theme theme = themeDao.findById(request.themeId());
-        return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
+        return reservationDao.save(new Reservation(member.name(), request.date(), reservationTime, theme));
 
     }
 
