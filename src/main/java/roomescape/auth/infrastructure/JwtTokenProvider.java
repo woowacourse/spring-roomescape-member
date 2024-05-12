@@ -23,16 +23,16 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String createToken(Member member) {
+    public Token createToken(Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
-        return Jwts.builder()
+        return new Token(Jwts.builder()
                 .setSubject(member.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
+                .compact());
     }
 
     public String getPayload(String token) {

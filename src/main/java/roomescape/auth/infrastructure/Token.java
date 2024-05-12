@@ -1,4 +1,4 @@
-package roomescape.auth.domain;
+package roomescape.auth.infrastructure;
 
 public class Token {
     private final String accessToken;

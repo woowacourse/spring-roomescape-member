@@ -1,11 +1,11 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.domain.Token;
 import roomescape.auth.dto.Accessor;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.auth.infrastructure.Token;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.global.exception.WrongPasswordException;
 import roomescape.member.domain.Member;
@@ -30,8 +30,7 @@ public class AuthService {
             throw new WrongPasswordException("비밀번호가 틀렸습니다");
         }
 
-        String token = jwtTokenProvider.createToken(findMember);
-        return new Token(token);
+        return jwtTokenProvider.createToken(findMember);
     }
 
     public LoginCheckResponse checkLogin(Accessor accessor) {

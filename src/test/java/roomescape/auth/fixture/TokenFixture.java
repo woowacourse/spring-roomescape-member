@@ -1,6 +1,6 @@
 package roomescape.auth.fixture;
 
-import roomescape.auth.domain.Token;
+import roomescape.auth.infrastructure.Token;
 
 public class TokenFixture {
 

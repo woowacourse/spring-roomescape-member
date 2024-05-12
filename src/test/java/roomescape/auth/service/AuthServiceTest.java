@@ -40,7 +40,7 @@ class AuthServiceTest {
     void should_return_token_when_valid_login_request_arrived() {
 
         when(memberRepository.findByEmail(any(String.class))).thenReturn(Optional.of(MemberFixture.MEMBER_ID_1));
-        when(jwtTokenProvider.createToken(any(Member.class))).thenReturn(DUMMY_TOKEN.getAccessToken());
+        when(jwtTokenProvider.createToken(any(Member.class))).thenReturn(DUMMY_TOKEN);
 
         LoginRequest request = new LoginRequest("aa@gmail.com", "12");
         assertThat(authService.login(request).getAccessToken()).isNotNull();
