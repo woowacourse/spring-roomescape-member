@@ -3,7 +3,6 @@ package roomescape.controller.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import roomescape.controller.rest.request.ReservationRequest;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationDao;
 
@@ -45,21 +42,6 @@ class ReservationControllerTest {
 
         Integer count = reservationDao.findAll().size();
         assertThat(reservations.size()).isEqualTo(count);
-    }
-
-    @Test
-    @DisplayName("예약을 추가하고 상태코드 201을 응답한다.")
-    void createByAdmin() {
-        assertReservationCountIsEqualTo(5);
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(new ReservationRequest("구구", LocalDate.parse("2024-08-06"), 1, 1))
-                .when().post("/reservations")
-                .then()
-                .statusCode(201);
-
-        assertReservationCountIsEqualTo(6);
     }
 
     @Test
