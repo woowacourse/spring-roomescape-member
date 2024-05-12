@@ -3,6 +3,7 @@ package roomescape.auth;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.exception.AccessNotAllowException;
 
 import java.util.Date;
 
@@ -27,10 +28,13 @@ public class JwtTokenProvider {
     }
 
     public String getPayload(String token) {
+        if (!validateToken(token)) {
+            throw new AccessNotAllowException("유효하지 않는 토큰입니다.");
+        }
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public boolean validateToken(String token) {
+    private boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());

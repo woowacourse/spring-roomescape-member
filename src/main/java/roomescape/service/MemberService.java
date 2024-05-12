@@ -58,9 +58,6 @@ public class MemberService {
     }
 
     public Member getMemberInfo(final String accessToken) {
-        if (!jwtTokenProvider.validateToken(accessToken)) {
-            throw new AccessNotAllowException("유효하지 않는 토큰입니다.");
-        }
         final String payload = jwtTokenProvider.getPayload(accessToken);
         final Member member = memberDao.findByEmail(payload)
                 .orElseThrow(() -> new AccessNotAllowException("회원 정보가 존재하지 않습니다."));
