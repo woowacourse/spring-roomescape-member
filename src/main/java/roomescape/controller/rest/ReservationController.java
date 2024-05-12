@@ -26,21 +26,15 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping("/reservations")
     public ResponseEntity<List<Reservation>> findAll() {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/reservations/{id}")
     public ResponseEntity<Reservation> findById(@PathVariable long id) {
         Reservation reservation = reservationService.findById(id);
         return ResponseEntity.ok(reservation);
-    }
-
-    @PostMapping("/admin/reservations")
-    public ResponseEntity<Reservation> createByAdmin(@RequestBody ReservationRequest request) {
-        Reservation createdReservation = reservationService.createByAdmin(request);
-        return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 
     @PostMapping("/reservations")
@@ -49,9 +43,15 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<Reservation> createByAdmin(@RequestBody ReservationRequest request) {
+        Reservation createdReservation = reservationService.createByAdmin(request);
+        return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 }
