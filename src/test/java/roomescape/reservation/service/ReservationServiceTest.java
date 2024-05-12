@@ -12,6 +12,7 @@ import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidTimeException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -37,7 +38,7 @@ public class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        member = new Member(1L, "김철수", "chulsoo@example.com", "123", "USER");
+        member = new Member(1L, "김철수", "chulsoo@example.com", "123", Role.MEMBER);
         theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     }
 

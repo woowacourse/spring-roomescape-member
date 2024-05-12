@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.SearchInfo;
 import roomescape.reservation.provider.WhereQueryProvider;
@@ -26,7 +27,7 @@ public class ReservationRepository {
                             resultSet.getString("member_name"),
                             resultSet.getString("email"),
                             resultSet.getString("password"),
-                            resultSet.getString("role")
+                            Role.valueOf(resultSet.getString("role"))
                     ),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(

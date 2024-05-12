@@ -35,10 +35,10 @@ VALUES ('정글 모험', '열대 정글의 심연을 탐험하세요.', 'https:/
        ('광산 속 보물', '포기된 광산 속 숨겨진 보물을 찾으세요.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 INSERT INTO member (name, email, password, role)
-VALUES ('김철수', 'chulsoo@example.com', '123', 'USER'),
-       ('이영희', 'younghi@example.com', '123', 'USER'),
-       ('박지민', 'jimin@example.com', '123', 'USER'),
-       ('최유리', 'yuri@example.com', '123', 'USER'),
+VALUES ('김철수', 'chulsoo@example.com', '123', 'MEMBER'),
+       ('이영희', 'younghi@example.com', '123', 'MEMBER'),
+       ('박지민', 'jimin@example.com', '123', 'MEMBER'),
+       ('최유리', 'yuri@example.com', '123', 'MEMBER'),
        ('한태웅', 'taewoong@example.com', '123', 'ADMIN');
 
 INSERT INTO reservation (date, time_id, theme_id, member_id)

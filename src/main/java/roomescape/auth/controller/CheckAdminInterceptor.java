@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.provider.JwtTokenProvider;
 import roomescape.exception.AuthorizationException;
+import roomescape.member.domain.Role;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
@@ -33,8 +34,17 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
     }
 
-    private void validateRole(String role) {
-        if (role.isBlank() || role.equals("USER")) {
+    private void validateRole(String rawRole) {
+        Role role = makeRole(rawRole);
+        if (role.isMember()) {
+            throw new AuthorizationException("권한이 없습니다.");
+        }
+    }
+
+    private Role makeRole(String rawRole) {
+        try {
+            return Role.valueOf(rawRole);
+        } catch (IllegalArgumentException ex) {
             throw new AuthorizationException("권한이 없습니다.");
         }
     }

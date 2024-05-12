@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ public class MemberRepository {
                     resultSet.getString("name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
-                    resultSet.getString("role"));
+                    Role.valueOf(resultSet.getString("role")));
 
     private final JdbcTemplate jdbcTemplate;
 

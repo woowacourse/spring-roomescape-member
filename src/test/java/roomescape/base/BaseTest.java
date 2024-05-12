@@ -8,6 +8,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.provider.JwtTokenProvider;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -28,8 +29,8 @@ public class BaseTest {
     void setUp() {
         RestAssured.port = port;
 
-        admin = new Member(1L, "한태웅", "taewoong@example.com", "123", "ADMIN");
-        member = new Member(1L, "김철수", "chulsoo@example.com", "123", "USER");
+        admin = new Member(1L, "한태웅", "taewoong@example.com", "123", Role.ADMIN);
+        member = new Member(1L, "김철수", "chulsoo@example.com", "123", Role.MEMBER);
 
         adminToken = jwtTokenProvider.createToken(admin);
         memberToken = jwtTokenProvider.createToken(member);
