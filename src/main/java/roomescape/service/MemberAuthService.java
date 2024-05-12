@@ -51,4 +51,11 @@ public class MemberAuthService {
                 member.getRole().name()))
             .toList();
     }
+
+    public boolean isExistsMemberByEmailAndPassword(String email, String password) {
+        if (memberRepository.isExistsByEmailAndPassword(email, password)) {
+            return true;
+        }
+        throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
+    }
 }

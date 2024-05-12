@@ -19,7 +19,6 @@ import roomescape.controller.request.TokenWebRequest;
 import roomescape.controller.response.MemberWebResponse;
 import roomescape.service.MemberAuthService;
 import roomescape.service.request.MemberSignUpAppRequest;
-import roomescape.service.request.TokenAppRequest;
 import roomescape.service.response.MemberAppResponse;
 
 @RestController
@@ -36,8 +35,10 @@ public class MemberAuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody TokenWebRequest request,
                                       HttpServletResponse response) {
-        String token = jwtProvider.createToken(new TokenAppRequest(request.email(), request.password()));
-        response.addCookie(createCookieByToken(token));
+        if (memberAuthService.isExistsMemberByEmailAndPassword(request.email(), request.password())) {
+            String token = jwtProvider.createToken(request.email());
+            response.addCookie(createCookieByToken(token));
+        }
         return ResponseEntity.ok().build();
     }
 
