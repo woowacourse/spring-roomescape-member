@@ -21,6 +21,10 @@ public enum MemberRole {
                 .orElseThrow(() -> new AuthorizationException("존재하지 않는 권한입니다."));
     }
 
+    public boolean isAdmin() {
+        return ADMIN.equals(this);
+    }
+
     public String getName() {
         return name;
     }

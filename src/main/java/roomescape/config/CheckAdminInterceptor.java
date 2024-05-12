@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberRole;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
@@ -45,7 +44,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         String payload = authService.findPayload(tokenCookies.get(0).getValue());
         Member member = memberService.findAuthInfo(payload);
 
-        if (member.getMemberRole() != MemberRole.ADMIN) {
+        if (member.isNotAdmin()) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
