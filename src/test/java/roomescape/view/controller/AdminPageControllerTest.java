@@ -1,4 +1,4 @@
-package roomescape.admin.controller;
+package roomescape.view.controller;
 
 
 import io.restassured.RestAssured;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class AdminPageControllerTest {
+class AdminPageControllerTest {
 
     @Autowired
     private MemberDao memberDao;

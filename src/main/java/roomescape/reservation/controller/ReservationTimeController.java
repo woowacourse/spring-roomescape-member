@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.annotation.Admin;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.reservation.dto.request.ReservationTimeRequest;
 import roomescape.reservation.dto.response.ReservationTimeResponse;
@@ -24,6 +25,7 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @Admin
     @GetMapping("/times")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ReservationTimesResponse> getAllTimes() {
@@ -31,6 +33,7 @@ public class ReservationTimeController {
         return ApiResponse.success(reservationTimeService.findAllTimes());
     }
 
+    @Admin
     @PostMapping("/times")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ReservationTimeResponse> saveTime(
@@ -43,6 +46,7 @@ public class ReservationTimeController {
         return ApiResponse.success(reservationTimeResponse);
     }
 
+    @Admin
     @DeleteMapping("/times/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> removeTime(@PathVariable final Long id) {

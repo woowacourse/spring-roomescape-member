@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.annotation.Admin;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.member.dto.MembersResponse;
 import roomescape.member.service.MemberService;
@@ -16,6 +17,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @Admin
     @GetMapping("/members")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<MembersResponse> getAllMembers() {

@@ -2,6 +2,8 @@ package roomescape.reservation.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,6 +15,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -28,6 +33,9 @@ public class ReservationTimeControllerTest {
     @Autowired
     private ReservationTimeController reservationTimeController;
 
+    @Autowired
+    private MemberDao memberDao;
+
     @LocalServerPort
     private int port;
 
@@ -35,12 +43,34 @@ public class ReservationTimeControllerTest {
             "startAt", "17:00"
     );
 
+    private static String adminAccessTokenCookie;
+
+    @BeforeEach
+    void init() {
+        String email = "admin@admin.com";
+        String password = "12341234";
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        adminAccessTokenCookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+    }
+
     @Test
     @DisplayName("처음으로 등록하는 시간의 id는 1이다.")
     void firstPost() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -54,6 +84,7 @@ public class ReservationTimeControllerTest {
     void readEmptyTimes() {
         RestAssured.given().log().all()
                 .port(port)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
@@ -66,6 +97,7 @@ public class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -75,6 +107,7 @@ public class ReservationTimeControllerTest {
 
         RestAssured.given().log().all()
                 .port(port)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
@@ -87,6 +120,7 @@ public class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -96,12 +130,14 @@ public class ReservationTimeControllerTest {
 
         RestAssured.given().log().all()
                 .port(port)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
                 .port(port)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
@@ -130,6 +166,7 @@ public class ReservationTimeControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .port(port)
                 .body(request)
                 .when().post("/times")
@@ -153,6 +190,7 @@ public class ReservationTimeControllerTest {
     void validateBlankRequest(Map<String, String> request) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .port(port)
                 .body(request)
                 .when().post("/times")

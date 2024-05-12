@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.annotation.Admin;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
@@ -26,6 +27,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @Admin
     @GetMapping("/themes")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ThemesResponse> getAllThemes() {
@@ -40,6 +42,7 @@ public class ThemeController {
         return ApiResponse.success(themeService.getTop10Themes(today));
     }
 
+    @Admin
     @PostMapping("/themes")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ThemeResponse> saveTheme(
@@ -52,6 +55,7 @@ public class ThemeController {
         return ApiResponse.success(themeResponse);
     }
 
+    @Admin
     @DeleteMapping("/themes/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> removeTheme(@PathVariable final Long id) {

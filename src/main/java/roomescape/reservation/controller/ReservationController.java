@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.annotation.Admin;
 import roomescape.global.auth.annotation.MemberId;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.reservation.dto.request.ReservationRequest;
@@ -29,6 +30,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @Admin
     @GetMapping("/reservations")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ReservationsResponse> getAllReservations() {
@@ -43,6 +45,7 @@ public class ReservationController {
         return ApiResponse.success(reservationService.findReservationsByDateAndThemeId(date, themeId));
     }
 
+    @Admin
     @GetMapping("/reservations/search")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ReservationsResponse> getReservationBySearching(

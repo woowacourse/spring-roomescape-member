@@ -1,4 +1,4 @@
-package roomescape.client.controller;
+package roomescape.view.controller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;

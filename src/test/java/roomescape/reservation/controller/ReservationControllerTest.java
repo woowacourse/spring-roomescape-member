@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,9 +51,9 @@ public class ReservationControllerTest {
 
     @BeforeEach
     void init() {
-        String email = "test@email.com";
+        String email = "admin@admin.com";
         String password = "12341234";
-        memberDao.insert(new Member("이름", email, password, Role.MEMBER));
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
 
         Map<String, String> loginParams = Map.of(
                 "email", email,
@@ -108,6 +109,7 @@ public class ReservationControllerTest {
         // then
         RestAssured.given().log().all()
                 .port(port)
+                .header(new Header("Cookie", accessTokenCookie))
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -127,6 +129,7 @@ public class ReservationControllerTest {
         // when
         RestAssured.given().log().all()
                 .port(port)
+                .header("Cookie", accessTokenCookie)
                 .when().delete("/reservations/" + reservation.getId())
                 .then().log().all()
                 .statusCode(204);

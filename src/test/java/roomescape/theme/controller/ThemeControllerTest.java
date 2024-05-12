@@ -2,14 +2,20 @@ package roomescape.theme.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -25,11 +31,36 @@ class ThemeControllerTest {
     @LocalServerPort
     private int port;
 
+    @Autowired
+    private MemberDao memberDao;
+
+    private static String adminAccessTokenCookie;
+
+    @BeforeEach
+    void init() {
+        String email = "admin@test.com";
+        String password = "12341234";
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        adminAccessTokenCookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+    }
+
     @Test
     @DisplayName("모든 테마 정보를 조회한다.")
     void readThemes() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .port(port)
                 .when().get("/themes")
                 .then().log().all()
@@ -48,6 +79,7 @@ class ThemeControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .port(port)
                 .body(params)
                 .when().post("/themes")
@@ -68,6 +100,7 @@ class ThemeControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .port(port)
                 .body(params)
                 .when().post("/themes")
@@ -78,6 +111,7 @@ class ThemeControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .port(port)
                 .when().delete("/themes/1")
                 .then().log().all()
@@ -92,7 +126,7 @@ class ThemeControllerTest {
      */
     @Test
     @DisplayName("예약 수 상위 10개 테마를 조회했을 때 내림차순으로 정렬된다. 만약 예약 수가 같다면, id 순으로 오름차순 정렬된다.")
-    @Sql(scripts = "/reservationData.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = {"/truncate.sql", "/reservationData.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void readTop10ThemesDescOrder() {
         LocalDate today = LocalDate.now();
 
@@ -112,6 +146,7 @@ class ThemeControllerTest {
     void validateBlankRequest(Map<String, String> invalidRequestBody) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .port(port)
                 .body(invalidRequestBody)
                 .when().post("/themes")

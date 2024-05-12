@@ -64,7 +64,7 @@ class ThemeDaoTest {
      */
     @Test
     @DisplayName("예약 수 상위 10개 테마를 조회했을 때 내림차순으로 정렬된다. 만약 예약 수가 같다면, id 순으로 오름차순 정렬된다.")
-    @Sql(scripts = "/reservationData.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = {"/truncate.sql", "/reservationData.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void readTop10ThemesDescOrder() {
         // given
         LocalDate startDate = LocalDate.now().minusDays(7);
