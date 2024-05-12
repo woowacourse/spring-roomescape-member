@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
@@ -30,7 +31,8 @@ public class ReservationDao {
                     resultSet.getLong("member_id"),
                     resultSet.getString("member_email"),
                     resultSet.getString("member_password"),
-                    resultSet.getString("member_name")
+                    resultSet.getString("member_name"),
+                    Role.from(resultSet.getString("role"))
             ),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -55,7 +57,8 @@ public class ReservationDao {
         String query = "SELECT "
                 + "r.id, r.date, "
                 + "member_id, member.email AS member_email, "
-                + "member.password AS member_password, member.name AS member_name, "
+                + "member.password AS member_password, member.name AS member_name,"
+                + "member.role AS member_role, "
                 + "time_id, time.start_at AS time_start_at, "
                 + "theme_id, theme.name AS theme_name, "
                 + "theme.description AS theme_description, theme.thumbnail as theme_thumbnail "
