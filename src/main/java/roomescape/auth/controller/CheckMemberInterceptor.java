@@ -7,7 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.provider.JwtTokenProvider;
 import roomescape.exception.AuthorizationException;
 
-import java.util.List;
+import java.util.Arrays;
 
 public class CheckMemberInterceptor implements HandlerInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
@@ -18,7 +18,7 @@ public class CheckMemberInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = extractTokenFromCookie(request);
+        String token = extractTokenFromCookie(request.getCookies());
         String role = jwtTokenProvider.getRole(token);
 
         if (role.isBlank() || role.equals("USER")) {
@@ -28,10 +28,8 @@ public class CheckMemberInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private String extractTokenFromCookie(HttpServletRequest request) {
-        List<Cookie> cookies = List.of(request.getCookies());
-
-        return cookies.stream()
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
                 .map(Cookie::getValue)
