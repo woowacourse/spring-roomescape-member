@@ -19,7 +19,11 @@ class ReservationTest {
                 new Password("******"), MemberRole.NORMAL
         );
         ReservationTime time = new ReservationTime(LocalTime.now());
-        Theme theme = new Theme("name", "description", "thumbnail");
+        Theme theme = new Theme(
+                new ThemeName("레벨 1 방탈출"),
+                "description",
+                "thumbnail"
+        );
 
         assertThatCode(() -> new Reservation(date, member, time, theme))
                 .doesNotThrowAnyException();

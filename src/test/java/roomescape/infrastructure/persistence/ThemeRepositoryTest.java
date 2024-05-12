@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 import roomescape.support.IntegrationTestSupport;
 
 class ThemeRepositoryTest extends IntegrationTestSupport {
@@ -43,6 +44,7 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
 
         assertThat(findReservationTime)
                 .map(Theme::getName)
+                .map(ThemeName::value)
                 .isNotEmpty()
                 .get()
                 .isEqualTo("레벨2 탈출");
@@ -59,7 +61,11 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("새로운 테마 데이터를 생성한다.")
     void create() {
-        Theme theme = new Theme("레벨4 탈출", "우테코 레벨4를 탈출하는 내용입니다.", "woowahan.com");
+        Theme theme = new Theme(
+                new ThemeName("레벨 1 방탈출"),
+                "우테코 레벨4를 탈출하는 내용입니다.",
+                "woowahan.com"
+        );
 
         target.save(theme);
 

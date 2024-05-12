@@ -2,6 +2,7 @@ package roomescape.service.request;
 
 import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 
 public record ThemeRequest(
         @NotBlank(message = "테마 이름은 필수입니다.") String name,
@@ -10,6 +11,7 @@ public record ThemeRequest(
 ) {
 
     public Theme toDomain() {
-        return new Theme(name, description, thumbnail);
+        return new Theme(
+                new ThemeName(name), description, thumbnail);
     }
 }

@@ -36,7 +36,7 @@ class ReservationFactoryTest {
                 new Password("******"), MemberRole.NORMAL
         );
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
-        Theme theme = new Theme("name", "description", "thumbnail");
+        Theme theme = new Theme(new ThemeName("레벨 1 방탈출"), "description", "thumbnail");
 
         assertThatCode(() -> reservationFactory.create(date, member, time, theme))
                 .doesNotThrowAnyException();
@@ -53,7 +53,7 @@ class ReservationFactoryTest {
                 new Password("******"), MemberRole.NORMAL
         );
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
-        Theme theme = new Theme("name", "description", "thumbnail");
+        Theme theme = new Theme(new ThemeName("레벨 1 방탈출"), "description", "thumbnail");
 
         assertThatThrownBy(() -> reservationFactory.create(previousDate, member, time, theme))
                 .isInstanceOf(IllegalStateException.class)
@@ -71,7 +71,7 @@ class ReservationFactoryTest {
                 new Password("******"), MemberRole.NORMAL
         );
         ReservationTime previousTime = new ReservationTime(LocalTime.parse("00:29"));
-        Theme theme = new Theme("name", "description", "thumbnail");
+        Theme theme = new Theme(new ThemeName("레벨 1 방탈출"), "description", "thumbnail");
 
         assertThatThrownBy(() -> reservationFactory.create(todayDate, member, previousTime, theme))
                 .isInstanceOf(IllegalStateException.class)

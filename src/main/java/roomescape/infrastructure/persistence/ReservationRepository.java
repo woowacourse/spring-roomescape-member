@@ -17,6 +17,7 @@ import roomescape.domain.Password;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 import roomescape.infrastructure.persistence.dynamic.ReservationQueryConditions;
 
 @Repository
@@ -118,7 +119,7 @@ public class ReservationRepository {
                     new ReservationTime(resultSet.getLong("time_id"), startAt),
                     new Theme(
                             resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
+                            new ThemeName(resultSet.getString("theme_name")),
                             resultSet.getString("description"),
                             resultSet.getString("thumbnail")
                     )

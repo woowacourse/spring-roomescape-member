@@ -10,7 +10,7 @@ class ThemeTest {
     @Test
     @DisplayName("생성 테스트")
     void create() {
-        assertThatCode(() -> new Theme("name", "description", "thumbnail"))
+        assertThatCode(() -> new Theme(new ThemeName("레벨 1 방탈출"), "description", "thumbnail"))
                 .doesNotThrowAnyException();
     }
 }
