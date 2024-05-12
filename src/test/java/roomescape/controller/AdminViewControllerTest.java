@@ -8,9 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.jwt.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql(value = "classpath:test_db_clean.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = "classpath:test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class AdminViewControllerTest {
 
     private static final String ADMIN_PAYLOAD = "test1@test.com";

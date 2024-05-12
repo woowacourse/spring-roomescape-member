@@ -25,7 +25,6 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
-import roomescape.dto.reservation.ReservationFilterRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.fixture.MemberFixtures;
 import roomescape.fixture.ReservationFixtures;
@@ -65,27 +64,6 @@ class ReservationServiceTest {
 
         //then
         assertThat(results).hasSize(2);
-    }
-
-    @Test
-    @DisplayName("요청에 시작시간이 종료시간보다 이후이면 예외가 발생한다.")
-    void findFilteredWhenFromDateAfterToDate() {
-        //given
-        Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
-        Member member = memberDao.create(MemberFixtures.createUserMember("daon"));
-        ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
-        ReservationTime time2 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:20"));
-        Reservation reservation1 = ReservationFixtures.createReservation(member, time1, theme);
-        Reservation reservation2 = ReservationFixtures.createReservation(member, time2, theme);
-        reservationDao.create(reservation1);
-        reservationDao.create(reservation2);
-
-        ReservationFilterRequest request = new ReservationFilterRequest(1L, 1L, "2024-04-04", "2024-04-03");
-
-        //when //then
-        assertThatThrownBy(() -> reservationService.findFiltered(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("시작 날짜는 종료 날짜보다 이후일 수 없습니다.");
     }
 
     @Test

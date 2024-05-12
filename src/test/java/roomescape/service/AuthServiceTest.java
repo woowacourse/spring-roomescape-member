@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequest;
@@ -23,6 +25,7 @@ import roomescape.fixture.MemberFixtures;
 import roomescape.jwt.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql(value = "classpath:test_db_clean.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class AuthServiceTest {
 
     @Autowired

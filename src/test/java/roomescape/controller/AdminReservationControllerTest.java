@@ -28,7 +28,7 @@ import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.fixture.MemberFixtures;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminReservationService;
 
 @WebMvcTest(AdminReservationController.class)
 class AdminReservationControllerTest {
@@ -38,7 +38,7 @@ class AdminReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private ReservationService reservationService;
+    private AdminReservationService adminReservationService;
     @MockBean
     private AuthenticationExtractor authenticationExtractor;
 
@@ -64,7 +64,7 @@ class AdminReservationControllerTest {
                 ReservationTimeResponse.of(1L, expectedStartAt),
                 ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
         );
-        given(reservationService.add(any(AdminReservationCreateRequest.class), any(LocalDateTime.class)))
+        given(adminReservationService.add(any(AdminReservationCreateRequest.class), any(LocalDateTime.class)))
                 .willReturn(response);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
@@ -85,7 +85,7 @@ class AdminReservationControllerTest {
         //given
         AdminReservationCreateRequest givenRequest
                 = AdminReservationCreateRequest.of("InvalidDate", -1L, 1L, 1L);
-        given(reservationService.add(any(AdminReservationCreateRequest.class), any(LocalDateTime.class)))
+        given(adminReservationService.add(any(AdminReservationCreateRequest.class), any(LocalDateTime.class)))
                 .willThrow(IllegalArgumentException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
@@ -118,7 +118,7 @@ class AdminReservationControllerTest {
                         ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
                 )
         );
-        given(reservationService.findFiltered(filterRequest)).willReturn(responses);
+        given(adminReservationService.findFiltered(filterRequest)).willReturn(responses);
 
         //when //then
         mockMvc.perform(get("/admin/reservations")
@@ -136,7 +136,7 @@ class AdminReservationControllerTest {
         //given
         ReservationFilterRequest filterRequest =
                 new ReservationFilterRequest(1L, 1L, null, null);
-        given(reservationService.findFiltered(filterRequest)).willThrow(IllegalArgumentException.class);
+        given(adminReservationService.findFiltered(filterRequest)).willThrow(IllegalArgumentException.class);
 
         //when //then
         mockMvc.perform(get("/admin/reservations")

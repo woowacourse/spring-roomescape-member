@@ -12,28 +12,28 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.ReservationFilterRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.AdminReservationService;
 
 @RestController
 public class AdminReservationController {
 
     private static final ZoneId KST_ZONE = ZoneId.of("Asia/Seoul");
 
-    private final ReservationService reservationService;
+    private final AdminReservationService adminReservationService;
 
-    public AdminReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public AdminReservationController(AdminReservationService adminReservationService) {
+        this.adminReservationService = adminReservationService;
     }
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> create(@RequestBody AdminReservationCreateRequest request) {
         LocalDateTime now = LocalDateTime.now(KST_ZONE);
         return ResponseEntity.created(URI.create("/admin/reservations"))
-                .body(reservationService.add(request, now));
+                .body(adminReservationService.add(request, now));
     }
 
     @GetMapping(value = "/admin/reservations")
     public ResponseEntity<List<ReservationResponse>> getFiltered(ReservationFilterRequest request) {
-        return ResponseEntity.ok(reservationService.findFiltered(request));
+        return ResponseEntity.ok(adminReservationService.findFiltered(request));
     }
 }
