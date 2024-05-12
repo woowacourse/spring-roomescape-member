@@ -21,7 +21,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Object handler
-    ) throws Exception {
+    ) {
         final MemberRole memberRole = parseMemberRole(request);
 
         if (memberRole != MemberRole.ADMIN) {

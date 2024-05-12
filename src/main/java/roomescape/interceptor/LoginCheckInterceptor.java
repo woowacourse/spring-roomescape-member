@@ -23,7 +23,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Object handler
-    ) throws Exception {
+    ) {
         final AuthenticationToken authenticationToken = parseAuthenticationToken(request);
         validateToken(authenticationToken);
 
