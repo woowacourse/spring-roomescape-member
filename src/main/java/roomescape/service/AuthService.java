@@ -3,17 +3,17 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.dto.auth.LoginRequest;
-import roomescape.dto.auth.LoginResponse;
+import roomescape.global.util.TokenManager;
 import roomescape.repository.MemberRepository;
+
+import java.util.Map;
 
 @Service
 public class AuthService {
 
-    private final TokenManager tokenManager;
     private final MemberRepository memberRepository;
 
-    public AuthService(TokenManager tokenManager, MemberRepository memberRepository) {
-        this.tokenManager = tokenManager;
+    public AuthService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
@@ -21,13 +21,11 @@ public class AuthService {
         // TODO: 암호화
         Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
 
-        return tokenManager.generateToken(member.getId().toString(), "email", member.getEmail());
-    }
+        String subject = member.getId().toString();
+        Map<String, String> claims = Map.of(
+                "name", member.getName()
+        );
 
-    public LoginResponse findLoggedInMemberWithToken(String token) {
-        Long memberId = Long.valueOf(tokenManager.extractSubject(token));
-        Member member = memberRepository.findById(memberId);
-
-        return LoginResponse.from(member);
+        return TokenManager.generateToken(subject, claims);
     }
 }

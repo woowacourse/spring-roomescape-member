@@ -8,6 +8,3 @@ spring:
     url: jdbc:h2:mem:database
     username: sa
     password:
-
-jwt:
-  secret: "나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다."
