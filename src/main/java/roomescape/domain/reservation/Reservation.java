@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import roomescape.domain.exception.InvalidDomainObjectException;
+import roomescape.domain.member.Member;
 import roomescape.domain.theme.Theme;
 
 import java.time.LocalDate;
@@ -9,34 +10,34 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final Name name;
+    private final Member member;
     private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new Name(name), new ReservationDate(date), time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, new ReservationDate(date), time, theme);
     }
 
-    public Reservation(Long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, Member member, ReservationDate date, ReservationTime time, Theme theme) {
+        validate(member, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validate(Name name, ReservationDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    private void validate(Member member, ReservationDate date, ReservationTime time, Theme theme) {
+        validateMember(member);
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
     }
 
-    private void validateName(Name name) {
-        if (Objects.isNull(name)) {
-            throw new InvalidDomainObjectException("이름은 null이 될 수 없습니다.");
+    private void validateMember(Member member) {
+        if (Objects.isNull(member)) {
+            throw new InvalidDomainObjectException("멤버는 null이 될 수 없습니다.");
         }
     }
 
@@ -62,8 +63,8 @@ public class Reservation {
         return id;
     }
 
-    public Name getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public ReservationDate getDate() {
@@ -86,5 +87,19 @@ public class Reservation {
         LocalDateTime reservationDataTime = LocalDateTime.of(date.getStartAt(), time.getStartAt());
         LocalDateTime currentDateTime = LocalDateTime.now();
         return reservationDataTime.isBefore(currentDateTime);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Reservation that = (Reservation) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

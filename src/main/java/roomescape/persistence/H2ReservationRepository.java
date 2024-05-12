@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
@@ -36,7 +37,7 @@ public class H2ReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         try {
             long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
-                            "name", reservation.getName().value(),
+                            "member_id", reservation.getMember().getId(),
                             "date", reservation.getDate().getStartAt(),
                             "time_id", reservation.getTime().getId(),
                             "theme_id", reservation.getTheme().getId()))
@@ -44,7 +45,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
             return new Reservation(
                     reservationId,
-                    reservation.getName(),
+                    reservation.getMember(),
                     reservation.getDate(),
                     reservation.getTime(),
                     reservation.getTheme());
@@ -100,19 +101,25 @@ public class H2ReservationRepository implements ReservationRepository {
         return """
                     select 
                         r.id as reservation_id,
-                        r.name as reservation_name,
                         r.date as reservation_date,
                         t.id as time_id,
                         t.start_at as time_value,
                         tm.id as theme_id,
                         tm.name as theme_name,
                         tm.description as theme_description,
-                        tm.thumbnail as theme_thumbnail
+                        tm.thumbnail as theme_thumbnail,
+                        m.id as member_id,
+                        m.name as member_name,
+                        m.email as member_email,
+                        m.password as member_password,
+                        m.role as member_role
                     from reservation as r
                     inner join reservation_time as t
                     on r.time_id = t.id
                     inner join theme as tm
                     on r.theme_id = tm.id 
+                    inner join member as m
+                    on r.member_id = m.id
                 """;
     }
 
@@ -121,8 +128,14 @@ public class H2ReservationRepository implements ReservationRepository {
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Reservation(
                     rs.getLong("reservation_id"),
-                    new Name(rs.getString("name")),
-                    new ReservationDate(rs.getDate("date").toLocalDate()),
+                    new Member(
+                            rs.getLong("member_id"),
+                            rs.getString("member_name"),
+                            rs.getString("member_email"),
+                            rs.getString("member_password"),
+                            rs.getString("member_role")),
+                    new ReservationDate(
+                            rs.getDate("date").toLocalDate()),
                     new ReservationTime(
                             rs.getLong("time_id"),
                             rs.getTime("time_value").toLocalTime()),
