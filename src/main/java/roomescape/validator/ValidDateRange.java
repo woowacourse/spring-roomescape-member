@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 public @interface ValidDateRange {
 
     String message() default "최대 " + DateRangeValidator.LIMIT_DAY + "일 까지만 조회가능합니다.";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

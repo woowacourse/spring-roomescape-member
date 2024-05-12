@@ -34,8 +34,8 @@ public class ReservationApiController {
     }
 
     @GetMapping("/reservations/search")
-    public ResponseEntity<List<ReservationResponse>> findAllBySearchCond (
-           @Valid @ModelAttribute ReservationSearchCondRequest reservationSearchCondRequest
+    public ResponseEntity<List<ReservationResponse>> findAllBySearchCond(
+            @Valid @ModelAttribute ReservationSearchCondRequest reservationSearchCondRequest
     ) {
         List<ReservationResponse> reservationResponses = reservationService.findAllBySearchCond(
                 reservationSearchCondRequest);

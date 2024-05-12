@@ -8,7 +8,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.annotaions.Login;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.member.dto.LoginMember;
 import roomescape.util.CookieUtils;

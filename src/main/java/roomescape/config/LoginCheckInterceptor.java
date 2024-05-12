@@ -11,7 +11,8 @@ import roomescape.util.CookieUtils;
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         String requestURI = request.getRequestURI();
         String httpMethod = request.getMethod();
         Cookie[] cookies = request.getCookies();

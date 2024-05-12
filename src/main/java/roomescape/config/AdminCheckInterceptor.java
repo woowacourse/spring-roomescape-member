@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.NoAdminPrivilegeException;
-import roomescape.exception.UnauthenticatedUserException;
 import roomescape.member.dto.LoginMember;
 import roomescape.util.CookieUtils;
 
