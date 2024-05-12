@@ -17,11 +17,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.MemberInfo;
 import roomescape.domain.member.Role;
+import roomescape.dto.member.SignupRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.dto.theme.WeeklyThemeResponse;
 import roomescape.dto.time.TimeRequest;
+import roomescape.service.member.MemberService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/test_schema.sql"})
@@ -35,6 +37,9 @@ class ReservationThemeServiceTest {
 
     @Autowired
     private ReservationTimeService timeService;
+
+    @Autowired
+    private MemberService memberService;
 
     @LocalServerPort
     int port;
@@ -102,11 +107,11 @@ class ReservationThemeServiceTest {
     @Test
     void deleteReservedTheme() {
         // given
+        memberService.insertMember(new SignupRequest("email@email.com", "password", "name"));
         timeService.insertTime(new TimeRequest(LocalTime.now().plusHours(1)));
         themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
         reservationService.insertUserReservation(new ReservationRequest(LocalDate.now(), 1L, 1L),
-                new MemberInfo(1L, "name",
-                        Role.USER));
+                new MemberInfo(1L, "name", Role.USER));
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
