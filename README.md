@@ -63,7 +63,7 @@
 - [x] 사용자 도메인을 추가한다.
     - [x] 사용자는 name(사용자 이름), email(email), password(비밀번호)를 가진다.
 - [x] 로그인 기능을 구현한다.
-    - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지`templates/login.htm`를 응답한다.
+    - [x] `GET /login` 요청 시 로그인 폼이 있는 페이지`templates/login.html`를 응답한다.
     - [x] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
         - [x] 응답 Cookie에 "token"값으로 토큰을 포함한다.
 - [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현한다.
