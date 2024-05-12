@@ -27,3 +27,16 @@ GET http://localhost:8080/themes
 
 ### THEME top10
 GET http://localhost:8080/themes/rank
+
+### Login
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "email": "email@email.com",
+  "password": "password"
+}
+
+### Login Check
+GET http://localhost:8080/login/check
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJpYXQiOjE3MTU1MDU3NDQsImV4cCI6MTcxNTUwOTM0NH0.HY1RjR7sila818kDJ-UYx_sF4tY9Ik6fjgkJOaZHdhc
