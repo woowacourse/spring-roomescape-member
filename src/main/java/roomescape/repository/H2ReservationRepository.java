@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -70,7 +71,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     public List<Reservation> findByPeriod(LocalDate startDate, LocalDate endDate) {
-        String conditionQuery = " where r.date between ? and ?";
+        String conditionQuery = " where r.date >= ? and r.date <= ?";
         String sql = getBasicSelectQuery() + conditionQuery;
 
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
@@ -78,9 +79,29 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> searchReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        String conditionQuery = " where tm.id = ? and u.id = ? and r.date between ? and ?";
-        String sql = getBasicSelectQuery() + conditionQuery;
-        return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
+        String sql = getBasicSelectQuery() + getSearchConditionQuery(themeId, memberId, dateFrom, dateTo);
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    private String getSearchConditionQuery(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        List<String> conditionQuery = new ArrayList<>();
+        if (themeId != null) {
+            conditionQuery.add("tm.id = " + themeId);
+        }
+        if (memberId != null) {
+            conditionQuery.add("u.id = " + memberId);
+        }
+        if (dateFrom != null) {
+            conditionQuery.add("r.date >= '%s'".formatted(dateFrom));
+        }
+        if (dateTo != null) {
+            conditionQuery.add("r.date <= '%s'".formatted(dateTo));
+        }
+        if (conditionQuery.isEmpty()) {
+            return "";
+        }
+        return "where " + String.join(" and ", conditionQuery);
     }
 
     private String getBasicSelectQuery() {
