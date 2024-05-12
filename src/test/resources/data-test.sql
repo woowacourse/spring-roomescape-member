@@ -15,10 +15,6 @@ VALUES ('polla', '폴라 방탈출', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461
        ('dobby', '도비 방탈출', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('pobi', '포비 방탈출', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('폴라', '2024-04-30', 1, 1),
-       ('구구', '2023-05-01', 2, 1);
-
 INSERT INTO registration (name, email, password, role)
 VALUES ('어드민', 'admin@admin.com', '1234', 'ADMIN'),
        ('어드민2', 'admin2@admin.com', '1234', 'ADMIN');
@@ -27,3 +23,11 @@ INSERT INTO registration (name, email, password)
 VALUES ('도비', 'kimdobby@wootaeco.com', 'pass1'),
        ('피케이', 'pke@best.com', 'pass2'),
        ('테스트', 'test@test.com', 'test');
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('도비', CURRENT_DATE(), 1, 1),
+       ('피케이', CURRENT_DATE(), 2, 1);
+
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 1),
+       (3, 2);

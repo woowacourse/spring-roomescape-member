@@ -41,6 +41,6 @@ CREATE TABLE IF NOT EXISTS member_reservation
     member_id BIGINT NOT NULL,
     reservation_id BIGINT NOT NULL,
     PRIMARY KEY (member_id, reservation_id),
-    FOREIGN KEY (member_id) REFERENCES registration (id),
-    FOREIGN KEY (reservation_id) REFERENCES reservation (id)
+    FOREIGN KEY (member_id) REFERENCES registration (id) ON DELETE CASCADE,
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE CASCADE
 );
