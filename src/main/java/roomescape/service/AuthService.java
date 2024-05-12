@@ -8,7 +8,6 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 
 import roomescape.controller.rest.request.LoginRequest;
-import roomescape.controller.rest.response.LoginCheckResponse;
 import roomescape.domain.Member;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.EntityNotFoundException;
@@ -46,11 +45,6 @@ public class AuthService {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
-    }
-
-    public LoginCheckResponse check(String token) {
-        Member member = findByToken(token);
-        return new LoginCheckResponse(member.name());
     }
 
     private void validate(LoginRequest request) {
