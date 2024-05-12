@@ -6,13 +6,16 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import roomescape.auth.domain.Payload;
 import roomescape.auth.service.TokenProvider;
+import roomescape.exception.ErrorType;
 
 @Component
 public class JwtTokenProvider implements TokenProvider<String> {
-
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final JwtProperties jwtProperties;
 
     public JwtTokenProvider(JwtProperties jwtProperties) {
@@ -47,6 +50,7 @@ public class JwtTokenProvider implements TokenProvider<String> {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
+            log.warn(ErrorType.INVALID_TOKEN.getMessage());
             return false;
         }
     }
