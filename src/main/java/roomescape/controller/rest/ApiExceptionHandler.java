@@ -1,9 +1,12 @@
 package roomescape.controller.rest;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.EntityExistsException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ForeignKeyViolationException;
@@ -29,5 +32,15 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ForeignKeyViolationException.class)
     public ResponseEntity<String> handleForeignKeyViolationException(ForeignKeyViolationException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Void> handleAuthenticationException(AuthenticationException ignored) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Void> handleExpiredJwtException(ExpiredJwtException ignored) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
