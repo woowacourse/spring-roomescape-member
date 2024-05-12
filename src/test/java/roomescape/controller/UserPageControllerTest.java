@@ -38,7 +38,7 @@ class UserPageControllerTest {
     @DisplayName("로그인 동작 기능을 확인한다")
     Stream<DynamicTest> checkLogin() {
         Map<String, String> login = Map.of(
-                "email", "admin@email.com",
+                "email", "admin1@email.com",
                 "password", "password"
         );
 
@@ -58,7 +58,7 @@ class UserPageControllerTest {
     @DisplayName("인증 정보 조회 기능을 확인한다")
     Stream<DynamicTest> checkLoginAuthenticationInformation() {
         Map<String, String> login = Map.of(
-                "email", "admin@email.com",
+                "email", "admin1@email.com",
                 "password", "password"
         );
 

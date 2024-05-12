@@ -12,19 +12,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.UserName;
+import roomescape.domain.*;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.repository.UserRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -40,6 +39,9 @@ class ReservationServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
@@ -47,8 +49,9 @@ class ReservationServiceTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
+        User user = userRepository.findById(1L);
         Reservation reservation1 = new Reservation(
-                new UserName("초롱"),
+                user,
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme
@@ -80,18 +83,19 @@ class ReservationServiceTest {
     void checkReservationCreate() {
         //given
         ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(
-                "메이슨",
                 LocalDate.parse("2025-04-10"),
                 1L,
                 1L
         );
 
+        User user = new User("admin1@email.com", "password");
+
         //when
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest);
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, user);
 
         //then
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo("메이슨"),
+                () -> assertThat(reservationResponse.userResponse().name()).isEqualTo("유저"),
                 () -> assertThat(reservationResponse.date()).isEqualTo("2025-04-10"),
                 () -> assertThat(reservationResponse.time().id()).isEqualTo(1L),
                 () -> assertThat(reservationResponse.theme().id()).isEqualTo(1L)
@@ -103,12 +107,12 @@ class ReservationServiceTest {
     void checkReservationDelete() {
         //given
         ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(
-                "메이슨",
                 LocalDate.parse("2025-04-10"),
                 1L,
                 1L
         );
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest);
+        User user = new User("admin1@email.com", "password");
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, user);
 
         //when & then
         assertDoesNotThrow(() -> reservationService.delete(reservationResponse.id()));
@@ -119,12 +123,12 @@ class ReservationServiceTest {
     void checkReservationDeleteFail() {
         //given
         ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(
-                "메이슨",
                 LocalDate.parse("2025-04-10"),
                 1L,
                 1L
         );
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest);
+        User user = new User("admin1@email.com", "password");
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, user);
 
         //when & then
         assertThatThrownBy(() -> reservationService.delete(0L))
