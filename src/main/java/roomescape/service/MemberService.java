@@ -10,9 +10,9 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.member.DuplicatedEmailException;
 import roomescape.service.security.JwtUtils;
-import roomescape.web.dto.request.LoginRequest;
-import roomescape.web.dto.request.SignupRequest;
-import roomescape.web.dto.response.MemberResponse;
+import roomescape.web.dto.request.member.LoginRequest;
+import roomescape.web.dto.request.member.SignupRequest;
+import roomescape.web.dto.response.member.MemberResponse;
 
 @Service
 @RequiredArgsConstructor

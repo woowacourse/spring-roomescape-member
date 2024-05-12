@@ -1,4 +1,4 @@
-package roomescape.web.dto.response;
+package roomescape.web.dto.response.time;
 
 import java.time.LocalTime;
 
@@ -17,6 +17,7 @@ public record AvailableReservationTimeResponse(Long id, LocalTime startAt, boole
         );
     }
 
+    @Override
     @JsonFormat(shape = Shape.STRING, pattern = "HH:mm")
     public LocalTime startAt() {
         return startAt;

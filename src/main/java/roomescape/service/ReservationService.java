@@ -20,9 +20,9 @@ import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
-import roomescape.web.dto.request.ReservationRequest;
-import roomescape.web.dto.request.ReservationSearchCond;
-import roomescape.web.dto.response.ReservationResponse;
+import roomescape.web.dto.request.reservation.ReservationRequest;
+import roomescape.web.dto.request.reservation.ReservationSearchCond;
+import roomescape.web.dto.response.reservation.ReservationResponse;
 
 @Service
 @RequiredArgsConstructor

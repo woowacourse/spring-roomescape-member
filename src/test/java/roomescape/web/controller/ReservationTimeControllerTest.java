@@ -21,8 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import roomescape.service.ReservationTimeService;
-import roomescape.web.dto.request.ReservationTimeRequest;
-import roomescape.web.dto.response.ReservationTimeResponse;
+import roomescape.web.dto.request.time.ReservationTimeRequest;
+import roomescape.web.dto.response.time.ReservationTimeResponse;
 
 @WebMvcTest(controllers = ReservationTimeController.class)
 class ReservationTimeControllerTest {

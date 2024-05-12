@@ -21,7 +21,7 @@ import roomescape.domain.policy.FixedDateWeeklyRankingPolicy;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
-import roomescape.web.dto.response.ThemeResponse;
+import roomescape.web.dto.response.theme.ThemeResponse;
 
 @SpringBootTest
 class ThemeServiceTest {

@@ -19,8 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import roomescape.service.ThemeService;
-import roomescape.web.dto.request.ThemeRequest;
-import roomescape.web.dto.response.ThemeResponse;
+import roomescape.web.dto.request.theme.ThemeRequest;
+import roomescape.web.dto.response.theme.ThemeResponse;
 
 @WebMvcTest(controllers = ThemeController.class)
 class ThemeControllerTest {

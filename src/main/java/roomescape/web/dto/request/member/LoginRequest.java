@@ -1,4 +1,4 @@
-package roomescape.web.dto.request;
+package roomescape.web.dto.request.member;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

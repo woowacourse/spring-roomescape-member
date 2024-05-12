@@ -27,12 +27,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import roomescape.domain.Member;
 import roomescape.service.ReservationService;
 import roomescape.service.security.JwtUtils;
-import roomescape.web.dto.request.ReservationRequest;
-import roomescape.web.dto.request.UserReservationRequest;
-import roomescape.web.dto.response.MemberResponse;
-import roomescape.web.dto.response.ReservationResponse;
-import roomescape.web.dto.response.ReservationTimeResponse;
-import roomescape.web.dto.response.ThemeResponse;
+import roomescape.web.dto.request.reservation.ReservationRequest;
+import roomescape.web.dto.request.reservation.UserReservationRequest;
+import roomescape.web.dto.response.member.MemberResponse;
+import roomescape.web.dto.response.reservation.ReservationResponse;
+import roomescape.web.dto.response.theme.ThemeResponse;
+import roomescape.web.dto.response.time.ReservationTimeResponse;
 
 @WebMvcTest(controllers = ReservationController.class)
 class ReservationControllerTest {

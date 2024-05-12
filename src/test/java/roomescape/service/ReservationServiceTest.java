@@ -22,8 +22,8 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
-import roomescape.web.dto.request.ReservationSearchCond;
-import roomescape.web.dto.response.ReservationResponse;
+import roomescape.web.dto.request.reservation.ReservationSearchCond;
+import roomescape.web.dto.response.reservation.ReservationResponse;
 
 @SpringBootTest
 class ReservationServiceTest {

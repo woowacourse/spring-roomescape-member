@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import roomescape.service.MemberService;
 import roomescape.service.security.JwtUtils;
-import roomescape.web.dto.request.LoginRequest;
-import roomescape.web.dto.response.MemberResponse;
+import roomescape.web.dto.request.member.LoginRequest;
+import roomescape.web.dto.response.member.MemberResponse;
 
 @RestController
 @RequiredArgsConstructor
