@@ -105,4 +105,11 @@ public class ReservationService {
             throw new IllegalArgumentException("삭제할 예약이 존재하지 않습니다");
         }
     }
+
+    public List<ReservationResponse> findSearchedReservations(
+            Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findSearchedReservation(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
 }

@@ -48,6 +48,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
@@ -73,6 +74,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
+    @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT
@@ -99,6 +101,35 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
+    @Override
+    public List<Reservation> findSearchedReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.date,
+                    u.id AS member_id,
+                    u.role AS member_role,
+                    u.name AS member_name,
+                    u.email AS email,
+                    u.password AS password,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation AS r
+                INNER JOIN member AS u ON r.member_id = u.id
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.theme_id = ? AND r.member_id = ? AND r.date BETWEEN ? AND ?;
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, themeId, memberId, dateFrom, dateTo);
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -119,6 +150,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         }
     }
 
+    @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
