@@ -1,8 +1,6 @@
 package roomescape.global.exception.auth;
 
-import roomescape.global.exception.IllegalRequestException;
-
-public class WrongPasswordException extends IllegalRequestException {
+public class WrongPasswordException extends AuthenticationException {
 
     public WrongPasswordException(String message) {
         super(message);

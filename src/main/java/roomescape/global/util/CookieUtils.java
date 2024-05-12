@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import roomescape.auth.infrastructure.Token;
-import roomescape.global.exception.auth.AuthenticationException;
+import roomescape.global.exception.IllegalRequestException;
 
 public class CookieUtils {
 
@@ -17,13 +17,13 @@ public class CookieUtils {
     public static String getToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new AuthenticationException("로그인 되어 있지 않습니다");
+            throw new IllegalRequestException("로그인 되어 있지 않습니다");
         }
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
                 .map(Cookie::getValue)
                 .findAny()
-                .orElseThrow(() -> new AuthenticationException("로그인 되어 있지 않습니다"));
+                .orElseThrow(() -> new IllegalRequestException("로그인 되어 있지 않습니다"));
     }
 
     public static Cookie createTokenCookie(Token token) {
