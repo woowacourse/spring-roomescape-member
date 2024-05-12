@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.token.AuthenticationToken;
 import roomescape.auth.token.TokenProvider;
 import roomescape.exception.UnauthorizedException;
-import roomescape.util.CookieUtil;
+import roomescape.util.CookieParser;
 
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
@@ -31,7 +31,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     }
 
     private AuthenticationToken parseAuthenticationToken(final HttpServletRequest request) {
-        final String accessToken = CookieUtil.findCookie(request, "token")
+        final String accessToken = CookieParser.findCookie(request, "token")
                 .orElseThrow(() -> new UnauthorizedException("인증되지 않은 요청입니다."))
                 .getValue();
 

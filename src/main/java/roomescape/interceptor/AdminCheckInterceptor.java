@@ -6,7 +6,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.token.TokenProvider;
 import roomescape.exception.AccessDeniedException;
 import roomescape.member.model.MemberRole;
-import roomescape.util.CookieUtil;
+import roomescape.util.CookieParser;
 
 public class AdminCheckInterceptor implements HandlerInterceptor {
 
@@ -32,7 +32,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
     }
 
     private MemberRole parseMemberRole(final HttpServletRequest request) {
-        final String accessToken = CookieUtil.findCookie(request, "token")
+        final String accessToken = CookieParser.findCookie(request, "token")
                 .orElseThrow(() -> new IllegalArgumentException("인증되지 않은 요청입니다."))
                 .getValue();
         final String role = tokenProvider.convertAuthenticationToken(accessToken)

@@ -1,5 +1,6 @@
 package roomescape.auth.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +13,15 @@ import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.token.AuthenticationToken;
 import roomescape.resolver.Authenticated;
-import roomescape.util.CookieUtil;
+import roomescape.util.CookieParser;
+
+import java.util.Optional;
 
 @RestController
 public class AuthController {
+
+    private static final String AUTHENTICATION_COOKIE_NAME = "token";
+    private static final int AUTHENTICATION_COOKIE_MAX_AGE = 60 * 60 * 24;
 
     private final AuthService authService;
 
@@ -31,10 +37,38 @@ public class AuthController {
     ) {
         final AuthenticationToken authenticationToken = authService.login(loginRequest);
 
-        final int cookieMaxAge = 60 * 60 * 24;
-        final String cookieName = "token";
-        CookieUtil.deleteCookie(request, response, cookieName);
-        CookieUtil.addCookie(response, cookieName, authenticationToken.getValue(), cookieMaxAge);
+        deleteCookie(request, response);
+        addCookie(
+                response,
+                AUTHENTICATION_COOKIE_NAME,
+                authenticationToken.getValue(),
+                AUTHENTICATION_COOKIE_MAX_AGE
+        );
+    }
+
+    private void deleteCookie(final HttpServletRequest request, final HttpServletResponse response) {
+        final Optional<Cookie> cookie = CookieParser.findCookie(request, AUTHENTICATION_COOKIE_NAME);
+
+        if (cookie.isPresent()) {
+            final Cookie cookieValue = cookie.get();
+            cookieValue.setValue("");
+            cookieValue.setPath("/");
+            cookieValue.setMaxAge(0);
+            response.addCookie(cookieValue);
+        }
+    }
+
+    private void addCookie(
+            final HttpServletResponse response,
+            final String cookieName,
+            final String value,
+            final int maxAge
+    ) {
+        final Cookie cookie = new Cookie(cookieName, value);
+        cookie.setPath("/");
+        cookie.setHttpOnly(false);
+        cookie.setMaxAge(maxAge);
+        response.addCookie(cookie);
     }
 
     @GetMapping("/login/check")
@@ -44,6 +78,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public void logout(final HttpServletRequest request, final HttpServletResponse response) {
-        CookieUtil.deleteCookie(request, response, "token");
+        deleteCookie(request, response);
     }
 }

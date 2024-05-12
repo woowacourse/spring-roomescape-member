@@ -9,7 +9,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
 import roomescape.member.model.Member;
-import roomescape.util.CookieUtil;
+import roomescape.util.CookieParser;
 
 import java.util.Objects;
 
@@ -39,7 +39,7 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
             final WebDataBinderFactory binderFactory
     ) {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        final String accessToken = Objects.requireNonNull(CookieUtil.findCookie(request, "token")
+        final String accessToken = Objects.requireNonNull(CookieParser.findCookie(request, "token")
                 .orElseThrow(() -> new IllegalArgumentException("요청에 인증 쿠키가 존재하지 않습니다."))
                 .getValue());
         final Member member = authService.findAuthenticatedMember(accessToken);
