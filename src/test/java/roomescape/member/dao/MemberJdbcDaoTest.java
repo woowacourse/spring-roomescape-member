@@ -34,7 +34,8 @@ class MemberJdbcDaoTest {
     @DisplayName("완전한 회원정보를 정상적으로 저장한다.")
     void save_ShouldRegisterSignUpData_WhenMemberRegisterInfoGiven() {
         // Given
-        MemberRegistrationInfo memberRegistrationInfo = new MemberRegistrationInfo("newbie","new@memeber.com", "password");
+        MemberRegistrationInfo memberRegistrationInfo = new MemberRegistrationInfo("newbie", "new@memeber.com",
+                "password");
 
         // When
         Member registeredMember = memberDao.save(memberRegistrationInfo);
@@ -53,10 +54,11 @@ class MemberJdbcDaoTest {
     void findAll_ShouldReturnAllRegistration_WhenCalled() {
         // Given
         List<Member> expectedMembers = List.of(
-                new Member(1, "도비", "kimdobby@wootaeco.com", "pass1"),
-                new Member(2, "피케이", "pke@best.com", "pass2"),
-                new Member(3, "어드민", "admin@admin.com", "1234"),
-                new Member(4, "테스트", "test@test.com", "test")
+                new Member(1,"어드민", "admin@admin.com", "1234"),
+                new Member(2, "어드민2", "admin2@admin.com", "1234"),
+                new Member(3, "도비", "kimdobby@wootaeco.com", "pass1"),
+                new Member(4, "피케이", "pke@best.com", "pass2"),
+                new Member(5, "테스트", "test@test.com", "test")
         );
 
         // When
@@ -91,7 +93,8 @@ class MemberJdbcDaoTest {
         memberDao.delete(1);
 
         // Then
-        assertEquals(3, memberDao.findAll().size());
+        assertEquals(4, memberDao.findAll()
+                .size());
     }
 
 }

@@ -10,6 +10,8 @@ public interface MemberDao {
 
     List<Member> findAll();
 
+    Member findById(long id);
+
     Member findByEmail(String email);
 
     void delete(long id);

@@ -9,6 +9,7 @@ import roomescape.exception.AuthorizationMismatchException;
 import roomescape.exception.IllegalAuthorizationException;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
+import roomescape.member.dto.MemberProfileInfo;
 import roomescape.member.security.crypto.PasswordEncoder;
 import roomescape.member.security.crypto.TokenProvider;
 
@@ -23,8 +24,8 @@ public class MemberAuthService {
         this.tokenProvider = tokenProvider;
     }
 
-    public void validateAuthentication(Member member,
-            MemberLoginRequest memberLoginRequest) throws AuthorizationMismatchException {
+    public void validateAuthentication(Member member, MemberLoginRequest memberLoginRequest)
+            throws AuthorizationMismatchException {
         if (!passwordEncoder.matches(memberLoginRequest.password(), member.getPassword())) {
             throw new AuthorizationMismatchException("비밀번호가 일치하지 않습니다.");
         }
@@ -35,9 +36,13 @@ public class MemberAuthService {
         return tokenProvider.createToken(member, now);
     }
 
-    public Map<String, String> extractPayload(Cookie[] cookies) {
+    public MemberProfileInfo extractPayload(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
-        return tokenProvider.getPayload(token);
+        Map<String, String> payload = tokenProvider.getPayload(token);
+        return new MemberProfileInfo(
+                Long.valueOf(payload.get("id")),
+                payload.get("name"),
+                payload.get("email"));
     }
 
     public String extractNameFromPayload(Cookie[] cookies) {

@@ -5,19 +5,25 @@ import java.util.Objects;
 public class Member {
 
     private final long id;
+    private final String name;
     private final String email;
     private final String password;
-    private final String name;
+    private MemberRole role;
 
-    public Member(long id, String name, String email, String password) {
+    public Member(long id, String name, String email, String password, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = MemberRole.valueOf(role);
+    }
+
+    public Member(long id, String name, String email, String password) {
+        this(id, name, email, password, "USER");
     }
 
     public Member(String name, String email, String password) {
-        this(0, email, password, name);
+        this(0, email, password, name, "GUEST");
     }
 
     public String getEmail() {
@@ -36,8 +42,12 @@ public class Member {
         return password;
     }
 
-    public Member toIdAssigned(long id) {
-        return new Member(id, email, password, name);
+    public MemberRole getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = MemberRole.valueOf(role);
     }
 
     @Override

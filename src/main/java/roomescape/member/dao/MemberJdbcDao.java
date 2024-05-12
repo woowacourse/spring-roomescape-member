@@ -14,10 +14,13 @@ import roomescape.member.dto.MemberRegistrationInfo;
 @Repository
 public class MemberJdbcDao implements MemberDao {
 
-    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (resultSet, rowNum) -> new Member(
-            resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("email"),
-            resultSet.getString("password")
-
+    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (resultSet, rowNum)
+            -> new Member(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("email"),
+            resultSet.getString("password"),
+            resultSet.getString("role")
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -42,6 +45,12 @@ public class MemberJdbcDao implements MemberDao {
     public List<Member> findAll() {
         String findAllSql = "SELECT * FROM registration";
         return jdbcTemplate.query(findAllSql, MEMBER_ROW_MAPPER);
+    }
+
+    @Override
+    public Member findById(long id) {
+        String findByIdSql = "SELECT * FROM registration WHERE id = ?";
+        return jdbcTemplate.queryForObject(findByIdSql, MEMBER_ROW_MAPPER, id);
     }
 
     @Override

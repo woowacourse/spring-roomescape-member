@@ -19,8 +19,11 @@ INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('폴라', '2024-04-30', 1, 1),
        ('구구', '2023-05-01', 2, 1);
 
+INSERT INTO registration (name, email, password, role)
+VALUES ('어드민', 'admin@admin.com', '1234', 'ADMIN'),
+       ('어드민2', 'admin2@admin.com', '1234', 'ADMIN');
+
 INSERT INTO registration (name, email, password)
 VALUES ('도비', 'kimdobby@wootaeco.com', 'pass1'),
        ('피케이', 'pke@best.com', 'pass2'),
-       ('어드민', 'admin@admin.com', '1234'),
        ('테스트', 'test@test.com', 'test');

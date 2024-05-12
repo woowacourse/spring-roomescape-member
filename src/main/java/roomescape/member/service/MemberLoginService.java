@@ -28,4 +28,8 @@ public class MemberLoginService {
         }
     }
 
+    public Member findMemberById(Long id) {
+        return memberJdbcDao.findById(id);
+    }
+
 }
