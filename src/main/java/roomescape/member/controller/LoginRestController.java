@@ -16,7 +16,7 @@ import roomescape.member.service.LoginService;
 @RestController
 public class LoginRestController {
 
-    private static final String TOKEN = "token";
+    private static final String AUTH_COOKIE_NAME = "token";
 
     private final LoginService loginService;
 
@@ -28,7 +28,7 @@ public class LoginRestController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         String accessToken = loginService.login(request);
 
-        Cookie cookie = new Cookie(TOKEN, accessToken);
+        Cookie cookie = new Cookie(AUTH_COOKIE_NAME, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -46,7 +46,7 @@ public class LoginRestController {
         Cookie[] cookies = request.getCookies();
 
         for (Cookie cookie : cookies) {
-            if (TOKEN.equals(cookie.getName())) {
+            if (AUTH_COOKIE_NAME.equals(cookie.getName())) {
                 Cookie emptyCookie = new Cookie("token", "");
                 emptyCookie.setMaxAge(0);
                 response.addCookie(cookie);
