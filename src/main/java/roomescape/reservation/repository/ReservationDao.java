@@ -144,14 +144,14 @@ public class ReservationDao {
                 INNER JOIN theme ON r.theme_id = theme.id
                 INNER JOIN member AS m ON r.member_id = m.id
                 WHERE (:member_id IS NULL AND :theme_id IS NULL AND :date_from IS NULL AND :date_to IS NULL)
-                OR (:member_id IS NULL OR r.member_id = :member_id)
+                OR ((:member_id IS NULL OR r.member_id = :member_id)
                 AND (:theme_id IS NULL OR r.theme_id = :theme_id)
                 AND (
                     (:date_from IS NULL AND :date_to IS NULL)
                     OR (:date_from IS NOT NULL AND :date_to IS NULL AND r.date > :date_from)
                     OR (:date_from IS NULL AND :date_to IS NOT NULL AND r.date < :date_to)
                     OR (:date_from IS NOT NULL AND :date_to IS NOT NULL AND r.date BETWEEN :date_from AND :date_to)
-                )
+                ))
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("member_id", memberId);
