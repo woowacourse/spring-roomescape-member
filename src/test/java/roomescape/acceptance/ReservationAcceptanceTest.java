@@ -159,6 +159,5 @@ class ReservationAcceptanceTest {
         public static final ReservationTime time = new ReservationTime(1L, timeAfterOneHour);
         public static final Reservation reservation = new Reservation(1L, new Name(name), new ReservationDate(tomorrow),
                 time, theme);
-
     }
 }
