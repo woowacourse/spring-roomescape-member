@@ -15,21 +15,18 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.service.MemberService;
 
-import java.util.Optional;
-
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
     private static final String TOKEN_COOKIE_NAME = "token";
 
     private final MemberService memberService;
+    private final JwtHandler jwtHandler;
 
     public AdminInterceptor(final MemberService memberService, final JwtHandler jwtHandler) {
         this.memberService = memberService;
         this.jwtHandler = jwtHandler;
     }
-
-    private final JwtHandler jwtHandler;
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
@@ -37,10 +34,11 @@ public class AdminInterceptor implements HandlerInterceptor {
             return true;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Optional<Admin> adminAnnotation = Optional.ofNullable(handlerMethod.getMethodAnnotation(Admin.class));
-        if (adminAnnotation.isEmpty()) {
+        Admin adminAnnotation = handlerMethod.getMethodAnnotation(Admin.class);
+        if (adminAnnotation == null) {
             return true;
         }
+
         String cookieHeader = request.getHeader("Cookie");
         if (cookieHeader != null) {
             for (Cookie cookie : request.getCookies()) {
