@@ -102,7 +102,8 @@ class AuthIntegrationTest extends IntegrationTest {
                     .then().log().all()
                     .statusCode(201)
                     .header("Location", "/members/2")
-                    .body("id", is(2));
+                    .body("id", is(2))
+                    .body("role", is("USER"));
         }
     }
 }

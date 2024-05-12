@@ -10,6 +10,8 @@ import roomescape.exception.auth.UnauthorizedEmailException;
 import roomescape.exception.auth.UnauthorizedPasswordException;
 import roomescape.service.dto.LoginCheckResponse;
 import roomescape.service.dto.LoginRequest;
+import roomescape.service.dto.SignupRequest;
+import roomescape.service.dto.SignupResponse;
 import roomescape.service.helper.CookieExtractor;
 import roomescape.service.helper.JwtTokenProvider;
 
@@ -59,5 +61,11 @@ public class AuthService {
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(InvalidTokenException::new);
+    }
+
+    public SignupResponse signup(SignupRequest request) {
+        Member member = request.toMember(MemberRole.USER);
+        Member savedMember = memberRepository.save(member);
+        return new SignupResponse(savedMember);
     }
 }
