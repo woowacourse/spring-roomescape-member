@@ -10,11 +10,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
-    private final LoginInterceptor loginInterceptor;
+    private final AdminLoginInterceptor adminLoginInterceptor;
+    private final MemberLoginInterceptor memberLoginInterceptor;
 
-    public WebMvcConfiguration(final LoginMemberArgumentResolver loginMemberArgumentResolver, final LoginInterceptor loginInterceptor) {
+    public WebMvcConfiguration(final LoginMemberArgumentResolver loginMemberArgumentResolver, final AdminLoginInterceptor adminLoginInterceptor,
+                               final MemberLoginInterceptor memberLoginInterceptor) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
-        this.loginInterceptor = loginInterceptor;
+        this.adminLoginInterceptor = adminLoginInterceptor;
+        this.memberLoginInterceptor = memberLoginInterceptor;
     }
 
     @Override
@@ -24,7 +27,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/admin/**");
+        registry.addInterceptor(adminLoginInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(memberLoginInterceptor).addPathPatterns("/reservation");
     }
 }
