@@ -31,7 +31,8 @@ public class H2ReservationRepository implements ReservationRepository {
         r.id as reservation_id, r.date as reservation_date,
         m.id as member_id, m.name as member_name, m.email as member_email, m.password as member_password, 
         rt.id as time_id, rt.start_at as reservation_time, 
-        th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail 
+        th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail,
+        ro.name as role_name
         FROM reservation as r 
         inner join member as m 
         on r.member_id = m.id
@@ -39,6 +40,8 @@ public class H2ReservationRepository implements ReservationRepository {
         on r.time_id = rt.id 
         inner join theme as th 
         on r.theme_id = th.id
+        inner join role as ro
+        on m.role_id = ro.id
         """;
 
     return template.query(sql, itemRowMapper());
@@ -51,7 +54,8 @@ public class H2ReservationRepository implements ReservationRepository {
             rs.getLong("member_id"),
             rs.getString("member_name"),
             rs.getString("member_email"),
-            rs.getString("member_password")
+            rs.getString("member_password"),
+            rs.getString("role_name")
         ),
         rs.getDate("reservation_date").toLocalDate(),
         new ReservationTime(rs.getLong("time_id"), rs.getTime("reservation_time").toLocalTime()),
@@ -70,7 +74,8 @@ public class H2ReservationRepository implements ReservationRepository {
         r.id as reservation_id, r.date as reservation_date, 
         m.id as member_id, m.name as member_name, m.email as member_email, m.password as member_password, 
         rt.id as time_id, rt.start_at as reservation_time, 
-        th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail 
+        th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail,
+        ro.name as role_name
         FROM reservation as r 
         inner join member as m 
         on r.member_id = m.id 
@@ -78,6 +83,8 @@ public class H2ReservationRepository implements ReservationRepository {
         on r.time_id = rt.id 
         inner join theme as th 
         on r.theme_id = th.id 
+        inner join role as ro
+        on m.role_id = ro.id
         WHERE r.id = :reservationId
         """;
 
@@ -144,7 +151,8 @@ public class H2ReservationRepository implements ReservationRepository {
         r.id as reservation_id, r.date as reservation_date,
         m.id as member_id, m.name as member_name, m.email as member_email, m.password as member_password, 
         rt.id as time_id, rt.start_at as reservation_time, 
-        th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail 
+        th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail,
+        ro.name as role_name 
         FROM reservation as r
         inner join member as m 
         on r.member_id = m.id 
@@ -152,6 +160,8 @@ public class H2ReservationRepository implements ReservationRepository {
         on r.time_id = rt.id 
         inner join theme as th 
         on r.theme_id = th.id 
+        inner join role as ro
+        on m.role_id = ro.id
         WHERE date = :date and theme_id = :themeId
         """;
 

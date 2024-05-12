@@ -47,7 +47,7 @@ class ReservationServiceIntegrationTest {
 
     // When
     final Reservation reservation = reservationService.saveReservation(
-        Member.createInstance(1L, "켈리", "kelly@example.com", "password123"),
+        Member.createInstance(1L, "켈리", "kelly@example.com", "password123", "USER"),
         saveReservationRequest);
 
     // Then

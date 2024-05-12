@@ -58,7 +58,8 @@ class ReservationRepositoryTest {
     final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 10));
     final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
     final Reservation reservation = Reservation.createInstanceWithoutId(
-        Member.createInstance(1L, "브라운", "kelly@example.com", "password123"), reservationDate,
+        Member.createInstance(1L, "브라운", "kelly@example.com", "password123", "ADMIN"),
+        reservationDate,
         reservationTime, theme);
 
     // When

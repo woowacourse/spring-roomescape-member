@@ -23,57 +23,57 @@ import roomescape.theme.dto.ThemeResponse;
 @Sql(value = {"/schema.sql", "/data.sql"}, executionPhase = BEFORE_TEST_METHOD)
 class ThemeControllerIntegrationTest {
 
-    @LocalServerPort
-    int randomServerPort;
+  @LocalServerPort
+  int randomServerPort;
 
-    @BeforeEach
-    public void initReservation() {
-        RestAssured.port = randomServerPort;
-    }
+  @BeforeEach
+  public void initReservation() {
+    RestAssured.port = randomServerPort;
+  }
 
-    @DisplayName("전체 테마 정보를 조회한다.")
-    @Test
-    void getThemesTest() {
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(15));
-    }
+  @DisplayName("전체 테마 정보를 조회한다.")
+  @Test
+  void getThemesTest() {
+    RestAssured.given().log().all()
+        .when().get("/themes")
+        .then().log().all()
+        .statusCode(200)
+        .body("size()", is(15));
+  }
 
-    @DisplayName("테마 정보를 저장한다.")
-    @Test
-    void saveThemeTest() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "켈리의 두근두근");
-        params.put("description", "켈리와 함께하는 두근두근 데이트");
-        params.put("thumbnail", "켈리 사진");
+  @DisplayName("테마 정보를 저장한다.")
+  @Test
+  void saveThemeTest() {
+    final Map<String, String> params = new HashMap<>();
+    params.put("name", "켈리의 두근두근");
+    params.put("description", "켈리와 함께하는 두근두근 데이트");
+    params.put("thumbnail", "켈리 사진");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .body("themeId", is(16));
-    }
+    RestAssured.given().log().all()
+        .contentType(ContentType.JSON)
+        .body(params)
+        .when().post("/themes")
+        .then().log().all()
+        .statusCode(201)
+        .body("id", is(16));
+  }
 
-    @DisplayName("테마 정보를 삭제한다.")
-    @Test
-    void deleteThemeTest() {
-        // 예약 시간 정보 삭제
-        RestAssured.given().log().all()
-                .when().delete("/themes/7")
-                .then().log().all()
-                .statusCode(204);
+  @DisplayName("테마 정보를 삭제한다.")
+  @Test
+  void deleteThemeTest() {
+    // 예약 시간 정보 삭제
+    RestAssured.given().log().all()
+        .when().delete("/themes/7")
+        .then().log().all()
+        .statusCode(204);
 
-        // 예약 시간 정보 조회
-        final List<ThemeResponse> themes = RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ThemeResponse.class);
+    // 예약 시간 정보 조회
+    final List<ThemeResponse> themes = RestAssured.given().log().all()
+        .when().get("/themes")
+        .then().log().all()
+        .statusCode(200).extract()
+        .jsonPath().getList(".", ThemeResponse.class);
 
-        assertThat(themes.size()).isEqualTo(14);
-    }
+    assertThat(themes.size()).isEqualTo(14);
+  }
 }

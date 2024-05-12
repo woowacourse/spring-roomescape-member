@@ -23,14 +23,19 @@ public class H2MemberRepository implements MemberRepository {
         rs.getLong("id"),
         rs.getString("name"),
         rs.getString("email"),
-        rs.getString("password")
+        rs.getString("password"),
+        rs.getString("role_name")
     ));
   }
 
   @Override
   public Optional<Member> findByEmail(String email) {
     final String sql = """
-        SELECT * FROM member WHERE email = :email
+        SELECT m.id, m.name, m.email, m.password, r.name as role_name
+        FROM member as m 
+        INNER JOIN role as r 
+        ON m.role_id = r.id
+        WHERE email = :email
         """;
 
     try {
@@ -47,7 +52,10 @@ public class H2MemberRepository implements MemberRepository {
   @Override
   public List<Member> findAll() {
     final String sql = """
-        SELECT * FROM member
+        SELECT m.id, m.name, m.email, m.password, r.name as role_name
+        FROM member as m 
+        INNER JOIN role as r 
+        ON m.role_id = r.id
         """;
 
     return template.query(sql, itemRowMapper());

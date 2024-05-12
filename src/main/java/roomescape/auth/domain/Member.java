@@ -8,28 +8,27 @@ public class Member {
   private final Name name;
   private final String email;
   private final String password;
+  private final Role role;
 
-  private Member(Long id, Name name, String email, String password) {
+  public Member(Long id, Name name, String email, String password, Role role) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.password = password;
-  }
-
-  public static Member of(String name, String email) {
-    return new Member(null, new Name(name), email, null);
+    this.role = role;
   }
 
   public static Member of(String name, String email, String password) {
-    return new Member(null, new Name(name), email, password);
+    return new Member(null, new Name(name), email, password, null);
   }
 
   public static Member of(Name name) {
-    return new Member(null, name, null, null);
+    return new Member(null, name, null, null, null);
   }
 
-  public static Member createInstance(long id, String name, String email, String password) {
-    return new Member(id, new Name(name), email, password);
+  public static Member createInstance(long id, String name, String email, String password,
+      String role) {
+    return new Member(id, new Name(name), email, password, new Role(role));
   }
 
   public Long getId() {
@@ -48,4 +47,7 @@ public class Member {
     return password;
   }
 
+  public Role getRole() {
+    return role;
+  }
 }
