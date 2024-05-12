@@ -84,7 +84,7 @@ class ReservationControllerTest {
 
     @ParameterizedTest
     @MethodSource("invalidRequestParameterProvider")
-    @DisplayName("유효하지 않는 요청인 경우 400을 반환한다.")
+    @DisplayName("유효하지 않은 요청인 경우 400을 반환한다.")
     void invalidRequest(final String date, final String timeId, final String themeId) {
         final Map<String, String> params = Map.of("date", date, "timeId", timeId, "themeId", themeId);
 

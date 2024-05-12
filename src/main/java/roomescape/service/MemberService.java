@@ -57,7 +57,7 @@ public class MemberService {
 
     public Member findMemberByToken(final String token) {
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new InvalidTokenException("유효하지 않는 토큰입니다.");
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
         final String payload = jwtTokenProvider.getPayload(token);
         return findMember(payload);
