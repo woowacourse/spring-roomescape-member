@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
@@ -22,6 +23,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim(ROLE, member.getRole())
+                .setExpiration(new Date(System.currentTimeMillis()+60*10000))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
