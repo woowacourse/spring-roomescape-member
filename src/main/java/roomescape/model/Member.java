@@ -5,17 +5,24 @@ import java.util.Objects;
 public class Member {
 
     private final long id;
-    private final String name;
-    private final String email;
-    private final String password;
+    private final Name name;
+    private final Email email;
+    private final Password password;
     private final Role role;
 
     public Member(long id, String name, String email, String password, Role role) {
+        validateRange(id);
         this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+        this.name = new Name(name);
+        this.email = new Email(email);
+        this.password = new Password(password);
         this.role = role;
+    }
+
+    private void validateRange(long id) {
+        if (id <= 0) {
+            throw new IllegalStateException("id는 0 이하일 수 없습니다.");
+        }
     }
 
     public long getId() {
@@ -23,15 +30,15 @@ public class Member {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getEmail() {
-        return email;
+        return email.getValue();
     }
 
     public String getPassword() {
-        return password;
+        return password.getValue();
     }
 
     public Role getRole() {
@@ -43,7 +50,11 @@ public class Member {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return id == member.id && Objects.equals(name, member.name) && Objects.equals(email, member.email) && Objects.equals(password, member.password) && Objects.equals(role, member.role);
+        return id == member.id
+                && Objects.equals(name.getValue(), member.name.getValue())
+                && Objects.equals(email.getValue(), member.email.getValue())
+                && Objects.equals(password.getValue(), member.password.getValue())
+                && role == member.role;
     }
 
     @Override
