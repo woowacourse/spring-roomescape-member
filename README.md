@@ -15,7 +15,8 @@
 | GET    | `/login/check`                        | 인증 정보 조회              |                                        | `@RestController` |
 | GET    | `/reservations`                       | 예약 정보 조회              |                                        | `@RestController` |
 | GET    | `/reservations/themes/{themeId}?date` | 특정 날짜의 특정 테마 예약 정보 조회 |                                        | `@RestController` |
-| POST   | `/reservations`                       | 예약 추가                 |                                        | `@RestController` |
+| POST   | `/reservations`                       | 사용자 예약 추가             |                                        | `@RestController` |
+| POST   | `/admin/reservations`                 | 관리자 예약 추가             |                                        | `@RestController` |
 | DELETE | `/reservations/{id}`                  | 예약 취소                 |                                        | `@RestController` |
 | GET    | `/times`                              | 예약 시간 조회              |                                        | `@RestController` |
 | DELETE | `/times/{id}`                         | 예약 시간 추가              |                                        | `@RestController` |
@@ -134,7 +135,7 @@ GET /reservations/themes/1?date=2024-12-31 HTTP/1.1
 
 ---
 
-### 예약 추가 API
+### 사용자 예약 추가 API
 
 - Request
 
@@ -148,6 +149,43 @@ host: localhost:8080
     "date": "2024-03-01",
     "themeId": 1,
     "timeId": 1
+}
+```
+
+- Response
+
+```
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-05",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    }
+}
+```
+
+---
+
+### 관리자 예약 추가 API
+
+- Request
+
+```
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
 }
 ```
 
