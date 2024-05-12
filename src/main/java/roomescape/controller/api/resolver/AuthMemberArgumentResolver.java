@@ -7,18 +7,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.api.dto.request.MemberAuthRequest;
-import roomescape.exception.CustomBadRequest;
+import roomescape.exception.CustomException;
 import roomescape.exception.CustomUnauthorized;
 import roomescape.infrastructure.CookieProvider;
-import roomescape.service.MemberService;
 
 public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
     private final CookieProvider cookieProvider;
 
-    public AuthMemberArgumentResolver(final MemberService memberService, final CookieProvider cookieProvider) {
-        this.memberService = memberService;
+    public AuthMemberArgumentResolver(final CookieProvider cookieProvider) {
         this.cookieProvider = cookieProvider;
     }
 
@@ -33,11 +30,9 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
                                              final NativeWebRequest webRequest,
                                              final WebDataBinderFactory binderFactory) throws Exception {
         final var request = (HttpServletRequest) webRequest.getNativeRequest();
-        final var authMember = cookieProvider.extractToken(request);
         try {
-            memberService.getMember(authMember.id());
-            return authMember;
-        } catch (final CustomBadRequest e) {
+            return cookieProvider.extractToken(request);
+        } catch (final CustomException e) {
             throw new CustomUnauthorized("멤버가 아닙니다.");
         }
     }

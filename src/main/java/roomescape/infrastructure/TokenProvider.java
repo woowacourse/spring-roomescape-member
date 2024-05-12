@@ -1,11 +1,13 @@
 package roomescape.infrastructure;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.controller.api.dto.response.MemberResponse;
+import roomescape.exception.CustomBadRequest;
 
 @Component
 public class TokenProvider {
@@ -23,11 +25,15 @@ public class TokenProvider {
     }
 
     public MemberAuthRequest parse(final String token) {
-        final var claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        final var id = Long.parseLong(claims.getSubject());
-        final var name = claims.get("name", String.class);
-        final var role = claims.get("role", String.class);
-        return new MemberAuthRequest(id, name, role);
+        try {
+            final var claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+            final var id = Long.parseLong(claims.getSubject());
+            final var name = claims.get("name", String.class);
+            final var role = claims.get("role", String.class);
+            return new MemberAuthRequest(id, name, role);
+        } catch (final JwtException e) {
+            throw new CustomBadRequest("유효하지 않은 토큰입니다.");
+        }
     }
 }
 

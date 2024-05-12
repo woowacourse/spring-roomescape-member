@@ -1,10 +1,12 @@
 package roomescape.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.controller.api.dto.response.MemberResponse;
+import roomescape.exception.CustomBadRequest;
 
 @Component
 public class CookieProvider {
@@ -25,12 +27,10 @@ public class CookieProvider {
     }
 
     public MemberAuthRequest extractToken(final HttpServletRequest request) {
-        final var cookies = request.getCookies();
-        for (final var cookie : cookies) {
-            if (cookie.getName().equals("accessToken")) {
-                return tokenProvider.parse(cookie.getValue());
-            }
-        }
-        return null;
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals("accessToken"))
+                .findAny()
+                .map(cookie -> tokenProvider.parse(cookie.getValue()))
+                .orElseThrow(() -> new CustomBadRequest("토큰이 없습니다."));
     }
 }

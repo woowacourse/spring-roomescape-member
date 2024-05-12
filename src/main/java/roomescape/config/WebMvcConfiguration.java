@@ -8,16 +8,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.controller.api.interceptor.CheckAdminMemberInterceptor;
 import roomescape.controller.api.resolver.AuthMemberArgumentResolver;
 import roomescape.infrastructure.CookieProvider;
-import roomescape.service.MemberService;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final MemberService memberService;
     private final CookieProvider cookieProvider;
 
-    public WebMvcConfiguration(final MemberService memberService, final CookieProvider cookieProvider) {
-        this.memberService = memberService;
+    public WebMvcConfiguration(final CookieProvider cookieProvider) {
         this.cookieProvider = cookieProvider;
     }
 
@@ -29,6 +26,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthMemberArgumentResolver(memberService, cookieProvider));
+        resolvers.add(new AuthMemberArgumentResolver(cookieProvider));
     }
 }
