@@ -21,3 +21,8 @@ VALUES ('User1', '2024-05-01', 1, 1),
        ('User4', '2024-05-04', 3, 4),
        ('User5', '2024-05-05', 3, 3)
 ;
+
+INSERT INTO member (email, password, name)
+VALUES ('email@email.com', 'password', 'Email'),
+       ('zeus@woowa.com', 'qwerty', 'Zeus')
+;
