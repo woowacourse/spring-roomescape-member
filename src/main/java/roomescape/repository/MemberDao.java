@@ -32,21 +32,21 @@ public class MemberDao {
     }
 
     public Optional<Member> findByEmailAndPassword(final String email, final String password) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE email = ? " + " AND password= ?";
+        String sql = "SELECT id as member_id, * FROM " + TABLE_NAME + " WHERE email = ? " + " AND password= ?";
         return jdbcTemplate.query(sql, memberRowMapper, email, password)
                 .stream()
                 .findAny();
     }
 
     public Optional<Member> findById(long memberId) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
+        String sql = "SELECT id as member_id, * FROM " + TABLE_NAME + " WHERE id = ?";
         return jdbcTemplate.query(sql, memberRowMapper, memberId)
                 .stream()
                 .findAny();
     }
 
     public List<Member> findAll() {
-        String sql = "SELECT * FROM " + TABLE_NAME;
+        String sql = "SELECT id as member_id, * FROM " + TABLE_NAME;
         return jdbcTemplate.query(sql, memberRowMapper);
     }
 }

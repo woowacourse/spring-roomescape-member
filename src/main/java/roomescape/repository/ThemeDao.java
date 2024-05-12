@@ -45,12 +45,12 @@ public class ThemeDao {
     }
 
     public List<Theme> getAll() {
-        String sql = "SELECT * FROM theme";
+        String sql = "SELECT id as theme_id, * FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     public Optional<Theme> findById(final long themeId) {
-        String sql = "SELECT * FROM theme WHERE id = ? ";
+        String sql = "SELECT id as theme_id, * FROM theme WHERE id = ? ";
         return jdbcTemplate.query(sql, themeRowMapper, themeId)
                 .stream()
                 .findAny();

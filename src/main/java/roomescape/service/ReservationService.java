@@ -74,14 +74,13 @@ public class ReservationService {
     private List<Long> findUsedTimeId(LocalDate date, long themeId) {
         return reservationDao.findByDateAndThemeId(date, themeId)
                 .stream()
-                .map(Reservation::getId)
+                .map(Reservation::getTimeId)
                 .toList();
     }
 
     private Member findMemberById(Long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
-
     }
 
     private ReservationTime findReservationTimeById(Long timeId) {

@@ -13,7 +13,7 @@ public class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
     public ReservationTime mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
             return new ReservationTime(
-                    resultSet.getLong("id"),
+                    resultSet.getLong("time_id"),
                     resultSet.getString("start_at")
             );
         } catch (SQLException exception) {

@@ -139,7 +139,7 @@ public class ReservationDao {
                 + "ON r.theme_id = theme.id "
                 + "INNER JOIN member as member "
                 + "ON r.member_id = member.id "
-                + "WHERE r.date= ? "
+                + "WHERE r.date = ? "
                 + "AND theme.id = ?";
 
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);

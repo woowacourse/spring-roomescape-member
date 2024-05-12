@@ -13,7 +13,7 @@ public class MemberRowMapper implements RowMapper<Member> {
     public Member mapRow(ResultSet resultSet, int rowNum) {
         try {
             return new Member(
-                    resultSet.getLong("id"),
+                    resultSet.getLong("member_id"),
                     resultSet.getString("member_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
