@@ -187,6 +187,22 @@ public class ReservationControllerTest {
                 .body("message", is("테마가 입력되지 않았습니다."));
     }
 
+    @DisplayName("특정 조건에 대한 예약을 조회한다.")
+    @Test
+    @Sql(scripts = {"/test_schema.sql", "/test_reservation_search.sql"})
+    void findByCondition() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .param("themeId", 1L)
+                .param("memberId", 1L)
+                .param("dateFrom", LocalDate.now().minusDays(7).toString())
+                .param("dateTo", LocalDate.now().minusDays(1).toString())
+                .when().get("/reservations/search")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(7));
+    }
+
     private String getAccessToken(String mail, String password) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
