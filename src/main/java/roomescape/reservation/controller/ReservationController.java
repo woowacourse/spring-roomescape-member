@@ -38,14 +38,9 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 
-//    @PostMapping("/validate")
-//    public ResponseEntity<Reservation> createAndValidateFuture(@RequestBody ReservationRequest request) {
-//        Reservation createdReservation = reservationService.validatePastAndSave(request);
-//        return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
-//    }
     @PostMapping("/validate")
     public ResponseEntity<Reservation> createAndValidatePast(@RequestBody ReservationRequest request, Member member) {
-        Reservation createdReservation = reservationService.validatePastAndSave(request,member);
+        Reservation createdReservation = reservationService.validatePastAndSave(request, member);
         return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 

@@ -1,13 +1,12 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.repository.ReservationDao;
@@ -46,7 +45,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         new ReservationDateTime(request, reservationTime).validatePast(LocalDateTime.now());
         Theme theme = themeDao.findById(request.themeId());
-        return reservationDao.save(new Reservation(member.name(), request.date(), reservationTime, theme));
+        return reservationDao.save(new Reservation(member, request.date(), reservationTime, theme));
 
     }
 
