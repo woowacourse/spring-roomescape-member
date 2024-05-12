@@ -22,7 +22,9 @@ public class ReservationDAO {
 
     public ReservationDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("reservation").usingGeneratedKeyColumns("id");
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Reservation insert(final Reservation reservation) {
