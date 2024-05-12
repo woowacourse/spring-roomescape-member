@@ -9,7 +9,7 @@ public class ThemeDto {
     private final String description;
     private final String thumbnail;
 
-    public ThemeDto(Long themeId, String name, String description, String thumbnail) {
+    private ThemeDto(Long themeId, String name, String description, String thumbnail) {
         this.themeId = themeId;
         this.name = name;
         this.description = description;

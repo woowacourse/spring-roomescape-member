@@ -45,7 +45,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
         Cookie token = findCookieByKey(request.getCookies(), AUTH_COOKIE_KEY).orElseThrow(AuthorizationException::new);
         MemberInfo loginMember = authService.checkToken(token.getValue());
-        LoginResponse response = new LoginResponse(loginMember.getName());
+        LoginResponse response = LoginResponse.from(loginMember);
         return ResponseEntity.ok(response);
     }
 

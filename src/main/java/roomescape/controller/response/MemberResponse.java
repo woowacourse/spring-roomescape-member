@@ -8,7 +8,7 @@ public class MemberResponse {
     private final String name;
     private final String email;
 
-    public MemberResponse(long id, String name, String email) {
+    private MemberResponse(long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;

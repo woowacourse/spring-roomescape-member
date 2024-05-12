@@ -10,7 +10,7 @@ public class ReservationTimeDto {
     private Long id;
     private LocalTime startAt;
 
-    public ReservationTimeDto(Long id, LocalTime startAt) {
+    private ReservationTimeDto(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }

@@ -9,7 +9,7 @@ public class ThemeResponse {
     private final String description;
     private final String thumbnail;
 
-    public ThemeResponse(long id, String name, String description, String thumbnail) {
+    private ThemeResponse(long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;

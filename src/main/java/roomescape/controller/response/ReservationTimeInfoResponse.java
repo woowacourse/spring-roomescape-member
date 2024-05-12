@@ -15,7 +15,7 @@ public class ReservationTimeInfoResponse {
     private final LocalTime startAt;
     private final boolean isBooked;
 
-    public ReservationTimeInfoResponse(long timeId, LocalTime startAt, boolean isBooked) {
+    private ReservationTimeInfoResponse(long timeId, LocalTime startAt, boolean isBooked) {
         this.timeId = timeId;
         this.startAt = startAt;
         this.isBooked = isBooked;
