@@ -28,8 +28,6 @@ public class RequestCookies {
 
     public Map<String, String> toMap() {
         return values.stream()
-                .collect(Collectors.toMap(
-                        cookie -> cookie.getName(),
-                        cookie -> cookie.getValue()));
+                .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
     }
 }
