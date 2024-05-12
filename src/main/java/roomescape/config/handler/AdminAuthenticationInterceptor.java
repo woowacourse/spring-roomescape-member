@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.MemberAuthenticationException;
+import roomescape.member.domain.LoggedInMember;
 import roomescape.member.domain.Member;
 import roomescape.member.service.AuthService;
 
@@ -22,7 +23,7 @@ public class AdminAuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
             String accessToken = findAccessToken(request);
-            Member member = authService.findMember(accessToken);
+            LoggedInMember member = authService.findLoggedInMember(accessToken);
             if (member.isAdmin()) {
                 return true;
             }

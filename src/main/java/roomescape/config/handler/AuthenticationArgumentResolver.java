@@ -8,7 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.exception.MemberAuthenticationException;
-import roomescape.member.dto.AccessToken;
+import roomescape.member.domain.LoggedInMember;
 import roomescape.member.service.AuthService;
 
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
@@ -22,7 +22,7 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(AccessToken.class);
+        return parameter.getParameterType().equals(LoggedInMember.class);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
                                   WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String accessToken = findAccessToken(request);
-        return authService.decode(accessToken);
+        return authService.findLoggedInMember(accessToken);
     }
 
     private String findAccessToken(HttpServletRequest request) {

@@ -39,6 +39,10 @@ public class Member {
         return email;
     }
 
+    public MemberRole getRole() {
+        return role;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {

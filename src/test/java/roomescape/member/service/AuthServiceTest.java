@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.LoggedInMember;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.AccessToken;
+import roomescape.member.domain.MemberRole;
 import roomescape.member.dto.LoginRequest;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,34 +39,14 @@ class AuthServiceTest {
                 .hasMessage("로그인 정보가 잘못 되었습니다.");
     }
 
-    @DisplayName("정상적으로 암호화된 토큰을 해독할 수 있다.")
-    @Test
-    void decodeTest() {
-        String accessToken = makeToken("브리", "bri@abc.com");
-        AccessToken expected = new AccessToken(1L, "bri@abc.com", "브리");
-
-        AccessToken actual = authService.decode(accessToken);
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("잘못된 토큰을 넣었을 경우, 예외를 던진다.")
-    @Test
-    void decodeTest_whenWrongToken() {
-        String wrongToken = "thisis.not.key";
-
-        assertThatThrownBy(() -> authService.decode(wrongToken))
-                .isInstanceOf(MemberAuthenticationException.class);
-    }
-
     @DisplayName("해당 토큰의 유저를 찾을 수 있다.")
     @Test
     void findMember() {
         String accessToken = makeToken("브리", "bri@abc.com");
         given(memberDao.findMemberById(1L)).willReturn(Optional.of(new Member(1L, "브리", "bri@abc.com")));
-        Member expected = new Member(1L, "브리", "bri@abc.com");
+        LoggedInMember expected = new LoggedInMember(1L, "브리", "bri@abc.com", MemberRole.USER);
 
-        Member actual = authService.findMember(accessToken);
+        LoggedInMember actual = authService.findLoggedInMember(accessToken);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -77,5 +57,4 @@ class AuthServiceTest {
                 .willReturn(Optional.of(new Member(1L, name, email)));
         return authService.makeToken(request);
     }
-
 }

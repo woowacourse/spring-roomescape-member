@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.LoggedInMember;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.AccessToken;
 import roomescape.member.dto.LoginRequest;
 
 @Service
@@ -42,20 +42,14 @@ public class AuthService {
                 .compact();
     }
 
-    public AccessToken decode(String token) {
-        Long id = getPayload(token).get("id", Long.class);
-        String email = getPayload(token).get("email", String.class);
-        String name = getPayload(token).get("name", String.class);
-        return new AccessToken(id, email, name);
-    }
-
-    public Member findMember(String token) {
-        Long id = getPayload(token).get("id", Long.class);
-        return memberDao.findMemberById(id)
+    public LoggedInMember findLoggedInMember(String token) {
+        Long id = getClaims(token).get("id", Long.class);
+        Member member = memberDao.findMemberById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+        return new LoggedInMember(member);
     }
 
-    private Claims getPayload(String token) {
+    private Claims getClaims(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
