@@ -51,6 +51,17 @@ public class MemberDAO {
         return jdbcTemplate.queryForObject(sql, Boolean.class, email, password);
     }
 
+    public Boolean existMemberOf(final String email) {
+        final String sql = """
+                SELECT CASE WHEN EXISTS (
+                    SELECT 1
+                    FROM member
+                    WHERE email = ?
+                ) THEN TRUE ELSE FALSE END;
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
     public Member findByEmail(final String email) {
         final String sql = "SELECT * FROM member WHERE email = ?;";
         return jdbcTemplate.queryForObject(sql, memberRowMapper(), email);

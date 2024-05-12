@@ -15,8 +15,10 @@ public class MemberService {
         this.memberDAO = memberDAO;
     }
 
-    // TODO - 중복된 email이 존재하면 예외 발생
     public Member join(final MemberRequest memberRequest) {
+        if (memberDAO.existMemberOf(memberRequest.email())) {
+            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+        }
         Member member = memberRequest.toEntity();
         return memberDAO.insert(member);
     }
