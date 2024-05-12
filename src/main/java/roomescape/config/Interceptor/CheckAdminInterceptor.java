@@ -22,9 +22,9 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
         String tokenValue = tokenProvider.getTokenValue(cookies);
-        String role = tokenProvider.getTokenRole(tokenValue);
+        Role role = Role.valueOf(tokenProvider.getTokenRole(tokenValue));
 
-        if (Role.ADMIN != Role.valueOf(role)) {
+        if (!role.isAdmin()) {
             throw new AuthorizationException("권한이 없습니다.");
         }
         return true;
