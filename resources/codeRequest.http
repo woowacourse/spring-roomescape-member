@@ -1,0 +1,45 @@
+### 로그인
+POST http://localhost:8080/login
+content-type: application/json
+
+{
+  "password": "password",
+  "email": "admin@email.com"
+}
+
+### 로그인 유저 조회
+GET http://localhost:8080/login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzE1MzE4MDU3LCJleHAiOjE3MTUzMjE2NTd9.Kb64JT6wPNTBcAx8P4ywGiJY4dD4u8osrtGjdFwvow8
+host: localhost:8080
+
+
+### 로그인 페이지
+GET http://localhost:8080/login
+
+### 테스트
+GET http://localhost:8080/reservations HTTP/1.1
+
+### 예약
+POST /reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzE1NDk0ODg2LCJleHAiOjE3MTU0OTg0ODZ9.BdsXtPj8Jmz4BZfYkgkY1WxPwjSUProBgeL81JdepAM
+host: localhost:8080
+
+{
+  "date": "2029-03-01",
+  "themeId": 1,
+  "timeId": 1
+}
+
+### 관리자 예약
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+  "date": "2025-03-01",
+  "themeId": 1,
+  "timeId": 1,
+  "memberId": 1
+}

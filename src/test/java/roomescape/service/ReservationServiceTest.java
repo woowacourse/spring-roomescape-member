@@ -1,13 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,14 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.*;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.domain.Member;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
