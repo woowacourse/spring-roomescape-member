@@ -10,9 +10,9 @@ VALUES ('15:40'),
        ('13:40'),
        ('17:40');
 
-INSERT INTO member (name, email, password)
-VALUES ('어드민', 'polla@gmail.com', 'pollari99'),
-       ('어드민', 'polla@naver.com', 'pollari999');
+INSERT INTO member (name, email, password, role)
+VALUES ('어드민', 'polla@gmail.com', 'pollari99', 'admin'),
+       ('일반', 'polla@naver.com', 'pollari999', 'member');
 
 
 INSERT INTO theme (name, description, thumbnail)
