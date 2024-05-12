@@ -42,7 +42,6 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(new AdminCheckInterceptor(tokenProvider))
                 .order(2)
-                .addPathPatterns("/admin/**")
-                .excludePathPatterns("/css/**", "/js/**", "/images/**", "/fonts/**", "/*.ico");
+                .addPathPatterns("/admin/**");
     }
 }
