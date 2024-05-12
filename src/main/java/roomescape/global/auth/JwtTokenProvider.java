@@ -4,12 +4,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
+import roomescape.global.exception.AuthorizationException;
 
 @Component
 public class JwtTokenProvider {
@@ -37,6 +39,27 @@ public class JwtTokenProvider {
             .compact();
     }
 
+    public LoginMember findMember(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new AuthorizationException("쿠키가 존재하지 않습니다.");
+        }
+        String token = extractTokenFromCookies(cookies);
+        if (token.isEmpty()) {
+            throw new AuthorizationException("토큰이 존재하지 않습니다.");
+        }
+        return parse(token);
+    }
+
+    public String extractTokenFromCookies(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
+    }
+
     public LoginMember parse(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(secretKey)
@@ -49,15 +72,6 @@ public class JwtTokenProvider {
         String role = claims.get(CLAIM_ROLE, String.class);
 
         return new LoginMember(id, email, name, Role.valueOf(role));
-    }
-
-    public String extractTokenFromCookies(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
 

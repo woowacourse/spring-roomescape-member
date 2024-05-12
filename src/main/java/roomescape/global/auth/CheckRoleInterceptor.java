@@ -1,6 +1,5 @@
 package roomescape.global.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -19,17 +18,9 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new AuthorizationException("잘못된 접근입니다.");
-        }
-        String token = jwtTokenProvider.extractTokenFromCookies(cookies);
-        if (token.isEmpty()) {
-            throw new AuthorizationException("잘못된 접근입니다.");
-        }
-        LoginMember member = jwtTokenProvider.parse(token);
+        LoginMember member = jwtTokenProvider.findMember(request);
         if (!member.isAdmin()) {
-            throw new AuthorizationException("잘못된 접근입니다.");
+            throw new AuthorizationException("접근 권한이 없습니다.");
         }
         return true;
     }
