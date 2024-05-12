@@ -24,6 +24,10 @@ public class Member {
         return role == Role.ADMIN;
     }
 
+    public boolean isNotSame(MemberPassword other) {
+        return password.isNotSame(other);
+    }
+
     public Long getId() {
         return id;
     }

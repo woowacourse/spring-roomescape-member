@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberPassword;
 import roomescape.dto.member.MemberLoginRequest;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.exception.AuthorizationException;
@@ -20,9 +21,7 @@ public class AuthService {
     }
 
     public String createToken(MemberLoginRequest request) {
-        if (checkInvalidLogin(request)) {
-            throw new AuthorizationException("이메일과 비밀번호를 확인해 주세요.");
-        }
+        checkInvalidLogin(request);
         return jwtTokenProvider.createToken(findMember(request));
     }
 
@@ -45,8 +44,11 @@ public class AuthService {
         return findMemberByToken(token).isAdmin();
     }
 
-    private boolean checkInvalidLogin(MemberLoginRequest request) {
-        return memberDao.readByEmailAndPassword(request.email(), request.password())
-                .isEmpty();
+    private void checkInvalidLogin(MemberLoginRequest request) {
+        Member member = memberDao.readByEmail(request.email())
+                .orElseThrow(() -> new AuthorizationException("아이디와 비밀번호를 확인해주세요."));
+        if (member.isNotSame(new MemberPassword(request.password()))) {
+            throw new AuthorizationException("아이디와 비밀번호를 확인해주세요.");
+        }
     }
 }

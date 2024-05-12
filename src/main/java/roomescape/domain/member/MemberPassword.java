@@ -17,6 +17,10 @@ public class MemberPassword {
         }
     }
 
+    public boolean isNotSame(MemberPassword other) {
+        return !this.value.equals(other.value);
+    }
+
     public String getValue() {
         return value;
     }
