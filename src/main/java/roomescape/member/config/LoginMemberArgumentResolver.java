@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import roomescape.member.AuthService;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 
