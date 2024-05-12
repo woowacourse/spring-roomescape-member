@@ -2,6 +2,7 @@ package roomescape.controller.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,9 +16,11 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public CheckRoleInterceptor(final MemberService memberService) {
+    @Autowired
+    public CheckRoleInterceptor(final MemberService memberService,
+                                final AuthorizationExtractor authorizationExtractor) {
         this.memberService = memberService;
-        this.authorizationExtractor = new AuthorizationExtractor();
+        this.authorizationExtractor = authorizationExtractor;
     }
 
     @Override

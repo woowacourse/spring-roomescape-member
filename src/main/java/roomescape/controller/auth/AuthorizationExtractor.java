@@ -2,9 +2,11 @@ package roomescape.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+@Component
 public class AuthorizationExtractor {
 
     private static final String TOKEN_KEY = "token";

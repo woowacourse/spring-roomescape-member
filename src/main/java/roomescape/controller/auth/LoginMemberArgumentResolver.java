@@ -1,7 +1,9 @@
 package roomescape.controller.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -10,14 +12,17 @@ import roomescape.dto.MemberResponse;
 import roomescape.dto.auth.LoginMember;
 import roomescape.service.MemberService;
 
+@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public LoginMemberArgumentResolver(final MemberService memberService) {
+    @Autowired
+    public LoginMemberArgumentResolver(final MemberService memberService,
+                                       final AuthorizationExtractor authorizationExtractor) {
         this.memberService = memberService;
-        this.authorizationExtractor = new AuthorizationExtractor();
+        this.authorizationExtractor = authorizationExtractor;
     }
 
     @Override
