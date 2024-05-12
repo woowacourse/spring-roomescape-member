@@ -2,13 +2,22 @@ package roomescape.domain.member;
 
 public enum Role {
     ADMIN,
-    MEMBER;
+    MEMBER,
+    GUEST;
 
     public static Role from(String name) {
         try {
             return Role.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("존재하지 않는 역할입니다. (입력한 역할: " + name + ")");
+            return GUEST;
         }
+    }
+
+    public boolean isMember() {
+        return this == MEMBER;
+    }
+
+    public boolean isAdmin() {
+        return this == ADMIN;
     }
 }

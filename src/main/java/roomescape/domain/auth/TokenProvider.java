@@ -5,6 +5,7 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,11 +34,13 @@ public class TokenProvider {
                 .get(EMAIL_FIELD, String.class);
     }
 
-    public String getRole(String token) {
-        return Jwts.parser().setSigningKey(secretKey.getBytes())
+    public Role getRole(String token) {
+        String role = Jwts.parser().setSigningKey(secretKey.getBytes())
                 .parseClaimsJws(token)
                 .getBody()
                 .get(ROLE_FIELD, String.class);
+
+        return Role.from(role);
     }
 
     public Optional<String> extractToken(Cookie[] cookies) {
