@@ -62,6 +62,8 @@ public class ReservationTimeService {
     }
 
     private boolean isBooked(List<ReservationTime> bookedReservationTimes, ReservationTime time) {
-        return bookedReservationTimes.contains(time);
+        return bookedReservationTimes.stream()
+                .map(ReservationTime::getStartAt)
+                .anyMatch(bookedTime -> bookedTime == time.getStartAt());
     }
 }
