@@ -10,6 +10,7 @@ import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
+import roomescape.domain.Password;
 
 @Repository
 public class MemberRepository {
@@ -67,7 +68,7 @@ public class MemberRepository {
                 resultSet.getLong("id"),
                 new Name(resultSet.getString("name")),
                 new Email(resultSet.getString("email")),
-                resultSet.getString("password"),
+                new Password(resultSet.getString("password")),
                 MemberRole.from(resultSet.getString("role"))
         );
     }

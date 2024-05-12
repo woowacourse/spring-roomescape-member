@@ -13,8 +13,10 @@ class MemberTest {
     @DisplayName("생성 테스트")
     void create() {
         Name name = new Name("호돌");
+        Email email = new Email("email");
+        Password password = new Password("******");
 
-        assertThatCode(() -> new Member(name, new Email("email"), "password", MemberRole.NORMAL))
+        assertThatCode(() -> new Member(name, email, password, MemberRole.NORMAL))
                 .doesNotThrowAnyException();
     }
 
@@ -24,13 +26,14 @@ class MemberTest {
         Member member = new Member(
                 new Name("아톰"),
                 new Email("email"),
-                "password",
-                MemberRole.NORMAL
+                new Password("password"), MemberRole.NORMAL
         );
 
+        Password answer = new Password("password");
+        Password wrongpassword = new Password("wrongPw");
         Assertions.assertAll(
-                () -> assertThat(member.isValidPassword("password")).isTrue(),
-                () -> assertThat(member.isValidPassword("wrong")).isFalse()
+                () -> assertThat(member.isValidPassword(answer)).isTrue(),
+                () -> assertThat(member.isValidPassword(wrongpassword)).isFalse()
         );
     }
 
@@ -40,8 +43,7 @@ class MemberTest {
         Member member = new Member(
                 new Name("아톰"),
                 new Email("email"),
-                "password",
-                MemberRole.ADMIN
+                new Password("******"), MemberRole.ADMIN
         );
 
         assertThat(member.isAdmin()).isTrue();
@@ -53,7 +55,7 @@ class MemberTest {
         Member member = new Member(
                 new Name("아톰"),
                 new Email("email"),
-                "password",
+                new Password("******"),
                 MemberRole.NORMAL
         );
 

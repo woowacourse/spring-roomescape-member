@@ -33,8 +33,7 @@ class ReservationFactoryTest {
         Member member = new Member(
                 new Name("아톰"),
                 new Email("email"),
-                "password",
-                MemberRole.NORMAL
+                new Password("******"), MemberRole.NORMAL
         );
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
@@ -51,8 +50,7 @@ class ReservationFactoryTest {
         Member member = new Member(
                 new Name("아톰"),
                 new Email("email"),
-                "password",
-                MemberRole.NORMAL
+                new Password("******"), MemberRole.NORMAL
         );
         ReservationTime time = new ReservationTime(LocalTime.parse("12:00"));
         Theme theme = new Theme("name", "description", "thumbnail");
@@ -70,8 +68,7 @@ class ReservationFactoryTest {
         Member member = new Member(
                 new Name("아톰"),
                 new Email("email"),
-                "password",
-                MemberRole.NORMAL
+                new Password("******"), MemberRole.NORMAL
         );
         ReservationTime previousTime = new ReservationTime(LocalTime.parse("00:29"));
         Theme theme = new Theme("name", "description", "thumbnail");

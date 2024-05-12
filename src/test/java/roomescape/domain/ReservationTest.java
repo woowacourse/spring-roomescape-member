@@ -16,8 +16,7 @@ class ReservationTest {
         Member member = new Member(
                 new Name("호돌"),
                 new Email("email"),
-                "password",
-                MemberRole.NORMAL
+                new Password("******"), MemberRole.NORMAL
         );
         ReservationTime time = new ReservationTime(LocalTime.now());
         Theme theme = new Theme("name", "description", "thumbnail");

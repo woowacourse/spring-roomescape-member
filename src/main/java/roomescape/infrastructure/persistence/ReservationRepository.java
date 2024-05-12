@@ -13,6 +13,7 @@ import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
+import roomescape.domain.Password;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -111,7 +112,7 @@ public class ReservationRepository {
                             resultSet.getLong("member_id"),
                             new Name(resultSet.getString("name")),
                             new Email(resultSet.getString("email")),
-                            resultSet.getString("password"),
+                            new Password(resultSet.getString("password")),
                             MemberRole.from(resultSet.getString("role"))
                     ),
                     new ReservationTime(resultSet.getLong("time_id"), startAt),

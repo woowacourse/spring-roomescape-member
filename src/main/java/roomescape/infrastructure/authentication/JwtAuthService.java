@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
+import roomescape.domain.Password;
 import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.service.auth.AuthService;
 import roomescape.service.auth.AuthenticatedMemberProfile;
@@ -45,7 +46,9 @@ public class JwtAuthService implements AuthService {
     }
 
     private void checkPassword(AuthenticationRequest request, Member member) {
-        if (!member.isValidPassword(request.password())) {
+        Password requestedPassword = new Password(request.password());
+
+        if (!member.isValidPassword(requestedPassword)) {
             throw new AuthenticationFailException();
         }
     }

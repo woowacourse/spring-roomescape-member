@@ -13,6 +13,7 @@ import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
+import roomescape.domain.Password;
 import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.service.auth.AuthService;
 import roomescape.service.auth.AuthenticationFailException;
@@ -55,12 +56,11 @@ class JwtAuthServiceTest {
         Member member = new Member(
                 new Name("아톰"),
                 new Email("email"),
-                "password",
-                MemberRole.NORMAL
+                new Password("password"), MemberRole.NORMAL
         );
         when(repository.findByEmail("email@test.com"))
                 .thenReturn(Optional.of(member));
-        AuthenticationRequest request = new AuthenticationRequest("email@test.com", "wrongPassword");
+        AuthenticationRequest request = new AuthenticationRequest("email@test.com", "wrongPw");
 
         assertThatThrownBy(() -> authService.authenticate(request))
                 .isInstanceOf(AuthenticationFailException.class)
