@@ -63,10 +63,10 @@ public class AdminReservationController {
         List<FindReservationResponse> createReservationResponse = reservations.stream().
             map(reservation -> new FindReservationResponse(
                 reservation.getId(),
-                reservation.getLoginMember(),
+                reservation.getLoginMember().name(),
                 reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
+                reservation.getTime().getStartAt(),
+                reservation.getTheme().getName()
             )).toList();
 
         return ResponseEntity.ok(createReservationResponse);
@@ -83,10 +83,10 @@ public class AdminReservationController {
         List<FindReservationResponse> response = reservations.stream().
             map(reservation -> new FindReservationResponse(
                 reservation.getId(),
-                reservation.getLoginMember(),
+                reservation.getLoginMember().name(),
                 reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
+                reservation.getTime().getStartAt(),
+                reservation.getTheme().getName()
             )).toList();
 
         return ResponseEntity.ok(response);

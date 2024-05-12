@@ -1,12 +1,11 @@
 package roomescape.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
-import roomescape.domain.member.LoginMember;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.theme.Theme;
+import java.time.LocalTime;
 
 public record FindReservationResponse(Long id,
-                                      LoginMember member,
+                                      String memberName,
                                       LocalDate date,
-                                      ReservationTime time,
-                                      Theme theme) { }
+                                      @JsonFormat(pattern = "HH:mm") LocalTime time,
+                                      String themeName) { }
