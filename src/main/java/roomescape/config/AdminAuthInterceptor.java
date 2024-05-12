@@ -21,8 +21,8 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        String token = CookieExtractor.getTokenCookie(request).getValue();
-        LoginMember loginMember = loginService.checkLogin(token);
+        String accessToken = CookieExtractor.getTokenCookie(request).getValue();
+        LoginMember loginMember = loginService.checkLogin(accessToken);
         if (!loginMember.isAdmin()) {
             throw new RoomescapeException(ExceptionType.PERMISSION_DENIED);
         }
