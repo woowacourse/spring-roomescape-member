@@ -13,7 +13,8 @@ public class MemberDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            resultSet.getBoolean("is_admin")
     );
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -28,7 +29,7 @@ public class MemberDao {
 
     public Member findMemberByEmail(String email) {
         String query = "SELECT " +
-                "ID, NAME, EMAIL, PASSWORD " +
+                "ID, NAME, EMAIL, PASSWORD, IS_ADMIN " +
                 "FROM MEMBER " +
                 "WHERE email = ?";
         return jdbcTemplate.queryForObject(query, memberRowMapper, email);
@@ -37,5 +38,10 @@ public class MemberDao {
     public String findNameById(Long memberId) {
         String query = "SELECT NAME FROM MEMBER WHERE ID = ?";
         return jdbcTemplate.queryForObject(query, String.class, memberId);
+    }
+
+    public Member findMemberById(long id) {
+        String query = "SELECT * FROM MEMBER WHERE ID = ?";
+        return jdbcTemplate.queryForObject(query, memberRowMapper, id);
     }
 }
