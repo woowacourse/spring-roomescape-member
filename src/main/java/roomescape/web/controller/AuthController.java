@@ -13,18 +13,15 @@ import roomescape.service.auth.AuthService;
 import roomescape.service.auth.AuthenticatedMemberProfile;
 import roomescape.service.auth.AuthenticationRequest;
 import roomescape.web.security.Authenticated;
-import roomescape.web.security.CookieTokenExtractor;
 
 @RestController
 @RequestMapping("/login")
 class AuthController {
 
     private final AuthService authService;
-    private final CookieTokenExtractor extractor;
 
-    public AuthController(AuthService authService, CookieTokenExtractor extractor) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.extractor = extractor;
     }
 
     @PostMapping
