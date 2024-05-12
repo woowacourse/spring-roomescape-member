@@ -37,9 +37,16 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getThumbnail());
+        insertTheme();
+        insertReservationTime();
+    }
+
+    private void insertReservationTime() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", reservationTimeFixture.getStartAt());
-        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)", memberFixture.getName(), memberFixture.getEmail(), memberFixture.getPassword(), memberFixture.getRole().toString());
+    }
+
+    private void insertTheme() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getThumbnail());
     }
 
     @DisplayName("예약시간이 없는 경우 예외가 발생한다.")
@@ -61,8 +68,11 @@ class ReservationServiceTest {
     @DisplayName("모든 예약 조회 테스트")
     @Test
     void findAllReservations() {
-        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id, created_at) VALUES (?, ?, ?, ?, ?)",
-                memberFixture.getId(), reservationDate, reservationTimeFixture.getId(), themeFixture.getId(), createdAt);
+        String sql = """
+                INSERT INTO reservation (member_id, date, time_id, theme_id, created_at)\s
+                VALUES (?, ?, ?, ?, ?)
+                """;
+        jdbcTemplate.update(sql, memberFixture.getId(), reservationDate, reservationTimeFixture.getId(), themeFixture.getId(), createdAt);
         List<Reservation> reservations = reservationService.findAllReservations();
 
         assertAll(
@@ -75,7 +85,12 @@ class ReservationServiceTest {
     @DisplayName("예약 삭제 테스트")
     @Test
     void deleteReservation() {
-        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id, created_at) VALUES (?, ?, ?, ?, ?)", 1, "2999-12-12", 1, 1, "2024-05-08 12:30");
+        String sql = """
+                INSERT INTO reservation (member_id, date, time_id, theme_id, created_at)\s
+                VALUES (?, ?, ?, ?, ?)
+                """;
+
+        jdbcTemplate.update(sql, 1, "2999-12-12", 1, 1, "2024-05-08 12:30");
         reservationService.deleteReservation(1L);
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
         assertThat(count).isEqualTo(0);

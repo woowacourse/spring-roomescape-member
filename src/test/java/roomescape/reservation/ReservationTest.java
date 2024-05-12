@@ -39,8 +39,20 @@ class ReservationTest {
     }
 
     void insert() {
+        insertReservationTime();
+        insertTheme();
+        insertReservation();
+    }
+
+    private void insertReservationTime() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", reservationTimeFixture.getStartAt());
+    }
+
+    private void insertTheme() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getDescription());
+    }
+
+    private void insertReservation() {
         jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id, created_at) VALUES(?, ?, ?, ?, ?)",
                 memberFixture.getId(), reservationDate, reservationTimeFixture.getId(), themeFixture.getId(), createdAt);
     }

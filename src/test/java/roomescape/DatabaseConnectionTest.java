@@ -47,6 +47,5 @@ class DatabaseConnectionTest {
         } catch (SQLException exception) {
             throw new RuntimeException("table을 찾을 수 없습니다.");
         }
-
     }
 }

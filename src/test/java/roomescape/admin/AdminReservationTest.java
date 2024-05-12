@@ -32,18 +32,18 @@ public class AdminReservationTest {
 
     @BeforeEach
     void setUp() {
-        setPort();
-        insert();
+        RestAssured.port = port;
+        insertReservationTime();
+        insertTheme();
         adminLogIn();
     }
 
-    void setPort() {
-        RestAssured.port = port;
+    private void insertTheme() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getDescription());
     }
 
-    void insert() {
+    private void insertReservationTime() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", reservationTimeFixture.getStartAt());
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getDescription());
     }
 
     void adminLogIn() {
