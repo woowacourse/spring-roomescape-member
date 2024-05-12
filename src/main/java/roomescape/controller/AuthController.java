@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.AuthService;
-import roomescape.service.dto.LoginMember;
+import roomescape.service.dto.AuthInfo;
 import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberResponse;
 
@@ -38,12 +38,12 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> findMember(LoginMember loginMember) {
-        if (loginMember == null) {
+    public ResponseEntity<MemberResponse> findMember(AuthInfo authInfo) {
+        if (authInfo == null) {
             return ResponseEntity.ok().build();
         }
 
-        MemberResponse memberResponse = new MemberResponse(loginMember.getId(), loginMember.getName());
+        MemberResponse memberResponse = new MemberResponse(authInfo.id(), authInfo.name());
         return ResponseEntity.ok(memberResponse);
     }
 
