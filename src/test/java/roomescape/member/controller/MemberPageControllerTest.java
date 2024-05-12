@@ -1,34 +1,33 @@
 package roomescape.member.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.web.servlet.MockMvc;
-import roomescape.config.WebMvcControllerTestConfig;
+import org.springframework.http.HttpStatus;
+import roomescape.config.IntegrationTest;
 
-@WebMvcTest(MemberPageController.class)
-@Import(WebMvcControllerTestConfig.class)
-class MemberPageControllerTest {
+class MemberPageControllerTest extends IntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
+    @DisplayName("/signup을 요청하면 html을 반환한다.")
     @Test
-    void userJoinPage() throws Exception {
-        mockMvc.perform(get("/signup"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("signup"));
+    void userSignUpPage() {
+        RestAssured.given().log().all()
+                .when()
+                .get("/signup")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .contentType(ContentType.HTML);
     }
 
+    @DisplayName("/login을 요청하면 html을 반환한다.")
     @Test
-    void userLoginPage() throws Exception {
-        mockMvc.perform(get("/login"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("login"));
+    void userLoginPage() {
+        RestAssured.given().log().all()
+                .when()
+                .get("/login")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .contentType(ContentType.HTML);
     }
 }
