@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import roomescape.advice.dto.ErrorResponse;
 import roomescape.auth.exception.AuthenticationException;
 import roomescape.auth.exception.MemberAuthenticationException;
+import roomescape.auth.exception.NotLoginAuthenticationException;
 
 class GlobalExceptionHandlerTest {
 
@@ -40,7 +41,7 @@ class GlobalExceptionHandlerTest {
     @DisplayName("인증 에러가 발생하면 401 에러를 반환한다.")
     @Test
     void handleAuthenticationException() {
-        AuthenticationException exception = new MemberAuthenticationException();
+        AuthenticationException exception = new NotLoginAuthenticationException();
         ResponseEntity<ErrorResponse> expected = ResponseEntity.status(401)
                 .body(new ErrorResponse(exception.getMessage()));
 

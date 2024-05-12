@@ -2,7 +2,7 @@ package roomescape.auth.domain;
 
 import java.util.Map;
 import org.springframework.http.ResponseCookie;
-import roomescape.auth.exception.MemberAuthenticationException;
+import roomescape.auth.exception.NotLoginAuthenticationException;
 
 public class AccessTokenCookie {
     private static final String ACCESS_TOKEN_KEY = "token";
@@ -22,7 +22,7 @@ public class AccessTokenCookie {
     public String findToken(Map<String, String> cookies) {
         String value = cookies.get(ACCESS_TOKEN_KEY);
         if (value == null) {
-            throw new MemberAuthenticationException();
+            throw new NotLoginAuthenticationException();
         }
         return value;
     }
