@@ -8,7 +8,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenManager {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
 

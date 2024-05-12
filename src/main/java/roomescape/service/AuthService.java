@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.LoginCheckResponse;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
-import roomescape.domain.infrastucture.JwtTokenProvider;
+import roomescape.domain.infrastucture.JwtTokenManager;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.LoginMemberRequest;
@@ -17,11 +17,11 @@ import roomescape.exception.AuthenticationException;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenManager jwtTokenManager;
 
-    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberRepository memberRepository, JwtTokenManager jwtTokenManager) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtTokenManager = jwtTokenManager;
     }
 
     public TokenResponse createToken(LoginRequest loginRequest) {
@@ -29,31 +29,31 @@ public class AuthService {
                 .findByEmailAndPassword(loginRequest.email(), loginRequest.password())
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
-        String token = jwtTokenProvider.createToken(member);
+        String token = jwtTokenManager.createToken(member);
         return new TokenResponse(token);
     }
 
     public LoginCheckResponse checkLogin(LoginCheckRequest loginCheckRequest) {
         String token = loginCheckRequest.token();
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (!jwtTokenManager.validateToken(token)) {
             throw new AuthenticationException("권한이 없습니다.");
         }
 
-        String memberName = jwtTokenProvider.getMemberNameFrom(token);
+        String memberName = jwtTokenManager.getMemberNameFrom(token);
 
         return new LoginCheckResponse(memberName);
     }
 
     public LoginMember getLoginMember(LoginMemberRequest loginMemberRequest) {
         String token = loginMemberRequest.token();
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (!jwtTokenManager.validateToken(token)) {
             throw new AuthenticationException("권한이 없습니다.");
         }
 
-        Long memberId = jwtTokenProvider.getMemberIdFrom(token);
-        String memberEmail = jwtTokenProvider.getMemberEmailFrom(token);
-        String memberName = jwtTokenProvider.getMemberNameFrom(token);
-        Role memberRole = jwtTokenProvider.getMemberRoleFrom(token);
+        Long memberId = jwtTokenManager.getMemberIdFrom(token);
+        String memberEmail = jwtTokenManager.getMemberEmailFrom(token);
+        String memberName = jwtTokenManager.getMemberNameFrom(token);
+        Role memberRole = jwtTokenManager.getMemberRoleFrom(token);
 
         return new LoginMember(memberId, memberEmail, memberName, memberRole);
     }
