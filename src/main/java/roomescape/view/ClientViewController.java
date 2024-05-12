@@ -15,4 +15,9 @@ public class ClientViewController {
     public String loginPage() {
         return "login";
     }
+
+    @GetMapping("/signup")
+    public String signUpPage() {
+        return "signup";
+    }
 }
