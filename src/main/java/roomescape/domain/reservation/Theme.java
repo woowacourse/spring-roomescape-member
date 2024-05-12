@@ -30,10 +30,10 @@ public class Theme {
             throw new IllegalArgumentException("이름과 설명은 공백일 수 없습니다");
         }
     }
+
     public boolean isEqualId(final long id){
         return this.id.equals(id);
     }
-
 
     public Long getId() {
         return id;

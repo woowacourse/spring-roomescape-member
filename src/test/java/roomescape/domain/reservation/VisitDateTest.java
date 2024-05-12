@@ -21,10 +21,10 @@ class VisitDateTest {
     @ParameterizedTest(name = "{0} 의 하루 전은 {1} 이다")
     @MethodSource("beforeDayMethod")
     @DisplayName("방문일의 하루 전 날을 반환한다.")
-    void return_before_1_day(String reservationDate, String beforeDate) {
-        VisitDate visitDate = VisitDate.from(reservationDate);
-        VisitDate b = visitDate.beforeDay();
-        assertThat(b.asString()).isEqualTo(beforeDate);
+    void return_before_1_day(final String reservationDate, final String beforeDate) {
+        final VisitDate visitDate = VisitDate.from(reservationDate);
+        final VisitDate beforeDayDate = visitDate.beforeDay();
+        assertThat(beforeDayDate.asString()).isEqualTo(beforeDate);
     }
 
     private static Stream<Arguments> beforeWeekMethod() {
@@ -37,11 +37,9 @@ class VisitDateTest {
     @ParameterizedTest(name = "{0} 의 일주일 전은 {1} 이다")
     @MethodSource("beforeWeekMethod")
     @DisplayName("방문일의 일주일 전 날을 반환한다.")
-    void return_before_1_week(String reservationDate, String beforeDate) {
-        VisitDate visitDate = VisitDate.from(reservationDate);
-        VisitDate b = visitDate.beforeWeek();
-        assertThat(b.asString()).isEqualTo(beforeDate);
+    void return_before_1_week(final String reservationDate, final String beforeDate) {
+        final VisitDate visitDate = VisitDate.from(reservationDate);
+        final VisitDate beforeWeekDate = visitDate.beforeWeek();
+        assertThat(beforeWeekDate.asString()).isEqualTo(beforeDate);
     }
-
-
 }

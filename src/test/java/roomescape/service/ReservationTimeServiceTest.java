@@ -60,7 +60,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("유효한 값을 입력하면 예외를 발생하지 않는다.")
     void create_reservationTime() {
-        ReservationTimeInput input = new ReservationTimeInput("10:00");
+        final ReservationTimeInput input = new ReservationTimeInput("10:00");
         assertThatCode(() -> reservationTimeService.createReservationTime(input))
                 .doesNotThrowAnyException();
     }
@@ -68,7 +68,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("유효하지 않은 값을 입력하면 예외를 발생한다.")
     void throw_exception_when_input_is_invalid() {
-        ReservationTimeInput input = new ReservationTimeInput("");
+        final ReservationTimeInput input = new ReservationTimeInput("");
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(input))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -87,6 +87,7 @@ class ReservationTimeServiceTest {
                 new ReservationTimeInput("10:00"));
         final ThemeOutput themeOutput = themeService.createTheme(ThemeFixture.getInput());
         final MemberCreateOutput memberOutput = memberService.createMember(MemberFixture.getUserCreateInput());
+
         reservationDao.create(Reservation.from(
                 null,
                 "2024-04-30",
@@ -94,8 +95,8 @@ class ReservationTimeServiceTest {
                 Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail()),
                 Member.fromMember(memberOutput.id(), memberOutput.name(), memberOutput.email(), memberOutput.password())
         ));
-        final var timeId = timeOutput.id();
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeOutput.id()))
                 .isInstanceOf(ExistReservationException.class);
     }
 

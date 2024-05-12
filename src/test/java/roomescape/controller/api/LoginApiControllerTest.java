@@ -51,6 +51,7 @@ class LoginApiControllerTest {
         member.put("name", "조이썬");
         member.put("email", "i894@naver.com");
         member.put("password", "password");
+
         RestAssured.given().contentType(ContentType.JSON).body(member)
                 .when().post("/members")
                 .then().statusCode(201);

@@ -13,15 +13,8 @@ public record ReservationDate(LocalDate date) {
         }
     }
 
-    public boolean isBefore(final LocalDate other) {
-        return this.date.isBefore(other);
-    }
-
     public String asString() {
         return date.toString();
     }
 
-    public boolean isEqual(final LocalDate date) {
-        return this.date.equals(date);
-    }
 }

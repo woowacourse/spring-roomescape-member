@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 @Component
 public class MemberMapper implements RowMapper<Member> {
+
     @Override
     public Member mapRow(final ResultSet rs, final int rowNum) throws SQLException {
         return new Member(

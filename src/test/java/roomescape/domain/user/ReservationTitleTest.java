@@ -10,7 +10,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.reservation.ReservationTitle;
 
 class ReservationTitleTest {
-
     @Test
     @DisplayName("String 을 통해 도메인을 생성한다.")
     void create_with_string() {
@@ -25,5 +24,4 @@ class ReservationTitleTest {
         assertThatThrownBy(() -> new ReservationTitle(invalidName))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
 }

@@ -14,6 +14,7 @@ public class MemberFixture {
                 "password1234",
                 Role.USER);
     }
+
     public static MemberCreateInput getAdminCreateInput() {
         return new MemberCreateInput("조이썬",
                 "joyson5582@gmail.com",

@@ -38,8 +38,6 @@ class AdminApiControllerTest {
     @Autowired
     TokenProvider tokenProvider;
 
-    String token;
-
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
@@ -54,7 +52,7 @@ class AdminApiControllerTest {
         final long themeId = themeService.createTheme(ThemeFixture.getInput())
                 .id();
         final var output = memberService.createMember(MemberFixture.getAdminCreateInput());
-        token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
+        final String token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
 
 
         final Map<String, Object> reservation = new HashMap<>();

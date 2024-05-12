@@ -22,10 +22,6 @@ public class ReservationTime {
         }
     }
 
-    public boolean isBefore(final LocalTime other) {
-        return this.startAt.isBefore(other);
-    }
-
     public Long getId() {
         return id;
     }

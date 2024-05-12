@@ -27,7 +27,6 @@ class ReservationTest {
                         ReservationTime.from(null, "10:00"),
                         ThemeFixture.getDomain(),
                         MemberFixture.getDomain()
-
                 ))
                 .doesNotThrowAnyException();
     }

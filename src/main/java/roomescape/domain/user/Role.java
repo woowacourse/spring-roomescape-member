@@ -13,7 +13,7 @@ public enum Role {
                 return role;
             }
         }
-        throw new IllegalArgumentException(String.format("%s 는 역활에 없습니다.",value));
+        throw new IllegalArgumentException(String.format("%s 는 역할에 없습니다.",value));
     }
 
     public String getValue() {

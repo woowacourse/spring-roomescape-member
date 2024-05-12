@@ -10,7 +10,6 @@ public record Thumbnail(String value) {
     private static final Pattern ALLOW_EXTENSIONS_PATTERN = Pattern.compile(
             String.format("^\\S+.(?i)(%s)$", ALLOW_EXTENSIONS_FORMAT));
 
-
     public Thumbnail {
         validate(value);
     }

@@ -87,6 +87,7 @@ public class ReservationDao {
                 """;
         return jdbcTemplate.query(sql, rowMapper, memberId, from.toString(), to.toString());
     }
+
     public List<Reservation> getThemeReservationWithPeriod(final long themeId, final LocalDate from, final LocalDate to) {
         final String sql = """
                 SELECT

@@ -56,7 +56,7 @@ class ReservationTimeApiControllerTest {
     @Test
     @DisplayName("시간 생성에 성공하면, 201을 반환한다")
     void return_201_when_reservationTime_create_success() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
         RestAssured.given().contentType(ContentType.JSON).body(params)
@@ -71,7 +71,7 @@ class ReservationTimeApiControllerTest {
     @Test
     @DisplayName("시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때 400을 반환한다.")
     void return_400_when_reservationTime_create_input_is_invalid() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "");
 
         RestAssured.given().contentType(ContentType.JSON).body(params)
@@ -104,8 +104,7 @@ class ReservationTimeApiControllerTest {
     @DisplayName("중복된 예약 시간을 생성하려 할 때 409를 반환한다.")
     void return_409_when_duplicate_reservationTime() {
         reservationTimeFixture.예약_시간_생성();
-
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
         RestAssured.given().contentType(ContentType.JSON).body(params)

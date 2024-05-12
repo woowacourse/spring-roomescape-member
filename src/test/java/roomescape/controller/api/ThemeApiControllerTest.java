@@ -55,7 +55,7 @@ class ThemeApiControllerTest {
     @Test
     @DisplayName("테마 생성에 성공하면, 201을 반환한다")
     void return_201_when_theme_create_success() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
@@ -68,7 +68,7 @@ class ThemeApiControllerTest {
     @Test
     @DisplayName("테마 조회에 성공하면, 200을 반환한다")
     void return_200_when_get_themes_success() {
-        ThemeInput input = new ThemeInput(
+        final ThemeInput input = new ThemeInput(
                 "레벨2 탈출",
                 "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"

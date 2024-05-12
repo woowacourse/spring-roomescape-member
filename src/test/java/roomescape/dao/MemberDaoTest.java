@@ -27,8 +27,8 @@ class MemberDaoTest {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
-
     @Test
+    @DisplayName("사용자를 생성한다.")
     void create_member() {
         final var member = memberDao.create(
                 Member.fromMember(null, "조이썬", "i894@naver.com", "password1234"));

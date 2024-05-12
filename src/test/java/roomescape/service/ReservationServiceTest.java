@@ -50,13 +50,13 @@ class ReservationServiceTest {
     @Test
     @DisplayName("유효한 값을 입력하면 예외를 발생하지 않는다")
     void create_reservation() {
-        long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
+        final long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
                 .getId();
-        long themeId = themeDao.create(ThemeFixture.getDomain())
+        final long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
-        long memberId = memberService.createMember(MemberFixture.getUserCreateInput())
+        final long memberId = memberService.createMember(MemberFixture.getUserCreateInput())
                 .id();
-        ReservationInput input = new ReservationInput("2023-03-13", timeId, themeId, memberId);
+        final ReservationInput input = new ReservationInput("2023-03-13", timeId, themeId, memberId);
 
         assertThatCode(() -> reservationService.createReservation(input))
                 .doesNotThrowAnyException();
@@ -89,9 +89,9 @@ class ReservationServiceTest {
     @Test
     @DisplayName("지나간 날짜와 시간으로 예약 생성 시 예외가 발생한다.")
     void throw_exception_when_create_past_time_reservation() {
-        Long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
+        final long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
                 .getId();
-        Long themeId = themeDao.create(ThemeFixture.getDomain())
+        final long themeId = themeDao.create(ThemeFixture.getDomain())
                 .getId();
         final var memberId = memberService.createMember(MemberFixture.getUserCreateInput())
                 .id();

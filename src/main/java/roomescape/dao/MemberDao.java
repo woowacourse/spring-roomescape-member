@@ -56,6 +56,7 @@ public class MemberDao {
             return Optional.empty();
         }
     }
+
     public List<Member> getAllMembers() {
         final String sql = "SELECT id, name, email, password,role FROM member";
         return jdbcTemplate.query(sql, rowMapper);

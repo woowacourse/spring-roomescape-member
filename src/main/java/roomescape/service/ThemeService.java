@@ -18,8 +18,8 @@ import static roomescape.exception.ExceptionDomainType.THEME;
 @Service
 public class ThemeService {
 
-    final ThemeDao themeDao;
-    final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
     public ThemeService(final ThemeDao themeDao, final ReservationDao reservationDao) {
         this.themeDao = themeDao;
