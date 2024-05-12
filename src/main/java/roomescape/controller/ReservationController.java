@@ -7,7 +7,7 @@ import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.ReservationTimeInfoResponse;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.exception.BadRequestException;
-import roomescape.model.LoginMember;
+import roomescape.model.member.LoginMember;
 import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationDto;

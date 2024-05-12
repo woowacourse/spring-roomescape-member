@@ -1,6 +1,6 @@
 package roomescape.service.fakedao;
 
-import roomescape.model.Member;
+import roomescape.model.member.Member;
 import roomescape.repository.dao.MemberDao;
 
 import java.util.ArrayList;

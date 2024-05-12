@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.model.Member;
+import roomescape.model.member.Member;
 import roomescape.repository.MemberRepository;
 
 import java.util.List;

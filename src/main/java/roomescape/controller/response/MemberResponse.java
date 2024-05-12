@@ -1,6 +1,6 @@
 package roomescape.controller.response;
 
-import roomescape.model.Member;
+import roomescape.model.member.Member;
 
 public class MemberResponse {
 

@@ -1,6 +1,6 @@
 package roomescape.service.dto;
 
-import roomescape.model.Role;
+import roomescape.model.member.Role;
 
 import java.util.Objects;
 

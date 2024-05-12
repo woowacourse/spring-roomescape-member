@@ -7,6 +7,8 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.*;
+import roomescape.model.member.Member;
+import roomescape.model.member.Role;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.dao.MemberDao;
 import roomescape.repository.dao.ReservationDao;

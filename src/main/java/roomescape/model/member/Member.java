@@ -1,4 +1,4 @@
-package roomescape.model;
+package roomescape.model.member;
 
 import java.util.Objects;
 

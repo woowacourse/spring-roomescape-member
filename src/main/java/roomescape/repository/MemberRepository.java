@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.stereotype.Repository;
-import roomescape.model.Member;
+import roomescape.model.member.Member;
 import roomescape.repository.dao.MemberDao;
 
 import java.util.List;

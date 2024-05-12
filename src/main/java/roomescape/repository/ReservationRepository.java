@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.stereotype.Repository;
-import roomescape.model.Member;
+import roomescape.model.member.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;

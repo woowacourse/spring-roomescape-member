@@ -1,5 +1,6 @@
 package roomescape.model;
 
+import roomescape.model.member.Member;
 import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;

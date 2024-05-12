@@ -7,7 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.exception.AuthorizationException;
-import roomescape.model.LoginMember;
+import roomescape.model.member.LoginMember;
 import roomescape.service.AuthService;
 import roomescape.service.dto.MemberInfo;
 

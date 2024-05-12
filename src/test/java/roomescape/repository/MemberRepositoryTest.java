@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import roomescape.model.Member;
-import roomescape.model.Role;
+import roomescape.model.member.Member;
+import roomescape.model.member.Role;
 
 import java.util.HashMap;
 import java.util.Map;

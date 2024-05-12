@@ -2,7 +2,7 @@ package roomescape.service.dto;
 
 import roomescape.controller.request.AdminReservationRequest;
 import roomescape.controller.request.ReservationRequest;
-import roomescape.model.LoginMember;
+import roomescape.model.member.LoginMember;
 
 import java.time.LocalDate;
 

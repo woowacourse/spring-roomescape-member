@@ -1,6 +1,6 @@
 package roomescape.repository.dao;
 
-import roomescape.model.Member;
+import roomescape.model.member.Member;
 
 import java.util.List;
 import java.util.Optional;
