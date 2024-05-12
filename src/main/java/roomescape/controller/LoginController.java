@@ -48,7 +48,7 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> loginCheck(@LoginMemberParameter LoginMember loginMember) {
+    public ResponseEntity<LoginResponse> loginCheck(@Authenticated LoginMember loginMember) {
         return ResponseEntity.ok(new LoginResponse(loginMember.getName()));
     }
 }
