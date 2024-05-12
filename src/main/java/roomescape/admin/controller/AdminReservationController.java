@@ -35,11 +35,6 @@ public class AdminReservationController {
                 .body(reservationResponse);
     }
 
-    @GetMapping
-    public List<ReservationResponse> getReservations() {
-        return reservationService.findReservations();
-    }
-
     @GetMapping("/search")
     public List<ReservationResponse> getReservations(
             @RequestParam Long themeId,
@@ -48,7 +43,7 @@ public class AdminReservationController {
             @RequestParam LocalDate dateTo
     ) {
         validateDateRange(dateFrom, dateTo);
-        return reservationService.findReservations(themeId, memberId, dateFrom, dateTo);
+        return reservationService.searchReservations(themeId, memberId, dateFrom, dateTo);
     }
 
     private void validateDateRange(LocalDate dateFrom, LocalDate dateTo) {

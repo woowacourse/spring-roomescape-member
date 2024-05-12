@@ -26,7 +26,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> getReservations() {
+    public List<ReservationResponse> findReservations() {
         return reservationService.findReservations();
     }
 
@@ -35,8 +35,8 @@ public class ReservationController {
             @RequestBody ReservationRequest reservationRequest,
             LoginMemberRequest loginMemberRequest
     ) {
-        ReservationResponse reservationResponse = reservationService.addReservation(
-                reservationRequest, loginMemberRequest);
+        ReservationResponse reservationResponse =
+                reservationService.addReservation(reservationRequest, loginMemberRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);

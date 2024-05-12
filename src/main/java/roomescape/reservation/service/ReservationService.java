@@ -96,7 +96,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findReservations(
+    public List<ReservationResponse> searchReservations(
             Long themeId,
             Long memberId,
             LocalDate dateFrom,

@@ -6,8 +6,6 @@ import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Email;
@@ -19,25 +17,10 @@ import roomescape.member.domain.Role;
 @Repository
 public class MemberH2Repository implements MemberRepository {
 
-    private static final String TABLE_NAME = "MEMBER";
-
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
 
-    public MemberH2Repository(JdbcTemplate jdbcTemplate, DataSource source) {
+    public MemberH2Repository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(source)
-                .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns("id");
-    }
-
-    @Override
-    public Member save(Member member) {
-        SqlParameterSource params = new BeanPropertySqlParameterSource(member);
-
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-
-        return new Member(id, member);
     }
 
     @Override
@@ -46,6 +29,7 @@ public class MemberH2Repository implements MemberRepository {
         return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, email.email()).isEmpty();
     }
 
+    // TODO: 비밀번호 보호를 위해 Member 말고 LoginMember를 반환하는 방향으로 리팩토링하기
     @Override
     public Optional<Member> findById(Long id) {
         try {

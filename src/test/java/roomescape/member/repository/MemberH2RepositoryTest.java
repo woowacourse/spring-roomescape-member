@@ -24,14 +24,6 @@ class MemberH2RepositoryTest {
     private MemberH2Repository memberH2Repository;
 
     @Test
-    @DisplayName("Member를 저장할 때 id를 생성해서 반환한다.")
-    void save() {
-        Member saved = memberH2Repository.save(NOT_SAVED_MEMBER);
-
-        assertThat(saved.getId()).isNotNull();
-    }
-
-    @Test
     @DisplayName("특정 email이 존재하면 true를 반환한다.")
     void trueIfExist() {
         boolean doesExist = memberH2Repository.doesEmailExist(MEMBER_1.getEmail());

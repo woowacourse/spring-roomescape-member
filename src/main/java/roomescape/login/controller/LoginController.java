@@ -43,7 +43,7 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public MemberNameResponse getLoginLoginName(MemberNameResponse memberNameResponse) {
+    public MemberNameResponse getLoginMemberName(MemberNameResponse memberNameResponse) {
         return memberNameResponse;
     }
 }
