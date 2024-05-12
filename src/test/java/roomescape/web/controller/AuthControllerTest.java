@@ -96,7 +96,7 @@ class AuthControllerTest {
         // given
         Member member = new Member(1L, "name", "email@email.com", "password", Role.NORMAL);
         String token = JwtUtils.encode(member);
-        MemberResponse response = new MemberResponse(member.getName());
+        MemberResponse response = new MemberResponse(member.getId(), member.getName());
 
         // when & then
         mockMvc.perform(get("/login/check")

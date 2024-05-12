@@ -163,6 +163,7 @@ function saveRow(event) {
     const themeSelect = row.querySelector('#theme-select');
     const timeSelect = row.querySelector('#time-select');
 
+    console.log(memberSelect);
     const reservation = {
         date: dateInput.value,
         themeId: themeSelect.value,

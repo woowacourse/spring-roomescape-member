@@ -22,7 +22,7 @@ public class MemberService {
     public List<MemberResponse> findAllMember() {
         return memberRepository.findAll()
                 .stream()
-                .map(member -> new MemberResponse(member.getName()))
+                .map(member -> new MemberResponse(member.getId(), member.getName()))
                 .toList();
     }
 

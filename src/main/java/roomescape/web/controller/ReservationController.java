@@ -62,7 +62,7 @@ public class ReservationController {
                 .themeId(request.themeId())
                 .build();
 
-        ReservationResponse response = reservationService.saveReservation(reservationRequest, memberInfo);
+        ReservationResponse response = reservationService.saveReservation(reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 

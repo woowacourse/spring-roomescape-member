@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import roomescape.domain.Member;
 import roomescape.service.ReservationService;
 import roomescape.service.security.JwtUtils;
-import roomescape.web.dto.request.MemberInfo;
 import roomescape.web.dto.request.ReservationRequest;
 import roomescape.web.dto.request.UserReservationRequest;
 import roomescape.web.dto.response.MemberResponse;
@@ -51,11 +50,11 @@ class ReservationControllerTest {
         Member member = new Member(1L, "name", "email", "password");
         String token = JwtUtils.encode(member);
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
-        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class), any(MemberInfo.class)))
+        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
                         new ReservationResponse(1L, LocalDate.now(), new ReservationTimeResponse(1L, LocalTime.now()),
                                 new ThemeResponse(1L, "n", "d", "t"),
-                                new MemberResponse(member.getName())
+                                new MemberResponse(member.getId(), member.getName())
                         )
                 );
 
@@ -75,12 +74,12 @@ class ReservationControllerTest {
         // given
         String token = JwtUtils.encode(new Member(1L, "a", "b", "c"));
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
-        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class), any(MemberInfo.class)))
+        Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
                         new ReservationResponse(1L, LocalDate.now(),
                                 new ReservationTimeResponse(1L, LocalTime.now()),
                                 new ThemeResponse(1L, "n", "d", "t"),
-                                new MemberResponse("aa"))
+                                new MemberResponse(1L, "aa"))
                 );
 
         // when & then

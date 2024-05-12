@@ -38,7 +38,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkAuthenticated(
             @CookieValue(value = TOKEN_COOKIE_KEY_NAME, defaultValue = "") String token) {
-        MemberResponse response = new MemberResponse(JwtUtils.decodeName(token));
+        MemberResponse response = new MemberResponse(JwtUtils.decodeId(token), JwtUtils.decodeName(token));
 
         return ResponseEntity.ok()
                 .body(response);

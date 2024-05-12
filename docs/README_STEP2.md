@@ -197,6 +197,7 @@ content-type: application/json
 host: localhost:8080
 
 {
+    "memberId": 1
     "date": "2023-08-05",
     "timeId": 1,
     "themeId": 1

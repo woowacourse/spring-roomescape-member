@@ -20,7 +20,6 @@ import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
-import roomescape.web.dto.request.MemberInfo;
 import roomescape.web.dto.request.ReservationRequest;
 import roomescape.web.dto.request.ReservationSearchCond;
 import roomescape.web.dto.response.ReservationResponse;
@@ -49,14 +48,14 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationRequest request, MemberInfo info) {
+    public ReservationResponse saveReservation(ReservationRequest request) {
         ReservationTime time = findReservationTimeById(request.timeId());
         Theme theme = findThemeById(request.themeId());
 
         validateDateTimeReservation(request, time);
         validateDuplicateReservation(request);
 
-        Member member = memberRepository.findById(info.id())
+        Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(AuthenticationFailureException::new);
 
         Reservation reservation = request.toReservation(time, theme, member);

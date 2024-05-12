@@ -27,7 +27,11 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
     }
 
     private Cookie extractCookie(HttpServletRequest request, String cookieName) {
-        return Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return new Cookie("token", "");
+        }
+        return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(cookieName))
                 .findAny()
                 .orElseThrow(AuthenticationFailureException::new);
