@@ -46,14 +46,4 @@ public class MemberJdbcRepository implements MemberRepository {
         String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
     }
-
-    @Override
-    public Member save(Member member) {
-        return null;
-    }
-
-    @Override
-    public int deleteById(Long id) {
-        return 0;
-    }
 }

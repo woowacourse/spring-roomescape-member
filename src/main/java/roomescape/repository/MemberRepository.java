@@ -13,8 +13,4 @@ public interface MemberRepository {
     Member findByEmail(String email);
 
     Member findById(Long id);
-
-    Member save(Member member);
-
-    int deleteById(Long id);
 }
