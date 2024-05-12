@@ -1,6 +1,7 @@
 package roomescape.controller.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -33,8 +34,9 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
             return new MemberRequest(loginService.check(request.getCookies()));
         } catch (Exception exception) {
+            HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             throw new IllegalStateException("[ERROR] 접근권한이 인증과정에서 문제가 생겼습니다.", exception);
         }
-
     }
 }
