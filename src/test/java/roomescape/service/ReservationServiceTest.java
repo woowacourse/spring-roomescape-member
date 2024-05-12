@@ -22,7 +22,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.repository.UserRepository;
+import roomescape.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -40,7 +40,7 @@ class ReservationServiceTest {
     private ThemeRepository themeRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -48,9 +48,9 @@ class ReservationServiceTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
-        User user = userRepository.findById(1L);
+        Member member = memberRepository.findById(1L);
         Reservation reservation1 = new Reservation(
-                user,
+                member,
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme
@@ -87,14 +87,14 @@ class ReservationServiceTest {
                 1L
         );
 
-        User user = new User("admin1@email.com", "password");
+        Member member = new Member("admin1@email.com", "password");
 
         //when
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, user);
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, member);
 
         //then
         assertAll(
-                () -> assertThat(reservationResponse.user().name()).isEqualTo("유저"),
+                () -> assertThat(reservationResponse.member().name()).isEqualTo("유저"),
                 () -> assertThat(reservationResponse.date()).isEqualTo("2025-04-10"),
                 () -> assertThat(reservationResponse.time().id()).isEqualTo(1L),
                 () -> assertThat(reservationResponse.theme().id()).isEqualTo(1L)
@@ -110,8 +110,8 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        User user = new User("admin1@email.com", "password");
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, user);
+        Member member = new Member("admin1@email.com", "password");
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, member);
 
         //when & then
         assertDoesNotThrow(() -> reservationService.delete(reservationResponse.id()));
@@ -126,8 +126,8 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        User user = new User("admin1@email.com", "password");
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, user);
+        Member member = new Member("admin1@email.com", "password");
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, member);
 
         //when & then
         assertThatThrownBy(() -> reservationService.delete(0L))

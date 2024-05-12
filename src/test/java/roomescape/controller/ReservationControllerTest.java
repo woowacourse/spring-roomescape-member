@@ -129,7 +129,7 @@ class ReservationControllerTest {
 
     @TestFactory
     @DisplayName("예약자명이 잘못된 경우 응답 코드 400을 반환한다.")
-    Stream<DynamicTest> checkReservationUserName() {
+    Stream<DynamicTest> checkReservationMemberName() {
 
         Map<String, String> reservationParams = Map.of(
                 "name", "초롱!!",

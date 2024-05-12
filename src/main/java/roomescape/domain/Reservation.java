@@ -5,22 +5,22 @@ import java.time.LocalDate;
 public class Reservation {
 
     private final Long id;
-    private final User user;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, User user, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         validate(date);
         this.id = id;
-        this.user = user;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(User user, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, user, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
     private void validate(LocalDate date) {
@@ -33,8 +33,8 @@ public class Reservation {
         return id;
     }
 
-    public User getUser() {
-        return user;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

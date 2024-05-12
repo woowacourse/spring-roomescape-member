@@ -21,9 +21,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            new User(
-                    resultSet.getLong("user_id"),
-                    resultSet.getString("user_name"),
+            new Member(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("member_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password")),
             LocalDate.parse(resultSet.getString("date")),
@@ -51,8 +51,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 SELECT
                     r.id AS reservation_id,
                     r.date,
-                    u.id AS user_id,
-                    u.name AS user_name,
+                    u.id AS member_id,
+                    u.name AS member_name,
                     u.email AS email,
                     u.password AS password,
                     t.id AS time_id,
@@ -63,7 +63,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     th.thumbnail AS theme_thumbnail
                 FROM
                     reservation AS r
-                INNER JOIN users AS u ON r.user_id = u.id
+                INNER JOIN member AS u ON r.member_id = u.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id;
                 """;
@@ -75,8 +75,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 SELECT
                     r.id AS reservation_id,
                     r.date,
-                    u.id AS user_id,
-                    u.name AS user_name,
+                    u.id AS member_id,
+                    u.name AS member_name,
                     u.email AS email,
                     u.password AS password,
                     t.id AS time_id,
@@ -87,7 +87,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     th.thumbnail AS theme_thumbnail
                 FROM
                     reservation AS r
-                INNER JOIN users AS u ON r.user_id = u.id
+                INNER JOIN member AS u ON r.member_id = u.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.date = ? AND r.theme_id = ?;
@@ -99,13 +99,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()
                     .addValue("date", reservation.getDate())
-                    .addValue("user_id", reservation.getUser().getId())
+                    .addValue("member_id", reservation.getMember().getId())
                     .addValue("time_id", reservation.getReservationTime().getId())
                     .addValue("theme_id", reservation.getTheme().getId());
             Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
             return new Reservation(
                     id,
-                    reservation.getUser(),
+                    reservation.getMember(),
                     reservation.getDate(),
                     reservation.getReservationTime(),
                     reservation.getTheme()

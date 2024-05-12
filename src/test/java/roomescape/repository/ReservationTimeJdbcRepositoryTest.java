@@ -49,7 +49,7 @@ class ReservationTimeJdbcRepositoryTest {
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
         reservationRepository.save(new Reservation(
-                new User("admin1@email.com", "password"),
+                new Member("admin1@email.com", "password"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme

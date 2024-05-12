@@ -5,7 +5,7 @@ FROM reservation_time;
 DELETE
 FROM theme;
 DELETE
-FROM users;
+FROM member;
 
-INSERT INTO users (name, email, password)
+INSERT INTO member (name, email, password)
 VALUES ('유저', 'admin1@email.com', 'password');

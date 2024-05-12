@@ -30,7 +30,7 @@ class ReservationJdbcRepositoryTest {
     private ThemeRepository themeRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -38,9 +38,9 @@ class ReservationJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
-        User user = userRepository.findById(1L);
+        Member member = memberRepository.findById(1L);
         Reservation reservation1 = new Reservation(
-                user,
+                member,
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme
@@ -76,7 +76,7 @@ class ReservationJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         Theme theme = themeRepository.findByThemeId(1L);
         Reservation reservation2 = new Reservation(
-                new User("admin1@email.com", "password"),
+                new Member("admin1@email.com", "password"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme

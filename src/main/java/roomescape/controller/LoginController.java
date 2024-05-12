@@ -6,11 +6,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.User;
-import roomescape.dto.request.UserCreateRequest;
+import roomescape.domain.Member;
+import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.response.TokenResponse;
-import roomescape.dto.response.UserLoginResponse;
-import roomescape.dto.response.UserResponse;
+import roomescape.dto.response.MemberLoginResponse;
+import roomescape.dto.response.MemberResponse;
 import roomescape.service.LoginService;
 
 @Controller
@@ -24,13 +24,13 @@ public class LoginController {
     }
 
     @GetMapping
-    public String showUserLoginPage() {
+    public String showMemberLoginPage() {
         return "login";
     }
 
     @PostMapping
-    public ResponseEntity<TokenResponse> showUserLoginPage(HttpServletResponse response, @RequestBody UserCreateRequest userCreateRequest) {
-        TokenResponse tokenResponse = loginService.createToken(userCreateRequest);
+    public ResponseEntity<TokenResponse> showMemberLoginPage(HttpServletResponse response, @RequestBody MemberCreateRequest memberCreateRequest) {
+        TokenResponse tokenResponse = loginService.createToken(memberCreateRequest);
         Cookie cookie = new Cookie("token", tokenResponse.token());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -39,7 +39,7 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserLoginResponse> checkLogin(User user) {
-        return ResponseEntity.ok().body(UserLoginResponse.from(user));
+    public ResponseEntity<MemberLoginResponse> checkLogin(Member member) {
+        return ResponseEntity.ok().body(MemberLoginResponse.from(member));
     }
 }

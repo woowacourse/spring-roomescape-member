@@ -4,15 +4,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UserPageController {
+public class MemberPageController {
 
     @GetMapping
-    public String showUserIndexPage() {
+    public String showMemberIndexPage() {
         return "index";
     }
 
     @GetMapping("/reservation")
-    public String showUserReservationPage() {
+    public String showMemberReservationPage() {
         return "reservation";
     }
 

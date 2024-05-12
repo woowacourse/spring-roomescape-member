@@ -16,7 +16,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.repository.UserRepository;
+import roomescape.repository.MemberRepository;
 
 @Service
 public class ReservationService {
@@ -24,16 +24,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
                               ThemeRepository themeRepository,
-                              UserRepository userRepository) {
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-        this.userRepository = userRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> findAll() {
@@ -60,12 +60,12 @@ public class ReservationService {
         return availableTimeResponses;
     }
 
-    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest, User user) {
+    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest, Member member) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
         Reservation reservation = new Reservation(
-                user,
+                member,
                 reservationCreateRequest.date(),
                 reservationTime,
                 theme
@@ -78,9 +78,9 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationAdminCreateRequest.timeId());
         validateAvailableDateTime(reservationAdminCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationAdminCreateRequest.themeId());
-        User user = userRepository.findById(reservationAdminCreateRequest.userId());
+        Member member = memberRepository.findById(reservationAdminCreateRequest.memberId());
         Reservation reservation = new Reservation(
-                user,
+                member,
                 reservationAdminCreateRequest.date(),
                 reservationTime,
                 theme

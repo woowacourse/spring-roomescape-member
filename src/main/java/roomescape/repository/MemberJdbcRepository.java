@@ -4,51 +4,51 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 @Repository
-public class UserJdbcRepository implements UserRepository {
+public class MemberJdbcRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<User> userRowMapper = (resultSet, rowNum) -> new User(
+    private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password")
     );
 
-    public UserJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public MemberJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("users")
+                .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public List<User> findAll() {
-        String sql = "SELECT id, name, email, password FROM users";
-        return jdbcTemplate.query(sql, userRowMapper);
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 
     @Override
-    public User findByEmail(String email) {
-        String sql = "SELECT id, name, email, password FROM users WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, userRowMapper, email);
+    public Member findByEmail(String email) {
+        String sql = "SELECT id, name, email, password FROM member WHERE email = ?";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
     }
 
     @Override
-    public User findById(Long id) {
-        String sql = "SELECT id, name, email, password FROM users WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, userRowMapper, id);
+    public Member findById(Long id) {
+        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
     }
 
     @Override
-    public User save(User user) {
+    public Member save(Member member) {
         return null;
     }
 

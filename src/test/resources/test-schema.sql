@@ -1,4 +1,4 @@
-CREATE TABLE users
+CREATE TABLE member
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
@@ -30,11 +30,11 @@ CREATE TABLE reservation
 (
     id      BIGINT      NOT NULL AUTO_INCREMENT,
     date    DATE        NOT NULL,
-    user_id BIGINT,
+    member_id BIGINT,
     time_id BIGINT,
     theme_id BIGINT,
     PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     UNIQUE (date, time_id, theme_id)
