@@ -83,7 +83,7 @@ public class ReservationJdbcDao implements ReservationDao {
                 SELECT r.id, r.date,
                     t.id AS timeId, t.start_at,
                     th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
-                    m.id AS memberId, m.name AS memberName, m.email, m.password
+                    m.id AS memberId, m.name AS memberName, m.email, m.password, m.role
                 FROM reservation r
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 INNER JOIN theme th ON r.theme_id = th.id
@@ -138,5 +138,25 @@ public class ReservationJdbcDao implements ReservationDao {
     public void deleteById(long reservationId) {
         String deleteReservationSql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(deleteReservationSql, reservationId);
+    }
+
+    @Override
+    public List<Reservation> findAllByUserIdAndThemeIdBetweenDate(long userId, long themeId, LocalDate fromDate,
+                                                                  LocalDate toDate) {
+        String findReservationsInOrderSql = """
+                SELECT r.id, r.date,
+                    t.id AS timeId, t.start_at,
+                    th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
+                    m.id AS memberId, m.name AS memberName, m.email, m.password, m.role
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                INNER JOIN member m ON r.member_id = m.id
+                WHERE m.id = ? AND th.id = ? AND DATE BETWEEN ? AND ?
+                ORDER BY r.date ASC, t.start_at ASC
+                """;
+
+        return jdbcTemplate.query(findReservationsInOrderSql, RESERVATION_ROW_MAPPER, userId, themeId, fromDate,
+                toDate);
     }
 }

@@ -20,4 +20,7 @@ public interface ReservationDao {
     boolean existsByThemeId(long themeId);
 
     boolean existsByTimeId(long timeId);
+
+    List<Reservation> findAllByUserIdAndThemeIdBetweenDate(long userId, long themeId, LocalDate fromDate,
+                                                           LocalDate toDate);
 }
