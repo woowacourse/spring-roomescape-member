@@ -30,7 +30,8 @@ public class JwtTokenProvider {
         String memberId = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(extractTokenFromCookie(cookies))
-                .getBody().getSubject();
+                .getBody()
+                .getSubject();
         return Long.parseLong(memberId);
     }
 
