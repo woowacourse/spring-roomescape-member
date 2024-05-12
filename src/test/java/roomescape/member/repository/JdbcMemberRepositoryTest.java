@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
 import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 import roomescape.member.repositoy.JdbcMemberRepository;
 
 @JdbcTest
@@ -30,11 +31,11 @@ public class JdbcMemberRepositoryTest {
     @Test
     @DisplayName("회원 저장")
     void save() {
-        Member member = new Member(null, "mark", "email@woowa.com", "password");
+        Member member = new Member(null, "mark", "email@woowa.com", "password", Role.ADMIN);
 
         Member saved = memberRepository.save(member);
 
-        assertThat(saved).isEqualTo(new Member(saved.getId(), "mark", "email@woowa.com", "password"));
+        assertThat(saved).isEqualTo(new Member(saved.getId(), "mark", "email@woowa.com", "password", Role.ADMIN));
     }
 
     @Test

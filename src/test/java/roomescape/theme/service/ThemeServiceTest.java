@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
+import roomescape.member.repositoy.JdbcMemberRepository;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.dto.request.CreateThemeRequest;
@@ -34,6 +35,8 @@ class ThemeServiceTest {
     private JdbcReservationTimeRepository reservationTimeRepository;
     @Autowired
     private JdbcReservationRepository reservationRepository;
+    @Autowired
+    private JdbcMemberRepository memberRepository;
 
     @Test
     @DisplayName("예약 테마 생성 시 해당 데이터를 반환한다.")
@@ -68,6 +71,8 @@ class ThemeServiceTest {
     @DisplayName("예약이 많은 상위 10개의 테마에 대한 정보를 반환한다.")
     void getPopularThemes() {
         // given
+        memberRepository.save(Fixture.MEMBER_1);
+        memberRepository.save(Fixture.MEMBER_2);
         themeRepository.save(Fixture.THEME_1);
         themeRepository.save(Fixture.THEME_2);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
@@ -92,6 +97,7 @@ class ThemeServiceTest {
     @DisplayName("해당하는 시간을 사용 중인 예약이 존재할 경우 예외가 발생한다.")
     void deleteById_ifAlreadyUsed_throwException() {
         // given
+        memberRepository.save(Fixture.MEMBER_1);
         themeRepository.save(Fixture.THEME_1);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         reservationRepository.save(Fixture.RESERVATION_1);

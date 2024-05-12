@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
+import roomescape.member.repositoy.JdbcMemberRepository;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.repository.JdbcThemeRepository;
@@ -28,17 +29,20 @@ class JdbcReservationRepositoryTest {
     private JdbcReservationRepository reservationRepository;
     private JdbcReservationTimeRepository reservationTimeRepository;
     private JdbcThemeRepository themeRepository;
+    private JdbcMemberRepository memberRepository;
 
     @BeforeEach
     void beforeEach() {
         reservationRepository = new JdbcReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         themeRepository = new JdbcThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        memberRepository = new JdbcMemberRepository(jdbcTemplate, jdbcTemplate.getDataSource());
     }
 
     @Test
     @DisplayName("예약을 저장한다.")
     void save() {
+        memberRepository.save(Fixture.MEMBER_1);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
 
@@ -51,6 +55,8 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("Reservation 테이블의 있는 모든 데이터를 조회한다.")
     void findAll() {
+        memberRepository.save(Fixture.MEMBER_1);
+        memberRepository.save(Fixture.MEMBER_2);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
         themeRepository.save(Fixture.THEME_2);
@@ -66,6 +72,7 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("Reservation 테이블의 주어진 id와 동일한 데이터를 조회한다.")
     void findById() {
+        memberRepository.save(Fixture.MEMBER_1);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
         reservationRepository.save(Fixture.RESERVATION_1);
@@ -84,6 +91,8 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("Reservation 테이블의 주어진 time_id와 동일한 데이터를 조회한다.")
     void findAllByTimeId() {
+        memberRepository.save(Fixture.MEMBER_1);
+        memberRepository.save(Fixture.MEMBER_2);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
         themeRepository.save(Fixture.THEME_2);
@@ -105,6 +114,8 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("주어진 theme_id와 동일한 예약들을 조회한다.")
     void findAllByThemeId() {
+        memberRepository.save(Fixture.MEMBER_1);
+        memberRepository.save(Fixture.MEMBER_2);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
         themeRepository.save(Fixture.THEME_2);
@@ -126,6 +137,8 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("주어진 date, theme_id와 동일한 예약들을 조회한다.")
     void findAllByDateAndThemeId() {
+        memberRepository.save(Fixture.MEMBER_1);
+        memberRepository.save(Fixture.MEMBER_2);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
         themeRepository.save(Fixture.THEME_2);
@@ -149,6 +162,7 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("날짜와 시간 컬럼의 값이 동일할 경우 참을 반환한다.")
     void existsByDateAndTime_whenSameName() {
+        memberRepository.save(Fixture.MEMBER_1);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
         reservationRepository.save(Fixture.RESERVATION_1);

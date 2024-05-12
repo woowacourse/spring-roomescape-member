@@ -63,13 +63,13 @@ class ReservationTimeControllerTest  {
 
     @Test
     void deleteReservationTime() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/times/6"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/times/5"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void deleteReservationTime_isConflict() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/times/3"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/times/1"))
                 .andExpect(status().isConflict());
     }
 }
