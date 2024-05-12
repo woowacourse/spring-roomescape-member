@@ -2,6 +2,7 @@ package roomescape.service.dto;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import roomescape.controller.dto.AdminReservationRequest;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;

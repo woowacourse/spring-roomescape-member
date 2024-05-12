@@ -19,7 +19,6 @@ import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
-import roomescape.service.dto.AdminReservationRequest;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
@@ -76,11 +75,9 @@ public class ReservationService {
         }
     }
 
-    public ReservationResponse saveReservationByAdmin(AdminReservationRequest request) {
-        Member member = findMemberById(request.getMemberId());
-        ReservationRequest reservationRequest = new ReservationRequest(
-                request); // TODO: service dto랑 controller dto 분리하기
-        return saveReservation(reservationRequest, member);
+    public ReservationResponse saveAdminReservation(ReservationRequest request, Long memberId) {
+        Member member = findMemberById(memberId);
+        return saveReservation(request, member);
     }
 
     public void deleteReservation(long id) {
