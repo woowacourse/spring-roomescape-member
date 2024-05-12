@@ -31,7 +31,7 @@ public class JdbcReservationDao implements ReservationDao {
                     resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail")),
             new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
                     resultSet.getString("member_email"),
-                    resultSet.getString("member_password"), Role.from(resultSet.getString("member_role"))));
+                    resultSet.getString("member_password"), Role.valueOf(resultSet.getString("member_role"))));
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

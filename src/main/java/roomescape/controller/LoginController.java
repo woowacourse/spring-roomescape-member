@@ -24,11 +24,6 @@ public class LoginController {
         this.memberService = memberService;
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "/login";
-    }
-
     @PostMapping("/login")
     public ResponseEntity<Void> loginPage(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         MemberResponse memberResponse = memberService.findBy(memberRequest);
