@@ -27,17 +27,22 @@ public class AuthService {
         this.memberRepository = memberRepository;
     }
 
-    public String login(LoginRequest request) {
+    public Cookie login(LoginRequest request) {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(UnauthorizedEmailException::new);
         if (!member.getPassword().equals(request.getPassword())) {
             throw new UnauthorizedPasswordException();
         }
-        return jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+        return cookieExtractor.createCookie(token);
     }
 
     public LoginCheckResponse loginCheck(Member member) {
         return new LoginCheckResponse(member);
+    }
+
+    public Cookie logout() {
+        return cookieExtractor.deleteCookie();
     }
 
     public MemberRole findMemberRoleByCookie(Cookie[] cookies) {
