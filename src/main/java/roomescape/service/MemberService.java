@@ -6,6 +6,7 @@ import roomescape.dao.MemberDao;
 import roomescape.domain.Email;
 import roomescape.domain.Password;
 import roomescape.repository.ReservationRepository;
+import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
 import roomescape.service.dto.output.MemberOutput;
 
@@ -19,6 +20,11 @@ public class MemberService {
                          final MemberDao memberDao) {
         this.reservationRepository = reservationRepository;
         this.memberDao = memberDao;
+    }
+
+    public MemberOutput createMember(final MemberCreateInput input) {
+        final var member = memberDao.create(input.toMember());
+        return MemberOutput.from(member);
     }
 
     public MemberOutput getMember(final MemberLoginInput input) {

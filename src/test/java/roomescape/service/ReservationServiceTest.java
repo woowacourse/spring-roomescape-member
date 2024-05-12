@@ -55,7 +55,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 생성한다.")
     @Test
     void create_reservation() {
-        final var memberId = memberDao.create(MemberFixture.getDomain("제리")).id();
+        final var memberId = memberDao.create(MemberFixture.getDomain()).id();
         final var timeId = reservationTimeDao.create(ReservationTimeFixture.getDomain()).id();
         final var themeId = themeDao.create(ThemeFixture.getDomain("테마 1")).id();
 
@@ -74,7 +74,7 @@ class ReservationServiceTest {
     @DisplayName("중복 예약이면 예외를 발생한다.")
     @Test
     void throw_exception_when_duplicate_reservationTime() {
-        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var member = memberDao.create(MemberFixture.getDomain());
         final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
         final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
         reservationDao.create(ReservationFixture.getDomain(member, time, theme));
@@ -89,7 +89,7 @@ class ReservationServiceTest {
     void throw_exception_when_create_past_time_reservation() {
         final var timeId = reservationTimeDao.create(ReservationTimeFixture.getDomain()).id();
         final var themeId = themeDao.create(ThemeFixture.getDomain("테마 1")).id();
-        final var memberId = memberDao.create(MemberFixture.getDomain("제리")).id();
+        final var memberId = memberDao.create(MemberFixture.getDomain()).id();
 
         final ReservationInput input = ReservationInput.of("2024-01-01", timeId, themeId, memberId);
         assertThatThrownBy(() -> reservationService.createReservation(input))
@@ -100,7 +100,7 @@ class ReservationServiceTest {
     @Test
     void get_all_date_reservations() {
         final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var member = memberDao.create(MemberFixture.getDomain());
         final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
 
         final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));
@@ -115,7 +115,7 @@ class ReservationServiceTest {
     @Test
     void get_until_dateTo_reservations() {
         final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var member = memberDao.create(MemberFixture.getDomain());
         final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
 
         final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));
@@ -130,7 +130,7 @@ class ReservationServiceTest {
     @Test
     void get_after_dateFrom_reservations() {
         final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var member = memberDao.create(MemberFixture.getDomain());
         final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
 
         final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));
@@ -145,7 +145,7 @@ class ReservationServiceTest {
     @Test
     void get_after_dateFrom_and_until_dateTo_reservations() {
         final var time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
-        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var member = memberDao.create(MemberFixture.getDomain());
         final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
 
         final var reservation1 = reservationDao.create(Reservation.of(null, member, "2024-06-02", time, theme));

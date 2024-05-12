@@ -81,7 +81,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 시간을 삭제하려 하면 예외가 발생한다.")
     @Test
     void throw_exception_when_delete_id_that_exist_reservation() {
-        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var member = memberDao.create(MemberFixture.getDomain());
         final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
         final Theme theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
         reservationDao.create(ReservationFixture.getDomain(member, time, theme));
@@ -102,7 +102,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 가능한 시간을 조회한다.")
     @Test
     void get_available_reservationTime() {
-        final var member = memberDao.create(MemberFixture.getDomain("제리"));
+        final var member = memberDao.create(MemberFixture.getDomain());
         final var time1 = reservationTimeDao.create(ReservationTimeFixture.getDomain());
         final var theme = themeDao.create(ThemeFixture.getDomain("테마 1"));
         reservationDao.create(ReservationFixture.getDomain(member, time1, theme));

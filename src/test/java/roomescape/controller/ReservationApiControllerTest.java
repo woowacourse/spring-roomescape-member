@@ -4,22 +4,20 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
+import roomescape.fixture.TokenFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -47,14 +45,17 @@ class ReservationApiControllerTest {
     void return_201_when_reservation_create_success() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", "2024-06-01");
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
+        reservation.put("memberId", memberId);
+        final var token = TokenFixture.getToken();
 
         RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -62,20 +63,22 @@ class ReservationApiControllerTest {
                 .statusCode(201);
     }
 
-    @DisplayName("유효하지 않은 예약자명, 날짜로 예약 생성하면 400을 반환한다.")
-    @ParameterizedTest
-    @MethodSource("invalidCreateInput")
-    void return_400_when_reservation_create_input_is_invalid(final String name, final String date) {
+    @DisplayName("유효하지 않은 날짜로 예약 생성하면 400을 반환한다.")
+    @Test
+    void return_400_when_reservation_create_input_is_invalid() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", date);
+        reservation.put("date", "");
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -83,18 +86,12 @@ class ReservationApiControllerTest {
                 .statusCode(400);
     }
 
-    private static Stream<Arguments> invalidCreateInput() {
-        return Stream.of(
-                Arguments.arguments("", "2024-06-01"),
-                Arguments.arguments("제리", "")
-        );
-    }
-
     @DisplayName("중복된 예약을 생성하면 400를 반환한다.")
     @Test
     void return_400_when_duplicate_reservation() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 
@@ -104,7 +101,10 @@ class ReservationApiControllerTest {
         reservation.put("timeId", themeId);
         reservation.put("themeId", themeId);
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -117,6 +117,7 @@ class ReservationApiControllerTest {
     void return_400_when_create_past_time_reservation() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         final Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "제리");
@@ -124,7 +125,10 @@ class ReservationApiControllerTest {
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -138,6 +142,7 @@ class ReservationApiControllerTest {
         final Long timeId1 = ReservationTimeFixture.createAndReturnId("10:00");
         final Long timeId2 = ReservationTimeFixture.createAndReturnId("11:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         ReservationFixture.createAndReturnId("2024-06-01", timeId1, themeId);
         ReservationFixture.createAndReturnId("2024-06-01", timeId2, themeId);
@@ -153,6 +158,8 @@ class ReservationApiControllerTest {
     void return_204_when_reservation_delete_success() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
+
         final Long reservationId = ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 
         RestAssured.given()
@@ -161,12 +168,12 @@ class ReservationApiControllerTest {
                 .statusCode(204);
     }
 
-    @DisplayName("특정 예약이 존재하지 않는데, 그 예약을 삭제하려 하면 404을 반환한다.")
+    @DisplayName("특정 예약이 존재하지 않는데, 그 예약을 삭제하려 하면 400을 반환한다.")
     @Test
     void return_404_when_not_exist_id() {
         RestAssured.given()
                 .delete("/reservations/-1")
                 .then()
-                .statusCode(404);
+                .statusCode(400);
     }
 }

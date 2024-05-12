@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
@@ -72,6 +73,7 @@ class ThemeApiControllerTest {
         final Long timeId1 = ReservationTimeFixture.createAndReturnId("10:00");
         final Long timeId2 = ReservationTimeFixture.createAndReturnId("11:00");
         final Long timeId3 = ReservationTimeFixture.createAndReturnId("12:00");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         final Long themeId1 = ThemeFixture.createAndReturnId("테마 1");
         ReservationFixture.createAndReturnId("2024-06-01", timeId1, themeId1);
@@ -91,13 +93,13 @@ class ThemeApiControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("특정 테마가 존재하지 않는데, 그 테마를 삭제하려 하면 404을 반환한다.")
+    @DisplayName("특정 테마가 존재하지 않는데, 그 테마를 삭제하려 하면 400을 반환한다.")
     @Test
     void return_404_when_not_exist_id() {
         RestAssured.given()
                 .delete("/themes/-1")
                 .then()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 하면 400를 반환한다.")
@@ -105,6 +107,7 @@ class ThemeApiControllerTest {
     void return_400_when_delete_id_that_exist_reservation() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 

@@ -13,9 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
+import roomescape.fixture.TokenFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -99,6 +101,8 @@ class ReservationTimeApiControllerTest {
     void return_200_when_get_available_reservationTimes_success() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
+
         ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 
         ReservationTimeFixture.createAndReturnId("11:00");
@@ -121,13 +125,13 @@ class ReservationTimeApiControllerTest {
                 .statusCode(204);
     }
 
-    @DisplayName("특정 시간이 존재하지 않는데, 그 시간을 삭제하려 할 때 404을 반환한다.")
+    @DisplayName("특정 시간이 존재하지 않는데, 그 시간을 삭제하려 할 때 400을 반환한다.")
     @Test
     void return_404_when_not_exist_id() {
         RestAssured.given()
                 .delete("/times/-1")
                 .then()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 400을 반환한다.")
@@ -135,10 +139,14 @@ class ReservationTimeApiControllerTest {
     void return_400_when_delete_id_that_exist_reservation() {
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        final Long memberId = MemberFixture.createAndReturnId();
 
         ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
+                .cookie("access_token", token)
                 .delete("/times/" + timeId)
                 .then()
                 .statusCode(400);

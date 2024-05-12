@@ -14,13 +14,16 @@ import roomescape.service.dto.input.ReservationInput;
 public class ReservationFixture {
 
     public static Long createAndReturnId(final String date, final long timeId, final long themeId) {
+
         final Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", date);
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
+        final String token = TokenFixture.getToken();
+
         final Response response = RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations");

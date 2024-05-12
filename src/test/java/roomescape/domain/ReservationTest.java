@@ -22,7 +22,7 @@ public class ReservationTest {
         assertThatCode(() ->
                 new Reservation(
                         null,
-                        MemberFixture.getDomain("제리"),
+                        MemberFixture.getDomain(),
                         ReservationDate.from("2024-04-03"),
                         ReservationTime.of(null, "10:00"),
                         ThemeFixture.getDomain("테마 1")
@@ -36,7 +36,7 @@ public class ReservationTest {
         assertThatCode(() ->
                 Reservation.of(
                         null,
-                        MemberFixture.getDomain("jerry"),
+                        MemberFixture.getDomain(),
                         "2024-04-03",
                         ReservationTime.of(null, "10:00"),
                         ThemeFixture.getDomain("테마 1")))
@@ -45,10 +45,10 @@ public class ReservationTest {
 
     private static Stream<Arguments> maskingDateAndTime() {
         return Stream.of(
-                Arguments.arguments(Reservation.of(null, MemberFixture.getDomain("jerry"), "2024-04-01",
+                Arguments.arguments(Reservation.of(null, MemberFixture.getDomain(), "2024-04-01",
                         ReservationTime.of(null, "10:00"),
                         ThemeFixture.getDomain("테마 1"))),
-                Arguments.arguments(Reservation.of(null, MemberFixture.getDomain("jerry"), "2024-04-02", ReservationTime.of(null, "09:59"),
+                Arguments.arguments(Reservation.of(null, MemberFixture.getDomain(), "2024-04-02", ReservationTime.of(null, "09:59"),
                         ThemeFixture.getDomain("테마 1")))
         );
     }
