@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookies;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +34,7 @@ class LanderPageTest {
                 .getDetailedCookies();
     }
 
+    @DisplayName("관리자가 관리자 페이지를 요청하면 상태 코드 200을 반환한다.")
     @ParameterizedTest(name = "{0} ,{1}")
     @CsvSource(value = {
             "/admin:관리자 메인 페이지",
@@ -48,6 +50,22 @@ class LanderPageTest {
                 .statusCode(HttpStatus.OK.value());
     }
 
+    @DisplayName("관리자가 아닐 때 관리자 페이지를 요청하면 상태 코드 401을 반환한다.")
+    @ParameterizedTest(name = "{0} ,{1}")
+    @CsvSource(value = {
+            "/admin:관리자 메인 페이지",
+            "/admin/reservation:예약 관리 페이지",
+            "/admin/time:예약 시간 관리 페이지",
+            "/admin/theme:테마 관리 페이지"
+    }, delimiter = ':')
+    void loadAdminPageFailed(String path, String description) {
+        RestAssured.given().log().all()
+                .when().get(path)
+                .then().log().all()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @DisplayName("사용자 페이지를 요청하면 상태 코드 200을 반환한다.")
     @ParameterizedTest(name = "{0} ,{1}")
     @CsvSource(value = {
             "/reservation:예약 페이지",
