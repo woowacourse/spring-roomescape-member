@@ -6,21 +6,13 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.service.MemberService;
-import roomescape.service.helper.CookieExtractor;
-import roomescape.service.helper.JwtTokenProvider;
+import roomescape.service.AuthService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final CookieExtractor cookieExtractor;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(CookieExtractor cookieExtractor,
-                                       JwtTokenProvider jwtTokenProvider,
-                                       MemberService memberService) {
-        this.cookieExtractor = cookieExtractor;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -34,8 +26,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = cookieExtractor.getToken(request.getCookies());
-        String email = jwtTokenProvider.getMemberEmail(token);
-        return memberService.findByEmail(email);
+        return authService.findMemberByCookie(request.getCookies());
     }
 }
