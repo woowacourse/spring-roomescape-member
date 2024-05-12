@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
@@ -53,7 +54,7 @@ class JwtAuthServiceTest {
     void cantAuthenticationWithWrongPassword() {
         Member member = new Member(
                 new Name("아톰"),
-                "email@test.com",
+                new Email("email"),
                 "password",
                 MemberRole.NORMAL
         );

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
@@ -109,7 +110,7 @@ public class ReservationRepository {
                     new Member(
                             resultSet.getLong("member_id"),
                             new Name(resultSet.getString("name")),
-                            resultSet.getString("email"),
+                            new Email(resultSet.getString("email")),
                             resultSet.getString("password"),
                             MemberRole.from(resultSet.getString("role"))
                     ),

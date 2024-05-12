@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
 import roomescape.domain.Name;
@@ -65,7 +66,7 @@ public class MemberRepository {
         return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
                 new Name(resultSet.getString("name")),
-                resultSet.getString("email"),
+                new Email(resultSet.getString("email")),
                 resultSet.getString("password"),
                 MemberRole.from(resultSet.getString("role"))
         );

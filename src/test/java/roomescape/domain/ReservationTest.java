@@ -13,7 +13,12 @@ class ReservationTest {
     @DisplayName("생성 테스트")
     void create() {
         LocalDate date = LocalDate.now();
-        Member member = new Member(new Name("호돌"), "email", "password", MemberRole.NORMAL);
+        Member member = new Member(
+                new Name("호돌"),
+                new Email("email"),
+                "password",
+                MemberRole.NORMAL
+        );
         ReservationTime time = new ReservationTime(LocalTime.now());
         Theme theme = new Theme("name", "description", "thumbnail");
 

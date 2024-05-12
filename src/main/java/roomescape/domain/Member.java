@@ -4,15 +4,15 @@ public class Member {
 
     private final Long id;
     private final Name name;
-    private final String email;
+    private final Email email;
     private final String password;
     private final MemberRole role;
 
-    public Member(Name name, String email, String password, MemberRole role) {
+    public Member(Name name, Email email, String password, MemberRole role) {
         this(null, name, email, password, role);
     }
 
-    public Member(Long id, Name name, String email, String password, MemberRole role) {
+    public Member(Long id, Name name, Email email, String password, MemberRole role) {
         this.id = id;
         this.name = name;
         this.email = email;
