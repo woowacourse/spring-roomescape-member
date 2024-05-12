@@ -9,11 +9,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.service.AuthService;
 import roomescape.service.dto.AuthInfo;
 
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
+    public AuthInfoArgumentResolver(AuthService authService) {
         this.authService = authService;
     }
 

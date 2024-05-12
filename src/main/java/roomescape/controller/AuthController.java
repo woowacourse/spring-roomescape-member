@@ -38,12 +38,12 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> findMember(AuthInfo authInfo) {
+    public ResponseEntity<MemberResponse> checkLogin(AuthInfo authInfo) {
         if (authInfo == null) {
             return ResponseEntity.ok().build();
         }
 
-        MemberResponse memberResponse = new MemberResponse(authInfo.id(), authInfo.name());
+        MemberResponse memberResponse = MemberResponse.from(authInfo);
         return ResponseEntity.ok(memberResponse);
     }
 
@@ -54,6 +54,7 @@ public class AuthController {
                 .httpOnly(true)
                 .path("/")
                 .build();
+
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
     }
 }
