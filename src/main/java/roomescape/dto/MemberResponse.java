@@ -9,4 +9,8 @@ public record MemberResponse(String name) {
                 .getValue()
         );
     }
+
+    public static MemberResponse from(LoginMember loginMember) {
+        return new MemberResponse(loginMember.name());
+    }
 }

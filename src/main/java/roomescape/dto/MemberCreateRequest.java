@@ -1,4 +1,4 @@
 package roomescape.dto;
 
-public record MemberCreateRequest(String email, String password) {
+public record MemberCreateRequest(String name, String email, String password) {
 }
