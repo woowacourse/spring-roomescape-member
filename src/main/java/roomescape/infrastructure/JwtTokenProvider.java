@@ -30,7 +30,7 @@ public class JwtTokenProvider {
 
         return Long.valueOf(claims.getSubject());
     }
-    
+
     public String findTokenRole(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
