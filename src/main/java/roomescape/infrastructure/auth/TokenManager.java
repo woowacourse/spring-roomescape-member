@@ -42,8 +42,7 @@ public class TokenManager {
 
     public Long getMemberId(Token token) {
         if (validateToken(token)) {
-            return Long.valueOf(jwtParser
-                    .parseClaimsJws(token.getToken())
+            return Long.valueOf(jwtParser.parseClaimsJws(token.getToken())
                     .getBody()
                     .getSubject()
             );
