@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.member.MemberInfo;
+import roomescape.domain.member.Role;
 import roomescape.domain.reservation.ReservationFactory;
 import roomescape.domain.reservation.ReservationTheme;
 import roomescape.domain.reservation.ReservationTime;
@@ -21,12 +23,13 @@ class ReservationFactoryTest {
         String name = "name";
         ReservationTime time = new ReservationTime(1L, LocalTime.now());
         ReservationTheme theme = new ReservationTheme(1L, "name", "desc", "thumb");
+        MemberInfo member = new MemberInfo(1L, "username", Role.USER);
 
         // when
         LocalDate date = LocalDate.now().minusDays(1);
 
         // then
-        assertThatThrownBy(() -> reservationFactory.createForAdd(name, date, time, theme))
+        assertThatThrownBy(() -> reservationFactory.createForAdd(date, time, theme, member))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -37,12 +40,13 @@ class ReservationFactoryTest {
         String name = "name";
         LocalDate date = LocalDate.now();
         ReservationTheme theme = new ReservationTheme(1L, "name", "desc", "thumb");
+        MemberInfo member = new MemberInfo(1L, "username", Role.USER);
 
         // when
         ReservationTime time = new ReservationTime(1L, LocalTime.now().minusMinutes(1));
 
         // then
-        assertThatThrownBy(() -> reservationFactory.createForAdd(name, date, time, theme))
+        assertThatThrownBy(() -> reservationFactory.createForAdd(date, time, theme, member))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

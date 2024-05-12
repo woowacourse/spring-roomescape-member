@@ -1,4 +1,4 @@
-package roomescape.reservation.dao;
+package roomescape.dao.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dao.reservation.ReservationTimeDao;
 import roomescape.domain.reservation.ReservationTime;
 
 @JdbcTest

@@ -12,16 +12,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dao.member.MemberDao;
 import roomescape.dao.reservation.ReservationDao;
 import roomescape.dao.reservation.ReservationThemeDao;
 import roomescape.dao.reservation.ReservationTimeDao;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberInfo;
+import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationFactory;
 import roomescape.domain.reservation.ReservationTheme;
 import roomescape.domain.reservation.ReservationTime;
 
 @JdbcTest
-@Import({ReservationDao.class, ReservationTimeDao.class, ReservationThemeDao.class, ReservationFactory.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ReservationThemeDao.class, ReservationFactory.class,
+        MemberDao.class})
 @Sql(scripts = {"/test_schema.sql"})
 public class ReservationDaoTest {
 
@@ -35,10 +40,14 @@ public class ReservationDaoTest {
     private ReservationThemeDao themeDao;
 
     @Autowired
+    private MemberDao memberDao;
+
+    @Autowired
     private ReservationFactory reservationFactory;
 
     @BeforeEach
     void setUp() {
+        memberDao.insert(new Member(null, "name", "email@email.com", "password", Role.USER));
         timeDao.insert(new ReservationTime(null, LocalTime.parse("10:00")));
         themeDao.insert(new ReservationTheme(null, "theme1", "desc1", "thumb1"));
     }
@@ -48,11 +57,11 @@ public class ReservationDaoTest {
     void insert() {
         // given
         Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
-                "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
-                new ReservationTheme(1L, "theme_name", "desc", "thumb"))
-        );
+                new ReservationTheme(1L, "theme_name", "desc", "thumb"),
+                new MemberInfo(1L, "name", Role.USER)
+        ));
 
         // when
         Long insertedReservationId = inserted.getId();
@@ -66,11 +75,11 @@ public class ReservationDaoTest {
     void findAll() {
         // given
         reservationDao.insert(reservationFactory.createForAdd(
-                "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
-                new ReservationTheme(1L, "theme_name", "desc", "thumb"))
-        );
+                new ReservationTheme(1L, "theme_name", "desc", "thumb"),
+                new MemberInfo(1L, "name", Role.USER)
+        ));
 
         // when
         List<Reservation> reservations = reservationDao.findAll();
@@ -84,11 +93,11 @@ public class ReservationDaoTest {
     void deleteById() {
         // given
         Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
-                "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
-                new ReservationTheme(1L, "theme_name", "desc", "thumb"))
-        );
+                new ReservationTheme(1L, "theme_name", "desc", "thumb"),
+                new MemberInfo(1L, "name", Role.USER)
+        ));
 
         // when
         int sizeBeforeDelete = reservationDao.findAll().size();
@@ -105,11 +114,11 @@ public class ReservationDaoTest {
     void hasReservationForTimeId() {
         // given
         Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
-                "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
-                new ReservationTheme(1L, "theme_name", "desc", "thumb"))
-        );
+                new ReservationTheme(1L, "theme_name", "desc", "thumb"),
+                new MemberInfo(1L, "name", Role.USER)
+        ));
 
         // when
         Boolean isReservationExist = reservationDao.hasReservationForTimeId(inserted.getTime().getId());
@@ -123,11 +132,11 @@ public class ReservationDaoTest {
     void hasReservationForThemeId() {
         // given
         Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
-                "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
-                new ReservationTheme(1L, "theme_name", "desc", "thumb"))
-        );
+                new ReservationTheme(1L, "theme_name", "desc", "thumb"),
+                new MemberInfo(1L, "name", Role.USER)
+        ));
 
         // when
         Boolean isReservationExist = reservationDao.hasReservationForTimeId(inserted.getTheme().getId());
@@ -141,11 +150,11 @@ public class ReservationDaoTest {
     void hasSameReservation() {
         // given
         Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
-                "name",
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
-                new ReservationTheme(1L, "theme_name", "desc", "thumb"))
-        );
+                new ReservationTheme(1L, "theme_name", "desc", "thumb"),
+                new MemberInfo(1L, "name", Role.USER)
+        ));
 
         // when
         Boolean isReservationExist = reservationDao.hasSameReservation(inserted.getDate().toString(),

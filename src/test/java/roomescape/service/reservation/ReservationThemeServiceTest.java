@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.service.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -15,14 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.member.MemberInfo;
+import roomescape.domain.member.Role;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.dto.theme.WeeklyThemeResponse;
 import roomescape.dto.time.TimeRequest;
-import roomescape.service.reservation.ReservationService;
-import roomescape.service.reservation.ReservationThemeService;
-import roomescape.service.reservation.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/test_schema.sql"})
@@ -105,7 +104,9 @@ class ReservationThemeServiceTest {
         // given
         timeService.insertTime(new TimeRequest(LocalTime.now().plusHours(1)));
         themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
-        reservationService.insertReservation(new ReservationRequest("user", LocalDate.now(), 1L, 1L));
+        reservationService.insertUserReservation(new ReservationRequest(LocalDate.now(), 1L, 1L),
+                new MemberInfo(1L, "name",
+                        Role.USER));
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(1L))

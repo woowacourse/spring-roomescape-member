@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.service.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -15,14 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.member.MemberInfo;
+import roomescape.domain.member.Role;
+import roomescape.dto.member.SignupRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.time.BookableTimeResponse;
 import roomescape.dto.time.TimeRequest;
 import roomescape.dto.time.TimeResponse;
-import roomescape.service.reservation.ReservationService;
-import roomescape.service.reservation.ReservationThemeService;
-import roomescape.service.reservation.ReservationTimeService;
+import roomescape.service.member.MemberService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/test_schema.sql"})
@@ -36,6 +37,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationThemeService themeService;
+
+    @Autowired
+    private MemberService memberService;
 
     @LocalServerPort
     int port;
@@ -91,10 +95,12 @@ class ReservationTimeServiceTest {
     @Test
     void getAllBookableTimes() {
         // given
+        memberService.insertMember(new SignupRequest("email@email.com", "name", "password"));
         timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
         timeService.insertTime(new TimeRequest(LocalTime.parse("11:00")));
         themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
-        reservationService.insertReservation(new ReservationRequest("user", LocalDate.now().plusDays(1), 1L, 1L));
+        reservationService.insertUserReservation(new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L),
+                new MemberInfo(1L, "name", Role.USER));
 
         // when
         List<BookableTimeResponse> bookableTimes = timeService.getAllBookableTimes(
@@ -130,9 +136,11 @@ class ReservationTimeServiceTest {
     @Test
     void deleteReservedTime() {
         // given
+        memberService.insertMember(new SignupRequest("email@email.com", "name", "password"));
         timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
         themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
-        reservationService.insertReservation(new ReservationRequest("user", LocalDate.now().plusDays(1), 1L, 1L));
+        reservationService.insertUserReservation(new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L),
+                new MemberInfo(1L, "name", Role.USER));
 
         // when & then
         assertThatThrownBy(() -> timeService.deleteTime(1L))

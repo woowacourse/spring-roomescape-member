@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
 
@@ -15,15 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.controller.reservation.ReservationController;
-import roomescape.controller.reservation.ReservationThemeController;
-import roomescape.controller.reservation.ReservationTimeController;
-import roomescape.dto.reservation.ReservationRequest;
+import roomescape.TestUtil;
+import roomescape.controller.member.MemberController;
+import roomescape.dto.member.SignupRequest;
+import roomescape.dto.reservation.AdminReservationRequest;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.time.TimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"/test_schema.sql"})
+@Sql(scripts = {"/test_schema.sql", "/test_admin_member.sql"})
 public class ReservationThemeControllerTest {
 
     @Autowired
@@ -34,6 +34,9 @@ public class ReservationThemeControllerTest {
 
     @Autowired
     private ReservationThemeController themeController;
+
+    @Autowired
+    private MemberController memberController;
 
     @LocalServerPort
     int port;
@@ -52,6 +55,7 @@ public class ReservationThemeControllerTest {
 
         // when & then
         RestAssured.given().log().all()
+                .cookie("token", TestUtil.getAdminUserToken())
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
@@ -71,6 +75,7 @@ public class ReservationThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", TestUtil.getAdminUserToken())
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
@@ -84,6 +89,7 @@ public class ReservationThemeControllerTest {
     @Test
     void delete() {
         RestAssured.given().log().all()
+                .cookie("token", TestUtil.getAdminUserToken())
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
@@ -93,12 +99,15 @@ public class ReservationThemeControllerTest {
     @Test
     void invalidDeleteTime() {
         // given
+        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
         timeController.createTime(new TimeRequest(LocalTime.parse("10:00")));
         themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
-        reservationController.createReservation(new ReservationRequest("user", LocalDate.parse("2025-01-01"), 1L, 1L));
+        reservationController.createAdminReservation(
+                new AdminReservationRequest(LocalDate.parse("2025-01-01"), 1L, 1L, 1L));
 
         // when & then
         RestAssured.given().log().all()
+                .cookie("token", TestUtil.getAdminUserToken())
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(400)
