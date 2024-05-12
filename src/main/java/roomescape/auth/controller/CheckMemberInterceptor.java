@@ -10,6 +10,7 @@ import roomescape.exception.AuthorizationException;
 import java.util.Arrays;
 
 public class CheckMemberInterceptor implements HandlerInterceptor {
+
     private final JwtTokenProvider jwtTokenProvider;
 
     public CheckMemberInterceptor(JwtTokenProvider jwtTokenProvider) {
@@ -18,12 +19,13 @@ public class CheckMemberInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = extractTokenFromCookie(request.getCookies());
-        String role = jwtTokenProvider.getRole(token);
+        Cookie[] cookies = request.getCookies();
+        validateCookie(cookies);
 
-        if (role.isBlank() || role.equals("USER")) {
-            throw new AuthorizationException("권한이 없습니다.");
-        }
+        String token = extractTokenFromCookie(cookies);
+
+        String role = jwtTokenProvider.getRole(token);
+        validateRole(role);
 
         return true;
     }
@@ -33,6 +35,18 @@ public class CheckMemberInterceptor implements HandlerInterceptor {
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElse("");
+                .orElseThrow(() -> new AuthorizationException("토큰이 없습니다."));
+    }
+
+    private void validateCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new AuthorizationException("쿠키가 없습니다.");
+        }
+    }
+
+    private void validateRole(String role) {
+        if (role.isBlank() || role.equals("USER")) {
+            throw new AuthorizationException("권한이 없습니다.");
+        }
     }
 }
