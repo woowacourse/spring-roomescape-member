@@ -71,7 +71,6 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    // TODO: DTO로 감싸기
     public List<ReservationResponse> findByCondition(String name, Long themeId, String from, String to) {
         List<Reservation> reservations = reservationRepository.findByCondition(name, themeId, from, to);
 

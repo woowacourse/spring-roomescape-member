@@ -31,7 +31,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         resolvers.add(memberArgumentResolver);
     }
 
-    // todo: admin은 /reservation 에 접근할 수 있어야 한다
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminAuthValidateInterceptor)
