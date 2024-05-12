@@ -25,7 +25,7 @@ public class ReservationTest {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         assertThatThrownBy(() -> new Reservation(id, LocalDate.now(), reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] id는 0 이하일 수 없습니다.");
+                .hasMessage("id는 0 이하일 수 없습니다.");
     }
 
     @DisplayName("데이터의 사용자가 null인 경우 예외를 발생시킨다.")
@@ -35,7 +35,7 @@ public class ReservationTest {
         Theme theme = new Theme(1L, "n", "d", "t");
         assertThatThrownBy(() -> new Reservation(1L, LocalDate.now(), reservationTime, theme, null))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("데이터는 null일 수 없습니다.");
     }
 
     @DisplayName("데이터의 날짜가 null인 경우 예외를 발생시킨다.")
@@ -46,7 +46,7 @@ public class ReservationTest {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         assertThatThrownBy(() -> new Reservation(1L, null, reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("데이터는 null일 수 없습니다.");
     }
 
     @DisplayName("데이터의 시간이 null인 경우 예외를 발생시킨다.")
@@ -57,7 +57,7 @@ public class ReservationTest {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         assertThatThrownBy(() -> new Reservation(1L, LocalDate.now(), reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("데이터는 null일 수 없습니다.");
     }
 
     @DisplayName("데이터의 테마가 null인 경우 예외를 발생시킨다.")
@@ -68,7 +68,7 @@ public class ReservationTest {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         assertThatThrownBy(() -> new Reservation(1L, LocalDate.now(), reservationTime, theme, member))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("데이터는 null일 수 없습니다.");
     }
 
     @DisplayName("데이터가 유효한 경우 예외가 발생하지 않는다.")

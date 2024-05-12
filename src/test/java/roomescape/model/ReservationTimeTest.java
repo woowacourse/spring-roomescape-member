@@ -19,7 +19,7 @@ public class ReservationTimeTest {
     void should_throw_exception_when_invalid_id(long id) {
         assertThatThrownBy(() -> new ReservationTime(id, LocalTime.now()))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] id는 0 이하일 수 없습니다.");
+                .hasMessage("id는 0 이하일 수 없습니다.");
     }
 
     @DisplayName("데이터의 시간이 null인 경우 예외를 발생시킨다.")
@@ -27,7 +27,7 @@ public class ReservationTimeTest {
     void should_throw_exception_when_invalid_time() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("데이터는 null일 수 없습니다.");
     }
 
     @DisplayName("데이터가 유효한 경우 예외가 발생하지 않는다.")

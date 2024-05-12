@@ -47,13 +47,13 @@ public class Theme {
 
     private void validateRange(long id) {
         if (id <= 0) {
-            throw new IllegalStateException("[ERROR] id는 0 이하일 수 없습니다.");
+            throw new IllegalStateException("id는 0 이하일 수 없습니다.");
         }
     }
 
     private void validateNull(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalStateException("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+            throw new IllegalStateException("데이터는 null 혹은 빈 문자열일 수 없습니다.");
         }
     }
 

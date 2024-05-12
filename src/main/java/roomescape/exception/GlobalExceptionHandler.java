@@ -41,4 +41,9 @@ public class GlobalExceptionHandler {
         String message = exception.getAllErrors().get(0).getDefaultMessage();
         return new ResponseEntity<>("[REQUEST_ERROR] " + message, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException exception) {
+        return new ResponseEntity<>("[ERROR] " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
