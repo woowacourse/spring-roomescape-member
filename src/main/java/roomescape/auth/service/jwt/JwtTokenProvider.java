@@ -14,7 +14,7 @@ import roomescape.auth.service.TokenProvider;
 import roomescape.exception.ErrorType;
 
 @Component
-public class JwtTokenProvider implements TokenProvider<String> {
+public class JwtTokenProvider implements TokenProvider {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final JwtProperties jwtProperties;
 

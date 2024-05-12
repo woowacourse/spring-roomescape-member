@@ -26,7 +26,7 @@ import roomescape.reservation.dao.FakeMemberDao;
 class AuthServiceTest {
 
     MemberRepository memberRepository;
-    TokenProvider<String> tokenProvider;
+    TokenProvider tokenProvider;
     AuthService authService;
 
     @BeforeEach

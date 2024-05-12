@@ -16,9 +16,9 @@ import roomescape.member.domain.repository.MemberRepository;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final TokenProvider<String> tokenProvider;
+    private final TokenProvider tokenProvider;
 
-    public AuthService(MemberRepository memberRepository, TokenProvider<String> tokenProvider) {
+    public AuthService(MemberRepository memberRepository, TokenProvider tokenProvider) {
         this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
     }

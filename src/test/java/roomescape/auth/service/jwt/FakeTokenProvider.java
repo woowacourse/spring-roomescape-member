@@ -7,7 +7,7 @@ import java.util.Random;
 import roomescape.auth.domain.Payload;
 import roomescape.auth.service.TokenProvider;
 
-public class FakeTokenProvider implements TokenProvider<String> {
+public class FakeTokenProvider implements TokenProvider {
     Map<String, String> tokens = new HashMap<>();
 
     @Override
