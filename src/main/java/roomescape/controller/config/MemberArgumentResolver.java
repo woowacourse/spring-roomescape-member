@@ -23,14 +23,18 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         return parameter.getParameterType().equals(MemberRequest.class);
     }
 
-    // TODO 예외가 터지는 상황에 대해 고려해보기
     @Override
     public MemberRequest resolveArgument(
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        return new MemberRequest(loginService.check(request.getCookies()));
+            WebDataBinderFactory binderFactory) {
+        try {
+            HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+            return new MemberRequest(loginService.check(request.getCookies()));
+        } catch (Exception exception) {
+            throw new IllegalStateException("[ERROR] 접근권한이 인증과정에서 문제가 생겼습니다.", exception);
+        }
+
     }
 }
