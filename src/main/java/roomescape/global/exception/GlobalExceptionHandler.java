@@ -4,7 +4,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
-import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +17,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(value = AccessDeniedException.class)
-    public ResponseEntity<Void> handle(final AccessDeniedException exception) {
-        logger.error(exception.getMessage(), exception);
-        return ResponseEntity.notFound().build();
-    }
-
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handle(final HttpMessageNotReadableException exception) {
         logger.error(exception.getMessage(), exception);
@@ -35,7 +28,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handle(final MethodArgumentNotValidException exception) {
         logger.error(exception.getMessage(), exception);
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse(BAD_REQUEST, "[ERROR] 올바른 형식의 필드를 입력해주세요."));
+                .body(new ErrorResponse(BAD_REQUEST, "[ERROR] 허용되지 않은 필드 입력입니다."));
     }
 
     @ExceptionHandler(value = NoSuchElementException.class)

@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,7 +27,7 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<AdminReservationResponse> save(
-            @RequestBody AdminReservationSaveRequest reservationSaveRequest
+            @RequestBody @Valid final AdminReservationSaveRequest reservationSaveRequest
     ) {
         AdminReservationResponse reservationResponse = adminReservationService.save(reservationSaveRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
@@ -35,10 +36,10 @@ public class AdminReservationController {
 
     @GetMapping
     public ResponseEntity<List<AdminReservationResponse>> getByFilter(
-            @RequestParam(required = false) Long memberId,
-            @RequestParam(required = false) Long themeId,
-            @RequestParam(required = false) LocalDate dateFrom,
-            @RequestParam(required = false) LocalDate dateTo
+            @RequestParam(required = false) final Long memberId,
+            @RequestParam(required = false) final Long themeId,
+            @RequestParam(required = false) final LocalDate dateFrom,
+            @RequestParam(required = false) final LocalDate dateTo
     ) {
         return ResponseEntity.ok(
                 adminReservationService.getByFilter(memberId, themeId, dateFrom, dateTo)

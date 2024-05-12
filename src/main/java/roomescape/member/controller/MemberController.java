@@ -23,7 +23,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<SignupResponse> save(@Valid @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<SignupResponse> save(@RequestBody @Valid final SignupRequest signupRequest) {
         return ResponseEntity.ok(memberService.save(signupRequest));
     }
 
