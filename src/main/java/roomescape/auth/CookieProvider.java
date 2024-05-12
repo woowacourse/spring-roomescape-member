@@ -1,4 +1,4 @@
-package roomescape.utils;
+package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Arrays;
 
-public class CookieUtils {
+public class CookieProvider {
     private static final String TOKEN_NAME = "token";
 
     public static String extractTokenFrom(final HttpServletRequest request) {
