@@ -1,11 +1,13 @@
 package roomescape.member.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class MemberRepository {
@@ -29,9 +31,13 @@ public class MemberRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Member readByEmail(String email) {
+    public Optional<Member> readByEmail(String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
-
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 }

@@ -7,6 +7,8 @@ import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.repository.MemberRepository;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
@@ -18,8 +20,13 @@ public class AuthService {
     }
 
     public String createToken(MemberRequest memberRequest) {
-        Member member = memberRepository.readByEmail(memberRequest.email());
+        Optional<Member> memberOptional = memberRepository.readByEmail(memberRequest.email());
 
+        if (memberOptional.isEmpty()) {
+            throw new IllegalArgumentException("이메일 정보가 올바르지 않습니다.");
+        }
+
+        Member member = memberOptional.get();
         validatePassword(member.getPassword(), memberRequest.password());
 
         return jwtTokenProvider.createToken(member);
@@ -27,8 +34,9 @@ public class AuthService {
 
     public Member readByToken(String token) {
         String email = jwtTokenProvider.getEmail(token);
+        Optional<Member> memberOptional = memberRepository.readByEmail(email);
 
-        return memberRepository.readByEmail(email);
+        return memberOptional.orElseThrow(() -> new IllegalArgumentException("올바르지 않은 토큰입니다."));
     }
 
     private void validatePassword(String actualPassword, String expectedPassword) {
