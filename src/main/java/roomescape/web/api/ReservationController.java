@@ -26,7 +26,7 @@ import java.util.List;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService, MemberService memberService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 

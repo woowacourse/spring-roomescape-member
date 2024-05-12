@@ -31,11 +31,9 @@ public class H2MemberRepository implements MemberRepository {
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
-        ;
     }
 
     public Member save(Member member) {
-        String sql = "insert into member(name, email, password) values(?, ?, ?)";
         Long memberId = jdbcInsert.executeAndReturnKey(
                 Map.of(
                         "name", member.getName(),

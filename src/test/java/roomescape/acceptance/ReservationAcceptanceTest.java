@@ -16,8 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
 import roomescape.domain.theme.Theme;
@@ -142,8 +140,6 @@ class ReservationAcceptanceTest {
         public static final Theme theme = new Theme(2L, themeName, "설명서", "https://i.postimg" +
                                                                           ".cc/cLqW2JLB/theme-SOS-SOS.jpg");
         public static final ReservationTime time = new ReservationTime(2L, timeAfterOneHour);
-        public static final Reservation reservation = new Reservation(2L, member, new ReservationDate(tomorrow),
-                time, theme);
     }
 
     private static class AdminFixture {
@@ -151,13 +147,10 @@ class ReservationAcceptanceTest {
         public static final LocalTime timeAfterOneHour = LocalTime.now().plusHours(1);
         public static final String name = "피케이";
         public static final String themeName = "피케이는 피케이다";
-        public static final String email = "pkpkpkpk@woowa.net";
 
         public static final Member member = new Member(1L, name, "pkpkpkpk@woowa.net", "anything", "ADMIN");
         public static final Theme theme = new Theme(1L, themeName, "설명서", "https://i.postimg" +
                                                                           ".cc/cLqW2JLB/theme-SOS-SOS.jpg");
         public static final ReservationTime time = new ReservationTime(1L, timeAfterOneHour);
-        public static final Reservation reservation = new Reservation(1L, member, new ReservationDate(tomorrow),
-                time, theme);
     }
 }
