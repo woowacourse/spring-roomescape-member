@@ -5,9 +5,9 @@ import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.dto.reservation.ReservationAvailableTimeResponse;
-import roomescape.dto.reservation.ReservationRequest;
-import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.request.UserReservationRequest;
+import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
+import roomescape.dto.reservation.response.ReservationResponse;
 import roomescape.global.exception.ApplicationException;
 import roomescape.global.exception.ExceptionType;
 import roomescape.repository.MemberRepository;
@@ -62,7 +62,7 @@ public class ReservationService {
         return response;
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest, Long memberId) {
+    public ReservationResponse createReservation(UserReservationRequest reservationRequest, Long memberId) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
@@ -84,7 +84,7 @@ public class ReservationService {
         }
     }
 
-    private void validateReservationDuplicate(ReservationRequest reservationRequest, Theme theme) {
+    private void validateReservationDuplicate(UserReservationRequest reservationRequest, Theme theme) {
         List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateThemeId(
                 reservationRequest.timeId(), reservationRequest.date(), theme.getId());
 

@@ -10,7 +10,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.global.exception.ApplicationException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -59,7 +59,7 @@ class ReservationServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest(LocalDate.now().plusDays(1L), 1L, 1L), 1L)
+                new UserReservationRequest(LocalDate.now().plusDays(1L), 1L, 1L), 1L)
         ).isInstanceOf(ApplicationException.class);
     }
 
@@ -74,7 +74,7 @@ class ReservationServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest(beforeDate, time.getId(), theme.getId()), member.getId())
+                new UserReservationRequest(beforeDate, time.getId(), theme.getId()), member.getId())
         ).isInstanceOf(ApplicationException.class);
     }
 
@@ -95,7 +95,7 @@ class ReservationServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest(LocalDate.now(), time.getId(), theme.getId()), member.getId())
+                new UserReservationRequest(LocalDate.now(), time.getId(), theme.getId()), member.getId())
         ).isInstanceOf(ApplicationException.class);
     }
 }

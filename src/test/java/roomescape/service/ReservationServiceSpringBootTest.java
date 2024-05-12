@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.domain.member.Member;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
@@ -40,10 +40,10 @@ class ReservationServiceSpringBootTest {
 
         // when & then
         reservationService.createReservation(
-                new ReservationRequest(LocalDate.now().plusDays(1L), time.getId(), theme.getId()), member.getId());
+                new UserReservationRequest(LocalDate.now().plusDays(1L), time.getId(), theme.getId()), member.getId());
 
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest(LocalDate.now().plusDays(1L), time.getId(), theme.getId()), member.getId())
+                new UserReservationRequest(LocalDate.now().plusDays(1L), time.getId(), theme.getId()), member.getId())
         ).isInstanceOf(ApplicationException.class);
     }
 
@@ -58,7 +58,7 @@ class ReservationServiceSpringBootTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest(beforeDate, time.getId(), theme.getId()), member.getId())
+                new UserReservationRequest(beforeDate, time.getId(), theme.getId()), member.getId())
         ).isInstanceOf(ApplicationException.class);
     }
 
@@ -74,7 +74,7 @@ class ReservationServiceSpringBootTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest(LocalDate.now(), time.getId(), theme.getId()), member.getId())
+                new UserReservationRequest(LocalDate.now(), time.getId(), theme.getId()), member.getId())
         ).isInstanceOf(ApplicationException.class);
     }
 }

@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.rest.auth.AuthInfo;
 import roomescape.dto.auth.LoginMember;
-import roomescape.dto.reservation.ReservationAvailableTimeResponse;
-import roomescape.dto.reservation.ReservationRequest;
-import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.request.UserReservationRequest;
+import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
+import roomescape.dto.reservation.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
@@ -47,7 +47,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody @Valid ReservationRequest reservationRequest,
+            @RequestBody @Valid UserReservationRequest reservationRequest,
             @AuthInfo LoginMember loginMember
     ) {
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest, loginMember.id());
