@@ -4,17 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.member.domain.Email;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.Password;
 
 public interface MemberRepository {
 
     Optional<Member> findById(Long id);
 
-    Optional<Member> findByEmailAndPassword(Email email, Password password);
+    Optional<Member> findByEmail(Email email);
 
     List<Member> findAll();
 
     void delete(Long id);
-
-    boolean doesEmailExist(Email email);
 }

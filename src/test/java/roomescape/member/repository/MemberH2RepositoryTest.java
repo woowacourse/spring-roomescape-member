@@ -24,22 +24,6 @@ class MemberH2RepositoryTest {
     private MemberH2Repository memberH2Repository;
 
     @Test
-    @DisplayName("특정 email이 존재하면 true를 반환한다.")
-    void trueIfExist() {
-        boolean doesExist = memberH2Repository.doesEmailExist(MEMBER_1.getEmail());
-
-        assertThat(doesExist).isTrue();
-    }
-
-    @Test
-    @DisplayName("특정 email이 존재하지 않으면 false를 반환한다.")
-    void falseIfNotExist() {
-        boolean doesExist = memberH2Repository.doesEmailExist(NOT_SAVED_MEMBER.getEmail());
-
-        assertThat(doesExist).isFalse();
-    }
-
-    @Test
     @DisplayName("모든 Member을 찾는다.")
     void findAll() {
         List<Member> found = memberH2Repository.findAll();
@@ -49,7 +33,7 @@ class MemberH2RepositoryTest {
 
     @Test
     @DisplayName("id에 맞는 Member을 찾는다.")
-    void findBy() {
+    void findById() {
         Member found = memberH2Repository.findById(MEMBER_1.getId()).get();
 
         assertThat(found).isEqualTo(MEMBER_1);
@@ -57,8 +41,24 @@ class MemberH2RepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 id가 들어오면 빈 Optional 객체를 반환한다.")
-    void findEmpty() {
+    void emptyIfNotExistId() {
         Optional<Member> member = memberH2Repository.findById(-1L);
+
+        assertThat(member.isEmpty()).isTrue();
+    }
+
+    @Test
+    @DisplayName("email에 맞는 Member를 찾는다.")
+    void findByEmail() {
+        Member found = memberH2Repository.findByEmail(MEMBER_1.getEmail()).get();
+
+        assertThat(found).isEqualTo(MEMBER_1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 email이 들어오면 빈 Optional 객체를 반환한다.")
+    void emptyIfNotExistEmail() {
+        Optional<Member> member = memberH2Repository.findByEmail(NOT_SAVED_MEMBER.getEmail());
 
         assertThat(member.isEmpty()).isTrue();
     }

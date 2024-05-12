@@ -22,12 +22,6 @@ public class MemberH2Repository implements MemberRepository {
     }
 
     @Override
-    public boolean doesEmailExist(Email email) {
-        String sql = "SELECT * FROM member WHERE email = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, email.email()).isEmpty();
-    }
-
-    @Override
     public Optional<Member> findById(Long id) {
         try {
             Member member = jdbcTemplate.queryForObject(
@@ -52,13 +46,12 @@ public class MemberH2Repository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmailAndPassword(Email email, Password password) {
+    public Optional<Member> findByEmail(Email email) {
         try {
             Member member = jdbcTemplate.queryForObject(
-                    "SELECT * FROM member WHERE email = ? AND password = ?",
+                    "SELECT * FROM member WHERE email = ?",
                     getMemberRowMapper(),
-                    email.email(),
-                    password.password()
+                    email.email()
             );
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
