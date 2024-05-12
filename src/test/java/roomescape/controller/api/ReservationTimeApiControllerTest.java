@@ -87,7 +87,7 @@ class ReservationTimeApiControllerTest {
     }
 
     @Test
-    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 409를 반환한다.")
+    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 400를 반환한다.")
     void return_409_when_delete_id_that_exist_reservation() {
         final long timeId = reservationTimeFixture.예약_시간_생성().id();
         final long themeId = themeService.createTheme(ThemeFixture.getInput())
@@ -97,7 +97,7 @@ class ReservationTimeApiControllerTest {
 
         RestAssured.given()
                    .when().delete("/times/" + timeId)
-                   .then().statusCode(409);
+                   .then().statusCode(400);
     }
 
     @Test

@@ -40,6 +40,7 @@ public class RoomescapeExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(exception));
     }
+
     @ExceptionHandler(value = AuthorizationException.class)
     public ResponseEntity<ErrorResponse> handleAuthorizationException(final AuthorizationException exception) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -55,7 +56,7 @@ public class RoomescapeExceptionHandler {
 
     @ExceptionHandler(value = ExistReservationException.class)
     public ResponseEntity<ErrorResponse> handleExistReservationException(final ExistReservationException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(exception));
     }
 
@@ -69,6 +70,11 @@ public class RoomescapeExceptionHandler {
     @ExceptionHandler(value = NotExistException.class)
     public ResponseEntity<ErrorResponse> handleNotExistException(final NotExistException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception));
+    }
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(final Exception exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(exception));
     }
 }
