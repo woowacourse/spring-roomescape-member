@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.Theme;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -89,7 +89,7 @@ public class AdminReservationTest {
         RestAssured.given().log().all()
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
-                .body(param)
+                .queryParams(param)
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
