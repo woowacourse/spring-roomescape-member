@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.AuthUser;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.LoginService;
-import roomescape.global.auth.AuthUser;
 
 @RestController
-public class MemberLoginRestController {
+public class LoginRestController {
 
     private static final String TOKEN = "token";
 
     private final LoginService loginService;
 
-    public MemberLoginRestController(LoginService loginService) {
+    public LoginRestController(LoginService loginService) {
         this.loginService = loginService;
     }
 
