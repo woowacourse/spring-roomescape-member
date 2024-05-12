@@ -16,7 +16,7 @@ import roomescape.controller.dto.CreateThemeRequest;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-class ThemeControllerTest {
+class AdminThemeControllerTest {
 
     @DisplayName("성공: 테마 생성 -> 201")
     @Test
