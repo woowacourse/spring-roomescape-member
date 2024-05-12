@@ -1,12 +1,13 @@
 package roomescape.global.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -21,8 +22,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = SecurityException.class)
     public ResponseEntity<ErrorResponse> handle(final SecurityException exception) {
         logger.error(exception.getMessage(), exception);
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(FORBIDDEN, "[ERROR] 접근 권한이 존재하지 않습니다."));
+        return new ResponseEntity(
+                new ErrorResponse(HttpStatus.UNAUTHORIZED, "[ERROR] 접근 권한이 없습니다."),
+                HttpStatusCode.valueOf(401)
+        );
     }
 
     @ExceptionHandler(value = NoSuchElementException.class)

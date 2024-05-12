@@ -77,6 +77,6 @@ class AdminReservationControllerTest {
                 .body(reservations)
                 .cookie("token", memberToken)
                 .when().post("/admin/reservations")
-                .then().statusCode(404);
+                .then().statusCode(401);
     }
 }
