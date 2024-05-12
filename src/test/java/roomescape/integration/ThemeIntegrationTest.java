@@ -39,9 +39,14 @@ class ThemeIntegrationTest {
     @LocalServerPort
     private int port;
 
+    @MockBean
+    private Clock clock;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        given(clock.instant()).willReturn(Instant.parse("2024-05-10T00:00:00Z"));
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
     }
 
     @TestFactory
@@ -89,18 +94,12 @@ class ThemeIntegrationTest {
     @DisplayName("인기 테마 조회 테스트")
     class PopularThemes {
 
-        @MockBean
-        private Clock clock;
-
         @Test
         @Sql(value = "classpath:test_data.sql")
         @DisplayName("인기 테마를 조회한다.")
         void readPopularThemes() {
-            given(clock.instant()).willReturn(Instant.parse("2024-05-10T00:00:00Z"));
-            given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
-
             RestAssured.given().log().all()
-                    .when().get("themes/populars")
+                    .when().get("/themes/populars")
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(10));
