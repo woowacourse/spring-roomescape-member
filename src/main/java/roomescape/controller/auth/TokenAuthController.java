@@ -2,7 +2,6 @@ package roomescape.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +33,6 @@ public class TokenAuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberNameResponse> getUserInformation(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
                 .body(new MemberNameResponse(member.getNameValue()));
     }
 
