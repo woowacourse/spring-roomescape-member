@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.global.exception.auth.AuthorizationException;
 import roomescape.global.util.CookieUtils;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
@@ -27,7 +28,6 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
         if (findMember.isAdmin()) {
             return true;
         }
-        response.setStatus(401);
-        return false;
+        throw new AuthorizationException("접근 권한이 없습니다");
     }
 }
