@@ -193,11 +193,8 @@ function applyFilter(event) {
 
   const themeId = document.getElementById('theme').value;
   const memberId = document.getElementById('member').value;
-
-  const dateFromValue = document.getElementById('date-from').value;
-  const dateToValue = document.getElementById('date-to').value;
-  const dateFrom = dateFromValue === "" ? null : dateFromValue;
-  const dateTo = dateToValue === "" ? null : dateToValue;
+  const dateFrom = document.getElementById('date-from').value;
+  const dateTo = document.getElementById('date-to').value;
 
   /*
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출

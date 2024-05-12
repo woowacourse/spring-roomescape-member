@@ -75,11 +75,12 @@ public class ReservationDao {
 
     public List<Reservation> filter(final Long themeId,
                                     final Long memberId,
-                                    final String dateFrom,
-                                    final String dateTo) {
+                                    final String dateFromValue,
+                                    final String dateToValue) {
+        final var dateFrom = dateFromValue.isEmpty() ? null : dateFromValue;
+        final var dateTo = dateToValue.isEmpty() ? null : dateToValue;
         final var sql = BASE_SQL + """
-                                    WHERE (? IS NULL OR theme_id = ?)
-                                    AND (? IS NULL OR member_id = ?)
+                                    WHERE (? IS NULL OR theme_id = ?) AND (? IS NULL OR member_id = ?)
                                     AND (
                                         (? IS NULL AND ? IS NULL)
                                         OR (? IS NULL AND date <= ?)
