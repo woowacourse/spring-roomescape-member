@@ -9,8 +9,10 @@ public record LoginMember(
         String name,
         Role role
 ) {
+    private static final String EMPTY_PASSWORD = "Empty Password";
+
     public Member toMember() {
-        return new Member(id, email, null, name, role);
+        return new Member(id, email, EMPTY_PASSWORD, name, role);
     }
 
     public boolean isNotAdmin() {
