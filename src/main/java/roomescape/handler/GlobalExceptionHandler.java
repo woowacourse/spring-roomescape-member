@@ -20,22 +20,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DateTimeParseException.class)
-    public ResponseEntity<String> handleInvalidPostTime(DateTimeParseException e) {
-        logger.error(e.getMessage(), e);
+    public ResponseEntity<String> handleCustomException(DateTimeParseException e) {
+        logger.trace(e.getMessage(), e);
         return new ResponseEntity<>("""
                 날짜/시간 입력 형식이 잘못되었습니다.
                 """, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<String> handleInvalidPostTime(CustomException e) {
-        logger.error(e.getMessage(), e);
-        return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
-    }
-
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<String> handleInvalidNumber(NumberFormatException e) {
-        logger.error(e.getMessage(), e);
+        logger.trace(e.getMessage(), e);
         return new ResponseEntity<>("""
                 잘못된 숫자 형식입니다.
                 """, HttpStatus.BAD_REQUEST);
@@ -43,10 +37,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleInvalidRequestForm(NumberFormatException e) {
-        logger.error(e.getMessage(), e);
+        logger.trace(e.getMessage(), e);
         return new ResponseEntity<>("""
                 요청 형식이 잘못되었습니다.
                 """, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<String> handleCustomException(CustomException e) {
+        logger.info(e.getMessage(), e);
+        return new ResponseEntity<>(e.getMessage(), e.getHttpStatus());
     }
 
     @ExceptionHandler(RuntimeException.class)
