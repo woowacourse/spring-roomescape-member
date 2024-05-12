@@ -10,18 +10,18 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.response.AuthResponse;
 import roomescape.service.AuthService;
+import roomescape.service.CookieService;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @Component
 public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    public static final String TOKEN = "token";
-
+    private final CookieService cookieService;
     private final AuthService authService;
 
-    public AuthenticatedUserArgumentResolver(AuthService authService) {
+    public AuthenticatedUserArgumentResolver(CookieService cookieService, AuthService authService) {
+        this.cookieService = cookieService;
         this.authService = authService;
     }
 
@@ -35,9 +35,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Optional<Cookie> findCookie = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(TOKEN))
-                .findAny();
+        Optional<Cookie> findCookie = cookieService.findCookie(request);
         if (findCookie.isEmpty()) {
             return null;
         }

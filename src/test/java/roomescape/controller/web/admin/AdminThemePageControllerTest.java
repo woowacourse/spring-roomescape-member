@@ -10,13 +10,14 @@ import roomescape.LoginUtils;
 import roomescape.repository.member.MemberRepository;
 
 import static roomescape.InitialDataFixture.ADMIN_1;
+import static roomescape.service.CookieService.TOKEN;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AdminThemePageControllerTest {
 
     @Autowired
-    MemberRepository memberRepository;
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("/admin/theme 페이지를 응답한다.")
@@ -25,7 +26,7 @@ public class AdminThemePageControllerTest {
         String token = LoginUtils.loginAndGetToken(ADMIN_1);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TOKEN, token)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);

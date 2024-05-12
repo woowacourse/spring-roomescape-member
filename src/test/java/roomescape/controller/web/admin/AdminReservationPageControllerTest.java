@@ -10,6 +10,7 @@ import roomescape.LoginUtils;
 import roomescape.repository.member.MemberRepository;
 
 import static roomescape.InitialDataFixture.ADMIN_1;
+import static roomescape.service.CookieService.TOKEN;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -25,7 +26,7 @@ class AdminReservationPageControllerTest {
         String token = LoginUtils.loginAndGetToken(ADMIN_1);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TOKEN, token)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -40,7 +41,7 @@ class AdminReservationPageControllerTest {
         String token = LoginUtils.loginAndGetToken(ADMIN_1);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TOKEN, token)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);

@@ -9,6 +9,7 @@ import roomescape.domain.Member;
 import java.util.HashMap;
 import java.util.Map;
 
+import static roomescape.service.CookieService.TOKEN;
 
 public class LoginUtils {
 
@@ -25,7 +26,7 @@ public class LoginUtils {
                 .then().log().all()
                 .extract().response();
 
-        return response.cookie("token");
+        return response.cookie(TOKEN);
     }
 
     public static void logout(Member member) {

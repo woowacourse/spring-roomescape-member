@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.service.CookieService.TOKEN;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -55,7 +56,7 @@ class LoginPageControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().response();
 
-        assertThat(response.getCookie("token")).isNotBlank();
+        assertThat(response.getCookie(TOKEN)).isNotBlank();
     }
 
     @Test
@@ -93,9 +94,9 @@ class LoginPageControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().response();
 
-        String token = response.getCookie("token");
+        String token = response.getCookie(TOKEN);
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TOKEN, token)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
@@ -127,7 +128,7 @@ class LoginPageControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().response();
 
-        assertThat(response.cookie("token")).isBlank();
+        assertThat(response.cookie(TOKEN)).isBlank();
     }
 
 }
