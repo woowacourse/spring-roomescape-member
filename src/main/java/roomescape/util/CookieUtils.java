@@ -16,7 +16,7 @@ public class CookieUtils {
                 .filter(cookie -> cookie.getName().equals(TOKEN_KEY))
                 .findAny()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("인증되지 않은 사용자 입니다."));
+                .orElse(null);
     }
 
     public static void setCookieByToken(HttpServletResponse response, String token) {
