@@ -33,10 +33,10 @@ POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-  "email": "email@email.com",
-  "password": "password"
+  "email": "zeus@woowa.com",
+  "password": "qwerty"
 }
 
 ### Login Check
 GET http://localhost:8080/login/check
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbWFpbEBlbWFpbC5jb20iLCJpYXQiOjE3MTU1MDU3NDQsImV4cCI6MTcxNTUwOTM0NH0.HY1RjR7sila818kDJ-UYx_sF4tY9Ik6fjgkJOaZHdhc
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6ZXVzQHdvb3dhLmNvbSIsImlhdCI6MTcxNTUwODQwNiwiZXhwIjoxNzE1NTEyMDA2fQ.kai-MV7T8j7KZhhHAjQt8TAH1WN18Hw9fzUP6HD-cDA
