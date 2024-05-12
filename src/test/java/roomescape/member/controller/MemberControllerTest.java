@@ -13,7 +13,7 @@ import roomescape.auth.service.dto.LoginRequest;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:truncate-with-admin-and-guest.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate-with-admin-and-guest.sql"})
 class MemberControllerTest {
     @LocalServerPort
     private int port;

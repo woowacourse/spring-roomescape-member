@@ -15,7 +15,7 @@ import roomescape.auth.service.dto.LoginRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:truncate-with-admin-and-guest.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate-with-admin-and-guest.sql"})
 public class AdminPageControllerTest {
     @LocalServerPort
     private int port;
