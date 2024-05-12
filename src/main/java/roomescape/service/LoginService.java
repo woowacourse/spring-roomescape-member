@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.request.MemberCreateRequest;

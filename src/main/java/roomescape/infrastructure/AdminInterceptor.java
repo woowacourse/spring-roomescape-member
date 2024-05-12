@@ -22,7 +22,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Member member = memberService.createMember(request.getCookies());
 
-        if(member == null || member.getRole() != Role.ADMIN) {
+        if (member == null || member.getRole() != Role.ADMIN) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
