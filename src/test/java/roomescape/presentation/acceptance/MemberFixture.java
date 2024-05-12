@@ -1,5 +1,6 @@
 package roomescape.presentation.acceptance;
 
+import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Role;
@@ -11,6 +12,6 @@ public class MemberFixture {
     }
 
     public static Member of(String name, String email, String password, Role role) {
-        return new Member(new PlayerName(name), email, password, role);
+        return new Member(new PlayerName(name), new Email(email), password, role);
     }
 }

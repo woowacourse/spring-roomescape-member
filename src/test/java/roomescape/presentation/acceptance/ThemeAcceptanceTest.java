@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.dto.ThemeRequest;
 import roomescape.application.dto.ThemeResponse;
+import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberCommandRepository;
 import roomescape.domain.PlayerName;
@@ -64,7 +65,7 @@ public class ThemeAcceptanceTest extends AcceptanceTest {
     void findPopularThemes() {
         Theme theme = themeRepository.create(ThemeFixture.defaultValue());
         ReservationTime reservationTime = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
-        Member member = memberCommandRepository.create(new Member(new PlayerName("test"), "test@email.com", "1234", Role.BASIC));
+        Member member = memberCommandRepository.create(new Member(new PlayerName("test"), new Email("test@email.com"), "1234", Role.BASIC));
         Reservation reservation = reservationCommandRepository.create(
                 new Reservation(member, LocalDate.now(), reservationTime, theme));
 

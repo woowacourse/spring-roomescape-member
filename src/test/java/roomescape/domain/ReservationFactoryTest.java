@@ -31,7 +31,7 @@ class ReservationFactoryTest {
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
         Theme savedTheme = themeRepository.create(ThemeFixture.defaultValue());
         Member member = memberCommandRepository.create(MemberFixture.defaultValue());
-        ReservationRequest request = ReservationRequestFixture.of(99L, savedTheme.getId());
+        ReservationRequest request = ReservationRequestFixture.of(9999L, savedTheme.getId());
 
         assertThatCode(() -> reservationFactory.create(member.getId(), request))
                 .isInstanceOf(RoomescapeException.class)

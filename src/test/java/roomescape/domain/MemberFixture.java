@@ -6,6 +6,6 @@ public class MemberFixture {
     }
 
     public static Member of(String name, String email, String password) {
-        return new Member(new PlayerName(name), email, password, Role.BASIC);
+        return new Member(new PlayerName(name), new Email(email), password, Role.BASIC);
     }
 }

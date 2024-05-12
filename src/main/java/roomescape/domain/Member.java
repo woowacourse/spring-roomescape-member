@@ -6,20 +6,17 @@ import roomescape.exception.RoomescapeException;
 public class Member {
     private final Long id;
     private final PlayerName name;
-    private final String email;
+    private final Email email;
     private final String password;
     private final Role role;
 
-    public Member(PlayerName name, String email, String password, Role role) {
+    public Member(PlayerName name, Email email, String password, Role role) {
         this(null, name, email, password, role);
     }
 
-    public Member(Long id, PlayerName name, String email, String password, Role role) {
+    public Member(Long id, PlayerName name, Email email, String password, Role role) {
         if (name == null) {
             throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "이름은 필수 입력값 입니다.");
-        }
-        if (email == null || email.isBlank()) {
-            throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "이메일은 필수 입력값 입니다.");
         }
         if (password == null || password.isBlank()) {
             throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "비밀번호는 필수 입력값 입니다.");
@@ -43,7 +40,7 @@ public class Member {
         return name.getName();
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return email;
     }
 

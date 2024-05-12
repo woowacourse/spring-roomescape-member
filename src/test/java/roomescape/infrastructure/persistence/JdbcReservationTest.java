@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.MemberCommandRepository;
 import roomescape.domain.PlayerName;
@@ -43,7 +44,7 @@ public abstract class JdbcReservationTest {
     protected Reservation createReservation() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme(new ThemeName("theme1"), "desc", "url"));
-        Member member = memberCommandRepository.create(new Member(new PlayerName("test"), "test@email.com", "1234",
+        Member member = memberCommandRepository.create(new Member(new PlayerName("test"), new Email("test@email.com"), "1234",
                 Role.BASIC));
         LocalDate date = LocalDate.of(2024, 12, 25);
         long id = jdbcInsert.executeAndReturnKey(Map.of(
