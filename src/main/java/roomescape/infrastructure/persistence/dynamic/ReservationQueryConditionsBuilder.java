@@ -62,12 +62,16 @@ public class ReservationQueryConditionsBuilder {
 
         LocalDate fromDate = LocalDate.parse(from);
         LocalDate endDate = LocalDate.parse(end);
+        validatePeriod(fromDate, endDate);
+        appendPeriodCondition(fromDate, endDate);
+
+        return this;
+    }
+
+    private void validatePeriod(LocalDate fromDate, LocalDate endDate) {
         if (fromDate.isAfter(endDate)) {
             throw new IllegalArgumentException("시작 조건 날짜는 종료 조건 날짜보다 미래일 수 없습니다.");
         }
-
-        appendPeriodCondition(fromDate, endDate);
-        return this;
     }
 
     private void appendPeriodCondition(LocalDate fromDate, LocalDate endDate) {
