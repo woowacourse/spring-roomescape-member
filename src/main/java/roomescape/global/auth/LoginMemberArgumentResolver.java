@@ -11,11 +11,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.global.jwt.JwtProvider;
 
+import java.util.List;
+
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String TOKEN = "token";
-
+    private final CookieManager cookieManager = new CookieManager();
     private final JwtProvider jwtProvider;
 
     public LoginMemberArgumentResolver(JwtProvider jwtProvider) {
@@ -34,25 +35,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             //todo 응답코드 변경
             throw new RoomEscapeException("[ERROR] 잘못된 요청입니다.");
         }
-        Cookie[] cookies = getCookies(request);
-        String token = extractTokenFromCookie(cookies);
+
+        List<Cookie> cookies = cookieManager.extractCookies(request);
+        String token = cookieManager.extractToken(cookies);
         return jwtProvider.parse(token);
-    }
-
-    private Cookie[] getCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            throw new RoomEscapeException("[ERROR] 권한 정보가 없습니다");
-        }
-        return cookies;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (TOKEN.equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        throw new RoomEscapeException("[ERROR] 토큰이 존재하지 않습니다.");
     }
 }

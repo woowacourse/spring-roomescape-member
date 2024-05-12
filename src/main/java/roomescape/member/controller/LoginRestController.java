@@ -9,15 +9,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.global.auth.AuthUser;
+import roomescape.global.auth.CookieManager;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.LoginService;
 
+import java.util.List;
+
 @RestController
 public class LoginRestController {
 
-    private static final String AUTH_COOKIE_NAME = "token";
-
+    private final CookieManager cookieManager = new CookieManager();
     private final LoginService loginService;
 
     public LoginRestController(LoginService loginService) {
@@ -26,11 +28,9 @@ public class LoginRestController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String accessToken = loginService.login(request);
+        String token = loginService.login(request);
 
-        Cookie cookie = new Cookie(AUTH_COOKIE_NAME, accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = cookieManager.createCookie(token);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
@@ -43,15 +43,10 @@ public class LoginRestController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
+        List<Cookie> cookies = cookieManager.extractCookies(request);
 
-        for (Cookie cookie : cookies) {
-            if (AUTH_COOKIE_NAME.equals(cookie.getName())) {
-                Cookie emptyCookie = new Cookie("token", "");
-                emptyCookie.setMaxAge(0);
-                response.addCookie(cookie);
-            }
-        }
+        Cookie cookie = cookieManager.expireAuthCookie(cookies);
+        response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
     }

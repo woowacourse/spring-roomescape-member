@@ -6,14 +6,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.global.jwt.JwtProvider;
+
+import java.util.List;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
-    private static final String TOKEN = "token";
-
-    public final JwtProvider jwtProvider;
+    private final CookieManager cookieManager = new CookieManager();
+    private final JwtProvider jwtProvider;
 
     public CheckAdminInterceptor(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
@@ -21,20 +23,16 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
+        List<Cookie> cookies = cookieManager.extractCookies(request);
+
+        try {
+            String token = cookieManager.extractToken(cookies);
+            AuthUser authUser = jwtProvider.parse(token);
+            return checkAdmin(response, authUser);
+        } catch (RoomEscapeException e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
-
-        for (Cookie cookie : cookies) {
-            if (TOKEN.equals(cookie.getName())) {
-                String token = cookie.getValue();
-                AuthUser authUser = jwtProvider.parse(token);
-                return checkAdmin(response, authUser);
-            }
-        }
-        return false;
     }
 
     private boolean checkAdmin(HttpServletResponse response, AuthUser authUser) {
