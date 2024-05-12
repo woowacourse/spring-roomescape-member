@@ -10,7 +10,7 @@ import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestInstance(Lifecycle.PER_METHOD)
-class AdminControllerTest {
+class AdminViewControllerTest {
 
     @Test
     @DisplayName("방탈출 관리 홈페이지를 매핑한다.")
