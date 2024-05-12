@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
 
 @SpringBootTest
-class JdbcTemplateReservationTimeRepositoryTest {
+class JdbcReservationTimeRepositoryTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired

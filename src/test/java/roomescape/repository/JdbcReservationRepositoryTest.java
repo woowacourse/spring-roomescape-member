@@ -21,7 +21,7 @@ import roomescape.domain.Theme;
 @SpringBootTest
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 @Sql(value = "/clear.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
-class JdbcTemplateReservationRepositoryTest {
+class JdbcReservationRepositoryTest {
     private static final Member DEFAULT_MEMBER = Fixture.defaultMember;
     private static final ReservationTime DEFAULT_TIME = new ReservationTime(1L, LocalTime.of(11, 56));
     private static final Theme DEFAULT_THEME = new Theme(1L, "이름", "설명", "썸네일");

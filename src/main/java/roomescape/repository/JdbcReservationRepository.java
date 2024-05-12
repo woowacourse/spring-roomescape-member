@@ -18,7 +18,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Themes;
 
 @Repository
-public class JdbcTemplateReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
     private static final String FIND_RESERVATION_QUERY = """
             SELECT
                 R.id AS reservation_id,
@@ -64,7 +64,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
             );
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcTemplateReservationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

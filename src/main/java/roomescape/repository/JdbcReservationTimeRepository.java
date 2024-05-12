@@ -15,15 +15,15 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimes;
 
 @Repository
-public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
-    private final JdbcTemplate jdbcTemplate;
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (rs, rowNum) ->
             new ReservationTime(
                     rs.getLong("id"),
                     rs.getTime("start_at").toLocalTime()
             );
+    private final JdbcTemplate jdbcTemplate;
 
-    public JdbcTemplateReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
