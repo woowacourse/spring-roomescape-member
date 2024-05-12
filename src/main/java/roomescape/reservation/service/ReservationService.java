@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -64,4 +65,9 @@ public class ReservationService {
         }
     }
 
+    public List<Reservation> filter(long themeId, long memberId, String dateFrom, String dateTo) {
+        LocalDate from=LocalDate.parse(dateFrom);
+        LocalDate to=LocalDate.parse(dateTo);
+        return reservationDao.filter(themeId, memberId, from, to);
+    }
 }
