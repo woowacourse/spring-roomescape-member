@@ -18,8 +18,6 @@ import roomescape.service.MemberService;
 @RestController
 public class AuthController {
 
-    private static final String TOKEN_KEY = "token";
-
     private final MemberService memberService;
     private final CookieProvider cookieProvider;
 
