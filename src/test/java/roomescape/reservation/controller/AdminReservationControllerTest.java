@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,7 +47,7 @@ class AdminReservationControllerTest {
                 .split("token=")[1];
     }
 
-    @DisplayName("어드민 예약 컨트롤러는 예약 조회 시 값을 반환한다.")
+    @DisplayName("어드민 예약 컨트롤러는 예약 조회 시 값을 200을 응답한다.")
     @Test
     void readReservations() {
         RestAssured.given().log().all()
@@ -57,7 +58,7 @@ class AdminReservationControllerTest {
                 .body("size()", is(9));
     }
 
-    @DisplayName("어드민 예약 컨트롤러는 기간, 사용자, 테마로 예약 조회 시 값을 반환한다.")
+    @DisplayName("어드민 예약 컨트롤러는 기간, 사용자, 테마로 예약 조회 시 200을 응답한다.")
     @Test
     void searchReservations() {
         RestAssured.given().log().all()
@@ -72,7 +73,7 @@ class AdminReservationControllerTest {
                 .body("size()", is(2));
     }
 
-    @DisplayName("어드민 예약 컨트롤러는 예약 생성 시 생성된 값을 반환한다.")
+    @DisplayName("어드민 예약 컨트롤러는 예약 생성 시 200을 응답한다.")
     @Test
     void createReservation() {
         Map<String, Object> reservation = new HashMap<>();
@@ -106,7 +107,31 @@ class AdminReservationControllerTest {
                 .body("size()", is(10));
     }
 
-    @DisplayName("어드민 예약 컨트롤러는 id 값에 따라 예약을 삭제한다.")
+    @DisplayName("어드민 예약 컨트롤러는 사용자 id 없이 예약을 생성할 경우 400을 응답한다.")
+    @Test
+    void createReservationWithoutMemberId() {
+        // given
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", LocalDate.MAX.toString());
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        // when
+        String detailMessage = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", accessToken)
+                .body(reservation)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .jsonPath().get("detail");
+
+        // then
+        assertThat(detailMessage).isEqualTo("사용자는 비어있을 수 없습니다.");
+    }
+
+    @DisplayName("어드민 예약 컨트롤러는 id 값에 따라 예약시 204을 응답한다.")
     @Test
     void deleteReservation() {
         RestAssured.given()
@@ -128,5 +153,21 @@ class AdminReservationControllerTest {
                 .then()
                 .statusCode(200)
                 .body("size()", is(8));
+    }
+
+    @DisplayName("어드민 예약 컨트롤러는 존재하지 않는 id 값으로 삭제하는 경우 404를 응답한다.")
+    @Test
+    void deleteReservationWithNonExistsId() {
+        // given & when
+        String detailMessage = RestAssured.given().log().all()
+                .cookie("token", accessToken)
+                .when().delete("/admin/reservations/50")
+                .then().log().all()
+                .statusCode(404)
+                .extract()
+                .jsonPath().get("detail");
+
+        // then
+        assertThat(detailMessage).isEqualTo("존재하지 않는 예약입니다.");
     }
 }

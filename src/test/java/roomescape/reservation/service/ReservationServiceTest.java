@@ -203,6 +203,26 @@ class ReservationServiceTest {
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
+    @DisplayName("예약 서비스는 예약 요청에 존재하지 않는 테마가 포함된 경우 예외가 발생한다.")
+    @Test
+    void createWithNonExistentTheme() {
+        // given
+        Mockito.when(memberRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.memberFixture));
+        Mockito.when(reservationTimeRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
+        Mockito.when(themeRepository.findById(id))
+                .thenReturn(Optional.empty());
+
+        ReservationCreateRequest request = new ReservationCreateRequest(id, date, id, id);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+
     @DisplayName("예약 서비스는 요청받은 테마가 동시간대에 이미 예약된 경우 예외가 발생한다.")
     @Test
     void createWithReservedTheme() {

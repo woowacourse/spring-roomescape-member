@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @Sql(value = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -57,6 +58,38 @@ class ThemeControllerTest {
                 .body("size()", is(4));
     }
 
+    @DisplayName("테마 컨트롤러는 중복된 이름으로 생성 요청이 들어올 경우 400을 응답한다.")
+    @Test
+    void createThemeWithDuplicatedName() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "리얼공포");
+        params.put("description", "완전 무서움");
+        params.put("thumbnail", "http://something");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+
+        // when
+        String detailMessage = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .jsonPath().get("detail");
+
+        // then
+        assertThat(detailMessage).isEqualTo("중복된 테마 이름입니다.");
+    }
+
+
     @DisplayName("테마 컨트롤러는 테마 조회 요청이 들어오면 200을 반환한다.")
     @Test
     void readThemes() {
@@ -87,5 +120,28 @@ class ThemeControllerTest {
                 .when().delete("/themes/3")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @DisplayName("테마 컨트롤러는 존재하지 않는 테마 삭제 요청이 들어오면 400을 응답한다.")
+    @Test
+    void deleteThemeWithNonExists() {
+        // given
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/3")
+                .then()
+                .statusCode(204);
+
+        // when
+        String detailMessage = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/3")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .jsonPath().get("detail");
+
+        // then
+        assertThat(detailMessage).isEqualTo("존재하지 않는 테마입니다.");
     }
 }
