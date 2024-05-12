@@ -7,6 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.dto.Accessor;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.global.util.CookieUtils;
 import roomescape.member.service.MemberService;
@@ -24,16 +25,17 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(Authenticated.class);
+        return parameter.hasParameterAnnotation(Authenticated.class) &&
+                parameter.getParameterType().equals(Accessor.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
-                                  ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) {
+    public Accessor resolveArgument(MethodParameter parameter,
+                                    ModelAndViewContainer mavContainer,
+                                    NativeWebRequest webRequest,
+                                    WebDataBinderFactory binderFactory) {
         String accessToken = CookieUtils.getToken((HttpServletRequest) webRequest.getNativeRequest());
         Long id = Long.valueOf(jwtTokenProvider.getPayload(accessToken));
-        return memberService.findById(id);
+        return new Accessor(id);
     }
 }

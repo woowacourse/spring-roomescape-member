@@ -13,11 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.auth.dto.Accessor;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.global.exception.WrongPasswordException;
-import roomescape.global.exception.auth.InvalidAuthenticationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.fixture.MemberFixture;
@@ -66,31 +66,20 @@ class AuthServiceTest {
                 .isInstanceOf(WrongPasswordException.class);
     }
 
-    @DisplayName("유효한 토큰으로 로그인 체크 시 이름을 반환한다")
+    @DisplayName("로그인 체크 시 인증 정보에 해당하는 이름을 반환한다")
     @Test
     void should_return_name_response_when_valid_token_check_performed() {
-        when(jwtTokenProvider.getPayload(DUMMY_TOKEN.getAccessToken())).thenReturn("1");
-        when(memberRepository.findById(any(Long.class))).thenReturn(Optional.of(MemberFixture.MEMBER_ID_1));
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(MemberFixture.MEMBER_ID_1));
 
-        assertThat(authService.checkLogin(DUMMY_TOKEN.getAccessToken()).name()).isEqualTo("썬");
-    }
-
-    @DisplayName("로그인 체크 시 유효하지 않은 토큰이라면 예외가 발생한다")
-    @Test
-    void should_throw_exception_when_token_is_invalid() {
-        when(jwtTokenProvider.getPayload(any(String.class))).thenThrow(InvalidAuthenticationException.class);
-
-        assertThatThrownBy(() -> authService.checkLogin(DUMMY_TOKEN.getAccessToken()))
-                .isInstanceOf(InvalidAuthenticationException.class);
+        assertThat(authService.checkLogin(new Accessor(1L)).name()).isEqualTo("썬");
     }
 
     @DisplayName("토큰에서 유저의 아이디를 추출했을 때 그 아이디에 해당하는 회원이 없으면 예외를 발생시킨다")
     @Test
     void should_throw_exception_when_token_member_no_exist() {
-        when(jwtTokenProvider.getPayload(DUMMY_TOKEN.getAccessToken())).thenReturn("1");
         when(memberRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> authService.checkLogin(DUMMY_TOKEN.getAccessToken()))
+        assertThatThrownBy(() -> authService.checkLogin(new Accessor(1L)))
                 .isInstanceOf(NoSuchRecordException.class);
     }
 }

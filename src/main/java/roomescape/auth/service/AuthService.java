@@ -2,6 +2,7 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.Token;
+import roomescape.auth.dto.Accessor;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
@@ -33,11 +34,9 @@ public class AuthService {
         return new Token(token);
     }
 
-    public LoginCheckResponse checkLogin(String token) {
-        Long id = Long.valueOf(jwtTokenProvider.getPayload(token));
-        Member findMember = memberRepository.findById(id)
-                .orElseThrow(() -> new NoSuchRecordException("id: " + id + " 해당하는 회원을 찾을 수 없습니다"));
-
+    public LoginCheckResponse checkLogin(Accessor accessor) {
+        Member findMember = memberRepository.findById(accessor.id())
+                .orElseThrow(() -> new NoSuchRecordException("id: " + accessor.id() + " 해당하는 회원을 찾을 수 없습니다"));
         return new LoginCheckResponse(findMember.getName());
     }
 }

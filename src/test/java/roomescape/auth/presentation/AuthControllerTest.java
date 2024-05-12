@@ -18,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.auth.dto.Accessor;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.service.AuthService;
@@ -60,7 +61,7 @@ class AuthControllerTest {
     void should_return_name_when_login_check_status_is_valid() throws Exception {
         MockCookie mockCookie = new MockCookie("token", "mock value");
         LoginCheckResponse loginCheckResponse = new LoginCheckResponse("리비");
-        when(authService.checkLogin(any(String.class))).thenReturn(loginCheckResponse);
+        when(authService.checkLogin(any(Accessor.class))).thenReturn(loginCheckResponse);
 
         mockMvc.perform(get("/login/check")
                         .cookie(mockCookie))
