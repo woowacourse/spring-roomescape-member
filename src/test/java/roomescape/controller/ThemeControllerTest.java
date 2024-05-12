@@ -2,6 +2,8 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,19 +24,34 @@ class ThemeControllerTest {
     private int port;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private String cookie;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-
+        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+
+        Map<String, String> admin = Map.of(
+                "email", "aaa@naver.com",
+                "password", "1111"
+        );
+
+        cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(admin)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
     }
 
     @DisplayName("테마 목록을 읽을 수 있다.")
     @Test
     void readReservations() {
         int size = RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -54,6 +71,7 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .header("cookie", cookie)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
@@ -67,6 +85,7 @@ class ThemeControllerTest {
     @Test
     void deleteTime() {
         RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);

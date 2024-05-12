@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +28,7 @@ class ReservationTimeControllerTest {
     private int port;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private String cookie;
 
     @BeforeEach
     void setUp() {
@@ -39,12 +41,26 @@ class ReservationTimeControllerTest {
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
                 , "2023-08-05", 1, 1, 1);
+
+        Map<String, String> admin = Map.of(
+                "email", "aaa@naver.com",
+                "password", "1111"
+        );
+
+        cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(admin)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
     }
 
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
     void readTimes() {
         int size = RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -63,6 +79,7 @@ class ReservationTimeControllerTest {
                 new AvailableTimeResponse(new TimeResponse(2L, LocalTime.of(11, 0)), false)
         );
         List<AvailableTimeResponse> response = RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .when().get("/times/available?date=2023-08-05&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -78,6 +95,7 @@ class ReservationTimeControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .header("cookie", cookie)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -92,6 +110,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteTime() {
         RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .when().delete("/times/2")
                 .then().log().all()
                 .statusCode(204);

@@ -25,23 +25,36 @@ class ReservationControllerTest {
     private int port;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private String cookie;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-
         jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
                 , "2023-08-05", 1, 1, 1);
+        Map<String, String> admin = Map.of(
+                "email", "aaa@naver.com",
+                "password", "1111"
+        );
+
+        cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(admin)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
     }
 
     @DisplayName("예약 목록을 읽을 수 있다.")
     @Test
     void readReservations() {
         int size = RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -55,20 +68,6 @@ class ReservationControllerTest {
     @DisplayName("예약을 DB에 추가할 수 있다.")
     @Test
     void createReservation() {
-
-        Map<String, String> loginParam = Map.of(
-                "email", "aaa@naver.com",
-                "password", "1111"
-        );
-
-        String cookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(loginParam)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
-
         ReservationMemberCreateRequest params = new ReservationMemberCreateRequest
                 (LocalDate.of(2040, 8, 5), 1L, 1L);
 
@@ -89,6 +88,7 @@ class ReservationControllerTest {
     @Test
     void deleteReservation() {
         RestAssured.given().log().all()
+                .header("cookie", cookie)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);

@@ -52,6 +52,17 @@ public class MemberDao {
         }
     }
 
+    public boolean existsMemberByEmail(String email) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM member
+                    WHERE email = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
     public Member createMember(Member member, String password) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO member(name, email, password) VALUES (?, ?, ?)";
