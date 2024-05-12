@@ -6,15 +6,16 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.controller.resolver.AccessToken;
 import roomescape.controller.rest.request.LoginRequest;
 import roomescape.controller.rest.response.LoginCheckResponse;
+import roomescape.domain.Member;
 import roomescape.service.AuthService;
 
 @RestController
@@ -35,9 +36,8 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> check(@CookieValue String token) {
-        LoginCheckResponse loginCheckResponse = authService.check(token);
-        return ResponseEntity.ok().body(loginCheckResponse);
+    public ResponseEntity<LoginCheckResponse> check(@AccessToken Member member) {
+        return ResponseEntity.ok().body(new LoginCheckResponse(member.name()));
     }
 
     @GetMapping("/logout")

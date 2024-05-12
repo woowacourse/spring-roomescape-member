@@ -51,8 +51,8 @@
   - [x] `reservation.html`
   - [x] `user-reservation.html`
   - [x] `admin/reservation-new.html`
-- [ ] 사용자 정보 조회 로직 리팩터링
-  - [ ] `HandlerMethodArgumentResolver` 사용하여 쿠키를 `Member` 객체로 변환 
+- [x] 사용자 정보 조회 로직 리팩터링
+  - [x] `HandlerMethodArgumentResolver` 사용하여 쿠키를 `Member` 객체로 변환 
 - [ ] 예약 생성 API 리팩터링
 
 ### 리팩토링 목록
