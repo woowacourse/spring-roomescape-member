@@ -11,7 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.service.AuthService;
 import roomescape.service.request.LoginMember;
-import roomescape.web.exception.AuthenticationException;
 
 @Component
 public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -35,24 +34,8 @@ public class TokenValueMethodArgumentResolver implements HandlerMethodArgumentRe
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
-        String tokenValue = getTokenValue(cookies);
+        String tokenValue = jwtTokenProvider.getTokenValue(cookies);
 
         return authService.getLoginMember(tokenValue);
-    }
-
-    private String getTokenValue(Cookie[] cookies) {
-        validateCookie(cookies);
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
-    }
-
-    private void validateCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            throw new AuthenticationException("로그인된 회원 정보가 없습니다.");
-        }
     }
 }

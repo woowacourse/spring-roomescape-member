@@ -6,15 +6,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.domain.Role;
-import roomescape.web.exception.AuthorizationException;
+import roomescape.service.AuthService;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
+    private final AuthService authService;
     private final JwtTokenProvider tokenProvider;
 
-    public CheckAdminInterceptor(JwtTokenProvider tokenProvider) {
+    public CheckAdminInterceptor(AuthService authService, JwtTokenProvider tokenProvider) {
+        this.authService = authService;
         this.tokenProvider = tokenProvider;
     }
 
@@ -22,11 +23,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
         String tokenValue = tokenProvider.getTokenValue(cookies);
-        Role role = Role.valueOf(tokenProvider.getTokenRole(tokenValue));
 
-        if (!role.isAdmin()) {
-            throw new AuthorizationException("권한이 없습니다.");
-        }
-        return true;
+        return authService.hasAdminPermission(tokenValue);
     }
 }

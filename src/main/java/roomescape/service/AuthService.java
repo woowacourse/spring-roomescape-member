@@ -3,12 +3,14 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.persistence.MemberRepository;
 import roomescape.service.request.LoginMember;
 import roomescape.service.request.MemberLoginRequest;
 import roomescape.service.response.MemberResponse;
 import roomescape.service.response.Token;
 import roomescape.web.exception.AuthenticationException;
+import roomescape.web.exception.AuthorizationException;
 
 @Service
 public class AuthService {
@@ -41,5 +43,13 @@ public class AuthService {
         Member findMember = memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
         return new MemberResponse(findMember.getId(), findMember.getNameValue());
+    }
+
+    public boolean hasAdminPermission(String tokenValue) {
+        Role role = Role.valueOf(jwtTokenProvider.getTokenRole(tokenValue));
+        if (!role.isAdmin()) {
+            throw new AuthorizationException("권한이 없습니다.");
+        }
+        return true;
     }
 }
