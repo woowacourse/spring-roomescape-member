@@ -18,13 +18,14 @@ public class MemberRepositoryImpl implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<Member> rowMapper = ((rs, rowNum) -> new Member(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("email"),
-            rs.getString("password"),
-            Role.convertToRole(rs.getString("role"))
-    ));
+    private final RowMapper<Member> rowMapper = ((rs, rowNum) ->
+            new Member(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    Role.convertToRole(rs.getString("role"))
+            ));
 
     public MemberRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -47,14 +48,9 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public Optional<Member> findById(Long id) {
         String sql = """
-                SELECT 
-                    m.id,
-                    m.name,
-                    m.email,
-                    m.password,
-                    m.role 
-                FROM member m 
-                WHERE m.id = ?
+                SELECT *
+                FROM member 
+                WHERE id = ?
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
@@ -66,14 +62,9 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String sql = """
-                SELECT 
-                    m.id,
-                    m.name,
-                    m.email,
-                    m.password,
-                    m.role  
-                FROM member m 
-                where m.email = ? and m.password = ?
+                SELECT *  
+                FROM member 
+                where email = ? and password = ?
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email, password));

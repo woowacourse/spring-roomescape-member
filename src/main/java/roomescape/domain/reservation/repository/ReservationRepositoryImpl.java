@@ -21,26 +21,37 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            resultSet.getDate("date").toLocalDate(),
-            new ReservationTime(resultSet.getLong("time_id"), resultSet.getTime("time_value").toLocalTime()),
-            new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
-                    resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail")),
-            new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
-                    resultSet.getString("member_email"), resultSet.getString("member_password"),
-                    Role.convertToRole(resultSet.getString("member_role")))
-    );
+    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) ->
+            new Reservation(
+                    resultSet.getLong("id"),
+                    resultSet.getDate("date").toLocalDate(),
+                    new ReservationTime(
+                            resultSet.getLong("reservation_time.id"),
+                            resultSet.getTime("reservation_time.start_at").toLocalTime()
+                    ),
+                    new Theme(
+                            resultSet.getLong("theme.id"),
+                            resultSet.getString("theme.name"),
+                            resultSet.getString("theme.description"),
+                            resultSet.getString("theme.thumbnail")
+                    ),
+                    new Member(resultSet.getLong("member.id"),
+                            resultSet.getString("member.name"),
+                            resultSet.getString("member.email"),
+                            resultSet.getString("member.password"),
+                            Role.convertToRole(resultSet.getString("member.role"))
+                    )
+            );
 
     private RowMapper<ReservationTime> timeRowMapper = ((rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
+            rs.getLong("reservation_time.id"),
+            rs.getTime("reservation_time.start_at").toLocalTime()
     ));
     private RowMapper<Theme> themeRowMapper = ((rs, rowNum) -> new Theme(
-            rs.getLong("theme_id"),
-            rs.getString("theme_name"),
-            rs.getString("theme_description"),
-            rs.getString("theme_thumbnail")
+            rs.getLong("theme.id"),
+            rs.getString("theme.name"),
+            rs.getString("theme.description"),
+            rs.getString("theme.thumbnail")
     ));
 
     public ReservationRepositoryImpl(JdbcTemplate jdbcTemplate) {
@@ -53,20 +64,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                    SELECT
-                        r.id as reservation_id,
-                        r.date,
-                        t.id as time_id,
-                        t.start_at as time_value,
-                        theme.id as theme_id,
-                        theme.name as theme_name,
-                        theme.description as theme_description,
-                        theme.thumbnail as theme_thumbnail,
-                        m.id as member_id,
-                        m.name as member_name,
-                        m.email as member_email,
-                        m.password as member_password,
-                        m.role as member_role
+                    SELECT *
                     FROM reservation as r 
                     INNER JOIN reservation_time as t 
                     ON r.time_id = t.id 
@@ -81,20 +79,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
-                SELECT
-                    r.id as reservation_id,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    theme.id as theme_id,
-                    theme.name as theme_name,
-                    theme.description as theme_description,
-                    theme.thumbnail as theme_thumbnail,
-                    m.id as member_id,
-                    m.name as member_name,
-                    m.email as member_email,
-                    m.password as member_password,
-                    m.role as member_role
+                SELECT *
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                 ON r.time_id = t.id
@@ -110,20 +95,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
-                SELECT
-                    r.id as reservation_id,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    theme.id as theme_id,
-                    theme.name as theme_name,
-                    theme.description as theme_description,
-                    theme.thumbnail as theme_thumbnail,
-                    m.id as member_id,
-                    m.name as member_name,
-                    m.email as member_email,
-                    m.password as member_password,
-                    m.role as member_role
+                SELECT *
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                 ON r.time_id = t.id

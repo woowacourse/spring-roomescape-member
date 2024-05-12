@@ -1,4 +1,4 @@
-package roomescape.domain.login.repository;
+package roomescape.domain.member.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.domain.member.domain.Role.MEMBER;
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.RepositoryTest;
 import roomescape.domain.member.domain.Member;
-import roomescape.domain.member.repository.MemberRepository;
-import roomescape.domain.member.repository.MemberRepositoryImpl;
 
 class MemberRepositoryImplTest extends RepositoryTest {
 

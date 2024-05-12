@@ -1,4 +1,4 @@
-package roomescape.domain.login.service;
+package roomescape.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.repository.MemberRepository;
-import roomescape.domain.member.service.MemberService;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 class MemberServiceTest {

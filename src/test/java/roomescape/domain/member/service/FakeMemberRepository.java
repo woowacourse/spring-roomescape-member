@@ -1,4 +1,4 @@
-package roomescape.domain.login.service;
+package roomescape.domain.member.service;
 
 import static roomescape.domain.member.domain.Role.MEMBER;
 
