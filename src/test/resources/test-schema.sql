@@ -38,8 +38,10 @@ CREATE TABLE reservation
     date     DATE        NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,
+    member_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (date, time_id, theme_id)
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    UNIQUE (date, time_id, theme_id, member_id)
 );
