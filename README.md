@@ -503,6 +503,15 @@
     "message": "유효하지 않은 이메일입니다."
     }  
     ```
+  - 추가 실패 : 비밀번호 약식 오류
+    ```
+    HTTP/1.1 400 
+    Content-Type: application/json
+  
+    {
+    "message": "비밀번호는 6자 이상 12자 이하여야 합니다."
+    }  
+    ```
 - response
   ```
   HTTP/1.1 201 OK
