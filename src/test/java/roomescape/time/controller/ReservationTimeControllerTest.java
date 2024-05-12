@@ -44,7 +44,6 @@ public class ReservationTimeControllerTest {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(reservationTimeRequest)
-                .log().all()
                 .when()
                 .post("times")
                 .then()

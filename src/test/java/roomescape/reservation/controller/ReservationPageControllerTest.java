@@ -20,8 +20,6 @@ public class ReservationPageControllerTest extends BaseTest {
                 .when()
                 .get("/reservation")
                 .then()
-                .log()
-                .all()
                 .statusCode(HttpStatus.OK.value());
     }
 }

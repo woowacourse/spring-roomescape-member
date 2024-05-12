@@ -31,7 +31,6 @@ public class MemberControllerTest {
                 .when()
                 .get("/members")
                 .then()
-                .log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", is(MEMBER_SIZE));
     }

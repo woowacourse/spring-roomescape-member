@@ -14,13 +14,9 @@ public class AdminPageControllerTest extends BaseTest {
     private void testAdminPage(String path) {
         RestAssured.given()
                 .cookie("token", adminToken)
-                .log()
-                .all()
                 .when()
                 .get("/admin" + path)
                 .then()
-                .log()
-                .all()
                 .statusCode(HttpStatus.OK.value());
     }
 

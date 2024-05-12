@@ -53,7 +53,6 @@ public class ReservationControllerTest extends BaseTest {
                 .cookie("token", memberToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(reservationRequest)
-                .log().all()
                 .when()
                 .post("reservations")
                 .then()

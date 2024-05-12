@@ -43,7 +43,6 @@ public class ThemeControllerTest {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(themeRequest)
-                .log().all()
                 .when()
                 .post("themes")
                 .then()

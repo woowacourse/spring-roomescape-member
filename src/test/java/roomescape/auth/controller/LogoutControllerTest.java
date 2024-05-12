@@ -31,7 +31,6 @@ public class LogoutControllerTest {
                 .post("/logout")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .log().all()
                 .cookie("token", "");
     }
 }

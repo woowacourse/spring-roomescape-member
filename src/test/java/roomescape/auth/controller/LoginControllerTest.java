@@ -21,13 +21,9 @@ public class LoginControllerTest extends BaseTest {
     void login() {
         RestAssured.given()
                 .cookie("token", memberToken)
-                .log()
-                .all()
                 .when()
                 .get("/login")
                 .then()
-                .log()
-                .all()
                 .statusCode(200);
     }
 
@@ -45,7 +41,6 @@ public class LoginControllerTest extends BaseTest {
 
         response.then()
                 .statusCode(HttpStatus.OK.value())
-                .log().all()
                 .cookie("token");
 
         String token = response.getCookie("token");
