@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -129,7 +130,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, themeId);
     }
 
-    public List<Reservation> findByDateBetween(final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<Reservation> findByDateFromAndDateTo(final LocalDate dateFrom, final LocalDate dateTo) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -141,9 +142,15 @@ public class ReservationDao {
                 INNER JOIN reservation_time AS time ON r.time_id = time.id
                 INNER JOIN theme ON r.theme_id = theme.id
                 INNER JOIN member AS m ON r.member_id = m.id
-                WHERE r.date BETWEEN ? AND ?
+                WHERE (:date_from IS NULL AND :date_to IS NULL)
+                    OR (:date_from IS NOT NULL AND :date_to IS NULL AND r.date > :date_from)
+                    OR (:date_from IS NULL AND :date_to IS NOT NULL AND r.date < :date_to)
+                    OR (:date_from IS NOT NULL AND :date_to IS NOT NULL AND r.date BETWEEN :date_from AND :date_to)
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper, dateFrom, dateTo);
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("date_from", dateFrom);
+        params.addValue("date_to", dateTo);
+        return namedParameterJdbcTemplate.query(sql, params, reservationRowMapper);
     }
 
     public List<Long> findByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
