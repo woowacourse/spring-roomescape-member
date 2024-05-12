@@ -15,9 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.global.exception.InvalidTokenException;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.global.exception.WrongPasswordException;
+import roomescape.global.exception.auth.InvalidAuthenticationException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.fixture.MemberFixture;
@@ -69,7 +69,6 @@ class AuthServiceTest {
     @DisplayName("유효한 토큰으로 로그인 체크 시 이름을 반환한다")
     @Test
     void should_return_name_response_when_valid_token_check_performed() {
-        when(jwtTokenProvider.isInvalidToken(any(String.class))).thenReturn(false);
         when(jwtTokenProvider.getPayload(DUMMY_TOKEN.getAccessToken())).thenReturn("1");
         when(memberRepository.findById(any(Long.class))).thenReturn(Optional.of(MemberFixture.MEMBER_ID_1));
 
@@ -79,16 +78,15 @@ class AuthServiceTest {
     @DisplayName("로그인 체크 시 유효하지 않은 토큰이라면 예외가 발생한다")
     @Test
     void should_throw_exception_when_token_is_invalid() {
-        when(jwtTokenProvider.isInvalidToken(any(String.class))).thenReturn(true);
+        when(jwtTokenProvider.getPayload(any(String.class))).thenThrow(InvalidAuthenticationException.class);
 
         assertThatThrownBy(() -> authService.checkLogin(DUMMY_TOKEN.getAccessToken()))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(InvalidAuthenticationException.class);
     }
 
     @DisplayName("토큰에서 유저의 아이디를 추출했을 때 그 아이디에 해당하는 회원이 없으면 예외를 발생시킨다")
     @Test
     void should_throw_exception_when_token_member_no_exist() {
-        when(jwtTokenProvider.isInvalidToken(any(String.class))).thenReturn(false);
         when(jwtTokenProvider.getPayload(DUMMY_TOKEN.getAccessToken())).thenReturn("1");
         when(memberRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 

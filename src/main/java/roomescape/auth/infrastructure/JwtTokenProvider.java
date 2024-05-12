@@ -1,7 +1,6 @@
 package roomescape.auth.infrastructure;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,6 +11,8 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.global.exception.IllegalRequestException;
+import roomescape.global.exception.auth.AuthenticationExpiredException;
+import roomescape.global.exception.auth.InvalidAuthenticationException;
 import roomescape.member.domain.Member;
 
 @Component
@@ -32,7 +33,6 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -40,21 +40,16 @@ public class JwtTokenProvider {
     }
 
     public String getPayload(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
-
-    public boolean isInvalidToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser()
+            return Jwts.parser()
                     .setSigningKey(secretKey)
-                    .parseClaimsJws(token);
-            return claims.getBody().getExpiration().before(new Date());
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new AuthenticationExpiredException("로그인 기한이 만료되었습니다", e);
         } catch (JwtException | IllegalArgumentException e) {
-            return true;
+            throw new InvalidAuthenticationException("유효하지 않은 로그인 정보입니다", e);
         }
     }
 

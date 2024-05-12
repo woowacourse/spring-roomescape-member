@@ -5,7 +5,6 @@ import roomescape.auth.domain.Token;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.global.exception.InvalidTokenException;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.global.exception.WrongPasswordException;
 import roomescape.member.domain.Member;
@@ -35,10 +34,6 @@ public class AuthService {
     }
 
     public LoginCheckResponse checkLogin(String token) {
-        if (jwtTokenProvider.isInvalidToken(token)) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다");
-        }
-
         Long id = Long.valueOf(jwtTokenProvider.getPayload(token));
         Member findMember = memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchRecordException("id: " + id + " 해당하는 회원을 찾을 수 없습니다"));
