@@ -7,24 +7,25 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.config.handler.AdminAuthenticationInterceptor;
 import roomescape.config.handler.AuthenticationArgumentResolver;
-import roomescape.member.service.AuthService;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
+    private final AuthenticationArgumentResolver authenticationArgumentResolver;
+    private final AdminAuthenticationInterceptor adminAuthenticationInterceptor;
 
-    private final AuthService authService;
-
-    public WebMvcConfiguration(AuthService authService) {
-        this.authService = authService;
+    public WebMvcConfiguration(AuthenticationArgumentResolver authenticationArgumentResolver,
+                               AdminAuthenticationInterceptor adminAuthenticationInterceptor) {
+        this.authenticationArgumentResolver = authenticationArgumentResolver;
+        this.adminAuthenticationInterceptor = adminAuthenticationInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationArgumentResolver(authService));
+        resolvers.add(authenticationArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminAuthenticationInterceptor(authService)).addPathPatterns("/admin/**");
+        registry.addInterceptor(adminAuthenticationInterceptor).addPathPatterns("/admin/**");
     }
 }

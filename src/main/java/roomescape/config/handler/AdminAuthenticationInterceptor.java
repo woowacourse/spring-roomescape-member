@@ -3,12 +3,14 @@ package roomescape.config.handler;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.dto.LoggedInMember;
 import roomescape.member.service.AuthService;
 
+@Component
 public class AdminAuthenticationInterceptor implements HandlerInterceptor {
     private static final String ACCESS_TOKEN_KEY = "token";
 
