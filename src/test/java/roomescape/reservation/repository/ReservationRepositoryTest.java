@@ -18,7 +18,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
-import roomescape.reservation.dto.ReservationSearchCondRequest;
+import roomescape.reservation.domain.ReservationSearchCond;
 
 @JdbcTest
 @Import({ReservationRepository.class, ThemeRepository.class, ReservationTimeRepository.class, MemberRepository.class})
@@ -161,8 +161,8 @@ public class ReservationRepositoryTest {
         reservationRepository.save(new Reservation(member, tomorrow, theme, reservationTime));
         reservationRepository.save(new Reservation(member, oneWeekLater, theme, reservationTime));
 
-        ReservationSearchCondRequest reservationSearchCondRequest = new ReservationSearchCondRequest(themeId, memberId, LocalDate.now(), tomorrow);
-        List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(reservationSearchCondRequest);
+        ReservationSearchCond reservationSearchCond = new ReservationSearchCond(themeId, memberId, LocalDate.now(), tomorrow);
+        List<Reservation> reservations = reservationRepository.findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(reservationSearchCond);
 
         assertThat(reservations).hasSize(1);
     }
