@@ -97,10 +97,7 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
         AtomicLong reservationId = new AtomicLong();
 
         return Stream.of(
-                dynamicTest("사용자 페이지에서 예약을 추가한다", () -> {
-                    Long id = ReservationCRD.postUserReservation(userToken, tomorrow.toString(), 1L, 1L, 201);
-                    reservationId.set(id);
-                }),
+                dynamicTest("사용자 페이지에서 예약을 추가한다", () -> reservationId.set(ReservationCRD.postUserReservation(userToken, tomorrow.toString(), 1L, 1L, 201))),
                 dynamicTest("사용자 페이지에서 예약을 추가한다", () -> ReservationCRD.postUserReservation(userToken, tomorrow.toString(), 2L, 2L, 201)),
                 dynamicTest("모든 예약을 조회한다 (총 2개)", () -> ReservationCRD.getReservations(200, 2)),
                 dynamicTest("예약을 삭제한다", () -> ReservationCRD.deleteReservation(reservationId.longValue(), 204)),

@@ -42,10 +42,7 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
         AtomicLong themeId = new AtomicLong();
 
         return Stream.of(
-                dynamicTest("테마를 추가한다 (10:00)", () -> {
-                    Long id = postTheme(201);
-                    themeId.set(id);
-                }),
+                dynamicTest("테마를 추가한다 (10:00)", () -> themeId.set(postTheme(201))),
                 dynamicTest("테마를 삭제한다 (10:00)", () -> deleteTheme(themeId.longValue(), 204)),
                 dynamicTest("테마를 추가한다 (10:00)", () -> postTheme(201)),
                 dynamicTest("모든 테마를 조회한다 (총 1개)", () -> getThemes(200, 1))

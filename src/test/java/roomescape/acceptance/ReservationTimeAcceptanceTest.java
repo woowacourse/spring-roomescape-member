@@ -46,10 +46,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         AtomicLong reservationTimeId = new AtomicLong();
 
         return Stream.of(
-                dynamicTest("예약 시간을 추가한다 (10:00)", () -> {
-                    Long id = postReservationTime("10:00", 201);
-                    reservationTimeId.set(id);
-                }),
+                dynamicTest("예약 시간을 추가한다 (10:00)", () -> reservationTimeId.set(postReservationTime("10:00", 201))),
                 dynamicTest("예약 시간을 삭제한다 (10:00)", () -> deleteReservationTime(reservationTimeId.longValue(), 204)),
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservationTime("10:00", 201)),
                 dynamicTest("모든 예약 시간을 조회한다 (총 1개)", () -> getReservationTimes(200, 1))
@@ -63,12 +60,10 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         AtomicReference<String> token = new AtomicReference<>();
         return Stream.of(
                 dynamicTest("모든 예약된 시간을 조회한다 (총 3개)", () -> getAvailableTimes(200, 3)),
-                dynamicTest("로그인을 한다", () -> {
-                    token.set(LoginUtil.login("email1", "qq1", 200));
-                }),
+                dynamicTest("로그인을 한다", () -> token.set(LoginUtil.login("email1", "qq1", 200))),
                 dynamicTest("예약을 추가한다", () -> ReservationCRD.postUserReservation(token.get(), "2099-04-29", 4L, 1L, 201)),
                 dynamicTest("모든 예약된 시간을 조회한다 (총 4개)", () -> getAvailableTimes(200, 4))
-                );
+        );
     }
 
     private Long postReservationTime(String time, int expectedHttpCode) {
