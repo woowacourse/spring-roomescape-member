@@ -14,7 +14,7 @@ public enum Role {
 
     public static Role convertToRole(String value) {
         return Arrays.stream(values())
-                .filter(role -> role.value.equals(value) || role.value.toUpperCase().equals(value))
+                .filter(role -> role.value.equalsIgnoreCase(value))
                 .findFirst()
                 .orElseThrow(() -> new ClientIllegalArgumentException("존재하지 않는 역할입니다."));
     }
