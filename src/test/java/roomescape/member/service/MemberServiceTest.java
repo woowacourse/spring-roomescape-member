@@ -33,13 +33,13 @@ class MemberServiceTest {
         String email = "test@email.com";
         String password = "password";
         Role role = Role.MEMBER;
-        memberRepository.save(new Member("test", email, password, role));
+        Member member = memberRepository.save(new Member("test", email, password, role));
 
         // when
         String token = memberService.checkLogin(new LoginRequest(email, password));
 
         //then
-        assertThat(token).isEqualTo(email);
+        assertThat(token).isEqualTo(member.getId().toString());
     }
 
     @DisplayName("이메일 혹은 비밀번호가 일치하지 않을 때, 로그인 시 예외가 발생한다.")

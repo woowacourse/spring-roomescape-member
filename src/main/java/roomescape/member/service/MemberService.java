@@ -21,11 +21,11 @@ public class MemberService {
     }
 
     public String checkLogin(LoginRequest loginRequest) {
-        if (checkInvalidLogin(loginRequest.getEmail(), loginRequest.getPassword())) {
+        if (checkInvalidLogin(loginRequest.email(), loginRequest.password())) {
             throw new IllegalArgumentException("이메일 혹은 비밀번호가 일치하지 않습니다.");
         }
-
-        return tokenProvider.createToken(loginRequest.getEmail());
+        Member member = memberRepository.findByEmail(loginRequest.email());
+        return tokenProvider.createToken(member.getId().toString());
     }
 
     private boolean checkInvalidLogin(String email, String password) {
@@ -33,15 +33,15 @@ public class MemberService {
     }
 
     public LoginCheckResponse findMemberNameByToken(String token) {
-        String email = tokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email);
+        long memberId = Long.parseLong(tokenProvider.getPayload(token));
+        Member member = memberRepository.findById(memberId);
         validateExistMember(member);
         return new LoginCheckResponse(member.getName());
     }
 
     public Object findLoginMemberByToken(String token) {
-        String email = tokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email);
+        long memberId = Long.parseLong(tokenProvider.getPayload(token));
+        Member member = memberRepository.findById(memberId);
         validateExistMember(member);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
