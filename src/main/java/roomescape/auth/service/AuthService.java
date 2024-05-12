@@ -7,7 +7,7 @@ import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.auth.infrastructure.Token;
 import roomescape.global.exception.NoSuchRecordException;
-import roomescape.global.exception.WrongPasswordException;
+import roomescape.global.exception.auth.WrongPasswordException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 

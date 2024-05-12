@@ -24,7 +24,7 @@ public class Member {
         this(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
-    public boolean isAdminMember() {
+    public boolean isAdmin() {
         return role == Role.ADMIN;
     }
 

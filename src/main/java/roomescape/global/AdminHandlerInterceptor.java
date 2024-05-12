@@ -24,7 +24,7 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
             throws Exception {
         String accessToken = CookieUtils.getToken(request);
         Member findMember = memberService.findById(jwtTokenProvider.getAccessorId(accessToken));
-        if (findMember.isAdminMember()) {
+        if (findMember.isAdmin()) {
             return true;
         }
         response.setStatus(401);
