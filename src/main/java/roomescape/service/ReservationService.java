@@ -41,6 +41,15 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> getReservationsWithFilter(Long memberId, Long themeId, LocalDate dateFrom,
+                                                               LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.findByFilter(memberId, themeId, dateFrom, dateTo);
+
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public ReservationResponse addReservation(MemberReservationRequest request, Member member) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
         validateNotDuplicatedTime(request.date(), request.timeId(), request.themeId());
@@ -54,15 +63,10 @@ public class ReservationService {
     }
 
     public ReservationResponse addAdminReservation(AdminReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
-        validateNotDuplicatedTime(request.date(), request.timeId(), request.themeId());
-        Theme theme = themeRepository.findById(request.themeId());
         Member member = memberRepository.findById(request.memberId());
 
-        Reservation reservation = new Reservation(member, request.date(), reservationTime, theme, LocalDateTime.now());
-        Reservation savedReservation = reservationRepository.save(reservation);
-
-        return ReservationResponse.from(savedReservation);
+        return addReservation(new MemberReservationRequest(request.date(), request.timeId(), request.themeId()),
+                member);
     }
 
     private void validateNotDuplicatedTime(LocalDate date, Long timeId, Long themeId) {

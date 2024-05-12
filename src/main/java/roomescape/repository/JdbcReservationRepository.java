@@ -132,4 +132,16 @@ public class JdbcReservationRepository {
 
         return !reservations.isEmpty();
     }
+
+    public List<Reservation> findByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = basicSelectQuery + "WHERE " +
+                "member_id = ? " +
+                "AND theme_id = ? " +
+                "AND r.date >= ? " +
+                "AND r.date <= ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, memberId, themeId, dateFrom,
+                dateTo);
+
+        return Collections.unmodifiableList(reservations);
+    }
 }
