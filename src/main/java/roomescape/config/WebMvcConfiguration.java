@@ -2,7 +2,9 @@ package roomescape.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.infrastructure.AdminInterceptor;
 import roomescape.infrastructure.MemberArgumentResolver;
 
 import java.util.List;
@@ -10,9 +12,16 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final MemberArgumentResolver memberArgumentResolver;
+    private final AdminInterceptor adminInterceptor;
 
-    public WebMvcConfiguration(MemberArgumentResolver memberArgumentResolver) {
+    public WebMvcConfiguration(MemberArgumentResolver memberArgumentResolver, AdminInterceptor adminInterceptor) {
         this.memberArgumentResolver = memberArgumentResolver;
+        this.adminInterceptor = adminInterceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(adminInterceptor).addPathPatterns("/admin/**");
     }
 
     @Override

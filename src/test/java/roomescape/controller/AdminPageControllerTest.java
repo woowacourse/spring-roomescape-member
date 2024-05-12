@@ -28,40 +28,152 @@ class AdminPageControllerTest {
 
     private String accessToken;
 
-    @Test
+    @TestFactory
     @DisplayName("방탈출 어드민 메인 페이지 조회를 확인한다")
-    void showAdminMainPage() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
+    Stream<DynamicTest> showAdminMainPage() {
+        Map<String, String> login = Map.of(
+                "role", "admin",
+                "email", "admin1@email.com",
+                "password", "password"
+        );
+
+        return Stream.of(
+                dynamicTest("로그인을 한다.", () -> {
+                    accessToken = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(login)
+                            .when().post("/login")
+                            .then().log().all()
+                            .extract().cookie("token");
+                }),
+
+                dynamicTest("어드민 메인 페이지를 조회한다.", () -> {
+                    RestAssured.given().log().all()
+                            .cookie("token", accessToken)
+                            .when().get("/admin")
+                            .then().log().all()
+                            .statusCode(200);
+                })
+        );
     }
 
-    @Test
+    @TestFactory
+    @DisplayName("관리자 권한이 없는 경우 admin 페이지에 접근할 수 없다")
+    Stream<DynamicTest> unauthorizedAdminMainPage() {
+        Map<String, String> login = Map.of(
+                "role", "user",
+                "email", "user1@email.com",
+                "password", "password"
+        );
+
+        return Stream.of(
+                dynamicTest("로그인을 한다.", () -> {
+                    accessToken = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(login)
+                            .when().post("/login")
+                            .then().log().all()
+                            .extract().cookie("token");
+                }),
+
+                dynamicTest("어드민 메인 페이지를 조회한다.", () -> {
+                    RestAssured.given().log().all()
+                            .cookie("token", accessToken)
+                            .when().get("/admin")
+                            .then().log().all()
+                            .statusCode(401);
+                })
+        );
+    }
+
+    @TestFactory
     @DisplayName("방탈출 예약 관리 페이지 조회를 확인한다")
-    void showReservationPage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
+    Stream<DynamicTest> showReservationPage() {
+        Map<String, String> login = Map.of(
+                "role", "admin",
+                "email", "admin1@email.com",
+                "password", "password"
+        );
+
+        return Stream.of(
+                dynamicTest("로그인을 한다.", () -> {
+                    accessToken = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(login)
+                            .when().post("/login")
+                            .then().log().all()
+                            .extract().cookie("token");
+                }),
+
+                dynamicTest("방탈출 예약 관리 페이지를 조회한다.", () -> {
+                    RestAssured.given().log().all()
+                            .cookie("token", accessToken)
+                            .when().get("/admin/reservation")
+                            .then().log().all()
+                            .statusCode(200);
+                })
+        );
+
     }
 
-    @Test
+    @TestFactory
     @DisplayName("방탈출 예약 시간 관리 페이지 조회를 확인한다")
-    void showReservationTimePage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
+    Stream<DynamicTest> showReservationTimePage() {
+        Map<String, String> login = Map.of(
+                "role", "admin",
+                "email", "admin1@email.com",
+                "password", "password"
+        );
+
+        return Stream.of(
+                dynamicTest("로그인을 한다.", () -> {
+                    accessToken = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(login)
+                            .when().post("/login")
+                            .then().log().all()
+                            .extract().cookie("token");
+                }),
+
+                dynamicTest("방탈출 예약 관리 페이지를 조회한다.", () -> {
+                    RestAssured.given().log().all()
+                            .cookie("token", accessToken)
+                            .when().get("/admin/time")
+                            .then().log().all()
+                            .statusCode(200);
+                })
+        );
+
     }
 
-    @Test
+    @TestFactory
     @DisplayName("방탈출 테마 관리 페이지 조회를 확인한다")
-    void showThemePage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
-                .then().log().all()
-                .statusCode(200);
+    Stream<DynamicTest> showThemePage() {
+        Map<String, String> login = Map.of(
+                "role", "admin",
+                "email", "admin1@email.com",
+                "password", "password"
+        );
+
+        return Stream.of(
+                dynamicTest("로그인을 한다.", () -> {
+                    accessToken = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(login)
+                            .when().post("/login")
+                            .then().log().all()
+                            .extract().cookie("token");
+                }),
+
+                dynamicTest("방탈출 예약 관리 페이지를 조회한다.", () -> {
+                    RestAssured.given().log().all()
+                            .cookie("token", accessToken)
+                            .when().get("/admin/theme")
+                            .then().log().all()
+                            .statusCode(200);
+                })
+        );
+
     }
 
     @TestFactory
@@ -75,6 +187,7 @@ class AdminPageControllerTest {
         );
 
         Map<String, String> login = Map.of(
+                "role", "admin",
                 "email", "admin1@email.com",
                 "password", "password"
         );

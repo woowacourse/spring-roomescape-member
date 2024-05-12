@@ -1,4 +1,5 @@
-INSERT INTO member (name, email, password) VALUES ('유저', 'admin@email.com', 'password');
+INSERT INTO member (role, name, email, password) VALUES ('admin', '관리자', 'admin@email.com', 'password');
+INSERT INTO member (role, name, email, password) VALUES ('user', '유저', 'user@email.com', 'password');
 
 INSERT INTO theme (name, description, thumbnail) VALUES ('테마명01', '테마 설명01', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('테마명02', '테마 설명02', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');

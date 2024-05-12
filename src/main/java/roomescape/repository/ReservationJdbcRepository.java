@@ -7,10 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -27,6 +24,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             resultSet.getLong("id"),
             new Member(
                     resultSet.getLong("member_id"),
+                    Role.from(resultSet.getString("member_role")),
                     resultSet.getString("member_name"),
                     resultSet.getString("email"),
                     resultSet.getString("password")),
@@ -56,6 +54,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     r.id AS reservation_id,
                     r.date,
                     u.id AS member_id,
+                    u.role AS member_role,
                     u.name AS member_name,
                     u.email AS email,
                     u.password AS password,
@@ -80,6 +79,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     r.id AS reservation_id,
                     r.date,
                     u.id AS member_id,
+                    u.role AS member_role,
                     u.name AS member_name,
                     u.email AS email,
                     u.password AS password,

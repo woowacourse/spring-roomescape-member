@@ -14,7 +14,7 @@ class ReservationTest {
     void checkNullReservationDate() {
         //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.parse("20:00"));
-        Member member = new Member("admin1@email.com", "password");
+        Member member = new Member(Role.ADMIN, "admin1@email.com", "password");
         Theme theme = new Theme("테마명", "테마 설명", "테마 이미지");
 
         //when & then

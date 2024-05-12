@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -79,7 +76,7 @@ class ReservationJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         Theme theme = themeRepository.findByThemeId(1L);
         Reservation reservation2 = new Reservation(
-                new Member("admin1@email.com", "password"),
+                new Member(Role.ADMIN, "admin1@email.com", "password"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme

@@ -9,13 +9,14 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
 import roomescape.service.LoginService;
+import roomescape.service.MemberService;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private LoginService loginService;
+    private MemberService memberService;
 
-    public MemberArgumentResolver(LoginService loginService) {
-        this.loginService = loginService;
+    public MemberArgumentResolver(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @Override
@@ -26,6 +27,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        return loginService.createMember(request.getCookies());
+        return memberService.createMember(request.getCookies());
     }
 }
