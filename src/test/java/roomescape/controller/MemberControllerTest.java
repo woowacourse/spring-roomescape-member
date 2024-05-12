@@ -31,7 +31,7 @@ class MemberControllerTest {
     void addMember() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new MemberRequest("test@email.com", "password", "이름"))
+                .body(new MemberRequest("hello@email.com", "password", "이름"))
                 .when().post("/members")
                 .then().log().all()
                 .statusCode(201);
