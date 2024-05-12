@@ -3,10 +3,11 @@ package roomescape.member.domain;
 import java.util.Map;
 
 public enum Role {
-    MEMBER("member"),
+
+    USER("user"),
     ADMIN("admin");
 
-    private static final Map<String, Role> CACHE = Map.of(MEMBER.getRoleName(), MEMBER, ADMIN.getRoleName(), ADMIN);
+    private static final Map<String, Role> CACHE = Map.of(USER.getRoleName(), USER, ADMIN.getRoleName(), ADMIN);
 
     private final String roleName;
 
@@ -25,5 +26,9 @@ public enum Role {
 
     public String getRoleName() {
         return roleName;
+    }
+
+    public boolean isAdmin() {
+        return this == ADMIN;
     }
 }

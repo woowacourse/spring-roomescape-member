@@ -23,4 +23,8 @@ public class MemberInfo {
     public Role getRole() {
         return role;
     }
+
+    public boolean isAdmin() {
+        return role.isAdmin();
+    }
 }
