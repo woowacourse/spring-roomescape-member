@@ -14,7 +14,7 @@ import roomescape.domain.member.Role;
 import roomescape.global.exception.AuthorizationException;
 
 @Component
-public class JwtTokenProvider {
+public class JwtManager {
 
     private static final String CLAIM_NAME = "name";
     private static final String CLAIM_EMAIL = "email";

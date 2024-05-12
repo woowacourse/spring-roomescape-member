@@ -9,15 +9,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.member.LoginMember;
-import roomescape.global.auth.JwtTokenProvider;
+import roomescape.global.auth.JwtManager;
 
 @Component
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtManager jwtManager;
 
-    public AuthenticationPrincipalArgumentResolver(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthenticationPrincipalArgumentResolver(JwtManager jwtManager) {
+        this.jwtManager = jwtManager;
     }
 
     @Override
@@ -40,11 +40,11 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
             return defaultMember;
         }
 
-        String token = jwtTokenProvider.extractTokenFromCookies(cookies);
+        String token = jwtManager.extractTokenFromCookies(cookies);
 
         if (token.isEmpty()) {
             return defaultMember;
         }
-        return jwtTokenProvider.parse(token);
+        return jwtManager.parse(token);
     }
 }
