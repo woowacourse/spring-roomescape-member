@@ -63,7 +63,7 @@ public class AuthService {
             Long userId = Long.parseLong(jwtProvider.getSubject(token));
             String userName = claims.get("name", String.class);
             String userEmail = claims.get("email", String.class);
-            Role userRole = claims.get("role", Role.class);
+            Role userRole = Role.valueOf(claims.get("role", String.class));
             return new LoginMember(userId, userName, userEmail, userRole);
         } catch (Exception e) {
             throw new Exception("검증되지 않은 토큰입니다. 먼저 토큰 검증을 해주세요.");
