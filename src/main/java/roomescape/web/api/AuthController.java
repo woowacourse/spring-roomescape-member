@@ -46,8 +46,9 @@ public class AuthController {
         String token = tokenProvider.extractToken(request.getCookies())
                 .orElseThrow(AuthorizationException::new);
 
+        Long id = tokenParser.getId(token);
         String payload = tokenParser.getEmail(token);
 
-        return ResponseEntity.ok(new MemberResponse(payload));
+        return ResponseEntity.ok(new MemberResponse(id, payload));
     }
 }
