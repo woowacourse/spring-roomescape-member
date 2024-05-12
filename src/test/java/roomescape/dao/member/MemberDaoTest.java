@@ -69,6 +69,20 @@ class MemberDaoTest {
         assertThat(found.getName()).isEqualTo(inserted.getName());
     }
 
+    @DisplayName("잘못된 이메일을 넣으면 빈 객체를 반환한다.")
+    @Test
+    void findByInvalidEmail() {
+        // given
+        MemberInfo inserted = memberDao.insert(
+                new Member(null, "name1", "email1@email.com", "password1", Role.USER));
+
+        // when
+        String invalidEmail = "email2@email.com";
+
+        // then
+        assertThat(memberDao.findByEmail(invalidEmail)).isEmpty();
+    }
+
     @DisplayName("아이디로 회원을 조회한다.")
     @Test
     void findById() {
@@ -82,6 +96,20 @@ class MemberDaoTest {
         // then
         assertThat(found).isNotNull();
         assertThat(found.getName()).isEqualTo(inserted.getName());
+    }
+
+    @DisplayName("잘못된 아이디를 넣으면 빈 객체를 반환한다.")
+    @Test
+    void findByInvalidId() {
+        // given
+        MemberInfo inserted = memberDao.insert(
+                new Member(null, "name1", "email1@email.com", "password1", Role.USER));
+
+        // when
+        Long invalidId = 0L;
+
+        // then
+        assertThat(memberDao.findById(invalidId)).isEmpty();
     }
 
     @DisplayName("이메일과 비밀번호로 회원을 조회한다.")

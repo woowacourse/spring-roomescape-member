@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.TestUtil;
 import roomescape.controller.member.MemberController;
 import roomescape.dto.auth.LoginRequest;
 import roomescape.dto.member.SignupRequest;
@@ -97,16 +98,35 @@ public class ReservationControllerTest {
         timeController.createTime(new TimeRequest(LocalTime.parse("10:00")));
         themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
 
-        String accessToken = getAccessToken("admin@email.com", "admin_password");
-
-        // then
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L))
-                .cookie("token", accessToken)
+                .body(new AdminReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L))
+                .cookie("token", TestUtil.getAdminUserToken())
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @DisplayName("관리자 예약시 유저 정보가 입력되지 않으면 400으로 응답한다.")
+    @Test
+    void notExistUserInfo() {
+        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2024-04-30");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("memberId", "멤버 선택");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .cookie("token", TestUtil.getAdminUserToken())
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("멤버가 입력되지 않았습니다."));
     }
 
     @DisplayName("예약 삭제 요청 시 204로 응답한다.")
@@ -128,7 +148,6 @@ public class ReservationControllerTest {
         String accessToken = getAccessToken("email@email.com", "password");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "test");
         params.put("date", "");
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -150,9 +169,8 @@ public class ReservationControllerTest {
         String accessToken = getAccessToken("email@email.com", "password");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "test");
         params.put("date", "2024-04-30");
-        params.put("timeId", "시간 입력");
+        params.put("timeId", "시간 선택");
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
@@ -172,10 +190,9 @@ public class ReservationControllerTest {
         String accessToken = getAccessToken("email@email.com", "password");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "test");
         params.put("date", "2024-04-30");
         params.put("timeId", 1);
-        params.put("themeId", "테마 입력");
+        params.put("themeId", "테마 선택");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
