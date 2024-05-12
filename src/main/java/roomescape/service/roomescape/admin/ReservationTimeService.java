@@ -44,7 +44,7 @@ public class ReservationTimeService {
 
     private void validateDoesNotExists(final long id) {
         if (reservationTimeDao.findById(id).isEmpty()) {
-            throw new NoSuchElementException("[ERROR] (id : " + id + ") 에 대한 자원에 존재하지 않습니다.");
+            throw new NoSuchElementException("[ERROR] (id : " + id + ") 에 대한 예약 시간이 존재하지 않습니다.");
         }
     }
 

@@ -46,7 +46,7 @@ public class ThemeService {
 
     public ThemeDeleteResponse delete(final long id) {
         if (themeDao.findById(id).isEmpty()) {
-            throw new NoSuchElementException("[ERROR] (id : " + id + ") 에 대한 자원에 존재하지 않습니다.");
+            throw new NoSuchElementException("[ERROR] (id : " + id + ") 에 대한 테마가 존재하지 않습니다.");
         }
         if (!reservationDao.findByThemeId(id).isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 해당 테마를 사용 중인 예약이 있어 삭제할 수 없습니다.");

@@ -83,7 +83,7 @@ public class ReservationService {
 
     public ReservationDeleteResponse delete(final long id) {
         if (reservationDao.findById(id).isEmpty()) {
-            throw new NoSuchElementException("[ERROR] (id : " + id + ") 에 대한 자원에 존재하지 않습니다.");
+            throw new NoSuchElementException("[ERROR] (id : " + id + ") 에 대한 예약이 존재하지 않습니다.");
         }
         return new ReservationDeleteResponse(reservationDao.delete(id));
     }
