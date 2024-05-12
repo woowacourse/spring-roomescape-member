@@ -74,6 +74,25 @@ class ReservationServiceTest {
         softAssertions.assertAll();
     }
 
+    @DisplayName("예약 서비스는 예약자, 테마, 조회기간을 설정하여 필터링된 결과를 조회한다.")
+    @Test
+    void testMethod() {
+        // given
+        long memberId = 1L;
+        long themeId = 1L;
+        LocalDate startDate = LocalDate.of(2099, 1, 1);
+        LocalDate endDate = LocalDate.of(2099, 12, 31);
+        Mockito.when(reservationRepository.findByMemberAndThemeAndDateBetween(
+                1L, 1L, startDate, endDate
+        )).thenReturn(List.of(Fixtures.reservationFixture));
+
+        // when
+        List<ReservationResponse> result = reservationService.findFilteredBy(memberId, themeId, startDate, endDate);
+
+        // then
+        assertThat(result).hasSize(1);
+    }
+
     @DisplayName("예약 서비스는 예약을 생성한다.")
     @Test
     void createReservation() {
