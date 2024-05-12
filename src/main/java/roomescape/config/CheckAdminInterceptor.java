@@ -21,8 +21,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         final Member member = authService.findMemberByToken(token);
 
         if (member == null || isUser(member.getRole())) {
-            response.setStatus(401);
-            return false;
+            throw new IllegalArgumentException("관리자 페이지는 관리자만 들어올 수 있습니다.");
         }
         return true;
     }
