@@ -4,12 +4,12 @@ public class Member {
     private final Long id;
     private final MemberName memberName;
     private final String email;
-    private final String password;
+    private final Password password;
     private final Role role;
 
     public Member(
             final Long id, final MemberName memberName, final String email,
-            final String password, final Role role
+            final Password password, final Role role
     ) {
         this.id = id;
         this.memberName = memberName;
@@ -22,11 +22,11 @@ public class Member {
             final long id, final String name, final String email,
             final String role, final String password
     ) {
-        return new Member(id, new MemberName(name), email, password, Role.from(role));
+        return new Member(id, new MemberName(name), email, new Password(password), Role.from(role));
     }
 
     public static Member of(final String name, final String email, final String password, final String role) {
-        return new Member(null, new MemberName(name), email, password, Role.from(role));
+        return new Member(null, new MemberName(name), email, new Password(password), Role.from(role));
     }
 
     public long getId() {
@@ -46,7 +46,7 @@ public class Member {
     }
 
     public String getPassword() {
-        return password;
+        return password.getValue();
     }
 
     public Role getRole() {
