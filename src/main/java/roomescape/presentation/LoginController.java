@@ -2,6 +2,7 @@ package roomescape.presentation;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody TokenRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@Valid @RequestBody TokenRequest request, HttpServletResponse response) {
         TokenResponse token = authService.createToken(request);
         authService.setToken(response, token.accessToken());
         return ResponseEntity.ok().build();
