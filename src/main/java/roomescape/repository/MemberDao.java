@@ -6,7 +6,7 @@ import roomescape.domain.Member;
 public interface MemberDao {
     List<Member> findAll();
 
-    Member findByEmail(String email);
-
     Member findById(Long id);
+
+    Member findByEmailAndPassWord(String email, String password);
 }

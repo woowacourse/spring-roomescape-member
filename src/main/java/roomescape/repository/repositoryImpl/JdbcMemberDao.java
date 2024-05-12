@@ -33,22 +33,22 @@ public class JdbcMemberDao implements MemberDao {
     }
 
     @Override
-    public Member findByEmail(final String email) {
-        String sql = "SELECT * FROM member WHERE email = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException("[ERROR] 존재하지 않는 사용자입니다.");
-        }
-    }
-
-    @Override
     public Member findById(final Long id) {
         String sql = "SELECT * FROM member WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NoSuchElementException("[ERROR] 존재하지 않는 사용자입니다.");
+        }
+    }
+
+    @Override
+    public Member findByEmailAndPassWord(final String email, final String password) {
+        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("[ERROR] 아이디와 비밀번호로 사용자를 찾을 수 없습니다.");
         }
     }
 }
