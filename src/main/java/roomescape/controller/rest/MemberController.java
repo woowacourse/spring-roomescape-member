@@ -9,7 +9,6 @@ import roomescape.service.MemberService;
 
 import java.util.List;
 
-// TODO: 테스트 추가
 @RestController
 @RequestMapping("/members")
 public class MemberController {

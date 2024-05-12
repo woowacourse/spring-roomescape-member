@@ -39,7 +39,6 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     private String extractToken(Cookie[] cookies) {
-        // TODO: CheckAdminInterceptor와 로직 중복 제거
         if (cookies == null) {
             throw new ApplicationException(ExceptionType.NO_COOKIE_EXIST);
         }

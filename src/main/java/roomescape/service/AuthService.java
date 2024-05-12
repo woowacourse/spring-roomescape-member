@@ -18,7 +18,6 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        // TODO: 암호화
         Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
 
         String subject = member.getId().toString();

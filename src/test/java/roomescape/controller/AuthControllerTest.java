@@ -37,7 +37,6 @@ class AuthControllerTest {
                 .cookie("token");
     }
 
-    // TODO: 404가 아니지 않나?
     @Test
     @DisplayName("DB에 존재하지 않는 member 정보로 로그인 시도시 404를 반환한다.")
     void loginFail() {

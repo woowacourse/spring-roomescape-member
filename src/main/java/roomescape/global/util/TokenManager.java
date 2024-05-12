@@ -7,8 +7,7 @@ import java.util.Map;
 
 public class TokenManager {
 
-    // TODO: application.yaml 분리
-    private static String secretKey = "나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.";
+    private static String secretKey = "b2cfed4c332ee2838d39a28310c9dbf1d8d43e2d33e941a98461b8dd5e177cbfcb699cf74863f3a7047d56ef00a2b2679e901a051da0334b25d01a97dc348bfc";
 
     public static String generateToken(String subject, Map<String, String> claims) {
         return Jwts.builder()
