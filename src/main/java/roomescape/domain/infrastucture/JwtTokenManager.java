@@ -1,7 +1,10 @@
 package roomescape.domain.infrastucture;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.time.Instant;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
@@ -15,6 +18,8 @@ public class JwtTokenManager {
     public String createToken(Member member) {
         return Jwts.builder()
                 .subject(String.valueOf(member.getId()))
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plusSeconds(30 * 60)))
                 .claim("name", member.getName())
                 .claim("email", member.getEmail())
                 .claim("role", member.getRole().name())
@@ -24,11 +29,14 @@ public class JwtTokenManager {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
-                    .parseSignedClaims(token);
-            return true;
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            Date expiration = claims.getExpiration();
+            return Date.from(Instant.now()).before(expiration);
         } catch (Exception e) {
             return false;
         }
