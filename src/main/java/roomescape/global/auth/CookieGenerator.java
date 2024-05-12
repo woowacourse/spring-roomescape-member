@@ -12,7 +12,7 @@ public class CookieGenerator {
     }
 
     public static Cookie generateExpiredToken(String name) {
-        Cookie cookie = new Cookie(name,null);
+        Cookie cookie = new Cookie(name, null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
