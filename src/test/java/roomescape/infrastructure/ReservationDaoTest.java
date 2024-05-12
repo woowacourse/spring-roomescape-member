@@ -5,21 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.Fixtures;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.theme.Theme;
 import roomescape.domain.reservation.ReservationRepository;
-
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.Fixtures.themeFixture;
 
 @JdbcTest
 @Import(ReservationDao.class)
@@ -27,29 +20,20 @@ import static roomescape.Fixtures.themeFixture;
 class ReservationDaoTest {
 
     private final ReservationRepository reservationRepository;
-    private final SimpleJdbcInsert simpleJdbcInsertWithReservationTime;
 
     @Autowired
-    public ReservationDaoTest(ReservationRepository reservationRepository, DataSource dataSource) {
+    public ReservationDaoTest(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.simpleJdbcInsertWithReservationTime = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
     }
 
     @DisplayName("예약 DAO는 생성 요청이 들어오면 DB에 값을 저장한다.")
     @Test
     void save() {
-        // given
-        ReservationTime reservationTime = Fixtures.reservationTimeFixture;
-        Long reservationTimeId = simpleJdbcInsertWithReservationTime.executeAndReturnKey(new BeanPropertySqlParameterSource(reservationTime))
-                .longValue();
-        ReservationTime newReservationTime = new ReservationTime(reservationTimeId, reservationTime.getStartAt());
         Reservation reservation = new Reservation(
                 Fixtures.memberFixture,
                 LocalDate.of(2024, 11, 16),
-                newReservationTime,
-                new Theme(1L, themeFixture)
+                Fixtures.reservationTimeFixture,
+                Fixtures.themeFixture
         );
 
         // when

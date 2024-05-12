@@ -1,5 +1,7 @@
 package roomescape;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -8,6 +10,7 @@ import roomescape.domain.theme.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.service.member.dto.MemberLoginRequest;
 
 public class Fixtures {
     public static final LocalDate DATE_AFTER_6_MONTH_LATER = LocalDate.now().plusMonths(6);
@@ -80,4 +83,14 @@ public class Fixtures {
             new Reservation(19L, memberFixture, LocalDate.now().minusDays(3), null, themeFixtures.get(4)),
             new Reservation(20L, memberFixture, LocalDate.now().minusDays(3), null, themeFixtures.get(4))
     );
+
+    public static String login(String email, String password) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new MemberLoginRequest(email, password))
+                .when().post("/login")
+                .then().log().all()
+                .extract()
+                .cookie("auth_token");
+    }
 }

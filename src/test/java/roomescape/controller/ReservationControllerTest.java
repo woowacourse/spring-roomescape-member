@@ -3,7 +3,6 @@ package roomescape.controller;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.Fixtures;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -23,13 +23,14 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("예약 컨트롤러")
 class ReservationControllerTest {
-
     @LocalServerPort
     private int port;
+    private String token;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        token = Fixtures.login("pedro@me.com", "11111");
     }
 
     @DisplayName("예약 컨트롤러는 예약 조회 시 값을 반환한다.")
@@ -51,13 +52,15 @@ class ReservationControllerTest {
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("auth_token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(200);
 
-        RestAssured.given()
+        RestAssured.given().log().all()
+                .cookie("auth_token", token)
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
                 .then()
