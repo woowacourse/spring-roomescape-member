@@ -11,6 +11,7 @@ import java.net.URI;
 import java.time.LocalDate;
 
 @RestController
+@RequestMapping("/admin")
 public class AdminReservationController {
     private final ReservationService reservationService;
 
@@ -28,7 +29,7 @@ public class AdminReservationController {
         return ResponseEntity.ok(reservationService.findReservations(themeId, memberId, dateFrom, dateTo));
     }
 
-    @PostMapping("/admin/reservations")
+    @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest) {
         ReservationResponse reservationResponse = reservationService.create(reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);

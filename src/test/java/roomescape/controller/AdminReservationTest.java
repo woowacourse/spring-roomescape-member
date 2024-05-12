@@ -23,6 +23,8 @@ import static org.hamcrest.Matchers.containsString;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class AdminReservationTest {
+    private static final String ADMIN_USER = "wedge@test.com";
+    private static final String COMMON_USER = "poke@test.com";
     @LocalServerPort
     int port;
     @Autowired
@@ -33,16 +35,16 @@ class AdminReservationTest {
         RestAssured.port = port;
     }
 
-    private String generateToken() {
-        return jwtTokenProvider.createToken("wedge@test.com");
+    private String generateToken(String email) {
+        return jwtTokenProvider.createToken(email);
     }
 
-    @DisplayName("reservation 페이지 조회 요청이 올바르게 연결된다.")
+    @DisplayName("예약 목록을 불러오는데 성공하면 200을 응답한다.")
     @Test
     void given_when_GetReservations_then_statusCodeIsOk() {
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
-                .when().get("/reservations")
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -57,7 +59,7 @@ class AdminReservationTest {
         reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -69,7 +71,8 @@ class AdminReservationTest {
     @Test
     void given_when_deleteSuccessful_then_statusCodeIsNoContents() {
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -84,7 +87,7 @@ class AdminReservationTest {
         reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -104,7 +107,7 @@ class AdminReservationTest {
         reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -125,7 +128,7 @@ class AdminReservationTest {
 
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -145,7 +148,7 @@ class AdminReservationTest {
 
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -165,7 +168,7 @@ class AdminReservationTest {
 
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -186,7 +189,7 @@ class AdminReservationTest {
         reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -205,7 +208,7 @@ class AdminReservationTest {
         reservation.put("themeId", 99);
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -223,7 +226,7 @@ class AdminReservationTest {
         reservation.put("memberId", 99);
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -241,11 +244,21 @@ class AdminReservationTest {
         reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
-                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken())
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(ADMIN_USER))
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @DisplayName("일반 유저가 예약을 삭제하려 할때 401오류를 반환한다.")
+    @Test
+    void given_commonUserCookie_when_deleteFail_then_statusCodeIsNoContents() {
+        RestAssured.given().log().all()
+                .cookie(AuthorizationExtractor.TOKEN_NAME, generateToken(COMMON_USER))
+                .when().delete("/admin/reservations/1")
+                .then().log().all()
+                .statusCode(401);
     }
 }
