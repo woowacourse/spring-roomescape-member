@@ -10,7 +10,7 @@ import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestInstance(Lifecycle.PER_METHOD)
-class MemberControllerTest {
+class MemberViewControllerTest {
 
     @Test
     @DisplayName("인기 테마 페이지를 매핑한다.")
