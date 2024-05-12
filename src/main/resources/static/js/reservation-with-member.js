@@ -207,6 +207,7 @@ function applyFilter(event) {
     },
   }).then(response => {
     if (response.status === 200) return response.json();
+    response.json().then(data => alert(data.errorMessage));
     throw new Error('Read failed');
   }).then(render)
       .catch(error => console.error("Error fetching available times:", error));
@@ -222,6 +223,7 @@ function requestCreate(reservation) {
   return fetch('/admin/reservations', requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
+        response.json().then(data => alert(data.errorMessage));
         throw new Error('Create failed');
       });
 }
