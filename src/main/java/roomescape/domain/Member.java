@@ -2,11 +2,11 @@ package roomescape.domain;
 
 import roomescape.domain.util.Validator;
 
-public record Member(Long id, String name, String email) {
+public record Member(Long id, String name, String email, Role role) {
     public static final int MAX_STRING_LENGTH = 255;
 
-    public Member(String name, String email) {
-        this(null, name, email);
+    public Member(String name, String email, Role role) {
+        this(null, name, email, role);
     }
 
     public Member {
@@ -15,6 +15,6 @@ public record Member(Long id, String name, String email) {
     }
 
     public Member createWithId(Long id) {
-        return new Member(id, name, email);
+        return new Member(id, name, email, role);
     }
 }

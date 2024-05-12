@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 import roomescape.dto.MemberModel;
 import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.request.MemberFindRequest;
@@ -23,7 +24,7 @@ import roomescape.dto.response.MemberResponse;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
-    private final Member member = new Member(1L, "켬미", "aaa@naver.com");
+    private final Member member = new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER);
     @Mock
     MemberDao memberDao;
     @InjectMocks

@@ -20,6 +20,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @JdbcTest
@@ -52,7 +53,7 @@ class ReservationDaoTest {
         List<Reservation> expected = List.of(new Reservation(
                 1L,
                 LocalDate.of(2023, 8, 5),
-                new Member(1L, "켬미", "aaa@naver.com"),
+                new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg")
         ));
@@ -90,7 +91,7 @@ class ReservationDaoTest {
         Reservation reservation = new Reservation(
                 1L,
                 LocalDate.of(2023, 8, 5),
-                new Member(1L, "켬미", "aaa@naver.com"),
+                new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg")
         );
