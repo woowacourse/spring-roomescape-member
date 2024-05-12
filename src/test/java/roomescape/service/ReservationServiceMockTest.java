@@ -1,12 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.when;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +14,14 @@ import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceMockTest {
@@ -51,8 +52,9 @@ class ReservationServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", LocalDate.now().plusDays(1L), 1L, 1L)))
-                .isInstanceOf(ApplicationException.class);
+                "예약",
+                new ReservationRequest(LocalDate.now().plusDays(1L), 1L, 1L))
+        ).isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -65,8 +67,9 @@ class ReservationServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
-                .isInstanceOf(ApplicationException.class);
+                "예약",
+                new ReservationRequest(beforeDate, time.getId(), theme.getId()))
+        ).isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -84,7 +87,8 @@ class ReservationServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId())))
-                .isInstanceOf(ApplicationException.class);
+                "예약",
+                new ReservationRequest(LocalDate.now(), time.getId(), theme.getId()))
+        ).isInstanceOf(ApplicationException.class);
     }
 }

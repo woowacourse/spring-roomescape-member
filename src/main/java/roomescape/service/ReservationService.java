@@ -58,7 +58,7 @@ public class ReservationService {
         return response;
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(String memberName, ReservationRequest reservationRequest) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
@@ -67,7 +67,7 @@ public class ReservationService {
         validateDateAndTime(requestDate, today, time);
         validateReservationDuplicate(reservationRequest, theme);
 
-        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time, theme));
+        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(memberName, time, theme));
 
         return ReservationResponse.from(savedReservation);
     }

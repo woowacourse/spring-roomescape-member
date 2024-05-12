@@ -1,9 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +11,11 @@ import roomescape.dto.reservation.ReservationRequest;
 import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationServiceSpringBootTest {
@@ -37,11 +38,13 @@ class ReservationServiceSpringBootTest {
 
         // when & then
         reservationService.createReservation(
-                new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId()));
+                "예약",
+                new ReservationRequest(LocalDate.now().plusDays(1L), time.getId(), theme.getId()));
 
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId())))
-                .isInstanceOf(ApplicationException.class);
+                "예약",
+                new ReservationRequest(LocalDate.now().plusDays(1L), time.getId(), theme.getId()))
+        ).isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -54,8 +57,9 @@ class ReservationServiceSpringBootTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
-                .isInstanceOf(ApplicationException.class);
+                "예약",
+                new ReservationRequest(beforeDate, time.getId(), theme.getId()))
+        ).isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -69,7 +73,8 @@ class ReservationServiceSpringBootTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId()))
+                "예약",
+                new ReservationRequest(LocalDate.now(), time.getId(), theme.getId()))
         ).isInstanceOf(ApplicationException.class);
     }
 }
