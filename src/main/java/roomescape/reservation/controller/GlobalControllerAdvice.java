@@ -35,6 +35,9 @@ public class GlobalControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidFormatException(HttpServletRequest request, InvalidFormatException e) {
         String message = e.getMessage();
+        if (message.contains("멤버")) {
+            message = "멤버가 입력되지 않았습니다.";
+        }
         if (message.contains("시간")) {
             message = "시간이 입력되지 않았습니다.";
         }
