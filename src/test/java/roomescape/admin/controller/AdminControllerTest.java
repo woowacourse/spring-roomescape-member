@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.service.TokenCookieService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class AdminControllerTest {
                 .extract()
                 .header(HttpHeaders.SET_COOKIE)
                 .split(";")[0]
-                .split("token=")[1];
+                .split(TokenCookieService.COOKIE_TOKEN_KEY + "=")[1];
     }
 
     @DisplayName("어드민 컨트롤러는 관리자가 아닌 사용자 /admin/**에 접근하는 경우 예외가 발생한다.")
@@ -61,10 +62,10 @@ public class AdminControllerTest {
                 .extract()
                 .header(HttpHeaders.SET_COOKIE)
                 .split(";")[0]
-                .split("token=")[1];
+                .split(TokenCookieService.COOKIE_TOKEN_KEY + "=")[1];
 
         String detailMessage = RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(403)
@@ -78,7 +79,7 @@ public class AdminControllerTest {
     @Test
     void readAdminPage() {
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200)
@@ -89,7 +90,7 @@ public class AdminControllerTest {
     @Test
     void readReservations() {
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200)
@@ -100,7 +101,7 @@ public class AdminControllerTest {
     @Test
     void readTimes() {
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200)
@@ -111,7 +112,7 @@ public class AdminControllerTest {
     @Test
     void readTheme() {
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200)

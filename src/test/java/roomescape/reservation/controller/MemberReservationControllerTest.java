@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.service.TokenCookieService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -45,14 +46,14 @@ class MemberReservationControllerTest {
                 .extract()
                 .header(HttpHeaders.SET_COOKIE)
                 .split(";")[0]
-                .split("token=")[1];
+                .split(TokenCookieService.COOKIE_TOKEN_KEY + "=")[1];
     }
 
     @DisplayName("사용자 예약 컨트롤러는 /reservation으로 GET 요청이 들어오면 사용자 예약 페이지를 반환한다.")
     @Test
     void readUserReservation() {
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200)
@@ -71,7 +72,7 @@ class MemberReservationControllerTest {
         // when
         String name = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .queryParam("type", "member")
                 .when().post("/reservations")
@@ -115,7 +116,7 @@ class MemberReservationControllerTest {
 
         String detailMessage = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -136,7 +137,7 @@ class MemberReservationControllerTest {
 
         String detailMessage = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -157,7 +158,7 @@ class MemberReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -165,7 +166,7 @@ class MemberReservationControllerTest {
 
         String detailMessage = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -186,7 +187,7 @@ class MemberReservationControllerTest {
 
         String detailMessage = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -207,7 +208,7 @@ class MemberReservationControllerTest {
 
         String detailMessage = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()

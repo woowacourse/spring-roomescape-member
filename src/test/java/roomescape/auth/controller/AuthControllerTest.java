@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.service.TokenCookieService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +56,7 @@ class AuthControllerTest {
                 .extract()
                 .header(HttpHeaders.SET_COOKIE)
                 .split(";")[0]
-                .split("token=")[1];
+                .split(TokenCookieService.COOKIE_TOKEN_KEY + "=")[1];
 
         String actual = jwtTokenProvider.decode(accessToken, JwtTokenProvider.CLAIM_EMAIL_KEY);
 
@@ -124,11 +125,11 @@ class AuthControllerTest {
                 .extract()
                 .header(HttpHeaders.SET_COOKIE)
                 .split(";")[0]
-                .split("token=")[1];
+                .split(TokenCookieService.COOKIE_TOKEN_KEY + "=")[1];
 
         // when
         String actual = RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)

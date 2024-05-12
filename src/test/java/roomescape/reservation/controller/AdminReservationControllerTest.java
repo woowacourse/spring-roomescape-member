@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.service.TokenCookieService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ class AdminReservationControllerTest {
 
         accessToken = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(body)
                 .when().post("/login")
                 .then().log().all()
@@ -44,14 +45,14 @@ class AdminReservationControllerTest {
                 .extract()
                 .header(HttpHeaders.SET_COOKIE)
                 .split(";")[0]
-                .split("token=")[1];
+                .split(TokenCookieService.COOKIE_TOKEN_KEY + "=")[1];
     }
 
     @DisplayName("어드민 예약 컨트롤러는 예약 조회 시 값을 200을 응답한다.")
     @Test
     void readReservations() {
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -66,7 +67,7 @@ class AdminReservationControllerTest {
                 .queryParam("dateTo", "2099-12-31")
                 .queryParam("memberId", 1)
                 .queryParam("themeId", 2)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/reservations/search")
                 .then().log().all()
                 .statusCode(200)
@@ -84,7 +85,7 @@ class AdminReservationControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/reservations")
                 .then()
                 .statusCode(200)
@@ -92,7 +93,7 @@ class AdminReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -100,7 +101,7 @@ class AdminReservationControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/reservations")
                 .then()
                 .statusCode(200)
@@ -119,7 +120,7 @@ class AdminReservationControllerTest {
         // when
         String detailMessage = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -135,20 +136,20 @@ class AdminReservationControllerTest {
     @Test
     void deleteReservation() {
         RestAssured.given()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/reservations")
                 .then()
                 .statusCode(200)
                 .body("size()", is(9));
 
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().get("/admin/reservations")
                 .then()
                 .statusCode(200)
@@ -160,7 +161,7 @@ class AdminReservationControllerTest {
     void deleteReservationWithNonExistsId() {
         // given & when
         String detailMessage = RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie(TokenCookieService.COOKIE_TOKEN_KEY, accessToken)
                 .when().delete("/admin/reservations/50")
                 .then().log().all()
                 .statusCode(404)
