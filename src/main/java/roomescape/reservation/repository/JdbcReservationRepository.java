@@ -144,13 +144,13 @@ public class JdbcReservationRepository {
 
     public List<Reservation> findAllByTimeId(final Long timeId) {
         String sql = """
-                select r.id, r.date, 
+                select r.id, r.date,
                     rt.id as time_id, rt.start_at,
                     t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
                     m.id as member_id, m.name as member_name, m.email, m.password, m.role
                 from reservation as r
                 join reservation_time as rt on r.time_id = rt.id
-                join theme as t r.theme_id = t.id
+                join theme as t on r.theme_id = t.id
                 join member as m on r.member_id = m.id
                 where r.time_id = ?
                 """;
