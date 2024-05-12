@@ -1,6 +1,6 @@
 package roomescape.service;
 
-import static roomescape.controller.AuthController.TOKEN_NAME;
+import static roomescape.controller.AuthController.TOKEN_COOKIE_NAME;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -52,7 +52,7 @@ public class TokenProvider {
 
     private String extractTokenBy(Cookie[] cookies) {
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
+                .filter(cookie -> cookie.getName().equals(TOKEN_COOKIE_NAME))
                 .findAny()
                 .map(Cookie::getValue)
                 .orElseThrow(() -> new BadRequestException("올바르지 않은 토큰값입니다."));

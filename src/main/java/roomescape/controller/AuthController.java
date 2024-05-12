@@ -16,7 +16,7 @@ import roomescape.service.dto.response.MemberResponse;
 @RestController
 public class AuthController {
 
-    public static final String TOKEN_NAME = "token";
+    public static final String TOKEN_COOKIE_NAME = "token";
 
     private final AuthService authService;
 
@@ -29,7 +29,7 @@ public class AuthController {
         String token = authService.login(loginRequest);
 
         ResponseCookie cookie = ResponseCookie
-                .from(TOKEN_NAME, token)
+                .from(TOKEN_COOKIE_NAME, token)
                 .httpOnly(true)
                 .path("/")
                 .build();
@@ -50,7 +50,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie
-                .from(TOKEN_NAME, null)
+                .from(TOKEN_COOKIE_NAME, null)
                 .httpOnly(true)
                 .path("/")
                 .build();
