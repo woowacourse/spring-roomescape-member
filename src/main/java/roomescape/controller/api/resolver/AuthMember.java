@@ -1,4 +1,4 @@
-package roomescape.controller.api;
+package roomescape.controller.api.resolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MemberId {
-
+public @interface AuthMember {
     boolean required() default true;
 }

@@ -1,7 +1,6 @@
 package roomescape.controller.api;
 
 import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.api.dto.request.AuthMemberRequest;
 import roomescape.controller.api.dto.request.ReservationCreateRequest;
 import roomescape.controller.api.dto.response.ReservationResponse;
 import roomescape.controller.api.dto.response.ReservationsResponse;
+import roomescape.controller.api.resolver.AuthMember;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.output.ReservationOutput;
 
 @RestController
 @RequestMapping("/reservations")
@@ -28,15 +28,15 @@ public class ReservationApiController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationCreateRequest request,
-                                                                 @MemberId final long memberId) {
-        final ReservationOutput output = reservationService.createReservation(request.toInput(memberId));
+                                                                 @AuthMember final AuthMemberRequest authMember) {
+        final var output = reservationService.createReservation(request.toInput(authMember.id()));
         return ResponseEntity.created(URI.create("/reservations/" + output.id()))
                 .body(ReservationResponse.from(output));
     }
 
     @GetMapping
     public ResponseEntity<ReservationsResponse> getAllReservations() {
-        final List<ReservationOutput> outputs = reservationService.getAllReservations();
+        final var outputs = reservationService.getAllReservations();
         return ResponseEntity.ok(ReservationsResponse.from(outputs));
     }
 

@@ -70,6 +70,17 @@ public class MemberDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public Optional<Member> findByEmailAndPassword(final Member member) {
+        final var sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(sql, rowMapper, member.emailAsString(), member.passwordAsString())
+            );
+        } catch (final EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
 //    public boolean isExistByStartAt(final String startAt) {
 //        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
 //        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
