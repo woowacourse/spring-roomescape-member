@@ -145,7 +145,7 @@ class ReservationRepositoryTest {
         Theme theme = new Theme(1L, "n1", "d1", "t1");
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
 
-        Reservation before = Reservation.from(reservationDto, time, theme, member);
+        Reservation before = Reservation.of(reservationDto, time, theme, member);
         Reservation actual = reservationRepository.saveReservation(before);
 
         Reservation after = new Reservation(3L, LocalDate.of(2000, 1, 3), time, theme, member);

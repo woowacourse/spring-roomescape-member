@@ -90,7 +90,7 @@ public class ReservationTest {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER);
         ReservationDto ReservationDto = new ReservationDto(LocalDate.now(), 1L, 1L, 1L);
         assertThatCode(() -> {
-            Reservation reservation = Reservation.from(ReservationDto, time, theme, member);
+            Reservation reservation = Reservation.of(ReservationDto, time, theme, member);
             assertThat(reservation.getId()).isEqualTo(0);
         }).doesNotThrowAnyException();
     }

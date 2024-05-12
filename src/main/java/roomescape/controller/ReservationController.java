@@ -38,7 +38,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@Valid @RequestBody ReservationRequest request, LoginMember member) {
-        ReservationDto reservationDto = ReservationDto.from(request, member);
+        ReservationDto reservationDto = ReservationDto.of(request, member);
         Reservation reservation = reservationService.saveReservation(reservationDto);
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity

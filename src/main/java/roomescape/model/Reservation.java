@@ -34,7 +34,7 @@ public class Reservation {
     private Reservation() {
     }
 
-    public static Reservation from(ReservationDto reservationDto, ReservationTime time, Theme theme, Member member) {
+    public static Reservation of(ReservationDto reservationDto, ReservationTime time, Theme theme, Member member) {
         return new Reservation(reservationDto.getDate(), time, theme, member);
     }
 
