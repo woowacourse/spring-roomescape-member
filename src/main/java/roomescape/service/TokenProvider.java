@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
@@ -17,17 +18,29 @@ import roomescape.service.dto.AuthInfo;
 @Component
 public class TokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private final String secretKey;
+    private final Long tokenExpirationMills;
 
     private static final String NAME_KEY = "name";
     private static final String ROLE_KEY = "role";
 
+    public TokenProvider(
+            @Value("${security.jwt.token.secret-key}") String secretKey,
+            @Value("${security.jwt.token.expiration-millis}") Long tokenExpirationMills) {
+        this.secretKey = secretKey;
+        this.tokenExpirationMills = tokenExpirationMills;
+    }
+
     public String createToken(Member member) {
+        Date now = new Date();
+        Date expiredDate = new Date(now.getTime() + tokenExpirationMills);
+
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim(NAME_KEY, member.getName())
                 .claim(ROLE_KEY, member.getRole().name())
+                .setIssuedAt(now)
+                .setExpiration(expiredDate)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
