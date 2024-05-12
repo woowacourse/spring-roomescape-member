@@ -2,6 +2,7 @@ package roomescape.theme.controller;
 
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
@@ -24,15 +26,13 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> findThemes() {
-        List<ThemeResponse> response = themeService.findThemes();
-        return ResponseEntity.ok(response);
+    public List<ThemeResponse> findThemes() {
+        return themeService.findThemes();
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> findPopularThemes() {
-        List<ThemeResponse> response = themeService.findPopularThemes();
-        return ResponseEntity.ok(response);
+    public List<ThemeResponse> findPopularThemes() {
+        return themeService.findPopularThemes();
     }
 
     @PostMapping
@@ -46,9 +46,9 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
-        return ResponseEntity.noContent().build();
     }
 }
 

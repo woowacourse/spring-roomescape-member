@@ -25,10 +25,9 @@ public class AdminReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findReservations(
+    public List<ReservationResponse> findReservations(
             @ModelAttribute ReservationSearchRequest searchRequest) {
-        List<ReservationResponse> response = service.findReservations(searchRequest);
-        return ResponseEntity.ok(response);
+        return service.findReservations(searchRequest);
     }
 
     @PostMapping

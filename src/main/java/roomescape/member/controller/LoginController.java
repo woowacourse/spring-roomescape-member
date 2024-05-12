@@ -43,8 +43,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> loginCheck(LoggedInMember member) {
+    public LoginResponse loginCheck(LoggedInMember member) {
         String name = member.name();
-        return ResponseEntity.ok(new LoginResponse(name));
+        return new LoginResponse(name);
     }
 }
