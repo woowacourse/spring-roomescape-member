@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.domain.reservation;
+package roomescape.domain.member.domain;
 
 import java.util.Objects;
 import roomescape.global.exception.ClientIllegalArgumentException;

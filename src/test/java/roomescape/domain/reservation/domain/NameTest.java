@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.reservation.domain.reservation.Name;
+import roomescape.domain.member.domain.Name;
 import roomescape.global.exception.ClientIllegalArgumentException;
 
 class NameTest {
