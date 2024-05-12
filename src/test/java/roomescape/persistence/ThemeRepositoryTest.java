@@ -80,7 +80,8 @@ public class ThemeRepositoryTest {
         int limit = 10;
 
         // when
-        List<Theme> popularThemes = themeRepository.findPopularThemes(startDate, endDate, limit);
+        List<Theme> popularThemes = themeRepository.findThemesOrderedByReservationCountInPeriod(startDate, endDate,
+                limit);
 
         // then
         assertThat(popularThemes)

@@ -46,7 +46,8 @@ public class ThemeService {
             LocalDate startDate = LocalDate.now().minusDays(POPULAR_THEME_START_DAY);
             LocalDate endDate = LocalDate.now().minusDays(POPULAR_THEME_END_DAY);
 
-            return themeRepository.findPopularThemes(startDate, endDate, POPULAR_THEME_LIMIT_COUNT).stream()
+            return themeRepository.findThemesOrderedByReservationCountInPeriod(startDate, endDate,
+                            POPULAR_THEME_LIMIT_COUNT).stream()
                     .map(ThemeResponse::from)
                     .toList();
         }
