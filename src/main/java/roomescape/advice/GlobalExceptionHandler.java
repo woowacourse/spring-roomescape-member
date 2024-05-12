@@ -30,8 +30,8 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleUnexpectedException(RuntimeException e) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse(UNEXPECTED_EXCEPTION_ERROR_MESSAGE));
     }
