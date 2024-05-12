@@ -23,6 +23,17 @@ public class Reservation {
         this(null, date, time, theme);
     }
 
+    public static Reservation create(LocalDate date, ReservationTime time, Theme theme) {
+        validate(date);
+        return new Reservation(date, time, theme);
+    }
+
+    private static void validate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new BusinessException(ErrorType.INVALID_REQUEST_ERROR);
+        }
+    }
+
     private void validate(LocalDate date, ReservationTime time) {
         if (date == null || time == null) {
             throw new BusinessException(ErrorType.MISSING_REQUIRED_VALUE_ERROR);

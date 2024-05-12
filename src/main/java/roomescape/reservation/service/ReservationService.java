@@ -67,19 +67,15 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse createMemberReservation(Member member, ReservationRequest reservationRequest) {
+        LocalDate date = LocalDate.parse(reservationRequest.date());
         ReservationTime reservationTime = getReservationTime(reservationRequest.timeId());
         Theme theme = getTheme(reservationRequest.themeId());
-
-        LocalDate date = LocalDate.parse(reservationRequest.date());
-        if (date.isBefore(LocalDate.now())) {
-            throw new BusinessException(ErrorType.INVALID_REQUEST_ERROR);
-        }
 
         if (memberReservationRepository.existBy(date, reservationTime, theme)) {
             throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_ERROR);
         }
 
-        Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
+        Reservation reservation = reservationRepository.save(Reservation.create(date, reservationTime, theme));
         long memberReservationId = memberReservationRepository.save(member, reservation);
 
         return ReservationResponse.from(memberReservationId, reservation, member);
@@ -89,7 +85,6 @@ public class ReservationService {
     public ReservationResponse createMemberReservation(MemberReservationRequest memberReservationRequest) {
         ReservationTime reservationTime = getReservationTime(memberReservationRequest.timeId());
         Theme theme = getTheme(memberReservationRequest.themeId());
-
         LocalDate date = LocalDate.parse(memberReservationRequest.date());
 
         if (reservationRepository.existsBy(date, reservationTime, theme)) {
