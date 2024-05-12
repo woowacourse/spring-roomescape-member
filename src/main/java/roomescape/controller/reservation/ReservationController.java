@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import roomescape.controller.exception.AuthenticationException;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.CreateReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
@@ -43,9 +42,6 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody @Valid final UserCreateReservationRequest request,
             @Valid final LoginMember loginMember) {
-        if (loginMember == null) {
-            throw new AuthenticationException("인증되지 않은 사용자입니다.");
-        }
 
         final CreateReservationRequest create = new CreateReservationRequest(loginMember.id(),
                 request.themeId(), request.date(), request.timeId());

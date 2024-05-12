@@ -19,12 +19,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberService));
+        resolvers.add(new LoginMemberArgumentResolver());
     }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckAdminInterceptor(memberService))
+        registry.addInterceptor(new CheckLoginInterceptor(memberService))
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/error", "/login", "/signup",
+                        "/members", "/themes/popular",
+                        "/css/**", "/*.ico", "/js/**", "/image/**");
+        registry.addInterceptor(new CheckAdminInterceptor())
                 .addPathPatterns("/admin/**");
     }
 }
