@@ -6,6 +6,7 @@ import roomescape.member.exception.MemberExceptionCode;
 
 public enum MemberRole {
 
+    NON_MEMBER("nonMember"),
     MEMBER("member"),
     ADMIN("admin");
 

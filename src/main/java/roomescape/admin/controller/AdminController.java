@@ -33,6 +33,7 @@ public class AdminController {
                 .build();
     }
 
+    @Auth(role = MemberRole.ADMIN)
     @GetMapping("/admin/reservations")
     public List<ReservationResponse> reservationFilteredList(
             @ModelAttribute ReservationFilterRequest reservationFilterRequest) {
