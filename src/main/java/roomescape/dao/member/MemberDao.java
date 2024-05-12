@@ -35,7 +35,8 @@ public class MemberDao {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword());
+                .addValue("password", member.getPassword())
+                .addValue("role", member.getRole().getRoleName());
 
         long id = insertActor.executeAndReturnKey(parameterSource).longValue();
 
@@ -74,5 +75,11 @@ public class MemberDao {
                 rs.getString("name"),
                 Role.of(rs.getString("role"))
         );
+    }
+
+    public Boolean isEmailExist(String email) {
+        String sql = "SELECT EXISTS(SELECT * FROM member WHERE email = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
     }
 }
