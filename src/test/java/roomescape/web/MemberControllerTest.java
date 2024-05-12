@@ -37,6 +37,6 @@ class MemberControllerTest extends ControllerTest {
         // when, then
         mockMvc.perform(get("/members"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$.members", hasSize(2)));
     }
 }

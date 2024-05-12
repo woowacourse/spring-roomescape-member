@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
 import roomescape.service.MemberService;
+import roomescape.web.api.dto.MemberListResponse;
+import roomescape.web.api.dto.MemberResponse;
 
 import java.util.List;
 
@@ -17,9 +19,14 @@ public class MemberController {
     }
 
     @GetMapping("/members")
-    public ResponseEntity<List<Member>> findAll() {
+    public ResponseEntity<MemberListResponse> findAll() {
         List<Member> members = memberService.findAll();
 
-        return ResponseEntity.ok(members);
+        List<MemberResponse> memberResponses = members.stream()
+                .map(Member::getId)
+                .map(MemberResponse::new)
+                .toList();
+
+        return ResponseEntity.ok(new MemberListResponse(memberResponses));
     }
 }
