@@ -52,8 +52,8 @@ public class ReservationService {
         Theme theme = getTheme(reservationAddRequest.themeId());
         Member member = getMember(reservationAddRequest.memberId());
 
-        Reservation reservationRequest = reservationAddRequest.toEntity(reservationTime, theme, member);
-        return reservationRepository.insert(reservationRequest);
+        Reservation reservation = reservationAddRequest.toEntity(reservationTime, theme, member);
+        return reservationRepository.insert(reservation);
     }
 
     private Theme getTheme(Long themeId) {
