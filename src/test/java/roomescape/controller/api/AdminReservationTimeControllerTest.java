@@ -17,7 +17,7 @@ import roomescape.controller.dto.CreateTimeRequest;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-class ReservationTimeControllerTest {
+class AdminReservationTimeControllerTest {
 
     // TODO: 사용자의 role 별로 검증 로직 추가, 프로덕션에 admin이 아니면 예약 시간 추가/삭제 못하도록 로직 추가
 
