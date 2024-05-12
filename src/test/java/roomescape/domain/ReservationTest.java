@@ -10,7 +10,6 @@ import static roomescape.Fixture.VALID_THEME;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.vo.ReservationDate;
 
 class ReservationTest {
 

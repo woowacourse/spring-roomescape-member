@@ -9,15 +9,15 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
+import roomescape.domain.MemberEmail;
+import roomescape.domain.MemberName;
+import roomescape.domain.MemberPassword;
+import roomescape.domain.MemberRole;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.vo.MemberEmail;
-import roomescape.domain.vo.MemberName;
-import roomescape.domain.vo.MemberPassword;
-import roomescape.domain.vo.MemberRole;
-import roomescape.domain.vo.ReservationDate;
-import roomescape.domain.vo.ReservationTime;
 
 @Repository
 public class JdbcReservationRepositoryImpl implements ReservationRepository {

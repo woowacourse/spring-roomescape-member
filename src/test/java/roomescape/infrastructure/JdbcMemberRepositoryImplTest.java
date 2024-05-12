@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Member;
+import roomescape.domain.MemberEmail;
+import roomescape.domain.MemberName;
+import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
-import roomescape.domain.vo.MemberEmail;
-import roomescape.domain.vo.MemberName;
-import roomescape.domain.vo.MemberPassword;
-import roomescape.domain.vo.MemberRole;
+import roomescape.domain.MemberRole;
 
 @JdbcTest
 class JdbcMemberRepositoryImplTest {

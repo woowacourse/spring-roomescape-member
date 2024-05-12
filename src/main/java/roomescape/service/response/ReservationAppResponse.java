@@ -1,7 +1,7 @@
 package roomescape.service.response;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.vo.ReservationDate;
+import roomescape.domain.ReservationDate;
 
 public record ReservationAppResponse(
     Long id,

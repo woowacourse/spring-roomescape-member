@@ -1,4 +1,4 @@
-package roomescape.domain.vo;
+package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,12 +9,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class MemberNameTest {
-
+class MemberRoleTest {
     @DisplayName("생성 테스트")
     @Test
     void create() {
-        assertThatCode(() -> new MemberName("하이용"))
+        assertThatCode(() -> new MemberRole("ADMIN"))
             .doesNotThrowAnyException();
     }
 
@@ -22,8 +21,8 @@ class MemberNameTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"11111111111"})
-    void create_Fail(String name) {
-        assertThatThrownBy(() -> new MemberName(name))
+    void create_Fail(String role) {
+        assertThatThrownBy(() -> new MemberRole(role))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

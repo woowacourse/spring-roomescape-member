@@ -1,4 +1,4 @@
-package roomescape.domain.vo;
+package roomescape.domain;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;

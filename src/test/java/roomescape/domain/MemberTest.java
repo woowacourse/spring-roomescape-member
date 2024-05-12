@@ -8,7 +8,6 @@ import static roomescape.Fixture.VALID_USER_PASSWORD;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.vo.MemberRole;
 
 class MemberTest {
 

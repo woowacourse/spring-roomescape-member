@@ -1,4 +1,4 @@
-package roomescape.domain.vo;
+package roomescape.domain;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.Objects;

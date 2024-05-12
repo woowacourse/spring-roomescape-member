@@ -16,10 +16,10 @@ import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.domain.vo.ReservationTime;
 
 @JdbcTest
 class JdbcReservationRepositoryImplTest {
