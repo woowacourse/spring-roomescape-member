@@ -1,18 +1,17 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.TestFixture.MEMBER_BROWN;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.Name;
-import roomescape.domain.member.Role;
 
 import java.util.List;
 import java.util.Optional;
 
-class MemberJdbcDaoTest extends DaoTest {
+class MemberDaoTest extends DaoTest {
 
     @Autowired
     private MemberDao memberDao;
@@ -21,7 +20,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("사용자를 저장한다.")
     void saveMember() {
         // given
-        final Member member = new Member(new Name("브라운"), "brown@email.com", "1234", Role.USER);
+        final Member member = MEMBER_BROWN();
 
         // when
         final Member savedMember = memberDao.save(member);
@@ -34,7 +33,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("Id에 해당하는 사용자를 조회한다.")
     void findMemberById() {
         // given
-        final Member savedMember = memberDao.save(new Member(new Name("브라운"), "brown@email.com", "1234", Role.USER));
+        final Member savedMember = memberDao.save(MEMBER_BROWN());
 
         // when
         final Optional<Member> member = memberDao.findById(savedMember.getId());
@@ -60,7 +59,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("email에 해당하는 사용자를 조회한다.")
     void findMemberByEmail() {
         // given
-        final Member savedMember = memberDao.save(new Member(new Name("브라운"), "brown@email.com", "1234", Role.USER));
+        final Member savedMember = memberDao.save(MEMBER_BROWN());
 
         // when
         final Optional<Member> member = memberDao.findByEmail(savedMember.getEmail());
@@ -86,7 +85,7 @@ class MemberJdbcDaoTest extends DaoTest {
     @DisplayName("사용자 전체 목록을 조회한다.")
     void findAllMembers() {
         // given
-        memberDao.save(new Member(new Name("브라운"), "brown@email.com", "1234", Role.USER));
+        memberDao.save(MEMBER_BROWN());
 
         // when
         final List<Member> members = memberDao.findAll();

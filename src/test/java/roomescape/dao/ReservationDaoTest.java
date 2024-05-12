@@ -1,16 +1,15 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.TestFixture.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.Name;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.member.Role;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.ReservationFilterParam;
 
@@ -35,115 +34,96 @@ class ReservationDaoTest extends DaoTest {
     private Member member;
     private ReservationTime reservationTime;
     private Theme theme;
+    private Reservation reservation;
 
     @BeforeEach
     void setUp() {
-        member = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234", Role.USER));
-        reservationTime = reservationTimeDao.save(new ReservationTime("19:00"));
-        theme = themeDao.save(new Theme("호러", "매우 무섭습니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        member = memberDao.save(MEMBER_BROWN());
+        reservationTime = reservationTimeDao.save(RESERVATION_TIME_SIX());
+        theme = themeDao.save(THEME_HORROR());
+        reservation = reservationDao.save(new Reservation(member, DATE_MAY_EIGHTH, reservationTime, theme));
     }
 
     @Test
     @DisplayName("예약을 저장한다.")
     void save() {
         // given
-        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
+        final Reservation reservation = new Reservation(member, DATE_MAY_NINTH, reservationTime, theme);
 
         // when
-        final Reservation savedReservation = reservationDao.save(reservation);
+        final Reservation actual = reservationDao.save(reservation);
 
         // then
-        assertThat(savedReservation.getId()).isNotNull();
+        assertThat(actual.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("모든 예약 목록을 조회한다.")
     void findAll() {
-        // given
-        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
-        reservationDao.save(reservation);
-
         // when
-        final List<Reservation> reservations = reservationDao.findAll();
+        final List<Reservation> actual = reservationDao.findAll();
 
         // then
-        assertThat(reservations).hasSize(1);
+        assertThat(actual).hasSize(1);
     }
 
     @Test
     @DisplayName("테마, 사용자, 예약 날짜에 따른 예약 목록을 조회한다.")
     void findAllByThemeAndMemberAndPeriod() {
         // given
-        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
-        reservationDao.save(reservation);
-        final Reservation reservation2 = new Reservation(member, "2034-05-09", reservationTime, theme);
-        reservationDao.save(reservation2);
         final ReservationFilterParam reservationFilterParam = new ReservationFilterParam(
-                theme.getId(), member.getId(), LocalDate.parse("2034-05-08"), LocalDate.parse("2034-05-09"));
+                theme.getId(), member.getId(), LocalDate.parse(DATE_MAY_EIGHTH), LocalDate.parse(DATE_MAY_NINTH));
 
         // when
-        final List<Reservation> reservations = reservationDao.findAllByThemeAndMemberAndPeriod(reservationFilterParam);
+        final List<Reservation> actual = reservationDao.findAllByThemeAndMemberAndPeriod(reservationFilterParam);
 
         // then
-        assertThat(reservations).hasSize(2);
+        assertThat(actual).hasSize(1);
     }
 
     @Test
     @DisplayName("동일 시간대의 예약 목록을 조회한다.")
     void findAllByDateAndTime() {
-        // given
-        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
-        reservationDao.save(reservation);
-
         // when
-        final List<Reservation> reservations = reservationDao.findAllByDateAndTimeAndThemeId(
-                LocalDate.parse("2034-05-08"), reservationTime, 1L);
+        final List<Reservation> actual = reservationDao.findAllByDateAndTimeAndThemeId(
+                LocalDate.parse(DATE_MAY_EIGHTH), reservationTime, 1L);
 
         // then
-        assertThat(reservations).hasSize(1);
+        assertThat(actual).hasSize(1);
     }
 
     @Test
     @DisplayName("Id에 해당하는 예약이 존재하면 true를 반환한다.")
     void returnTrueWhenExistById() {
-        // given
-        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
-        final Reservation savedReservation = reservationDao.save(reservation);
-
         // when
-        final boolean isExist = reservationDao.existById(savedReservation.getId());
+        final boolean actual = reservationDao.existById(reservation.getId());
 
         // then
-        assertThat(isExist).isTrue();
+        assertThat(actual).isTrue();
     }
 
     @Test
     @DisplayName("Id에 해당하는 예약이 존재하지 않으면 false를 반환한다.")
     void returnFalseWhenNotExistById() {
         // given
-        final Long id = 1L;
+        final Long id = 2L;
 
         // when
-        final boolean isExist = reservationDao.existById(id);
+        final boolean actual = reservationDao.existById(id);
 
         // then
-        assertThat(isExist).isFalse();
+        assertThat(actual).isFalse();
     }
 
     @Test
     @DisplayName("Id에 해당하는 예약을 삭제한다.")
     void deleteById() {
-        // given
-        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
-        final Reservation savedReservation = reservationDao.save(reservation);
-
         // when
-        reservationDao.deleteById(savedReservation.getId());
+        reservationDao.deleteById(reservation.getId());
 
         // then
-        final List<Reservation> reservations = reservationDao.findAll();
-        assertThat(reservations).hasSize(0);
+        final List<Reservation> actual = reservationDao.findAll();
+        assertThat(actual).hasSize(0);
     }
 
     @Test
@@ -153,24 +133,20 @@ class ReservationDaoTest extends DaoTest {
         final long timeId = 2L;
 
         // when
-        final int count = reservationDao.countByTimeId(timeId);
+        final int actual = reservationDao.countByTimeId(timeId);
 
         // then
-        assertThat(count).isEqualTo(0);
+        assertThat(actual).isEqualTo(0);
     }
 
     @Test
     @DisplayName("날짜와 themeId로 예약 목록을 조회한다.")
     void findAllByDateAndThemeId() {
-        // given
-        final Reservation reservation = new Reservation(member, "2034-05-08", reservationTime, theme);
-        reservationDao.save(reservation);
-
         // when
-        final List<Long> reservationsByDateAndThemeId = reservationDao.findAllTimeIdsByDateAndThemeId(
-                LocalDate.parse("2034-05-08"), theme.getId());
+        final List<Long> actual = reservationDao.findAllTimeIdsByDateAndThemeId(
+                LocalDate.parse(DATE_MAY_EIGHTH), theme.getId());
 
         // then
-        assertThat(reservationsByDateAndThemeId).hasSize(1);
+        assertThat(actual).hasSize(1);
     }
 }

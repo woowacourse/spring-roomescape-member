@@ -3,6 +3,8 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static roomescape.TestFixture.ADMIN;
+import static roomescape.TestFixture.MEMBER_MIA;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.Name;
-import roomescape.domain.member.Role;
 import roomescape.dto.MemberResponse;
 
 import java.util.List;
@@ -32,7 +32,7 @@ class MemberServiceTest {
     @DisplayName("id에 해당하는 사용자를 조회한다.")
     void findById() {
         // given
-        final Member expectedMember = new Member(1L, new Name("냥인"), "nyangin@email.com", "1234", Role.USER);
+        final Member expectedMember = MEMBER_MIA(1L);
         given(memberDao.findById(anyLong()))
                 .willReturn(Optional.of(expectedMember));
 
@@ -47,8 +47,8 @@ class MemberServiceTest {
     @DisplayName("모든 사용자를 조회한다.")
     void findAll() {
         // given
-        final Member member1 = new Member(1L, new Name("냥인"), "nyangin@email.com", "1234", Role.USER);
-        final Member member2 = new Member(2L, new Name("미아"), "mia@email.com", "1234", Role.USER);
+        final Member member1 = MEMBER_MIA(1L);
+        final Member member2 = ADMIN(2L);
         final List<Member> initial_members = List.of(member1, member2);
         given(memberDao.findAll()).willReturn(initial_members);
 
