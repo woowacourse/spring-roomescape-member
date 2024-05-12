@@ -45,15 +45,21 @@ public class ReservationJdbcDao implements ReservationDao {
     @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("name", reservation.getMemberName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("theme_id", reservation.getThemeId());
-
-        long id = jdbcInsert.executeAndReturnKey(sqlParameterSource)
+                .addValue("theme_id", reservation.getThemeId()
+                );
+        long reservationId = jdbcInsert.executeAndReturnKey(sqlParameterSource)
                 .longValue();
-        reservation.setId(id);
+        reservation.setId(reservationId);
         return reservation;
+    }
+
+    @Override
+    public void saveMemberReservation(long reservationId, long memberId) {
+        String sql = "INSERT INTO member_reservation (reservation_id, member_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, String.valueOf(reservationId), String.valueOf(memberId));
     }
 
     @Override

@@ -6,7 +6,9 @@ import roomescape.reservation.domain.Reservation;
 
 public interface ReservationDao {
 
-    Reservation save(Reservation reservation);
+    Reservation save(Reservation reservationSimpleInfo);
+
+    void saveMemberReservation(long reservationId, long memberId);
 
     List<Reservation> findAllOrderByDateAndTime();
 

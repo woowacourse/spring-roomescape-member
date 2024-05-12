@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.exception.SaveDuplicateContentException;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.dto.MemberProfileInfo;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -21,19 +23,23 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(ReservationRequest reservationRequest,
+            MemberProfileInfo memberProfileInfo) {
         Time time = timeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
         validateReservationRequest(reservationRequest, time);
         Reservation reservation = reservationRequest.toReservation(time, theme);
         Reservation savedReservation = reservationDao.save(reservation);
+        reservationDao.saveMemberReservation(savedReservation.getId(), memberProfileInfo.id());
         return ReservationResponse.fromReservation(savedReservation);
     }
 

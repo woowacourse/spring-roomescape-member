@@ -8,7 +8,7 @@ import roomescape.time.domain.Time;
 
 public record ReservationRequest(
         @NotNull(message = "날짜가 존재하지 않습니다.") LocalDate date,
-        @NotNull(message = "예약자명이 존재하지 않습니다.") String name,
+        @NotNull(message = "예약자 정보가 입력되지 않았습니다.") String name,
         long timeId,
         long themeId
 ) {
