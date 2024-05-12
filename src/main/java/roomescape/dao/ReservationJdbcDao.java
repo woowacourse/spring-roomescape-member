@@ -24,6 +24,17 @@ import java.util.Objects;
 @Repository
 public class ReservationJdbcDao implements ReservationDao {
 
+    private static final String RESERVATION_BASIC_SQL = """
+                SELECT r.id AS reservation_id, r.member_id, r.date, 
+                    t.id AS time_id, t.start_at AS time_value,
+                    th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
+                """;
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNumber) -> new Reservation(
@@ -68,32 +79,13 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAll() {
-        final String sql = """
-                SELECT r.id AS reservation_id, r.member_id, r.date, 
-                    t.id AS time_id, t.start_at AS time_value,
-                    th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
-                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN member AS m ON r.member_id = m.id;
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(RESERVATION_BASIC_SQL, rowMapper);
     }
 
     @Override
     public List<Reservation> findAllByThemeAndMemberAndPeriod(final ReservationFilterParam param) {
-        String sql = """
-                SELECT r.id AS reservation_id, r.member_id, r.date, 
-                    t.id AS time_id, t.start_at AS time_value,
-                    th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
-                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN member AS m ON r.member_id = m.id
-                WHERE 1=1 
-                """;
+        String sql = RESERVATION_BASIC_SQL;
+        sql += "WHERE 1=1 ";
 
         final MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         if (param.themeId() != null) {
@@ -114,18 +106,8 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAllByDateAndTimeAndThemeId(final LocalDate date, final ReservationTime time, final Long themeId) {
-        final String sql = """
-                SELECT 
-                    r.id AS reservation_id, r.member_id, r.date, 
-                    t.id AS time_id, t.start_at AS time_value,
-                    th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail,
-                    m.id AS member_id, m.name AS member_name, m.email AS member_email, m.password AS member_password, m.role AS member_role
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN member AS m ON r.member_id = m.id
-                WHERE `date` = :date AND t.start_at = :startAt AND th.id = :themeId
-                """;
+        String sql = RESERVATION_BASIC_SQL;
+        sql += "WHERE `date` = :date AND t.start_at = :startAt AND th.id = :themeId";
 
         final SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("date", Date.valueOf(date))
