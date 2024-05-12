@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import roomescape.member.domain.MemberInfo;
 import roomescape.reservation.dto.reservation.AdminReservationRequest;
 import roomescape.reservation.dto.reservation.ReservationRequest;
 import roomescape.reservation.dto.reservation.ReservationResponse;
+import roomescape.reservation.dto.reservation.ReservationSearchRequest;
 import roomescape.reservation.service.ReservationService;
 
 @Controller
@@ -51,5 +53,11 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations/search")
+    public ResponseEntity<List<ReservationResponse>> searchReservation(@ModelAttribute @Valid ReservationSearchRequest request) {
+        List<ReservationResponse> response = reservationService.searchReservation(request);
+        return ResponseEntity.ok().body(response);
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.reservation.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,6 +50,34 @@ public class ReservationDao {
                         ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(findAllSql, getReservationRowMapper());
+    }
+
+    public List<Reservation> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                        SELECT 
+                            r.id as reservation_id, 
+                            r.date, 
+                            t.id as time_id, 
+                            t.start_at as time_value, 
+                            tm.id as theme_id, 
+                            tm.name as theme_name, 
+                            tm.description,     
+                            tm.thumbnail,
+                            r.member_id as member_id,
+                            m.name as member_name,
+                            m.role as member_role
+                        FROM reservation AS r 
+                        INNER JOIN reservation_time AS t 
+                        ON r.time_id = t.id 
+                        INNER JOIN theme AS tm 
+                        ON r.theme_id = tm.id AND tm.id = ?
+                        INNER JOIN member AS m
+                        ON r.member_id = m.id AND m.id = ?
+                        WHERE r.date BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(sql, getReservationRowMapper(), themeId, memberId, dateFrom.toString(),
+                dateTo.toString());
     }
 
     public Reservation insert(Reservation reservation) {

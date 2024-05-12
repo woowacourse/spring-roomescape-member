@@ -15,6 +15,7 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.reservation.AdminReservationRequest;
 import roomescape.reservation.dto.reservation.ReservationRequest;
 import roomescape.reservation.dto.reservation.ReservationResponse;
+import roomescape.reservation.dto.reservation.ReservationSearchRequest;
 
 @Service
 public class ReservationService {
@@ -88,5 +89,14 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationDao.deleteById(id);
+    }
+
+    public List<ReservationResponse> searchReservation(ReservationSearchRequest request) {
+        if (request.dateTo().isBefore(request.dateFrom())) {
+            throw new IllegalArgumentException("종료 날짜는 시작 날짜 이전일 수 없습니다.");
+        }
+        return reservationDao.searchReservation(request.themeId(), request.memberId(), request.dateFrom(), request.dateTo()).stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 }
