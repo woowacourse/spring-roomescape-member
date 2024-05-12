@@ -36,12 +36,12 @@ class ThemeIntegrationTest extends IntegrationTest {
                     "브라운", "1999-09-18", "1", "1");
 
             RestAssured.given().log().all()
-                    .when().get("/themes/ranking")
+                    .when().get("/themes/popular")
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(1));
 
-            List<Map<String, Object>> response = RestAssured.get("/themes/ranking")
+            List<Map<String, Object>> response = RestAssured.get("/themes/popular")
                     .as(new TypeRef<>() {
                     });
             assertThat(response.get(0)).containsEntry("id", 1);

@@ -433,7 +433,7 @@ Content-Type: application/json
 Request
 
 ```
-GET /themes/ranking
+GET /themes/popular
 ```
 
 Response
