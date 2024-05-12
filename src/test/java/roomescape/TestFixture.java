@@ -40,15 +40,15 @@ public class TestFixture {
     }
 
     public static Member MEMBER_MIA() {
-        return new Member(new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_PASSWORD, Role.USER);
+        return new Member(new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_PASSWORD, Role.MEMBER);
     }
 
     public static Member MEMBER_MIA(final Long id) {
-        return new Member(id, new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_PASSWORD, Role.USER);
+        return new Member(id, new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_PASSWORD, Role.MEMBER);
     }
 
     public static Member MEMBER_BROWN() {
-        return new Member(new Name(MEMBER_BROWN_NAME), MEMBER_BROWN_EMAIL, MEMBER_PASSWORD, Role.USER);
+        return new Member(new Name(MEMBER_BROWN_NAME), MEMBER_BROWN_EMAIL, MEMBER_PASSWORD, Role.MEMBER);
     }
 
     public static ReservationTime RESERVATION_TIME_SIX() {
