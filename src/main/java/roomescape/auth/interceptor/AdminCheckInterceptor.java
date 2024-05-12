@@ -9,10 +9,10 @@ import roomescape.auth.service.AuthService;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 
-public class RoleCheckInterceptor implements HandlerInterceptor {
+public class AdminCheckInterceptor implements HandlerInterceptor {
     private final AuthService authService;
 
-    public RoleCheckInterceptor(final AuthService authService) {
+    public AdminCheckInterceptor(final AuthService authService) {
         this.authService = authService;
     }
 
@@ -22,7 +22,7 @@ public class RoleCheckInterceptor implements HandlerInterceptor {
         String token = JwtTokenExtractor.extractTokenFromCookies(request.getCookies());
         Member member = authService.findMemberByToken(token);
         if (member == null || !member.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("[ERROR] 접근 권한이 없는 요청입니다.");
+            throw new SecurityException("[ERROR] 접근 권한이 없습니다.");
         }
         return true;
     }
