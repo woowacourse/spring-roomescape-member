@@ -32,7 +32,7 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
     }
 
     @Override
-    public Object resolveArgument(
+    public AuthenticatedMember resolveArgument(
             final MethodParameter parameter,
             final ModelAndViewContainer mavContainer,
             final NativeWebRequest webRequest,
