@@ -28,7 +28,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         logger.trace("request = {}", request.getRequestURI());
 
         try {
-            String token = authenticationExtractor.extract(request, LoginController.TOKEN_NAME);
+            String token = authenticationExtractor.extract(request, authService.getTokenName());
             authService.validateToken(token);
         } catch (AuthenticationException e) {
             response.sendRedirect("/login");

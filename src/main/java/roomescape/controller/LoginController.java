@@ -17,8 +17,6 @@ import roomescape.service.dto.MemberResponse;
 @Controller
 public class LoginController {
 
-    public static final String TOKEN_NAME = "token";
-
     private final MemberService memberService;
     private final AuthService authService;
 
@@ -37,7 +35,7 @@ public class LoginController {
         MemberResponse memberResponse = memberService.findByEmailAndPassword(tokenRequest.email(), tokenRequest.password());
         String accessToken = authService.createToken(memberResponse);
 
-        Cookie cookie = new Cookie(TOKEN_NAME, accessToken);
+        Cookie cookie = new Cookie(authService.getTokenName(), accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -53,7 +51,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(TOKEN_NAME, null);
+        Cookie cookie = new Cookie(authService.getTokenName(), null);
         cookie.setMaxAge(0);
 
         response.addCookie(cookie);

@@ -11,6 +11,11 @@ import roomescape.service.dto.MemberResponse;
 @Service
 public class AuthService {
 
+    private static final String TOKEN_NAME = "token";
+    private static final String CLAIM_SUB = "sub";
+    private static final String CLAIM_NAME = "name";
+    private static final String CLAIM_ROLE = "role";
+
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthService(JwtTokenProvider jwtTokenProvider) {
@@ -19,9 +24,9 @@ public class AuthService {
 
     public String createToken(MemberResponse memberResponse) {
         Map<String, Object> payload = Map.of(
-                "sub", String.valueOf(memberResponse.id()),
-                "name", memberResponse.name(),
-                "role", memberResponse.role()
+                CLAIM_SUB, String.valueOf(memberResponse.id()),
+                CLAIM_NAME, memberResponse.name(),
+                CLAIM_ROLE, memberResponse.role()
         );
 
         return jwtTokenProvider.createToken(payload);
@@ -32,9 +37,9 @@ public class AuthService {
         Map<String, Object> payload = jwtTokenProvider.getPayload(token);
 
         return new LoginMember(
-                Long.parseLong((String) payload.get("sub")),
-                (String) payload.get("name"),
-                Role.valueOf((String) payload.get("role"))
+                Long.parseLong((String) payload.get(CLAIM_SUB)),
+                (String) payload.get(CLAIM_NAME),
+                Role.valueOf((String) payload.get(CLAIM_ROLE))
         );
     }
 
@@ -42,5 +47,9 @@ public class AuthService {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new AuthenticationException();
         }
+    }
+
+    public String getTokenName() {
+        return TOKEN_NAME;
     }
 }
