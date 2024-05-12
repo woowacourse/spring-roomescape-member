@@ -1,7 +1,9 @@
 package roomescape.service;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.dto.login.LoginMember;
 import roomescape.dto.login.LoginRequest;
 import roomescape.dto.member.MemberPayload;
@@ -31,10 +33,14 @@ public class AuthService {
         return new TokenDto(token);
     }
 
-    public LoginMember checkLogin(TokenDto tokenDto) {
+    public boolean isValidateToken(TokenDto tokenDto) {
         String token = tokenDto.accessToken();
-        Long userId = extractUserIdByToken(token);
-        return new LoginMember(userId);
+        return token != null && jwtProvider.isValidateToken(token);
+    }
+
+    public LoginMember extractLoginMemberByToken(TokenDto tokenDto) throws Exception {
+        String token = tokenDto.accessToken();
+        return createLoginMemberByToken(token);
     }
 
     private Member authenticateUser(LoginRequest request) {
@@ -51,32 +57,22 @@ public class AuthService {
                 ));
     }
 
-    private Long extractUserIdByToken(String token) {
-        validateToken(token);
-        String tokenSubject = jwtProvider.getSubject(token);
-        return parseLong(tokenSubject);
+    private LoginMember createLoginMemberByToken(String token) throws Exception {
+        try {
+            Claims claims = jwtProvider.getClaims(token);
+            Long userId = Long.parseLong(jwtProvider.getSubject(token));
+            String userName = claims.get("name", String.class);
+            String userEmail = claims.get("email", String.class);
+            Role userRole = claims.get("role", Role.class);
+            return new LoginMember(userId, userName, userEmail, userRole);
+        } catch (Exception e) {
+            throw new Exception("검증되지 않은 토큰입니다. 먼저 토큰 검증을 해주세요.");
+        }
     }
 
     private void validatePassword(LoginRequest request, Member memberToLogin) {
         if (!passwordEncoder.matches(request.password(), memberToLogin.getPassword())) {
             throw new ClientErrorExceptionWithLog("[ERROR] 잘못된 비밀번호 입니다.");
-        }
-    }
-
-    private void validateToken(String token) {
-        if (token == null || !jwtProvider.isValidateToken(token)) {
-            throw new ClientErrorExceptionWithLog("[ERROR] 유효한 토큰이 아닙니다.");
-        }
-    }
-
-    private Long parseLong(String value) {
-        try {
-            return Long.valueOf(value);
-        } catch (NumberFormatException e) {
-            throw new ClientErrorExceptionWithLog(
-                    "[ERROR] 토큰의 사용자 ID 형식이 유효하지 않습니다.",
-                    "subject(userId) : " + value
-            );
         }
     }
 }
