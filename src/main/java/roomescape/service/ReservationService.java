@@ -52,7 +52,7 @@ public class ReservationService {
         return reservation.get();
     }
 
-    public Reservation createByAdmin(ReservationRequest request) {
+    public Reservation createByAdmin(Member admin, ReservationRequest request) {
         requireExistsByAttributes(request);
         Member member = memberDao.findById(request.memberId())
                 .orElseThrow(EntityNotFoundException::new);

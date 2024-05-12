@@ -4,11 +4,12 @@ GET http://localhost:8080/reservations
 ### RESERVATION create
 POST http://localhost:8080/reservations
 Content-Type: application/json
+Cookie: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6ZXVzQHdvb3dhLmNvbSIsImlhdCI6MTcxNTUzMzM3OSwiZXhwIjoxNzE1NTM2OTc5fQ.-Jaj0TQCll4jZAOx6VC-aDucO-ag9UPDIVVzcupQWGk
 
 {
-  "name": "pond",
-  "date": "2021-03-01",
-  "timeId": 1
+  "date": "2024-06-01",
+  "timeId": 1,
+  "themeId": 1
 }
 
 ### RESERVATION_TIME getAll
@@ -39,4 +40,4 @@ Content-Type: application/json
 
 ### Login Check
 GET http://localhost:8080/login/check
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6ZXVzQHdvb3dhLmNvbSIsImlhdCI6MTcxNTUwODQwNiwiZXhwIjoxNzE1NTEyMDA2fQ.kai-MV7T8j7KZhhHAjQt8TAH1WN18Hw9fzUP6HD-cDA
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6ZXVzQHdvb3dhLmNvbSIsImlhdCI6MTcxNTUzMzM3OSwiZXhwIjoxNzE1NTM2OTc5fQ.-Jaj0TQCll4jZAOx6VC-aDucO-ag9UPDIVVzcupQWGk
