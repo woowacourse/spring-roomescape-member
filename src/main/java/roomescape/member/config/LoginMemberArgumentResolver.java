@@ -1,6 +1,5 @@
 package roomescape.member.config;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.core.MethodParameter;
@@ -30,8 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Cookie[] cookies = request.getCookies();
-        String token = authService.extractTokenFromCookie(cookies);
+        String token = authService.extractTokenFromCookie(request);
         long id = authService.findMemberIdByToken(token);
         return memberService.findMemberById(id);
     }

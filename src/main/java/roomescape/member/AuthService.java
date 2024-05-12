@@ -2,6 +2,7 @@ package roomescape.member;
 
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,8 @@ public class AuthService {
                 .getBody().getSubject());
     }
 
-    public String extractTokenFromCookie(Cookie[] cookies) {
+    public String extractTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
