@@ -20,7 +20,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String accessToken = authService.extractTokenFromCookie(request);
+        String accessToken = authService.extractToken(request);
         long memberId = authService.findMemberIdByToken(accessToken);
         Member member = memberService.findMemberById(memberId);
 

@@ -43,7 +43,7 @@ public class AuthService {
                 .getBody().getSubject());
     }
 
-    public String extractTokenFromCookie(HttpServletRequest request) {
+    public String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {

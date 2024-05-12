@@ -29,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = authService.extractTokenFromCookie(request);
+        String token = authService.extractToken(request);
         long id = authService.findMemberIdByToken(token);
         return memberService.findMemberById(id);
     }
