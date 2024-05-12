@@ -12,21 +12,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ExceptionResponse> handleJwtException(JwtException e) {
+    @ExceptionHandler({JwtException.class, IllegalArgumentException.class, MethodArgumentNotValidException.class})
+    public ResponseEntity<ExceptionResponse> handleBadRequestException(Exception e) {
         return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ExceptionResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
-    }
-
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception e) {
         log.error(e.getMessage());
