@@ -16,11 +16,6 @@ public class AdminReservationPageController {
         this.reservationRepository = reservationRepository;
     }
 
-    @GetMapping("/admin")
-    public String getAdminPage() {
-        return "/admin/index";
-    }
-
     @GetMapping("/admin/reservation")
     public String getReservationPage(Model model) {
         List<ReservationResponse> reservationResponses = reservationRepository.findAll()
