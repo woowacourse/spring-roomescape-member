@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
+import roomescape.constant.CommonKey;
 import roomescape.domain.member.Member;
 import roomescape.exception.AuthorizationException;
 import roomescape.service.AuthService;
@@ -11,7 +12,6 @@ import roomescape.service.AuthService;
 @Component
 public class AuthenticationExtractor {
 
-    private static final String TOKEN_KEY = "token";
     private static final String UNAUTHORIZED_MESSAGE = "접근 권한이 없는 요청입니다.";
 
     private final AuthService authService;
@@ -26,7 +26,7 @@ public class AuthenticationExtractor {
             throw new AuthorizationException(UNAUTHORIZED_MESSAGE);
         }
         Cookie cookie = Arrays.stream(cookies)
-                .filter(element -> element.getName().equals(TOKEN_KEY))
+                .filter(element -> CommonKey.TOKEN_KEY.isTokenKey(element.getName()))
                 .findFirst()
                 .orElseThrow(() -> new AuthorizationException(UNAUTHORIZED_MESSAGE));
 

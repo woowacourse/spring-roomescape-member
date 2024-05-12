@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.config.LoginUser;
+import roomescape.constant.CommonKey;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginCheckResponse;
 import roomescape.dto.member.LoginRequest;
@@ -21,8 +22,6 @@ import roomescape.service.MemberService;
 
 @RestController
 public class MemberController {
-
-    private static final String TOKEN_KEY = "token";
 
     private final MemberService memberService;
     private final AuthService authService;
@@ -52,7 +51,7 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
         authService.checkLoginInfo(loginRequest);
         LoginResponse loginResponse = authService.createToken(loginRequest);
-        ResponseCookie cookie = ResponseCookie.from(TOKEN_KEY, loginResponse.getAccessToken())
+        ResponseCookie cookie = ResponseCookie.from(CommonKey.TOKEN_KEY.getKey(), loginResponse.getAccessToken())
                 .path("/")
                 .httpOnly(true)
                 .build();
@@ -66,7 +65,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        ResponseCookie cookie = ResponseCookie.from(TOKEN_KEY, "")
+        ResponseCookie cookie = ResponseCookie.from(CommonKey.TOKEN_KEY.getKey(), "")
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
