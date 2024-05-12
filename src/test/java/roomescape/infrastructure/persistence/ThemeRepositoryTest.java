@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Description;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
+import roomescape.domain.Thumbnail;
 import roomescape.support.IntegrationTestSupport;
 
 class ThemeRepositoryTest extends IntegrationTestSupport {
@@ -64,7 +65,8 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     void create() {
         Theme theme = new Theme(
                 new ThemeName("레벨 1 방탈출"),
-                new Description("description"), "woowahan.com"
+                new Description("description"),
+                new Thumbnail("thumbnail")
         );
 
         target.save(theme);

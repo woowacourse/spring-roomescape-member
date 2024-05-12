@@ -39,7 +39,7 @@ class ReservationFactoryTest {
         Theme theme = new Theme(
                 new ThemeName("레벨 1 방탈출"),
                 new Description("description"),
-                "thumbnail"
+                new Thumbnail("thumbnail")
         );
 
         assertThatCode(() -> reservationFactory.create(date, member, time, theme))
@@ -60,7 +60,7 @@ class ReservationFactoryTest {
         Theme theme = new Theme(
                 new ThemeName("레벨 1 방탈출"),
                 new Description("description"),
-                "thumbnail"
+                new Thumbnail("thumbnail")
         );
 
         assertThatThrownBy(() -> reservationFactory.create(previousDate, member, time, theme))
@@ -82,7 +82,7 @@ class ReservationFactoryTest {
         Theme theme = new Theme(
                 new ThemeName("레벨 1 방탈출"),
                 new Description("description"),
-                "thumbnail"
+                new Thumbnail("thumbnail")
         );
 
         assertThatThrownBy(() -> reservationFactory.create(todayDate, member, previousTime, theme))

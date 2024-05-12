@@ -23,7 +23,7 @@ class ReservationTest {
         Theme theme = new Theme(
                 new ThemeName("레벨 1 방탈출"),
                 new Description("description"),
-                "thumbnail"
+                new Thumbnail("thumbnail")
         );
 
         assertThatCode(() -> new Reservation(date, member, time, theme))

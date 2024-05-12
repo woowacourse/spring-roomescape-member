@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Description;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
+import roomescape.domain.Thumbnail;
 
 @Repository
 public class ThemeRepository {
@@ -73,6 +74,6 @@ public class ThemeRepository {
                 resultSet.getLong("id"),
                 new ThemeName(resultSet.getString("name")),
                 new Description(resultSet.getString("description")),
-                resultSet.getString("thumbnail"));
+                new Thumbnail(resultSet.getString("thumbnail")));
     }
 }
