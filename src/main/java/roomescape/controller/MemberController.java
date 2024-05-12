@@ -23,7 +23,7 @@ public class MemberController {
     @GetMapping("/members")
     public ResponseEntity<List<Member>> members() {
         final List<Member> members = memberService.findAll();
-        return ResponseEntity.ok().body(members);
+        return ResponseEntity.ok(members);
     }
 
     @PostMapping("/members")
