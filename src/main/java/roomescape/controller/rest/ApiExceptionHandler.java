@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.EntityExistsException;
 import roomescape.exception.EntityNotFoundException;
@@ -35,12 +36,17 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Void> handleAuthenticationException(AuthenticationException ignored) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<Void> handleExpiredJwtException(ExpiredJwtException ignored) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<Void> handleSignatureException(SignatureException ignored) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
