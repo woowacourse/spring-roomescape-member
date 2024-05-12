@@ -31,7 +31,7 @@ public class TokenProvider {
             final var name = claims.get("name", String.class);
             final var role = claims.get("role", String.class);
             return new MemberAuthRequest(id, name, role);
-        } catch (final JwtException e) {
+        } catch (final IllegalArgumentException | JwtException e) {
             throw new CustomBadRequest("유효하지 않은 토큰입니다.");
         }
     }
