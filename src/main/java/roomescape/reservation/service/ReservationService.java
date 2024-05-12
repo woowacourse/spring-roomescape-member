@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberDao;
+import roomescape.reservation.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.repository.ReservationDao;
@@ -25,14 +26,14 @@ public class ReservationService {
     private final ThemeDao themeDao;
     private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao,MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
-        this.memberDao=memberDao;
+        this.memberDao = memberDao;
     }
 
-    public List<Reservation> findAll() {
+    public List<ReservationResponse> findAll() {
         return reservationDao.findAll();
     }
 
@@ -65,9 +66,9 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> filter(long themeId, long memberId, String dateFrom, String dateTo) {
-        LocalDate from=LocalDate.parse(dateFrom);
-        LocalDate to=LocalDate.parse(dateTo);
+    public List<ReservationResponse> filter(long themeId, long memberId, String dateFrom, String dateTo) {
+        LocalDate from = LocalDate.parse(dateFrom);
+        LocalDate to = LocalDate.parse(dateTo);
         return reservationDao.filter(themeId, memberId, from, to);
     }
 }
