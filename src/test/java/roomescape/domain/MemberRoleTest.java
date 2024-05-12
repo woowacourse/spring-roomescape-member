@@ -29,7 +29,7 @@ class MemberRoleTest {
                 .hasMessage("존재하지 않는 역할입니다.");
     }
 
-    public static List<Arguments> roleSource() {
+    private static List<Arguments> roleSource() {
         return List.of(
                 Arguments.arguments("ADMIN", MemberRole.ADMIN),
                 Arguments.arguments("NORMAL", MemberRole.NORMAL)
