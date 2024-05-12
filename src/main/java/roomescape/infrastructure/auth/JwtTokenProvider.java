@@ -5,24 +5,17 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.domain.TokenProvider;
 import roomescape.exception.RoomescapeErrorCode;
 import roomescape.exception.RoomescapeException;
 
 @Component
+@ConfigurationProperties(prefix = "security.jwt.token")
 public class JwtTokenProvider implements TokenProvider {
-    private final String secretKey;
-    private final long validityInMilliseconds;
-
-    public JwtTokenProvider(
-            @Value("${security.jwt.token.secret-key}") String secretKey,
-            @Value("${security.jwt.token.expire-length}") long validityInMilliseconds
-    ) {
-        this.secretKey = secretKey;
-        this.validityInMilliseconds = validityInMilliseconds;
-    }
+    private String secretKey;
+    private long validityInMilliseconds;
 
     public String createToken(String payload) {
         Claims claims = Jwts.claims().setSubject(payload);
@@ -43,5 +36,13 @@ public class JwtTokenProvider implements TokenProvider {
         } catch (ExpiredJwtException e) {
             throw new RoomescapeException(RoomescapeErrorCode.TOKEN_EXPIRED);
         }
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setValidityInMilliseconds(long validityInMilliseconds) {
+        this.validityInMilliseconds = validityInMilliseconds;
     }
 }
