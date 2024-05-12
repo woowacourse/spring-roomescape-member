@@ -10,7 +10,6 @@ import roomescape.exception.AuthorizationException;
 import java.util.Arrays;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
-
     private final JwtTokenProvider jwtTokenProvider;
 
     public CheckAdminInterceptor(JwtTokenProvider jwtTokenProvider) {
