@@ -29,74 +29,87 @@ class PageControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("메인 페이지를 조회한다.")
     void mainPage() {
+        // 메인 페이지 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/")
                 .then().log().all()
                 .extract();
 
+        // 검증: 응답 상태코드는 200이다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("예약 페이지를 조회한다.")
     void reservationPage() {
+        // 예약 페이지 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/reservation")
                 .then().log().all()
                 .extract();
 
+        // 검증: 응답 상태코드는 200이다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("어드민 페이지를 조회한다.")
     void adminPage() {
+        // 어드민 페이지 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .cookie("token", getToken("admin@naver.com", "admin"))
                 .when().get("/admin")
                 .then().log().all()
                 .extract();
 
+        // 검증: 응답 상태코드는 200이다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("어드민 예약 페이지를 조회한다.")
     void adminReservationPage() {
+        // 어드민 예약 페이지 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .cookie("token", getToken("admin@naver.com", "admin"))
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .extract();
 
+        // 검증: 응답 상태코드는 200이다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("어드민 예약 시간 페이지를 조회한다.")
     void adminTimePage() {
+        // 어드민 예약 시간 페이지 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .cookie("token", getToken("admin@naver.com", "admin"))
                 .when().get("/admin/time")
                 .then().log().all()
                 .extract();
 
+        // 검증: 응답 상태코드는 200이다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     @DisplayName("어드민 테마 페이지를 조회한다.")
     void adminThemePage() {
+        // 어드민 테마 페이지 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .cookie("token", getToken("admin@naver.com", "admin"))
                 .when().get("/admin/theme")
                 .then().log().all()
                 .extract();
 
+        // 검증: 응답 상태코드는 200이다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     private String getToken(String email, String password) {
+        // 로그인 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new LoginRequest(email, password))
@@ -104,6 +117,7 @@ class PageControllerTest extends BaseControllerTest {
                 .then().log().all()
                 .extract();
 
+        // 토큰 반환
         return response.cookie("token");
     }
 }
