@@ -18,7 +18,7 @@ public class JwtTokenProvider {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
-    @Value("${jwt.expiration-minutes}")
+    @Value("${jwt.expiration-milliseconds}")
     private long tokenExpirationMilliseconds;
 
     public String createToken(Member findMember) {
