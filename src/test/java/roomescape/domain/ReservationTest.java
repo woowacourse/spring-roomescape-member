@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 class ReservationTest {
 
     @ParameterizedTest
-    @CsvSource(value = {"1,1", "0,1", "0,0"})
+    @CsvSource(value = {"0,0", "0,1", "1,1"})
     @DisplayName("신규 예약의 예약 날짜, 시간을 검증한다.")
     void validateDateTime(int minusDay, int minusMinute) {
         // given
