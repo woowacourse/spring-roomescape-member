@@ -2,7 +2,9 @@ package roomescape.global.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import roomescape.auth.domain.Token;
 import roomescape.global.exception.auth.AuthenticationException;
 
 public class CookieUtils {
@@ -22,5 +24,19 @@ public class CookieUtils {
                 .map(Cookie::getValue)
                 .findAny()
                 .orElseThrow(() -> new AuthenticationException("로그인 되어 있지 않습니다"));
+    }
+
+    public static Cookie createTokenCookie(Token token) {
+        Cookie cookie = new Cookie(TOKEN_NAME, token.getAccessToken());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
+    }
+
+    public static void clearTokenCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(TOKEN_NAME, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }
