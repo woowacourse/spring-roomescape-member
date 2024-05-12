@@ -75,6 +75,15 @@ public class ReservationService {
         return new AvailableTimeResponses(availableTimeResponses);
     }
 
+    public ReservationResponses findByIdsAndDates(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        List<ReservationResponse> reservationResponses
+                = reservationRepository.findByIdsAndDates(memberId, themeId, from, to)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return new ReservationResponses(reservationResponses);
+    }
+
     public ReservationResponse create(ReservationCreateRequest reservationCreateRequest, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
@@ -91,7 +100,8 @@ public class ReservationService {
     }
 
     public ReservationResponse createByAdmin(ReservationAdminCreateRequest reservationAdminCreateRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationAdminCreateRequest.timeId());
+        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(
+                reservationAdminCreateRequest.timeId());
         validateAvailableDateTime(reservationAdminCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationAdminCreateRequest.themeId());
         Member member = memberRepository.findById(reservationAdminCreateRequest.memberId());

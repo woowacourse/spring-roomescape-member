@@ -135,6 +135,52 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
+    public List<Reservation> findByIdsAndDates(Long memberId, Long themeId, LocalDate from, LocalDate to) {
+        String sql = """
+                SELECT
+                    r.id AS id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS description,
+                    th.thumbnail AS thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS email,
+                    m.password AS password,
+                    m.role AS role
+                FROM
+                    reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m on r.member_id = m.id
+                WHERE TRUE
+                """;
+        String conditions = makeQueryByParams(memberId, themeId, from, to);
+        return jdbcTemplate.query(sql + conditions, reservationRowMapper);
+    }
+
+    private String makeQueryByParams(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = "";
+
+        if (memberId != null) {
+            sql += "AND member_id = " + memberId.toString() + " ";
+        }
+        if (themeId != null) {
+            sql += "AND theme_id = " + themeId.toString() + " ";
+        }
+        if (dateFrom != null) {
+            sql += "AND r.date >= '" + dateFrom.toString() + "' ";
+        }
+        if (dateTo != null) {
+            sql += "AND r.date <= '" + dateTo.toString() + "'";
+        }
+        sql += ";";
+        return sql;
+    }
+
     public Reservation save(Reservation reservation) {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()

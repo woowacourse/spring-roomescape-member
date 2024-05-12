@@ -12,6 +12,8 @@ public interface ReservationRepository {
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long id);
 
+    List<Reservation> findByIdsAndDates(Long memberId, Long themeId, LocalDate from, LocalDate to);
+
     Reservation save(Reservation reservation);
 
     int deleteById(Long id);
