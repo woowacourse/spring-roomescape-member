@@ -28,7 +28,7 @@ public class MemberTest {
     JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    void setPort() {
+    void setUp() {
         RestAssured.port = port;
     }
 

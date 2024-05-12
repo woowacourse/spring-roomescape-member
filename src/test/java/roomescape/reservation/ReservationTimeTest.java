@@ -28,9 +28,9 @@ class ReservationTimeTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        insert();
     }
 
-    @BeforeEach
     void insert() {
         LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));

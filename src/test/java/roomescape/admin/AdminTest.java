@@ -25,9 +25,9 @@ class AdminTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        adminLogIn();
     }
 
-    @BeforeEach
     void adminLogIn() {
         Map<String, String> params = new HashMap<>();
         params.put("email", adminFixture.getEmail());

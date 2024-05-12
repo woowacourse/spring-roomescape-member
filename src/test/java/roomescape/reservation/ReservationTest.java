@@ -35,9 +35,9 @@ class ReservationTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        insert();
     }
 
-    @BeforeEach
     void insert() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", reservationTimeFixture.getStartAt());
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getDescription());
