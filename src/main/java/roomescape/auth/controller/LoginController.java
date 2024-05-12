@@ -39,4 +39,14 @@ public class LoginController {
     public ResponseEntity<AuthInformationResponse> checkLogin(@LoginMemberId Long id) {
         return ResponseEntity.ok().body(memberService.getAuthInformation(id));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
 }
