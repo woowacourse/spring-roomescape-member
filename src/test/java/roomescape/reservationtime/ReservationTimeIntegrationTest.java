@@ -47,7 +47,7 @@ class ReservationTimeIntegrationTest {
     }
 
     @Test
-    @DisplayName("방탈출 시간대 생성 시, 시간이 형식에 맞지 않 경우 예외를 반환한다.")
+    @DisplayName("방탈출 시간대 생성 시, 시간이 형식에 맞지 않을 경우 예외를 반환한다.")
     void createReservationTime_WhenTimeIsInvalidType() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", "10:0--");
@@ -60,6 +60,23 @@ class ReservationTimeIntegrationTest {
 
                 .statusCode(400)
                 .body("detail", equalTo("입력값의 형식이 올바르지 않습니다. 다시 시도해주세요."));
+    }
+
+    @Test
+    @DisplayName("방탈출 시간대 생성 시, 이미 존재하는 시간인 경우 예외를 반환한다.")
+    void createReservationTime_WhenTimeIsExist() {
+        createReservationTime();
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+
+                .statusCode(400)
+                .body("detail", equalTo("생성하려는 시간 10:00가 이미 존재합니다. 시간을 생성할 수 없습니다."));
     }
 
     @Test
@@ -102,7 +119,7 @@ class ReservationTimeIntegrationTest {
                 .then().log().all()
 
                 .statusCode(404)
-                .body("detail", equalTo("조회하려는 예약 시간이 존재하지 않습니다."));
+                .body("detail", equalTo("식별자 1에 해당하는 예약이 존재하지 않아 시간을 조회할 수 없습니다."));
     }
 
     @Test
@@ -127,7 +144,7 @@ class ReservationTimeIntegrationTest {
                 .then().log().all()
 
                 .statusCode(404)
-                .body("detail", equalTo("삭제하려는 예약 시간이 존재하지 않습니다. 삭제가 불가능합니다"));
+                .body("detail", equalTo("식별자 1에 해당하는 시간이 존재하지 않습니다. 삭제가 불가능합니다."));
     }
 
     @Test
@@ -144,6 +161,6 @@ class ReservationTimeIntegrationTest {
                 .then().log().all()
 
                 .statusCode(409)
-                .body("detail", equalTo("삭제하려는 시간을 사용 중인 예약이 존재합니다. 삭제가 불가능합니다."));
+                .body("detail", equalTo("식별자 1인 시간을 사용 중인 예약이 존재합니다. 삭제가 불가능합니다."));
     }
 }

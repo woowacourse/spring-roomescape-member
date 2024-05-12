@@ -42,7 +42,7 @@ public class Theme {
 
     private void validateThemeThumbnailIsBlank(final String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("다테마 생성 시 썸네일은 필수입니다.");
+            throw new IllegalArgumentException("테마 생성 시 썸네일은 필수입니다.");
         }
     }
 

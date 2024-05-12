@@ -219,7 +219,7 @@ class ThemeIntegrationTest {
                 .then().log().all()
 
                 .statusCode(404)
-                .body("detail", equalTo("삭제하려는 테마가 존재하지 않습니다. 삭제가 불가능합니다."));
+                .body("detail", equalTo("식별자 1에 해당하는 테마가 존재하지 않습니다. 삭제가 불가능합니다."));
     }
 
     @Test
@@ -236,6 +236,6 @@ class ThemeIntegrationTest {
                 .then().log().all()
 
                 .statusCode(409)
-                .body("detail", equalTo("삭제하려는 테마를 사용 중인 예약이 존재합니다. 삭제가 불가능합니다."));
+                .body("detail", equalTo("식별자 1인 테마를 사용 중인 예약이 존재합니다. 삭제가 불가능합니다."));
     }
 }
