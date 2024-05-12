@@ -494,6 +494,15 @@
       "message": "이름은 1자 이상, 20자 이하여야 합니다."
     }  
     ```
+  - 추가 실패 : 이메일 형식 오류
+    ```
+    HTTP/1.1 400 
+    Content-Type: application/json
+  
+    {
+    "message": "유효하지 않은 이메일입니다."
+    }  
+    ```
 - response
   ```
   HTTP/1.1 201 OK
