@@ -44,6 +44,6 @@ public class LoginController {
         if (member == null || member.id() == null) {
             throw new AuthorizationException("로그인되어 있지 않습니다.");
         }
-        return ResponseEntity.ok(new LoginCheckResponse(member.name()));
+        return ResponseEntity.ok(new LoginCheckResponse(member.name(), member.role().toString()));
     }
 }

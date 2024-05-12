@@ -5,6 +5,10 @@
     margin-right: 5px; /* 이름과의 간격 조정 */
 }
 
+.nav-item .nav-admin {
+    display: none;
+}
+
 .nav-item .dropdown-toggle::after {
     display: none; /* 드롭다운 화살표 제거 */
 }
