@@ -56,7 +56,7 @@ public class ReservationTimeRepository {
     }
 
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ? LIMIT 1";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {

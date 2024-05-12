@@ -29,6 +29,7 @@ public class MemberRepository {
                     password
                 FROM member
                 WHERE email = ?
+                LIMIT 1
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getMemberRowMapper(), email));
@@ -47,6 +48,7 @@ public class MemberRepository {
                     password
                 FROM member
                 WHERE id = ?
+                LIMIT 1
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getMemberRowMapper(), id));

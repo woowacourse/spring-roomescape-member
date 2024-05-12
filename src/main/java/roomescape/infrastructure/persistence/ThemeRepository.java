@@ -58,7 +58,7 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ? LIMIT 1";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id));
         } catch (Exception exception) {
