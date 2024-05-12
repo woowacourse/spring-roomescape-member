@@ -52,21 +52,17 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeInfoResponse>> showReservationTimesInformation(
-            @RequestParam(name = "date") LocalDate date,
-            @RequestParam(name = "themeId") Long themeId) {
+    @GetMapping(value = "/times", params = {"date", "themeId"})
+    public ResponseEntity<List<ReservationTimeInfoResponse>> showReservationTimesInformation(LocalDate date, Long themeId) {
         validateNull(themeId);
         ReservationTimeInfoDto timesInfo = reservationService.findReservationTimesInformation(date, themeId);
         List<ReservationTimeInfoResponse> response = ReservationTimeInfoResponse.from(timesInfo);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/filter") // TODO: 각 조건이 없는 경우?
-    public ResponseEntity<List<ReservationResponse>> searchReservations(@RequestParam(name = "member_id") Long memberId,
-                                                                        @RequestParam(name = "theme_id") Long themeId,
-                                                                        @RequestParam(name = "from") LocalDate from,
-                                                                        @RequestParam(name = "to") LocalDate to) {
+    @GetMapping(value = "/filter", params = {"memberId", "themeId", "from", "to"})
+    public ResponseEntity<List<ReservationResponse>> searchReservations(Long memberId, Long themeId,
+                                                                        LocalDate from, LocalDate to) {
         List<Reservation> responses = reservationService.findReservationsByConditions(memberId, themeId, from, to);
         List<ReservationResponse> response = responses.stream()
                 .map(ReservationResponse::from)

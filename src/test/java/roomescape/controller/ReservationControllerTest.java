@@ -159,7 +159,7 @@ class ReservationControllerTest {
         long themeId = 1;
         List<ReservationTimeInfoResponse> times = RestAssured.given().log().all()
                 .when().get(String.format("/reservations/times?date=%s&themeId=%d", date, themeId))
-                .then().log().all()
+                .then().log().all() // TODO: use param option
                 .statusCode(200)
                 .extract().jsonPath().getList(".", ReservationTimeInfoResponse.class);
 
@@ -180,8 +180,8 @@ class ReservationControllerTest {
     @Test
     void should_get_reservations_by_date_and_theme_and_member() {
         List<ReservationResponse> reservations = RestAssured.given().log().all()
-                .param("member_id", 1L)
-                .param("theme_id", 1L)
+                .param("memberId", 1L)
+                .param("themeId", 1L)
                 .param("from", "2024-04-30")
                 .param("to", "2024-05-10")
                 .get("/reservations/filter")
