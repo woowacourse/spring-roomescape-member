@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -49,9 +50,12 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "select * from reservation_time where id = ?";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, rowMapper, id);
-
-        return reservationTimes.stream().findFirst();
+        try {
+            ReservationTime savedReservationTime = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(savedReservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void deleteById(Long id) {

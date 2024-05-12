@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -37,8 +38,12 @@ public class H2ThemeRepository implements ThemeRepository {
 
     public Optional<Theme> findById(Long id) {
         String sql = "select * from theme where id = ?";
-
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        try {
+            Theme savedTheme = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(savedTheme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Theme save(Theme theme) {

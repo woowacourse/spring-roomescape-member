@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -51,29 +52,23 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = """
-                SELECT
-                    id, name, email, password, role
-                FROM
-                    user_table
-                WHERE
-                    email = ? AND password = ?
-                """;
-        List<Member> members = jdbcTemplate.query(sql, rowMapper, email, password);
-        return members.stream().findFirst();
+        String sql = "SELECT * FROM user_table WHERE email = ? AND password = ?";
+        try {
+            Member savedMember = jdbcTemplate.queryForObject(sql, rowMapper, email, password);
+            return Optional.ofNullable(savedMember);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Member> findById(Long memberId) {
-        String sql = """
-                SELECT
-                    id, name, email, password, role
-                FROM
-                    user_table
-                WHERE
-                    id = ?
-                """;
-        List<Member> members = jdbcTemplate.query(sql, rowMapper, memberId);
-        return members.stream().findFirst();
+        String sql = "SELECT * FROM user_table WHERE id = ?";
+        try {
+            Member savedMember = jdbcTemplate.queryForObject(sql, rowMapper, memberId);
+            return Optional.ofNullable(savedMember);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Member> findAll() {
