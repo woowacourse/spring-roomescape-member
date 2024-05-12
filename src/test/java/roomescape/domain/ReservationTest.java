@@ -14,7 +14,7 @@ class ReservationTest {
     void create() {
         LocalDate date = LocalDate.now();
         Member member = new Member(
-                new Name("호돌"),
+                new MemberName("호돌"),
                 new Email("email"),
                 new Password("******"), MemberRole.NORMAL
         );

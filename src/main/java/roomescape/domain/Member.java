@@ -3,16 +3,16 @@ package roomescape.domain;
 public class Member {
 
     private final Long id;
-    private final Name name;
+    private final MemberName name;
     private final Email email;
     private final Password password;
     private final MemberRole role;
 
-    public Member(Name name, Email email, Password password, MemberRole role) {
+    public Member(MemberName name, Email email, Password password, MemberRole role) {
         this(null, name, email, password, role);
     }
 
-    public Member(Long id, Name name, Email email, Password password, MemberRole role) {
+    public Member(Long id, MemberName name, Email email, Password password, MemberRole role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -32,7 +32,7 @@ public class Member {
         return id;
     }
 
-    public Name getName() {
+    public MemberName getName() {
         return name;
     }
 }

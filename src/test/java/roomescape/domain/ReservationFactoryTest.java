@@ -31,7 +31,7 @@ class ReservationFactoryTest {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String date = "2024-05-02";
         Member member = new Member(
-                new Name("아톰"),
+                new MemberName("아톰"),
                 new Email("email"),
                 new Password("******"), MemberRole.NORMAL
         );
@@ -48,7 +48,7 @@ class ReservationFactoryTest {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String previousDate = "2024-04-30";
         Member member = new Member(
-                new Name("아톰"),
+                new MemberName("아톰"),
                 new Email("email"),
                 new Password("******"), MemberRole.NORMAL
         );
@@ -66,7 +66,7 @@ class ReservationFactoryTest {
         ReservationFactory reservationFactory = new ReservationFactory(clock);
         String todayDate = "2024-05-01";
         Member member = new Member(
-                new Name("아톰"),
+                new MemberName("아톰"),
                 new Email("email"),
                 new Password("******"), MemberRole.NORMAL
         );

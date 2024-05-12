@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
+import roomescape.domain.MemberName;
 import roomescape.domain.MemberRole;
-import roomescape.domain.Name;
 import roomescape.domain.Password;
 import roomescape.infrastructure.persistence.MemberRepository;
 import roomescape.service.auth.AuthService;
@@ -54,7 +54,7 @@ class JwtAuthServiceTest {
     @DisplayName("비밀번호가 틀리다면 사용자에게 토큰을 발급할 수 없다.")
     void cantAuthenticationWithWrongPassword() {
         Member member = new Member(
-                new Name("아톰"),
+                new MemberName("아톰"),
                 new Email("email"),
                 new Password("password"), MemberRole.NORMAL
         );

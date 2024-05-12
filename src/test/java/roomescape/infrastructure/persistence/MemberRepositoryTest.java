@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.Member;
-import roomescape.domain.Name;
+import roomescape.domain.MemberName;
 import roomescape.support.IntegrationTestSupport;
 
 class MemberRepositoryTest extends IntegrationTestSupport {
@@ -42,7 +42,7 @@ class MemberRepositoryTest extends IntegrationTestSupport {
 
         assertThat(findMember)
                 .map(Member::getName)
-                .map(Name::value)
+                .map(MemberName::value)
                 .isNotEmpty()
                 .get()
                 .isEqualTo("어드민");
@@ -63,7 +63,7 @@ class MemberRepositoryTest extends IntegrationTestSupport {
 
         assertThat(findMember)
                 .map(Member::getName)
-                .map(Name::value)
+                .map(MemberName::value)
                 .isNotEmpty()
                 .get()
                 .isEqualTo("어드민");

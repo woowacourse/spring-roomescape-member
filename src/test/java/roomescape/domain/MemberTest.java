@@ -12,7 +12,7 @@ class MemberTest {
     @Test
     @DisplayName("생성 테스트")
     void create() {
-        Name name = new Name("호돌");
+        MemberName name = new MemberName("호돌");
         Email email = new Email("email");
         Password password = new Password("******");
 
@@ -24,7 +24,7 @@ class MemberTest {
     @DisplayName("주어진 비밀번호가 올바른지 확인할 수 있다.")
     void isValidPassword() {
         Member member = new Member(
-                new Name("아톰"),
+                new MemberName("아톰"),
                 new Email("email"),
                 new Password("password"), MemberRole.NORMAL
         );
@@ -41,7 +41,7 @@ class MemberTest {
     @DisplayName("어드민 계정인지 확인할 수 있다.")
     void isAdmin() {
         Member member = new Member(
-                new Name("아톰"),
+                new MemberName("아톰"),
                 new Email("email"),
                 new Password("******"), MemberRole.ADMIN
         );
@@ -53,7 +53,7 @@ class MemberTest {
     @DisplayName("어드민 계정이 아닌지 확인할 수 있다.")
     void isNotAdmin() {
         Member member = new Member(
-                new Name("아톰"),
+                new MemberName("아톰"),
                 new Email("email"),
                 new Password("******"),
                 MemberRole.NORMAL
