@@ -250,7 +250,7 @@
     GET /themes/popular HTTP/1.1
     ```
 - Response
-  ```  
+  ```http  
   HTTP/1.1 200
   Content-Type: application/json
       
@@ -335,7 +335,7 @@
   cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token={token}
   ```
 - Response
-  ```  
+  ```http  
   HTTP/1.1 200 OK
   ```
   |파라미터|타입|필수여부|설명|
