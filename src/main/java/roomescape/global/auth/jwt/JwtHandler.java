@@ -6,6 +6,8 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.global.exception.error.ErrorType;
@@ -19,6 +21,8 @@ public class JwtHandler {
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long expireTime;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public String createToken(Long memberId) {
         Date date = new Date();
@@ -44,20 +48,15 @@ public class JwtHandler {
         try {
             Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException(ErrorType.EXPIRED_TOKEN,
-                    String.format("Expired JWT Token: %s", e.getMessage()));
+            throw new UnauthorizedException(ErrorType.EXPIRED_TOKEN, "Expired JWT Token", e);
         } catch (UnsupportedJwtException e) {
-            throw new UnauthorizedException(ErrorType.UNSUPPORTED_TOKEN,
-                    String.format("Unsupported JWT Token: %s", e.getMessage()));
+            throw new UnauthorizedException(ErrorType.UNSUPPORTED_TOKEN, "Unsupported JWT Token", e);
         } catch (MalformedJwtException e) {
-            throw new UnauthorizedException(ErrorType.MALFORMED_TOKEN,
-                    String.format("Malformed JWT Token: %s", e.getMessage()));
+            throw new UnauthorizedException(ErrorType.MALFORMED_TOKEN, "Malformed JWT Token", e);
         } catch (SignatureException e) {
-            throw new UnauthorizedException(ErrorType.INVALID_SIGNATURE_TOKEN,
-                    String.format("Can not validate JWT Token Signature: %s", e.getMessage()));
+            throw new UnauthorizedException(ErrorType.INVALID_SIGNATURE_TOKEN, "Can not validate JWT Token Signature", e);
         } catch (IllegalArgumentException e) {
-            throw new UnauthorizedException(ErrorType.ILLEGAL_TOKEN,
-                    String.format("JWT claims string is empty: %s", e.getMessage()));
+            throw new UnauthorizedException(ErrorType.ILLEGAL_TOKEN, "JWT claims string is empty", e);
         }
     }
 }
