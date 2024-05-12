@@ -51,10 +51,10 @@ class ReservationControllerTest {
         ReservationCreateRequest params = new ReservationCreateRequest(
                 null, LocalDate.of(2040, 8, 5), 1L, 1L);
         long expectedId = COUNT_OF_RESERVATION + 1;
-        Cookies cookies = makeCookie("brown@abc.com", "1234");
+        Cookies userCookies = makeUserCookie();
 
         RestAssured.given().log().all()
-                .cookies(cookies)
+                .cookies(userCookies)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -63,8 +63,25 @@ class ReservationControllerTest {
                 .header("Location", "/reservations/" + expectedId);
     }
 
-    private Cookies makeCookie(String email, String password) {
-        LoginRequest request = new LoginRequest(email, password);
+    @DisplayName("예약 추가 시 인자 중 null이 있을 경우, 예약을 추가할 수 없다.")
+    @Test
+    void createReservation_whenNameIsNull() {
+        ReservationCreateRequest params = new ReservationCreateRequest
+                (null, null, 1L, 1L);
+        Cookies userCookies = makeUserCookie();
+
+        RestAssured.given().log().all()
+                .cookies(userCookies)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("errorMessage", is("인자 중 null 값이 존재합니다."));
+    }
+
+    private Cookies makeUserCookie() {
+        LoginRequest request = new LoginRequest("bri@abc.com", "1234");
 
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -73,21 +90,6 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .extract().detailedCookies();
-    }
-
-    @DisplayName("예약 추가 시 인자 중 null이 있을 경우, 예약을 추가할 수 없다.")
-    @Test
-    void createReservation_whenNameIsNull() {
-        ReservationCreateRequest params = new ReservationCreateRequest
-                (1L, null, 1L, 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("errorMessage", is("인자 중 null 값이 존재합니다."));
     }
 
     @DisplayName("삭제할 id를 받아서 DB에서 해당 예약을 삭제 할 수 있다.")
