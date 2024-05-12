@@ -33,6 +33,13 @@ public class ReservationTimeService {
         return new ReservationTimeResponse(reservationTime);
     }
 
+    public ReservationTimeResponse getTime(Long id) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간 id입니다. time_id = " + id));
+
+        return new ReservationTimeResponse(reservationTime);
+    }
+
     public List<ReservationTimeResponse> findTimes() {
         return reservationTimeRepository.findAll()
                 .stream()
@@ -51,15 +58,6 @@ public class ReservationTimeService {
                         )
                 )
                 .toList();
-    }
-
-    public ReservationTimeResponse getTime(Long id) {
-        return new ReservationTimeResponse(getValidReservationTime(id));
-    }
-
-    private ReservationTime getValidReservationTime(Long id) {
-        return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간 id입니다. time_id = " + id));
     }
 
     public void deleteTime(Long id) {

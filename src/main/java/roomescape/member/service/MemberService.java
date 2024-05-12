@@ -26,12 +26,33 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public MemberNameResponse getMemberResponse(String token) throws AuthenticationException {
+    public LoginMember getLoginMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .map(LoginMember::new)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 id입니다. memberId = " + memberId));
+    }
+
+    public List<MemberResponse> findMembers() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponse::new)
+                .toList();
+    }
+
+    public MemberNameResponse getMemberNameResponse(String token) throws AuthenticationException {
         Long memberId = parseTokenToMemberId(token);
 
         return memberRepository.findById(memberId)
                 .map(member -> new MemberNameResponse(member.getName().name()))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
+    }
+
+    public boolean isAdmin(String token) throws AuthenticationException {
+        Long memberId = parseTokenToMemberId(token);
+
+        return Role.ADMIN == memberRepository.findById(memberId)
+                .map(Member::getRole)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 토큰입니다. token = " + token));
     }
 
     private Long parseTokenToMemberId(String token) throws AuthenticationException {
@@ -48,32 +69,11 @@ public class MemberService {
         }
     }
 
-    public boolean isAdmin(String token) throws AuthenticationException {
-        Long memberId = parseTokenToMemberId(token);
-
-        return Role.ADMIN == memberRepository.findById(memberId)
-                .map(Member::getRole)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 토큰입니다. token = " + token));
-    }
-
     public LoginMemberRequest getLoginMemberRequest(String token) throws AuthenticationException {
         Long memberId = parseTokenToMemberId(token);
 
         return memberRepository.findById(memberId)
                 .map(member -> new LoginMemberRequest(memberId, member.getName().name(), member.getEmail().email()))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
-    }
-
-    public LoginMember getLoginMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .map(LoginMember::new)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 id입니다. memberId = " + memberId));
-    }
-
-    public List<MemberResponse> findMembers() {
-        return memberRepository.findAll()
-                .stream()
-                .map(MemberResponse::new)
-                .toList();
     }
 }

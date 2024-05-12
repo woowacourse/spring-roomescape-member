@@ -37,11 +37,11 @@ public class ThemeService {
         }
     }
 
-    public List<ThemeResponse> findThemes() {
-        return themeRepository.findAll()
-                .stream()
-                .map(ThemeResponse::new)
-                .toList();
+    public ThemeResponse getTheme(Long id) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 id입니다. theme_id = " + id));
+
+        return new ThemeResponse(theme);
     }
 
     public List<ThemeResponse> findTrendingThemes(Long limit) {
@@ -55,13 +55,11 @@ public class ThemeService {
                 .toList();
     }
 
-    public ThemeResponse getTheme(Long id) {
-        return new ThemeResponse(getValidTheme(id));
-    }
-
-    private Theme getValidTheme(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 id입니다. theme_id = " + id));
+    public List<ThemeResponse> findThemes() {
+        return themeRepository.findAll()
+                .stream()
+                .map(ThemeResponse::new)
+                .toList();
     }
 
     public void deleteTheme(Long id) {

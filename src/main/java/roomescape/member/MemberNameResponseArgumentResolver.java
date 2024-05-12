@@ -37,7 +37,7 @@ public class MemberNameResponseArgumentResolver implements HandlerMethodArgument
         Cookie[] cookies = servletRequest.getCookies();
         String token = extractTokenFromCookie(cookies);
 
-        return memberService.getMemberResponse(token);
+        return memberService.getMemberNameResponse(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

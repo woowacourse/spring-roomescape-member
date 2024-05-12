@@ -85,10 +85,6 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
-        reservationRepository.delete(id);
-    }
-
     public List<ReservationResponse> findReservations() {
         return reservationRepository.findAll()
                 .stream()
@@ -108,5 +104,9 @@ public class ReservationService {
                         && reservation.isBetweenInclusive(dateFrom, dateTo))
                 .map(ReservationResponse::new)
                 .toList();
+    }
+
+    public void deleteReservation(Long id) {
+        reservationRepository.delete(id);
     }
 }

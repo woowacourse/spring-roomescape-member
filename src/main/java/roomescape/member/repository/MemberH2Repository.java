@@ -2,11 +2,9 @@ package roomescape.member.repository;
 
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Email;
 import roomescape.member.domain.Member;
@@ -29,7 +27,6 @@ public class MemberH2Repository implements MemberRepository {
         return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, email.email()).isEmpty();
     }
 
-    // TODO: 비밀번호 보호를 위해 Member 말고 LoginMember를 반환하는 방향으로 리팩토링하기
     @Override
     public Optional<Member> findById(Long id) {
         try {
