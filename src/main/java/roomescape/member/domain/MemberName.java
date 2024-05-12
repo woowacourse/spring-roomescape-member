@@ -13,12 +13,12 @@ public class MemberName {
     private final String value;
 
     public MemberName(String value) {
-        validateName(value);
+        validate(value);
         this.value = value;
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank() || name.length() < MINIMUM_NAME_LENGTH || name.length() > MAXIMUM_NAME_LENGTH) {
+    private void validate(String name) {
+        if (name.length() < MINIMUM_NAME_LENGTH || name.length() > MAXIMUM_NAME_LENGTH) {
             throw new InvalidReservationException(INVALID_NAME_LENGTH);
         }
     }
