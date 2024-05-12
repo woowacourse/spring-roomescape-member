@@ -108,7 +108,7 @@ class MemberControllerTest {
         //given
         String accessToken = "accessToken";
         LoginRequest loginRequest = new LoginRequest("email", "1234");
-        doNothing().when(memberService).checkLoginInfo(any(LoginRequest.class));
+        doNothing().when(authService).checkLoginInfo(any(LoginRequest.class));
         given(authService.createToken(any(LoginRequest.class))).willReturn(new LoginResponse(accessToken));
         String request = objectMapper.writeValueAsString(loginRequest);
 
@@ -126,7 +126,7 @@ class MemberControllerTest {
     void loginWhenFail() throws Exception {
         //given
         LoginRequest loginRequest = new LoginRequest("email", "1234");
-        doNothing().when(memberService).checkLoginInfo(any(LoginRequest.class));
+        doNothing().when(authService).checkLoginInfo(any(LoginRequest.class));
         given(authService.createToken(any(LoginRequest.class))).willThrow(AuthorizationException.class);
         String request = objectMapper.writeValueAsString(loginRequest);
 
@@ -148,8 +148,7 @@ class MemberControllerTest {
         String name = "daon";
         String email = "test@test.com";
         Member member = MemberFixtures.createUserMember(name, email);
-        given(authService.findPayload(anyString())).willReturn(email);
-        given(memberService.findAuthInfo(anyString())).willReturn(member);
+        given(authService.findAuthInfo(anyString())).willReturn(member);
 
         //when //then
         mockMvc.perform(get("/login/check")
@@ -166,8 +165,7 @@ class MemberControllerTest {
         Cookie cookie = new Cookie("token", "1234");
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        given(authService.findPayload(anyString())).willThrow(AuthorizationException.class);
-        given(memberService.findAuthInfo(anyString())).willThrow(IllegalArgumentException.class);
+        given(authService.findAuthInfo(anyString())).willThrow(AuthorizationException.class);
 
         //when //then
         mockMvc.perform(get("/login/check")
@@ -186,8 +184,7 @@ class MemberControllerTest {
         String name = "daon";
         String email = "test@test.com";
         Member member = MemberFixtures.createUserMember(name, email);
-        given(authService.findPayload(anyString())).willReturn(email);
-        given(memberService.findAuthInfo(anyString())).willReturn(member);
+        given(authService.findAuthInfo(anyString())).willReturn(member);
 
         //when //then
         mockMvc.perform(post("/logout")

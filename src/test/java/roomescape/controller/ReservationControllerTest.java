@@ -32,7 +32,6 @@ import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.AuthorizationException;
 import roomescape.fixture.MemberFixtures;
 import roomescape.service.AuthService;
-import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -46,13 +45,10 @@ class ReservationControllerTest {
     private ReservationService reservationService;
     @MockBean
     private AuthService authService;
-    @MockBean
-    private MemberService memberService;
 
     @BeforeEach
     void setUp() {
-        given(authService.findPayload(anyString())).willReturn("test@test.com");
-        given(memberService.findAuthInfo(anyString())).willReturn(MemberFixtures.createUserMember("daon"));
+        given(authService.findAuthInfo(anyString())).willReturn(MemberFixtures.createUserMember("daon"));
     }
 
     @Test

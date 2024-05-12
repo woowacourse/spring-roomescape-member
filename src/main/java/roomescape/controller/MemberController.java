@@ -50,7 +50,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        memberService.checkLoginInfo(loginRequest);
+        authService.checkLoginInfo(loginRequest);
         LoginResponse loginResponse = authService.createToken(loginRequest);
         Cookie cookie = new Cookie(TOKEN_KEY, loginResponse.getAccessToken());
         cookie.setPath("/");

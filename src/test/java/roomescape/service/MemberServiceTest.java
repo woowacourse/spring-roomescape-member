@@ -13,11 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dao.MemberDao;
-import roomescape.domain.member.Member;
-import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
-import roomescape.exception.AuthorizationException;
 import roomescape.fixture.MemberFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -77,47 +74,5 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.add(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("동일한 이메일이 존재합니다.");
-    }
-
-    @Test
-    @DisplayName("payload로 로그인 검증 응답을 반환한다.")
-    void findAuthInfo() {
-        //given
-        String email = "test@test.com";
-        String name = "daon";
-        Member member = memberDao.create(MemberFixtures.createUserMember(name, email, "1234"));
-
-        //when
-        Member result = memberService.findAuthInfo(email);
-
-        //then
-        assertAll(
-                () -> assertThat(member.getId()).isEqualTo(result.getId()),
-                () -> assertThat(member.getName().getValue()).isEqualTo(result.getName().getValue()),
-                () -> assertThat(member.getEmail().getValue()).isEqualTo(result.getEmail().getValue()),
-                () -> assertThat(member.getPassword().getValue()).isEqualTo(result.getPassword().getValue())
-        );
-    }
-
-    @Test
-    @DisplayName("인증 정보가 회원 저장소에 없다면 예외가 발생한다.")
-    void findAuthInfoWhenNotExistData() {
-        //given
-        String email = "test@test.com";
-
-        //when //then
-        assertThatThrownBy(() -> memberService.findAuthInfo(email))
-                .isInstanceOf(AuthorizationException.class);
-    }
-
-    @Test
-    @DisplayName("로그인 정보가 존재하지 않으면 예외가 발생한다.")
-    void checkLoginInfoWithNotExist() {
-        //given
-        LoginRequest loginRequest = new LoginRequest("test@test.com", "1111");
-
-        //when //then
-        assertThatThrownBy(() -> memberService.checkLoginInfo(loginRequest))
-                .isInstanceOf(AuthorizationException.class);
     }
 }

@@ -17,7 +17,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.exception.AuthorizationException;
 import roomescape.service.AuthService;
-import roomescape.service.MemberService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationPrincipalArgumentResolverTest {
@@ -31,16 +30,13 @@ class AuthenticationPrincipalArgumentResolverTest {
     @Mock
     private NativeWebRequest nativeWebRequest;
     @Mock
-    private MemberService memberService;
-    @Mock
     private AuthService authService;
 
     @Test
     @DisplayName("요청에 쿠키가 존재하지 않으면 예외를 발생한다.")
     void resolveArgumentWhenNoCookies() {
         //given
-        HandlerMethodArgumentResolver resolver =
-                new AuthenticationPrincipalArgumentResolver(memberService, authService);
+        HandlerMethodArgumentResolver resolver = new AuthenticationPrincipalArgumentResolver(authService);
         MockHttpServletRequest request = new MockHttpServletRequest();
         given(nativeWebRequest.getNativeRequest()).willReturn(request);
 
@@ -53,8 +49,7 @@ class AuthenticationPrincipalArgumentResolverTest {
     @DisplayName("요청에 token 이름의 쿠키가 존재하지 않으면 예외를 발생한다.")
     void resolveArgumentNotExistTokenCookie() {
         //given
-        HandlerMethodArgumentResolver resolver =
-                new AuthenticationPrincipalArgumentResolver(memberService, authService);
+        HandlerMethodArgumentResolver resolver = new AuthenticationPrincipalArgumentResolver(authService);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setCookies(new Cookie("test", "test"));
         given(nativeWebRequest.getNativeRequest()).willReturn(request);

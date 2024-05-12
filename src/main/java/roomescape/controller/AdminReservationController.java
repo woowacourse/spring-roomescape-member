@@ -32,7 +32,7 @@ public class AdminReservationController {
                 .body(reservationService.add(request, now));
     }
 
-    @GetMapping(value = "/admin/reservations", params = {"memberId", "themeId", "dateFrom", "dateTo"})
+    @GetMapping(value = "/admin/reservations")
     public ResponseEntity<List<ReservationResponse>> getFiltered(ReservationFilterRequest request) {
         return ResponseEntity.ok(reservationService.findFiltered(request));
     }

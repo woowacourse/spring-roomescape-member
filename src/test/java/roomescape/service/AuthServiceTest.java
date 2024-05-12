@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import roomescape.dao.MemberDao;
+import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.LoginResponse;
 import roomescape.exception.AuthorizationException;
+import roomescape.fixture.MemberFixtures;
 import roomescape.jwt.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -23,6 +27,8 @@ class AuthServiceTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private MemberDao memberDao;
     @Autowired
     private AuthService authService;
     @Value("${security.jwt.token.secret-key}")
@@ -48,13 +54,20 @@ class AuthServiceTest {
     void findAuthInfo() {
         //given
         String email = "test@test.com";
+        String name = "daon";
+        Member member = memberDao.create(MemberFixtures.createUserMember(name, email, "1234"));
         String token = jwtTokenProvider.createToken(email);
 
         //when
-        String payload = authService.findPayload(token);
+        Member result = authService.findAuthInfo(token);
 
         //then
-        assertThat(payload).isEqualTo(email);
+        assertAll(
+                () -> assertThat(member.getId()).isEqualTo(result.getId()),
+                () -> assertThat(member.getName().getValue()).isEqualTo(result.getName().getValue()),
+                () -> assertThat(member.getEmail().getValue()).isEqualTo(result.getEmail().getValue()),
+                () -> assertThat(member.getPassword().getValue()).isEqualTo(result.getPassword().getValue())
+        );
     }
 
     @Test
@@ -64,10 +77,31 @@ class AuthServiceTest {
         String expiredToken = generateExpiredToken();
 
         //when //then
-        assertThatThrownBy(() -> authService.findPayload(expiredToken))
+        assertThatThrownBy(() -> authService.findAuthInfo(expiredToken))
                 .isInstanceOf(AuthorizationException.class);
     }
 
+    @Test
+    @DisplayName("인증 정보가 회원 저장소에 없다면 예외가 발생한다.")
+    void findAuthInfoWhenNotExistData() {
+        //given
+        String email = "test@test.com";
+
+        //when //then
+        assertThatThrownBy(() -> authService.findAuthInfo(email))
+                .isInstanceOf(AuthorizationException.class);
+    }
+
+    @Test
+    @DisplayName("로그인 정보가 존재하지 않으면 예외가 발생한다.")
+    void checkLoginInfoWithNotExist() {
+        //given
+        LoginRequest loginRequest = new LoginRequest("test@test.com", "1111");
+
+        //when //then
+        assertThatThrownBy(() -> authService.checkLoginInfo(loginRequest))
+                .isInstanceOf(AuthorizationException.class);
+    }
 
     private String generateExpiredToken() {
         Claims claims = Jwts.claims().setSubject("test@test.com");

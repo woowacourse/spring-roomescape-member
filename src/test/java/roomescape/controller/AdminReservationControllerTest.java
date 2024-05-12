@@ -31,7 +31,6 @@ import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.fixture.MemberFixtures;
 import roomescape.service.AuthService;
-import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(AdminReservationController.class)
@@ -46,14 +45,11 @@ class AdminReservationControllerTest {
     @MockBean
     private AuthService authService;
     @MockBean
-    private MemberService memberService;
-    @MockBean
     private CheckAdminInterceptor checkAdminInterceptor;
 
     @BeforeEach
     void setUp() {
-        given(authService.findPayload(anyString())).willReturn("test@test.com");
-        given(memberService.findAuthInfo(anyString())).willReturn(MemberFixtures.createUserMember("daon"));
+        given(authService.findAuthInfo(anyString())).willReturn(MemberFixtures.createUserMember("daon"));
         given(checkAdminInterceptor.preHandle(any(HttpServletRequest.class), any(HttpServletResponse.class), any()))
                 .willReturn(true);
     }
