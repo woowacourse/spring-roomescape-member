@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
@@ -15,18 +16,22 @@ import roomescape.handler.exception.ExceptionCode;
 @Component
 public class TokenProvider {
 
-    private static final String RANDOM_VALUE = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RANDOM_VALUE.getBytes());
     private static final String TOKEN_COOKIE_NAME = "token";
     private static final String AUTHENTICATION_PAYLOAD = "name";
     private static final String AUTHENTICATION_ROLE = "role";
+
+    private final SecretKey secretKey;
+
+    public TokenProvider(@Value("${jwt.secret.random.value}") String randomValue) {
+        secretKey = Keys.hmacShaKeyFor(randomValue.getBytes());
+    }
 
     public String generateTokenOf(Member member) {
         return Jwts.builder()
                 .subject(member.getId().toString())
                 .claim(AUTHENTICATION_PAYLOAD, member.getName())
                 .claim(AUTHENTICATION_ROLE, member.getRole())
-                .signWith(SECRET_KEY)
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -56,12 +61,12 @@ public class TokenProvider {
         return Role.of(authenticationInfo);
     }
 
-    public long parseSubjectFromCookies(Cookie[] cookies) {
+    public long parseMemberIdFromCookies(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
-        return parseSubject(token);
+        return parseMemberId(token);
     }
 
-    public long parseSubject(String token) {
+    public long parseMemberId(String token) {
         String authenticationInfo = parsePayload(token).getSubject();
         if (authenticationInfo == null) {
             throw new CustomException(ExceptionCode.NO_AUTHENTICATION_INFO);
@@ -82,7 +87,7 @@ public class TokenProvider {
 
     private Claims parsePayload(String token) {
         return Jwts.parser()
-                .verifyWith(SECRET_KEY)
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

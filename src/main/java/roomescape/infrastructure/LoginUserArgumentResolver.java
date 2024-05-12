@@ -32,6 +32,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         if (request == null) {
             throw new CustomException(ExceptionCode.BAD_REQUEST);
         }
-        return tokenProvider.parseSubjectFromCookies(request.getCookies());
+        return tokenProvider.parseMemberIdFromCookies(request.getCookies());
     }
 }
