@@ -13,6 +13,7 @@ import roomescape.domain.Member;
 public class MemberDao {
 
     private final RowMapper<Member> rowMapper = (resultSet, __) -> new Member(
+            resultSet.getLong("id"),
             resultSet.getString("email"),
             resultSet.getString("password"),
             resultSet.getString("name")
