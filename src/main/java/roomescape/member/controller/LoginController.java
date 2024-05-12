@@ -10,15 +10,17 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.member.AuthService;
 import roomescape.member.request.LoginRequest;
 import roomescape.member.response.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @RequestMapping("/login")
 @RestController
 public class LoginController {
 
     private final AuthService authService;
-
-    public LoginController(AuthService authService) {
+    private final MemberService memberService;
+    public LoginController(AuthService authService,MemberService memberService) {
         this.authService = authService;
+        this.memberService=memberService;
     }
 
     @PostMapping
@@ -35,18 +37,9 @@ public class LoginController {
     @GetMapping("/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        MemberResponse response = authService.findMemberNameByToken(token);
+        String token = authService.extractTokenFromCookie(cookies);
+        long id = authService.findMemberIdByToken(token);
+        MemberResponse response = new MemberResponse(memberService.findMemberNameById(id));
         return ResponseEntity.ok().body(response);
     }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
-    }
-
 }

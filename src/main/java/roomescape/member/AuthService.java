@@ -1,6 +1,8 @@
 package roomescape.member;
 
 
+import jakarta.servlet.http.Cookie;
+
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Jwts;
@@ -8,7 +10,6 @@ import io.jsonwebtoken.security.Keys;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberDao;
 import roomescape.member.request.LoginRequest;
-import roomescape.member.response.MemberResponse;
 
 @Service
 public class AuthService {
@@ -25,24 +26,28 @@ public class AuthService {
         return !memberDao.isMember(email, password);
     }
 
-    public Member findMemberByEmail(String email) {
-        return memberDao.findMemberByEmail(email);
-    }
-
     public String createToken(LoginRequest loginRequest) {
         if (checkInvalidLogin(loginRequest.email(), loginRequest.password())) {
             throw new IllegalArgumentException("login failed");
         }
-        Member member = findMemberByEmail(loginRequest.email());
+        Member member = memberDao.findMemberByEmail(loginRequest.email());
         return jwtTokenProvider.createToken(member);
     }
 
-    public MemberResponse findMemberNameByToken(String token) {
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
+    public long findMemberIdByToken(String token) {
+        return Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
-        return new MemberResponse(memberDao.findNameById(memberId));
+    }
+
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
     }
 }
