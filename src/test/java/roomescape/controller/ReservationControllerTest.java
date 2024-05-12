@@ -114,6 +114,6 @@ class ReservationControllerTest {
 
     private String getAccessToken() {
         final ResponseEntity<TokenResponse> response = loginController.login(new LoginRequest("test@email.com", "password"), new MockHttpServletResponse());
-        return response.getBody().getAccessToken();
+        return response.getBody().accessToken();
     }
 }

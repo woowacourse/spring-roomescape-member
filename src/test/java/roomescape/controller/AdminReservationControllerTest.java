@@ -41,6 +41,6 @@ class AdminReservationControllerTest {
 
     private String getAccessToken() {
         final ResponseEntity<TokenResponse> response = loginController.login(new LoginRequest("789@email.com", "789"), new MockHttpServletResponse());
-        return response.getBody().getAccessToken();
+        return response.getBody().accessToken();
     }
 }

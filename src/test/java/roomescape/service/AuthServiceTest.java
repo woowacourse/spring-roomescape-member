@@ -27,7 +27,7 @@ class AuthServiceTest {
         memberDAO.insert(new Member("뽀로로", "email@email.com", "1234"));
         final TokenResponse tokenResponse = authService.createToken(new LoginRequest("email@email.com", "1234"));
 
-        final Member member = authService.findMemberByToken(tokenResponse.getAccessToken());
+        final Member member = authService.findMemberByToken(tokenResponse.accessToken());
 
         assertThat(member.getName()).isEqualTo("뽀로로");
     }

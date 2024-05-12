@@ -25,7 +25,7 @@ class AdminControllerTest {
     @BeforeEach
     void setUp() {
         final ResponseEntity<TokenResponse> login = loginController.login(new LoginRequest("789@email.com", "789"), new MockHttpServletResponse());
-        accessToken = login.getBody().getAccessToken();
+        accessToken = login.getBody().accessToken();
     }
 
     @Test
