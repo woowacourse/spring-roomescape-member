@@ -36,7 +36,7 @@ class ReservationTimeControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTime.class);
 
-        Integer count = reservationTimeDao.getAll().size();
+        Integer count = reservationTimeDao.findAll().size();
         assertThat(times.size()).isEqualTo(count);
     }
 
@@ -83,6 +83,6 @@ class ReservationTimeControllerTest {
     }
 
     void assertReservationTimeCountIsEqualTo(int count) {
-        assertThat(count).isEqualTo(reservationTimeDao.getAll().size());
+        assertThat(count).isEqualTo(reservationTimeDao.findAll().size());
     }
 }
