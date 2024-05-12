@@ -49,7 +49,7 @@ class ThemeControllerTest {
     @Test
     void createTime() {
         ThemeCreateRequest params = new ThemeCreateRequest(
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+                "오리와 호랑이2", "오리들과 호랑이들 사이에서 살아남기2", "https://image.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -57,7 +57,7 @@ class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/themes/1");
+                .header("Location", "/themes/2");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
         assertThat(count).isEqualTo(2);

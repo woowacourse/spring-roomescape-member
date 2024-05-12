@@ -64,7 +64,7 @@ class MemberControllerTest {
                 .header("Location", "/members/2");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from member", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(2);
     }
 
 }
