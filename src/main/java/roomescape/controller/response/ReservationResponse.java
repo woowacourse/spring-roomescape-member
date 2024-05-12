@@ -3,7 +3,7 @@ package roomescape.controller.response;
 import roomescape.model.member.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 
 import java.time.LocalDate;
 

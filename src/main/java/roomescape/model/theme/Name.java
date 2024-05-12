@@ -1,10 +1,10 @@
-package roomescape.model;
+package roomescape.model.theme;
 
-public class Description {
+public class Name {
 
     private final String value;
 
-    public Description(String value) {
+    public Name(String value) {
         validate(value);
         this.value = value;
     }
@@ -15,7 +15,7 @@ public class Description {
 
     private void validateNull(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalStateException("테마 설명문은 null 혹은 빈 문자열일 수 없습니다.");
+            throw new IllegalStateException("테마 이름은 null 혹은 빈 문자열일 수 없습니다.");
         }
     }
 

@@ -3,7 +3,7 @@ package roomescape.repository.dao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 
 import java.util.HashMap;
 import java.util.List;

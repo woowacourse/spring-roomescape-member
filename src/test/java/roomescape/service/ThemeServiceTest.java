@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ThemeDao;

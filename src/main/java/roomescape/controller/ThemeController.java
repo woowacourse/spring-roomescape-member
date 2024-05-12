@@ -2,12 +2,11 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.controller.response.ThemeResponse;
 import roomescape.exception.BadRequestException;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeDto;
 

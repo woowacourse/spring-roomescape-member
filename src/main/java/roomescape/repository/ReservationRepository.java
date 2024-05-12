@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.member.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.repository.dao.MemberDao;
 import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ReservationTimeDao;

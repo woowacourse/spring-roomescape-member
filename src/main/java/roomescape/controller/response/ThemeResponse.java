@@ -1,6 +1,6 @@
 package roomescape.controller.response;
 
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 
 public class ThemeResponse {
 

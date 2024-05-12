@@ -1,4 +1,4 @@
-package roomescape.model;
+package roomescape.model.theme;
 
 import roomescape.service.dto.ThemeDto;
 

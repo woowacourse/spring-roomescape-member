@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.service.dto.ThemeDto;
 
 import java.time.LocalDate;

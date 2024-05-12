@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.model.*;
 import roomescape.model.member.Member;
 import roomescape.model.member.Role;
+import roomescape.model.theme.Theme;
 import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
