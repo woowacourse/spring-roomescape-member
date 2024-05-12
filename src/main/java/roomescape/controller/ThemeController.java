@@ -1,13 +1,13 @@
 package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import roomescape.domain.dto.ThemeRequest;
-import roomescape.domain.dto.ThemeResponse;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.dto.ThemeResponses;
 import roomescape.service.ThemeService;
 
-import java.net.URI;
 import java.time.LocalDate;
 
 @RestController
@@ -22,18 +22,6 @@ public class ThemeController {
     @GetMapping
     public ResponseEntity<ThemeResponses> findAll() {
         return ResponseEntity.ok(themeService.findAll());
-    }
-
-    @PostMapping
-    public ResponseEntity<ThemeResponse> create(@RequestBody final ThemeRequest themeRequest) {
-        ThemeResponse themeResponse = themeService.create(themeRequest);
-        return ResponseEntity.created(URI.create("/themes/" + themeResponse.id())).body(themeResponse);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        themeService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/rank")

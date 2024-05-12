@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.containsString;
 class AdminReservationTest {
     private static final String ADMIN_USER = "wedge@test.com";
     private static final String COMMON_USER = "poke@test.com";
+
     @LocalServerPort
     int port;
     @Autowired
