@@ -1,7 +1,5 @@
 package roomescape.member.service;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.ReservationMember;
@@ -14,18 +12,9 @@ import java.util.List;
 public class MemberService {
 
     private final MemberMapper memberMapper = new MemberMapper();
-
-    private final JdbcTemplate jdbcTemplate;
     private final MemberDao memberDao;
 
-    private final RowMapper<ReservationMember> memberRowMapper = (resultSet, rowNum) ->
-            new ReservationMember(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name")
-            );
-
-    public MemberService(JdbcTemplate jdbcTemplate, MemberDao memberDao) {
-        this.jdbcTemplate = jdbcTemplate;
+    public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 
@@ -38,7 +27,6 @@ public class MemberService {
     }
 
     public ReservationMember findById(Long id) {
-        String sql = "SELECT id, name FROM member WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+        return memberDao.findById(id);
     }
 }

@@ -4,9 +4,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import roomescape.global.auth.AuthUser;
 import roomescape.member.domain.ReservationMember;
 import roomescape.member.domain.Role;
-import roomescape.global.auth.AuthUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,5 +44,10 @@ public class MemberDao {
     public List<ReservationMember> findAll() {
         String sql = "SELECT id, name FROM member";
         return jdbcTemplate.query(sql, memberRowMapper);
+    }
+
+    public ReservationMember findById(Long id) {
+        String sql = "SELECT id, name FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
     }
 }
