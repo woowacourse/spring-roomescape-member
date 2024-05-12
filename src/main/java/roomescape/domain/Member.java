@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.Role;
+import roomescape.constant.Role;
 
 public class Member {
 

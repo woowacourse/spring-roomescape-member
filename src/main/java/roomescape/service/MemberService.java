@@ -2,13 +2,13 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.repository.JdbcMemberRepository;
 import roomescape.repository.JdbcReservationRepository;
+import roomescape.util.JwtTokenProvider;
 
 @Service
 public class MemberService {

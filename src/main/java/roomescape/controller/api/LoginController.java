@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.JwtTokenProvider;
 import roomescape.controller.LoginMemberArgument;
 import roomescape.domain.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.service.MemberService;
+import roomescape.util.JwtTokenProvider;
 
 @RestController
 public class LoginController {

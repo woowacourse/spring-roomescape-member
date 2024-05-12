@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.JwtTokenProvider;
-import roomescape.Role;
-import roomescape.service.AuthorizationException;
+import roomescape.constant.Role;
+import roomescape.exception.AuthorizationException;
+import roomescape.util.JwtTokenProvider;
 
 @Component
 public class CheckAuthInterceptor implements HandlerInterceptor {
