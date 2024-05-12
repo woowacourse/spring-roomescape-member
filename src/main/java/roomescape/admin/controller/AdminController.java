@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.dto.AdminReservationRequest;
+import roomescape.global.annotation.Auth;
+import roomescape.member.role.MemberRole;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -17,6 +19,7 @@ public class AdminController {
         this.reservationService = reservationService;
     }
 
+    @Auth(role = MemberRole.ADMIN)
     @PostMapping("/admin/reservations")
     public ResponseEntity<Void> reservationSave(@RequestBody AdminReservationRequest adminReservationRequest) {
         reservationService.addAdminReservation(adminReservationRequest);

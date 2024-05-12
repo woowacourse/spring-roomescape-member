@@ -20,29 +20,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.auth.provider.model.TokenProvider;
-import roomescape.auth.resolver.TokenResolver;
+import roomescape.model.ControllerTest;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
 import roomescape.time.service.TimeService;
 
 @WebMvcTest(TimeController.class)
-class TimeControllerTest {
+class TimeControllerTest extends ControllerTest {
     private final Time time = new Time(4L, LocalTime.of(10, 0, 0));
-    private final String expectedTime = "10:00";
+    private final String expectedTime = "10:00:00";
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private TimeService timeService;
-
-    @MockBean
-    private TokenResolver tokenResolver;
-
-    @MockBean
-    private TokenProvider tokenProvider;
 
     @Test
     @DisplayName("시간을 잘 저장하는지 확인한다.")
