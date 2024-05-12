@@ -174,7 +174,10 @@ function saveRow(event) {
       .then(() => {
         location.reload();
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        alert(error.message);
+        console.error('Error:', error);
+      });
 
   isEditing = false;  // isEditing 값을 false로 설정
 }
@@ -200,16 +203,22 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+  const url = `/reservations/search?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}`;
+  fetch(url, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
   }).then(response => {
     if (response.status === 200) return response.json();
-    throw new Error('Read failed');
+    return response.json().then(data => {
+      throw new Error(data.message);
+    });
   }).then(render)
-      .catch(error => console.error("Error fetching available times:", error));
+      .catch(error => {
+        alert(error.message);
+        console.error("Error fetching available times:", error)
+      });
 }
 
 function requestCreate(reservation) {
@@ -222,7 +231,9 @@ function requestCreate(reservation) {
   return fetch('/admin/reservations', requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+        return response.json().then(data => {
+          throw new Error(data.message);
+        });
       });
 }
 
