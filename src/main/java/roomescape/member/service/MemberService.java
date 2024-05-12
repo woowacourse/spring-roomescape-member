@@ -15,8 +15,6 @@ public class MemberService {
     }
 
     public List<MemberInfo> findAll() {
-        return memberDao.findAll().stream()
-                .map(member -> new MemberInfo(member.getId(), member.getName()))
-                .toList();
+        return memberDao.findAll();
     }
 }

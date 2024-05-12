@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberInfo;
+import roomescape.member.domain.Role;
 
 @Repository
 public class MemberDao {
@@ -26,7 +27,7 @@ public class MemberDao {
     }
 
     public List<MemberInfo> findAll() {
-        String findAllSql = "SELECT id, name FROM member";
+        String findAllSql = "SELECT id, name, role FROM member";
         return jdbcTemplate.query(findAllSql, memberInfoRowMapper());
     }
 
@@ -38,11 +39,11 @@ public class MemberDao {
 
         long id = insertActor.executeAndReturnKey(parameterSource).longValue();
 
-        return new MemberInfo(id, member.getName());
+        return new MemberInfo(id, member.getName(), member.getRole());
     }
 
     public Optional<MemberInfo> findByEmail(String email) {
-        String sql = "SELECT id, name FROM member WHERE email = ? LIMIT 1";
+        String sql = "SELECT id, name, role FROM member WHERE email = ? LIMIT 1";
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberInfoRowMapper(), email));
@@ -52,7 +53,7 @@ public class MemberDao {
     }
 
     public Optional<MemberInfo> findById(Long id) {
-        String sql = "SELECT id, name FROM member WHERE id = ? LIMIT 1";
+        String sql = "SELECT id, name, role FROM member WHERE id = ? LIMIT 1";
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, memberInfoRowMapper(), id));
@@ -70,7 +71,8 @@ public class MemberDao {
     public RowMapper<MemberInfo> memberInfoRowMapper() {
         return (rs, rowNum) -> new MemberInfo(
                 rs.getLong("id"),
-                rs.getString("name")
+                rs.getString("name"),
+                Role.of(rs.getString("role"))
         );
     }
 }
