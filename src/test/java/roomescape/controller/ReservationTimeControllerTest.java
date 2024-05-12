@@ -3,6 +3,7 @@ package roomescape.controller;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,7 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,10 +26,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.config.AuthenticationExtractor;
+import roomescape.domain.member.Member;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.fixture.MemberFixtures;
 import roomescape.service.AuthService;
-import roomescape.service.MemberService;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeController.class)
@@ -39,9 +44,16 @@ class ReservationTimeControllerTest {
     @MockBean
     private ReservationTimeService reservationTimeService;
     @MockBean
-    private MemberService memberService;
-    @MockBean
     private AuthService authService;
+    @MockBean
+    private AuthenticationExtractor authenticationExtractor;
+
+    @BeforeEach
+    void setUp() {
+        Member member = MemberFixtures.createUserMember("daon");
+        given(authService.findAuthInfo(anyString())).willReturn(member);
+        given(authenticationExtractor.extractAuthInfo(any(HttpServletRequest.class))).willReturn(member);
+    }
 
     @Test
     @DisplayName("전체 예약 시간을 조회한다.")

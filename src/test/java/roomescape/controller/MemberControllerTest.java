@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.config.AuthenticationExtractor;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.LoginResponse;
@@ -45,7 +47,8 @@ class MemberControllerTest {
     private MemberService memberService;
     @MockBean
     private AuthService authService;
-
+    @MockBean
+    private AuthenticationExtractor authenticationExtractor;
 
     @Test
     @DisplayName("모든 회원 정보를 조회한다.")
@@ -149,6 +152,7 @@ class MemberControllerTest {
         String email = "test@test.com";
         Member member = MemberFixtures.createUserMember(name, email);
         given(authService.findAuthInfo(anyString())).willReturn(member);
+        given(authenticationExtractor.extractAuthInfo(any(HttpServletRequest.class))).willReturn(member);
 
         //when //then
         mockMvc.perform(get("/login/check")
@@ -166,6 +170,8 @@ class MemberControllerTest {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         given(authService.findAuthInfo(anyString())).willThrow(AuthorizationException.class);
+        given(authenticationExtractor.extractAuthInfo(any(HttpServletRequest.class)))
+                .willThrow(AuthorizationException.class);
 
         //when //then
         mockMvc.perform(get("/login/check")

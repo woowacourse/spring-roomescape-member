@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +21,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.config.CheckAdminInterceptor;
+import roomescape.config.AuthenticationExtractor;
 import roomescape.dto.reservation.AdminReservationCreateRequest;
 import roomescape.dto.reservation.ReservationFilterRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.fixture.MemberFixtures;
-import roomescape.service.AuthService;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(AdminReservationController.class)
@@ -43,15 +40,12 @@ class AdminReservationControllerTest {
     @MockBean
     private ReservationService reservationService;
     @MockBean
-    private AuthService authService;
-    @MockBean
-    private CheckAdminInterceptor checkAdminInterceptor;
+    private AuthenticationExtractor authenticationExtractor;
 
     @BeforeEach
     void setUp() {
-        given(authService.findAuthInfo(anyString())).willReturn(MemberFixtures.createUserMember("daon"));
-        given(checkAdminInterceptor.preHandle(any(HttpServletRequest.class), any(HttpServletResponse.class), any()))
-                .willReturn(true);
+        given(authenticationExtractor.extractAuthInfo(any(HttpServletRequest.class)))
+                .willReturn(MemberFixtures.createUserMember("daon"));
     }
 
     @Test

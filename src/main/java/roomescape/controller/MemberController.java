@@ -1,9 +1,9 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,23 +49,33 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
         authService.checkLoginInfo(loginRequest);
         LoginResponse loginResponse = authService.createToken(loginRequest);
-        Cookie cookie = new Cookie(TOKEN_KEY, loginResponse.getAccessToken());
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
-        return ResponseEntity.ok().build();
+        ResponseCookie cookie = ResponseCookie.from(TOKEN_KEY, loginResponse.getAccessToken())
+                .path("/")
+                .httpOnly(true)
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok()
+                .headers(httpHeaders)
+                .build();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(TOKEN_KEY, null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from(TOKEN_KEY, "")
+                .maxAge(0)
+                .path("/")
+                .httpOnly(true)
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok()
+                .headers(httpHeaders)
+                .build();
     }
 }

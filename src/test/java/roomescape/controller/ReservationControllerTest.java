@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.config.AuthenticationExtractor;
 import roomescape.domain.member.Member;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
@@ -45,10 +47,14 @@ class ReservationControllerTest {
     private ReservationService reservationService;
     @MockBean
     private AuthService authService;
+    @MockBean
+    private AuthenticationExtractor authenticationExtractor;
 
     @BeforeEach
     void setUp() {
-        given(authService.findAuthInfo(anyString())).willReturn(MemberFixtures.createUserMember("daon"));
+        Member member = MemberFixtures.createUserMember("daon");
+        given(authService.findAuthInfo(anyString())).willReturn(member);
+        given(authenticationExtractor.extractAuthInfo(any(HttpServletRequest.class))).willReturn(member);
     }
 
     @Test
