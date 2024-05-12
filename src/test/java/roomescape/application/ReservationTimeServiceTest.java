@@ -66,12 +66,12 @@ public class ReservationTimeServiceTest {
     @Test
     @Sql("/reservation.sql")
     void 테마의_예약_가능한_시간을_조회한다() {
-        LocalDate date = LocalDate.parse("2024-05-01");
+        LocalDate date = LocalDate.parse("2024-04-26");
         List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(2L, date);
 
         assertSoftly(softly -> {
             softly.assertThat(availableTimes.get(0).alreadyBooked()).isTrue();
-            softly.assertThat(availableTimes.get(1).alreadyBooked()).isTrue();
+            softly.assertThat(availableTimes.get(1).alreadyBooked()).isFalse();
             softly.assertThat(availableTimes.get(2).alreadyBooked()).isFalse();
             softly.assertThat(availableTimes.get(3).alreadyBooked()).isFalse();
             softly.assertThat(availableTimes.get(4).alreadyBooked()).isFalse();

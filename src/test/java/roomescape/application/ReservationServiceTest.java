@@ -5,11 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationCreationRequest;
+import roomescape.application.dto.request.ReservationFilteringRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.support.annotation.FixedClock;
 import roomescape.support.annotation.ServiceTest;
@@ -31,7 +33,8 @@ public class ReservationServiceTest {
         assertAll(
                 () -> assertThat(response.date()).isEqualTo(request.date()),
                 () -> assertThat(response.time().id()).isEqualTo(request.timeId()),
-                () -> assertThat(response.theme().id()).isEqualTo(request.themeId())
+                () -> assertThat(response.theme().id()).isEqualTo(request.themeId()),
+                () -> assertThat(response.member().id()).isEqualTo(request.memberId())
         );
     }
 
@@ -47,7 +50,7 @@ public class ReservationServiceTest {
 
     @Test
     void 중복된_예약이_있으면_예약을_실패한다() {
-        LocalDate date = LocalDate.parse("2024-05-01");
+        LocalDate date = LocalDate.parse("2024-04-27");
         ReservationCreationRequest request = new ReservationCreationRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
@@ -66,5 +69,16 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.cancel(0L))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 필터링된_예약을_조회한다() {
+        LocalDate dateFrom = LocalDate.parse("2024-04-26");
+        LocalDate dateTo = LocalDate.parse("2024-04-30");
+        ReservationFilteringRequest request = new ReservationFilteringRequest(1L, 1L, dateFrom, dateTo);
+
+        List<ReservationResponse> reservations = reservationService.findReservations(request);
+
+        assertThat(reservations).hasSize(3);
     }
 }
