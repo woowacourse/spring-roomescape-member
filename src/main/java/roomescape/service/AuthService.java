@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.rest.request.LoginRequest;
 import roomescape.controller.rest.response.LoginCheckResponse;
 import roomescape.domain.Member;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.MemberDao;
 import roomescape.util.JwtProvider;
@@ -42,8 +43,7 @@ public class AuthService {
         return cookie;
     }
 
-    public LoginCheckResponse check(Cookie cookie) {
-        String token = cookie.getValue();
+    public LoginCheckResponse check(String token) {
         String email = jwtProvider.getSubject(token);
         Member member = findByEmail(email);
         return new LoginCheckResponse(member.name());
@@ -52,7 +52,7 @@ public class AuthService {
     private void validate(LoginRequest request) {
         Member member = findByEmail(request.email());
         if (!isValidLogin(request, member)) {
-            throw new IllegalArgumentException("Invalid password.");
+            throw new AuthenticationException("Invalid password.");
         }
     }
 

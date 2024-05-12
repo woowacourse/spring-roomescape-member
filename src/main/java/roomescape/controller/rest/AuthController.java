@@ -1,13 +1,13 @@
 package roomescape.controller.rest;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.io.IOException;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.controller.rest.request.LoginRequest;
 import roomescape.controller.rest.response.LoginCheckResponse;
-import roomescape.exception.AuthenticationException;
 import roomescape.service.AuthService;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping
 public class AuthController {
 
     private final AuthService authService;
@@ -29,20 +28,24 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest body, HttpServletResponse response) {
         Cookie cookie = authService.createToken(body);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<LoginCheckResponse> check(HttpServletRequest request) {
-        Cookie token = Arrays.stream(request.getCookies())
-                .filter(cookie -> Objects.equals(cookie.getName(), "token"))
-                .findFirst()
-                .orElseThrow(AuthenticationException::new);
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> check(@CookieValue String token) {
         LoginCheckResponse loginCheckResponse = authService.check(token);
         return ResponseEntity.ok().body(loginCheckResponse);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 }

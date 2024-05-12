@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.getElementById('logout-btn').addEventListener('click', function (event) {
   event.preventDefault();
   fetch('/logout', {
-    method: 'POST', // 또는 서버 설정에 따라 GET 일 수도 있음
+    method: 'GET', // 또는 서버 설정에 따라 GET 일 수도 있음
     credentials: 'include' // 쿠키를 포함시키기 위해 필요
   })
       .then(response => {
