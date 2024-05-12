@@ -6,7 +6,7 @@ import roomescape.domain.Reservation;
 
 public record ReservationResponse(
         Long id,
-        UserResponse userResponse,
+        UserResponse user,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate date,
         ReservationTimeResponse time,

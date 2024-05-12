@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
@@ -39,7 +38,7 @@ class ReservationServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -95,7 +94,7 @@ class ReservationServiceTest {
 
         //then
         assertAll(
-                () -> assertThat(reservationResponse.userResponse().name()).isEqualTo("유저"),
+                () -> assertThat(reservationResponse.user().name()).isEqualTo("유저"),
                 () -> assertThat(reservationResponse.date()).isEqualTo("2025-04-10"),
                 () -> assertThat(reservationResponse.time().id()).isEqualTo(1L),
                 () -> assertThat(reservationResponse.theme().id()).isEqualTo(1L)

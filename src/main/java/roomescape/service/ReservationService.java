@@ -5,14 +5,18 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import roomescape.domain.*;
+import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.repository.UserRepository;
 
 @Service
 public class ReservationService {
@@ -20,13 +24,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final UserRepository userRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.userRepository = userRepository;
     }
 
     public List<ReservationResponse> findAll() {
@@ -60,6 +67,21 @@ public class ReservationService {
         Reservation reservation = new Reservation(
                 user,
                 reservationCreateRequest.date(),
+                reservationTime,
+                theme
+        );
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(savedReservation);
+    }
+
+    public ReservationResponse createAdminReservation(ReservationAdminCreateRequest reservationAdminCreateRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationAdminCreateRequest.timeId());
+        validateAvailableDateTime(reservationAdminCreateRequest.date(), reservationTime.getStartAt());
+        Theme theme = themeRepository.findByThemeId(reservationAdminCreateRequest.themeId());
+        User user = userRepository.findById(reservationAdminCreateRequest.userId());
+        Reservation reservation = new Reservation(
+                user,
+                reservationAdminCreateRequest.date(),
                 reservationTime,
                 theme
         );
