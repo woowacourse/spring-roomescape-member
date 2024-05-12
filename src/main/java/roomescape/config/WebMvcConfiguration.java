@@ -33,7 +33,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(checkLoginInterceptor)
                 .addPathPatterns("/reservation")
-                .addPathPatterns("/admin/**");
+                .addPathPatterns("/admin/**")
+                .addPathPatterns("/reservations")
+                .addPathPatterns("/themes")
+                .addPathPatterns("/times")
+                .excludePathPatterns("/themes/weeklyBest");
 
         registry.addInterceptor(checkAdminInterceptor)
                 .addPathPatterns("/admin/**");
