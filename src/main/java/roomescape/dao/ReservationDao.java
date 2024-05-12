@@ -143,7 +143,7 @@ public class ReservationDao {
             return jdbcTemplate.query(query.toString(), reservationMapper, themeId, dateForm, dateTo);
         }
 
-        throw new BadRequestException("검색 조건이 빈값일 수 없습니다.");
+        return findAll();
     }
 
     public boolean existsByDateTime(LocalDate date, Long timeId, Long themeId) {

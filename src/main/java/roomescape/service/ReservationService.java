@@ -46,7 +46,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        validateConditions(themeId, memberId, dateFrom, dateTo);
+        validateDateCondition(dateFrom, dateTo);
 
         return reservationDao.findBy(themeId, memberId, dateFrom, dateTo)
                 .stream().map(ReservationResponse::from)
@@ -79,13 +79,9 @@ public class ReservationService {
         return reservationDao.deleteById(id);
     }
 
-    private void validateConditions(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        if (themeId == null && memberId == null && dateFrom == null && dateTo == null) {
-            throw new BadRequestException("검색 조건이 빈값일 수 없습니다.");
-        }
-
-        if (dateFrom.isAfter(dateTo)) {
-            throw new BadRequestException("시간을 잘못 입력하셨습니다.");
+    private void validateDateCondition(LocalDate dateFrom, LocalDate dateTo) {
+        if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
+            throw new BadRequestException("날짜를 잘못 입력하셨습니다.");
         }
     }
 
