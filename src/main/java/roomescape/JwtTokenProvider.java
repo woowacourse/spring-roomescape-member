@@ -7,6 +7,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Member;
+import roomescape.service.AuthorizationException;
 
 @Component
 public class JwtTokenProvider {
@@ -48,6 +49,9 @@ public class JwtTokenProvider {
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new AuthorizationException("접근 권한이 없습니다.");
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();

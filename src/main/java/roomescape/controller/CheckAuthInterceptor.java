@@ -20,8 +20,8 @@ public class CheckAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = tokenProvider.extractTokenFromCookie(request.getCookies());
-        Role role = Role.valueOf(tokenProvider.getRoleFromToken(token));
-        if (role != Role.ADMIN) {
+        String role = tokenProvider.getRoleFromToken(token);
+        if (Role.valueOf(role) != Role.ADMIN) {
             throw new AuthorizationException("접근 권한이 없습니다.");
         }
 
