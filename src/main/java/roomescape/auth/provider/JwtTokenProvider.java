@@ -2,10 +2,13 @@ package roomescape.auth.provider;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.exception.AuthorizationException;
 import roomescape.member.domain.Member;
 
+import java.util.Arrays;
 import java.util.Date;
 
 @Component
@@ -27,6 +30,14 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new AuthorizationException("토큰이 없습니다."));
     }
 
     public String getEmail(String token) {

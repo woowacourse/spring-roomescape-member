@@ -7,8 +7,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.provider.JwtTokenProvider;
 import roomescape.exception.AuthorizationException;
 
-import java.util.Arrays;
-
 public class CheckAdminInterceptor implements HandlerInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -21,20 +19,12 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         validateCookie(cookies);
 
-        String token = extractTokenFromCookie(cookies);
+        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
 
         String role = jwtTokenProvider.getRole(token);
         validateRole(role);
 
         return true;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new AuthorizationException("토큰이 없습니다."));
     }
 
     private void validateCookie(Cookie[] cookies) {
