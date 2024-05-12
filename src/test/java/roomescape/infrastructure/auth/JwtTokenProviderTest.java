@@ -4,26 +4,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import javax.crypto.SecretKey;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.RoomescapeErrorCode;
 import roomescape.exception.RoomescapeException;
 
 class JwtTokenProviderTest {
-    private static final String TEST_SECRET_KEY = "testSecretKey";
+    private static final String TEST_SECRET_KEY = "i-appreciate-your-kindness-her0807";
 
     @DisplayName("이메일로 토큰을 생성한다.")
     @Test
     void createTokenTest() {
         JwtTokenProvider jwtTokenProvider = createJwtTokenProvider(1000);
+        SecretKey key = Keys.hmacShaKeyFor(TEST_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         String payload = "test@test.com";
 
         String token = jwtTokenProvider.createToken(payload);
 
         String subject = Jwts.parser()
-                .setSigningKey(TEST_SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
 
         assertThat(payload).isEqualTo(subject);

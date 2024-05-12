@@ -1,10 +1,11 @@
 package roomescape.infrastructure.auth;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 import roomescape.application.TokenProvider;
 import roomescape.exception.RoomescapeErrorCode;
@@ -19,24 +20,28 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtTokenProperties.getExpireMinute());
 
+        String secretKey = jwtTokenProperties.getSecretKey();
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, jwtTokenProperties.getSecretKey())
+                .subject(payload)
+                .expiration(validity)
+                .signWith(key)
                 .compact();
     }
 
     public String getPayload(String token) {
+        String secretString = jwtTokenProperties.getSecretKey();
+        SecretKey key = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
+
         try {
             return Jwts.parser()
-                    .setSigningKey(jwtTokenProperties.getSecretKey())
-                    .parseClaimsJws(token)
-                    .getBody()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
                     .getSubject();
         } catch (ExpiredJwtException e) {
             throw new RoomescapeException(RoomescapeErrorCode.TOKEN_EXPIRED);
