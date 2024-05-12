@@ -23,8 +23,7 @@ public record CreateReservationRequest(
         Long themeId) {
 
     public Reservation toReservation(final Member member, final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(
-                null,
+        return Reservation.create(
                 member,
                 this.date,
                 reservationTime,

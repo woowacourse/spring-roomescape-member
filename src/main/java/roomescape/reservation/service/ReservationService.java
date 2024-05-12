@@ -39,14 +39,12 @@ public class ReservationService {
 
     public CreateReservationResponse createReservation(final AuthInfo authInfo,
                                                        final CreateReservationRequest createReservationRequest) {
-        checkAlreadyExistReservation(createReservationRequest);
-
         ReservationTime reservationTime = findReservationTime(createReservationRequest.timeId());
-        checkDateTimeToCreateIsPast(createReservationRequest.date(), reservationTime);
-
         Theme theme = findTheme(createReservationRequest.themeId());
         Member member = findMember(authInfo.getMemberId());
 
+        checkAlreadyExistReservation(createReservationRequest, createReservationRequest.date(), theme.getName(),
+                reservationTime.getTime());
         Reservation reservation = createReservationRequest.toReservation(member, reservationTime, theme);
         return CreateReservationResponse.from(reservationRepository.save(reservation));
     }
@@ -73,26 +71,6 @@ public class ReservationService {
     private Member findMember(final Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않아 예약을 생성할 수 없습니다."));
-    }
-
-    private void checkDateTimeToCreateIsPast(final LocalDate dateToCreate, final ReservationTime reservationTime) {
-        LocalDate now = LocalDate.now();
-        checkDateToCreateIsPast(dateToCreate, now);
-        checkTimeToCreateIsPastWhenSameDate(dateToCreate, now, reservationTime);
-    }
-
-    private void checkDateToCreateIsPast(final LocalDate dateToCreate, final LocalDate now) {
-        if (dateToCreate.isBefore(now)) {
-            throw new IllegalArgumentException("지나간 날짜에 대한 예약 생성은 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
-        }
-    }
-
-    private void checkTimeToCreateIsPastWhenSameDate(final LocalDate dateToCreate,
-                                                     final LocalDate now,
-                                                     final ReservationTime timeToCreate) {
-        if (dateToCreate.isEqual(now) && timeToCreate.isNotAfter(LocalTime.now())) {
-            throw new IllegalArgumentException("지나간 시간 또는 현재 시간에 대한 예약 생성은 불가능합니다. 현재 이후 날짜로 재예약해주세요");
-        }
     }
 
     public List<FindReservationResponse> getReservations() {

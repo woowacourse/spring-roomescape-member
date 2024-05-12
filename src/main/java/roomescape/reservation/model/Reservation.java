@@ -1,6 +1,7 @@
 package roomescape.reservation.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.member.domain.Member;
 import roomescape.reservationtime.model.ReservationTime;
@@ -38,6 +39,40 @@ public class Reservation {
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme());
+    }
+
+    public static Reservation create(final Member member,
+                                     final LocalDate date,
+                                     final ReservationTime reservationTime,
+                                     final Theme theme) {
+        validateCreateTimeIsPast(date, reservationTime);
+        return new Reservation(
+                null,
+                member,
+                date,
+                reservationTime,
+                theme);
+    }
+
+    private static void validateCreateTimeIsPast(final LocalDate dateToCreate, final ReservationTime reservationTime) {
+        LocalDateTime now = LocalDateTime.now();
+        checkDateToCreateIsPast(dateToCreate, now.toLocalDate());
+        checkTimeToCreateIsPastWhenSameDate(now, dateToCreate, reservationTime);
+    }
+
+    private static void checkDateToCreateIsPast(final LocalDate dateToCreate, final LocalDate now) {
+        if (dateToCreate.isBefore(now)) {
+            throw new IllegalArgumentException(dateToCreate + "는 지나간 시간임으로 예약 생성이 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
+        }
+    }
+
+    private static void checkTimeToCreateIsPastWhenSameDate(final LocalDateTime now,
+                                                            final LocalDate dateToCreate,
+                                                            final ReservationTime timeToCreate) {
+        LocalDateTime newDateTime = LocalDateTime.of(dateToCreate, timeToCreate.getTime());
+        if (newDateTime.isEqual(now) || newDateTime.isBefore(now)) {
+            throw new IllegalArgumentException(newDateTime + "는 현재보다 동일하거나 지나간 시간임으로 예약 생성이 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
+        }
     }
 
     private void validateReservationMemberIsNull(final Member member) {

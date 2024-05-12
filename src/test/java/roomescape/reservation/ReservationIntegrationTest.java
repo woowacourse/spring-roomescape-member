@@ -230,7 +230,7 @@ class ReservationIntegrationTest {
                 .then().log().all()
 
                 .statusCode(404)
-                .body("detail", equalTo("해당하는 테마가 존재하지 않아 예약을 생성할 수 없습니다."));
+                .body("detail", equalTo("식별자 1에 해당하는 테마가 존재하지 않아 예약을 생성할 수 없습니다."));
     }
 
     @Test
@@ -252,7 +252,32 @@ class ReservationIntegrationTest {
                 .then().log().all()
 
                 .statusCode(404)
-                .body("detail", equalTo("해당하는 시간이 존재하지 않아 예약을 생성할 수 없습니다."));
+                .body("detail", equalTo("식별자 1에 해당하는 시간이 존재하지 않아 예약을 생성할 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("예약 생성 시 이미 같은 테마, 같은 날짜, 같은 시간에 예약이 있는 경우 예외를 반환한다.")
+    void createReservation_WhenTimeAndDateAndThemeExist() {
+        jdbcTemplate.update(
+                "INSERT INTO member (name, role, email, password) values ( '몰리', 'USER', 'asd@naver.com', 'hihi')");
+        jdbcTemplate.update("insert into theme (name, description, thumbnail) values ('홀리몰리', '설명', '썸네일')");
+        jdbcTemplate.update("insert into reservation_time (start_at) values ('20:00')");
+        jdbcTemplate.update("insert into reservation (member_id, date, time_id, theme_id) values ( 1, '2024-12-23', 1, 1 )");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2024-12-23");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", getTokenByLogin())
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+
+                .statusCode(400)
+                .body("detail", equalTo("이미 2024-12-23의 홀리몰리 테마에는 20:00 시의 예약이 존재하여 예약을 생성할 수 없습니다."));
     }
 
     @Test
@@ -299,7 +324,7 @@ class ReservationIntegrationTest {
                 .then().log().all()
 
                 .statusCode(404)
-                .body("detail", equalTo("현재 저장된 예약이 존재하지 않아 예약을 조회할 수 없습니다."));
+                .body("detail", equalTo("식별자 1에 해당하는 예약이 존재하지 않아 예약을 조회할 수 없습니다."));
     }
 
     @Test
@@ -370,6 +395,6 @@ class ReservationIntegrationTest {
                 .then().log().all()
 
                 .statusCode(404)
-                .body("detail", equalTo("삭제하려는 예약이 존재하지 않습니다. 삭제가 불가능합니다."));
+                .body("detail", equalTo("식별자 1에 해당하는 예약이 존재하지 않습니다. 삭제가 불가능합니다."));
     }
 }
