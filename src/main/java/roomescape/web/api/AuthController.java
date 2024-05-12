@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.token.TokenParser;
 import roomescape.domain.token.TokenProvider;
 import roomescape.service.MemberService;
+import roomescape.service.dto.response.MemberResponse;
 import roomescape.web.api.dto.LoginRequest;
 import roomescape.web.exception.AuthorizationException;
 
@@ -48,8 +49,5 @@ public class AuthController {
         String payload = tokenParser.getEmail(token);
 
         return ResponseEntity.ok(new MemberResponse(payload));
-    }
-
-    public record MemberResponse(String name) {
     }
 }
