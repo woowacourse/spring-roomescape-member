@@ -11,17 +11,27 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final HandlerMethodArgumentResolver argumentResolver;
-    private final HandlerInterceptor handlerInterceptor;
+    private final HandlerInterceptor checkRoleInterceptor;
+    private final HandlerInterceptor checkUserInterceptor;
 
-    public WebMvcConfiguration(HandlerMethodArgumentResolver argumentResolver, HandlerInterceptor handlerInterceptor) {
+    public WebMvcConfiguration(
+        HandlerMethodArgumentResolver argumentResolver,
+        HandlerInterceptor checkRoleInterceptor,
+        HandlerInterceptor checkUserInterceptor) {
+
         this.argumentResolver = argumentResolver;
-        this.handlerInterceptor = handlerInterceptor;
+        this.checkRoleInterceptor = checkRoleInterceptor;
+        this.checkUserInterceptor = checkUserInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(handlerInterceptor)
+        registry.addInterceptor(checkRoleInterceptor)
             .addPathPatterns("/admin/**");
+
+        registry.addInterceptor(checkUserInterceptor)
+            .addPathPatterns("/reservation")
+            .addPathPatterns("/reservations");
     }
 
     @Override

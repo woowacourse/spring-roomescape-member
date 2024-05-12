@@ -42,7 +42,7 @@ public class JwtManager {
     public LoginMember findMember(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new AuthorizationException("쿠키가 존재하지 않습니다.");
+            throw new AuthorizationException("로그인 후 이용해 주세요.");
         }
         String token = extractTokenFromCookies(cookies);
         if (token.isEmpty()) {

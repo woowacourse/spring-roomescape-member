@@ -36,6 +36,10 @@ public final class LoginMember {
         return role == Role.ADMIN;
     }
 
+    public boolean isNotRegistered() {
+        return role == null;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
