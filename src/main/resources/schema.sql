@@ -4,6 +4,7 @@ CREATE TABLE member
     name     VARCHAR(255) NOT NULL,
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    role     ENUM('MEMBER', 'ADMIN') NOT NULL DEFAULT 'MEMBER',
     PRIMARY KEY (id)
 );
 
@@ -37,6 +38,7 @@ CREATE TABLE reservation
 );
 
 INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111');
+INSERT INTO member(name, email, password, role) VALUES ('관리자켬', 'kyum@naver.com', '1111', 'ADMIN');
 
 INSERT INTO reservation_time(start_at) VALUES ('09:00');
 INSERT INTO reservation_time(start_at) VALUES ('10:00');
