@@ -22,7 +22,6 @@ public class Member {
 
     public Member(Long id, String name, String email, String password) {
         this(id, name, email, password, Role.NORMAL);
-        
     }
 
     public Member(String name, String email, String password, Role role) {

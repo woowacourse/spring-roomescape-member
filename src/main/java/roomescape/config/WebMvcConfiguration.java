@@ -11,7 +11,6 @@ import roomescape.service.security.JwtProvider;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver());

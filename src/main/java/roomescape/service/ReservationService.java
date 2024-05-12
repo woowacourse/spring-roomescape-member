@@ -32,7 +32,6 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-
     public List<ReservationResponse> findAllReservation() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()

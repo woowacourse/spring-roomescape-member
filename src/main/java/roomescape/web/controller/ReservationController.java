@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import roomescape.service.ReservationService;
 import roomescape.web.dto.request.member.MemberInfo;
 import roomescape.web.dto.request.reservation.ReservationRequest;
@@ -23,14 +24,11 @@ import roomescape.web.dto.request.reservation.ReservationSearchCond;
 import roomescape.web.dto.request.reservation.UserReservationRequest;
 import roomescape.web.dto.response.reservation.ReservationResponse;
 
-@RequestMapping("/reservations")
 @RestController
+@RequestMapping("/reservations")
+@RequiredArgsConstructor
 public class ReservationController {
     private final ReservationService reservationService;
-
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAllReservation() {

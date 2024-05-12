@@ -80,5 +80,4 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         String sql = "DELETE FROM reservation_time";
         jdbcTemplate.update(sql);
     }
-
 }
