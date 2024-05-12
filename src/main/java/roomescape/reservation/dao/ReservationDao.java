@@ -23,6 +23,17 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 public class ReservationDao implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private static final String SELECT_COMPLETED_RESERVATION = """
+            SELECT r.id AS reservation_id, r.date,
+            t.id AS time_id, t.start_at AS time_value,
+            th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail,
+            m.id AS member_id, m.name AS member_name, m.email, m.password, m.role
+            FROM reservation AS r 
+            INNER JOIN reservation_time AS t ON r.time_id = t.id 
+            INNER JOIN theme AS th ON r.theme_id = th.id
+            INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
+            INNER JOIN member AS m ON m.id = mr.member_id
+            """;
 
     private final RowMapper<CompletedReservation> rowMapper = (ResultSet resultSet, int rowNum) -> {
         return new CompletedReservation(
@@ -70,36 +81,14 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public List<CompletedReservation> findAll() {
-        String sql = """
-                SELECT r.id AS reservation_id, r.date,
-                t.id AS time_id, t.start_at AS time_value,
-                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail,
-                m.id AS member_id, m.name AS member_name, m.email, m.password, m.role
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id 
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
-                INNER JOIN member AS m ON m.id = mr.member_id
-                """;
-
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(SELECT_COMPLETED_RESERVATION, rowMapper);
     }
 
     @Override
     public List<CompletedReservation> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        String sql = """
-                SELECT r.id AS reservation_id, r.date,
-                t.id AS time_id, t.start_at AS time_value,
-                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail,
-                m.id AS member_id, m.name AS member_name, m.email, m.password, m.role
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id 
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN reservation_list AS mr ON mr.reservation_id = r.id
-                INNER JOIN member AS m ON m.id = mr.member_id
-                """;
-        sql += makeFilterSql(themeId, memberId, dateFrom, dateTo);
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(SELECT_COMPLETED_RESERVATION
+                        + makeFilterSql(themeId, memberId, dateFrom, dateTo),
+                rowMapper);
     }
 
     private String makeFilterSql(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
