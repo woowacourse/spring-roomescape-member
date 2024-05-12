@@ -36,3 +36,8 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     CONSTRAINT UNIQUE_RESERVATION UNIQUE (date, time_id, theme_id)
 );
+
+INSERT INTO member
+VALUES (1, '관리자', 'admin@gmail.com', '1234', 'ADMIN');
+INSERT INTO member
+VALUES (2, '사용자', 'user@gmail.com', '1234', 'USER');
