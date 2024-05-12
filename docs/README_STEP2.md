@@ -224,7 +224,89 @@ Content-Type: application/json
     }
 }
 ```
+### 모든 사용자 조회 API
+**request**
+```http request
+GET /members
+```
 
-### 회원 조회 API
+**response**
+```http request
+HTTP/1.1 200
 
+[
+    {
+        "name": "name"
+    }
+]
+```
+### 회원가입 요청 API
+**request**
+```http request
+POST /members
+Content-Type: application/json
 
+{
+"name": "name",
+"email": "email@email.com",
+"password": "password"
+}
+
+```
+
+**response**
+```http request
+<Response body is empty>Response code: 201; Time: 33ms (33 ms); Content length: 0 bytes (0 B)
+
+```
+### 로그아웃 API
+**request**
+```http request
+POST /logout 
+```
+
+**response**
+```http request
+<Response body is empty>Response code: 200; Time: 33ms (33 ms); Content length: 0 bytes (0 B)
+
+```
+### 회원 삭제 API
+**request**
+```http request
+DELETE members/1
+```
+
+**response**
+```http request
+<Response body is empty>Response code: 204; Time: 33ms (33 ms); Content length: 0 bytes (0 B)
+
+```
+
+### 관리자페이지 예약 검색 API
+**request**
+```http request
+GET /reservations/search?name={fram}&theme={horror}&from={2024.05.12}&to={2024.06.01}
+```
+
+**response**
+```http request
+HTTP/1.1 200
+{
+    [
+        {
+            "id": 1,
+            "date": "2023-08-05",
+            "time" : {
+                "id": 1,
+                "startAt" : "10:00"
+             },
+             "theme": {
+                "id": 1,
+                "name": "레벨2 탈출",
+                "description": "우테코 레벨2를 탈출하는 내용입니다.",
+                "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+             }
+         },
+    ]
+}
+```

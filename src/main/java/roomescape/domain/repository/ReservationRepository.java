@@ -13,6 +13,9 @@ public interface ReservationRepository {
 
     List<Long> findTimeIdByDateAndThemeId(LocalDate date, Long themeId);
 
+    List<Reservation> findByPeriodAndMemberAndTheme(LocalDate start, LocalDate end, String memberName,
+                                                    String themeName);
+
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     Reservation save(Reservation reservation);

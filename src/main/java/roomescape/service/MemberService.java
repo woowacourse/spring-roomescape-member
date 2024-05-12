@@ -45,7 +45,6 @@ public class MemberService {
         }
     }
 
-    //TODO
     public void withdrawal(Long memberId) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(IllegalArgumentException::new);

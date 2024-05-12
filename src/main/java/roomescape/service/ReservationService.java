@@ -22,6 +22,7 @@ import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
 import roomescape.web.dto.request.MemberInfo;
 import roomescape.web.dto.request.ReservationRequest;
+import roomescape.web.dto.request.ReservationSearchCond;
 import roomescape.web.dto.response.ReservationResponse;
 
 @Service
@@ -36,6 +37,14 @@ public class ReservationService {
     public List<ReservationResponse> findAllReservation() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> findAllReservationByConditions(ReservationSearchCond cond) {
+        return reservationRepository.findByPeriodAndMemberAndTheme(cond.start(), cond.end(), cond.memberName(),
+                        cond.themeName())
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
