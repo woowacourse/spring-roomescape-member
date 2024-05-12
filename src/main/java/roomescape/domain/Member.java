@@ -7,18 +7,21 @@ public class Member {
     private final Long id;
     private final PlayerName name;
     private final Email email;
-    private final String password;
+    private final Password password;
     private final Role role;
 
-    public Member(PlayerName name, Email email, String password, Role role) {
+    public Member(PlayerName name, Email email, Password password, Role role) {
         this(null, name, email, password, role);
     }
 
-    public Member(Long id, PlayerName name, Email email, String password, Role role) {
+    public Member(Long id, PlayerName name, Email email, Password password, Role role) {
         if (name == null) {
             throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "이름은 필수 입력값 입니다.");
         }
-        if (password == null || password.isBlank()) {
+        if (email == null) {
+            throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "이메일은 필수 입력값 입니다.");
+        }
+        if (password == null) {
             throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "비밀번호는 필수 입력값 입니다.");
         }
         this.id = id;
@@ -26,6 +29,10 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public boolean matchPassword(String password) {
+        return this.password.matches(password);
     }
 
     public Member withId(long id) {
@@ -44,7 +51,7 @@ public class Member {
         return email;
     }
 
-    public String getPassword() {
+    public Password getPassword() {
         return password;
     }
 

@@ -41,7 +41,7 @@ public class ReservationAcceptanceTest extends AcceptanceTest {
     void setUp() {
         accessToken = RestAssured.given()
                 .contentType("application/json")
-                .body("{\"email\":\"admin@wooteco.com\", \"password\":\"1234\"}")
+                .body("{\"email\":\"admin@wooteco.com\", \"password\":\"wootecoCrew6!\"}")
                 .when().post("/login")
                 .then()
                 .statusCode(200)

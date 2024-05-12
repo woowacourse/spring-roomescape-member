@@ -1,8 +1,8 @@
 insert into member (name, email, password, role)
-values ('수달', 'sudal@wooteco.com', '1234', 'BASIC'),
-       ('이상', 'leesang@wooteco.com', '1234', 'BASIC'),
-       ('회원', 'member@wooteco.com', '1234', 'BASIC'),
-       ('운영자', 'admin@wooteco.com', '1234', 'ADMIN');
+values ('수달', 'sudal@wooteco.com', 'wootecoCrew6!', 'BASIC'),
+       ('이상', 'leesang@wooteco.com', 'wootecoCrew6!', 'BASIC'),
+       ('회원', 'member@wooteco.com', 'wootecoCrew6!', 'BASIC'),
+       ('운영자', 'admin@wooteco.com', 'wootecoCrew6!', 'ADMIN');
 
 insert into reservation_time (start_at)
 values ('12:00:00'),

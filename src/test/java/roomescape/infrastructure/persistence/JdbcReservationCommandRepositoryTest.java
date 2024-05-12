@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
+import roomescape.domain.Password;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationCommandRepository;
@@ -35,7 +36,7 @@ class JdbcReservationCommandRepositoryTest extends JdbcReservationTest {
     void shouldReturnReservationWithIdWhenReservationSave() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme(new ThemeName("theme1"), "desc", "url"));
-        Member member = memberCommandRepository.create(new Member(new PlayerName("test"), new Email("test@email.com"), "1234", Role.BASIC));
+        Member member = memberCommandRepository.create(new Member(new PlayerName("test"), new Email("test@email.com"), new Password("wootecoCrew6!"), Role.BASIC));
         Reservation reservationWithoutId = new Reservation(
                 member,
                 LocalDate.of(2024, 12, 25),

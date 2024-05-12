@@ -29,11 +29,9 @@ class ReservationFactoryTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 예외를 반환한다.")
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
-        Theme savedTheme = themeRepository.create(ThemeFixture.defaultValue());
-        Member member = memberCommandRepository.create(MemberFixture.defaultValue());
-        ReservationRequest request = ReservationRequestFixture.of(9999L, savedTheme.getId());
+        ReservationRequest request = ReservationRequestFixture.of(99L, 1L);
 
-        assertThatCode(() -> reservationFactory.create(member.getId(), request))
+        assertThatCode(() -> reservationFactory.create(1L, request))
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(RoomescapeErrorCode.NOT_FOUND_TIME);
