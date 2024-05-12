@@ -1,6 +1,7 @@
 package roomescape.service.request;
 
 import jakarta.validation.constraints.NotBlank;
+import roomescape.domain.Description;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 
@@ -12,6 +13,9 @@ public record ThemeRequest(
 
     public Theme toDomain() {
         return new Theme(
-                new ThemeName(name), description, thumbnail);
+                new ThemeName(name),
+                new Description(description),
+                thumbnail
+        );
     }
 }

@@ -4,14 +4,14 @@ public class Theme {
 
     private final Long id;
     private final ThemeName name;
-    private final String description;
+    private final Description description;
     private final String thumbnail;
 
-    public Theme(ThemeName name, String description, String thumbnail) {
+    public Theme(ThemeName name, Description description, String thumbnail) {
         this(null, name, description, thumbnail);
     }
 
-    public Theme(Long id, ThemeName name, String description, String thumbnail) {
+    public Theme(Long id, ThemeName name, Description description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -26,7 +26,7 @@ public class Theme {
         return name;
     }
 
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 

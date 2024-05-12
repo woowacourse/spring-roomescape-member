@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Description;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 
@@ -71,7 +72,7 @@ public class ThemeRepository {
         return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
                 new ThemeName(resultSet.getString("name")),
-                resultSet.getString("description"),
+                new Description(resultSet.getString("description")),
                 resultSet.getString("thumbnail"));
     }
 }

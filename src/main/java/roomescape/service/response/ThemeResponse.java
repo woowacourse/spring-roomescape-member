@@ -13,7 +13,7 @@ public record ThemeResponse(
         return new ThemeResponse(
                 theme.getId(),
                 theme.getName().value(),
-                theme.getDescription(),
+                theme.getDescription().value(),
                 theme.getThumbnail()
         );
     }

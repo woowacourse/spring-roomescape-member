@@ -16,12 +16,13 @@ class ReservationTest {
         Member member = new Member(
                 new MemberName("호돌"),
                 new Email("email"),
-                new Password("******"), MemberRole.NORMAL
+                new Password("******"),
+                MemberRole.NORMAL
         );
         ReservationTime time = new ReservationTime(LocalTime.now());
         Theme theme = new Theme(
                 new ThemeName("레벨 1 방탈출"),
-                "description",
+                new Description("description"),
                 "thumbnail"
         );
 

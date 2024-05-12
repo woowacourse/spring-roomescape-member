@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Description;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.support.IntegrationTestSupport;
@@ -63,8 +64,7 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     void create() {
         Theme theme = new Theme(
                 new ThemeName("레벨 1 방탈출"),
-                "우테코 레벨4를 탈출하는 내용입니다.",
-                "woowahan.com"
+                new Description("description"), "woowahan.com"
         );
 
         target.save(theme);
