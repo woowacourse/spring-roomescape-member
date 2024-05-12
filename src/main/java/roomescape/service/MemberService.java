@@ -3,6 +3,8 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
+import roomescape.domain.Email;
+import roomescape.domain.Password;
 import roomescape.exception.CustomBadRequest;
 import roomescape.service.dto.input.MemberLoginInput;
 import roomescape.service.dto.output.MemberOutput;
@@ -17,8 +19,7 @@ public class MemberService {
     }
 
     public MemberOutput findMember(final MemberLoginInput input) {
-        final var member = input.toMember();
-        final var savedMember = memberDao.findByEmailAndPassword(member)
+        final var savedMember = memberDao.findByEmailAndPassword(new Email(input.email()), new Password(input.password()))
                 .orElseThrow(() -> new CustomBadRequest("없는 이메일이거나 잘못된 비밀번호입니다."));
         return MemberOutput.from(savedMember);
     }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.controller.api.dto.request.AuthMemberRequest;
+import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.exception.CustomBadRequest;
 import roomescape.exception.CustomUnauthorized;
 import roomescape.infrastructure.CookieProvider;
@@ -28,10 +28,10 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
     }
 
     @Override
-    public AuthMemberRequest resolveArgument(final MethodParameter parameter,
-                                  final ModelAndViewContainer mavContainer,
-                                  final NativeWebRequest webRequest,
-                                  final WebDataBinderFactory binderFactory) throws Exception {
+    public MemberAuthRequest resolveArgument(final MethodParameter parameter,
+                                             final ModelAndViewContainer mavContainer,
+                                             final NativeWebRequest webRequest,
+                                             final WebDataBinderFactory binderFactory) throws Exception {
         final var request = (HttpServletRequest) webRequest.getNativeRequest();
         final var authMember = cookieProvider.extractToken(request);
         try {

@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.controller.api.dto.request.AuthMemberRequest;
+import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.controller.api.dto.response.MemberResponse;
 
 @Component
@@ -22,12 +22,12 @@ public class TokenProvider {
                 .compact();
     }
 
-    public AuthMemberRequest parse(final String token) {
+    public MemberAuthRequest parse(final String token) {
         final var claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         final var id = Long.parseLong(claims.getSubject());
         final var name = claims.get("name", String.class);
         final var role = claims.get("role", String.class);
-        return new AuthMemberRequest(id, name, role);
+        return new MemberAuthRequest(id, name, role);
     }
 }
 

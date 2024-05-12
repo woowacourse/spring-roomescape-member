@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.api.dto.request.AuthMemberRequest;
+import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.controller.api.dto.request.MemberLoginRequest;
 import roomescape.controller.api.dto.response.AuthMemberNameResponse;
 import roomescape.controller.api.dto.response.MemberResponse;
-import roomescape.controller.api.dto.response.TokenResponse;
 import roomescape.controller.api.resolver.AuthMember;
 import roomescape.infrastructure.CookieProvider;
 import roomescape.service.MemberService;
@@ -29,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping
-    public ResponseEntity<TokenResponse> loginMember(@RequestBody final MemberLoginRequest request) {
+    public ResponseEntity<Void> loginMember(@RequestBody final MemberLoginRequest request) {
         final var output = memberService.findMember(request.toInput());
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookieProvider.create(MemberResponse.from(output)))
@@ -37,7 +36,7 @@ public class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<AuthMemberNameResponse> getAuthMemberName(@AuthMember final AuthMemberRequest request) {
+    public ResponseEntity<AuthMemberNameResponse> getAuthMemberName(@AuthMember final MemberAuthRequest request) {
         return ResponseEntity.ok(AuthMemberNameResponse.from(request));
     }
 }

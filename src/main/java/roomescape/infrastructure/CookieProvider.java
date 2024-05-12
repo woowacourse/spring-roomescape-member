@@ -3,7 +3,7 @@ package roomescape.infrastructure;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-import roomescape.controller.api.dto.request.AuthMemberRequest;
+import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.controller.api.dto.response.MemberResponse;
 
 @Component
@@ -24,7 +24,7 @@ public class CookieProvider {
         return String.valueOf(cookie);
     }
 
-    public AuthMemberRequest extractToken(final HttpServletRequest request) {
+    public MemberAuthRequest extractToken(final HttpServletRequest request) {
         final var cookies = request.getCookies();
         for (final var cookie : cookies) {
             if (cookie.getName().equals("accessToken")) {

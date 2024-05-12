@@ -2,9 +2,9 @@ package roomescape.controller.api.dto.request;
 
 import roomescape.service.dto.input.ReservationInput;
 
-public record ReservationCreateRequest(String date, Long timeId, Long themeId) {
+public record ReservationCreateForAdminRequest(String date, Long timeId, Long themeId, Long memberId) {
 
-    public ReservationInput toInput(final Long memberId) {
+    public ReservationInput toInput() {
         return ReservationInput.of(date, timeId, themeId, memberId);
     }
 }
