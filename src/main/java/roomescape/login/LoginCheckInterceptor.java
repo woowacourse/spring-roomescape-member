@@ -10,11 +10,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.service.MemberService;
 
 @Component
-public class CheckLoginInterceptor implements HandlerInterceptor {
+public class LoginCheckInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
 
-    public CheckLoginInterceptor(MemberService memberService) {
+    public LoginCheckInterceptor(MemberService memberService) {
         this.memberService = memberService;
     }
 
