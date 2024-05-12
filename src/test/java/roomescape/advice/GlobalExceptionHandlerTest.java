@@ -7,11 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import roomescape.advice.dto.ErrorResponse;
 import roomescape.auth.exception.AuthenticationException;
-import roomescape.auth.exception.MemberAuthenticationException;
 import roomescape.auth.exception.NotLoginAuthenticationException;
 
 class GlobalExceptionHandlerTest {
-
     private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
     @DisplayName("IllegalArgumentException가 던져지면 400 에러를 반환한다.")
