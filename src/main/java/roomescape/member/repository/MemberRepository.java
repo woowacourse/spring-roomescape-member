@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.exception.MemberExceptionCode;
+import roomescape.member.role.MemberRole;
 
 @Repository
 public class MemberRepository {
@@ -27,5 +28,11 @@ public class MemberRepository {
 
     public List<Long> findAllId() {
         return memberDao.findAllId();
+    }
+
+    public MemberRole findRoleById(long id) {
+        String memberRole = memberDao.findRoleById(id)
+                .orElseThrow(() -> new RoomEscapeException(MemberExceptionCode.MEMBER_ROLE_NOT_EXIST_EXCEPTION));
+        return MemberRole.findMemberRole(memberRole);
     }
 }

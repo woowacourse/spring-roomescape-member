@@ -62,4 +62,21 @@ public class MemberJdbcDao implements MemberDao {
         return jdbcTemplate.query(findNameByIdSql,
                 (resultSet, rowNum) -> resultSet.getLong("id"));
     }
+
+    @Override
+    public Optional<String> findRoleById(long id) {
+        String findRoleByIdSql = """
+                SELECT role
+                FROM member
+                WHERE id =?
+                """;
+
+        try {
+            String role = jdbcTemplate.queryForObject(findRoleByIdSql,
+                    (resultSet, rowNum) -> resultSet.getString("role"), id);
+            return Optional.ofNullable(role);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

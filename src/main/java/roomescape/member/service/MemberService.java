@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.member.dto.MemberLoginCheckResponse;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberRepository;
+import roomescape.member.role.MemberRole;
 
 @Service
 public class MemberService {
@@ -26,5 +27,9 @@ public class MemberService {
         return ids.stream()
                 .map(MemberResponse::new)
                 .toList();
+    }
+
+    public MemberRole findMemberRole(long id) {
+        return memberRepository.findRoleById(id);
     }
 }

@@ -10,4 +10,6 @@ public interface MemberDao {
     Optional<String> findNameById(long id);
 
     List<Long> findAllId();
+
+    Optional<String> findRoleById(long id);
 }
