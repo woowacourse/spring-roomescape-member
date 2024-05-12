@@ -11,6 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
 
 @Sql("/setReservation.sql")
 class H2ReservationRepositoryTest extends BasicAcceptanceTest {

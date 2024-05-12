@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 
 @Repository
 public class H2ThemeRepository implements ThemeRepository {

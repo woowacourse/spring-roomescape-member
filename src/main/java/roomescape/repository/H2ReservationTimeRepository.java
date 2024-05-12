@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import roomescape.domain.ReservationTimeRepository;
 
 @Repository
 public class H2ReservationTimeRepository implements ReservationTimeRepository {

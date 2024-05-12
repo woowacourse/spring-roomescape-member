@@ -12,7 +12,7 @@ import roomescape.dto.request.UserLoginRequest;
 import roomescape.dto.response.CheckMemberResponse;
 import roomescape.dto.response.TokenResponse;
 import roomescape.service.MemberService;
-import roomescape.ui.MemberIdConverter;
+import roomescape.config.MemberIdConverter;
 
 @RestController
 public class LoginController {

@@ -9,7 +9,7 @@ import roomescape.dto.response.CheckMemberResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
 import roomescape.infrastructure.JwtTokenProvider;
-import roomescape.repository.MemberRepository;
+import roomescape.domain.MemberRepository;
 
 @Service
 public class MemberService {

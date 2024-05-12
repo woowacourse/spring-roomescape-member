@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 
 @Sql(value = "/setMember.sql")
 class H2MemberRepositoryTest extends BasicAcceptanceTest {
