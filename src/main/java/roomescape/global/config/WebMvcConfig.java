@@ -5,29 +5,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.AuthenticationInfoExtractor;
-import roomescape.domain.member.MemberRepository;
+import roomescape.application.AuthService;
+import roomescape.ui.support.AuthenticationExtractInterceptor;
 import roomescape.ui.support.AuthenticationPrincipalArgumentResolver;
 import roomescape.ui.support.CheckAdminAccessInterceptor;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    private final AuthenticationInfoExtractor authenticationInfoExtractor;
-    private final MemberRepository memberRepository;
+    private final AuthService authService;
 
-    public WebMvcConfig(AuthenticationInfoExtractor authenticationInfoExtractor, MemberRepository memberRepository) {
-        this.authenticationInfoExtractor = authenticationInfoExtractor;
-        this.memberRepository = memberRepository;
+    public WebMvcConfig(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationPrincipalArgumentResolver(authenticationInfoExtractor));
+        resolvers.add(new AuthenticationPrincipalArgumentResolver());
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckAdminAccessInterceptor(authenticationInfoExtractor, memberRepository))
-                .addPathPatterns("/admin/**");
+        registry.addInterceptor(new AuthenticationExtractInterceptor(authService))
+                .excludePathPatterns("/", "/login", "/logout", "/themes/popular")
+                .excludePathPatterns("/css/**", "/js/**", "/image/**");
+        registry.addInterceptor(new CheckAdminAccessInterceptor()).addPathPatterns("/admin/**");
     }
 }

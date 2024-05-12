@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationService;
 import roomescape.application.dto.response.ReservationResponse;
+import roomescape.auth.Principal;
 import roomescape.ui.controller.dto.ReservationRequest;
 import roomescape.ui.support.AuthenticationPrincipal;
 
@@ -32,7 +33,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request,
-                                                                 @AuthenticationPrincipal long memberId) {
+                                                                 @AuthenticationPrincipal Principal principal) {
+        long memberId = principal.getId();
         ReservationResponse response = reservationService.reserve(request.toReservationCreationRequest(memberId));
         URI location = URI.create("/reservations/" + response.id());
         return ResponseEntity.created(location).body(response);

@@ -9,7 +9,6 @@ import roomescape.application.AuthService;
 import roomescape.application.ReservationService;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
-import roomescape.auth.AuthenticationInfoExtractor;
 import roomescape.domain.member.MemberRepository;
 import roomescape.ui.controller.AuthController;
 import roomescape.ui.controller.ReservationController;
@@ -35,8 +34,6 @@ public class ControllerTest {
     private ThemeService themeService;
     @MockBean
     private AuthService authService;
-    @MockBean
-    private AuthenticationInfoExtractor authenticationInfoExtractor;
     @MockBean
     private MemberRepository memberRepository;
 }

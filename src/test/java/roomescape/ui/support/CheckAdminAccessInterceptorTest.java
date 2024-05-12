@@ -3,34 +3,20 @@ package roomescape.ui.support;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.context.jdbc.Sql;
-import roomescape.auth.AuthenticationInfoExtractor;
-import roomescape.auth.TokenProvider;
+import roomescape.auth.Principal;
 import roomescape.auth.exception.AccessDeniedException;
-import roomescape.domain.member.MemberRepository;
-import roomescape.support.annotation.WithoutWebSpringBootTest;
+import roomescape.fixture.MemberFixture;
 
-@WithoutWebSpringBootTest
-@Sql("/member.sql")
 class CheckAdminAccessInterceptorTest {
-    private final CheckAdminAccessInterceptor checkAdminAccessInterceptor;
-    @Autowired
-    private TokenProvider tokenProvider;
-
-    @Autowired
-    CheckAdminAccessInterceptorTest(AuthenticationInfoExtractor extractor, MemberRepository memberRepository) {
-        checkAdminAccessInterceptor = new CheckAdminAccessInterceptor(extractor, memberRepository);
-    }
+    private final CheckAdminAccessInterceptor checkAdminAccessInterceptor = new CheckAdminAccessInterceptor();
 
     @Test
     void 관리자_페이지에_접근할_수_있으면_true를_반환한다() {
-        String token = tokenProvider.createToken("1");
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setCookies(new Cookie("token", token));
+        Principal principal = Principal.from(MemberFixture.DEFAULT_ADMIN);
+        request.setAttribute(AuthenticationExtractInterceptor.PRINCIPAL_KEY_NAME, principal);
 
         boolean isHandled = checkAdminAccessInterceptor.preHandle(request, null, null);
 
@@ -39,9 +25,9 @@ class CheckAdminAccessInterceptorTest {
 
     @Test
     void 관리자_페이지에_접근할_수_없으면_예외가_발생한다() {
-        String token = tokenProvider.createToken("2");
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setCookies(new Cookie("token", token));
+        Principal principal = Principal.from(MemberFixture.DEFAULT_MEMBER);
+        request.setAttribute(AuthenticationExtractInterceptor.PRINCIPAL_KEY_NAME, principal);
 
         assertThatThrownBy(() -> checkAdminAccessInterceptor.preHandle(request, null, null))
                 .isExactlyInstanceOf(AccessDeniedException.class);

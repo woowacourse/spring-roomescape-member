@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.AuthService;
 import roomescape.application.dto.response.MemberResponse;
 import roomescape.application.dto.response.TokenResponse;
+import roomescape.auth.Principal;
 import roomescape.ui.controller.dto.LoginRequest;
 import roomescape.ui.support.AuthenticationPrincipal;
 
@@ -38,8 +39,8 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public MemberResponse check(@AuthenticationPrincipal long memberId) {
-        return authService.getMemberById(memberId);
+    public MemberResponse check(@AuthenticationPrincipal Principal principal) {
+        return new MemberResponse(principal.getId(), principal.getName());
     }
 
     @PostMapping("/logout")

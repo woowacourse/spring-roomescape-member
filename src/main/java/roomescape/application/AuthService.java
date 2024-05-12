@@ -2,8 +2,8 @@ package roomescape.application;
 
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.request.TokenCreationRequest;
-import roomescape.application.dto.response.MemberResponse;
 import roomescape.application.dto.response.TokenResponse;
+import roomescape.auth.Principal;
 import roomescape.auth.TokenProvider;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
@@ -23,14 +23,16 @@ public class AuthService {
     public TokenResponse authenticateMember(TokenCreationRequest request) {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException(WRONG_EMAIL_OR_PASSWORD_MESSAGE));
-        member.validatePassword(request.password());
+        member.validatePassword(request.password(), WRONG_EMAIL_OR_PASSWORD_MESSAGE);
         String token = tokenProvider.createToken(Long.toString(member.getId()));
         return new TokenResponse(token);
     }
 
-    public MemberResponse getMemberById(long id) {
-        Member member = memberRepository.findById(id)
+    public Principal createPrincipal(String token) {
+        String subject = tokenProvider.extractSubject(token);
+        long memberId = Long.parseLong(subject);
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        return MemberResponse.from(member);
+        return Principal.from(member);
     }
 }
