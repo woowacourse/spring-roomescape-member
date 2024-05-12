@@ -6,8 +6,12 @@
 | GET    | `/admin/reservation`                             | 어드민 예약 관리 페이지 요청          |
 | GET    | `/admin/time`                                    | 어드민 시간 관리 페이지 요청          |
 | GET    | `/admin/theme`                                   | 어드민 테마 관리 페이지 요청          |
-| GET    | ` `                                              | 메인 페이지 요청                 |
 | GET    | `/reservation`                                   | 예약 관리 페이지 요청              |
+| GET    | ` `                                              | 메인 페이지 요청                 |
+| GET    | `/login`                                         | 로그인 페이지 요청                |
+| GET    | `/signup`                                        | 회원가입 페이지 요청               |
+| GET    | `/members`                                       | 전체 회원 조회 요청               |
+| POST   | `/members`                                       | 회원 가입 요청                  |
 | GET    | `/reservations`                                  | 전체 예약 정보 요청               |
 | POST   | `/reservations`                                  | 예약 추가 요청                  |
 | DELETE | `/reservations/{id}`                             | 예약 삭제 요청                  |
@@ -45,13 +49,4 @@
 - [x] 예약 신청 날짜는 오늘보다 이전일 수 없다.
 - [x] 예약 날짜는 null일 수 없다.
 
-## 4단계
-
-- [x] 멤버 도메인 구현 (name, email(id), password )
-- [x] GET login 요청 시 로그인 폼이 있는 페이지 응답
-- [x] POST login 요청 시 로그인 시도 (바디에 있음)
-- [x] POST login은 응답으로 토큰 줘야 함 (쿠키 이용)
-- [x] 로그인 상태를 체크할 수 있는 api 구현 쿠키와 호스트를 통해서 login/check
-
-## 5단계
 

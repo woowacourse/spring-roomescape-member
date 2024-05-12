@@ -11,5 +11,9 @@ public interface MemberRepository {
 
     Optional<Member> findByEmail(String email);
 
+    boolean existByEmail(String email);
+
+    boolean existByName(String name);
+
     Member save(Member member);
 }

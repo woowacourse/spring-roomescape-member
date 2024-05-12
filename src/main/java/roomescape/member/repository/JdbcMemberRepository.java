@@ -64,6 +64,30 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
+    public boolean existByEmail(String email) {
+        String sql = """
+                SELECT EXISTS ( 
+                    SELECT 1 
+                    FROM member 
+                    WHERE email = ?
+                );
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        String sql = """
+                SELECT EXISTS ( 
+                    SELECT 1 
+                    FROM member 
+                    WHERE name = ?
+                );
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    @Override
     public Member save(Member member) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(member);
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();

@@ -2,6 +2,7 @@ package roomescape.member.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.DuplicateSaveException;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
@@ -27,6 +28,14 @@ public class MemberService {
     }
 
     public MemberResponse joinMember(JoinRequest joinRequest) {
+        if (memberRepository.existByEmail(joinRequest.email())) {
+            throw new DuplicateSaveException("중복되는 이메일의 회원이 존재합니다");
+        }
+
+        if (memberRepository.existByName(joinRequest.name())) {
+            throw new DuplicateSaveException("중복되는 이름의 회원이 존재합니다");
+        }
+
         Member member = joinRequest.toMember();
         return new MemberResponse(memberRepository.save(member));
     }
