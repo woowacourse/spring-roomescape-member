@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.util.List;
+import roomescape.service.dto.ReservationSpecificRequest;
 
 public interface ReservationRepository {
 
@@ -17,4 +18,6 @@ public interface ReservationRepository {
     boolean isExistReservationOf(long id);
 
     boolean hasSameReservationForThemeAtDateTime(Reservation reservation);
+
+    List<Reservation> findSpecificReservations(ReservationSpecificRequest request);
 }
