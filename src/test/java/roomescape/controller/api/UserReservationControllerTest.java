@@ -37,10 +37,10 @@ class UserReservationControllerTest {
             .then().log().all()
             .statusCode(201)
             .body("id", is(5))
-            .body("member.id", is(2))
+            .body("memberName", is("사용자"))
             .body("date", is("2060-01-01"))
-            .body("time.id", is(1))
-            .body("theme.id", is(1));
+            .body("time", is("10:00"))
+            .body("themeName", is("theme1"));
     }
 
 

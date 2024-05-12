@@ -34,10 +34,10 @@ public class UserReservationController {
 
         CreateReservationResponse response = new CreateReservationResponse(
             reservation.getId(),
-            reservation.getLoginMember(),
+            reservation.getLoginMember().name(),
             reservation.getDate(),
-            reservation.getTime(),
-            reservation.getTheme());
+            reservation.getTime().getStartAt(),
+            reservation.getTheme().getName());
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
             .body(response);

@@ -41,10 +41,10 @@ public class AdminReservationController {
 
         CreateReservationResponse response = new CreateReservationResponse(
             id,
-            newReservation.getLoginMember(),
+            newReservation.getLoginMember().name(),
             newReservation.getDate(),
-            newReservation.getTime(),
-            newReservation.getTheme()
+            newReservation.getTime().getStartAt(),
+            newReservation.getTheme().getName()
         );
 
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(response);
