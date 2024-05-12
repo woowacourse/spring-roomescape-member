@@ -23,12 +23,12 @@ public class LoginService {
     }
 
     public TokenResponse login(TokenRequest tokenRequest) {
-        Member member = findUserBy(tokenRequest.email());
+        Member member = findMemberBy(tokenRequest.email());
         String token = tokenProvider.generateTokenOf(member);
         return TokenResponse.from(token);
     }
 
-    private Member findUserBy(String email) {
+    private Member findMemberBy(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
     }
