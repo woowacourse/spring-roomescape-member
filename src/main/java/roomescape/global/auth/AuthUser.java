@@ -1,6 +1,6 @@
 package roomescape.global.auth;
 
-import roomescape.domain.member.domain.Role;
+import roomescape.member.domain.Role;
 
 public record AuthUser(
         Long id,

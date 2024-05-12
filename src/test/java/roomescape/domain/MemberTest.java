@@ -2,8 +2,8 @@ package roomescape.domain;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.domain.member.domain.Member;
-import roomescape.domain.member.domain.Role;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.global.exception.RoomEscapeException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

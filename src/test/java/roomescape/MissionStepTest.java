@@ -11,8 +11,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import roomescape.domain.page.controller.AdminController;
-import roomescape.domain.reservation.domain.Reservation;
+import roomescape.page.controller.AdminController;
+import roomescape.reservation.domain.Reservation;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;

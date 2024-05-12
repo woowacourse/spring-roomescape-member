@@ -2,9 +2,9 @@ package roomescape;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import roomescape.domain.member.domain.ReservationMember;
-import roomescape.domain.reservation.domain.ReservationTime;
-import roomescape.domain.theme.domain.Theme;
+import roomescape.member.domain.ReservationMember;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.theme.domain.Theme;
 
 import java.time.LocalTime;
 

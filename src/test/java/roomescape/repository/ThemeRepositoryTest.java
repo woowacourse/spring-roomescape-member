@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.theme.domain.Theme;
-import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.theme.theme.domain.Theme;
+import roomescape.theme.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -4,9 +4,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.domain.member.dto.MemberResponse;
-import roomescape.domain.reservation.dto.ReservationResponse;
-import roomescape.domain.reservation.service.ReservationService;
+import roomescape.member.dto.MemberResponse;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.service.ReservationService;
 
 import java.time.LocalDate;
 import java.util.List;

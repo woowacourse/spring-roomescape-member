@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.theme.domain.Theme;
-import roomescape.domain.theme.dao.ThemeDao;
+import roomescape.theme.theme.domain.Theme;
+import roomescape.theme.theme.dao.ThemeDao;
 
 import java.util.Optional;
 

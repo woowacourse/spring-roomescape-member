@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import roomescape.domain.reservation.service.ReservationTimeService;
+import roomescape.reservation.service.ReservationTimeService;
 import roomescape.global.exception.RoomEscapeException;
 
 import java.sql.PreparedStatement;
