@@ -12,7 +12,7 @@ import roomescape.exception.RoomescapeException;
 @Component
 public class JwtTokenManager implements TokenManager {
     private static final String TOKEN_KEY = "token";
-    private static final int MINUTE = 60;
+    private static final int ONE_MINUTE = 60;
 
     @Override
     public String extractToken(Cookie[] cookies) {
@@ -35,7 +35,7 @@ public class JwtTokenManager implements TokenManager {
         Cookie cookie = new Cookie(TOKEN_KEY, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(MINUTE * 30);
+        cookie.setMaxAge(ONE_MINUTE * 5);
         response.addCookie(cookie);
     }
 }
