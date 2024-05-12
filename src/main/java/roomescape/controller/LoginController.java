@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(
-            @RequestBody TokenRequest tokenRequest,
+            @RequestBody @Valid TokenRequest tokenRequest,
             HttpServletResponse response
     ) {
         TokenResponse tokenResponse = loginService.login(tokenRequest);
