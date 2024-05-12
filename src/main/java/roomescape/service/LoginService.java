@@ -11,28 +11,28 @@ import roomescape.infrastructure.auth.TokenManager;
 @Service
 public class LoginService {
     private final CookieManager cookieManager;
-    private final TokenManager tokenGenerator;
+    private final TokenManager tokenManager;
     private final MemberService memberService;
 
     public LoginService(
             final CookieManager cookieManager,
-            final TokenManager tokenGenerator,
+            final TokenManager tokenManager,
             final MemberService memberService) {
         this.cookieManager = cookieManager;
-        this.tokenGenerator = tokenGenerator;
+        this.tokenManager = tokenManager;
         this.memberService = memberService;
     }
 
     public Cookie login(LoginRequest loginRequest) {
         Member member = memberService.findMemberByEmailAndPassword(loginRequest.email(), loginRequest.password());
         validateLogin(loginRequest, member);
-        Token token = tokenGenerator.generate(member);
+        Token token = tokenManager.generate(member);
         return cookieManager.generate(token);
     }
 
     public Member check(Cookie[] cookies) {
         Token token = cookieManager.getToken(cookies);
-        Long memberId = tokenGenerator.getMemberId(token);
+        Long memberId = tokenManager.getMemberId(token);
         return memberService.findMemberById(memberId);
     }
 
