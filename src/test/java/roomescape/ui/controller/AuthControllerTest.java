@@ -6,18 +6,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.core.StringContains;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.AuthService;
 import roomescape.application.dto.response.TokenResponse;
-import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 import roomescape.ui.controller.dto.LoginRequest;
 
-class AuthControllerTest extends ControllerTest {
-    @Autowired
+@WebMvcTest(AuthController.class)
+class AuthControllerTest {
+    @MockBean
     private AuthService authService;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
     void 로그인을_성공한다() throws Exception {
@@ -30,6 +39,17 @@ class AuthControllerTest extends ControllerTest {
         result.andExpectAll(
                         status().isOk(),
                         header().string("Set-Cookie", "token=token!!!; Path=/; HttpOnly")
+                )
+                .andDo(print());
+    }
+
+    @Test
+    void 로그아웃을_성공한다() throws Exception {
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/logout", "");
+
+        result.andExpectAll(
+                        status().isOk(),
+                        header().string("Set-Cookie", StringContains.containsString("token=; Path=/; Max-Age=0;"))
                 )
                 .andDo(print());
     }
