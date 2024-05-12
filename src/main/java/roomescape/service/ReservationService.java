@@ -63,10 +63,8 @@ public class ReservationService {
         return reservationDao.save(new Reservation(0, request.date(), member, reservationTime, theme));
     }
 
-    public Reservation createByMember(ReservationRequest request) {
+    public Reservation createByMember(Member member, ReservationRequest request) {
         requireExistsByAttributes(request);
-        Member member = memberDao.findById(request.memberId())
-                .orElseThrow(EntityNotFoundException::new);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(EntityNotFoundException::new);
         requireFuture(request.date(), reservationTime.startAt());
