@@ -24,7 +24,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         String accessToken = TokenCookieManager.getToken(request);
         MemberInfo member = authService.findMemberByToken(accessToken);
 
-        if (member.isAdmin()) {
+        if (member.getRole().isAdmin()) {
             return true;
         }
 
