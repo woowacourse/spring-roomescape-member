@@ -18,7 +18,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         this.authorizationExtractor = authorizationExtractor;
     }
 
-    public void addArgumentResolver(List<HandlerMethodArgumentResolver> resolvers) {
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new AuthenticationPrincipalArgumentResolver(authService, authorizationExtractor));
     }
 }

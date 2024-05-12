@@ -12,6 +12,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.UserName;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.AvailableTimeResponses;
+import roomescape.dto.LoginMember;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationResponses;
@@ -69,12 +70,12 @@ public class ReservationService {
         return new AvailableTimeResponses(availableTimeResponses);
     }
 
-    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest) {
+    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
         Reservation reservation = new Reservation(
-                new UserName(reservationCreateRequest.name()),
+                new UserName(loginMember.name()),
                 reservationCreateRequest.date(),
                 reservationTime,
                 theme
