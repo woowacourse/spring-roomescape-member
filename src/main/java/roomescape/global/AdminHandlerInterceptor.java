@@ -23,7 +23,7 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         String accessToken = CookieUtils.getToken(request);
-        Member findMember = memberService.findById(Long.valueOf(jwtTokenProvider.getPayload(accessToken)));
+        Member findMember = memberService.findById(jwtTokenProvider.getAccessorId(accessToken));
         if (findMember.isAdminMember()) {
             return true;
         }

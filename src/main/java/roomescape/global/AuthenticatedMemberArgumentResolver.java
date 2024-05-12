@@ -35,7 +35,7 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
                                     NativeWebRequest webRequest,
                                     WebDataBinderFactory binderFactory) {
         String accessToken = CookieUtils.getToken((HttpServletRequest) webRequest.getNativeRequest());
-        Long id = Long.valueOf(jwtTokenProvider.getPayload(accessToken));
+        Long id = jwtTokenProvider.getAccessorId(accessToken);
         return new Accessor(id);
     }
 }

@@ -35,13 +35,13 @@ public class JwtTokenProvider {
                 .compact());
     }
 
-    public String getPayload(String token) {
+    public Long getAccessorId(String token) {
         try {
-            return Jwts.parser()
+            return Long.valueOf(Jwts.parser()
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token)
                     .getBody()
-                    .getSubject();
+                    .getSubject());
         } catch (ExpiredJwtException e) {
             throw new AuthenticationExpiredException("로그인 기한이 만료되었습니다", e);
         } catch (JwtException | IllegalArgumentException e) {
