@@ -36,7 +36,7 @@ public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new UnauthorizedException("사용자 인증 정보가 없습니다."))
                 .getValue();
 
-        String roleName = jwtTokenProvider.decode(accessToken, "role");
+        String roleName = jwtTokenProvider.decode(accessToken, JwtTokenProvider.CLAIM_ROLE_KEY);
         Role role = Role.valueOf(roleName);
 
         checkAdminRole(role);

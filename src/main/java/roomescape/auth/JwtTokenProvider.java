@@ -10,15 +10,14 @@ import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
 
-    private static final String EMAIL_KEY = "email";
-    private static final String ID_KEY = "id";
-    private static final String ROLE_KEY = "role";
+    public static final String CLAIM_EMAIL_KEY = "email";
+    public static final String CLAIM_ID_KEY = "id";
+    public static final String CLAIM_ROLE_KEY = "role";
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -29,23 +28,22 @@ public class JwtTokenProvider {
         long now = new Date().getTime();
 
         return Jwts.builder()
-                .claim(ID_KEY, member.getId())
-                .claim(EMAIL_KEY, member.getEmail())
-                .claim(ROLE_KEY, member.getRole().name())
+                .claim(CLAIM_ID_KEY, member.getId())
+                .claim(CLAIM_EMAIL_KEY, member.getEmail())
+                .claim(CLAIM_ROLE_KEY, member.getRole().name())
                 .setExpiration(new Date(now + expiredPeriod))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
 
     public Map<String, String> decode(String token) {
-        Map<String, String> decodedClaims = new HashMap<>();
-
         Claims claims = parseJwt(token);
-        decodedClaims.put(EMAIL_KEY, claims.get(EMAIL_KEY).toString());
-        decodedClaims.put(ID_KEY, claims.get(ID_KEY).toString());
-        decodedClaims.put(ROLE_KEY, claims.get(ROLE_KEY).toString());
 
-        return decodedClaims;
+        return Map.of(
+                CLAIM_EMAIL_KEY, claims.get(CLAIM_EMAIL_KEY).toString(),
+                CLAIM_ID_KEY, claims.get(CLAIM_ID_KEY).toString(),
+                CLAIM_ROLE_KEY, claims.get(CLAIM_ROLE_KEY).toString()
+        );
     }
 
     public String decode(String token, String key) {
