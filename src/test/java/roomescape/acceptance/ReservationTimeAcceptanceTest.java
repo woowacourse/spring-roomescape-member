@@ -8,12 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.support.AcceptanceTest;
 import roomescape.support.SimpleRestAssured;
 import roomescape.ui.controller.dto.ReservationTimeRequest;
 
-@Sql("/member.sql")
 class ReservationTimeAcceptanceTest extends AcceptanceTest {
     private static final String PATH = "/times";
 

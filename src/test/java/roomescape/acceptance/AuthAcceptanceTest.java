@@ -7,12 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.support.AcceptanceTest;
 import roomescape.support.SimpleRestAssured;
 import roomescape.ui.controller.dto.LoginRequest;
 
-@Sql("/member.sql")
 public class AuthAcceptanceTest extends AcceptanceTest {
     private String token;
 
