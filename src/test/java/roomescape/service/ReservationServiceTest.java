@@ -14,7 +14,6 @@ import roomescape.repository.dao.ReservationTimeDao;
 import roomescape.repository.dao.ThemeDao;
 import roomescape.repository.dto.ReservationSavedDto;
 import roomescape.service.dto.ReservationDto;
-import roomescape.service.dto.ReservationTimeDto;
 import roomescape.service.dto.ReservationTimeInfoDto;
 import roomescape.service.fakedao.FakeMemberDao;
 import roomescape.service.fakedao.FakeReservationDao;
@@ -132,8 +131,8 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.of(9999, 9, 9);
         ReservationTimeInfoDto timesInfo = reservationService.findReservationTimesInformation(date, 1L);
 
-        List<ReservationTimeDto> bookedTimes = timesInfo.getBookedTimes();
-        List<ReservationTimeDto> notBookedTimes = timesInfo.getNotBookedTimes();
+        List<ReservationTime> bookedTimes = timesInfo.getBookedTimes();
+        List<ReservationTime> notBookedTimes = timesInfo.getNotBookedTimes();
         assertThat(bookedTimes.size() + notBookedTimes.size()).isEqualTo(INITIAL_TIME_COUNT);
     }
 }

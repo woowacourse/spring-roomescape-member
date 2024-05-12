@@ -1,22 +1,24 @@
 package roomescape.service.dto;
 
+import roomescape.model.ReservationTime;
+
 import java.util.List;
 
 public class ReservationTimeInfoDto {
 
-    private final List<ReservationTimeDto> bookedTimes;
-    private final List<ReservationTimeDto> notBookedTimes;
+    private final List<ReservationTime> bookedTimes;
+    private final List<ReservationTime> notBookedTimes;
 
-    public ReservationTimeInfoDto(List<ReservationTimeDto> bookedTimes, List<ReservationTimeDto> notBookedTimes) {
+    public ReservationTimeInfoDto(List<ReservationTime> bookedTimes, List<ReservationTime> notBookedTimes) {
         this.bookedTimes = bookedTimes;
         this.notBookedTimes = notBookedTimes;
     }
 
-    public List<ReservationTimeDto> getBookedTimes() {
+    public List<ReservationTime> getBookedTimes() {
         return bookedTimes;
     }
 
-    public List<ReservationTimeDto> getNotBookedTimes() {
+    public List<ReservationTime> getNotBookedTimes() {
         return notBookedTimes;
     }
 }

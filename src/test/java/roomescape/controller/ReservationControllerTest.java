@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.controller.request.ReservationRequest;
-import roomescape.controller.response.MemberReservationTimeResponse;
+import roomescape.controller.response.ReservationTimeInfoResponse;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.service.AuthService;
 import roomescape.service.dto.AuthDto;
@@ -157,11 +157,11 @@ class ReservationControllerTest {
     void should_get_reservations_with_book_state_by_date_and_theme() {
         String date = LocalDate.now().minusDays(1).toString();
         long themeId = 1;
-        List<MemberReservationTimeResponse> times = RestAssured.given().log().all()
+        List<ReservationTimeInfoResponse> times = RestAssured.given().log().all()
                 .when().get(String.format("/reservations/times?date=%s&themeId=%d", date, themeId))
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".", MemberReservationTimeResponse.class);
+                .extract().jsonPath().getList(".", ReservationTimeInfoResponse.class);
 
         assertThat(times).hasSize(INITIAL_TIME_COUNT);
         assertThat(times.get(0).getIsBooked()).isTrue();

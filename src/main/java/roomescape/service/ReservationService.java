@@ -10,7 +10,6 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.service.dto.ReservationDto;
-import roomescape.service.dto.ReservationTimeDto;
 import roomescape.service.dto.ReservationTimeInfoDto;
 
 import java.time.LocalDate;
@@ -73,15 +72,7 @@ public class ReservationService {
         // TODO: themeId <= 0 예외 처리
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeBooked(date, themeId);
         List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
-        List<ReservationTimeDto> bookedTimesDto = mapToDto(bookedTimes);
-        List<ReservationTimeDto> notBookedTimesDto = mapToDto(notBookedTimes);
-        return new ReservationTimeInfoDto(bookedTimesDto, notBookedTimesDto);
-    }
-
-    private List<ReservationTimeDto> mapToDto(List<ReservationTime> times) {
-        return times.stream()
-                .map(ReservationTimeDto::from)
-                .toList();
+        return new ReservationTimeInfoDto(bookedTimes, notBookedTimes);
     }
 
     public List<Reservation> findReservationsByConditions(long memberId, long themeId, LocalDate from, LocalDate to) {

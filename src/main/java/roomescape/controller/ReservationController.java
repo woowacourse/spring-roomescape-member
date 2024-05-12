@@ -3,20 +3,18 @@ package roomescape.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ReservationRequest;
-import roomescape.controller.response.MemberReservationTimeResponse;
+import roomescape.controller.response.ReservationTimeInfoResponse;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.model.LoginMember;
 import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationDto;
-import roomescape.service.dto.ReservationTimeDto;
 import roomescape.service.dto.ReservationTimeInfoDto;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/reservations")
@@ -55,30 +53,13 @@ public class ReservationController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<MemberReservationTimeResponse>> showReservationTimesInformation(
+    public ResponseEntity<List<ReservationTimeInfoResponse>> showReservationTimesInformation(
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") Long themeId) {
         validateNull(themeId);
         ReservationTimeInfoDto timesInfo = reservationService.findReservationTimesInformation(date, themeId);
-        List<MemberReservationTimeResponse> response = makeResponse(timesInfo);
+        List<ReservationTimeInfoResponse> response = ReservationTimeInfoResponse.from(timesInfo);
         return ResponseEntity.ok(response);
-    }
-
-    private List<MemberReservationTimeResponse> makeResponse(ReservationTimeInfoDto timesInfo) {
-        return concat(
-                formatToResponse(timesInfo.getBookedTimes(), true),
-                formatToResponse(timesInfo.getNotBookedTimes(), false));
-    }
-
-    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> first,
-                                                       List<MemberReservationTimeResponse> second) {
-        return Stream.concat(first.stream(), second.stream()).toList();
-    }
-
-    private List<MemberReservationTimeResponse> formatToResponse(List<ReservationTimeDto> times, boolean isBooked) {
-        return times.stream()
-                .map(time -> MemberReservationTimeResponse.from(time, isBooked))
-                .toList();
     }
 
     @GetMapping("/filter") // TODO: 각 조건이 없는 경우?
