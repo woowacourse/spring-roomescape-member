@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import roomescape.dto.MemberResponse;
 
-public class MemberAcceptanceTest extends ApiAcceptanceTest {
+public class AuthAcceptanceTest extends ApiAcceptanceTest {
 
     @Test
     @DisplayName("로그인을 하여 얻은 accessToken으로 사용자의 정보를 받아온다.")
