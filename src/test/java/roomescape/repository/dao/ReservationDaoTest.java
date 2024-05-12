@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import roomescape.repository.dto.ReservationSavedDto;
+import roomescape.repository.dto.ReservationRowDto;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -103,9 +103,9 @@ class ReservationDaoTest {
     @DisplayName("예약을 저장한다.")
     @Test
     void should_save_reservation() {
-        ReservationSavedDto reservationSavedDto = new ReservationSavedDto(LocalDate.of(2000, 1, 3), 1L, 1L, 1L);
+        ReservationRowDto reservationRowDto = new ReservationRowDto(LocalDate.of(2000, 1, 3), 1L, 1L, 1L);
 
-        reservationDao.save(reservationSavedDto);
+        reservationDao.save(reservationRowDto);
 
         assertThat(reservationDao.findAll()).hasSize(INITIAL_RESERVATION_COUNT + 1);
     }
@@ -113,16 +113,16 @@ class ReservationDaoTest {
     @DisplayName("모든 예약을 조회한다.")
     @Test
     void should_find_all_reservations() {
-        List<ReservationSavedDto> reservations = reservationDao.findAll();
+        List<ReservationRowDto> reservations = reservationDao.findAll();
         assertThat(reservations).hasSize(INITIAL_RESERVATION_COUNT);
     }
 
     @DisplayName("특정 id의 예약을 조회한다.")
     @Test
     void should_find_reservation_by_id() { // TODO: test empty optional
-        ReservationSavedDto expected = new ReservationSavedDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L);
+        ReservationRowDto expected = new ReservationRowDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L);
 
-        Optional<ReservationSavedDto> actual = reservationDao.findById(1L);
+        Optional<ReservationRowDto> actual = reservationDao.findById(1L);
 
         assertThat(actual).isNotEmpty();
         assertThat(actual).hasValue(expected);
@@ -131,9 +131,9 @@ class ReservationDaoTest {
     @DisplayName("특정 date 와 theme_id의 예약을 조회한다.")
     @Test
     void should_find_reservation_by_date_and_themeId() {
-        ReservationSavedDto expected = new ReservationSavedDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L);
+        ReservationRowDto expected = new ReservationRowDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L);
 
-        List<ReservationSavedDto> actual = reservationDao.findByDateAndThemeId(LocalDate.of(2000, 1, 1), 1L);
+        List<ReservationRowDto> actual = reservationDao.findByDateAndThemeId(LocalDate.of(2000, 1, 1), 1L);
 
         assertThat(actual).containsExactly(expected);
     }

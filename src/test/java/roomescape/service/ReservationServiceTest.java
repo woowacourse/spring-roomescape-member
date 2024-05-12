@@ -15,7 +15,7 @@ import roomescape.repository.dao.MemberDao;
 import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ReservationTimeDao;
 import roomescape.repository.dao.ThemeDao;
-import roomescape.repository.dto.ReservationSavedDto;
+import roomescape.repository.dto.ReservationRowDto;
 import roomescape.service.dto.ReservationDto;
 import roomescape.service.dto.ReservationTimeInfoDto;
 import roomescape.service.fakedao.FakeMemberDao;
@@ -51,9 +51,9 @@ class ReservationServiceTest {
                 new Member(1, "에버", "treeboss@gmail.com", "treeboss123!", Role.USER),
                 new Member(1, "우테코", "wtc@gmail.com", "wtc123!!", Role.ADMIN))));
         ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
-                new ReservationSavedDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L),
-                new ReservationSavedDto(2L, LocalDate.of(2000, 1, 2), 2L, 2L, 2L),
-                new ReservationSavedDto(3L, LocalDate.of(9999, 9, 9), 1L, 1L, 2L))));
+                new ReservationRowDto(1L, LocalDate.of(2000, 1, 1), 1L, 1L, 1L),
+                new ReservationRowDto(2L, LocalDate.of(2000, 1, 2), 2L, 2L, 2L),
+                new ReservationRowDto(3L, LocalDate.of(9999, 9, 9), 1L, 1L, 2L))));
         reservationService = new ReservationService(new ReservationRepository(reservationDao, reservationTimeDao, themeDao, memberDao));
     }
 

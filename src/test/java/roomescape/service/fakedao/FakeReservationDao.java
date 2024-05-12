@@ -1,7 +1,7 @@
 package roomescape.service.fakedao;
 
 import roomescape.repository.dao.ReservationDao;
-import roomescape.repository.dto.ReservationSavedDto;
+import roomescape.repository.dto.ReservationRowDto;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -11,36 +11,36 @@ import java.util.stream.Collectors;
 public class FakeReservationDao implements ReservationDao {
 
     private final AtomicLong index = new AtomicLong(1);
-    private final List<ReservationSavedDto> reservations = new ArrayList<>();
+    private final List<ReservationRowDto> reservations = new ArrayList<>();
 
-    public FakeReservationDao(List<ReservationSavedDto> reservations) {
+    public FakeReservationDao(List<ReservationRowDto> reservations) {
         reservations.forEach(this::save);
     }
 
     @Override
-    public List<ReservationSavedDto> findAll() {
+    public List<ReservationRowDto> findAll() {
         return Collections.unmodifiableList(reservations);
     }
 
     @Override
-    public long save(ReservationSavedDto rawDto) {
+    public long save(ReservationRowDto rawDto) {
         long key = index.getAndIncrement();
-        ReservationSavedDto reservationSavedDto = new ReservationSavedDto(
+        ReservationRowDto reservationRowDto = new ReservationRowDto(
                 key, rawDto.getDate(),
                 rawDto.getTimeId(), rawDto.getThemeId(), rawDto.getMemberId());
-        reservations.add(reservationSavedDto);
+        reservations.add(reservationRowDto);
         return key;
     }
 
     @Override
-    public Optional<ReservationSavedDto> findById(long id) {
+    public Optional<ReservationRowDto> findById(long id) {
         return reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst();
     }
 
     @Override
-    public List<ReservationSavedDto> findByDateAndThemeId(LocalDate date, long themeId) {
+    public List<ReservationRowDto> findByDateAndThemeId(LocalDate date, long themeId) {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date) && reservation.getThemeId() == themeId)
                 .toList();
@@ -48,12 +48,12 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
-        List<ReservationSavedDto> filteredReservations = findBetweenDates(startDate, endDate);
+        List<ReservationRowDto> filteredReservations = findBetweenDates(startDate, endDate);
         Map<Long, Long> countOfThemeIds = countByThemeId(filteredReservations);
         return sortByCountAndLimit(countOfThemeIds, limit);
     }
 
-    private List<ReservationSavedDto> findBetweenDates(LocalDate startDate, LocalDate endDate) {
+    private List<ReservationRowDto> findBetweenDates(LocalDate startDate, LocalDate endDate) {
         return reservations.stream()
                 .filter(reservation -> isBetweenDate(reservation.getDate(), startDate, endDate))
                 .toList();
@@ -64,9 +64,9 @@ public class FakeReservationDao implements ReservationDao {
                 && target.isBefore(endDate) || target.isEqual(endDate);
     }
 
-    private Map<Long, Long> countByThemeId(List<ReservationSavedDto> filteredReservations) {
+    private Map<Long, Long> countByThemeId(List<ReservationRowDto> filteredReservations) {
         return filteredReservations.stream()
-                .collect(Collectors.groupingBy(ReservationSavedDto::getThemeId, Collectors.counting()));
+                .collect(Collectors.groupingBy(ReservationRowDto::getThemeId, Collectors.counting()));
     }
 
     private List<Long> sortByCountAndLimit(Map<Long, Long> countOfThemeIds, int limit) {
@@ -79,7 +79,7 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public void deleteById(long id) {
-        ReservationSavedDto foundReservation = reservations.stream()
+        ReservationRowDto foundReservation = reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약입니다."));
@@ -107,7 +107,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationSavedDto> findByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
+    public List<ReservationRowDto> findByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
         return reservations.stream()
                 .filter(reservation -> reservation.getMemberId() == memberId
                         && reservation.getThemeId() == themeId

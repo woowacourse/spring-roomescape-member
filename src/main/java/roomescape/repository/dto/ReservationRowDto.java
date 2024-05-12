@@ -1,9 +1,11 @@
 package roomescape.repository.dto;
 
+import roomescape.model.Reservation;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class ReservationSavedDto {
+public class ReservationRowDto {
 
     private final long id;
     private final LocalDate date;
@@ -11,7 +13,7 @@ public class ReservationSavedDto {
     private final long themeId;
     private final long memberId;
 
-    public ReservationSavedDto(long id, LocalDate date, long timeId, long themeId, long memberId) {
+    public ReservationRowDto(long id, LocalDate date, long timeId, long themeId, long memberId) {
         this.id = id;
         this.date = date;
         this.timeId = timeId;
@@ -19,12 +21,21 @@ public class ReservationSavedDto {
         this.memberId = memberId;
     }
 
-    public ReservationSavedDto(LocalDate date, long timeId, long themeId, long memberId) {
+    public ReservationRowDto(LocalDate date, long timeId, long themeId, long memberId) {
         this.id = 0;
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
         this.memberId = memberId;
+    }
+
+    public static ReservationRowDto from(Reservation reservation) {
+        return new ReservationRowDto(
+                reservation.getId(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getMember().getId());
     }
 
     public long getId() {
@@ -51,7 +62,7 @@ public class ReservationSavedDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ReservationSavedDto that = (ReservationSavedDto) o;
+        ReservationRowDto that = (ReservationRowDto) o;
         return id == that.id && timeId == that.timeId && themeId == that.themeId && memberId == that.memberId && Objects.equals(date, that.date);
     }
 

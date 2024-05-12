@@ -9,7 +9,7 @@ import roomescape.repository.dao.MemberDao;
 import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ReservationTimeDao;
 import roomescape.repository.dao.ThemeDao;
-import roomescape.repository.dto.ReservationSavedDto;
+import roomescape.repository.dto.ReservationRowDto;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -31,15 +31,8 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAllReservations() {
-        List<Reservation> result = new ArrayList<>();
-        List<ReservationSavedDto> reservations = reservationDao.findAll();
-        for (ReservationSavedDto reservation : reservations) {
-            ReservationTime time = reservationTimeDao.findById(reservation.getTimeId()).orElseThrow(NoSuchElementException::new);
-            Theme theme = themeDao.findById(reservation.getThemeId()).orElseThrow(NoSuchElementException::new);
-            Member member = memberDao.findById(reservation.getMemberId()).orElseThrow(NoSuchElementException::new);
-            result.add(new Reservation(reservation.getId(), reservation.getDate(), time, theme, member));
-        }
-        return result;
+        List<ReservationRowDto> reservations = reservationDao.findAll();
+        return makeReservations(reservations);
     }
 
     public Optional<ReservationTime> findReservationTimeById(long id) {
@@ -59,15 +52,10 @@ public class ReservationRepository {
     }
 
     public Reservation saveReservation(Reservation reservation) {
-        ReservationSavedDto reservationSavedDto = new ReservationSavedDto(
-                reservation.getId(), reservation.getDate(),
-                reservation.getTime().getId(), reservation.getTheme().getId(), reservation.getMember().getId());
-        long id = reservationDao.save(reservationSavedDto);
-        ReservationSavedDto saved = reservationDao.findById(id).orElseThrow(NoSuchElementException::new);
-        ReservationTime time = reservationTimeDao.findById(saved.getTimeId()).orElseThrow(NoSuchElementException::new);
-        Theme theme = themeDao.findById(saved.getThemeId()).orElseThrow(NoSuchElementException::new);
-        Member member = memberDao.findById(saved.getMemberId()).orElseThrow(NoSuchElementException::new);
-        return new Reservation(id, saved.getDate(), time, theme, member);
+        ReservationRowDto reservationRowDto = ReservationRowDto.from(reservation);
+        long id = reservationDao.save(reservationRowDto);
+        ReservationRowDto saved = reservationDao.findById(id).orElseThrow(NoSuchElementException::new);
+        return makeReservation(saved, id);
     }
 
     public boolean isExistReservationById(long id) {
@@ -79,16 +67,15 @@ public class ReservationRepository {
     }
 
     public List<ReservationTime> findReservationTimeBooked(LocalDate date, long themeId) {
-        List<ReservationTime> result = new ArrayList<>();
-        List<ReservationSavedDto> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        Set<Long> timeIds = reservations.stream()
-                .map(ReservationSavedDto::getTimeId)
+        List<ReservationRowDto> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        Set<Long> timeIds = extractTimeIds(reservations);
+        return makeReservationTimes(timeIds);
+    }
+
+    private Set<Long> extractTimeIds(List<ReservationRowDto> reservations) {
+        return reservations.stream()
+                .map(ReservationRowDto::getTimeId)
                 .collect(Collectors.toSet());
-        for (long timeId : timeIds) { // TODO: findByIds()
-            ReservationTime time = reservationTimeDao.findById(timeId).orElseThrow(NoSuchElementException::new);
-            result.add(time);
-        }
-        return result;
     }
 
     public List<ReservationTime> findReservationTimeNotBooked(LocalDate date, long themeId) {
@@ -99,17 +86,39 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findReservationsByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
-        List<Reservation> result = new ArrayList<>();
-        List<ReservationSavedDto> reservations = reservationDao.findByMemberIdAndThemeIdAndDate(memberId, themeId, from, to);
-        for (ReservationSavedDto reservation : reservations) {
-            ReservationTime time = reservationTimeDao.findById(reservation.getTimeId())
-                    .orElseThrow(NoSuchElementException::new);
-            Theme theme = themeDao.findById(reservation.getThemeId())
-                    .orElseThrow(NoSuchElementException::new);
-            Member member = memberDao.findById(reservation.getMemberId())
-                    .orElseThrow(NoSuchElementException::new);
-            result.add(new Reservation(reservation.getId(), reservation.getDate(), time, theme, member));
+        List<ReservationRowDto> reservations = reservationDao.findByMemberIdAndThemeIdAndDate(memberId, themeId, from, to);
+        return makeReservations(reservations);
+    }
+
+    private List<ReservationTime> makeReservationTimes(Set<Long> timeIds) {
+        List<ReservationTime> result = new ArrayList<>();
+        for (long timeId : timeIds) {
+            ReservationTime time = reservationTimeDao.findById(timeId).orElseThrow(NoSuchElementException::new);
+            result.add(time);
         }
         return result;
+    }
+
+    private List<Reservation> makeReservations(List<ReservationRowDto> reservations) {
+        List<Reservation> result = new ArrayList<>();
+        for (ReservationRowDto reservationDto : reservations) {
+            Reservation reservation = makeReservation(reservationDto);
+            result.add(reservation);
+        }
+        return result;
+    }
+
+    private Reservation makeReservation(ReservationRowDto reservation, long id) {
+        long timeId = reservation.getTimeId();
+        long themeId = reservation.getThemeId();
+        long memberId = reservation.getMemberId();
+        ReservationTime time = reservationTimeDao.findById(timeId).orElseThrow(NoSuchElementException::new);
+        Theme theme = themeDao.findById(themeId).orElseThrow(NoSuchElementException::new);
+        Member member = memberDao.findById(memberId).orElseThrow(NoSuchElementException::new);
+        return new Reservation(id, reservation.getDate(), time, theme, member);
+    }
+
+    private Reservation makeReservation(ReservationRowDto reservation) {
+        return makeReservation(reservation, reservation.getId());
     }
 }

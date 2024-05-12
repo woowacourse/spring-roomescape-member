@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.repository.dto.ReservationSavedDto;
+import roomescape.repository.dto.ReservationRowDto;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
-    private final RowMapper<ReservationSavedDto> rowMapper = (resultSet, rowNum) -> new ReservationSavedDto(
+    private final RowMapper<ReservationRowDto> rowMapper = (resultSet, rowNum) -> new ReservationRowDto(
             resultSet.getLong("id"),
             resultSet.getDate("date").toLocalDate(),
             resultSet.getLong("time_id"),
@@ -33,30 +33,30 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(ReservationSavedDto reservationSavedDto) {
+    public long save(ReservationRowDto reservationRowDto) {
         Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("date", reservationSavedDto.getDate());
-        parameters.put("time_id", reservationSavedDto.getTimeId());
-        parameters.put("theme_id", reservationSavedDto.getThemeId());
-        parameters.put("member_id", reservationSavedDto.getMemberId());
+        parameters.put("date", reservationRowDto.getDate());
+        parameters.put("time_id", reservationRowDto.getTimeId());
+        parameters.put("theme_id", reservationRowDto.getThemeId());
+        parameters.put("member_id", reservationRowDto.getMemberId());
         return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
-    public List<ReservationSavedDto> findAll() {
+    public List<ReservationRowDto> findAll() {
         String sql = "select id, date, time_id, theme_id, member_id from reservation";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public Optional<ReservationSavedDto> findById(long id) {
+    public Optional<ReservationRowDto> findById(long id) {
         String sql = "select id, date, time_id, theme_id, member_id from reservation where id = ?";
-        ReservationSavedDto reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
+        ReservationRowDto reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
         return Optional.ofNullable(reservation);
     }
 
     @Override
-    public List<ReservationSavedDto> findByDateAndThemeId(LocalDate date, long themeId) {
+    public List<ReservationRowDto> findByDateAndThemeId(LocalDate date, long themeId) {
         String sql = "select id, date, time_id, theme_id, member_id from reservation where date = ? and theme_id = ?";
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
@@ -101,7 +101,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationSavedDto> findByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
+    public List<ReservationRowDto> findByMemberIdAndThemeIdAndDate(long memberId, long themeId, LocalDate from, LocalDate to) {
         String sql = """
                 select id, date, time_id, theme_id, member_id
                 from reservation

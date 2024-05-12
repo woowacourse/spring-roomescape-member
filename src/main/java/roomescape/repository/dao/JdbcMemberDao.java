@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public class JdbcMemberDao implements MemberDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<Member> rowMapper = (resultSet, ignore) ->

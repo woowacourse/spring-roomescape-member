@@ -1,6 +1,7 @@
 package roomescape.repository.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.theme.Theme;
@@ -15,6 +16,12 @@ public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
+    public final RowMapper<Theme> rowMapper = (resultSet, rowNum) ->
+            new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail"));
 
     public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -35,25 +42,13 @@ public class JdbcThemeDao implements ThemeDao {
     @Override
     public List<Theme> findAll() {
         String sql = "select id, name, description, thumbnail from theme";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ));
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<Theme> findById(long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
-        Theme theme = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), id);
+        Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
         return Optional.ofNullable(theme);
     }
 
