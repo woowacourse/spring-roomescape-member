@@ -3,7 +3,9 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -31,11 +33,21 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationTime> getAll() {
+    public List<ReservationTime> findAll() {
         return jdbcTemplate.query("SELECT * FROM RESERVATION_TIME", reservationTimeRowMapper);
     }
 
-    public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
+    public Optional<ReservationTime> findById(long id) {
+        String query = "SELECT * FROM RESERVATION_TIME WHERE ID = ?";
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(query, reservationTimeRowMapper, id);
+            return Optional.ofNullable(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public List<ReservationTime> findAvailableTimes(LocalDate date, long themeId) {
         String query = "SELECT rt.id, rt.start_at " +
                 "FROM reservation_time rt " +
                 "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
@@ -43,17 +55,11 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(query, reservationTimeRowMapper, date, themeId);
     }
 
-    public ReservationTime findById(long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM RESERVATION_TIME WHERE ID = ?", reservationTimeRowMapper, id
-        );
-    }
-
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.startAt());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return findById(id);
+        return new ReservationTime(id, reservationTime.startAt());
     }
 
     public void delete(long id) {

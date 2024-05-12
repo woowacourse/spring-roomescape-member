@@ -2,7 +2,9 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -57,7 +59,7 @@ public class ReservationDao {
         return jdbcTemplate.query(query, reservationRowMapper);
     }
 
-    private Reservation findById(long id) {
+    public Optional<Reservation> findById(long id) {
         String query = "SELECT "
                 + "r.id, r.name, r.date, "
                 + "t.id AS time_id, t.start_at, "
@@ -69,7 +71,12 @@ public class ReservationDao {
                 + "INNER JOIN THEME AS theme "
                 + "ON r.theme_id = theme.id "
                 + "WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(query, reservationRowMapper, id);
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(query, reservationRowMapper, id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Reservation save(Reservation reservation) {
@@ -79,7 +86,7 @@ public class ReservationDao {
                 .addValue("time_id", reservation.time().id())
                 .addValue("theme_id", reservation.theme().id());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return findById(id);
+        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(), reservation.theme());
     }
 
     public void deleteById(long id) {

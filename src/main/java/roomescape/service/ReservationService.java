@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -34,18 +35,30 @@ public class ReservationService {
         return reservationDao.findAll();
     }
 
+    public Reservation findById(long id) {
+        Optional<Reservation> reservation = reservationDao.findById(id);
+        if (reservation.isEmpty()) {
+            throw new EntityNotFoundException("Reservation with id " + id + " not found");
+        }
+        return reservation.get();
+    }
+
     public Reservation createByAdmin(ReservationRequest request) {
         requireExistsByAttributes(request);
-        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
-        Theme theme = themeDao.findById(request.themeId());
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
+                .orElseThrow(EntityNotFoundException::new);
+        Theme theme = themeDao.findById(request.themeId())
+                .orElseThrow(EntityNotFoundException::new);
         return reservationDao.save(new Reservation(0, request.name(), request.date(), reservationTime, theme));
     }
 
     public Reservation createByMember(ReservationRequest request) {
         requireExistsByAttributes(request);
-        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
+                .orElseThrow(EntityNotFoundException::new);
         requireFuture(request.date(), reservationTime.startAt());
-        Theme theme = themeDao.findById(request.themeId());
+        Theme theme = themeDao.findById(request.themeId())
+                .orElseThrow(EntityNotFoundException::new);
         return reservationDao.save(new Reservation(0, request.name(), request.date(), reservationTime, theme));
     }
 
