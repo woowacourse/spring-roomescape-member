@@ -6,7 +6,6 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.AccessTokenCookie;
@@ -20,15 +19,9 @@ import roomescape.member.domain.Member;
 @Service
 public class AuthService {
     private final MemberDao memberDao;
-    @Value("${jwt.secret-key}")
-    private String secretKey;
+    private final String secretKey;
 
-    @Autowired
-    public AuthService(MemberDao memberDao) {
-        this.memberDao = memberDao;
-    }
-
-    public AuthService(MemberDao memberDao, String secretKey) {
+    public AuthService(MemberDao memberDao, @Value("${jwt.secret-key}") String secretKey) {
         this.memberDao = memberDao;
         this.secretKey = secretKey;
     }
