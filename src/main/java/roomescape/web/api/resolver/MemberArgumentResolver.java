@@ -8,8 +8,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.auth.TokenParser;
-import roomescape.domain.auth.TokenProvider;
+import roomescape.domain.token.TokenParser;
+import roomescape.domain.token.TokenProvider;
 import roomescape.web.exception.AuthorizationException;
 
 @Component
