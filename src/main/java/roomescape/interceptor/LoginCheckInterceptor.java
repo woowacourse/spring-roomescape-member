@@ -32,11 +32,11 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
     private AuthenticationToken parseAuthenticationToken(final HttpServletRequest request) {
         final String accessToken = CookieUtil.findCookie(request, "token")
-                .orElseThrow(() -> new UnauthorizedException("요청에 인증 쿠키가 존재하지 않습니다."))
+                .orElseThrow(() -> new UnauthorizedException("인증되지 않은 요청입니다."))
                 .getValue();
 
         if (accessToken == null || accessToken.isBlank()) {
-            throw new UnauthorizedException("요청에 인증 토큰이 존재하지 않습니다.");
+            throw new UnauthorizedException("인증되지 않은 요청입니다.");
         }
 
         return tokenProvider.convertAuthenticationToken(accessToken);

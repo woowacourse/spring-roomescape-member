@@ -33,7 +33,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private MemberRole parseMemberRole(final HttpServletRequest request) {
         final String accessToken = CookieUtil.findCookie(request, "token")
-                .orElseThrow(() -> new IllegalArgumentException("요청에 인증 쿠키가 존재하지 않습니다."))
+                .orElseThrow(() -> new IllegalArgumentException("인증되지 않은 요청입니다."))
                 .getValue();
         final String role = tokenProvider.convertAuthenticationToken(accessToken)
                 .getClaims()
