@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.auth.exception;
 
 public class JwtAuthenticationException extends AuthenticationException {
     public JwtAuthenticationException(String message) {

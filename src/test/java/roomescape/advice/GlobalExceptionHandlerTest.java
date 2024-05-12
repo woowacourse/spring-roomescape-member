@@ -6,8 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import roomescape.advice.dto.ErrorResponse;
-import roomescape.exception.AuthenticationException;
-import roomescape.exception.MemberAuthenticationException;
+import roomescape.auth.exception.AuthenticationException;
+import roomescape.auth.exception.MemberAuthenticationException;
 
 class GlobalExceptionHandlerTest {
 

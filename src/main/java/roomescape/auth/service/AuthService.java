@@ -13,7 +13,7 @@ import roomescape.auth.domain.AccessTokenCookie;
 import roomescape.auth.dto.LoggedInMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.RequestCookies;
-import roomescape.exception.JwtAuthenticationException;
+import roomescape.auth.exception.JwtAuthenticationException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 

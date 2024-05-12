@@ -2,7 +2,7 @@ package roomescape.auth.domain;
 
 import java.util.Map;
 import org.springframework.http.ResponseCookie;
-import roomescape.exception.MemberAuthenticationException;
+import roomescape.auth.exception.MemberAuthenticationException;
 
 public class AccessTokenCookie {
     private static final String ACCESS_TOKEN_KEY = "token";
