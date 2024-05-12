@@ -210,7 +210,7 @@ class ReservationServiceTest {
         reservationService.deleteMemberReservation(member, id);
 
         //then
-        assertThat(memberReservationRepository.findBy(LocalDate.now(), LocalDate.now().plusDays(1))).hasSize(0);
+        assertThat(memberReservationRepository.findBy(null, null, LocalDate.now(), LocalDate.now().plusDays(1))).hasSize(0);
     }
 
     @DisplayName("일자와 시간 중복 시 예외가 발생한다.")

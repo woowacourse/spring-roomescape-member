@@ -14,13 +14,7 @@ public interface MemberReservationRepository {
 
     Optional<MemberReservation> findById(long id);
 
-    List<MemberReservation> findBy(Member member, Theme theme, LocalDate startDate, LocalDate endDate);
-
-    List<MemberReservation> findBy(Member member, LocalDate startDate, LocalDate endDate);
-
-    List<MemberReservation> findBy(Theme theme, LocalDate startDate, LocalDate endDate);
-
-    List<MemberReservation> findBy(LocalDate startDate, LocalDate endDate);
+    List<MemberReservation> findBy(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate);
 
     void deleteById(long memberReservationId);
 

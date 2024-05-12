@@ -2,6 +2,7 @@ package roomescape.reservation.dao;
 
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -96,7 +97,7 @@ public class MemberReservationDao implements MemberReservationRepository {
     }
 
     @Override
-    public List<MemberReservation> findBy(Member member, Theme theme, LocalDate startDate, LocalDate endDate) {
+    public List<MemberReservation> findBy(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT mr.id AS member_reservation_id, r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value,
                 th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name
@@ -105,58 +106,30 @@ public class MemberReservationDao implements MemberReservationRepository {
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 INNER JOIN member_reservation AS mr ON mr.reservation_id = r.id
                 INNER JOIN member AS m ON m.id = mr.member_id
-                WHERE th.id = ? AND m.id = ? AND r.date BETWEEN ? AND ?;
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, theme.getId(), member.getId(), startDate, endDate);
+        List<String> conditions = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        addCondition(memberId, conditions, "m.id = ?", params);
+        addCondition(themeId, conditions, "th.id = ?", params);
+        addCondition(startDate, conditions, "r.date >= ?", params);
+        addCondition(endDate, conditions, "r.date <= ?", params);
+
+        if (!conditions.isEmpty()) {
+            sql += " WHERE " + String.join(" AND ", conditions);
+        }
+
+        return jdbcTemplate.query(sql, rowMapper, params.toArray());
     }
 
-    @Override
-    public List<MemberReservation> findBy(Member member, LocalDate startDate, LocalDate endDate) {
-        String sql = """
-                SELECT mr.id AS member_reservation_id, r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value,
-                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN member_reservation AS mr ON mr.reservation_id = r.id
-                INNER JOIN member AS m ON m.id = mr.member_id
-                WHERE m.id = ? AND r.date BETWEEN ? AND ?;
-                """;
+    private void addCondition(Object param, List<String> conditions, String sql, List<Object> params) {
+        if (param == null) {
+            return;
+        }
 
-        return jdbcTemplate.query(sql, rowMapper, member.getId(), startDate, endDate);
-    }
-
-    @Override
-    public List<MemberReservation> findBy(Theme theme, LocalDate startDate, LocalDate endDate) {
-        String sql = """
-                SELECT mr.id AS member_reservation_id, r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value,
-                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN member_reservation AS mr ON mr.reservation_id = r.id
-                INNER JOIN member AS m ON m.id = mr.member_id
-                WHERE th.id = ? AND r.date BETWEEN ? AND ?;
-                """;
-
-        return jdbcTemplate.query(sql, rowMapper, theme.getId(), startDate, endDate);
-    }
-
-    @Override
-    public List<MemberReservation> findBy(LocalDate startDate, LocalDate endDate) {
-        String sql = """
-                SELECT mr.id AS member_reservation_id, r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value,
-                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                INNER JOIN member_reservation AS mr ON mr.reservation_id = r.id
-                INNER JOIN member AS m ON m.id = mr.member_id
-                WHERE r.date BETWEEN ? AND ?;
-                """;
-
-        return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
+        conditions.add(sql);
+        params.add(param);
     }
 
     @Override

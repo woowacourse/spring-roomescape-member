@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.domain.AuthInfo;
-import roomescape.auth.service.AuthService;
 import roomescape.auth.handler.RequestHandler;
 import roomescape.auth.handler.ResponseHandler;
+import roomescape.auth.service.AuthService;
 
 @Controller
 public class AuthController {
@@ -37,7 +37,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(HttpServletResponse response, @RequestBody LoginRequest loginRequest) {
         authService.authenticate(loginRequest);
-        responseHandler.set(response,  authService.createToken(loginRequest).accessToken());
+        responseHandler.set(response, authService.createToken(loginRequest).accessToken());
         return ResponseEntity.ok().build();
     }
 

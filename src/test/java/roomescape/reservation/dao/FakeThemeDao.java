@@ -45,7 +45,7 @@ public class FakeThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
 
-        List<MemberReservation> memberReservations = memberReservationRepository.findBy(startDate, endDate);
+        List<MemberReservation> memberReservations = memberReservationRepository.findBy(null, null, startDate, endDate);
 
         Map<Long, Long> themeReservationCounts = memberReservations.stream()
                 .filter(reservationMember -> reservationMember.getReservation().getDate().isAfter(startDate)

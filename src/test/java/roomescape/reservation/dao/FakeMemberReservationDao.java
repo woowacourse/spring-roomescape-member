@@ -29,31 +29,32 @@ public class FakeMemberReservationDao implements MemberReservationRepository {
     }
 
     @Override
-    public List<MemberReservation> findBy(Member member, Theme theme, LocalDate startDate, LocalDate endDate) {
+    public List<MemberReservation> findBy(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate) {
+        if (memberId == null && themeId == null) {
+            return findBy(startDate, endDate);
+        }
+
+        if (themeId == null) {
+            return memberReservations.values().stream()
+                    .filter(memberReservation -> memberReservation.getMember().getId().equals(memberId) &&
+                            isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
+                    .toList();
+        }
+
+        if (memberId == null) {
+            return  memberReservations.values().stream()
+                    .filter(memberReservation -> memberReservation.getReservation().getTheme().getId().equals(themeId) &&
+                            isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
+                    .toList();
+        }
+
         return memberReservations.values().stream()
-                .filter(memberReservation -> memberReservation.isMember(member) &&
-                        memberReservation.getReservation().getTheme().equals(theme) &&
+                .filter(memberReservation -> memberReservation.getMember().getId().equals(memberId) &&
+                        memberReservation.getReservation().getTheme().getId().equals(themeId) &&
                         isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
                 .toList();
     }
 
-    @Override
-    public List<MemberReservation> findBy(Member member, LocalDate startDate, LocalDate endDate) {
-        return memberReservations.values().stream()
-                .filter(memberReservation -> memberReservation.isMember(member) &&
-                        isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
-                .toList();
-    }
-
-    @Override
-    public List<MemberReservation> findBy(Theme theme, LocalDate startDate, LocalDate endDate) {
-        return memberReservations.values().stream()
-                .filter(memberReservation -> memberReservation.getReservation().getTheme().equals(theme) &&
-                        isInDateRange(memberReservation.getReservation().getDate(), startDate, endDate))
-                .toList();
-    }
-
-    @Override
     public List<MemberReservation> findBy(LocalDate startDate, LocalDate endDate) {
         return memberReservations.values().stream()
                 .filter(memberReservation -> isInDateRange(memberReservation.getReservation().getDate(), startDate,

@@ -41,26 +41,9 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findMemberReservations(ReservationQueryRequest request) {
-        if (request.getThemeId() == null && request.getMemberId() == null) {
-            return memberReservationRepository.findBy(request.getStartDate(), request.getEndDate()).stream()
-                    .map(ReservationResponse::from)
-                    .toList();
-        }
-        if (request.getThemeId() == null) {
-            Member member = getMember(request.getMemberId());
-            return memberReservationRepository.findBy(member, request.getStartDate(), request.getEndDate()).stream()
-                    .map(ReservationResponse::from)
-                    .toList();
-        }
-        if (request.getMemberId() == null) {
-            Theme theme = getTheme(request.getThemeId());
-            return memberReservationRepository.findBy(theme, request.getStartDate(), request.getEndDate()).stream()
-                    .map(ReservationResponse::from)
-                    .toList();
-        }
-        Member member = getMember(request.getMemberId());
-        Theme theme = getTheme(request.getThemeId());
-        return memberReservationRepository.findBy(member, theme, request.getStartDate(), request.getEndDate()).stream()
+        return memberReservationRepository.findBy(request.getMemberId(), request.getThemeId(), request.getStartDate(),
+                        request.getEndDate())
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
