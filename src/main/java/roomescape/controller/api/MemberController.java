@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.response.MemberResponse;
@@ -16,10 +17,11 @@ public class MemberController {
     }
 
     @GetMapping("/members")
-    public List<MemberResponse> members() {
-        return memberService.findAllMembers()
+    public ResponseEntity<List<MemberResponse>> members() {
+        List<MemberResponse> memberResponses = memberService.findAllMembers()
                 .stream()
                 .map(MemberResponse::new)
                 .toList();
+        return ResponseEntity.ok(memberResponses);
     }
 }
