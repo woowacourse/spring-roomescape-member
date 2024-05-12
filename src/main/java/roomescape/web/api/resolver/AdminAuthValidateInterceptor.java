@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.domain.auth.TokenParser;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.domain.member.Role;
 import roomescape.web.exception.AuthorizationException;
@@ -12,9 +13,11 @@ import roomescape.web.exception.AuthorizationException;
 @Component
 public class AdminAuthValidateInterceptor implements HandlerInterceptor {
     private final TokenProvider tokenProvider;
+    private final TokenParser tokenParser;
 
-    public AdminAuthValidateInterceptor(TokenProvider tokenProvider) {
+    public AdminAuthValidateInterceptor(TokenProvider tokenProvider, final TokenParser tokenParser) {
         this.tokenProvider = tokenProvider;
+        this.tokenParser = tokenParser;
     }
 
     @Override
@@ -23,7 +26,7 @@ public class AdminAuthValidateInterceptor implements HandlerInterceptor {
         String accessToken = tokenProvider.extractToken(cookies)
                 .orElseThrow(AuthorizationException::new);
 
-        Role role = tokenProvider.getRole(accessToken);
+        Role role = tokenParser.getRole(accessToken);
         return role.isAdmin();
     }
 }

@@ -68,6 +68,16 @@ public class H2MemberRepository implements MemberRepository {
         }
     }
 
+    public Optional<Member> findById(Long id) {
+        String sql = "select * from member where id = ?";
+        try {
+            Member savedMember = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(savedMember);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     private String getBasicSelectQuery() {
         return "select * from member";
     }

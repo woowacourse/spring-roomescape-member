@@ -41,7 +41,7 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime requestedReservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
         Theme requestedTheme = themeRepository.getById(reservationRequest.themeId());
-        Member requestedMember = memberRepository.getByEmail(reservationRequest.principal());
+        Member requestedMember = memberRepository.getById(reservationRequest.memberId());
         LocalDate requestedDate = LocalDate.parse(reservationRequest.date());
 
         Reservation requestedReservation = reservationFactory.createReservation(

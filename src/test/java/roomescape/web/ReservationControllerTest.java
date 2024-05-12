@@ -9,10 +9,12 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.domain.member.Role;
 import roomescape.web.api.dto.ReservationMemberRequest;
 import roomescape.web.api.resolver.AdminAuthValidateInterceptor;
 import roomescape.web.api.resolver.MemberArgumentResolver;
 import roomescape.web.api.resolver.MemberAuthValidateInterceptor;
+import roomescape.web.api.resolver.Principal;
 
 import java.time.LocalDate;
 
@@ -44,10 +46,13 @@ class ReservationControllerTest extends ControllerTest {
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql"})
     @Test
     void when_createReservation_then_created() throws Exception {
+        // given
+        Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
+
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk@woowa.net").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -64,10 +69,13 @@ class ReservationControllerTest extends ControllerTest {
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql"})
     @Test
     void when_createReservationWithPastTime_then_badRequest() throws Exception {
+        // given
+        Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
+
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk@woowa.net").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -84,10 +92,13 @@ class ReservationControllerTest extends ControllerTest {
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql"})
     @Test
     void when_createDuplicateReservation_then_badRequest() throws Exception {
+        // given
+        Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
+
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk@woowa.net").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -109,10 +120,13 @@ class ReservationControllerTest extends ControllerTest {
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql", "/test-data/reservations.sql"})
     @Test
     void when_findAllReservations_then_ok() throws Exception {
+        // given
+        Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
+
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // when, then
         mockMvc.perform(get("/reservations"))
@@ -124,10 +138,13 @@ class ReservationControllerTest extends ControllerTest {
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql", "/test-data/reservations.sql"})
     @Test
     void when_findByCondition_then_ok() throws Exception {
+        // given
+        Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
+
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // when, then
         mockMvc.perform(get("/admin/reservations?name=피케이&themeId=1&dateFrom=2099-07-01&dateTo=2099-07-01"))
@@ -139,10 +156,13 @@ class ReservationControllerTest extends ControllerTest {
     @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql", "/test-data/reservations.sql"})
     @Test
     void when_deleteReservation_then_noContent() throws Exception {
+        // given
+        Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
+
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // when, then
         mockMvc.perform(delete("/reservations/1"))

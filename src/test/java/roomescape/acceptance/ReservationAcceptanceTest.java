@@ -108,7 +108,7 @@ class ReservationAcceptanceTest {
         doReturn(Optional.of(token)).when(tokenProvider).extractToken(any());
 
         Map<?, ?> request = Map.of(
-                "email", AdminFixture.email,
+                "memberId", 1,
                 "date", AdminFixture.tomorrow.toString(),
                 "timeId", 1,
                 "themeId", 1);

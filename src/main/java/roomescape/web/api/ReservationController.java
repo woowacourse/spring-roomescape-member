@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
@@ -16,6 +17,7 @@ import roomescape.web.api.dto.ReservationAdminRequest;
 import roomescape.web.api.dto.ReservationListResponse;
 import roomescape.web.api.dto.ReservationMemberRequest;
 import roomescape.web.api.resolver.Auth;
+import roomescape.web.api.resolver.Principal;
 
 import java.net.URI;
 import java.util.List;
@@ -24,16 +26,16 @@ import java.util.List;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, MemberService memberService) {
         this.reservationService = reservationService;
     }
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> save(
             @RequestBody @Valid ReservationMemberRequest request,
-            @Auth String principal
+            @Auth Principal principal
     ) {
-        ReservationRequest reservationRequest = new ReservationRequest(principal, request.date(),
+        ReservationRequest reservationRequest = new ReservationRequest(principal.id(), request.date(),
                 request.timeId(), request.themeId());
 
         ReservationResponse reservationResponse = reservationService.save(reservationRequest);
@@ -58,7 +60,7 @@ public class ReservationController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> save(@RequestBody @Valid ReservationAdminRequest request) {
-        ReservationRequest reservationRequest = new ReservationRequest(request.email(), request.date(),
+        ReservationRequest reservationRequest = new ReservationRequest(request.memberId(), request.date(),
                 request.timeId(), request.themeId());
 
         ReservationResponse reservationResponse = reservationService.save(reservationRequest);
