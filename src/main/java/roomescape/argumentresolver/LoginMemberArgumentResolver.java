@@ -32,7 +32,22 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+
+        LoginMember loginMember = (LoginMember) request.getAttribute("loginMember");
+        if (loginMember != null) {
+            return loginMember;
+        }
+
+        return extractLoginMemberByRequest(request);
+    }
+
+    private LoginMember extractLoginMemberByRequest(HttpServletRequest request) throws Exception {
         String token = authorizationExtractor.extractToken(request);
-        return authService.checkLogin(new TokenDto(token));
+        TokenDto tokenDto = new TokenDto(token);
+        if (authService.isValidateToken(tokenDto)) {
+            throw new IllegalArgumentException("[ERROR] 유효한 토큰이 아닙니다.");
+        }
+
+        return authService.extractLoginMemberByToken(tokenDto);
     }
 }
