@@ -1,5 +1,6 @@
 package roomescape.config;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import org.springframework.core.MethodParameter;
@@ -28,11 +29,15 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+    public MemberProfileInfo resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws AuthorizationException {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        return memberAuthService.extractPayload(Objects.requireNonNull(request)
-                .getCookies());
+        Cookie[] cookies = Objects.requireNonNull(request)
+                .getCookies();
+        if (memberAuthService.isLoginMember(cookies)) {
+            return memberAuthService.extractPayload(cookies);
+        }
+        throw new AuthorizationException("로그인이 만료되었습니다. 다시 로그인 해주세요.");
     }
 
 }
