@@ -2,8 +2,6 @@ package roomescape.domain.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
@@ -23,4 +21,6 @@ public interface ReservationRepository {
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
+
+    List<Reservation> findByMemberIdAndThemeId(Long memberId, Long themeId, LocalDate startDate, LocalDate endDate);
 }

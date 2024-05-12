@@ -9,6 +9,15 @@ spring:
     url: jdbc:h2:mem:database
     driverClassName: org.h2.Driver
 
+security:
+  jwt:
+    token:
+      secret-key: 6f8357b21fda609654fef0431e86f17d9786c9487c32f9cc558b13a882022b21
+
+server:
+  tomcat:
+    keep-alive-timeout: 60000
+
 logging:
   level:
     org.springframework:

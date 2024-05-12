@@ -1,8 +1,5 @@
 package roomescape.service;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -10,8 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.request.PopularThemeRequest;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.ThemeResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,13 +17,11 @@ public class ThemeService {
 
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
     public ThemeService(ReservationRepository reservationRepository,
-                        ThemeRepository themeRepository, Clock clock) {
+                        ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
     public List<ThemeResponse> getAllThemes() {
@@ -62,13 +58,9 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> getPopularThemes(
-            LocalDate startDate,
-            LocalDate endDate,
-            int limit
-    ) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        List<Theme> themes = themeRepository.findPopularThemes(startDate, endDate, limit);
+    public List<ThemeResponse> getPopularThemes(PopularThemeRequest popularThemeRequest) {
+        List<Theme> themes = themeRepository.findPopularThemes(
+                popularThemeRequest.startDate(), popularThemeRequest.endDate(), popularThemeRequest.limit());
 
         return themes.stream()
                 .map(ThemeResponse::from)

@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -8,14 +7,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.LoginMember;
+import roomescape.dto.response.ReservationResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,15 +25,12 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
-                              Clock clock) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -44,10 +42,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
         Theme theme = themeRepository.getById(reservationRequest.themeId());
-        Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
+        Member member = loginMember.toMember();
+        Reservation reservation = reservationRequest.toReservation(member, reservationTime, theme);
 
         validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
         validateDuplicatedReservation(reservation);
@@ -58,7 +57,7 @@ public class ReservationService {
     }
 
     private void validateDateTimeNotPassed(LocalDate date, LocalTime startAt) {
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
 
         if (reservationDateTime.isBefore(now)) {
