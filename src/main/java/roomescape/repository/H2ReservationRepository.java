@@ -80,7 +80,6 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> searchReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = getBasicSelectQuery() + getSearchConditionQuery(themeId, memberId, dateFrom, dateTo);
-        System.out.println(sql);
         return jdbcTemplate.query(sql, rowMapper);
     }
 
