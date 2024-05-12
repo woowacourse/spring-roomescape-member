@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.domain.exception.InvalidDomainObjectException;
 
 import java.util.List;
@@ -65,6 +66,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSignatureException(SignatureException e) {
         String errorMessage = "유효하지 않은 토큰입니다.";
         return new ResponseEntity<>(new ErrorResponse(errorMessage), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException e) {
+        return new ResponseEntity<>(new ErrorResponse("존재하지 않는 자원입니다."), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
