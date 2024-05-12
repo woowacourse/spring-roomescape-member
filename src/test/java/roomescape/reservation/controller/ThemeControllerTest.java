@@ -1,4 +1,4 @@
-package roomescape.controller.roomescape.admin;
+package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
 

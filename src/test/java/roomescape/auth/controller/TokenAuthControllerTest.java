@@ -1,4 +1,4 @@
-package roomescape.controller.auth;
+package roomescape.auth.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
