@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtGenerator {
 
-    private final long expireLen;
+    private final long expireMillisecond;
     private final String secretKey;
 
     public JwtGenerator(
             @Value("${security.jwt.token.secret-key}") String secretKey,
-            @Value("${security.jwt.token.expire-length}") long expireLen) {
+            @Value("${security.jwt.token.expire-length}") long expireMillisecond) {
         this.secretKey = secretKey;
-        this.expireLen = expireLen;
+        this.expireMillisecond = expireMillisecond;
     }
 
     public String generateWith(Map<String, Object> claimDatas) {
@@ -27,7 +27,7 @@ public class JwtGenerator {
         return Jwts.builder()
                 .addClaims(Jwts.claims(claimDatas))
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expireLen))
+                .setExpiration(new Date(now.getTime() + expireMillisecond))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
