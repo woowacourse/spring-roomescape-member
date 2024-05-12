@@ -12,10 +12,10 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/themes")
-public class ThemeController {
+public class ClientThemeController {
     private final ThemeService themeService;
 
-    public ThemeController(final ThemeService themeService) {
+    public ClientThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 

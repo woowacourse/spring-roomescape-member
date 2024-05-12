@@ -9,10 +9,10 @@ import roomescape.service.TimeService;
 
 @RestController
 @RequestMapping("/times")
-public class TimeController {
+public class ClientTimeController {
     private final TimeService timeService;
 
-    public TimeController(TimeService timeService) {
+    public ClientTimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 

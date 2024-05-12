@@ -14,11 +14,11 @@ import roomescape.domain.dto.*;
 import roomescape.service.MemberService;
 
 @RestController
-public class MemberController {
+public class ClientMemberController {
     private final AuthorizationExtractor<String> authorizationExtractor;
     private final MemberService memberService;
 
-    public MemberController(final MemberService memberService) {
+    public ClientMemberController(final MemberService memberService) {
         this.authorizationExtractor = new CookieAuthorizationExtractor();
         this.memberService = memberService;
     }
