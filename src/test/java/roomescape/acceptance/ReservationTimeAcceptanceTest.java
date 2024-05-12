@@ -3,36 +3,35 @@ package roomescape.acceptance;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.support.AcceptanceTest;
 import roomescape.support.SimpleRestAssured;
+import roomescape.ui.controller.dto.ReservationTimeRequest;
 
+@Sql("/member.sql")
 class ReservationTimeAcceptanceTest extends AcceptanceTest {
     private static final String PATH = "/times";
-    private static final Map<String, String> BODY = Map.of(
-            "startAt", "10:00"
-    );
 
-    @DisplayName("[7단계 - 시간 관리 기능]")
     @TestFactory
-    List<DynamicTest> step7() {
+    List<DynamicTest> 시간_등록_조회_삭제() {
         return Arrays.asList(
                 dynamicTest("시간을 등록한다.", () -> {
-                    SimpleRestAssured.post(PATH, BODY)
+                    ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.parse("10:00"));
+                    SimpleRestAssured.post(PATH, request, adminToken())
                             .statusCode(201);
                 }),
                 dynamicTest("등록된 시간을 조회한다.", () -> {
-                    SimpleRestAssured.get(PATH)
+                    SimpleRestAssured.get(PATH, adminToken())
                             .statusCode(200)
                             .body("size()", is(1));
                 }),
-                dynamicTest("시간을 삭제한다.", () -> {
-                    SimpleRestAssured.delete(PATH + "/1")
+                dynamicTest("등록된 시간을 삭제한다.", () -> {
+                    SimpleRestAssured.delete(PATH + "/1", adminToken())
                             .statusCode(204);
                 })
         );
