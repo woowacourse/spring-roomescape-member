@@ -22,9 +22,9 @@ public class AdminController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody AdminReservationRequest adminReservationRequest) {
-        final Reservation reservation = reservationService.saveReservation(adminReservationRequest.toReservation());
+        Reservation reservation = reservationService.saveReservation(adminReservationRequest.toReservation());
 
-        final ReservationResponse reservationResponse = changeToReservationResponse(reservation);
+        ReservationResponse reservationResponse = changeToReservationResponse(reservation);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
