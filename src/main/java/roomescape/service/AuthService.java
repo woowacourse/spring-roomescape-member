@@ -34,6 +34,11 @@ public class AuthService {
         return member.get();
     }
 
+    public Member findByToken(String token) {
+        String email = jwtProvider.getSubject(token);
+        return findByEmail(email);
+    }
+
     public Cookie createToken(LoginRequest request) {
         validate(request);
         String token = jwtProvider.createToken(request.email());
@@ -44,8 +49,7 @@ public class AuthService {
     }
 
     public LoginCheckResponse check(String token) {
-        String email = jwtProvider.getSubject(token);
-        Member member = findByEmail(email);
+        Member member = findByToken(token);
         return new LoginCheckResponse(member.name());
     }
 
