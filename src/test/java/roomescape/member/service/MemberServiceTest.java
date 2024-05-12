@@ -26,7 +26,7 @@ class MemberServiceTest {
     @Test
     @DisplayName("유효하지 않은 형식의 토큰으로 로그인 시도 시 예외가 발생한다.")
     void throwExceptionIfInvalidTokenFormat() {
-        assertThatThrownBy(() -> memberService.getMemberNameResponse("invalid token"))
+        assertThatThrownBy(() -> memberService.getMemberNameResponseByToken("invalid token"))
                 .isInstanceOf(AuthenticationException.class);
     }
 
@@ -36,7 +36,7 @@ class MemberServiceTest {
         LoginRequest loginRequest = new LoginRequest(MEMBER_4.getPassword().password(), MEMBER_4.getEmail().email());
         String token = loginService.createLoginToken(loginRequest);
 
-        MemberNameResponse memberNameResponse = memberService.getMemberNameResponse(token);
+        MemberNameResponse memberNameResponse = memberService.getMemberNameResponseByToken(token);
 
         assertThat(memberNameResponse.name()).isEqualTo(MEMBER_4.getName().name());
     }

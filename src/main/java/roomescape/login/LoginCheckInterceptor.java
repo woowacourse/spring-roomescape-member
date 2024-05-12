@@ -22,7 +22,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws AuthenticationException {
         String token = extractTokenFromCookie(request.getCookies());
-        if (memberService.isAdmin(token)) {
+        if (memberService.isAdminToken(token)) {
             return true;
         }
         throw new AuthenticationException("접근 권한이 없습니다.");

@@ -39,7 +39,7 @@ public class MemberService {
                 .toList();
     }
 
-    public MemberNameResponse getMemberNameResponse(String token) throws AuthenticationException {
+    public MemberNameResponse getMemberNameResponseByToken(String token) throws AuthenticationException {
         Long memberId = parseTokenToMemberId(token);
 
         return memberRepository.findById(memberId)
@@ -47,7 +47,7 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
     }
 
-    public boolean isAdmin(String token) throws AuthenticationException {
+    public boolean isAdminToken(String token) throws AuthenticationException {
         Long memberId = parseTokenToMemberId(token);
 
         return Role.ADMIN == memberRepository.findById(memberId)
@@ -69,11 +69,11 @@ public class MemberService {
         }
     }
 
-    public LoginMemberRequest getLoginMemberRequest(String token) throws AuthenticationException {
+    public LoginMemberRequest getLoginMemberRequestByToken(String token) throws AuthenticationException {
         Long memberId = parseTokenToMemberId(token);
 
         return memberRepository.findById(memberId)
-                .map(member -> new LoginMemberRequest(memberId, member.getName().name(), member.getEmail().email()))
+                .map(LoginMemberRequest::new)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
     }
 }

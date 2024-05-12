@@ -35,7 +35,7 @@ public class LoginMemberRequestArgumentResolver implements HandlerMethodArgument
         HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = extractTokenFromCookie(servletRequest.getCookies());
 
-        return memberService.getLoginMemberRequest(token);
+        return memberService.getLoginMemberRequestByToken(token);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) throws AuthenticationException {
