@@ -81,6 +81,46 @@ public class JdbcReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
+    public List<Reservation> findAllFilterOf(
+            final Long memberId, final Long themeId,
+            final LocalDate dateFrom, final LocalDate dateTo
+    ) {
+        String sql = """
+                select r.id, r.date, 
+                        rt.id as time_id, rt.start_at, 
+                        t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
+                        m.id as member_id, m.name as member_name, m.email, m.password 
+                from reservation as r 
+                join reservation_time as rt on r.time_id = rt.id
+                join theme as t on r.theme_id = t.id
+                join member as m on r.member_id = m.id
+                where %s
+                """.formatted(generateWhereClause(memberId, themeId, dateFrom, dateTo));
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    // TODO: 리팩터링
+    private String generateWhereClause(final Long memberId, final Long themeId, final LocalDate dateFrom, final LocalDate dateTo) {
+        StringBuilder whereClauseBuilder = new StringBuilder();
+        if (memberId != null) {
+            whereClauseBuilder.append(" m.id = ").append(memberId).append(" and");
+        }
+        if (themeId != null) {
+            whereClauseBuilder.append(" t.id = ").append(themeId).append(" and");
+        }
+        if (dateFrom != null) {
+            whereClauseBuilder.append(" r.date >= '").append(dateFrom).append("'").append(" and");;
+        }
+        if (dateTo != null) {
+            whereClauseBuilder.append(" r.date <= '").append(dateTo).append("'");
+        }
+        final String whereClause = whereClauseBuilder.toString();
+        if (whereClause.endsWith("and")) {
+            return whereClause.substring(0, whereClause.length() - 3);
+        }
+        return whereClause;
+    }
+
     public Optional<Reservation> findById(final Long id) {
         String sql = """
                 select r.id, r.date,

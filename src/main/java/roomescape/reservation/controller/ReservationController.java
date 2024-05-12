@@ -58,8 +58,17 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<FindReservationResponse>> getReservations() {
-        return ResponseEntity.ok(reservationService.getReservations());
+    public ResponseEntity<List<FindReservationResponse>> getReservations(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo
+    ) {
+        if (memberId == null && themeId == null && dateFrom == null && dateTo == null) {
+            return ResponseEntity.ok(reservationService.getReservations());
+        }
+
+        return ResponseEntity.ok(reservationService.getReservations(memberId, themeId, dateFrom, dateTo));
     }
 
     @GetMapping("/reservations/{id}")

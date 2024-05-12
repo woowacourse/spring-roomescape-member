@@ -77,6 +77,15 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<FindReservationResponse> getReservations(
+            final Long memberId, final Long themeId,
+            final LocalDate dateFrom, final LocalDate dateTo
+    ) {
+        return reservationRepository.findAllFilterOf(memberId, themeId, dateFrom, dateTo).stream()
+                .map(FindReservationResponse::of)
+                .toList();
+    }
+
     public FindReservationResponse getReservation(final Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
