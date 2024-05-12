@@ -1,5 +1,6 @@
 package roomescape.service.reservation;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,42 +45,32 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse insertAdminReservation(AdminReservationRequest request) {
-        Reservation reservation = getAdminReservation(request);
-
-        return new ReservationResponse(insert(reservation));
-    }
-
-    @Transactional
-    public ReservationResponse insertReservation(ReservationRequest request, MemberInfo member) {
-        Reservation reservation = getMemberReservation(request, member);
-
-        return new ReservationResponse(insert(reservation));
-    }
-
-    private Reservation insert(Reservation reservation) {
-        return reservationDao.insert(reservation);
-    }
-
-    private Reservation getMemberReservation(ReservationRequest request, MemberInfo member) {
-        validateDuplicate(request.date().toString(), request.timeId(), request.themeId());
-        ReservationTime time = reservationTimeDao.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
-        ReservationTheme theme = reservationThemeDao.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
-        return reservationFactory.createForAdd(request.date(), time, theme, member);
-    }
-
-    private Reservation getAdminReservation(AdminReservationRequest request) {
-        validateDuplicate(request.date().toString(), request.timeId(), request.themeId());
-        ReservationTime time = reservationTimeDao.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
-        ReservationTheme theme = reservationThemeDao.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         MemberInfo member = memberDao.findById(request.memberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        return reservationFactory.createForAdd(request.date(), time, theme, member);
+        return getResponseAfterInsert(request.date(), request.timeId(), request.themeId(), member);
+    }
+
+    @Transactional
+    public ReservationResponse insertUserReservation(ReservationRequest request, MemberInfo member) {
+        return getResponseAfterInsert(request.date(), request.timeId(), request.themeId(), member);
+    }
+
+    private ReservationResponse getResponseAfterInsert(LocalDate date, Long timeId, Long themeId, MemberInfo member) {
+        Reservation reservation = getReservation(date, timeId, themeId, member);
+        Reservation inserted = reservationDao.insert(reservation);
+
+        return new ReservationResponse(inserted);
+    }
+
+    private Reservation getReservation(LocalDate date, Long timeId, Long themeId, MemberInfo member) {
+        validateDuplicate(date.toString(), timeId, themeId);
+        ReservationTime time = reservationTimeDao.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+        ReservationTheme theme = reservationThemeDao.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
+        return reservationFactory.createForAdd(date, time, theme, member);
     }
 
     private void validateDuplicate(String date, Long timeId, Long themeId) {

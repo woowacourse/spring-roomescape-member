@@ -38,15 +38,19 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createMemberReservation(
             @RequestBody @Valid ReservationRequest reservationRequest,
             @LoginMember MemberInfo member) {
-        ReservationResponse response = reservationService.insertReservation(reservationRequest, member);
-        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
+        ReservationResponse response = reservationService.insertUserReservation(reservationRequest, member);
+        return ResponseEntity.created(createdUri(response.id())).body(response);
     }
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> createAdminReservation(
             @RequestBody @Valid AdminReservationRequest request) {
         ReservationResponse response = reservationService.insertAdminReservation(request);
-        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
+        return ResponseEntity.created(createdUri(response.id())).body(response);
+    }
+
+    private static URI createdUri(Long reservationId) {
+        return URI.create("/reservations/" + reservationId);
     }
 
     @DeleteMapping("/reservations/{id}")
