@@ -22,11 +22,13 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao,MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao=memberDao;
     }
 
     public List<Reservation> findAll() {
@@ -37,7 +39,8 @@ public class ReservationService {
         validateDuplicate(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
-        return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
+        Member member = memberDao.findMemberById(request.memberId());
+        return reservationDao.save(new Reservation(member, request.date(), reservationTime, theme));
     }
 
     public Reservation validatePastAndSave(ReservationRequest request, Member member) {
