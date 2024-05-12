@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.Password;
+import roomescape.domain.Role;
 import roomescape.domain.UserName;
 import roomescape.exception.NotExistingEntryException;
 
@@ -20,7 +21,8 @@ public class MemberJdbcRepository implements MemberRepository {
             resultSet.getLong("id"),
             new UserName(resultSet.getString("name")),
             new Email(resultSet.getString("email")),
-            new Password(resultSet.getString("password"))
+            new Password(resultSet.getString("password")),
+            Role.valueOf(resultSet.getString("role"))
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -34,22 +36,22 @@ public class MemberJdbcRepository implements MemberRepository {
     }
 
     public List<Member> findAll() {
-        String sql = "SELECT id, name, email, password FROM member";
+        String sql = "SELECT id, name, email, password, role FROM member";
         return jdbcTemplate.query(sql, memberRowMapper);
     }
 
     public Member findById(Long id) {
-        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        String sql = "SELECT id, name, email, password, role FROM member WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
     }
 
     public Member findByEmail(String email) {
-        String sql = "SELECT id, name, email, password FROM member WHERE email = ?";
+        String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
         return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?";
+        String sql = "SELECT id, name, email, password, role FROM member WHERE email = ? AND password = ?";
         try {
             return jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
         } catch (EmptyResultDataAccessException e) {

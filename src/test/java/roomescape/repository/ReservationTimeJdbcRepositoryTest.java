@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Email;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -53,8 +54,9 @@ class ReservationTimeJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
-        reservationRepository.save(new Reservation(
-                new UserName("메이슨"),
+        UserName userName = new UserName("메이슨");
+
+                reservationRepository.save(new Reservation(
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme

@@ -14,11 +14,14 @@ class ReservationTest {
     void checkNullReservationDate() {
         //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.parse("20:00"));
-        UserName userName = new UserName("chorong");
         Theme theme = new Theme("테마명", "테마 설명", "테마 이미지");
+        UserName userName = new UserName("chorong");
+        Email email = new Email("chorong@exampl.com");
+        Password password = new Password("password2@");
+        Member member = new Member(userName, email, password);
 
         //when & then
-        assertThatThrownBy(() -> new Reservation(userName, null, reservationTime, theme))
+        assertThatThrownBy(() -> new Reservation( null, reservationTime, theme, member))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 날짜가 입력되지 않았습니다.");
     }

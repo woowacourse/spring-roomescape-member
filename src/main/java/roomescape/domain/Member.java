@@ -6,16 +6,18 @@ public class Member {
     private final UserName name;
     private final Email email;
     private final Password password;
+    private final Role role;
 
-    public Member(Long id, UserName name, Email email, Password password) {
+    public Member(Long id, UserName name, Email email, Password password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public Member(UserName name, Email email, Password password) {
-        this(null, name, email, password);
+    public Member(UserName name, Email email, Password password, Role role) {
+        this(null, name, email, password, role);
     }
 
     public Long getId() {
@@ -32,5 +34,9 @@ public class Member {
 
     public Password getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }
