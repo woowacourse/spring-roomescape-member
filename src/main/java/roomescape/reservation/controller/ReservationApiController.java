@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.dto.LoginMember;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationSaveRequest;
-import roomescape.reservation.domain.ReservationSearchCond;
+import roomescape.reservation.dto.ReservationSearchCondRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -35,10 +35,10 @@ public class ReservationApiController {
 
     @GetMapping("/reservations/search")
     public ResponseEntity<List<ReservationResponse>> findAllBySearchCond (
-            @Valid @ModelAttribute ReservationSearchCond reservationSearchCond
+           @Valid @ModelAttribute ReservationSearchCondRequest reservationSearchCondRequest
     ) {
         List<ReservationResponse> reservationResponses = reservationService.findAllBySearchCond(
-                reservationSearchCond);
+                reservationSearchCondRequest);
 
         return ResponseEntity.ok(reservationResponses);
     }

@@ -10,7 +10,7 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationSaveRequest;
-import roomescape.reservation.domain.ReservationSearchCond;
+import roomescape.reservation.dto.ReservationSearchCondRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
@@ -82,8 +82,8 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findAllBySearchCond(ReservationSearchCond reservationSearchCond) {
-        return reservationRepository.findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(reservationSearchCond).stream()
+    public List<ReservationResponse> findAllBySearchCond(ReservationSearchCondRequest reservationSearchCondRequest) {
+        return reservationRepository.findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(reservationSearchCondRequest).stream()
                 .map(ReservationResponse::toResponse)
                 .toList();
     }

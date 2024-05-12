@@ -19,7 +19,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
-import roomescape.reservation.domain.ReservationSearchCond;
+import roomescape.reservation.dto.ReservationSearchCondRequest;
 
 @Repository
 public class ReservationRepository {
@@ -119,7 +119,7 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(
-            ReservationSearchCond reservationSearchCond) {
+            ReservationSearchCondRequest reservationSearchCondRequest) {
         String sql = """
                 select
                 r.id,
@@ -148,10 +148,10 @@ public class ReservationRepository {
         return jdbcTemplate.query(
                 sql,
                 createReservationRowMapper(),
-                reservationSearchCond.getThemeId(),
-                reservationSearchCond.getMemberId(),
-                reservationSearchCond.getDateFrom(),
-                reservationSearchCond.getDateTo()
+                reservationSearchCondRequest.themeId(),
+                reservationSearchCondRequest.memberId(),
+                reservationSearchCondRequest.dateFrom(),
+                reservationSearchCondRequest.dateTo()
         );
     }
 
