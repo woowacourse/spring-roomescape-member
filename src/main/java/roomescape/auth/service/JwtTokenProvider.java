@@ -8,13 +8,12 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import roomescape.auth.domain.AuthInfo;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 
-@Component
+@ConfigurationProperties(prefix = "jwt")
 public class JwtTokenProvider implements TokenProvider {
     private static final String MEMBER_ID_CLAIM = "memberId";
     private static final String MEMBER_ROLE_CLAIM = "memberRole";
@@ -22,8 +21,8 @@ public class JwtTokenProvider implements TokenProvider {
     private final String secretKey;
     private final long validityInMilliseconds;
 
-    public JwtTokenProvider(@Value("${security.jwt.token.secret-key}") final String secretKey,
-                         @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
+    public JwtTokenProvider(final String secretKey,
+                            final long validityInMilliseconds) {
         this.secretKey = secretKey;
         this.validityInMilliseconds = validityInMilliseconds;
     }
