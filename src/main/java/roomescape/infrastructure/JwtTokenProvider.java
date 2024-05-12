@@ -32,8 +32,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    //TODO 만료되면 재발급해주기
-
     public String getPayload(final String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)

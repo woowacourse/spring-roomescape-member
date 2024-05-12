@@ -8,7 +8,7 @@ public record SignupRequest(
         String email,
 
         @NotBlank
-        String password, //TODO 커스텀 애노테이션 만들어볼까?
+        String password,
 
         @NotBlank
         String name) {

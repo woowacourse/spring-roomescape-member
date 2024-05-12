@@ -10,6 +10,7 @@ import roomescape.service.MemberService;
 import roomescape.service.exception.InvalidTokenException;
 import roomescape.service.exception.MemberNotFoundException;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public class CheckLoginInterceptor implements HandlerInterceptor {
@@ -21,7 +22,8 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
+    public boolean preHandle(final HttpServletRequest request,
+                             final HttpServletResponse response, final Object handler) throws IOException {
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
         if (token == null) {
