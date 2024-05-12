@@ -1,10 +1,12 @@
 package roomescape.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.time.format.DateTimeParseException;
 
@@ -40,6 +42,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         String message = exception.getAllErrors().get(0).getDefaultMessage();
         return new ResponseEntity<>("[REQUEST_ERROR] " + message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException exception) {
+        return new ResponseEntity<>("[REQUEST_ERROR] " + exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = HandlerMethodValidationException.class)
+    public ResponseEntity<String> handleHandlerMethodValidationException(HandlerMethodValidationException exception) {
+        return new ResponseEntity<>("[REQUEST_ERROR] " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = IllegalStateException.class)

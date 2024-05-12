@@ -1,14 +1,16 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ReservationRequest;
-import roomescape.controller.response.ReservationTimeInfoResponse;
 import roomescape.controller.response.ReservationResponse;
-import roomescape.exception.BadRequestException;
-import roomescape.model.member.LoginMember;
+import roomescape.controller.response.ReservationTimeInfoResponse;
 import roomescape.model.Reservation;
+import roomescape.model.member.LoginMember;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationDto;
 import roomescape.service.dto.ReservationTimeInfoDto;
@@ -17,6 +19,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+//@Validated
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -47,33 +50,28 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
-        validateNull(id);
+    public ResponseEntity<Void> deleteReservation(@NotNull @Min(1) @PathVariable("id") Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/times", params = {"date", "themeId"})
-    public ResponseEntity<List<ReservationTimeInfoResponse>> showReservationTimesInformation(LocalDate date, Long themeId) {
-        validateNull(themeId);
+    public ResponseEntity<List<ReservationTimeInfoResponse>> showReservationTimesInformation(@NotNull LocalDate date,
+                                                                                             @NotNull @Min(1) Long themeId) {
         ReservationTimeInfoDto timesInfo = reservationService.findReservationTimesInformation(date, themeId);
         List<ReservationTimeInfoResponse> response = ReservationTimeInfoResponse.from(timesInfo);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping(value = "/filter", params = {"memberId", "themeId", "from", "to"})
-    public ResponseEntity<List<ReservationResponse>> searchReservations(Long memberId, Long themeId,
-                                                                        LocalDate from, LocalDate to) {
+    public ResponseEntity<List<ReservationResponse>> searchReservations(@NotNull @Min(1) Long memberId,
+                                                                        @NotNull @Min(1) Long themeId,
+                                                                        @NotNull LocalDate from,
+                                                                        @NotNull LocalDate to) {
         List<Reservation> responses = reservationService.findReservationsByConditions(memberId, themeId, from, to);
         List<ReservationResponse> response = responses.stream()
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(response);
-    }
-
-    private void validateNull(Long value) {
-        if (value == null) {
-            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
-        }
     }
 }

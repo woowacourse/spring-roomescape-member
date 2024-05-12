@@ -5,13 +5,16 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.controller.request.ReservationRequest;
-import roomescape.controller.response.ReservationTimeInfoResponse;
 import roomescape.controller.response.ReservationResponse;
+import roomescape.controller.response.ReservationTimeInfoResponse;
 import roomescape.service.AuthService;
 import roomescape.service.dto.AuthDto;
 
@@ -151,11 +154,44 @@ class ReservationControllerTest {
         assertThat(countAllReservations()).isEqualTo(INITIAL_RESERVATION_COUNT - 1);
     }
 
+    @DisplayName("예약 삭제 - id가 1 미만일 경우 예외를 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "-1", "-999"})
+    void should_throw_exception_when_delete_by_invalid_id(String id) {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/" + id)
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("예약 삭제 - id가 null일 경우 매퍼를 찾지 못하여 404 예외를 반환한다.")
+    @Test
+    void should_throw_exception_when_delete_by_id_null() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인 - 테마 id가 null 또는 1 미만일 경우 예외를 반환한다.")
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(longs = {0, -1, -999})
+    void should_throw_exception_when_get_by_invalid_themeId(Long themeId) {
+        String date = LocalDate.now().minusDays(1).toString();
+        RestAssured.given().log().all()
+                .param("date", date)
+                .param("themeId", themeId)
+                .when().get("/reservations/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인한다.")
     @Test
     void should_get_reservations_with_book_state_by_date_and_theme() {
         String date = LocalDate.now().minusDays(1).toString();
-        long themeId = 1;
+        Long themeId = 1L;
         List<ReservationTimeInfoResponse> times = RestAssured.given().log().all()
                 .param("date", date)
                 .param("themeId", themeId)
@@ -180,7 +216,7 @@ class ReservationControllerTest {
     @DisplayName("날짜, 테마, 사용자 조건으로 예약을 검색한다.")
     @Test
     void should_get_reservations_by_date_and_theme_and_member() {
-        List<ReservationResponse> reservations = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .param("memberId", 1L)
                 .param("themeId", 1L)
                 .param("from", "2024-04-30")

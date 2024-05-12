@@ -69,7 +69,6 @@ public class ReservationService {
     }
 
     public ReservationTimeInfoDto findReservationTimesInformation(LocalDate date, long themeId) {
-        // TODO: themeId <= 0 예외 처리
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeBooked(date, themeId);
         List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
         return new ReservationTimeInfoDto(bookedTimes, notBookedTimes);

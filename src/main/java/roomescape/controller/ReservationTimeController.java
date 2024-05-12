@@ -1,11 +1,12 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.controller.response.ReservationTimeResponse;
-import roomescape.exception.BadRequestException;
 import roomescape.model.ReservationTime;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeDto;
@@ -43,15 +44,8 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") Long id) {
-        validateNull(id);
+    public ResponseEntity<Void> deleteReservationTime(@NotNull @Min(1) @PathVariable("id") Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private void validateNull(Long value) {
-        if (value == null) {
-            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
-        }
     }
 }
