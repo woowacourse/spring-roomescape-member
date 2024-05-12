@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.helper.RoleAllowed;
+import roomescape.domain.MemberRole;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeRequest;
 import roomescape.service.dto.ThemeResponse;
 
-@RequestMapping("/themes")
 @RestController
 public class ThemeController {
     private final ThemeService themeService;
@@ -23,25 +23,27 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
+    @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponse>> findAllTheme() {
         List<ThemeResponse> response = themeService.findAllTheme();
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/popular")
+    @GetMapping("/themes/popular")
     public ResponseEntity<List<ThemeResponse>> findAllPopularTheme() {
         List<ThemeResponse> response = themeService.findAllPopularTheme();
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping
+    @RoleAllowed(value = MemberRole.ADMIN)
+    @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.saveTheme(request);
         return ResponseEntity.created(URI.create("/themes/" + response.getId())).body(response);
     }
 
-    @DeleteMapping("/{themeId}")
+    @RoleAllowed(value = MemberRole.ADMIN)
+    @DeleteMapping("/themes/{themeId}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long themeId) {
         themeService.deleteTheme(themeId);
         return ResponseEntity.noContent().build();

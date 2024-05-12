@@ -21,6 +21,7 @@ class ReservationIntegrationTest extends IntegrationTest {
         @Test
         void 예약_목록을_조회할_수_있다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().get("/reservations")
                     .then().log().all()
                     .statusCode(200)
@@ -30,6 +31,7 @@ class ReservationIntegrationTest extends IntegrationTest {
         @Test
         void 예약_목록을_예약자별로_필터링해_조회할_수_있다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().get("/reservations?member-id=1")
                     .then().log().all()
                     .statusCode(200)
@@ -39,6 +41,7 @@ class ReservationIntegrationTest extends IntegrationTest {
         @Test
         void 예약_목록을_테마별로_필터링해_조회할_수_있다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().get("/reservations?theme-id=1")
                     .then().log().all()
                     .statusCode(200)
@@ -48,6 +51,7 @@ class ReservationIntegrationTest extends IntegrationTest {
         @Test
         void 예약_목록을_기간별로_필터링해_조회할_수_있다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().get("/reservations?date-from=2024-08-05&date-to=2024-08-10")
                     .then().log().all()
                     .statusCode(200)
@@ -186,6 +190,7 @@ class ReservationIntegrationTest extends IntegrationTest {
         @Test
         void 예약을_삭제할_수_있다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().delete("/reservations/1")
                     .then().log().all()
                     .statusCode(204);
@@ -197,6 +202,7 @@ class ReservationIntegrationTest extends IntegrationTest {
         @Test
         void 존재하지_않는_예약은_삭제할_수_없다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().delete("/reservations/10")
                     .then().log().all()
                     .statusCode(404);

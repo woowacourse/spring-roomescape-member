@@ -181,6 +181,7 @@ Response
 
 ```
 HTTP/1.1 200
+Cookie: token=hello.example.token
 Content-Type: application/json
 
 [
@@ -199,38 +200,8 @@ Content-Type: application/json
 Request
 
 ```
-GET /reservations
-```
-
-Response
-
-```
-HTTP/1.1 200
-Content-Type: application/json
-
-[
-    {
-        "id": 1,
-        "name": "브라운",
-        "date": "2023-08-05",
-        "time": {
-            "id": 1,
-            "startAt": "10:00"
-        },
-        "theme": {
-            "id": 1,
-            "name": "레벨2 탈출"
-        }
-    }
-]
-```
-
-### 예약 검색 API (접근 권한: 관리자)
-
-Request
-
-```
 GET /reservations/search?theme-id={$}&member-id={$}&date-from={$}&date-to={$}
+Cookie: token=hello.example.token
 ```
 
 Response
@@ -337,6 +308,7 @@ Request
 
 ```
 DELETE /reservations/1
+Cookie: token=hello.example.token
 ```
 
 Response
@@ -345,14 +317,15 @@ Response
 HTTP/1.1 204
 ```
 
-## 시간
+## 예약 시간
 
-### 시간 목록 조회 API (접근 권한: 관리자)
+### 예약 시간 목록 조회 API (접근 권한: 관리자)
 
 Request
 
 ```
 GET /times
+Cookie: token=hello.example.token
 ```
 
 Response
@@ -392,12 +365,13 @@ Content-Type: application/json
 ]
 ```
 
-### 시간 추가 API (접근 권한: 관리자)
+### 예약 시간 추가 API (접근 권한: 관리자)
 
 Request
 
 ```
 POST /times
+Cookie: token=hello.example.token
 Content-Type: application/json
 
 {
@@ -417,12 +391,13 @@ Content-Type: application/json
 }
 ```
 
-### 시간 삭제 API (접근 권한: 관리자)
+### 예약 시간 삭제 API (접근 권한: 관리자)
 
 Request
 
 ```
 DELETE /times/1
+Cookie: token=hello.example.token
 ```
 
 Response
@@ -487,6 +462,7 @@ Request
 
 ```
 POST /themes
+Cookie: token=hello.example.token
 Content-Type: application/json
 
 {
@@ -518,6 +494,7 @@ Request
 
 ```
 DELETE /themes/1
+Cookie: token=hello.example.token
 ```
 
 Response

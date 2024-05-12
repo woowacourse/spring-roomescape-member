@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.AdminReservationRequest;
 import roomescape.controller.helper.LoginMember;
+import roomescape.controller.helper.RoleAllowed;
 import roomescape.domain.Member;
+import roomescape.domain.MemberRole;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
@@ -26,6 +28,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @RoleAllowed(value = MemberRole.ADMIN)
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> findAllReservation(
             @RequestParam(required = false, name = "member-id") Long memberId,
@@ -36,6 +39,7 @@ public class ReservationController {
         return ResponseEntity.ok().body(response);
     }
 
+    @RoleAllowed
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request,
                                                                @LoginMember Member member) {
@@ -43,6 +47,7 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + response.getId())).body(response);
     }
 
+    @RoleAllowed(value = MemberRole.ADMIN)
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> saveAdminReservation(@RequestBody AdminReservationRequest request) {
         ReservationRequest input = new ReservationRequest(request);
@@ -50,6 +55,7 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + response.getId())).body(response);
     }
 
+    @RoleAllowed(value = MemberRole.ADMIN)
     @DeleteMapping("/reservations/{reservationId}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long reservationId) {
         reservationService.deleteReservation(reservationId);

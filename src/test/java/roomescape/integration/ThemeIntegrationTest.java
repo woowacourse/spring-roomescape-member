@@ -59,6 +59,7 @@ class ThemeIntegrationTest extends IntegrationTest {
             params.put("thumbnail", "https://naver.com");
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -76,6 +77,7 @@ class ThemeIntegrationTest extends IntegrationTest {
             params.put("thumbnail", "https://naver.com");
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/themes")
@@ -92,6 +94,7 @@ class ThemeIntegrationTest extends IntegrationTest {
             jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", 1);
 
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(204);
@@ -100,6 +103,7 @@ class ThemeIntegrationTest extends IntegrationTest {
         @Test
         void 존재하지_않는_테마는_삭제할_수_없다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().delete("/themes/13")
                     .then().log().all()
                     .statusCode(404);
@@ -108,6 +112,7 @@ class ThemeIntegrationTest extends IntegrationTest {
         @Test
         void 예약이_존재하는_테마는_삭제할_수_없다() {
             RestAssured.given().log().all()
+                    .header("Cookie", cookieProvider.getCookie())
                     .when().delete("/themes/1")
                     .then().log().all()
                     .statusCode(400);

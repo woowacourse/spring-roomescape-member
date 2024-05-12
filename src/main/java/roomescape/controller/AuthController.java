@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.helper.LoginMember;
+import roomescape.controller.helper.RoleAllowed;
 import roomescape.domain.Member;
 import roomescape.service.AuthService;
 import roomescape.service.dto.LoginCheckResponse;
@@ -31,12 +32,14 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @RoleAllowed
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> loginCheck(@LoginMember Member member) {
         LoginCheckResponse response = authService.loginCheck(member);
         return ResponseEntity.ok().body(response);
     }
 
+    @RoleAllowed
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = authService.logout();

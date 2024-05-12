@@ -11,12 +11,12 @@ Content-Type: application/json
 ### 로그아웃 API
 POST /logout
 Host: localhost:8080
-Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJpYXQiOjE3MTU0MjI0NzUsImV4cCI6MTcxNTQyNjA3NX0.eP4KsZ8YZ0jMKy0dTl9HywQGSaCeQjyBtHZQ1TGIU3c
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MTU1MjE0OTgsImV4cCI6MTcxNTUyNTA5OH0.FWjmIKq9FHy109WqZMrCkTYDHTIbvZhhhVhrxlF8gE8
 
 ### 인증 정보 조회 API
 GET /login/check
 Host: localhost:8080
-Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcxNTUxOTExMiwiZXhwIjoxNzE1NTIyNzEyfQ.bGS7aNXBQ4pDLqDxnAqDRTMGrh1FLo5ss_ZntvUozfM
 
 ### 회원가입 API
 POST /signup
@@ -24,7 +24,7 @@ Host: localhost:8080
 Content-Type: application/json
 
 {
-  "email": "admin@email.com",
+  "email": "user@email.com",
   "password": "password",
-  "name": "어드민"
+  "name": "사용자"
 }
