@@ -77,13 +77,30 @@ public class ReservationDao {
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
+    public List<Reservation> search(final long themeId, final long memberId, final LocalDate startDate, final LocalDate endDate) {
+        final String sql = """
+                SELECT r.id AS reservation_id, r.date, 
+                       rt.id AS time_id, rt.start_at AS time_value, 
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail, 
+                       m.id AS member_id, m.name, m.email, m.role 
+                FROM reservation AS r 
+                INNER JOIN reservation_time rt ON r.time_id = rt.id 
+                INNER JOIN theme t ON r.theme_id = t.id 
+                INNER JOIN member m ON r.member_id = m.id 
+                WHERE r.member_id = ? 
+                  AND r.date BETWEEN ? AND ? 
+                  AND r.theme_id = ? ORDER BY r.date;
+                """;
+        return jdbcTemplate.query(sql, rowMapper, memberId, startDate.toString(), endDate.toString(), themeId);
+    }
+
     public int deleteById(final long id) {
         final String sql = "delete from reservation where id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
     public boolean checkExistByReservation(final LocalDate date, final long timeId, final long themeId) {
-        String sql = """
+        final String sql = """
                 SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END 
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS rt 
@@ -92,19 +109,19 @@ public class ReservationDao {
                 ON r.theme_id = t.id 
                 WHERE r.date = ? AND rt.id = ? AND t.id = ?
                 """;
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        final Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(result);
     }
 
     public boolean checkExistReservationByTheme(final long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
+        final Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
         return Boolean.TRUE.equals(result);
     }
 
     public boolean checkExistReservationByTime(final long timeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+        final Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
         return Boolean.TRUE.equals(result);
     }
 }

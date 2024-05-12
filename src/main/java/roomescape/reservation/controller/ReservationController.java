@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.auth.annotation.AuthenticatedMember;
@@ -44,6 +46,19 @@ public class ReservationController {
     public ResponseEntity<ReservationResponseDto> save(@RequestBody @Valid final ReservationRequestDto request, @AuthenticatedMember Member member) {
         ReservationResponseDto responseDto = new ReservationResponseDto(reservationService.save(member, request));
         return ResponseEntity.created(URI.create("/reservations/" + responseDto.id())).body(responseDto);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ReservationResponseDto>> search(
+            @RequestParam("themeId") @Min(value = 1, message = "올바른 테마 ID를 입력해야 합니다.") long themeId,
+            @RequestParam("memberId") @Min(value = 1, message = "올바른 사용자 ID를 입력해야 합니다.") long memberId,
+            @RequestParam("dateFrom") @NotBlank(message = "시작 날짜를 입력해 주세요.") String dateFrom,
+            @RequestParam("dateTo") @NotBlank(message = "시작 날짜를 입력해 주세요.") String dateTo) {
+        List<ReservationResponseDto> responseDtos = reservationService.search(themeId, memberId, dateFrom, dateTo)
+                .stream()
+                .map(ReservationResponseDto::new)
+                .toList();
+        return ResponseEntity.ok(responseDtos);
     }
 
     @DeleteMapping("/{id}")
