@@ -32,9 +32,6 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     public Theme save(Theme theme) {
-        if (theme.getThumbnail().isEmpty()) {
-            return saveWithoutThumbnail(theme);
-        }
         return saveWithAllField(theme);
     }
 
@@ -42,26 +39,14 @@ public class H2ThemeRepository implements ThemeRepository {
         Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
                         "name", theme.getName(),
                         "description", theme.getDescription(),
-                        "thumbnail", theme.getThumbnail().get()))
+                        "thumbnail", theme.getThumbnail()))
                 .longValue();
 
         return new Theme(
                 reservationTimeId,
                 theme.getName(),
                 theme.getDescription(),
-                theme.getThumbnail().get());
-    }
-
-    private Theme saveWithoutThumbnail(Theme theme) {
-        Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "name", theme.getName(),
-                        "description", theme.getDescription()))
-                .longValue();
-
-        return new Theme(
-                reservationTimeId,
-                theme.getName(),
-                theme.getDescription());
+                theme.getThumbnail());
     }
 
     public List<Theme> findAll() {

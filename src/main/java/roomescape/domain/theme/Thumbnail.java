@@ -36,4 +36,8 @@ public record Thumbnail(String value) {
             throw new InvalidDomainObjectException("썸네일 URL 형식이 올바르지 않습니다. (예: http(s)://example.com/image.png)");
         }
     }
+
+    public static Thumbnail empty() {
+        return new Thumbnail("https://www.contentviewspro.com/wp-content/uploads/2017/07/default_image.png");
+    }
 }
