@@ -16,9 +16,9 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('오락', '재밌어', 
 INSERT INTO theme (name, description, thumbnail) VALUES ('판타지', '말이 안돼', 'https://i.postimg.cc/8k2PQ4yv/theme.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('감성', '감동적', 'https://sherlock-holmes.co.kr/attach/theme/16788523411.jpg');
 
-INSERT INTO member (name, email, password) VALUES ('마크', 'email1@woowa.com', 'password');
-INSERT INTO member (name, email, password) VALUES ('러너덕','email2@woowa.com', 'password' );
-INSERT INTO member (name, email, password) VALUES ('포비', 'email3@woowa.com', 'password');
+INSERT INTO member (name, email, password, role) VALUES ('마크', 'email1@woowa.com', 'password', 'ADMIN');
+INSERT INTO member (name, email, password, role) VALUES ('러너덕','email2@woowa.com', 'password', 'USER');
+INSERT INTO member (name, email, password, role) VALUES ('포비', 'email3@woowa.com', 'password', 'USER');
 
 INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2025-01-01', 1, 1);
 INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 2, '2025-01-02', 2, 2);

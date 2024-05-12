@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 
 @Repository
 public class JdbcMemberRepository {
@@ -21,7 +22,8 @@ public class JdbcMemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            Role.valueOf(resultSet.getString("role"))
     );
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate, DataSource source) {
@@ -35,10 +37,10 @@ public class JdbcMemberRepository {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
-                .addValue("password", member.getPassword()); // TODO: 암호화
-
+                .addValue("password", member.getPassword()) // TODO: 암호화
+                .addValue("role", member.getRole().name());
         Long id = simpleJdbcInsert.executeAndReturnKey(mapSqlParameterSource).longValue();
-        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     public List<Member> findAll() {

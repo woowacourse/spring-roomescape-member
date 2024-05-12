@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
@@ -29,7 +30,8 @@ public class JdbcReservationRepository {
                             resultSet.getLong("member_id"),
                             resultSet.getString("member_name"),
                             resultSet.getString("email"),
-                            resultSet.getString("password")
+                            resultSet.getString("password"),
+                            Role.valueOf(resultSet.getString("role"))
                     ),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
@@ -72,7 +74,7 @@ public class JdbcReservationRepository {
                 select r.id, r.date, 
                         rt.id as time_id, rt.start_at, 
                         t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
-                        m.id as member_id, m.name as member_name, m.email, m.password 
+                        m.id as member_id, m.name as member_name, m.email, m.password, m.role 
                 from reservation as r 
                 join reservation_time as rt on r.time_id = rt.id
                 join theme as t on r.theme_id = t.id
@@ -89,7 +91,7 @@ public class JdbcReservationRepository {
                 select r.id, r.date, 
                         rt.id as time_id, rt.start_at, 
                         t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
-                        m.id as member_id, m.name as member_name, m.email, m.password 
+                        m.id as member_id, m.name as member_name, m.email, m.password, m.role
                 from reservation as r 
                 join reservation_time as rt on r.time_id = rt.id
                 join theme as t on r.theme_id = t.id
@@ -126,7 +128,7 @@ public class JdbcReservationRepository {
                 select r.id, r.date,
                         rt.id as time_id, rt.start_at, 
                         t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
-                        m.id as member_id, m.name as member_name, m.email, m.password
+                        m.id as member_id, m.name as member_name, m.email, m.password, m.role
                 from reservation as r 
                 join reservation_time as rt on r.time_id = rt.id
                 join theme as t on r.theme_id = t.id 
@@ -145,7 +147,7 @@ public class JdbcReservationRepository {
                 select r.id, r.date, 
                     rt.id as time_id, rt.start_at,
                     t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
-                    m.id as member_id, m.name as member_name, m.email, m.password
+                    m.id as member_id, m.name as member_name, m.email, m.password, m.role
                 from reservation as r
                 join reservation_time as rt on r.time_id = rt.id
                 join theme as t r.theme_id = t.id
@@ -160,7 +162,7 @@ public class JdbcReservationRepository {
                 select r.id, r.date,
                     rt.id as time_id, rt.start_at,
                     t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
-                    m.id as member_id, m.name as member_name, m.email, m.password
+                    m.id as member_id, m.name as member_name, m.email, m.password, m.role
                 from reservation as r
                 join reservation_time as rt on r.time_id = rt.id
                 join theme as t on r.theme_id = t.id
@@ -175,7 +177,7 @@ public class JdbcReservationRepository {
                 select r.id, r.date,
                     rt.id as time_id, rt.start_at,
                     t.id as theme_id, t.name as theme_name, t.description, t.thumbnail,
-                    m.id as member_id, m.name as member_name, m.email, m.password
+                    m.id as member_id, m.name as member_name, m.email, m.password, m.role
                 from reservation as r
                 join reservation_time as rt on r.time_id = rt.id
                 join theme as t on r.theme_id = t.id 
