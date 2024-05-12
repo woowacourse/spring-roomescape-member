@@ -47,8 +47,8 @@ public class ThemeRepository {
         return updatedRowCount == 1;
     }
 
-    public List<Theme> findThemesOrderedByReservationCountInPeriod(LocalDate startDate, LocalDate endDate,
-                                                                   int limitCount) {
+    public List<Theme> findOrderedByReservationCountInPeriod(LocalDate startDate, LocalDate endDate,
+                                                             int limitCount) {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme as t

@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.PopularThemesCriteria;
 import roomescape.domain.Theme;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ThemeRepository;
@@ -12,16 +13,14 @@ import roomescape.service.response.ThemeResponse;
 @Service
 public class ThemeService {
 
-    private static final int POPULAR_THEME_LIMIT_COUNT = 10;
-    private static final int POPULAR_THEME_START_DAY = 7;
-    private static final int POPULAR_THEME_END_DAY = 1;
-
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final PopularThemesCriteria popularThemesCriteria;
 
     public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
+        this.popularThemesCriteria = new PopularThemesCriteria();
     }
 
     public ThemeResponse create(ThemeRequest themeRequest) {
@@ -43,15 +42,19 @@ public class ThemeService {
 
     public List<ThemeResponse> findAll(boolean showRanking) {
         if (showRanking) {
-            LocalDate startDate = LocalDate.now().minusDays(POPULAR_THEME_START_DAY);
-            LocalDate endDate = LocalDate.now().minusDays(POPULAR_THEME_END_DAY);
-
-            return themeRepository.findThemesOrderedByReservationCountInPeriod(startDate, endDate,
-                            POPULAR_THEME_LIMIT_COUNT).stream()
-                    .map(ThemeResponse::from)
-                    .toList();
+            return findPopularThemes();
         }
         return themeRepository.findAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    private List<ThemeResponse> findPopularThemes() {
+        LocalDate startDate = popularThemesCriteria.getStartDate();
+        LocalDate endDate = popularThemesCriteria.getEndDate();
+        int countLimit = popularThemesCriteria.getCountLimit();
+
+        return themeRepository.findOrderedByReservationCountInPeriod(startDate, endDate, countLimit).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
