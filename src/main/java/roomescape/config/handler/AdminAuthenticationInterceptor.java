@@ -7,10 +7,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.dto.LoggedInMember;
 import roomescape.auth.dto.RequestCookies;
 import roomescape.auth.service.AuthService;
-import roomescape.exception.AuthenticationException;
+import roomescape.exception.AdminAuthenticationException;
 
 @Component
 public class AdminAuthenticationInterceptor implements HandlerInterceptor {
+
     private final AuthService authService;
 
     public AdminAuthenticationInterceptor(AuthService authService) {
@@ -19,16 +20,11 @@ public class AdminAuthenticationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        try {
-            RequestCookies cookies = new RequestCookies(request.getCookies());
-            LoggedInMember member = authService.findLoggedInMember(cookies);
-            if (member.isAdmin()) {
-                return true;
-            }
-        } catch (IllegalArgumentException | AuthenticationException ignored) {
+        RequestCookies cookies = new RequestCookies(request.getCookies());
+        LoggedInMember member = authService.findLoggedInMember(cookies);
+        if (member.isAdmin()) {
+            return true;
         }
-
-        response.setStatus(401);
-        return false;
+        throw new AdminAuthenticationException();
     }
 }
