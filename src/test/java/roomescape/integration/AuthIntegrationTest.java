@@ -1,8 +1,12 @@
 package roomescape.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -78,6 +82,27 @@ class AuthIntegrationTest extends IntegrationTest {
                     .when().post("/logout")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value());
+        }
+    }
+
+    @Nested
+    @DisplayName("회원가입 API")
+    class Signup {
+        @Test
+        void 일반유저_권한으로_회원가입을_할_수_있다() {
+            Map<String, String> params = new HashMap<>();
+            params.put("email", "user@email.com");
+            params.put("password", "password");
+            params.put("name", "사용자");
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/signup")
+                    .then().log().all()
+                    .statusCode(201)
+                    .header("Location", "/members/2")
+                    .body("id", is(2));
         }
     }
 }

@@ -76,6 +76,7 @@
 - [x] 예약 목록 조회 시 필터링해 조회할 수 있도록 리팩토링한다
     - [x] 관리자가 조건에 따라 예약 검색
     - [x] 예약자별(memberId), 테마별(themeId), 기간(날짜)별(dateFrom, dateTo) 검색 조건 사용해 검색
+- [x] 회원가입 API를 구현한다
 
 # API 명세
 
@@ -135,6 +136,34 @@ Content-Type: application/json
 
 {
     "name": "어드민"
+}
+```
+
+### 회원가입 API
+
+Request
+
+```
+POST /signup
+Content-Type: application/json
+
+{
+    "email": "admin@email.com",
+    "password": "password",
+    "name": "어드민"
+}
+```
+
+Response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "email": "admin@email.com"
 }
 ```
 
