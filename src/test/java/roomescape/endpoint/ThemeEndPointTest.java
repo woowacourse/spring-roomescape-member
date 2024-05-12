@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.dto.ThemeRequest;
@@ -25,8 +24,6 @@ public class ThemeEndPointTest {
 
     @Autowired
     JdbcThemeRepository themeRepository;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("테마 목록을 조회하면 상태 코드 200과 테마 목록을 응답으로 반환한다.")
     @Test

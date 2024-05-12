@@ -1,7 +1,8 @@
 package roomescape.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,10 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    public void printKey() {
+        System.out.println(secretKey);
+    }
+
     public String createToken(Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -26,26 +31,28 @@ public class JwtTokenProvider {
                 .claim("name", member.getName())
                 .claim("role", member.getRole().name())
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
     public long getIdFromToken(String token) {
-        String payload = Jwts.parser()
-                .setSigningKey(secretKey)
+        Claims body = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
 
-        return Long.parseLong(payload);
+        return Long.parseLong(body.getSubject());
     }
 
     public String getRoleFromToken(String token) {
-        return (String) Jwts.parser()
-                .setSigningKey(secretKey)
+        Claims body = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .get("role");
+                .getBody();
+
+        return (String) body.get("role");
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
