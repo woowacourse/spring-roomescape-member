@@ -38,10 +38,6 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         Cookie[] cookies = request.getCookies();
 
         String token = CookieUtils.extractTokenFromCookie(cookies);
-        LoginMember loginMember = jwtTokenProvider.getMember(token);
-        if (loginMember == null) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-        }
-        return loginMember;
+        return jwtTokenProvider.getMember(token);
     }
 }
