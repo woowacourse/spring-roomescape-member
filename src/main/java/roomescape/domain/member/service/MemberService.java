@@ -22,17 +22,11 @@ public class MemberService {
 
     public Member findMemberById(Long id) {
         Optional<Member> member = memberRepository.findById(id);
-        if (member.isEmpty()) {
-            throw new ClientIllegalArgumentException("없는 member를 조회 했습니다.");
-        }
-        return member.get();
+        return member.orElseThrow(() -> new ClientIllegalArgumentException("없는 member를 조회 했습니다."));
     }
 
     public Member findMemberByEmailAndPassword(String email, String password) {
         Optional<Member> member = memberRepository.findByEmailAndPassword(email, password);
-        if (member.isEmpty()) {
-            throw new ClientIllegalArgumentException("이메일 또는 비밀번호를 잘못 입력했습니다.");
-        }
-        return member.get();
+        return member.orElseThrow(() -> new ClientIllegalArgumentException("이메일 또는 비밀번호를 잘못 입력했습니다."));
     }
 }
