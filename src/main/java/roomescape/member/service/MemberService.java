@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.global.exception.NoSuchRecordException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
+import roomescape.member.dto.JoinRequest;
+import roomescape.member.dto.MemberResponse;
 
 @Service
 public class MemberService {
@@ -22,5 +24,10 @@ public class MemberService {
     public Member findById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new NoSuchRecordException("id: " + id + " 해당하는 회원을 찾을 수 없습니다"));
+    }
+
+    public MemberResponse joinMember(JoinRequest joinRequest) {
+        Member member = joinRequest.toMember();
+        return new MemberResponse(memberRepository.save(member));
     }
 }
