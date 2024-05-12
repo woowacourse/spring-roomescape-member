@@ -1,7 +1,6 @@
 package roomescape.domain.member.service;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.repository.MemberRepository;
@@ -21,12 +20,12 @@ public class MemberService {
     }
 
     public Member findMemberById(Long id) {
-        Optional<Member> member = memberRepository.findById(id);
-        return member.orElseThrow(() -> new ClientIllegalArgumentException("없는 member를 조회 했습니다."));
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new ClientIllegalArgumentException("없는 member를 조회 했습니다."));
     }
 
     public Member findMemberByEmailAndPassword(String email, String password) {
-        Optional<Member> member = memberRepository.findByEmailAndPassword(email, password);
-        return member.orElseThrow(() -> new ClientIllegalArgumentException("이메일 또는 비밀번호를 잘못 입력했습니다."));
+        return memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new ClientIllegalArgumentException("이메일 또는 비밀번호를 잘못 입력했습니다."));
     }
 }
