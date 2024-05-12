@@ -27,5 +27,5 @@ VALUES ('2024-04-24', 1, 1, 1),
        ('2024-05-02', 6, 6, 1);
 
 INSERT INTO member (name, email, password, is_admin)
-VALUES ('pond', 'pond@naver.com', '123', false);
-VALUES ('admin', 'admin@naver.com', '123', true);
+VALUES ('pond', 'pond@naver.com', '123', false),
+       ('admin', 'admin@naver.com', '123', true);
