@@ -27,4 +27,11 @@ public class CookieUtils {
         cookie.setPath(PATH);
         response.addCookie(cookie);
     }
+
+    public static void clearTokenAndCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(TOKEN_KEY, null);
+        cookie.setMaxAge(0);
+        cookie.setPath(PATH);
+        response.addCookie(cookie);
+    }
 }

@@ -19,3 +19,6 @@ Content-Type: application/json
 
 ### 인증 정보 조회 API
 GET http://localhost:8080/login/member
+
+### 로그아웃
+POST http://localhost:8080/logout

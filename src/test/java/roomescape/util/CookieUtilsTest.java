@@ -47,4 +47,20 @@ class CookieUtilsTest {
                 () -> assertThat(cookie.getPath()).isEqualTo(CookieUtils.PATH)
         );
     }
+
+    @DisplayName("토큰과 쿠키를 제거한다.")
+    @Test
+    void clearTokenAndCookie() {
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        CookieUtils.clearTokenAndCookie(response);
+
+        Cookie cookie = response.getCookie(CookieUtils.TOKEN_KEY);
+
+        assertAll(
+                () -> assertThat(cookie.getValue()).isEqualTo(null),
+                () -> assertThat(cookie.getMaxAge()).isEqualTo(0),
+                () -> assertThat(cookie.getPath()).isEqualTo(CookieUtils.PATH)
+        );
+    }
 }

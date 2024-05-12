@@ -1,5 +1,7 @@
 package roomescape.member.controller;
 
+import static org.hamcrest.Matchers.containsString;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
@@ -34,5 +36,19 @@ class MemberApiControllerTest extends IntegrationTest {
                 .get("/members")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("로그아웃을 하면 해당 사용자의 쿠키를 제거한다.")
+    @Test
+    void logout() {
+        RestAssured.given().log().all()
+                .cookie(CookieUtils.TOKEN_KEY, "cookieValue")
+                .when()
+                .post("/logout")
+                .then().log().all()
+                .statusCode(200)
+                .header("Set-Cookie", containsString("token=;"))
+                .header("Set-Cookie", containsString("Max-Age=0"))
+                .header("Set-Cookie", containsString("Path=/"));
     }
 }
