@@ -30,7 +30,7 @@ class EmailTest {
         String email = "a@b.";
         assertThatThrownBy(() -> new Email(email))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이메일은 5자 이상이어야 합니다.");
+                .hasMessageContaining("이메일은 5자 이상, 30자 이하여야 합니다.");
     }
 
     @Test
@@ -39,7 +39,7 @@ class EmailTest {
 
         assertThatThrownBy(() -> new Email(email))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이메일은 30자 이하여야 합니다.");
+                .hasMessageContaining("이메일은 5자 이상, 30자 이하여야 합니다.");
     }
 
     @Test
