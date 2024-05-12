@@ -1,6 +1,5 @@
 package roomescape.config.handler;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -9,13 +8,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.dto.LoggedInMember;
+import roomescape.auth.dto.RequestCookies;
 import roomescape.auth.service.AuthService;
-import roomescape.exception.MemberAuthenticationException;
 
 @Component
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
-    private static final String ACCESS_TOKEN_KEY = "token";
-
     private final AuthService authService;
 
     public AuthenticationArgumentResolver(AuthService authService) {
@@ -33,17 +30,7 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String accessToken = findAccessToken(request);
-        return authService.findLoggedInMember(accessToken);
-    }
-
-    private String findAccessToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(ACCESS_TOKEN_KEY)) {
-                return cookie.getValue();
-            }
-        }
-        throw new MemberAuthenticationException();
+        RequestCookies cookies = new RequestCookies(request.getCookies());
+        return authService.findLoggedInMember(cookies);
     }
 }

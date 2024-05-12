@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
+import jakarta.servlet.http.Cookie;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.auth.dto.LoggedInMember;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.dto.RequestCookies;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 
@@ -33,7 +35,7 @@ class AuthServiceTest {
         LoginRequest request = new LoginRequest("not_exist@abc.com", "1234");
         given(memberDao.findMemberByEmail("not_exist@abc.com")).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> authService.makeToken(request))
+        assertThatThrownBy(() -> authService.createAccessToken(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("로그인 정보가 잘못 되었습니다.");
     }
@@ -41,11 +43,12 @@ class AuthServiceTest {
     @DisplayName("해당 토큰의 유저를 찾을 수 있다.")
     @Test
     void findMember() {
-        String accessToken = makeToken("브리", "bri@abc.com");
+        Cookie[] cookies = new Cookie[]{new Cookie("token", makeToken("브리", "bri@abc.com"))};
+        RequestCookies requestCookies = new RequestCookies(cookies);
         given(memberDao.findMemberById(1L)).willReturn(Optional.of(new Member(1L, "브리", "bri@abc.com")));
         LoggedInMember expected = new LoggedInMember(1L, "브리", "bri@abc.com", false);
 
-        LoggedInMember actual = authService.findLoggedInMember(accessToken);
+        LoggedInMember actual = authService.findLoggedInMember(requestCookies);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -54,6 +57,6 @@ class AuthServiceTest {
         LoginRequest request = new LoginRequest(email, "1234");
         given(memberDao.findMemberByEmail(email))
                 .willReturn(Optional.of(new Member(1L, name, email)));
-        return authService.makeToken(request);
+        return authService.createAccessToken(request).getValue();
     }
 }

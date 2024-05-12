@@ -6,8 +6,10 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.auth.domain.AccessTokenCookie;
 import roomescape.auth.dto.LoggedInMember;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.dto.RequestCookies;
 import roomescape.exception.MemberAuthenticationException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
@@ -28,9 +30,14 @@ public class AuthService {
         this.secretKey = secretKey;
     }
 
-    public String makeToken(LoginRequest request) {
+    public AccessTokenCookie createAccessToken(LoginRequest request) {
         Member member = memberDao.findMemberByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("로그인 정보가 잘못 되었습니다."));
+        String values = createTokenValue(member);
+        return new AccessTokenCookie(values);
+    }
+
+    private String createTokenValue(Member member) {
         return Jwts.builder()
                 .claims()
                 .add("id", member.getId())
@@ -39,7 +46,8 @@ public class AuthService {
                 .compact();
     }
 
-    public LoggedInMember findLoggedInMember(String token) {
+    public LoggedInMember findLoggedInMember(RequestCookies cookies) {
+        String token = new AccessTokenCookie(cookies.toMap()).getValue();
         Long id = getMemberId(token);
         Member member = memberDao.findMemberById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
