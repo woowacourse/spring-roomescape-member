@@ -4,6 +4,7 @@ import io.micrometer.common.util.StringUtils;
 import java.util.Objects;
 
 public class MemberName {
+
     private static final int MAX_NAME_SIZE = 10;
 
     private final String name;

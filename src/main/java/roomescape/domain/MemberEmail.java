@@ -8,6 +8,7 @@ public class MemberEmail {
 
     private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
         Pattern.compile("^[A-z0-9]+@[A-z0-9.-]+\\.[A-z]{2,6}$");
+
     private final String email;
 
     public MemberEmail(String email) {
