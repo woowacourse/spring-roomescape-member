@@ -2,7 +2,6 @@ package roomescape.domain.login.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -16,12 +15,14 @@ import roomescape.global.exception.ClientIllegalArgumentException;
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
+    public MemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.memberService = memberService;
+    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
