@@ -34,6 +34,9 @@ public class AuthService {
     }
 
     public Member findByToken(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new AuthenticationException("Token is null or empty.");
+        }
         String email = jwtProvider.getSubject(token);
         return findByEmail(email);
     }
