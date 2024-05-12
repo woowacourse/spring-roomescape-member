@@ -30,8 +30,8 @@ public class MemberLoginApiController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> loginCheck(LoginMember loginMember) {
+    @GetMapping("/login/member")
+    public ResponseEntity<MemberResponse> findMemberNameByLoginMember(LoginMember loginMember) {
         MemberResponse memberResponse = memberLoginService.findMemberNameByLoginMember(loginMember);
 
         return ResponseEntity.ok(memberResponse);

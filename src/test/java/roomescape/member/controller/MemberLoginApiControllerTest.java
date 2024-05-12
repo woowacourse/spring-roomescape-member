@@ -49,7 +49,7 @@ class MemberLoginApiControllerTest {
         String cookie = String.valueOf(response.getDetailedCookie(CookieUtils.TOKEN_KEY));
         RestAssured.given().log().all()
                 .cookie(cookie)
-                .when().get("/login/check")
+                .when().get("/login/member")
                 .then().log().all()
                 .statusCode(200);
     }
