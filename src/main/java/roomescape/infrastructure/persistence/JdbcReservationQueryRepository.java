@@ -40,11 +40,11 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                    t.description as description, 
                    t.thumbnail as thumbnail 
             from reservation as r
-            left join reservation_time as rt
+            join reservation_time as rt
             on r.time_id = rt.id
-            left join theme as t
+            join theme as t
             on r.theme_id = t.id  
-            left join member as m
+            join member as m
             on r.member_id = m.id
             where r.id = ?
             """;
@@ -73,11 +73,11 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                    t.description as description, 
                    t.thumbnail as thumbnail 
             from reservation as r
-            left join reservation_time as rt
+            join reservation_time as rt
             on r.time_id = rt.id
-            left join theme as t
+            join theme as t
             on r.theme_id = t.id  
-            left join member as m
+            join member as m
             on r.member_id = m.id  
             """;
         return jdbcTemplate.query(sql, ReservationRowMapper::joinedMapRow);
@@ -103,7 +103,7 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                         start_at in (
                             select start_at
                             from reservation as r
-                            left join reservation_time as rt 
+                            join reservation_time as rt 
                             on r.time_id = rt.id
                             where date = ? and r.theme_id = ?
                         ) as is_booked
@@ -126,7 +126,7 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                         t.thumbnail, 
                         count(r.id) as reservation_count
                 from    theme as t 
-                left join reservation as r 
+                join reservation as r 
                 on t.id = r.theme_id
                 where r.date between ? and ?
                 group by t.id
@@ -157,11 +157,11 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                        t.description as description, 
                        t.thumbnail as thumbnail 
                 from reservation as r
-                left join reservation_time as rt
+                join reservation_time as rt
                 on r.time_id = rt.id
-                left join theme as t
+                join theme as t
                 on r.theme_id = t.id  
-                left join member as m
+                join member as m
                 on r.member_id = m.id  
                 """;
 
