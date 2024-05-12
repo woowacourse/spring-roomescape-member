@@ -109,7 +109,7 @@
 
 - [ ] Member의 role이 ADMIN인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있다.
   - [ ] HandlerInterceptor를 이용
-    - [ ] Cookie에 role 값을 넣어라
+    - [x] Cookie에 role 추가
     - [ ] 반환 값에 따라 처리되는 방식을 확인
 - [ ] 로그인이 되지 않은 경우, login, signUp 페이지에만 접근할 수 있다.
 

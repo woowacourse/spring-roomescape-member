@@ -17,6 +17,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(member.id().toString())
                 .claim("name", member.name())
+                .claim("role", member.role())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
