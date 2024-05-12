@@ -21,12 +21,6 @@ class ReservationFactoryTest {
     private ReservationQueryRepository reservationQueryRepository;
 
     @Autowired
-    private ReservationCommandRepository reservationCommandRepository;
-
-    @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @Autowired
     private ThemeRepository themeRepository;
 
     @Autowired
