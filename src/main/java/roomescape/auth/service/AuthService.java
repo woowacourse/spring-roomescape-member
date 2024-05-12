@@ -52,7 +52,7 @@ public class AuthService {
 
     private Long findMemberId(String token) {
         try {
-            return tryToFindMemberId(token);
+            return parseId(token);
         } catch (ExpiredJwtException exception) {
             throw new JwtAuthenticationException("토큰의 유효 기간이 만료되었습니다.");
         } catch (MalformedJwtException exception) {
@@ -64,7 +64,7 @@ public class AuthService {
         }
     }
 
-    private Long tryToFindMemberId(String token) {
+    private Long parseId(String token) {
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
