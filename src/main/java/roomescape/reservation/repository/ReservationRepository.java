@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+import roomescape.admin.domain.FilterInfo;
 import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
@@ -59,5 +60,10 @@ public class ReservationRepository {
 
     public void deleteById(long reservationId) {
         reservationDao.deleteById(reservationId);
+    }
+
+    public List<Reservation> findAllByUserIdAndThemeIdBetweenDate(FilterInfo filterInfo) {
+        return reservationDao.findAllByUserIdAndThemeIdBetweenDate(filterInfo.getMemberId(), filterInfo.getThemeId(),
+                filterInfo.getFromDate(), filterInfo.getToDate());
     }
 }
