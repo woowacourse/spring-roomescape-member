@@ -1,6 +1,5 @@
 package roomescape.controller.member.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import roomescape.domain.Role;
@@ -11,9 +10,6 @@ public record LoginMember(
 
         @NotBlank
         String name,
-
-        @Email
-        String email,
 
         @NotBlank
         String role) {

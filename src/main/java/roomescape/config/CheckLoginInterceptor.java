@@ -29,8 +29,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         }
         try {
             final Member member = memberService.findMemberByToken(token);
-            final LoginMember loginMember = new LoginMember(member.getId(), member.getName(),
-                    member.getEmail(), member.getRole().name());
+            final LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole().name());
             request.setAttribute("loginMember", loginMember);
         } catch (final InvalidTokenException | MemberNotFoundException e) {
             response.sendRedirect("/login");
