@@ -30,7 +30,6 @@ class ReservationControllerTest {
     private static final int INITIAL_RESERVATION_COUNT = 15;
     private static final AuthDto userDto = new AuthDto("treeboss@gmail.com", "treeboss123!");
 
-
     private final JdbcTemplate jdbcTemplate;
     private final AuthService authService;
     private final SimpleJdbcInsert themeInsertActor;
