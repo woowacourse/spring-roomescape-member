@@ -24,11 +24,11 @@ class MemberRoleTest {
     @Test
     @DisplayName("같은 권한인지 확인한다.")
     void isSameRole() {
-        MemberRole memberRole = MemberRole.MEMBER;
+        MemberRole[] memberRoles = new MemberRole[]{MemberRole.MEMBER};
 
         assertAll(
-                () -> assertTrue(memberRole.isSameRole(MemberRole.MEMBER)),
-                () -> assertFalse(memberRole.isSameRole(MemberRole.ADMIN))
+                () -> assertTrue(MemberRole.MEMBER.hasSameRoleFrom(memberRoles)),
+                () -> assertFalse(MemberRole.ADMIN.hasSameRoleFrom(memberRoles))
         );
     }
 }

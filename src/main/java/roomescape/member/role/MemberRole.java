@@ -22,7 +22,12 @@ public enum MemberRole {
                 .orElseThrow(() -> new RoomEscapeException(MemberExceptionCode.MEMBER_ROLE_NOT_EXIST_EXCEPTION));
     }
 
-    public boolean isSameRole(MemberRole role) {
-        return roleName.equals(role.roleName);
+    public boolean hasSameRoleFrom(MemberRole[] roles) {
+        for (MemberRole memberRole : roles) {
+            if (this.equals(memberRole)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

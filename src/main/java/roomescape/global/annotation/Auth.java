@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import roomescape.member.role.MemberRole;
 
-@Target(ElementType.METHOD)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Auth {
 
-    MemberRole memberRole() default MemberRole.MEMBER;
+    MemberRole[] role() default MemberRole.MEMBER;
 }
