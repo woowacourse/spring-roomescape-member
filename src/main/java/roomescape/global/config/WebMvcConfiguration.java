@@ -5,32 +5,32 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.interceptor.CheckAdminInterceptor;
-import roomescape.auth.interceptor.CheckMemberInterceptor;
+import roomescape.auth.interceptor.AdminInterceptor;
+import roomescape.auth.interceptor.MemberInterceptor;
 import roomescape.auth.resolver.LoginUserArgumentResolver;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final LoginUserArgumentResolver loginUserArgumentResolver;
-    private final CheckAdminInterceptor checkAdminInterceptor;
-    private final CheckMemberInterceptor checkMemberInterceptor;
+    private final AdminInterceptor adminInterceptor;
+    private final MemberInterceptor memberInterceptor;
 
     public WebMvcConfiguration(LoginUserArgumentResolver loginUserArgumentResolver,
-                               CheckAdminInterceptor checkAdminInterceptor,
-                               CheckMemberInterceptor checkMemberInterceptor) {
+                               AdminInterceptor adminInterceptor,
+                               MemberInterceptor memberInterceptor) {
         this.loginUserArgumentResolver = loginUserArgumentResolver;
-        this.checkAdminInterceptor = checkAdminInterceptor;
-        this.checkMemberInterceptor = checkMemberInterceptor;
+        this.adminInterceptor = adminInterceptor;
+        this.memberInterceptor = memberInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(checkMemberInterceptor)
+        registry.addInterceptor(memberInterceptor)
                 .addPathPatterns("/reservation/**")
                 .addPathPatterns("/reservations/**")
                 .addPathPatterns("/logout");
 
-        registry.addInterceptor(checkAdminInterceptor)
+        registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");
     }
 
