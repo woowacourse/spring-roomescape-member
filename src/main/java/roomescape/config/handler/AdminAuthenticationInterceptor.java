@@ -6,8 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.MemberAuthenticationException;
-import roomescape.member.domain.LoggedInMember;
-import roomescape.member.domain.Member;
+import roomescape.member.dto.LoggedInMember;
 import roomescape.member.service.AuthService;
 
 public class AdminAuthenticationInterceptor implements HandlerInterceptor {

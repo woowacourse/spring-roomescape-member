@@ -12,9 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.domain.LoggedInMember;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRole;
+import roomescape.member.dto.LoggedInMember;
 import roomescape.member.dto.LoginRequest;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +43,7 @@ class AuthServiceTest {
     void findMember() {
         String accessToken = makeToken("브리", "bri@abc.com");
         given(memberDao.findMemberById(1L)).willReturn(Optional.of(new Member(1L, "브리", "bri@abc.com")));
-        LoggedInMember expected = new LoggedInMember(1L, "브리", "bri@abc.com", MemberRole.USER);
+        LoggedInMember expected = new LoggedInMember(1L, "브리", "bri@abc.com", false);
 
         LoggedInMember actual = authService.findLoggedInMember(accessToken);
 
