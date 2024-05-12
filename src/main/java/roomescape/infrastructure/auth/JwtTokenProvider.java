@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import roomescape.domain.TokenProvider;
+import roomescape.application.TokenProvider;
 import roomescape.exception.RoomescapeErrorCode;
 import roomescape.exception.RoomescapeException;
 

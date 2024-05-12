@@ -2,7 +2,6 @@ package roomescape.presentation.acceptance;
 
 import java.time.LocalDate;
 import roomescape.application.dto.ReservationRequest;
-import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 

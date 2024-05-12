@@ -14,7 +14,7 @@ public enum RoomescapeErrorCode {
     ALREADY_RESERVED(HttpStatus.CONFLICT, "이미 연관된 예약이 존재합니다."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "운영자만 접근할 수 있습니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "적합한 권한이 아닙니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "인증 유효기간이 만료되었습니다."),
     ;
 
