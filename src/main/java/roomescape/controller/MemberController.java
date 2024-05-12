@@ -21,7 +21,7 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberResponse>> showMembers() {
+    public ResponseEntity<List<MemberResponse>> getMembers() {
         List<Member> members = memberService.findAllMembers();
         List<MemberResponse> response = members.stream()
                 .map(MemberResponse::from)

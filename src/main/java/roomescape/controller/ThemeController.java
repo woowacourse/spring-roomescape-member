@@ -24,7 +24,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> showThemes() {
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<Theme> themes = themeService.findAllThemes();
         List<ThemeResponse> response = themes.stream()
                 .map(ThemeResponse::from)
@@ -50,7 +50,7 @@ public class ThemeController {
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<ThemeResponse>> showPopularThemes() {
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
         List<Theme> themes = themeService.findPopularThemes();
         List<ThemeResponse> response = themes.stream()
                 .map(ThemeResponse::from)
