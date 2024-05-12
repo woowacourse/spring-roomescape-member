@@ -31,6 +31,6 @@ public class MemberController {
     public ResponseEntity<MemberResponse> createMember(@RequestBody @Valid JoinRequest joinRequest) {
         MemberResponse createdResponse = memberService.joinMember(joinRequest);
         URI createdUri = URI.create("/members/" + createdResponse.id());
-        return ResponseEntity.created(createdUri).body(memberService.joinMember(joinRequest));
+        return ResponseEntity.created(createdUri).body(createdResponse);
     }
 }

@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public enum Role {
-    ADMIN("admin"),
-    MEMBER("member"),
-    GUEST("guest");
+    ADMIN("ADMIN"),
+    MEMBER("MEMBER"),
+    GUEST("GUEST");
 
     private final String value;
 
