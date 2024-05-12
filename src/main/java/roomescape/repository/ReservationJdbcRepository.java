@@ -11,10 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.UserName;
+import roomescape.domain.*;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -24,7 +21,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            new UserName(resultSet.getString("name")),
+            new User(
+                    resultSet.getLong("user_id"),
+                    resultSet.getString("user_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password")),
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -49,8 +50,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
+                    u.id AS user_id,
+                    u.name AS user_name,
+                    u.email AS email,
+                    u.password AS password,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
@@ -59,6 +63,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     th.thumbnail AS theme_thumbnail
                 FROM
                     reservation AS r
+                INNER JOIN users AS u ON r.user_id = u.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id;
                 """;
@@ -69,8 +74,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
+                    u.id AS user_id,
+                    u.name AS user_name,
+                    u.email AS email,
+                    u.password AS password,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
@@ -79,9 +87,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     th.thumbnail AS theme_thumbnail
                 FROM
                     reservation AS r
+                INNER JOIN users AS u ON r.user_id = u.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE date = ? AND theme_id = ?;
+                WHERE r.date = ? AND r.theme_id = ?;
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
@@ -89,14 +98,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()
-                    .addValue("name", reservation.getName().getUserName())
                     .addValue("date", reservation.getDate())
+                    .addValue("user_id", reservation.getUser().getId())
                     .addValue("time_id", reservation.getReservationTime().getId())
                     .addValue("theme_id", reservation.getTheme().getId());
             Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
             return new Reservation(
                     id,
-                    reservation.getName(),
+                    reservation.getUser(),
                     reservation.getDate(),
                     reservation.getReservationTime(),
                     reservation.getTheme()

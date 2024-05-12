@@ -6,10 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.UserName;
+import roomescape.domain.*;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -56,12 +53,12 @@ public class ReservationService {
         return availableTimeResponses;
     }
 
-    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest) {
+    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest, User user) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
         Reservation reservation = new Reservation(
-                new UserName(reservationCreateRequest.name()),
+                user,
                 reservationCreateRequest.date(),
                 reservationTime,
                 theme
