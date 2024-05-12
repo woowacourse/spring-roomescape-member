@@ -58,11 +58,11 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @Sql("/reservation.sql")
     void 테마의_예약된_시간_아이디를_조회한다() {
-        Set<Long> reservedTimeIds = reservationTimeRepository.findReservedTimeIds(2L, LocalDate.parse("2024-05-01"));
+        Set<Long> reservedTimeIds = reservationTimeRepository.findReservedTimeIds(3L, LocalDate.parse("2024-05-01"));
 
         assertAll(
                 () -> assertThat(reservedTimeIds).hasSize(2),
-                () -> assertThat(reservedTimeIds).containsExactly(1L, 2L)
+                () -> assertThat(reservedTimeIds).containsExactly(2L, 3L)
         );
     }
 }

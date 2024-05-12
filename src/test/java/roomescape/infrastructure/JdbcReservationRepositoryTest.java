@@ -47,7 +47,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 주어진_예약날짜_시간_테마의_예약이_존재하면_true를_반환한다() {
-        LocalDate date = LocalDate.parse("2024-05-01");
+        LocalDate date = LocalDate.parse("2024-04-27");
         boolean exists = reservationRepository.existsByReservationDateTimeAndTheme(date, 1L, 1L);
 
         assertThat(exists).isTrue();
