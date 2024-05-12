@@ -15,12 +15,12 @@ import roomescape.repository.MemberDao;
 import roomescape.util.JwtProvider;
 
 @Service
-public class LoginService {
+public class AuthService {
 
     private final MemberDao memberDao;
     private final JwtProvider jwtProvider;
 
-    public LoginService(MemberDao memberDao, JwtProvider jwtProvider) {
+    public AuthService(MemberDao memberDao, JwtProvider jwtProvider) {
         this.memberDao = memberDao;
         this.jwtProvider = jwtProvider;
     }
