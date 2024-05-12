@@ -24,15 +24,15 @@ public class ReservationCreateValidator {
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final MemberDao memberDao;
-    private final DateTimeFormatter dateTimeFormatter;
+    private final DateTimeFormatter nowDateTimeFormatter;
 
 
-    public ReservationCreateValidator(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao, final ThemeDao themeDao, final MemberDao memberDao, final DateTimeFormatter dateTimeFormatter) {
+    public ReservationCreateValidator(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao, final ThemeDao themeDao, final MemberDao memberDao, final DateTimeFormatter nowDateTimeFormatter) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
         this.memberDao = memberDao;
-        this.dateTimeFormatter = dateTimeFormatter;
+        this.nowDateTimeFormatter = nowDateTimeFormatter;
     }
 
     public Reservation validateReservationInput(final ReservationInput input) {
@@ -44,7 +44,7 @@ public class ReservationCreateValidator {
         if (reservationDao.isExistByReservationAndTime(ReservationDate.from(input.date()), input.timeId())) {
             throw new AlreadyExistsException(RESERVATION, reservation.getLocalDateTimeFormat());
         }
-        if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
+        if (reservation.isBefore(nowDateTimeFormatter.getDate(), nowDateTimeFormatter.getTime())) {
             throw new PastTimeReservationException(reservation.getLocalDateTimeFormat());
         }
         return reservation;
