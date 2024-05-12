@@ -46,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    ResponseEntity<Void> checkLogin(HttpServletResponse servletResponse) {
+    ResponseEntity<Void> logout(HttpServletResponse servletResponse) {
         servletResponse.addCookie(deleteTokenCookie());
 
         return ResponseEntity.status(HttpStatus.OK).build();
