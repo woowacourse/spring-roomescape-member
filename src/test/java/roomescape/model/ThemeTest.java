@@ -28,7 +28,7 @@ class ThemeTest {
     void should_throw_exception_when_invalid_name(String name) {
         assertThatThrownBy(() -> new Theme(1L, name, "d", "t"))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("테마 이름은 null 혹은 빈 문자열일 수 없습니다.");
     }
 
     @DisplayName("데이터의 설명이 null 혹은 비어있는 경우 예외를 발생시킨다.")
@@ -38,7 +38,7 @@ class ThemeTest {
     void should_throw_exception_when_invalid_description(String description) {
         assertThatThrownBy(() -> new Theme(1L, "n", description, "t"))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("테마 설명문은 null 혹은 빈 문자열일 수 없습니다.");
     }
 
     @DisplayName("데이터의 썸네일이 null 혹은 비어있는 경우 예외를 발생시킨다.")
@@ -48,7 +48,7 @@ class ThemeTest {
     void should_throw_exception_when_invalid_thumbnail(String thumbnail) {
         assertThatThrownBy(() -> new Theme(1L, "n", "d", thumbnail))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("데이터는 null 혹은 빈 문자열일 수 없습니다.");
+                .hasMessage("테마 썸네일은 null 혹은 빈 문자열일 수 없습니다.");
     }
 
     @DisplayName("데이터가 유효한 경우 예외가 발생하지 않는다.")
