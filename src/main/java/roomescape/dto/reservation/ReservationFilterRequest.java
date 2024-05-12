@@ -42,9 +42,9 @@ public class ReservationFilterRequest {
         }
         ReservationFilterRequest other = (ReservationFilterRequest) o;
         return Objects.equals(this.memberId, other.memberId)
-               && Objects.equals(this.themeId, other.themeId)
-               && Objects.equals(this.dateFrom, other.dateFrom)
-               && Objects.equals(this.dateTo, other.dateTo);
+                && Objects.equals(this.themeId, other.themeId)
+                && Objects.equals(this.dateFrom, other.dateFrom)
+                && Objects.equals(this.dateTo, other.dateTo);
     }
 
     @Override
@@ -55,10 +55,10 @@ public class ReservationFilterRequest {
     @Override
     public String toString() {
         return "ReservationFilterRequest{" +
-               "dateFrom='" + dateFrom + '\'' +
-               ", memberId=" + memberId +
-               ", themeId=" + themeId +
-               ", dateTo='" + dateTo + '\'' +
-               '}';
+                "dateFrom='" + dateFrom + '\'' +
+                ", memberId=" + memberId +
+                ", themeId=" + themeId +
+                ", dateTo='" + dateTo + '\'' +
+                '}';
     }
 }

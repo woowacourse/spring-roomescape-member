@@ -47,8 +47,8 @@ public class MemberSignupRequest {
         }
         MemberSignupRequest other = (MemberSignupRequest) o;
         return Objects.equals(this.name, other.name)
-               && Objects.equals(this.email, other.email)
-               && Objects.equals(this.password, other.password);
+                && Objects.equals(this.email, other.email)
+                && Objects.equals(this.password, other.password);
     }
 
     @Override
@@ -59,9 +59,9 @@ public class MemberSignupRequest {
     @Override
     public String toString() {
         return "MemberSignupRequest{" +
-               "email='" + email + '\'' +
-               ", name='" + name + '\'' +
-               ", password='" + password + '\'' +
-               '}';
+                "email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

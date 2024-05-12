@@ -39,7 +39,7 @@ public class LoginCheckResponse {
     @Override
     public String toString() {
         return "LoginCheckResponse{" +
-               "name='" + name + '\'' +
-               '}';
+                "name='" + name + '\'' +
+                '}';
     }
 }

@@ -22,7 +22,7 @@ class ReservationDateTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"2023.04.05","12.05.04","12-4-3", "1212-3-4"})
+    @ValueSource(strings = {"2023.04.05", "12.05.04", "12-4-3", "1212-3-4"})
     @DisplayName("예약 날짜 형식이 맞지 않으면 예외가 발생한다.")
     void createReservationDateByInvalidDateFormat(String given) {
         //when //then

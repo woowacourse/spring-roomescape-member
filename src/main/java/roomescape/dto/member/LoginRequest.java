@@ -30,7 +30,7 @@ public class LoginRequest {
         }
         LoginRequest other = (LoginRequest) o;
         return Objects.equals(this.email, other.email)
-               && Objects.equals(this.password, other.password);
+                && Objects.equals(this.password, other.password);
     }
 
     @Override
@@ -41,8 +41,8 @@ public class LoginRequest {
     @Override
     public String toString() {
         return "LoginRequest{" +
-               "email='" + email + '\'' +
-               ", password='" + password + '\'' +
-               '}';
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

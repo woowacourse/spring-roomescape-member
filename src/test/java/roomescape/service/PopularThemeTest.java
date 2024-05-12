@@ -31,23 +31,27 @@ class PopularThemeTest {
 
         //when
         List<ThemeResponse> results = themeService.findPopulars(startDate, endDate);
-
+        ThemeResponse firstResponse = results.get(0);
+        ThemeResponse secondResponse = results.get(1);
+        ThemeResponse thirdResponse = results.get(2);
+        ThemeResponse fourthResponse = results.get(3);
+        ThemeResponse fifthResponse = results.get(4);
         /*
-        *   테마 통계
-        *   5번 방탈출 - 5개
-        *   4번 방탈출 - 4개
-        *   3번 방탈출 - 3개
-        *   2번 방탈출 - 2개
-        *   1번 방탈출 - 1개
-        * */
+         *   테마 통계
+         *   5번 방탈출 - 5개
+         *   4번 방탈출 - 4개
+         *   3번 방탈출 - 3개
+         *   2번 방탈출 - 2개
+         *   1번 방탈출 - 1개
+         * */
         //then
         assertAll(
                 () -> assertThat(results).hasSize(10),
-                () -> assertThat(results.get(0).getId()).isSameAs(5L),
-                () -> assertThat(results.get(1).getId()).isSameAs(4L),
-                () -> assertThat(results.get(2).getId()).isSameAs(3L),
-                () -> assertThat(results.get(3).getId()).isSameAs(2L),
-                () -> assertThat(results.get(4).getId()).isSameAs(1L)
+                () -> assertThat(firstResponse.getId()).isSameAs(5L),
+                () -> assertThat(secondResponse.getId()).isSameAs(4L),
+                () -> assertThat(thirdResponse.getId()).isSameAs(3L),
+                () -> assertThat(fourthResponse.getId()).isSameAs(2L),
+                () -> assertThat(fifthResponse.getId()).isSameAs(1L)
         );
     }
 }

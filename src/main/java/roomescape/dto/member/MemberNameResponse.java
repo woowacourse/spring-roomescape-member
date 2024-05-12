@@ -35,7 +35,7 @@ public class MemberNameResponse {
         }
         MemberNameResponse other = (MemberNameResponse) o;
         return this.id == other.id
-               && Objects.equals(this.name, other.name);
+                && Objects.equals(this.name, other.name);
     }
 
     @Override
@@ -46,8 +46,8 @@ public class MemberNameResponse {
     @Override
     public String toString() {
         return "MemberNameResponse{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

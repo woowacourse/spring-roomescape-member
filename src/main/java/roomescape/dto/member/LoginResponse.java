@@ -34,7 +34,7 @@ public class LoginResponse {
     @Override
     public String toString() {
         return "LoginResponse{" +
-               "accessToken='" + accessToken + '\'' +
-               '}';
+                "accessToken='" + accessToken + '\'' +
+                '}';
     }
 }

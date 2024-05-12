@@ -45,8 +45,8 @@ public class AvailableReservationResponse {
         }
         AvailableReservationResponse other = (AvailableReservationResponse) o;
         return this.alreadyBooked == other.alreadyBooked
-               && Objects.equals(this.startAt, other.startAt)
-               && Objects.equals(this.timeId, other.timeId);
+                && Objects.equals(this.startAt, other.startAt)
+                && Objects.equals(this.timeId, other.timeId);
     }
 
     @Override
@@ -57,9 +57,9 @@ public class AvailableReservationResponse {
     @Override
     public String toString() {
         return "AvailableReservationResponse{" +
-               "startAt='" + startAt + '\'' +
-               ", timeId=" + timeId +
-               ", alreadyBooked=" + alreadyBooked +
-               '}';
+                "startAt='" + startAt + '\'' +
+                ", timeId=" + timeId +
+                ", alreadyBooked=" + alreadyBooked +
+                '}';
     }
 }

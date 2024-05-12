@@ -55,8 +55,8 @@ public class ReservationCreateRequest {
         }
         ReservationCreateRequest other = (ReservationCreateRequest) o;
         return Objects.equals(this.date, other.date)
-               && Objects.equals(this.timeId, other.timeId)
-               && Objects.equals(this.themeId, other.themeId);
+                && Objects.equals(this.timeId, other.timeId)
+                && Objects.equals(this.themeId, other.themeId);
     }
 
     @Override
@@ -67,9 +67,9 @@ public class ReservationCreateRequest {
     @Override
     public String toString() {
         return "ReservationCreateRequest{" +
-               ", date='" + date + '\'' +
-               ", timeId=" + timeId +
-               ", themeId=" + themeId +
-               '}';
+                ", date='" + date + '\'' +
+                ", timeId=" + timeId +
+                ", themeId=" + themeId +
+                '}';
     }
 }

@@ -16,7 +16,7 @@ public interface ReservationDao {
     List<Reservation> readAll();
 
     List<Reservation> readAllByMemberAndThemeAndDateBetweenFromAndTo(Member member, Theme theme,
-                                                                         ReservationDate from, ReservationDate to);
+                                                                     ReservationDate from, ReservationDate to);
 
     Optional<Reservation> readById(Long id);
 

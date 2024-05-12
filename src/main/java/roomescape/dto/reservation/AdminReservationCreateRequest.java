@@ -61,9 +61,9 @@ public class AdminReservationCreateRequest {
         }
         AdminReservationCreateRequest other = (AdminReservationCreateRequest) o;
         return Objects.equals(this.date, other.date)
-               && Objects.equals(this.memberId, other.memberId)
-               && Objects.equals(this.timeId, other.timeId)
-               && Objects.equals(this.themeId, other.themeId);
+                && Objects.equals(this.memberId, other.memberId)
+                && Objects.equals(this.timeId, other.timeId)
+                && Objects.equals(this.themeId, other.themeId);
     }
 
     @Override
@@ -74,10 +74,10 @@ public class AdminReservationCreateRequest {
     @Override
     public String toString() {
         return "ReservationCreateRequest{" +
-               ", date='" + date + '\'' +
-               ", memberId='" + memberId + '\'' +
-               ", timeId=" + timeId +
-               ", themeId=" + themeId +
-               '}';
+                ", date='" + date + '\'' +
+                ", memberId='" + memberId + '\'' +
+                ", timeId=" + timeId +
+                ", themeId=" + themeId +
+                '}';
     }
 }
