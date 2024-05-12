@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at VARCHAR(255) NOT NULL,
+    start_at VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
@@ -34,6 +34,5 @@ CREATE TABLE IF NOT EXISTS reservation
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
-        ON DELETE CASCADE
+    FOREIGN KEY (theme_id) REFERENCES theme (id) ON DELETE CASCADE
 );
