@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.User;
 import roomescape.dto.request.UserCreateRequest;
 import roomescape.dto.response.TokenResponse;
-import roomescape.dto.response.UserResponse;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.UserRepository;
 
@@ -24,10 +23,8 @@ public class LoginService {
         return new TokenResponse(jwtTokenProvider.createToken(user));
     }
 
-    public UserResponse createUserResponse(Cookie[] cookies) {
+    public User createUser(Cookie[] cookies) {
         Long userId = jwtTokenProvider.getUserIdFromToken(cookies);
-        User user = userRepository.findById(userId);
-
-        return new UserResponse(user.getName());
+        return userRepository.findById(userId);
     }
 }

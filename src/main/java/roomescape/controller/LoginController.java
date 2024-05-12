@@ -4,13 +4,16 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import roomescape.domain.User;
 import roomescape.dto.request.UserCreateRequest;
 import roomescape.dto.response.TokenResponse;
+import roomescape.dto.response.UserLoginResponse;
 import roomescape.dto.response.UserResponse;
 import roomescape.service.LoginService;
 
-@RestController
+@Controller
 @RequestMapping("/login")
 public class LoginController {
 
@@ -36,10 +39,7 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        UserResponse userResponse = loginService.createUserResponse(cookies);
-
-        return ResponseEntity.ok().body(userResponse);
+    public ResponseEntity<UserLoginResponse> checkLogin(User user) {
+        return ResponseEntity.ok().body(UserLoginResponse.from(user));
     }
 }
