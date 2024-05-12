@@ -5,8 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.member.domain.Role;
 import roomescape.global.auth.AuthUser;
+import roomescape.member.domain.Role;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,11 +23,11 @@ public class JwtProvider {
     private String secretKey;
 
     @Value("${jwt.expiration}")
-    private int expiration;
+    private int expirationSeconds;
 
     public String createAccessToken(AuthUser authUser) {
         Instant now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant();
-        Instant expiredAt = now.plusSeconds(expiration);
+        Instant expiredAt = now.plusSeconds(expirationSeconds);
 
         return Jwts.builder()
                 .subject(String.valueOf(authUser.id()))
