@@ -157,8 +157,10 @@ class ReservationControllerTest {
         String date = LocalDate.now().minusDays(1).toString();
         long themeId = 1;
         List<ReservationTimeInfoResponse> times = RestAssured.given().log().all()
-                .when().get(String.format("/reservations/times?date=%s&themeId=%d", date, themeId))
-                .then().log().all() // TODO: use param option
+                .param("date", date)
+                .param("themeId", themeId)
+                .when().get("/reservations/times")
+                .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", ReservationTimeInfoResponse.class);
 
