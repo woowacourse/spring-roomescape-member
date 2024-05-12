@@ -3,15 +3,15 @@ package roomescape.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.role.Role;
 
 public class PermissionCheckInterceptor implements HandlerInterceptor {
-    private final AuthService authService;
+    private final RequestPayloadContext context;
 
-    public PermissionCheckInterceptor(AuthService authService) {
-        this.authService = authService;
+    public PermissionCheckInterceptor(ObjectProvider<RequestPayloadContext> contextProvider) {
+        this.context = contextProvider.getObject();
     }
 
     @Override
@@ -22,9 +22,8 @@ public class PermissionCheckInterceptor implements HandlerInterceptor {
             return true;
         }
         PermissionRequired permissionRequired = method.getAnnotation(PermissionRequired.class);
-        Role requiredRole = permissionRequired.value();
-        String token = AuthInformationExtractor.extractToken(request);
-        authService.validatePermission(token, requiredRole);
+        context.setMemberRoleIfNotPresent(request);
+        context.validatePermission(permissionRequired.value());
         return true;
     }
 }
