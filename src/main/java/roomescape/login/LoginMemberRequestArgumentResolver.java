@@ -3,6 +3,7 @@ package roomescape.login;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
+import javax.naming.AuthenticationException;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -12,8 +13,6 @@ import roomescape.member.dto.LoginMemberRequest;
 import roomescape.member.service.MemberService;
 
 public class LoginMemberRequestArgumentResolver implements HandlerMethodArgumentResolver {
-
-    private static final String TOKEN = "token";
 
     private final MemberService memberService;
 
@@ -34,18 +33,19 @@ public class LoginMemberRequestArgumentResolver implements HandlerMethodArgument
             WebDataBinderFactory binderFactory
     ) throws Exception {
         HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        Cookie[] cookies = servletRequest.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = extractTokenFromCookie(servletRequest.getCookies());
 
         return memberService.getLoginMemberRequest(token);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (Objects.equals(cookie.getName(), TOKEN)) {
-                return cookie.getValue();
+    private String extractTokenFromCookie(Cookie[] cookies) throws AuthenticationException {
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (Objects.equals(cookie.getName(), "token")) {
+                    return cookie.getValue();
+                }
             }
         }
-        return "";
+        throw new AuthenticationException("접근 권한 확인을 위한 쿠키가 없습니다.");
     }
 }
