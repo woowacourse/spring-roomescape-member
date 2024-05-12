@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.MemberRequest;
-import roomescape.dto.MemberResponse;
+import roomescape.dto.MemberCheckResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -60,16 +60,16 @@ class LoginControllerTest {
                 .response().getDetailedCookies();
 
         // when
-        MemberResponse memberResponse = RestAssured.given().log().all()
+        MemberCheckResponse memberCheckResponse = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookies(cookies)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
-                .extract().response().as(MemberResponse.class);
+                .extract().response().as(MemberCheckResponse.class);
 
         // then
-        assertThat(memberResponse.name()).isEqualTo("사용자1");
+        assertThat(memberCheckResponse.name()).isEqualTo("사용자1");
     }
 
     @Test

@@ -65,7 +65,7 @@ public class ReservationService {
         return ReservationResponse.fromReservation(reservationDao.save(reservation));
     }
 
-    public ReservationResponse save(ReservationCreateRequest request, final Member member) {
+    public ReservationResponse save(ReservationCreateRequest request, final Long memberId) {
         if (request.date().isBefore(LocalDate.now())) {
             throw new IllegalReservationException("[ERROR] 과거 날짜는 예약할 수 없습니다.");
         }
@@ -76,6 +76,7 @@ public class ReservationService {
         }
 
         Theme theme = themeDao.findById(request.themeId());
+        Member member = memberDao.findById(memberId);
         Reservation reservation = ReservationCreateRequest.toReservation(request.date(), time, theme, member);
 
         if (reservationDao.existByDateAndTimeAndTheme(reservation.getDate(), reservation.getTimeId(),

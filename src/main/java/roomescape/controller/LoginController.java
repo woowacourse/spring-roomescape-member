@@ -10,8 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.domain.Role;
+import roomescape.config.JwtTokenProvider;
 import roomescape.dto.MemberRequest;
+import roomescape.dto.MemberCheckResponse;
 import roomescape.dto.MemberResponse;
 import roomescape.service.MemberService;
 
@@ -19,22 +20,18 @@ import roomescape.service.MemberService;
 public class LoginController {
 
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginController(final MemberService memberService) {
+    public LoginController(final MemberService memberService, final JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> loginPage(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         MemberResponse memberResponse = memberService.findBy(memberRequest);
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        String accessToken = Jwts.builder()
-                .setSubject(memberResponse.id().toString())
-                .claim("name", memberResponse.name())
-                .claim("role", Role.MEMBER)
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+        String accessToken = jwtTokenProvider.createToken(memberResponse.id(), memberResponse.role());
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
@@ -45,7 +42,7 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> loginCheckPage(HttpServletRequest request) {
+    public ResponseEntity<MemberCheckResponse> loginCheckPage(HttpServletRequest request) {
         String token = extractTokenFromCookie(request.getCookies());
 
         Long memberId = Long.valueOf(Jwts.parserBuilder()
@@ -54,9 +51,9 @@ public class LoginController {
                 .parseClaimsJws(token)
                 .getBody().getSubject());
 
-        MemberResponse memberResponse = memberService.findById(memberId);
+        MemberCheckResponse memberCheckResponse = memberService.findById(memberId);
 
-        return ResponseEntity.ok().body(memberResponse);
+        return ResponseEntity.ok().body(memberCheckResponse);
     }
 
     @PostMapping("/logout")

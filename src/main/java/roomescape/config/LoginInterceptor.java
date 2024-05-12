@@ -1,49 +1,29 @@
 package roomescape.config;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.Member;
-import roomescape.service.MemberService;
+import roomescape.domain.Role;
 
 @Component
-public class LoginInterceptor implements HandlerInterceptor  {
+public class LoginInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginInterceptor(final MemberService memberService) {
-        this.memberService = memberService;
+    public LoginInterceptor(final JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
-        String token = extractTokenFromCookie(request.getCookies());
+        Role role = jwtTokenProvider.extractRole(request);
 
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-        Member member = memberService.findMemberById(memberId);
-
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        if (Role.ADMIN != role) {
             response.setStatus(401);
             return false;
         }
         return true;
-    }
-
-    private String extractTokenFromCookie(final Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }

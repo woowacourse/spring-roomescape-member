@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.MemberRequest;
+import roomescape.dto.MemberCheckResponse;
 import roomescape.dto.MemberResponse;
 import roomescape.repository.repositoryImpl.JdbcMemberDao;
 
@@ -16,22 +17,18 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public List<MemberResponse> findAll() {
+    public List<MemberCheckResponse> findAll() {
         List<Member> allMembers = memberDao.findAll();
-        return MemberResponse.fromMembers(allMembers);
+        return MemberCheckResponse.fromMembers(allMembers);
     }
 
     public MemberResponse findBy(final MemberRequest memberRequest) {
-        Member member = memberDao.findByEmail(memberRequest.email());
+        Member member = memberDao.findByEmailAndPassWord(memberRequest.email(), memberRequest.password());
         return MemberResponse.from(member);
     }
 
-    public MemberResponse findById(final Long id) {
+    public MemberCheckResponse findById(final Long id) {
         Member member = memberDao.findById(id);
-        return MemberResponse.from(member);
-    }
-
-    public Member findMemberById(final Long id) {
-        return memberDao.findById(id);
+        return MemberCheckResponse.from(member);
     }
 }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.MemberResponse;
+import roomescape.dto.MemberCheckResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -28,17 +28,17 @@ class MemberRestControllerTest {
     @DisplayName("모든 회원을 조회한다.")
     void getAll() {
         // given && when
-        List<MemberResponse> members = RestAssured.given().log().all()
+        List<MemberCheckResponse> members = RestAssured.given().log().all()
                 .when().get("/members")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", MemberResponse.class);
+                .jsonPath().getList(".", MemberCheckResponse.class);
 
         // then
         assertThat(members).containsExactly(
-                new MemberResponse(1L, "어드민"),
-                new MemberResponse(2L, "사용자1"),
-                new MemberResponse(3L, "사용자2"),
-                new MemberResponse(4L, "사용자3"));
+                new MemberCheckResponse(1L, "어드민"),
+                new MemberCheckResponse(2L, "사용자1"),
+                new MemberCheckResponse(3L, "사용자2"),
+                new MemberCheckResponse(4L, "사용자3"));
     }
 }
