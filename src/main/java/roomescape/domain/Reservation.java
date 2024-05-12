@@ -6,22 +6,22 @@ import roomescape.exception.InvalidInputException;
 public class Reservation {
 
     private final Long id;
-    private final UserName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
-    public Reservation(Long id, UserName name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, Member member) {
         validate(date);
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(UserName name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(LocalDate date, ReservationTime time, Theme theme, Member member) {
+        this(null, date, time, theme, member);
     }
 
     private void validate(LocalDate date) {
@@ -34,10 +34,6 @@ public class Reservation {
         return id;
     }
 
-    public UserName getName() {
-        return name;
-    }
-
     public LocalDate getDate() {
         return date;
     }
@@ -48,5 +44,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

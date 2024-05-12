@@ -58,7 +58,6 @@ public class ReservationController {
             @AuthenticationPrincipal LoginMember loginMember
     ) {
         ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, loginMember);
-        System.out.println(loginMember);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
     }

@@ -6,19 +6,21 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.AvailableTimeResponses;
 import roomescape.dto.LoginMember;
+import roomescape.dto.ReservationAdminCreateRequest;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationResponses;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotExistingEntryException;
 import roomescape.exception.ReservingPastTimeException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -29,13 +31,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponses findAll() {
@@ -74,11 +79,27 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
+        Member member = memberRepository.findById(loginMember.id());
         Reservation reservation = new Reservation(
-                new UserName(loginMember.name()),
                 reservationCreateRequest.date(),
                 reservationTime,
-                theme
+                theme,
+                member
+        );
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(savedReservation);
+    }
+
+    public ReservationResponse createByAdmin(ReservationAdminCreateRequest reservationAdminCreateRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationAdminCreateRequest.timeId());
+        validateAvailableDateTime(reservationAdminCreateRequest.date(), reservationTime.getStartAt());
+        Theme theme = themeRepository.findByThemeId(reservationAdminCreateRequest.themeId());
+        Member member = memberRepository.findById(reservationAdminCreateRequest.memberId());
+        Reservation reservation = new Reservation(
+                reservationAdminCreateRequest.date(),
+                reservationTime,
+                theme,
+                member
         );
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);

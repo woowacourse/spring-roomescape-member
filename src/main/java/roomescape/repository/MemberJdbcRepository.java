@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +31,16 @@ public class MemberJdbcRepository implements MemberRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    public List<Member> findAll() {
+        String sql = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(sql, memberRowMapper);
+    }
+
+    public Member findById(Long id) {
+        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
     }
 
     public Member findByEmail(String email) {
