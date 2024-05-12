@@ -1,7 +1,5 @@
 package roomescape.config;
 
-import static roomescape.exception.ExceptionType.REQUIRED_LOGIN;
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -10,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.LoginMemberParameter;
-import roomescape.exception.RoomescapeException;
 import roomescape.service.LoginService;
 
 @Component
@@ -31,9 +28,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
             throws Exception {
-        HttpServletRequest servletRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = CookieExtractor.getCookie(servletRequest, "token")
-                .orElseThrow(() -> new RoomescapeException(REQUIRED_LOGIN))
+        String token = CookieExtractor.getTokenCookie((HttpServletRequest) webRequest.getNativeRequest())
                 .getValue();
         return loginService.checkLogin(token);
     }

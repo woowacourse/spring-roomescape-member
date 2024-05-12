@@ -1,7 +1,5 @@
 package roomescape.config;
 
-import static roomescape.exception.ExceptionType.REQUIRED_LOGIN;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -27,9 +25,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        String token = CookieExtractor.getCookie(request, "token")
-                .orElseThrow(() -> new RoomescapeException(REQUIRED_LOGIN))
-                .getValue();
+        String token = CookieExtractor.getTokenCookie(request).getValue();
         LoginMember loginMember = loginService.checkLogin(token);
         Member findMember = memberService.findById(loginMember.getId());
         if (!findMember.isAdmin()) {

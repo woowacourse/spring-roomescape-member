@@ -1,7 +1,5 @@
 package roomescape.controller;
 
-import static roomescape.exception.ExceptionType.REQUIRED_LOGIN;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +12,6 @@ import roomescape.config.CookieExtractor;
 import roomescape.domain.LoginMember;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.LoginResponse;
-import roomescape.exception.RoomescapeException;
 import roomescape.service.LoginService;
 
 @Controller
@@ -42,8 +39,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie token = CookieExtractor.getCookie(request, "token")
-                .orElseThrow(() -> new RoomescapeException(REQUIRED_LOGIN));
+        Cookie token = CookieExtractor.getTokenCookie(request);
         token.setMaxAge(0);
         response.addCookie(token);
 
