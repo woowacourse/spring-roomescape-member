@@ -48,20 +48,18 @@ public class MemberDao implements MemberRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        try {
-            String sql = "SELECT * FROM member WHERE id = ?";
-            Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
-            return Optional.ofNullable(member);
-        } catch (EmptyResultDataAccessException exception) {
-            return Optional.empty();
-        }
+        return findBy("id", id);
     }
 
     @Override
     public Optional<Member> findByEmail(String email) {
+        return findBy("email", email);
+    }
+
+    private Optional<Member> findBy(String column, Object value) {
         try {
-            String sql = "SELECT * FROM member WHERE email = ?";
-            Member member = jdbcTemplate.queryForObject(sql, rowMapper, email);
+            String sql = String.format("SELECT * FROM member WHERE %s = ?", column);
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, value);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
