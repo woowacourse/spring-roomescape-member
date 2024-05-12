@@ -4,7 +4,8 @@ import java.util.Arrays;
 import roomescape.exception.BadRequestException;
 
 public enum Role {
-    ADMIN, MEMBER;
+    ADMIN,
+    MEMBER;
 
     public static Role findBy(String role) {
         return Arrays.stream(values()).filter(value -> value.name().equals(role))
