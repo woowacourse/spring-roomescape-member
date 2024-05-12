@@ -76,12 +76,12 @@ public class TokenProvider {
 
     public String extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null) {
-            throw new IllegalArgumentException("쿠키를 찾을 수 없습니다.");
+            throw new CustomException(ExceptionCode.NO_AUTHENTICATION_ACCESS);
         }
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(TOKEN_COOKIE_NAME))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("쿠키를 찾을 수 없습니다."))
+                .orElseThrow(() -> new CustomException(ExceptionCode.NO_AUTHENTICATION_ACCESS))
                 .getValue();
     }
 
