@@ -7,21 +7,21 @@ public class Member {
     private final Password password;
     private final Role role;
 
-    public Member(Long id, MemberName memberName, String email, String password, Role role) {
+    private Member(Long id, MemberName memberName, Email email, Password password, Role role) {
         this.id = id;
         this.memberName = memberName;
-        this.email = new Email(email);
-        this.password = new Password(password);
+        this.email = email;
+        this.password = password;
         this.role = role;
     }
 
     public Member(Long id, String name, String email, String password, Role role) {
-        this(id, new MemberName(name), email, password, role);
+        this(id, new MemberName(name), new Email(email), new Password(password), role);
     }
 
-    public void validatePassword(String rawPassword) {
+    public void validatePassword(String rawPassword, String message) {
         if (!password.match(rawPassword)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(message);
         }
     }
 
