@@ -15,9 +15,7 @@ class JwtTokenProviderTest {
     @DisplayName("이메일로 토큰을 생성한다.")
     @Test
     void createTokenTest() {
-        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
-        jwtTokenProvider.setSecretKey(TEST_SECRET_KEY);
-        jwtTokenProvider.setValidityInMilliseconds(1000);
+        JwtTokenProvider jwtTokenProvider = createJwtTokenProvider(1000);
         String payload = "test@test.com";
 
         String token = jwtTokenProvider.createToken(payload);
@@ -34,9 +32,7 @@ class JwtTokenProviderTest {
     @DisplayName("만료된 토큰의 payload를 추출하면 예외가 발생한다.")
     @Test
     void getPayloadExceptionTest() {
-        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
-        jwtTokenProvider.setSecretKey(TEST_SECRET_KEY);
-        jwtTokenProvider.setValidityInMilliseconds(-1);
+        JwtTokenProvider jwtTokenProvider = createJwtTokenProvider(-1);
         String payload = "test@test.com";
         String expiredToken = jwtTokenProvider.createToken(payload);
 
@@ -44,5 +40,12 @@ class JwtTokenProviderTest {
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(RoomescapeErrorCode.TOKEN_EXPIRED);
+    }
+
+    private JwtTokenProvider createJwtTokenProvider(int validityInMilliseconds) {
+        JwtTokenProperties jwtTokenProperties = new JwtTokenProperties();
+        jwtTokenProperties.setSecretKey(TEST_SECRET_KEY);
+        jwtTokenProperties.setValidityInMilliseconds(validityInMilliseconds);
+        return new JwtTokenProvider(jwtTokenProperties);
     }
 }
