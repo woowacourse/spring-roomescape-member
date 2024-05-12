@@ -49,7 +49,7 @@ public class ReservationDao {
 
     public Optional<Reservation> findById(long id) {
         try {
-            String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+            String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at, "
                     + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
                     + "member.id as member_id, member.member_name, member.email, member.password, member.role "
                     + "FROM reservation as r "
@@ -67,7 +67,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> getAll() {
-        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at, "
                 + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.member_name, member.email, member.password, member.role "
                 + "FROM reservation as r "
@@ -81,7 +81,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByTimeId(final long timeId) {
-        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at, "
                 + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.member_name, member.email, member.password, member.role "
                 + "FROM reservation as r "
@@ -96,7 +96,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByThemeId(final long themeId) {
-        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at, "
                 + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.member_name, member.email, member.password, member.role "
                 + "FROM reservation as r "
@@ -111,7 +111,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
-        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at, "
                 + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.member_name, member.email, member.password, member.role "
                 + "FROM reservation as r "
@@ -128,8 +128,8 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);
     }
 
-    public List<Reservation> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
-        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+    public List<Reservation> findByDateAndThemeId(LocalDate date, long themeId) {
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at, "
                 + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.member_name, member.email, member.password, member.role "
                 + "FROM reservation as r "
@@ -164,7 +164,7 @@ public class ReservationDao {
             final LocalDate start,
             final LocalDate end
     ) {
-        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at as time_value, "
+        String sql = "SELECT r.id as reservation_id, r.date, time.id as time_id, time.start_at, "
                 + "theme.id as theme_id, theme.theme_name, theme.description, theme.thumbnail, "
                 + "member.id as member_id, member.member_name, member.email, member.password, member.role "
                 + "FROM reservation as r "

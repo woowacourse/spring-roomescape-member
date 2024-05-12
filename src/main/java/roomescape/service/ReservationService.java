@@ -72,7 +72,7 @@ public class ReservationService {
     }
 
     private List<Long> findUsedTimeId(LocalDate date, long themeId) {
-        return reservationDao.findTimeIdByDateAndThemeId(date, themeId)
+        return reservationDao.findByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getId)
                 .toList();

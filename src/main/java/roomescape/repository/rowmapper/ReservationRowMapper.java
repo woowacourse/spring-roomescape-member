@@ -32,7 +32,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
     public Reservation mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
             return new Reservation(
-                    resultSet.getLong("reservation_id"),
+                    resultSet.getLong("id"),
                     resultSet.getObject("date", LocalDate.class),
                     reservationTimeRowMapper.mapRow(resultSet, rowNumber),
                     themeRowMapper.mapRow(resultSet, rowNumber),
