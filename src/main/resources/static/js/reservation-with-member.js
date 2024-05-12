@@ -28,11 +28,7 @@ function render(data) {
     const row = tableBody.insertRow();
 
     row.insertCell(0).textContent = item.id;
-    /*
-    TODO: 이후 DB 스키마를 변경하면 수정해야 한다.
     row.insertCell(1).textContent = item.member.name;
-     */
-    row.insertCell(1).textContent = item.name;
     row.insertCell(2).textContent = item.theme.name;
     row.insertCell(3).textContent = item.date;
     row.insertCell(4).textContent = item.time.startAt;
@@ -200,7 +196,17 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/admin/reservations', {
+
+  const queryParams = new URLSearchParams({
+    themeId: themeId,
+    memberId: memberId,
+    dateFrom: dateFrom,
+    dateTo: dateTo
+  });
+
+  const url = `/admin/reservations?${queryParams}`
+
+  fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
