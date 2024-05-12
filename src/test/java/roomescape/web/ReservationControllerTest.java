@@ -147,7 +147,7 @@ class ReservationControllerTest extends ControllerTest {
         doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // when, then
-        mockMvc.perform(get("/admin/reservations?name=피케이&themeId=1&dateFrom=2099-07-01&dateTo=2099-07-01"))
+        mockMvc.perform(get("/admin/reservations?memberId=1&themeId=1&dateFrom=2099-07-01&dateTo=2099-07-01"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.reservations", hasSize(2)));
     }

@@ -90,10 +90,10 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByCondition(String name, Long themeId, String from, String to) {
-        String conditionQuery = " where m.name = ? and tm.id = ? and r.date between ? and ?";
+    public List<Reservation> findByCondition(Long memberId, Long themeId, String from, String to) {
+        String conditionQuery = " where m.id = ? and tm.id = ? and r.date between ? and ?";
         String sql = getBasicSelectQuery() + conditionQuery;
-        return jdbcTemplate.query(sql, rowMapper, name, themeId, from, to);
+        return jdbcTemplate.query(sql, rowMapper, memberId, themeId, from, to);
     }
 
     private String getBasicSelectQuery() {

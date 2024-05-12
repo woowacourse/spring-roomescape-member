@@ -79,8 +79,8 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResponse> findByCondition(String name, Long themeId, String from, String to) {
-        List<Reservation> reservations = reservationRepository.findByCondition(name, themeId, from, to);
+    public List<ReservationResponse> findByCondition(Long memberId, Long themeId, String from, String to) {
+        List<Reservation> reservations = reservationRepository.findByCondition(memberId, themeId, from, to);
 
         return reservations.stream()
                 .map(ReservationResponse::from)

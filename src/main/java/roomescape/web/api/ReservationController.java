@@ -71,12 +71,12 @@ public class ReservationController {
 
     @GetMapping("/admin/reservations")
     public ResponseEntity<ReservationListResponse> findByCondition(
-            @RequestParam(value = "name") String name,
+            @RequestParam(value = "memberId") Long memberId,
             @RequestParam(value = "themeId") Long themeId,
             @RequestParam(value = "dateFrom") String dateFrom,
             @RequestParam(value = "dateTo") String dateTo
     ) {
-        List<ReservationResponse> reservationResponses = reservationService.findByCondition(name, themeId, dateFrom,
+        List<ReservationResponse> reservationResponses = reservationService.findByCondition(memberId, themeId, dateFrom,
                 dateTo);
 
         return ResponseEntity.ok(new ReservationListResponse(reservationResponses));
