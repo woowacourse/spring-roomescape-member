@@ -33,8 +33,9 @@ public class AuthController {
         final Cookie cookie = new Cookie("token", token.assessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setMaxAge(60); //TODO 설정은 했다. 적절한 유통기한은 언제일까?
         response.addCookie(cookie);
-        response.setHeader("Keep-Alive", "timeout=600");
+        response.setHeader("Keep-Alive", "timeout=60");
         return ResponseEntity.ok().body(token);
     }
 
