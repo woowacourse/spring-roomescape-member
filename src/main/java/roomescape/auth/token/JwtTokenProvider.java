@@ -1,4 +1,4 @@
-package roomescape.auth.service;
+package roomescape.auth.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -8,35 +8,32 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import java.util.Date;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import roomescape.auth.domain.AuthInfo;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 
-@ConfigurationProperties(prefix = "jwt")
+@Component
 public class JwtTokenProvider implements TokenProvider {
     private static final String MEMBER_ID_CLAIM = "memberId";
     private static final String MEMBER_ROLE_CLAIM = "memberRole";
 
-    private final String secretKey;
-    private final long validityInMilliseconds;
+    private final TokenProperties tokenProperties;
 
-    public JwtTokenProvider(final String secretKey,
-                            final long validityInMilliseconds) {
-        this.secretKey = secretKey;
-        this.validityInMilliseconds = validityInMilliseconds;
+    public JwtTokenProvider(final TokenProperties tokenProperties) {
+        this.tokenProperties = tokenProperties;
     }
 
     public String createToken(final Member member) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + tokenProperties.getValidityInMilliseconds());
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .claim(MEMBER_ID_CLAIM, member.getName())
                 .claim(MEMBER_ROLE_CLAIM, member.getMemberRole())
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, tokenProperties.getSecretKey())
                 .compact();
     }
 
@@ -50,7 +47,7 @@ public class JwtTokenProvider implements TokenProvider {
 
     private Claims getClaims(final String token) {
         try {
-            return Jwts.parser().setSigningKey(secretKey)
+            return Jwts.parser().setSigningKey(tokenProperties.getSecretKey())
                     .parseClaimsJws(token)
                     .getBody();
         } catch (MalformedJwtException e) {
