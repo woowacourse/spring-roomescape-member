@@ -103,7 +103,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("테마,멤버,날짜 범위에 인정하는 예약을 검색한다.")
+    @DisplayName("테마,멤버,날짜 범위에 맞는 예약을 검색한다.")
     void search_reservation_with_theme_member_and_date() {
         final Long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
                 .getId();

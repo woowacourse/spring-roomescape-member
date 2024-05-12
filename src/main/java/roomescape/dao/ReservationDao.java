@@ -62,7 +62,7 @@ public class ReservationDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, conditionValue));
     }
 
-    public List<Reservation> getMemberReservationWithPeriod(final long memberId, final LocalDate from, final LocalDate to) {
+    public List<Reservation> getThemeAndMemberReservationWithPeriod(final long themeId, final long memberId, final LocalDate from, final LocalDate to) {
         final String sql = """
                 SELECT
                      r.id AS reservation_id,
@@ -83,35 +83,9 @@ public class ReservationDao {
                      INNER JOIN reservation_time AS t ON r.time_id = t.id
                      INNER JOIN theme AS th ON r.theme_id = th.id
                      INNER JOIN member AS m ON r.member_id = m.id
-                WHERE m.id = ? AND r.date BETWEEN ? AND ?;
+                WHERE th.id = ? AND m.id = ? AND r.date BETWEEN ? AND ?;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, memberId, from.toString(), to.toString());
-    }
-
-    public List<Reservation> getThemeReservationWithPeriod(final long themeId, final LocalDate from, final LocalDate to) {
-        final String sql = """
-                SELECT
-                     r.id AS reservation_id,
-                     r.date AS reservation_date,
-                     t.id AS time_id,
-                     t.start_at AS time_value,
-                     th.id AS theme_id,
-                     th.name AS theme_name,
-                     th.description AS theme_description,
-                     th.thumbnail AS theme_thumbnail,
-                     m.id AS member_id,
-                     m.name AS member_name,
-                     m.email AS member_email,
-                     m.password AS member_password,
-                     m.role AS member_role,
-                FROM
-                     reservation AS r
-                     INNER JOIN reservation_time AS t ON r.time_id = t.id
-                     INNER JOIN theme AS th ON r.theme_id = th.id
-                     INNER JOIN member AS m ON r.member_id = m.id
-                WHERE th.id = ? AND r.date BETWEEN ? AND ?;
-                """;
-        return jdbcTemplate.query(sql, rowMapper, themeId, from.toString(), to.toString());
+        return jdbcTemplate.query(sql, rowMapper, themeId, memberId, from.toString(), to.toString());
     }
 
     public List<Reservation> getAll() {

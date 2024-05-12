@@ -1,8 +1,6 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -38,12 +36,9 @@ public class ReservationService {
     }
 
     public List<ReservationOutput> searchReservation(final ReservationSearchInput input) {
-        final List<Reservation> memberReservations = reservationDao.getMemberReservationWithPeriod(input.memberId(), input.fromDate(), input.toDate());
-        final List<Reservation> themeReservations = reservationDao.getThemeReservationWithPeriod(input.themeId(), input.fromDate(), input.toDate());
-        return ReservationOutput.toOutputs(Stream.of(memberReservations, themeReservations)
-                .flatMap(List::stream)
-                .filter(reservation -> reservation.isEqualMember(input.memberId()) && reservation.isEqualTheme(input.themeId()))
-                .collect(Collectors.toSet()));
+        final List<Reservation> themeReservations = reservationDao.getThemeAndMemberReservationWithPeriod(
+                input.themeId(), input.memberId(), input.fromDate(), input.toDate());
+        return ReservationOutput.toOutputs(themeReservations);
     }
 
     public void deleteReservation(final long id) {
