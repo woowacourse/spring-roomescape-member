@@ -1,8 +1,8 @@
 package roomescape.domain.reservation;
 
-public record Name(String name) {
+public record ReservationTitle(String name) {
 
-    public Name {
+    public ReservationTitle {
         validate(name);
     }
 
