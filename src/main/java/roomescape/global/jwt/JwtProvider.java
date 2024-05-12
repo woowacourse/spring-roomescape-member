@@ -9,8 +9,6 @@ import roomescape.global.auth.AuthUser;
 import roomescape.member.domain.Role;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -26,8 +24,7 @@ public class JwtProvider {
     private int expirationSeconds;
 
     public String createAccessToken(AuthUser authUser) {
-        Instant now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant();
-        Instant expiredAt = now.plusSeconds(expirationSeconds);
+        Instant expiredAt = Instant.now().plusSeconds(expirationSeconds);
 
         return Jwts.builder()
                 .subject(String.valueOf(authUser.id()))
