@@ -1,17 +1,14 @@
 package roomescape.controller.api;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.controller.api.dto.request.LoginMemberRequest;
 import roomescape.controller.api.dto.request.MemberLoginRequest;
 import roomescape.controller.api.dto.response.TokenLoginResponse;
 import roomescape.service.MemberService;
 import roomescape.service.dto.output.MemberLoginOutput;
-import roomescape.service.dto.output.TokenLoginOutput;
-
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("/login")
@@ -38,14 +35,7 @@ public class LoginApiController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<TokenLoginResponse> checkLogin(final HttpServletRequest request) {
-        final String token = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName()
-                        .equals("token"))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("토큰이 없습니다"));
-        final TokenLoginOutput output = memberService.loginToken(token);
-        return ResponseEntity.ok(TokenLoginResponse.toResponse(output));
+    public ResponseEntity<TokenLoginResponse> checkLogin(final LoginMemberRequest request) {
+        return ResponseEntity.ok(new TokenLoginResponse(request.name()));
     }
 }
