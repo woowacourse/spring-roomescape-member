@@ -26,7 +26,7 @@ public class JwtTokenProvider implements TokenProvider {
         String secretKey = jwtTokenProperties.getSecretKey();
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
-                .subject(payload)
+                .subject(String.valueOf(payload))
                 .expiration(validity)
                 .signWith(key)
                 .compact();

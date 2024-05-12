@@ -20,7 +20,7 @@ class JwtTokenProviderTest {
     void createTokenTest() {
         JwtTokenProvider jwtTokenProvider = createJwtTokenProvider(1000);
         SecretKey key = Keys.hmacShaKeyFor(TEST_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-        String payload = "test@test.com";
+        String payload = String.valueOf(1L);
 
         String token = jwtTokenProvider.createToken(payload);
 
@@ -38,7 +38,7 @@ class JwtTokenProviderTest {
     @Test
     void getPayloadExceptionTest() {
         JwtTokenProvider jwtTokenProvider = createJwtTokenProvider(-1);
-        String payload = "test@test.com";
+        String payload = String.valueOf(1L);
         String expiredToken = jwtTokenProvider.createToken(payload);
 
         assertThatCode(() -> jwtTokenProvider.getPayload(expiredToken))

@@ -30,19 +30,27 @@ public class AuthService {
         if (!member.matchPassword(tokenRequest.password())) {
             throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "로그인 회원 정보가 일치하지 않습니다.");
         }
-        String accessToken = tokenProvider.createToken(email);
+        String payload = String.valueOf(member.getId());
+        String accessToken = tokenProvider.createToken(payload);
         return new TokenResponse(accessToken);
     }
 
     public MemberResponse findMemberByToken(String token) {
         String payload = tokenProvider.getPayload(token);
-        return MemberResponse.from(getMemberBy(payload));
+        long id = Long.parseLong(payload);
+        return MemberResponse.from(getMemberBy(id));
     }
 
     private Member getMemberBy(String email) {
         return memberQueryRepository.findByEmail(email)
                 .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_MEMBER,
                         String.format("존재하지 않는 회원입니다. 입력한 회원 email:%s", email)));
+    }
+
+    private Member getMemberBy(long id) {
+        return memberQueryRepository.findById(id)
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_MEMBER,
+                        String.format("존재하지 않는 회원입니다. 입력한 회원 id:%d", id)));
     }
 
     public String extractToken(Cookie[] cookies) {
