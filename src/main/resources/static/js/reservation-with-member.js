@@ -141,14 +141,6 @@ function createInput(type) {
   return input;
 }
 
-function createActionButton(label, className, eventListener) {
-  const button = document.createElement('button');
-  button.textContent = label;
-  button.classList.add('btn', className, 'mr-2');
-  button.addEventListener('click', eventListener);
-  return button;
-}
-
 function saveRow(event) {
   // 이벤트 전파를 막는다
   event.stopPropagation();
