@@ -4,8 +4,8 @@ import java.util.Map;
 
 public enum Role {
 
-    USER("user"),
-    ADMIN("admin");
+    USER("USER"),
+    ADMIN("ADMIN");
 
     private static final Map<String, Role> CACHE = Map.of(USER.getRoleName(), USER, ADMIN.getRoleName(), ADMIN);
 
