@@ -28,7 +28,7 @@ public class MemberService {
     }
 
     public List<MemberResponse> readMember() {
-        return memberDao.readMember()
+        return memberDao.readMemberOnlyMember()
                 .stream()
                 .map(MemberResponse::from)
                 .toList();

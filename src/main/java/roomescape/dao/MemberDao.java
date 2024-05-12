@@ -29,9 +29,9 @@ public class MemberDao {
         );
     }
 
-    public List<Member> readMember() {
-        String sql = "SELECT id, name, email, role FROM member";
-        return jdbcTemplate.query(sql, rowMapper);
+    public List<Member> readMemberOnlyMember() {
+        String sql = "SELECT id, name, email, role FROM member WHERE role = ?";
+        return jdbcTemplate.query(sql, rowMapper, "MEMBER");
     }
 
     public Optional<Member> readMemberById(Long id) {
