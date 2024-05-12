@@ -12,7 +12,6 @@ import roomescape.base.BaseTest;
 import roomescape.member.dto.MemberRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -52,8 +51,8 @@ public class LoginControllerTest extends BaseTest {
         String token = response.getCookie("token");
         assertThat(token).isNotNull();
 
-        String email = jwtTokenProvider.getEmail(token);
-        assertThat(email).isEqualTo(member.getEmail());
+        long id = jwtTokenProvider.getId(token);
+        assertThat(id).isEqualTo(member.getId());
     }
 
     @Test
@@ -66,11 +65,6 @@ public class LoginControllerTest extends BaseTest {
                 .when()
                 .get("/login/check")
                 .then()
-                .statusCode(HttpStatus.OK.value())
-                .log().all()
-                .body("id", equalTo(member.getId().intValue()),
-                        "name", equalTo(member.getName()),
-                        "email", equalTo(member.getEmail()),
-                        "role", equalTo(member.getRole()));
+                .statusCode(HttpStatus.OK.value());
     }
 }

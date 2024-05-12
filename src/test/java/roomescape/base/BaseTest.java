@@ -29,7 +29,7 @@ public class BaseTest {
     void setUp() {
         RestAssured.port = port;
 
-        admin = new Member(1L, "한태웅", "taewoong@example.com", "123", Role.ADMIN);
+        admin = new Member(5L, "한태웅", "taewoong@example.com", "123", Role.ADMIN);
         member = new Member(1L, "김철수", "chulsoo@example.com", "123", Role.MEMBER);
 
         adminToken = jwtTokenProvider.createToken(admin);

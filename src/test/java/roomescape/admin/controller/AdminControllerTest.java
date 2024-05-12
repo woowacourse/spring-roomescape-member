@@ -25,15 +25,14 @@ public class AdminControllerTest extends BaseTest {
         AdminReservationRequest adminReservationRequest = new AdminReservationRequest(
                 LocalDate.of(3000, 1, 1), 1L, 1L, 1L);
 
-        RestAssured.given()
+        RestAssured.given().log().all()
                 .cookie("token", adminToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(adminReservationRequest)
                 .when()
                 .post("/admin/reservations")
-                .then()
+                .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
-                .log().all()
                 .body("date", equalTo(DATE),
                         "theme.id", equalTo(1),
                         "time.id", equalTo(1),

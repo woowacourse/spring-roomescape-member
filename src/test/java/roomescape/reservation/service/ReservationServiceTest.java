@@ -55,8 +55,8 @@ public class ReservationServiceTest {
     @Test
     @DisplayName("지난 시간에 대한 예약은 할 수 없다.")
     void validateFutureTimeReservationTest() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.MIN);
-        Reservation reservation = new Reservation(1L, member, LocalDate.of(2024, 5, 11), reservationTime, theme);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(0, 0));
+        Reservation reservation = new Reservation(1L, member, LocalDate.now(), reservationTime, theme);
 
         assertThatThrownBy(() -> reservationService.saveReservation(reservation))
                 .isInstanceOf(InvalidTimeException.class);

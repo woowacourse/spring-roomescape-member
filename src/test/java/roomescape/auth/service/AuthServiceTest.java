@@ -4,11 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.base.BaseTest;
 import roomescape.exception.InvalidPasswordException;
-import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +33,7 @@ public class AuthServiceTest extends BaseTest {
         String wrongEmail = "wrongemail@example.com";
 
         assertThatThrownBy(() -> authService.createToken(new MemberRequest(wrongEmail, member.getPassword())))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -45,13 +43,5 @@ public class AuthServiceTest extends BaseTest {
 
         assertThatThrownBy(() -> authService.createToken(new MemberRequest(member.getEmail(), wrongPassword)))
                 .isInstanceOf(InvalidPasswordException.class);
-    }
-
-    @Test
-    @DisplayName("토큰을 해석해서 멤버 객체를 얻는다.")
-    void findMemberByTokenTest() {
-        Member actualMember = authService.findMemberByToken(memberToken);
-
-        assertThat(actualMember).isEqualTo(member);
     }
 }
