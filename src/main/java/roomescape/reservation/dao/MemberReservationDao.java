@@ -120,6 +120,7 @@ public class MemberReservationDao implements MemberReservationRepository {
             sql += " WHERE " + String.join(" AND ", conditions);
         }
 
+        sql += " ORDER BY r.date, t.start_at;";
         return jdbcTemplate.query(sql, rowMapper, params.toArray());
     }
 
@@ -143,8 +144,7 @@ public class MemberReservationDao implements MemberReservationRepository {
         String sql = "DELETE FROM member_reservation WHERE reservation_id = ?";
         jdbcTemplate.update(sql, reservationId);
     }
-
-
+    
     @Override
     public boolean existBy(LocalDate date, ReservationTime time, Theme theme) {
         String sql = """
