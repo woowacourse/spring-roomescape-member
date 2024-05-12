@@ -2,6 +2,8 @@
 
 ## 웹 어플리케이션 API 명세
 
+---
+
 ### 예약 시간 추가 API
 
 #### Request
@@ -85,7 +87,7 @@ Content-Type: application/json
 }
 ```
 
-### 시간 삭제 API
+### 예약 시간 삭제 API
 
 #### Request
 
@@ -98,6 +100,8 @@ DELETE /times/1 HTTP/1.1
 ```http request
 HTTP/1.1 204
 ```
+
+---
 
 ### 예약 추가 API
 
@@ -175,6 +179,80 @@ Content-Type: application/json
 }
 ```
 
+### 어드민 권한으로 예약 조회 API
+
+#### Request
+
+```http request
+GET /admin/reservations?
+    memberId=1&
+    themeId=1&
+    dateFrom=2024-04-29&
+    dateTo=2024-04-29 HTTP/1.1
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+```
+
+#### Response
+
+HTTP/1.1 200
+Content-Type: application/json
+
+```http request
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+  "reservations": [
+    {
+      "id": 1,
+      "name": "피케이",
+      "date": "2024-04-29",
+      "startAt": "10:00",
+      "name": "세렌디피티: 뜻밖의 행운",
+    }
+  ]
+}
+```
+
+### 어드민 권한으로 예약 추가 API
+
+#### Request
+
+```http request
+POST /admin/reservations
+Content-Type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+
+{
+    "memberId": 1,
+    "date": "2024-04-29",
+    "timeId": 1,
+    "themeId": 1
+}
+```
+
+#### Response
+
+HTTP/1.1 200
+Content-Type: application/json
+
+```http request
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+  "reservations": [
+    {
+      "id": 1,
+      "name": "피케이",
+      "date": "2024-04-29",
+      "startAt": "10:00",
+      "name": "세렌디피티: 뜻밖의 행운",
+    }
+  ]
+}
+```
+
 ### 예약 삭제 API
 
 #### Request
@@ -188,6 +266,8 @@ DELETE /reservations/1 HTTP/1.1
 ```http request
 HTTP/1.1 204
 ```
+
+---
 
 ### 테마 추가 API
 
@@ -292,6 +372,8 @@ DELETE /themes/1 HTTP/1.1
 HTTP/1.1 204
 ```
 
+---
+
 ### 사용자 로그인 API
 
 #### Request
@@ -328,13 +410,40 @@ cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvb
 
 ```http request
 HTTP/1.1 200
-Connection: keep-alive
 Content-Type: application/json
-Date: Sun, 03 Mar 2024 19:16:56 GMT
 Keep-Alive: timeout=60
-Transfer-Encoding: chunked
 
 {
     "name": "어드민"
+}
+```
+
+---
+
+### 사용자 조회 API
+
+#### Request
+
+```http request
+GET /members HTTP/1.1
+```
+
+#### Response
+
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+  "members": [
+    {
+      "id": 1,
+      "name": "피케이"
+    },
+    {
+      "id": 2,
+      "name": "망쵸"
+    }
+  ]
 }
 ```
