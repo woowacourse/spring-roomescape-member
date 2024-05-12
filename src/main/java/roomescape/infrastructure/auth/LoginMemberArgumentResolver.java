@@ -8,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.application.AuthService;
-import roomescape.application.TokenManager;
 import roomescape.application.dto.LoginMember;
 import roomescape.application.dto.MemberResponse;
 import roomescape.exception.RoomescapeErrorCode;
@@ -17,11 +16,9 @@ import roomescape.exception.RoomescapeException;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthService authService;
-    private final TokenManager tokenManager;
 
-    public LoginMemberArgumentResolver(AuthService authService, TokenManager tokenManager) {
+    public LoginMemberArgumentResolver(AuthService authService) {
         this.authService = authService;
-        this.tokenManager = tokenManager;
     }
 
     @Override
@@ -35,8 +32,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         if (request == null) {
             throw new RoomescapeException(RoomescapeErrorCode.UNAUTHORIZED);
         }
-        String token = tokenManager.extractToken(request.getCookies());
+        String token = authService.extractToken(request.getCookies());
         MemberResponse response = authService.findMemberByToken(token);
         return new LoginMember(response.id(), response.name(), response.email(), response.role().name());
     }
+
 }
