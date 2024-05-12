@@ -3,6 +3,7 @@ package roomescape.auth.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,10 @@ import roomescape.auth.service.AuthService;
 import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.exception.UnauthorizedException;
+import roomescape.member.service.MemberResponse;
+import roomescape.member.service.dto.SignUpRequest;
 
+import java.net.URI;
 import java.util.Arrays;
 
 @RestController
@@ -23,6 +27,12 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<Void> register(@RequestBody @Valid SignUpRequest signUpRequest) {
+        MemberResponse memberResponse = authService.create(signUpRequest);
+        return ResponseEntity.created(URI.create("/members/" + memberResponse.id())).build();
     }
 
     @PostMapping("/login")

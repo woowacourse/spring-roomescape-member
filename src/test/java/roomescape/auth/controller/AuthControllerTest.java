@@ -31,7 +31,7 @@ class AuthControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
-                .when().post("/members")
+                .when().post("/signup")
                 .then().log().all();
 
         //when&then
@@ -50,7 +50,7 @@ class AuthControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
-                .when().post("/members")
+                .when().post("/signup")
                 .then().log().all();
 
         //when&then
@@ -68,7 +68,7 @@ class AuthControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
-                .when().post("/members")
+                .when().post("/signup")
                 .then().log().all();
 
         String token = RestAssured.given().log().all()
@@ -83,5 +83,16 @@ class AuthControllerTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .assertThat().statusCode(200).body("name", is("lini"));
+    }
+
+    @DisplayName("회원가입 성공 테스트")
+    @Test
+    void signUp() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
+                .when().post("/signup")
+                .then().log().all()
+                .assertThat().statusCode(201);
     }
 }

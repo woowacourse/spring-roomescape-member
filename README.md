@@ -97,6 +97,12 @@
       }
   ]
   ```
+
+### 조건별 예약 조회 - 어드민
+- http method: GET
+- uri: /reservations
+- response
+
 ### 예약 추가 - 어드민
 - http method: POST
 - uri: /reservations

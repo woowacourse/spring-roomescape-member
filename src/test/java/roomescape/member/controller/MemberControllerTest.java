@@ -35,16 +35,4 @@ class MemberControllerTest {
                 .then().log().all()
                 .assertThat().statusCode(200).body("size()", is(3));
     }
-
-
-    @DisplayName("회원가입 성공 테스트")
-    @Test
-    void signUp() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new SignUpRequest("lini", "lini@email.com", "lini123"))
-                .when().post("/members")
-                .then().log().all()
-                .assertThat().statusCode(201);
-    }
 }

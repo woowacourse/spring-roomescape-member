@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.service.dto.LoginCheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.LoginResponse;
+import roomescape.exception.InvalidMemberException;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.service.MemberResponse;
+import roomescape.member.service.dto.SignUpRequest;
 
 @Service
 public class AuthService {
@@ -37,5 +41,17 @@ public class AuthService {
         String email = tokenProvider.extractMemberEmail(token);
         Member member = memberRepository.getByEmail(email);
         return new LoginCheckResponse(member);
+    }
+
+    public MemberResponse create(SignUpRequest signUpRequest) {
+        validateEmail(signUpRequest.email());
+        Member member = memberRepository.save(new Member(signUpRequest.name(), signUpRequest.email(), signUpRequest.password(), Role.GUEST));
+        return new MemberResponse(member);
+    }
+
+    private void validateEmail(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new InvalidMemberException("이미 가입된 이메일입니다.");
+        }
     }
 }

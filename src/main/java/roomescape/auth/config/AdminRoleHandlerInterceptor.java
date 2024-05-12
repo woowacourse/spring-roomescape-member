@@ -13,12 +13,12 @@ import roomescape.member.domain.Role;
 import java.util.Arrays;
 
 @Component
-public class RoleHandlerInterceptor implements HandlerInterceptor {
+public class AdminRoleHandlerInterceptor implements HandlerInterceptor {
     private static final String KEY = "token";
 
     private final TokenProvider tokenProvider;
 
-    public RoleHandlerInterceptor(TokenProvider tokenProvider) {
+    public AdminRoleHandlerInterceptor(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
@@ -27,7 +27,7 @@ public class RoleHandlerInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
         String role = tokenProvider.extractMemberRole(token);
-        if (!role.equals(Role.ADMIN.name())) {
+        if(!Role.valueOf(role).isAdmin()){
             throw new ForbiddenException("권한이 없는 접근입니다.");
         }
         return true;

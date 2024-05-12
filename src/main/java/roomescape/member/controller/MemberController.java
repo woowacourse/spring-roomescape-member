@@ -23,10 +23,4 @@ public class MemberController {
     public List<MemberResponse> findAllMembers() {
         return memberService.findAll();
     }
-
-    @PostMapping
-    public ResponseEntity<Void> register(@RequestBody @Valid SignUpRequest signUpRequest) {
-        MemberResponse memberResponse = memberService.create(signUpRequest);
-        return ResponseEntity.created(URI.create("/members/" + memberResponse.id())).build();
-    }
 }
