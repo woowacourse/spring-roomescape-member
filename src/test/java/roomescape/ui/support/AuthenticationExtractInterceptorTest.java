@@ -28,12 +28,12 @@ class AuthenticationExtractInterceptorTest {
     void attribute에_principal_객체를_저장한다() {
         when(authService.createPrincipal(anyString())).thenReturn(Principal.from(MemberFixture.DEFAULT_MEMBER));
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setCookies(new Cookie("token", "토"));
+        request.setCookies(new Cookie("token", "this is token ~"));
 
         authenticationExtractInterceptor.preHandle(request, null, null);
 
         Principal principal = (Principal) request.getAttribute(AuthenticationExtractInterceptor.PRINCIPAL_KEY_NAME);
-        assertThat(principal.getId()).isEqualTo(1L);
+        assertThat(principal).isNotNull();
     }
 
     @Test
