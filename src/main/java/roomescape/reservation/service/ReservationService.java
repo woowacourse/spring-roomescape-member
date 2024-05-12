@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dto.ReservationFilterRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginMember;
@@ -38,12 +39,14 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findReservationsBy(Long themeId, Long memberId, LocalDate dateFrom,
-                                                        LocalDate dateTo) {
+    public List<ReservationResponse> findReservationsBy(ReservationFilterRequest reservationFilterRequest) {
+        LocalDate dateFrom = reservationFilterRequest.dateFrom();
+        LocalDate dateTo = reservationFilterRequest.dateTo();
         if (dateFrom != null && dateTo != null) {
             validateDate(dateFrom, dateTo);
         }
-        return reservationRepository.findBy(themeId, memberId, dateFrom, dateTo).stream()
+        return reservationRepository.findBy(reservationFilterRequest.themeId(), reservationFilterRequest.themeId(),
+                        dateFrom, dateTo).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

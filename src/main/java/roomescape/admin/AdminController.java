@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import roomescape.dto.ReservationFilterRequest;
 import roomescape.reservation.dto.ReservationAdminRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -40,12 +41,8 @@ public class AdminController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> reservationByFilter(
-            @RequestParam(value = "themeId", required = false) Long themeId,
-            @RequestParam(value = "memberId", required = false) Long memberId,
-            @RequestParam(value = "dateFrom", required = false) LocalDate dateFrom,
-            @RequestParam(value = "dateTo", required = false) LocalDate dateTo) {
-        return ResponseEntity.ok(reservationService.findReservationsBy(themeId, memberId, dateFrom, dateTo));
+    public ResponseEntity<List<ReservationResponse>> reservationByFilter(ReservationFilterRequest reservationFilterRequest) {
+        return ResponseEntity.ok(reservationService.findReservationsBy(reservationFilterRequest));
     }
 
     @PostMapping("/reservations")

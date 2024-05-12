@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.dto.ReservationFilterRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
@@ -86,10 +87,11 @@ class ReservationServiceTest {
 
         reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+        ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(theme.getId(), member.getId(),
+                LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
 
         //when
-        List<ReservationResponse> reservations = reservationService.findReservationsBy(theme.getId(), member.getId(),
-                LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
+        List<ReservationResponse> reservations = reservationService.findReservationsBy(reservationFilterRequest);
 
         //then
         assertAll(
@@ -108,10 +110,11 @@ class ReservationServiceTest {
 
         reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+        ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(theme.getId(), member.getId(),
+                LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
 
         //when
-        List<ReservationResponse> reservations = reservationService.findReservationsBy(theme.getId(), member.getId(),
-                LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
+        List<ReservationResponse> reservations = reservationService.findReservationsBy(reservationFilterRequest);
 
         //when & then
         assertAll(
@@ -130,9 +133,10 @@ class ReservationServiceTest {
 
         reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+        ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(null, null, null, null);
 
         //when
-        List<ReservationResponse> reservations = reservationService.findReservationsBy(null, null, null, null);
+        List<ReservationResponse> reservations = reservationService.findReservationsBy(reservationFilterRequest);
 
         //then
         assertAll(
@@ -151,10 +155,11 @@ class ReservationServiceTest {
 
         reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+        ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(theme.getId(), member.getId(),
+                LocalDate.parse("2025-01-01"), LocalDate.parse("2024-12-31"));
 
         //when & then
-        assertThatThrownBy(() -> reservationService.findReservationsBy(theme.getId(), member.getId(),
-                LocalDate.parse("2025-01-01"), LocalDate.parse("2024-12-31")))
+        assertThatThrownBy(() -> reservationService.findReservationsBy(reservationFilterRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
