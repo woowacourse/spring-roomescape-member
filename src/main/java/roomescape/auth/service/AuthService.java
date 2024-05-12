@@ -11,6 +11,7 @@ import roomescape.globar.infra.JwtTokenProvider;
 @Service
 public class AuthService {
 
+  public static final String ADMIN_ROLE_NAME = "ADMIN";
   private final MemberRepository memberRepository;
   private final JwtTokenProvider jwtTokenProvider;
 
@@ -40,9 +41,5 @@ public class AuthService {
   public Member findMemberByEmail(String email) {
     return memberRepository.findByEmail(email).orElseThrow(
         () -> new NoSuchElementException("주어진 이메일로 가입한 멤버가 없습니다. (email : " + email + ")"));
-  }
-
-  public boolean checkAdminPermission(String token) {
-    return false;
   }
 }

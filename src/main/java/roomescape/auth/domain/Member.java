@@ -31,6 +31,10 @@ public class Member {
     return new Member(id, new Name(name), email, password, new Role(role));
   }
 
+  public boolean isAdmin() {
+    return role.isAdmin();
+  }
+
   public Long getId() {
     return id;
   }

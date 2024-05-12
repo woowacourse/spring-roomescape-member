@@ -57,14 +57,14 @@ class AuthServiceIntegrationTest {
         .hasMessage("주어진 이메일로 가입한 멤버가 없습니다. (email : " + email + ")");
   }
 
-  @DisplayName("주어진 토큰으로 어드민 권한을 확인한다.")
-  @Test
-  void checkAdminPermission() {
-    // given
-    String token = jwtTokenProvider.createToken("neo@example.com", "네오");
-    // when 
-    boolean isAdmin = authService.checkAdminPermission(token);
-    //then
-    assertThat(isAdmin).isTrue();
-  }
+//  @DisplayName("주어진 토큰으로 어드민 권한을 확인한다.")
+//  @Test
+//  void checkAdminPermission() {
+//    // given
+//    String token = jwtTokenProvider.createToken("neo@example.com", "네오");
+//    // when
+//    boolean isAdmin = authService.checkAdminPermission(token);
+//    //then
+//    assertThat(isAdmin).isTrue();
+//  }
 }
