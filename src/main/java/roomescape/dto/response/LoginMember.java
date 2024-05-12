@@ -12,4 +12,8 @@ public record LoginMember(
     public Member toMember() {
         return new Member(id, email, null, name, role);
     }
+
+    public boolean isNotAdmin() {
+        return role != Role.ADMIN;
+    }
 }

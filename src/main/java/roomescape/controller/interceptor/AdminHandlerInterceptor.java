@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.Role;
 import roomescape.dto.request.LoginMemberRequest;
 import roomescape.dto.response.LoginMember;
 import roomescape.exception.AuthenticationException;
@@ -40,7 +39,7 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
 
         LoginMember loginMember = authService.getLoginMember(new LoginMemberRequest(token));
 
-        if (loginMember.role() != Role.ADMIN) {
+        if (loginMember.isNotAdmin()) {
             throw new ForbiddenException("관리자 전용 입니다.");
         }
 
