@@ -10,6 +10,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.global.exception.ApplicationException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
 
@@ -30,13 +31,16 @@ class ReservationServiceSpringBootTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @Test
     @DisplayName("동일한 날짜와 시간과 테마에 예약을 생성하면 예외가 발생한다")
     void duplicateTimeReservationAddFail() {
         // given
         Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
+        Member member = memberRepository.save(new Member("ddang", "user", "ddang@google.com", "password"));
 
         // when & then
         reservationService.createReservation(
@@ -53,7 +57,7 @@ class ReservationServiceSpringBootTest {
         // given
         Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
+        Member member = memberRepository.save(new Member("ddang", "user", "ddang@google.com", "password"));
         LocalDate beforeDate = LocalDate.now().minusDays(1L);
 
         // when & then
@@ -70,7 +74,7 @@ class ReservationServiceSpringBootTest {
         LocalTime beforeTime = requestTime.minusMinutes(1L);
         Time time = timeRepository.save(new Time(beforeTime));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
+        Member member = memberRepository.save(new Member("ddang", "user", "ddang@google.com", "password"));
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(

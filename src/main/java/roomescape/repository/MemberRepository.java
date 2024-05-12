@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class MemberRepository {
@@ -47,6 +48,14 @@ public class MemberRepository {
                 """;
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, email, password);
+    }
+
+    public List<Member> findAll() {
+        String sql = """
+                SELECT * FROM member m 
+                """;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Member save(Member requestMember) {
