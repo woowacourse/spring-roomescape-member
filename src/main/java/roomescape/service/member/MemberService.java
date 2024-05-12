@@ -21,13 +21,13 @@ public class MemberService {
         return memberDao.findAll();
     }
 
-    public MemberInfo signup(SignupRequest signupRequest) {
+    public MemberInfo insertMember(SignupRequest signupRequest) {
         if (memberDao.isEmailExist(signupRequest.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
         Member member = new Member(null, signupRequest.name(), signupRequest.email(), signupRequest.password(),
                 Role.USER);
 
-        return memberDao.addMember(member);
+        return memberDao.insert(member);
     }
 }

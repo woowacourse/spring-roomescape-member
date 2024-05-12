@@ -32,7 +32,7 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<MemberInfo> createMember(@RequestBody @Valid SignupRequest signupRequest) {
-        MemberInfo member = memberService.signup(signupRequest);
+        MemberInfo member = memberService.insertMember(signupRequest);
 
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }

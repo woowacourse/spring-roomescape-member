@@ -31,7 +31,7 @@ public class MemberDao {
         return jdbcTemplate.query(findAllSql, memberInfoRowMapper());
     }
 
-    public MemberInfo addMember(Member member) {
+    public MemberInfo insert(Member member) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
@@ -69,17 +69,17 @@ public class MemberDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, email, password);
     }
 
-    public RowMapper<MemberInfo> memberInfoRowMapper() {
+    public Boolean isEmailExist(String email) {
+        String sql = "SELECT EXISTS(SELECT * FROM member WHERE email = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    private RowMapper<MemberInfo> memberInfoRowMapper() {
         return (rs, rowNum) -> new MemberInfo(
                 rs.getLong("id"),
                 rs.getString("name"),
                 Role.of(rs.getString("role"))
         );
-    }
-
-    public Boolean isEmailExist(String email) {
-        String sql = "SELECT EXISTS(SELECT * FROM member WHERE email = ?)";
-
-        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
     }
 }
