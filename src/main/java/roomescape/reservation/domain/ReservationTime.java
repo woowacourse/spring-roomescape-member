@@ -4,7 +4,6 @@ import roomescape.exception.InvalidReservationException;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.Objects;
 
 public class ReservationTime {
     private final static long NO_ID = 0;
