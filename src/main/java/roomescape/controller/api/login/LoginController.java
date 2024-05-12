@@ -15,15 +15,18 @@ import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
 import roomescape.service.AuthService;
+import roomescape.service.CookieService;
 import roomescape.service.MemberService;
 
 @RestController
 public class LoginController {
 
+    private final CookieService cookieService;
     private final AuthService authService;
     private final MemberService memberService;
 
-    public LoginController(AuthService authService, MemberService memberService) {
+    public LoginController(CookieService cookieService, AuthService authService, MemberService memberService) {
+        this.cookieService = cookieService;
         this.authService = authService;
         this.memberService = memberService;
     }
@@ -31,7 +34,9 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         MemberResponse memberResponse = memberService.login(loginRequest);
-        Cookie cookie = makeCookie(memberResponse);
+        TokenRequest tokenRequest = new TokenRequest(memberResponse.email(), memberResponse.name());
+        TokenResponse tokenResponse = authService.createToken(tokenRequest);
+        Cookie cookie = cookieService.makeCookie(tokenResponse.token());
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
@@ -44,19 +49,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        Cookie cookie = cookieService.makeExpireCookie();
         response.addCookie(cookie);
-    }
-
-    private Cookie makeCookie(MemberResponse memberResponse) {
-        TokenRequest tokenRequest = new TokenRequest(memberResponse.email(), memberResponse.name());
-        TokenResponse tokenResponse = authService.createToken(tokenRequest);
-        Cookie cookie = new Cookie("token", tokenResponse.token());
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        return cookie;
     }
 }

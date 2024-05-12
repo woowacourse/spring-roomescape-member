@@ -43,6 +43,6 @@ public class AdminReservationController {
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo
     ) {
-        return reservationService.findReservationsByCondition(memberId, themeId, dateFrom, dateTo);
+        return reservationService.findReservations(memberId, themeId, dateFrom, dateTo);
     }
 }

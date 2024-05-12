@@ -65,7 +65,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findReservationsByCondition(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<ReservationResponse> findReservations(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
         return reservationRepository.findByCondition(memberId, themeId, dateFrom, dateTo)
                 .stream()
                 .map(ReservationResponse::from)

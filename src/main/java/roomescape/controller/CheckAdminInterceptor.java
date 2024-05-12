@@ -10,34 +10,26 @@ import roomescape.dto.response.AuthResponse;
 import roomescape.dto.response.MemberResponse;
 import roomescape.exception.InvalidAccessException;
 import roomescape.service.AuthService;
+import roomescape.service.CookieService;
 import roomescape.service.MemberService;
-
-import java.util.Arrays;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
-    // TODO CookieService 추가
+    private final CookieService cookieService;
     private final AuthService authService;
     private final MemberService memberService;
 
-    public CheckAdminInterceptor(AuthService authService, MemberService memberService) {
+    public CheckAdminInterceptor(CookieService cookieService, AuthService authService, MemberService memberService) {
+        this.cookieService = cookieService;
         this.authService = authService;
         this.memberService = memberService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            throw new InvalidAccessException("관리자 페이지에 접근할 권한이 없습니다.");
-        }
-        Cookie findCookie = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
-                .findAny()
+        Cookie findCookie = cookieService.findCookie(request)
                 .orElseThrow(() -> new InvalidAccessException("관리자 페이지에 접근할 권한이 없습니다."));
-
         validateAdmin(findCookie);
         return true;
     }
