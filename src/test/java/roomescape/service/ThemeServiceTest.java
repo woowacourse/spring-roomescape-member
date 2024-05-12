@@ -21,9 +21,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.ExistsException;
-import roomescape.exception.InvalidInputException;
-import roomescape.exception.NotExistsException;
+import roomescape.exception.CustomBadRequest;
 import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
@@ -68,7 +66,7 @@ class ThemeServiceTest {
     @Test
     void throw_exception_when_input_is_invalid() {
         assertThatThrownBy(() -> themeService.createTheme(ThemeFixture.getInput("")))
-                .isInstanceOf(InvalidInputException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("모든 요소를 받아온다.")
@@ -86,7 +84,7 @@ class ThemeServiceTest {
     @Test
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> themeService.deleteTheme(-1))
-                .isInstanceOf(NotExistsException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("특정 테마에 대한 예약이 존재하면 예외를 발생한다.")
@@ -98,7 +96,7 @@ class ThemeServiceTest {
         reservationDao.create(ReservationFixture.getDomain(member, time, theme));
 
         assertThatThrownBy(() -> themeService.deleteTheme(theme.id()))
-                .isInstanceOf(ExistsException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("예약이 많은 테마 순으로 조회한다.")

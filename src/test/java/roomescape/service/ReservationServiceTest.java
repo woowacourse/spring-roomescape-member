@@ -16,8 +16,8 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
-import roomescape.exception.CustomException2;
-import roomescape.exception.NotExistsException;
+import roomescape.exception.CustomBadRequest;
+import roomescape.exception.CustomException;
 import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
@@ -68,7 +68,7 @@ class ReservationServiceTest {
     @Test
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> reservationService.deleteReservation(-1))
-                .isInstanceOf(NotExistsException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("중복 예약이면 예외를 발생한다.")
@@ -81,7 +81,7 @@ class ReservationServiceTest {
 
         final ReservationInput input = ReservationFixture.getInput(time.id(), theme.id(), member.id());
         assertThatThrownBy(() -> reservationService.createReservation(input))
-                .isInstanceOf(CustomException2.class);
+                .isInstanceOf(CustomException.class);
     }
 
     @DisplayName("지나간 날짜와 시간으로 예약 생성 시 예외가 발생한다.")
@@ -93,7 +93,7 @@ class ReservationServiceTest {
 
         final ReservationInput input = ReservationInput.of("2024-01-01", timeId, themeId, memberId);
         assertThatThrownBy(() -> reservationService.createReservation(input))
-                .isInstanceOf(CustomException2.class);
+                .isInstanceOf(CustomException.class);
     }
 
     @DisplayName("dateFrom이 없고 dateTo가 없는 경우 전체 날짜를 조회한다.")

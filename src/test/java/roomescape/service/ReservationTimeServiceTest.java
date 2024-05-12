@@ -18,9 +18,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.ExistsException;
-import roomescape.exception.InvalidInputException;
-import roomescape.exception.NotExistsException;
+import roomescape.exception.CustomBadRequest;
 import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ReservationTimeFixture;
@@ -70,14 +68,14 @@ class ReservationTimeServiceTest {
         final ReservationTimeInput input = new ReservationTimeInput("");
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(input))
-                .isInstanceOf(InvalidInputException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("존재하지 않는 시간 ID 를 삭제하려 하면 에외가 발생한다.")
     @Test
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(-1))
-                .isInstanceOf(NotExistsException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("예약이 존재하는 시간을 삭제하려 하면 예외가 발생한다.")
@@ -89,7 +87,7 @@ class ReservationTimeServiceTest {
         reservationDao.create(ReservationFixture.getDomain(member, time, theme));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(time.id()))
-                .isInstanceOf(ExistsException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("중복 예약 시간이면 예외를 발생한다.")
@@ -98,7 +96,7 @@ class ReservationTimeServiceTest {
         reservationTimeDao.create(ReservationTimeFixture.getDomain());
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(ReservationTimeFixture.getInput()))
-                .isInstanceOf(ExistsException.class);
+                .isInstanceOf(CustomBadRequest.class);
     }
 
     @DisplayName("예약 가능한 시간을 조회한다.")

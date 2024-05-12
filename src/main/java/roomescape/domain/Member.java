@@ -14,20 +14,8 @@ public record Member(Long id, Name name, Email email, Password password, Role ro
         return new Member(id, member.name, member.email, member.password, member.role);
     }
 
-    public static Member of(final Long id, final String name, final String role) {
-        return Member.of(id, name, null, null, role);
-    }
-
-    public static Member of(final String email, final String password) {
-        return Member.of(null, null, email, password, null);
-    }
-
     public String nameAsString() {
         return name.value();
-    }
-
-    public String roleAsString() {
-        return role.name();
     }
 
     public String emailAsString() {
@@ -36,5 +24,9 @@ public record Member(Long id, Name name, Email email, Password password, Role ro
 
     public String passwordAsString() {
         return password.value();
+    }
+
+    public String roleAsString() {
+        return role.name();
     }
 }

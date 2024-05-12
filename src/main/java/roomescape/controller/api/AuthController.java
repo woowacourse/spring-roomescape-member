@@ -29,7 +29,7 @@ public class AuthController {
 
     @PostMapping
     public ResponseEntity<Void> loginMember(@RequestBody final MemberLoginRequest request) {
-        final var output = memberService.findMember(request.toInput());
+        final var output = memberService.getMember(request.toInput());
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookieProvider.create(MemberResponse.from(output)))
                 .build();

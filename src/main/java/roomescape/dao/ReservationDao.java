@@ -1,8 +1,10 @@
 package roomescape.dao;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Repository;
 import roomescape.dao.mapper.ReservationRowMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
-import roomescape.exception.CustomException2;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.exception.CustomBadRequest;
 
 @Repository
 public class ReservationDao {
@@ -39,7 +43,7 @@ public class ReservationDao {
             final var id = jdbcInsert.executeAndReturnKey(params).longValue();
             return Reservation.of(id, reservation);
         } catch (final DuplicateKeyException error) {
-            throw new CustomException2("중복 예약은 불가능합니다.");
+            throw new CustomBadRequest("중복 예약은 불가능합니다.");
         }
     }
 
@@ -48,19 +52,19 @@ public class ReservationDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date.asString(), timeId));
     }
 
-    public boolean isExistByTimeId(final long timeId) {
-        return isExistByCondition("time_id", timeId);
+    public boolean exists(final ReservationTime time) {
+        return existsByCondition("time_id", time.id());
     }
 
-    public boolean isExistByThemeId(final long themeId) {
-        return isExistByCondition("theme_id", themeId);
+    public boolean exists(final Theme theme) {
+        return existsByCondition("theme_id", theme.id());
     }
 
-    public boolean isExistById(final long id) {
-        return isExistByCondition("id", id);
+    public boolean existsById(final long id) {
+        return existsByCondition("id", id);
     }
 
-    private boolean isExistByCondition(final String conditionColumn, final Object conditionValue) {
+    private boolean existsByCondition(final String conditionColumn, final Object conditionValue) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE " + conditionColumn + " = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, conditionValue));
     }
@@ -90,6 +94,36 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public Optional<Reservation> findById(final long reservationId) {
+        final String sql = """
+                            SELECT
+                            r.id AS reservation_id,
+                            r.date,
+                            t.id AS time_id,
+                            t.start_at,
+                            th.id AS theme_id,
+                            th.name AS theme_name,
+                            th.description AS theme_description,
+                            th.thumbnail AS theme_thumbnail,
+                            m.id AS member_id,
+                            m.name AS member_name,
+                            m.role AS member_role
+                            FROM reservation AS r
+                            INNER JOIN reservation_time AS t 
+                            ON r.time_id = t.id 
+                            INNER JOIN theme AS th 
+                            ON r.theme_id = th.id 
+                            INNER JOIN member AS m
+                            ON r.member_id = m.id
+                            WHERE r.id = ?;
+                            """;
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, reservationId));
+        } catch (final EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public void delete(final long id) {
         final String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
@@ -99,7 +133,6 @@ public class ReservationDao {
                                     final Long memberId,
                                     final String dateFrom,
                                     final String dateTo) {
-        System.out.println(themeId + ", " + memberId + ", " + dateFrom + ", " + dateTo);
         final var sql = """
                         SELECT 
                         r.id AS reservation_id,
@@ -112,6 +145,8 @@ public class ReservationDao {
                         th.thumbnail AS theme_thumbnail,
                         m.id AS member_id,
                         m.name AS member_name,
+                        m.email AS member_email,
+                        m.password AS member_password,
                         m.role AS member_role
                         FROM reservation AS r
                         INNER JOIN reservation_time AS t 

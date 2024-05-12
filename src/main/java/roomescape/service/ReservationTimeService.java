@@ -2,12 +2,10 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ExistsException;
-import roomescape.exception.NotExistsException;
+import roomescape.repository.ReservationRepository;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.AvailableReservationTimeOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
@@ -15,22 +13,19 @@ import roomescape.service.dto.output.ReservationTimeOutput;
 @Service
 public class ReservationTimeService {
 
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeDao reservationTimeDao;
-    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(final ReservationTimeDao reservationTimeDao, final ReservationDao reservationDao) {
+    public ReservationTimeService(final ReservationRepository reservationRepository,
+                                  final ReservationTimeDao reservationTimeDao) {
+        this.reservationRepository = reservationRepository;
         this.reservationTimeDao = reservationTimeDao;
-        this.reservationDao = reservationDao;
     }
 
     public ReservationTimeOutput createReservationTime(final ReservationTimeInput input) {
-        final ReservationTime reservationTime = input.toReservationTime();
-
-        if (reservationTimeDao.isExistByStartAt(reservationTime.getStartAtAsString())) {
-            throw ExistsException.of(String.format("startAt 이 %s 인 reservationTime", reservationTime.getStartAtAsString()));
-        }
-
-        final ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
+        final var reservationTime = input.toReservationTime();
+        reservationRepository.checkReservationTimeNotExists(reservationTime);
+        final var savedReservationTime = reservationTimeDao.create(reservationTime);
         return ReservationTimeOutput.from(savedReservationTime);
     }
 
@@ -44,13 +39,8 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(final long id) {
-        final ReservationTime reservationTime = reservationTimeDao.findById(id)
-                .orElseThrow(() -> NotExistsException.of("reservationTimeId", id));
-
-        if (reservationDao.isExistByTimeId(id)) {
-            throw ExistsException.of(String.format("reservationTimeId 가 %d 인 reservation", id));
-        }
-
-        reservationTimeDao.delete(reservationTime.id());
+        final var time = reservationRepository.getReservationTimeById(id);
+        reservationRepository.checkReservationNotExists(time);
+        reservationTimeDao.delete(id);
     }
 }

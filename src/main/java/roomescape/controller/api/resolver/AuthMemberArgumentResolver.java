@@ -35,7 +35,7 @@ public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver
         final var request = (HttpServletRequest) webRequest.getNativeRequest();
         final var authMember = cookieProvider.extractToken(request);
         try {
-            memberService.findMember(authMember.id());
+            memberService.getMember(authMember.id());
             return authMember;
         } catch (final CustomBadRequest e) {
             throw new CustomUnauthorized("멤버가 아닙니다.");

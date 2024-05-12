@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.CustomBadRequest;
 
 public record Theme(Long id, String name, String description, Thumbnail thumbnail) {
 
@@ -19,10 +19,10 @@ public record Theme(Long id, String name, String description, Thumbnail thumbnai
 
     private void validateNull(final String name, final String description) {
         if (name.isBlank()) {
-            throw InvalidInputException.of("name", name);
+            throw new CustomBadRequest(String.format("name(%s)이 유효하지 않습니다.", name));
         }
         if (description.isBlank()) {
-            throw InvalidInputException.of("description", description);
+            throw new CustomBadRequest(String.format("description(%s)이 유효하지 않습니다.", description));
         }
     }
 

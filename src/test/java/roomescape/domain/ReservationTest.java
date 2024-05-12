@@ -60,6 +60,4 @@ public class ReservationTest {
         final var result = reservation.isBefore(LocalDate.parse("2024-04-02"), LocalTime.parse("10:00"));
         assertThat(result).isTrue();
     }
-
-    //TODO: 거짓 반환 케이스
 }

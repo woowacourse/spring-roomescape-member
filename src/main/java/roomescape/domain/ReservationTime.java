@@ -3,7 +3,7 @@ package roomescape.domain;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.CustomBadRequest;
 
 public record ReservationTime(Long id, LocalTime startAt) {
 
@@ -11,7 +11,7 @@ public record ReservationTime(Long id, LocalTime startAt) {
         try {
             return new ReservationTime(id, LocalTime.parse(startAt));
         } catch (final DateTimeException exception) {
-            throw InvalidInputException.of("startAt", startAt);
+            throw new CustomBadRequest(String.format("startAt(%s)이 유효하지 않습니다.", startAt));
         }
     }
 
