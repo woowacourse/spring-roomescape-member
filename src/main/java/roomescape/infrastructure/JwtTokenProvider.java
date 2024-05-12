@@ -43,7 +43,7 @@ public class JwtTokenProvider {
                 return cookie.getValue();
             }
         }
-        return "";
+        throw new IllegalArgumentException("토큰이 존재하지 않습니다");
     }
 
     public String getRoleByCookie(Cookie[] cookies) {
@@ -61,5 +61,18 @@ public class JwtTokenProvider {
             return false;
         }
         return true;
+    }
+
+    public void validateToken(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        Date expiration = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+
+        if (expiration.before(new Date())) {
+            throw new IllegalArgumentException("유효기간이 만료된 토큰입니다");
+        }
     }
 }
