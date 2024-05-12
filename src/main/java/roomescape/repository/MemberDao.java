@@ -34,4 +34,14 @@ public class MemberDao {
             return Optional.empty();
         }
     }
+
+    public Optional<Member> findById(long id) {
+        String query = "SELECT * FROM MEMBER WHERE id = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(query, rowMapper, id);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
