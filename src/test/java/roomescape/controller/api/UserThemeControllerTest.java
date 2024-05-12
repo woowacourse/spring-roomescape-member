@@ -35,7 +35,7 @@ class UserThemeControllerTest {
     @Test
     void findPopular() {
         RestAssured.given().log().all()
-            .when().get("/themes/popular")
+            .when().get("/themes/trending")
             .then().log().all()
             .statusCode(200)
             .body("id", contains(1, 3, 2));

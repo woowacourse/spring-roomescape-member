@@ -32,7 +32,7 @@ public class UserThemeController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/popular")
+    @GetMapping("/trending")
     public ResponseEntity<List<FindThemeResponse>> findPopular() {
         List<FindThemeResponse> response = themeService.findPopular()
             .stream()
