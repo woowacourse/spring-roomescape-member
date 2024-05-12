@@ -24,11 +24,9 @@ public class TokenProvider {
     }
 
     public String createToken(String subject) {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + expirationMilliseconds);
+        Date expiration = new Date(System.currentTimeMillis() + expirationMilliseconds);
         return Jwts.builder()
                 .subject(subject)
-                .issuedAt(now)
                 .expiration(expiration)
                 .signWith(key)
                 .compact();
