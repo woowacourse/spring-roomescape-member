@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,8 +20,21 @@ import roomescape.service.auth.UnauthorizedException;
 
 class JwtAuthServiceTest {
 
-    private final MemberRepository repository = Mockito.mock(MemberRepository.class);
-    private final AuthService authService = new JwtAuthService(repository);
+    private final MemberRepository repository;
+    private final AuthService authService;
+
+    public JwtAuthServiceTest() {
+        this.repository = Mockito.mock(MemberRepository.class);
+        this.authService = new JwtAuthService(repository, getProperties());
+    }
+
+    private JwtProperties getProperties() {
+        JwtProperties properties = Mockito.mock(JwtProperties.class);
+        when(properties.secretKey())
+                .thenReturn(UUID.randomUUID().toString());
+
+        return properties;
+    }
 
     @Test
     @DisplayName("존재하지 않는 사용자에게 토큰을 발급할 수 없다.")
@@ -53,7 +67,7 @@ class JwtAuthServiceTest {
     }
 
     @Test
-    @DisplayName("토큰이 실패하면, 인가를 할 수 없다.")
+    @DisplayName("토큰 파싱이 실패하면, 인가를 할 수 없다.")
     void cantAuthorized() {
         assertThatThrownBy(() -> authService.authorize("invalid-token"))
                 .isInstanceOf(UnauthorizedException.class)
