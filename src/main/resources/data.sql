@@ -16,6 +16,5 @@ values ('09:00'),
 
 insert into member(member_name, email, password, role)
 values ('coli1', 'kkwoo001021@naver.com', 'rlarjsdn1021!', 'USER'),
-       ('coli2', 'kkwoo1021@hanmail.net', 'rlarjsdn1021!', 'ADMIN'),
-       ('coli3', 'kkwoo1021@naver.com1', 'rlarjsdn1021!', 'ADMIN'),
-       ('coli4', 'kkwoo1021@naver.com2', 'rlarjsdn1021!', 'USER');
+       ('coli2', 'kkwoo1021@hanmail.net', 'rlarjsdn1021!', 'ADMIN');
+
