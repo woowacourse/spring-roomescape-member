@@ -5,13 +5,13 @@ import roomescape.global.exception.model.ValidateException;
 
 public class Member {
     private Long id;
-    private Name name;
+    private MemberName name;
     private Email email;
     private Password password;
     private Role role;
 
     public Member(final String name, final String email, final String password, final Role role) {
-        this(null, new Name(name), new Email(email), new Password(password), role);
+        this(null, new MemberName(name), new Email(email), new Password(password), role);
     }
 
     public Member(final Long id, final Member member) {
@@ -19,10 +19,10 @@ public class Member {
     }
 
     public Member(final Long id, final String name, final String email, final String password, final Role role) {
-        this(id, new Name(name), new Email(email), new Password(password), role);
+        this(id, new MemberName(name), new Email(email), new Password(password), role);
     }
 
-    public Member(final Long id, final Name name, final Email email, final Password password, final Role role) {
+    public Member(final Long id, final MemberName name, final Email email, final Password password, final Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -61,5 +61,16 @@ public class Member {
 
     public boolean isRole(final Role role) {
         return this.role == role;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name=" + name +
+                ", email=" + email +
+                ", password=" + password +
+                ", role=" + role +
+                '}';
     }
 }

@@ -6,10 +6,10 @@ import roomescape.global.exception.model.ValidateException;
 
 import java.util.Objects;
 
-public class Name {
+public class MemberName {
     private final String value;
 
-    public Name(final String value) {
+    public MemberName(final String value) {
         this.value = value;
 
         validateBlank();
@@ -19,14 +19,14 @@ public class Name {
     private void validateBlank() {
         if (StringUtils.isBlank(value)) {
             throw new ValidateException(ErrorType.REQUEST_DATA_BLANK,
-                    String.format("회원(Member)의 이름(Name)에 유효하지 않은 값(null OR 공백)이 입력되었습니다. [value: %s]", this));
+                    String.format("회원 이름(MemberName)에 유효하지 않은 값(null OR 공백)이 입력되었습니다. [value: %s]", this));
         }
     }
 
     private void validateName() {
         if (value.length() < 1 || value.length() > 10) {
             throw new ValidateException(ErrorType.INVALID_MEMBER_NAME,
-                    String.format("회원(Member)의 이름은 1자 이상 10자 이하여야 합니다. [name: %s]", value));
+                    String.format("회원 이름(MemberName)은 1자 이상 10자 이하여야 합니다. [name: %s]", value));
         }
     }
 
@@ -38,7 +38,7 @@ public class Name {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Name name = (Name) o;
+        MemberName name = (MemberName) o;
         return Objects.equals(value, name.value);
     }
 
