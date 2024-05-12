@@ -27,13 +27,13 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> getAll() {
-        return ResponseEntity.ok(reservationService.getAll());
+    public ResponseEntity<List<Reservation>> findAll() {
+        return ResponseEntity.ok(reservationService.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> create(@RequestBody ReservationRequest request) {
-        Reservation createdReservation = reservationService.create(request);
+    public ResponseEntity<Reservation> createByAdmin(@RequestBody ReservationRequest request) {
+        Reservation createdReservation = reservationService.createByAdmin(request);
         return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 
