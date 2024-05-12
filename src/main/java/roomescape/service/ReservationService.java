@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
@@ -9,6 +10,7 @@ import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.global.exception.ApplicationException;
 import roomescape.global.exception.ExceptionType;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
@@ -26,13 +28,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              TimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
+                              ThemeRepository themeRepository, MemberRepository memberRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -58,16 +62,17 @@ public class ReservationService {
         return response;
     }
 
-    public ReservationResponse createReservation(String memberName, ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(ReservationRequest reservationRequest, Long memberId) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
         Theme theme = themeRepository.findById(reservationRequest.themeId());
+        Member member = memberRepository.findById(memberId);
 
         validateDateAndTime(requestDate, today, time);
         validateReservationDuplicate(reservationRequest, theme);
 
-        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(memberName, time, theme));
+        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time, theme, member));
 
         return ReservationResponse.from(savedReservation);
     }

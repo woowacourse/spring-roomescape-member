@@ -1,17 +1,12 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
@@ -19,6 +14,13 @@ import roomescape.dto.time.TimeRequest;
 import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TimeServiceMockTest {
@@ -51,7 +53,8 @@ class TimeServiceMockTest {
         // given
         Time time = new Time(1L, LocalTime.now());
         Theme theme = new Theme(1L, "테마명", "설명", "썸네일URL");
-        Reservation reservation = new Reservation("예약", LocalDate.now().plusDays(1L), time, theme);
+        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
+        Reservation reservation = new Reservation(LocalDate.now().plusDays(1L), time, theme, member);
 
         when(reservationRepository.findByTimeId(time.getId())).thenReturn(List.of(reservation));
 

@@ -6,11 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.global.exception.ApplicationException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
@@ -38,22 +40,26 @@ class ReservationServiceMockTest {
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private MemberRepository memberRepository;
+
     @Test
     @DisplayName("동일한 날짜와 시간과 테마에 예약을 생성하면 예외가 발생한다")
     void duplicateTimeReservationAddFail() {
         // given
         Time time = new Time(1L, LocalTime.of(12, 30));
         Theme theme = new Theme(1L, "테마명", "설명", "썸네일URL");
+        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
 
         when(timeRepository.findById(any())).thenReturn(time);
         when(themeRepository.findById(any())).thenReturn(theme);
+        when(memberRepository.findById(any())).thenReturn(member);
         when(reservationRepository.findByTimeIdAndDateThemeId(any(), any(), any()))
-                .thenReturn(List.of(new Reservation("sdf", LocalDate.now(), time, theme)));
+                .thenReturn(List.of(new Reservation(LocalDate.now(), time, theme, member)));
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                "예약",
-                new ReservationRequest(LocalDate.now().plusDays(1L), 1L, 1L))
+                new ReservationRequest(LocalDate.now().plusDays(1L), 1L, 1L), 1L)
         ).isInstanceOf(ApplicationException.class);
     }
 
@@ -63,12 +69,12 @@ class ReservationServiceMockTest {
         // given
         Time time = new Time(1L, LocalTime.of(12, 30));
         Theme theme = new Theme(1L, "테마명", "설명", "썸네일URL");
+        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
         LocalDate beforeDate = LocalDate.now().minusDays(1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                "예약",
-                new ReservationRequest(beforeDate, time.getId(), theme.getId()))
+                new ReservationRequest(beforeDate, time.getId(), theme.getId()), member.getId())
         ).isInstanceOf(ApplicationException.class);
     }
 
@@ -81,14 +87,15 @@ class ReservationServiceMockTest {
 
         Time time = new Time(1L, beforeTime);
         Theme theme = new Theme(1L, "테마명", "설명", "썸네일URL");
+        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
 
         when(timeRepository.findById(any())).thenReturn(time);
         when(themeRepository.findById(any())).thenReturn(theme);
+        when(memberRepository.findById(any())).thenReturn(member);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                "예약",
-                new ReservationRequest(LocalDate.now(), time.getId(), theme.getId()))
+                new ReservationRequest(LocalDate.now(), time.getId(), theme.getId()), member.getId())
         ).isInstanceOf(ApplicationException.class);
     }
 }

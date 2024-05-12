@@ -1,11 +1,5 @@
 package roomescape.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +9,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -26,6 +28,7 @@ public class ReservationRepositoryTest {
     private ReservationRepository reservationRepository;
     private TimeRepository timeRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -38,6 +41,7 @@ public class ReservationRepositoryTest {
         this.reservationRepository = new ReservationRepository(jdbcTemplate, dataSource);
         this.timeRepository = new TimeRepository(jdbcTemplate, dataSource);
         this.themeRepository = new ThemeRepository(jdbcTemplate, dataSource);
+        this.memberRepository = new MemberRepository(jdbcTemplate, dataSource);
     }
 
     @Test
@@ -46,11 +50,13 @@ public class ReservationRepositoryTest {
         // given
         Time time = timeRepository.save(new Time(LocalTime.of(17, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberRepository.save(new Member("ddang", "user", "ddang@google.com", "password"));
+
         reservationRepository.save(new Reservation(
-                "브라운",
                 LocalDate.of(2024, 4, 25),
                 time,
-                theme
+                theme,
+                member
         ));
 
         // when
@@ -67,13 +73,14 @@ public class ReservationRepositoryTest {
         // given
         Time time = timeRepository.save(new Time(LocalTime.of(17, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberRepository.save(new Member("ddang", "user", "ddang@google.com", "password"));
 
         // when
         reservationRepository.save(new Reservation(
-                "브라운",
                 LocalDate.of(2024, 4, 25),
                 time,
-                theme
+                theme,
+                member
         ));
         int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
 
@@ -87,13 +94,14 @@ public class ReservationRepositoryTest {
         // given
         Time time = timeRepository.save(new Time(LocalTime.of(17, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberRepository.save(new Member("ddang", "user", "ddang@google.com", "password"));
 
         // when
         Reservation savedReservation = reservationRepository.save(new Reservation(
-                "브라운",
                 LocalDate.of(2024, 4, 25),
                 time,
-                theme
+                theme,
+                member
         ));
         int deleteCount = reservationRepository.delete(savedReservation.getId());
 
@@ -107,11 +115,13 @@ public class ReservationRepositoryTest {
         // given
         Time time = timeRepository.save(new Time(LocalTime.of(17, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = memberRepository.save(new Member("ddang", "user", "ddang@google.com", "password"));
+
         Reservation savedReservation = reservationRepository.save(new Reservation(
-                "브라운",
                 LocalDate.of(2024, 4, 25),
                 time,
-                theme
+                theme,
+                member
         ));
 
         // when

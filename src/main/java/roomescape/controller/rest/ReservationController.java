@@ -50,8 +50,7 @@ public class ReservationController {
             @RequestBody @Valid ReservationRequest reservationRequest,
             @AuthInfo LoginMember loginMember
     ) {
-        String memberName = loginMember.name();
-        ReservationResponse reservationResponse = reservationService.createReservation(memberName, reservationRequest);
+        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest, loginMember.id());
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);

@@ -2,8 +2,13 @@ package roomescape.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
+
+import javax.sql.DataSource;
 
 @Repository
 public class MemberRepository {
@@ -17,9 +22,13 @@ public class MemberRepository {
     );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    public MemberRepository(JdbcTemplate jdbcTemplate) {
+    public MemberRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Member findById(Long id) {
@@ -38,5 +47,22 @@ public class MemberRepository {
                 """;
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, email, password);
+    }
+
+    public Member save(Member requestMember) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", requestMember.getName())
+                .addValue("role", requestMember.getRole())
+                .addValue("email", requestMember.getEmail())
+                .addValue("password", requestMember.getPassword());
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new Member(
+                id,
+                requestMember.getName(),
+                requestMember.getRole(),
+                requestMember.getEmail(),
+                requestMember.getPassword()
+        );
     }
 }
