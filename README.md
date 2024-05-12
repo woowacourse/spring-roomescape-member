@@ -100,8 +100,38 @@
 
 ### 조건별 예약 조회 - 어드민
 - http method: GET
-- uri: /reservations
+- uri: /reservations/search?memberId=1&themeId=1&dateFrom=2024-11-11&dateTo=2024-11-12
+  - memberId: 필수 아님
+  - themeId: 필수 아님
+  - dateFrom: 필수 아님
+  - dateTo: 필수 아님
 - response
+  ```
+  HTTP/1.1 200 
+  Content-Type: application/json
+  
+  [
+      {
+          "id": 1,
+          "date": "2023-01-01",
+          "time": {
+            "id": 1.
+            "startAt": "10:00"
+          },
+          "theme": {
+            "id": 1,
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+          },
+          "member": {
+            "id": 1,
+            "name": "lini",
+            "email": "lini@email.com"
+          }
+      }
+  ]
+  ```
 
 ### 예약 추가 - 어드민
 - http method: POST
@@ -430,6 +460,7 @@
       "message": "해당 테마로 예약이 존재해서 삭제할 수 없습니다."
     }
     ```
+    
 ### 사용자 회원가입
 - http method: POST
 - uri: /members
@@ -568,6 +599,14 @@
     }
   ]
   ```
+  - 사용자는 권한 없음
+    ```
+      HTTP/1.1 403
+
+      {
+      "message": "권한이 없는 접근입니다."
+      }
+    ```
 
 ## 기능 명세서
 
