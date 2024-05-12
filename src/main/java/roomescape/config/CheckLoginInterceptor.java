@@ -9,8 +9,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthenticationException;
 import roomescape.infrastructure.AuthenticationExtractor;
 import roomescape.service.AuthService;
+import roomescape.service.dto.LoginMember;
 
 public class CheckLoginInterceptor implements HandlerInterceptor {
+
+    public static final String LOGIN_MEMBER_REQUEST = "loginMember";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -25,11 +28,13 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
-        logger.trace("request = {}", request.getRequestURI());
+        logger.trace("login request = {}", request.getRequestURI());
 
         try {
             String token = authenticationExtractor.extract(request, authService.getTokenName());
-            authService.validateToken(token);
+            LoginMember member = authService.findMemberByToken(token);
+
+            request.setAttribute(LOGIN_MEMBER_REQUEST, member);
         } catch (AuthenticationException e) {
             response.sendRedirect("/login");
             return false;

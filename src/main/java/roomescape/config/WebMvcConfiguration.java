@@ -31,17 +31,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addInterceptor(new CheckLoginInterceptor(authService, authenticationExtractor))
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/", "/error", "/login/**", "/signup",
+                .excludePathPatterns("/", "/error", "/login", "/signup",
                         "/members", "/themes/popular",
                         "/css/**", "/*.ico", "/js/**", "/image/**");
 
-        registry.addInterceptor(new CheckAdminInterceptor(authService, authenticationExtractor))
+        registry.addInterceptor(new CheckAdminInterceptor())
                 .order(2)
                 .addPathPatterns("/admin/**");
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationPrincipalArgumentResolver(authService, authenticationExtractor));
+        resolvers.add(new AuthenticationPrincipalArgumentResolver());
     }
 }

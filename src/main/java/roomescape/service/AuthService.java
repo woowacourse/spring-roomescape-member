@@ -32,6 +32,10 @@ public class AuthService {
         return jwtTokenProvider.createToken(payload);
     }
 
+    public String getTokenName() {
+        return TOKEN_NAME;
+    }
+
     public LoginMember findMemberByToken(String token) {
         validateToken(token);
         Map<String, Object> payload = jwtTokenProvider.getPayload(token);
@@ -43,13 +47,9 @@ public class AuthService {
         );
     }
 
-    public void validateToken(String token) {
+    private void validateToken(String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             throw new AuthenticationException();
         }
-    }
-
-    public String getTokenName() {
-        return TOKEN_NAME;
     }
 }
