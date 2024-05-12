@@ -44,12 +44,21 @@ public class JwtTokenProvider {
 
     public String getTokenSubject(String token) {
         validateEmptyToken(token);
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public String getTokenRole(String token) {
         validateEmptyToken(token);
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(ROLE).toString();
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .get(ROLE)
+                .toString();
     }
 
     private void validateEmptyToken(String token) {
