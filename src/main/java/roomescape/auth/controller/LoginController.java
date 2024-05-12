@@ -3,14 +3,13 @@ package roomescape.auth.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.service.AuthService;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
 
-@Controller
+@RestController
 @RequestMapping("/login")
 public class LoginController {
     private final AuthService authService;
@@ -19,13 +18,7 @@ public class LoginController {
         this.authService = authService;
     }
 
-    @GetMapping
-    public String login() {
-        return "/login";
-    }
-
     @PostMapping
-    @ResponseBody
     public ResponseEntity<Void> tokenLogin(HttpServletResponse response, @RequestBody MemberRequest memberRequest) {
         String accessToken = authService.createToken(memberRequest);
 
@@ -38,7 +31,6 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    @ResponseBody
     public ResponseEntity<MemberResponse> checkLogin(Member member) {
         MemberResponse memberResponse = new MemberResponse(member);
 
