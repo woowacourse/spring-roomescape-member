@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberReservationRequest;
 import roomescape.dto.MemberResponse;
@@ -77,12 +78,73 @@ public class ReservationEndPointTest {
                 .isEqualTo(expected);
     }
 
+    @DisplayName("예약 목록에서 검색하면 상태 코드 200과 예약 목록을 응답으로 반환한다.")
+    @Test
+    void getFilterReservations() {
+        LocalDate dateFrom = LocalDate.now().minusDays(2);
+        LocalDate dateTo = LocalDate.now().plusDays(1);
+        String path = String.format(
+                "/reservations/filter?memberId=2&themeId=2&dateFrom=%s&dateTo=%s",
+                dateFrom, dateTo
+        );
+        List<ReservationResponse> responses = RestAssured.given().log().all()
+                .when().get(path)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath()
+                .getList(".", ReservationResponse.class);
+
+        List<ReservationResponse> expected = List.of(new ReservationResponse(
+                1L,
+                new MemberResponse(2L, "멤버2"),
+                LocalDate.now().minusDays(1),
+                new ReservationTimeResponse(2L, LocalTime.parse("11:00:00")),
+                new ThemeResponse(2L, "이름2", "설명2", "썸네일2")
+        ));
+
+        assertThat(responses)
+                .isEqualTo(expected);
+    }
+
     @DisplayName("예약을 추가하면 상태 코드 201와 추가된 객체를 반환한다.")
     @Test
     void addReservation() {
         LocalDate date = LocalDate.now().plusDays(1);
         MemberReservationRequest request = new MemberReservationRequest(
                 date,
+                2L,
+                2L
+        );
+        ReservationResponse expected = new ReservationResponse(
+                2L,
+                new MemberResponse(2L, "멤버2"),
+                date,
+                new ReservationTimeResponse(2L, LocalTime.parse("11:00:00")),
+                new ThemeResponse(2L, "이름2", "설명2", "썸네일2")
+        );
+
+        ReservationResponse response = RestAssured.given().log().all()
+                .cookies(cookies)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(ReservationResponse.class);
+
+        assertThat(response)
+                .isEqualTo(expected);
+    }
+
+    @DisplayName("관리자가 예약을 추가하면 상태 코드 201와 추가된 객체를 반환한다.")
+    @Test
+    void addAdminReservation() {
+        LocalDate date = LocalDate.now().plusDays(1);
+        AdminReservationRequest request = new AdminReservationRequest(
+                date,
+                2L,
                 2L,
                 2L
         );
