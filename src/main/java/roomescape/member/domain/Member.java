@@ -38,6 +38,14 @@ public class Member {
         }
     }
 
+    public boolean isAdmin() {
+        return role.equals(MemberRole.ADMIN);
+    }
+
+    public boolean hasCredential(String credential) {
+        return password.equals(credential);
+    }
+
     public Long getId() {
         return id;
     }
@@ -69,9 +77,5 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public boolean isAdmin() {
-        return role.equals(MemberRole.ADMIN);
     }
 }
