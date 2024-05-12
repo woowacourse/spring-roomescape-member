@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.config.util.CookieExtractor;
+import roomescape.config.util.CookieManager;
 import roomescape.service.AuthService;
 import roomescape.service.exception.AuthorizationException;
 
@@ -23,7 +23,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         if (request.getCookies() == null) {
             throw new AuthorizationException("사용자 정보를 조회할 수 없습니다.");
         }
-        String token = CookieExtractor.extractTokenFromCookie(request.getCookies());
+        String token = CookieManager.extractTokenFromCookie(request.getCookies());
         if (authService.isAdminByToken(token)) {
             return true;
         }
