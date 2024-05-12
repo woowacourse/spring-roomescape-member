@@ -66,6 +66,7 @@ class AdminAuthenticationInterceptorTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
     private Cookies makeAdminCookie() {
         LoginRequest request = new LoginRequest("admin@abc.com", "1234");
 
