@@ -118,4 +118,17 @@ class AuthServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorType.DUPLICATED_EMAIL_ERROR.getMessage());
     }
+
+    @DisplayName("존재하지 않는 사용자 정보 조회에 실패한다.")
+    @Test
+    void unauthorizedMember() {
+        //given
+        String invalidEmail = "invalidEmail@invalid.com";
+        String accessToken = tokenProvider.createAccessToken(invalidEmail);
+
+        //when & then
+        assertThatThrownBy(() -> authService.fetchByToken(accessToken))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.TOKEN_PAYLOAD_EXTRACTION_FAILURE.getMessage());
+    }
 }

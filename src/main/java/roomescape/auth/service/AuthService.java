@@ -35,7 +35,7 @@ public class AuthService {
 
     public AuthInfo fetchByToken(String token) {
         Member member = memberRepository.findBy(tokenProvider.getPayload(token).getValue())
-                .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorType.TOKEN_PAYLOAD_EXTRACTION_FAILURE));
         return AuthInfo.of(member);
     }
 
