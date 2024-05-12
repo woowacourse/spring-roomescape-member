@@ -6,7 +6,7 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import roomescape.dto.auth.MemberLoginResponse;
+import roomescape.dto.MemberResponse;
 
 public class MemberAcceptanceTest extends ApiAcceptanceTest {
 
@@ -15,14 +15,14 @@ public class MemberAcceptanceTest extends ApiAcceptanceTest {
     void tokenLoginAndFindMemberInfo() {
         final String accessToken = getAccessToken("nyangin@email.com");
 
-        final MemberLoginResponse response = RestAssured
+        final MemberResponse response = RestAssured
                 .given().log().all()
                 .cookie("token", accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
-                .extract().as(MemberLoginResponse.class);
+                .extract().as(MemberResponse.class);
 
         assertThat(response.name()).isEqualTo("냥인");
     }

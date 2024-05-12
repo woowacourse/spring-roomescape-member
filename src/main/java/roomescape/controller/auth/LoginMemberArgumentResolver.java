@@ -6,7 +6,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.auth.MemberLoginResponse;
+import roomescape.dto.MemberResponse;
+import roomescape.dto.auth.LoginMember;
 import roomescape.service.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -21,16 +22,18 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.getParameterType().equals(MemberLoginResponse.class);
+        return parameter.getParameterType().equals(LoginMember.class)
+                && parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
     }
 
     @Override
-    public MemberLoginResponse resolveArgument(final MethodParameter parameter,
+    public LoginMember resolveArgument(final MethodParameter parameter,
                                   final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest,
                                   final WebDataBinderFactory binderFactory) throws Exception {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String accessToken = authorizationExtractor.extractToken(request);
-        return memberService.findMemberByToken(accessToken);
+        final MemberResponse memberResponse = memberService.findMemberByToken(accessToken);
+        return new LoginMember(memberResponse.id(), memberResponse.name(), memberResponse.email(), memberResponse.role());
     }
 }

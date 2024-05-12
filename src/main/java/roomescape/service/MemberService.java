@@ -3,14 +3,12 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
-import roomescape.dto.auth.MemberLoginResponse;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
 import roomescape.auth.JwtTokenProvider;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class MemberService {
@@ -39,10 +37,9 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getNameString(), member.getEmail(), member.getRole());
     }
 
-    public MemberLoginResponse findMemberByToken(final String accessToken) {
+    public MemberResponse findMemberByToken(final String accessToken) {
         final Long memberId = jwtTokenProvider.getMemberIdByToken(accessToken);
-        final MemberResponse memberResponse = findById(memberId);
-        return new MemberLoginResponse(memberResponse.id(), memberResponse.name(), memberResponse.email(), memberResponse.role());
+        return findById(memberId);
     }
 
     public List<MemberResponse> findAll() {

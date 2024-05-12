@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.auth.MemberLoginResponse;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
 import roomescape.service.MemberService;
@@ -37,11 +37,10 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberLoginResponse> findMemberInfo(final HttpServletRequest request) {
+    public ResponseEntity<MemberResponse> findMemberInfo(final HttpServletRequest request) {
         final String accessToken = authorizationExtractor.extractToken(request);
-
-        final MemberLoginResponse memberLoginResponse = memberService.findMemberByToken(accessToken);
-        return ResponseEntity.ok(memberLoginResponse);
+        final MemberResponse memberResponse = memberService.findMemberByToken(accessToken);
+        return ResponseEntity.ok(memberResponse);
     }
 
     @PostMapping("/logout")

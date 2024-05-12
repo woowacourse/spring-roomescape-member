@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.auth.AuthenticationPrincipal;
 import roomescape.domain.reservation.Reservation;
-import roomescape.dto.auth.MemberLoginResponse;
+import roomescape.dto.auth.LoginMember;
 import roomescape.dto.reservation.MemberReservationSaveRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.dto.reservation.ReservationResponse;
@@ -47,9 +47,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @AuthenticationPrincipal MemberLoginResponse loginResponse,
+            @AuthenticationPrincipal final LoginMember loginMember,
             @RequestBody final MemberReservationSaveRequest request) {
-        final MemberResponse memberResponse = memberService.findById(loginResponse.id());
+        final MemberResponse memberResponse = memberService.findById(loginMember.id());
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
         final ThemeResponse themeResponse = themeService.findById(request.themeId());
 

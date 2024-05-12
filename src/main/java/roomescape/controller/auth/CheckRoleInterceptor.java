@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Role;
-import roomescape.dto.auth.MemberLoginResponse;
+import roomescape.dto.MemberResponse;
 import roomescape.service.MemberService;
 
 @Component
@@ -23,9 +23,9 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
         final String accessToken = authorizationExtractor.extractToken(request);
-        final MemberLoginResponse memberLoginResponse = memberService.findMemberByToken(accessToken);
+        final MemberResponse memberResponse = memberService.findMemberByToken(accessToken);
 
-        if (!memberLoginResponse.role().equals(Role.ADMIN)) {
+        if (memberResponse.role() != Role.ADMIN) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return false;
         }
