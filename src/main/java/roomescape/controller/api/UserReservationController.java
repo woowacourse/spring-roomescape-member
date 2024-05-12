@@ -30,11 +30,11 @@ public class UserReservationController {
         @AuthenticationPrincipal LoginMember member) {
 
         Reservation reservation = reservationService.save(new SaveReservationDto(
-            member.id(), request.date(), request.timeId(), request.themeId()));
+            member.getId(), request.date(), request.timeId(), request.themeId()));
 
         CreateReservationResponse response = new CreateReservationResponse(
             reservation.getId(),
-            reservation.getLoginMember().name(),
+            reservation.getLoginMember().getName(),
             reservation.getDate(),
             reservation.getTime().getStartAt(),
             reservation.getTheme().getName());

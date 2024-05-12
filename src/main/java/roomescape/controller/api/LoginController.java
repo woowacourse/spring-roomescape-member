@@ -41,9 +41,9 @@ public class LoginController {
 
     @GetMapping("/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(@AuthenticationPrincipal LoginMember member) {
-        if (member == null || member.id() == null) {
+        if (member == null || member.getId() == null) {
             throw new AuthorizationException("로그인되어 있지 않습니다.");
         }
-        return ResponseEntity.ok(new LoginCheckResponse(member.name(), member.role().toString()));
+        return ResponseEntity.ok(new LoginCheckResponse(member.getName(), member.getRole()));
     }
 }

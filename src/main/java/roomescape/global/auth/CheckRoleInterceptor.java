@@ -1,7 +1,5 @@
 package roomescape.global.auth;
 
-import static roomescape.domain.member.Role.ADMIN;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +28,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
             throw new AuthorizationException("잘못된 접근입니다.");
         }
         LoginMember member = jwtTokenProvider.parse(token);
-        if (member.role() != ADMIN) {
+        if (!member.isAdmin()) {
             throw new AuthorizationException("잘못된 접근입니다.");
         }
         return true;

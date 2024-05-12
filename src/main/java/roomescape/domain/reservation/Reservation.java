@@ -30,7 +30,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return loginMember.name();
+        return loginMember.getName();
     }
 
     public LocalDate getDate() {

@@ -41,7 +41,7 @@ public class AdminReservationController {
 
         CreateReservationResponse response = new CreateReservationResponse(
             id,
-            newReservation.getLoginMember().name(),
+            newReservation.getLoginMember().getName(),
             newReservation.getDate(),
             newReservation.getTime().getStartAt(),
             newReservation.getTheme().getName()
@@ -63,7 +63,7 @@ public class AdminReservationController {
         List<FindReservationResponse> createReservationResponse = reservations.stream().
             map(reservation -> new FindReservationResponse(
                 reservation.getId(),
-                reservation.getLoginMember().name(),
+                reservation.getLoginMember().getName(),
                 reservation.getDate(),
                 reservation.getTime().getStartAt(),
                 reservation.getTheme().getName()
@@ -83,7 +83,7 @@ public class AdminReservationController {
         List<FindReservationResponse> response = reservations.stream().
             map(reservation -> new FindReservationResponse(
                 reservation.getId(),
-                reservation.getLoginMember().name(),
+                reservation.getLoginMember().getName(),
                 reservation.getDate(),
                 reservation.getTime().getStartAt(),
                 reservation.getTheme().getName()

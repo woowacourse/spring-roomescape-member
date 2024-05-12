@@ -53,7 +53,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> saveSource = Map.ofEntries(
-            Map.entry("member_id", reservation.getLoginMember().id()),
+            Map.entry("member_id", reservation.getLoginMember().getId()),
             Map.entry("date", reservation.getDate()),
             Map.entry("time_id", reservation.getTime().getId()),
             Map.entry("theme_id", reservation.getTheme().getId())
