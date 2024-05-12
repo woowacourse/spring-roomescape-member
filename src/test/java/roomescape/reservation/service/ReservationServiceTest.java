@@ -17,6 +17,7 @@ import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
 import roomescape.reservation.service.dto.AdminReservationRequest;
+import roomescape.reservation.service.dto.ReservationFindRequest;
 import roomescape.reservation.service.dto.ReservationResponse;
 
 import java.time.LocalDate;
@@ -84,6 +85,37 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(1);
     }
 
+    @DisplayName("사용자 조건으로 예약 내역을 조회한다.")
+    @Test
+    void findByMember() {
+        //given
+        Reservation reservation = new Reservation(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme);
+        reservationRepository.save(reservation);
+        ReservationFindRequest reservationFindRequest = new ReservationFindRequest(member.getId(), null, null, null);
+
+        //when
+        List<ReservationResponse> reservations = reservationService.findByCondition(reservationFindRequest);
+
+        //then
+        assertThat(reservations).hasSize(1);
+    }
+
+    @DisplayName("사용자와 테마 조건으로 예약 내역을 조회한다.")
+    @Test
+    void findByMemberAndTheme() {
+        //given
+        Reservation reservation = new Reservation(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme);
+        reservationRepository.save(reservation);
+        long notMemberthemeId = theme.getId() + 1;
+        ReservationFindRequest reservationFindRequest = new ReservationFindRequest(member.getId(), notMemberthemeId, null, null);
+
+        //when
+        List<ReservationResponse> reservations = reservationService.findByCondition(reservationFindRequest);
+
+        //then
+        assertThat(reservations).hasSize(0);
+    }
+
     @DisplayName("id로 예약을 삭제한다.")
     @Test
     void deleteById() {
@@ -131,7 +163,6 @@ class ReservationServiceTest {
     @Test
     void cannotCreateByUnknownTheme() {
         //given
-        String name = "lini";
         String date = "2024-10-04";
         AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, member.getId(), reservationTime.getId(), 0);
 

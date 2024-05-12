@@ -13,6 +13,7 @@ import roomescape.reservation.domain.repostiory.ReservationRepository;
 import roomescape.reservation.domain.repostiory.ReservationTimeRepository;
 import roomescape.reservation.domain.repostiory.ThemeRepository;
 import roomescape.reservation.service.dto.AdminReservationRequest;
+import roomescape.reservation.service.dto.ReservationFindRequest;
 import roomescape.reservation.service.dto.ReservationRequest;
 import roomescape.reservation.service.dto.ReservationResponse;
 
@@ -109,5 +110,11 @@ public class ReservationService {
         if (reservationRepository.getById(reservationId).getMember().getId() != memberId) {
             throw new UnauthorizedException("예약을 삭제할 권한이 없습니다.");
         }
+    }
+
+    public List<ReservationResponse> findByCondition(ReservationFindRequest reservationFindRequest) {
+        return reservationRepository.findBy(reservationFindRequest.memberId(), reservationFindRequest.themeId(), reservationFindRequest.dateFrom(), reservationFindRequest.dateTo()).stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 }
