@@ -4,6 +4,9 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -92,23 +95,14 @@ public class ReservationDao implements ReservationRepository {
     }
 
     private String makeFilterSql(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        List<String> filterSql = new ArrayList<>();
-        if (themeId != null) {
-            filterSql.add("th.id = " + themeId);
-        }
-        if (memberId != null) {
-            filterSql.add("m.id = " + memberId);
-        }
-        if (dateFrom != null) {
-            filterSql.add("r.date >= " + String.format("'%s'", dateFrom));
-        }
-        if (dateTo != null) {
-            filterSql.add("r.date <= " + String.format("'%s'", dateTo));
-        }
-        if (filterSql.isEmpty()) {
-            return "";
-        }
-        return "WHERE " + String.join(" AND ", filterSql);
+        return Stream.of(
+                        themeId != null ? "th.id = " + themeId : null,
+                        memberId != null ? "m.id = " + memberId : null,
+                        dateFrom != null ? "r.date >= '" + dateFrom + "'" : null,
+                        dateTo != null ? "r.date <= '" + dateTo + "'" : null
+                )
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" AND ", "WHERE ", ""));
     }
 
 
