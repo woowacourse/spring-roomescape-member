@@ -1,6 +1,6 @@
-package roomescape.controller;
+package roomescape.config;
 
-import static roomescape.controller.CookieHandler.extractTokenFromCookies;
+import static roomescape.config.CookieHandler.extractTokenFromCookies;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -10,7 +10,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.request.LoginMemberInformation;
-import roomescape.service.JwtProvider;
 import roomescape.service.MemberAuthService;
 import roomescape.service.response.MemberAppResponse;
 

@@ -1,7 +1,7 @@
 package roomescape.controller.api;
 
-import static roomescape.controller.CookieHandler.createCookieByToken;
-import static roomescape.controller.CookieHandler.extractTokenFromCookies;
+import static roomescape.config.CookieHandler.createCookieByToken;
+import static roomescape.config.CookieHandler.extractTokenFromCookies;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.config.JwtProvider;
 import roomescape.controller.request.MemberSignUpWebRequest;
 import roomescape.controller.request.TokenWebRequest;
 import roomescape.controller.response.MemberWebResponse;
-import roomescape.service.JwtProvider;
 import roomescape.service.MemberAuthService;
 import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.request.TokenAppRequest;

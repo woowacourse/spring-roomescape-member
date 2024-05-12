@@ -1,13 +1,12 @@
-package roomescape.controller;
+package roomescape.config;
 
-import static roomescape.controller.CookieHandler.extractTokenFromCookies;
+import static roomescape.config.CookieHandler.extractTokenFromCookies;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthorizationException;
-import roomescape.service.JwtProvider;
 import roomescape.service.MemberAuthService;
 import roomescape.service.response.MemberAppResponse;
 

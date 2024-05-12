@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.config;
 
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;

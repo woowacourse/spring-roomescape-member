@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
