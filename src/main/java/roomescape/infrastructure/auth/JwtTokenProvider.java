@@ -32,7 +32,11 @@ public class JwtTokenProvider implements TokenProvider {
 
     public String getPayload(String token) {
         try {
-            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
         } catch (ExpiredJwtException e) {
             throw new RoomescapeException(RoomescapeErrorCode.TOKEN_EXPIRED);
         }
