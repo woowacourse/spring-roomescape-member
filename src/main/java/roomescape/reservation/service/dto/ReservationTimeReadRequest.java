@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ReservationTimeReadRequest(
-        @NotBlank(message = "올바르지 않은 날짜입니다.") String date,
-        @NotNull long themeId
+        @NotBlank(message = "날짜를 입력해주세요.") String date,
+        @NotNull(message = "테마 ID를 입력해주세요.") long themeId
 ) {
 }
