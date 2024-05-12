@@ -5,13 +5,13 @@ public class Member {
     private final MemberName name;
     private final Email email;
     private final Password password;
-    private final String role;
+    private final Role role;
 
     public Member(Long id, String name, String email, String password, String role) {
-        this(id, new MemberName(name), new Email(email), new Password(password), role);
+        this(id, new MemberName(name), new Email(email), new Password(password), Role.from(role));
     }
 
-    public Member(Long id, MemberName name, Email email, Password password, String role) {
+    public Member(Long id, MemberName name, Email email, Password password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -36,6 +36,6 @@ public class Member {
     }
 
     public String getRole() {
-        return role;
+        return role.name();
     }
 }

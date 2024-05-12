@@ -10,6 +10,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberRepository;
 import roomescape.domain.member.Password;
+import roomescape.domain.member.Role;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -79,7 +80,7 @@ public class H2MemberRepository implements MemberRepository {
                     new MemberName(rs.getString("name")),
                     new Email(rs.getString("email")),
                     new Password(rs.getString("password")),
-                    rs.getString("role")
+                    Role.from(rs.getString("role"))
             );
         }
     }
