@@ -56,7 +56,7 @@ public class ReservationService {
         return mapToSelectableTimeResponses(reservationTimes, usedTimeId);
     }
 
-    public List<ReservationResponse> findReservationBy(long themeId, long memberId, LocalDate start, LocalDate end) {
+    public List<ReservationResponse> findReservationByTimeAndDateInDuration(long themeId, long memberId, LocalDate start, LocalDate end) {
         List<Reservation> filteredReservations = reservationDao.findByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
         return mapToReservationTimeResponses(filteredReservations);
     }
