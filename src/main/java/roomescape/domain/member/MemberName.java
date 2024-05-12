@@ -1,5 +1,6 @@
 package roomescape.domain.member;
 
+import roomescape.exception.EmptyParameterException;
 import roomescape.exception.ParameterException;
 
 public class MemberName {
@@ -15,7 +16,7 @@ public class MemberName {
 
     private void validateNameExist(String name) {
         if (name == null || name.isBlank()) {
-            throw new ParameterException("회원 이름이 비어 있습니다.");
+            throw new EmptyParameterException("회원 이름이 비어 있습니다.");
         }
     }
 
