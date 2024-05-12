@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
@@ -31,12 +33,14 @@ class ReservationTimeRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new H2ReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         reservationRepository = new H2ReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         themeRepository = new H2ThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        memberRepository = new H2MemberRepository(jdbcTemplate, jdbcTemplate.getDataSource());
     }
 
     @DisplayName("예약 시간을 저장한다")
@@ -116,7 +120,9 @@ class ReservationTimeRepositoryTest {
         // given
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
-        Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(1), savedReservationTime, savedTheme);
+        Member savedMember = memberRepository.save(Fixture.member);
+        Reservation reservation = new Reservation(savedMember, LocalDate.now().plusDays(1), savedReservationTime,
+                savedTheme);
         reservationRepository.save(reservation);
 
         // when, then
@@ -128,5 +134,6 @@ class ReservationTimeRepositoryTest {
     private static class Fixture {
         private static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
         private static final Theme theme = new Theme("테마", "테마 설명", "https://1.jpg");
+        private static final Member member = new Member(1L, "피케이", "pkpkpkpk@woowa.net", "password", "ADMIN");
     }
 }

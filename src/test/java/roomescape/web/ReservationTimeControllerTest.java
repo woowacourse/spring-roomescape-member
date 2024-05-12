@@ -71,7 +71,8 @@ class ReservationTimeControllerTest extends ControllerTest {
     }
 
     @DisplayName("예약 가능한 시간을 조회한다")
-    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql",
+            "/test-data/reservations.sql"})
     @Test
     void when_getAvailableTimes_then_returnAvailableTimes() throws Exception {
         // when, then

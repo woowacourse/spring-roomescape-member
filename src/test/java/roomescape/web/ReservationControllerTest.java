@@ -41,13 +41,13 @@ class ReservationControllerTest extends ControllerTest {
     MemberArgumentResolver memberArgumentResolver;
 
     @DisplayName("예약을 생성한다")
-    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql"})
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql"})
     @Test
     void when_createReservation_then_created() throws Exception {
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn("pkpkpkpk@woowa.net").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -61,13 +61,13 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @DisplayName("과거 시간에 대한 예약을 하면, 예외가 발생한다")
-    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql"})
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql"})
     @Test
     void when_createReservationWithPastTime_then_badRequest() throws Exception {
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn("pkpkpkpk@woowa.net").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -81,13 +81,13 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @DisplayName("이미 예약된 테마와 시간을 예약을 하면, 예외가 발생한다")
-    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql"})
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql"})
     @Test
     void when_createDuplicateReservation_then_badRequest() throws Exception {
         // setting
         doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn("pkpkpkpk").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
+        doReturn("pkpkpkpk@woowa.net").when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -106,7 +106,7 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @DisplayName("예약을 조회한다")
-    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql", "/test-data/reservations.sql"})
     @Test
     void when_findAllReservations_then_ok() throws Exception {
         // setting
@@ -121,7 +121,7 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @DisplayName("조건에 맞는 예약을 조회한다")
-    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql", "/test-data/reservations.sql"})
     @Test
     void when_findByCondition_then_ok() throws Exception {
         // setting
@@ -136,7 +136,7 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @DisplayName("예약을 삭제한다")
-    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/reservations.sql"})
+    @Sql(value = {"/test-data/reservation-times.sql", "/test-data/themes.sql", "/test-data/members.sql", "/test-data/reservations.sql"})
     @Test
     void when_deleteReservation_then_noContent() throws Exception {
         // setting

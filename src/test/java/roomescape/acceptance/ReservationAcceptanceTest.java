@@ -16,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.auth.TokenProvider;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
-import roomescape.domain.reservation.Name;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
@@ -95,7 +94,7 @@ class ReservationAcceptanceTest {
         JsonPath jsonPath = response.jsonPath();
         assertAll(
                 () -> assertThat(jsonPath.getLong("id")).isNotNull(),
-                () -> assertThat(jsonPath.getString("name")).isEqualTo(UserFixture.email),
+                () -> assertThat(jsonPath.getString("member.email")).isEqualTo(UserFixture.email),
                 () -> assertThat(jsonPath.getString("date")).isEqualTo(UserFixture.tomorrow.toString()),
                 () -> assertThat(jsonPath.getString("theme.name")).isEqualTo(UserFixture.themeName)
         );
@@ -109,7 +108,7 @@ class ReservationAcceptanceTest {
         doReturn(Optional.of(token)).when(tokenProvider).extractToken(any());
 
         Map<?, ?> request = Map.of(
-                "name", AdminFixture.name,
+                "email", AdminFixture.email,
                 "date", AdminFixture.tomorrow.toString(),
                 "timeId", 1,
                 "themeId", 1);
@@ -126,7 +125,7 @@ class ReservationAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(response.jsonPath().getLong("id")).isNotNull(),
-                () -> assertThat(response.jsonPath().getString("name")).isEqualTo(AdminFixture.name),
+                () -> assertThat(response.jsonPath().getString("member.name")).isEqualTo(AdminFixture.name),
                 () -> assertThat(response.jsonPath().getString("date")).isEqualTo(AdminFixture.tomorrow.toString()),
                 () -> assertThat(response.jsonPath().getString("theme.name")).isEqualTo(AdminFixture.themeName)
         );
@@ -143,7 +142,7 @@ class ReservationAcceptanceTest {
         public static final Theme theme = new Theme(2L, themeName, "설명서", "https://i.postimg" +
                                                                           ".cc/cLqW2JLB/theme-SOS-SOS.jpg");
         public static final ReservationTime time = new ReservationTime(2L, timeAfterOneHour);
-        public static final Reservation reservation = new Reservation(2L, new Name(name), new ReservationDate(tomorrow),
+        public static final Reservation reservation = new Reservation(2L, member, new ReservationDate(tomorrow),
                 time, theme);
     }
 
@@ -152,12 +151,13 @@ class ReservationAcceptanceTest {
         public static final LocalTime timeAfterOneHour = LocalTime.now().plusHours(1);
         public static final String name = "피케이";
         public static final String themeName = "피케이는 피케이다";
+        public static final String email = "pkpkpkpk@woowa.net";
 
         public static final Member member = new Member(1L, name, "pkpkpkpk@woowa.net", "anything", "ADMIN");
         public static final Theme theme = new Theme(1L, themeName, "설명서", "https://i.postimg" +
                                                                           ".cc/cLqW2JLB/theme-SOS-SOS.jpg");
         public static final ReservationTime time = new ReservationTime(1L, timeAfterOneHour);
-        public static final Reservation reservation = new Reservation(1L, new Name(name), new ReservationDate(tomorrow),
+        public static final Reservation reservation = new Reservation(1L, member, new ReservationDate(tomorrow),
                 time, theme);
     }
 }

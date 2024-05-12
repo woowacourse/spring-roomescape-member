@@ -58,7 +58,7 @@ public class ReservationController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> save(@RequestBody @Valid ReservationAdminRequest request) {
-        ReservationRequest reservationRequest = new ReservationRequest(request.name(), request.date(),
+        ReservationRequest reservationRequest = new ReservationRequest(request.email(), request.date(),
                 request.timeId(), request.themeId());
 
         ReservationResponse reservationResponse = reservationService.save(reservationRequest);
