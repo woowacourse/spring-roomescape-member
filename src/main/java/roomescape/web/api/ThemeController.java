@@ -40,10 +40,10 @@ public class ThemeController {
     }
 
     @GetMapping("/themes/tops")
-    public ResponseEntity<List<ThemeResponse>> findTops() {
+    public ResponseEntity<ThemeListResponse> findTops() {
         List<ThemeResponse> themeResponses = themeService.findTopThemes();
 
-        return ResponseEntity.ok(themeResponses);
+        return ResponseEntity.ok(new ThemeListResponse(themeResponses));
     }
 
     @DeleteMapping("/themes/{id}")
