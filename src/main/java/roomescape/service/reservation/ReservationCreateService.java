@@ -32,14 +32,11 @@ public class ReservationCreateService {
         this.memberRepository = memberRepository;
     }
 
-    public Reservation createReservationByAdmin(ReservationAdminSaveRequest request) {
+    public Reservation createReservationByAdmin(ReservationAdminSaveRequest request, Member member) {
         ReservationTime reservationTime = getValidReservationTime(request.timeId());
         validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
         Theme theme = getValidTheme(request.themeId());
         validateAlreadyBooked(request.date(), request.timeId(), request.themeId());
-
-        Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
         Reservation reservation = request.toEntity(request, reservationTime, theme, member);
         return reservationRepository.save(reservation);
