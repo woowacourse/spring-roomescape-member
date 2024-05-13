@@ -9,11 +9,9 @@ import roomescape.domain.MemberCommandRepository;
 
 @Repository
 public class JdbcMemberCommandRepository implements MemberCommandRepository {
-    private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     public JdbcMemberCommandRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingColumns("name", "email", "password", "role")

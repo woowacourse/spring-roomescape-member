@@ -11,14 +11,14 @@ public class ReservationRowMapper {
     }
 
     public static Reservation joinedMapRow(ResultSet rs, int rowNum) throws SQLException {
-        long id = rs.getLong("id");
-        String date = rs.getString("date");
+        long id = rs.getLong("reservation_id");
+        String date = rs.getString("reservation_date");
         return new Reservation(
                 id,
-                MemberRowMapper.joinedMapRow(rs),
+                MemberRowMapper.mapRow(rs, rowNum),
                 LocalDate.parse(date),
-                ReservationTimeRowMapper.joinedMapRow(rs),
-                ThemeRowMapper.joinedMapRow(rs)
+                ReservationTimeRowMapper.mapRow(rs, rowNum),
+                ThemeRowMapper.mapRow(rs, rowNum)
         );
     }
 }

@@ -14,6 +14,14 @@ import roomescape.infrastructure.persistence.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
+    private static final String SQL = """
+            select  id as theme_id, 
+                    name as theme_name, 
+                    description as theme_description, 
+                    thumbnail as theme_thumbnail 
+            from theme
+            """;
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -38,13 +46,12 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "select id, name, description, thumbnail from theme";
-        return jdbcTemplate.query(sql, ThemeRowMapper::mapRow);
+        return jdbcTemplate.query(SQL, ThemeRowMapper::mapRow);
     }
 
     @Override
     public Optional<Theme> findById(long id) {
-        String sql = "select id, name, description, thumbnail from theme where id = ?";
+        String sql = SQL + " where id = ?";
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, ThemeRowMapper::mapRow, id);
             return Optional.of(Objects.requireNonNull(theme));

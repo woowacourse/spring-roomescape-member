@@ -12,6 +12,17 @@ import roomescape.infrastructure.persistence.rowmapper.MemberRowMapper;
 
 @Repository
 public class JdbcMemberQueryRepository implements MemberQueryRepository {
+    private static final String SQL = """
+            select 
+                id as member_id, 
+                name as member_name, 
+                email as member_email, 
+                password as member_password,
+                role as member_role
+            from 
+                member
+            """;
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcMemberQueryRepository(JdbcTemplate jdbcTemplate) {
@@ -20,16 +31,7 @@ public class JdbcMemberQueryRepository implements MemberQueryRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        String sql = """
-                select 
-                    id as member_id, 
-                    name as member_name, 
-                    email as member_email, 
-                    password as member_password,
-                    role as member_role
-                from 
-                    member where id = ?
-                """;
+        String sql = SQL + " where id = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, MemberRowMapper::mapRow, id);
             return Optional.of(Objects.requireNonNull(member));
@@ -40,16 +42,7 @@ public class JdbcMemberQueryRepository implements MemberQueryRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        String sql = """
-                select 
-                    id as member_id, 
-                    name as member_name, 
-                    email as member_email, 
-                    password as member_password,
-                    role as member_role
-                from 
-                    member where email = ?
-                """;
+        String sql = SQL + " where email = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, MemberRowMapper::mapRow, email);
             return Optional.of(Objects.requireNonNull(member));
@@ -60,16 +53,6 @@ public class JdbcMemberQueryRepository implements MemberQueryRepository {
 
     @Override
     public List<Member> findAll() {
-        String sql = """
-                select 
-                    id as member_id, 
-                    name as member_name, 
-                    email as member_email, 
-                    password as member_password,
-                    role as member_role
-                from 
-                    member
-                """;
-        return jdbcTemplate.query(sql, MemberRowMapper::mapRow);
+        return jdbcTemplate.query(SQL, MemberRowMapper::mapRow);
     }
 }

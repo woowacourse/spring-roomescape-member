@@ -17,6 +17,29 @@ import roomescape.infrastructure.persistence.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcReservationQueryRepository implements ReservationQueryRepository {
+    private static final String SQL = """
+            select r.id as reservation_id,
+                   r.member_id as member_id,
+                   m.name as member_name,
+                   m.email as member_email,
+                   m.password as member_password,
+                   m.role as member_role,
+                   r.date as reservation_date, 
+                   r.time_id as reservation_time_id,
+                   rt.start_at as reservation_time_start_at, 
+                   r.theme_id as theme_id,
+                   t.name as theme_name,
+                   t.description as theme_description, 
+                   t.thumbnail as theme_thumbnail 
+            from reservation as r
+            join reservation_time as rt
+            on r.time_id = rt.id
+            join theme as t
+            on r.theme_id = t.id  
+            join member as m
+            on r.member_id = m.id
+            """;
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationQueryRepository(JdbcTemplate jdbcTemplate) {
@@ -25,29 +48,7 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
 
     @Override
     public Optional<Reservation> findById(long id) {
-        String sql = """
-            select r.id as id,
-                   r.member_id as member_id,
-                   m.name as member_name,
-                   m.email as member_email,
-                   m.password as member_password,
-                   m.role as member_role,
-                   r.date as date, 
-                   r.time_id as time_id,
-                   rt.start_at as start_at, 
-                   r.theme_id as theme_id,
-                   t.name as theme_name,
-                   t.description as description, 
-                   t.thumbnail as thumbnail 
-            from reservation as r
-            join reservation_time as rt
-            on r.time_id = rt.id
-            join theme as t
-            on r.theme_id = t.id  
-            join member as m
-            on r.member_id = m.id
-            where r.id = ?
-            """;
+        String sql = SQL + "where r.id = ?";
         try {
             Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper::joinedMapRow, id);
             return Optional.of(Objects.requireNonNull(reservation));
@@ -58,29 +59,7 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-            select r.id as id,
-                   r.member_id as member_id,
-                   m.name as member_name,
-                   m.email as member_email,
-                   m.password as member_password,
-                   m.role as member_role,
-                   r.date as date, 
-                   r.time_id as time_id,
-                   rt.start_at as start_at, 
-                   r.theme_id as theme_id,
-                   t.name as theme_name,
-                   t.description as description, 
-                   t.thumbnail as thumbnail 
-            from reservation as r
-            join reservation_time as rt
-            on r.time_id = rt.id
-            join theme as t
-            on r.theme_id = t.id  
-            join member as m
-            on r.member_id = m.id  
-            """;
-        return jdbcTemplate.query(sql, ReservationRowMapper::joinedMapRow);
+        return jdbcTemplate.query(SQL, ReservationRowMapper::joinedMapRow);
     }
 
     @Override
@@ -98,8 +77,8 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
     @Override
     public List<AvailableTimeDto> findAvailableReservationTimes(LocalDate date, long themeId) {
         String sql = """
-                select  id, 
-                        start_at, 
+                select  id as reservation_time_id, 
+                        start_at as reservation_time_start_at, 
                         start_at in (
                             select start_at
                             from reservation as r
@@ -120,12 +99,12 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
     @Override
     public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
-                select  t.id, 
-                        t.name, 
-                        t.description, 
-                        t.thumbnail, 
+                select  t.id as theme_id, 
+                        t.name as theme_name, 
+                        t.description as theme_description, 
+                        t.thumbnail as theme_thumbnail, 
                         count(r.id) as reservation_count
-                from    theme as t 
+                from theme as t 
                 join reservation as r 
                 on t.id = r.theme_id
                 where r.date between ? and ?
@@ -142,28 +121,7 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
         List<Object> params = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
 
-        String sql = """
-                select r.id as id,
-                       r.member_id as member_id,
-                       m.name as member_name,
-                       m.email as member_email,
-                       m.password as member_password,
-                       m.role as member_role,
-                       r.date as date, 
-                       r.time_id as time_id,
-                       rt.start_at as start_at, 
-                       r.theme_id as theme_id,
-                       t.name as theme_name,
-                       t.description as description, 
-                       t.thumbnail as thumbnail 
-                from reservation as r
-                join reservation_time as rt
-                on r.time_id = rt.id
-                join theme as t
-                on r.theme_id = t.id  
-                join member as m
-                on r.member_id = m.id  
-                """;
+        String sql = SQL;
 
         addCondition(themeId, conditions, "r.theme_id = ?", params);
         addCondition(memberId, conditions, "r.member_id = ?", params);
