@@ -24,8 +24,8 @@ import roomescape.support.SimpleRestAssured;
 class ReservationAcceptanceTest extends AcceptanceTest {
     private static final String PATH = "/reservations";
     private static final Map<String, Object> BODY = Map.of(
-            "name", "브라운",
             "date", LocalDate.now().plusDays(2).toString(),
+            "memberId", 1L,
             "timeId", 1L,
             "themeId", 1L
     );
@@ -73,7 +73,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     @Test
     void step5() {
         LocalDate date = LocalDate.now().plusDays(2);
-        jdbcTemplate.update("INSERT INTO reservation (name, reservation_date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+        jdbcTemplate.update(
+                "INSERT INTO reservation (reservation_date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "브라운", date, 1L, 1L);
 
         List<ReservationResponse> reservations = SimpleRestAssured.get(PATH)

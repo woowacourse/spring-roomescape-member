@@ -7,24 +7,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationService;
+import roomescape.controller.api.ReservationController;
+import roomescape.controller.api.ReservationTimeController;
+import roomescape.controller.api.ThemeController;
+import roomescape.controller.api.TokenLoginController;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.time.ReservationTime;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.fixture.ThemeFixture;
-import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
-class ReservationControllerTest extends ControllerTest {
+@WebMvcTest(controllers = {
+        ReservationController.class,
+        ReservationTimeController.class,
+        ThemeController.class,
+        TokenLoginController.class
+})
+class ReservationControllerTest /*extends ControllerTest*/ {
     @Autowired
     private ReservationService reservationService;
+    @Autowired
+    protected MockMvc mockMvc;
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     private Reservation makeReservation() {
         return new Reservation(
@@ -41,8 +57,9 @@ class ReservationControllerTest extends ControllerTest {
         Reservation reservation = makeReservation();
 
         when(reservationService.reserve(any())).thenReturn(reservation);
-        ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate(),
+        ReservationRequest request = new ReservationRequest(reservation.getDate(),
                 reservation.getTimeId(), reservation.getTheme().getId());
+
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);

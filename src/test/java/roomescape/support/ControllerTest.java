@@ -2,23 +2,17 @@ package roomescape.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.application.ReservationService;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
-import roomescape.controller.api.ReservationController;
-import roomescape.controller.api.ReservationTimeController;
-import roomescape.controller.api.ThemeController;
 
-@WebMvcTest(controllers = {
-        ReservationController.class,
-        ReservationTimeController.class,
-        ThemeController.class
-})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ControllerTest {
-    @Autowired
+    @MockBean
     protected MockMvc mockMvc;
     @Autowired
     protected ObjectMapper objectMapper;

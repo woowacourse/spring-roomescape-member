@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
@@ -18,7 +19,7 @@ import roomescape.dto.reservationtime.ReservationTimeRequest;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.extension.TableTruncateExtension;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(TableTruncateExtension.class)
 public class ReservationTimeServiceTest {
     @Autowired

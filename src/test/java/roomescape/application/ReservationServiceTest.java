@@ -16,7 +16,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
-import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationInfo;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.extension.TableTruncateExtension;
 
@@ -42,9 +42,9 @@ public class ReservationServiceTest {
     @Test
     void 예약을_성공한다() {
         LocalDate date = LocalDate.now().plusDays(2);
-        ReservationRequest request = new ReservationRequest("prin", date, time.getId(), theme.getId());
+        ReservationInfo reservationInfo = new ReservationInfo("prin", date, time.getId(), theme.getId());
 
-        Reservation reservation = reservationService.reserve(request);
+        Reservation reservation = reservationService.reserve(reservationInfo);
 
         assertThat(reservation.getName()).isEqualTo("prin");
         assertEquals(date, reservation.getDate());
@@ -54,10 +54,10 @@ public class ReservationServiceTest {
     @Test
     void 최소_1일_전에_예약하지_않으면_예약을_실패한다() {
         LocalDate invalidDate = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest("liv", invalidDate, time.getId(),
+        ReservationInfo reservationInfo = new ReservationInfo("liv", invalidDate, time.getId(),
                 theme.getId());
 
-        assertThatThrownBy(() -> reservationService.reserve(request))
+        assertThatThrownBy(() -> reservationService.reserve(reservationInfo))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("예약은 최소 1일 전에 해야합니다.");
     }
@@ -65,10 +65,10 @@ public class ReservationServiceTest {
     @Test
     void 중복된_예약이_있으면_예약을_실패한다() {
         LocalDate date = LocalDate.now().plusDays(2);
-        ReservationRequest request = new ReservationRequest("sudal", date, time.getId(), theme.getId());
-        reservationService.reserve(request);
+        ReservationInfo reservationInfo = new ReservationInfo("sudal", date, time.getId(), theme.getId());
+        reservationService.reserve(reservationInfo);
 
-        assertThatThrownBy(() -> reservationService.reserve(request))
+        assertThatThrownBy(() -> reservationService.reserve(reservationInfo))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 예약된 날짜, 시간입니다.");
     }
@@ -76,8 +76,8 @@ public class ReservationServiceTest {
     @Test
     void 예약을_취소한다() {
         LocalDate date = LocalDate.now().plusDays(2);
-        ReservationRequest request = new ReservationRequest("prin", date, time.getId(), theme.getId());
-        Reservation reservation = reservationService.reserve(request);
+        ReservationInfo reservationInfo = new ReservationInfo("prin", date, time.getId(), theme.getId());
+        Reservation reservation = reservationService.reserve(reservationInfo);
 
         reservationService.cancel(reservation.getId());
 
