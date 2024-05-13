@@ -32,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new AuthorizationException();
         }
         String token = cookie.substring(6);
-        MemberInfo loginMember = authService.checkToken(token);
-        return new LoginMember(loginMember.getId(), loginMember.getName(), loginMember.getEmail());
+        MemberInfo loginMemberInfo = authService.checkToken(token);
+        return new LoginMember(loginMemberInfo.getId());
     }
 }
