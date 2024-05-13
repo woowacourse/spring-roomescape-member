@@ -6,10 +6,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.annotation.AuthenticationPrincipal;
 import roomescape.controller.request.UserLoginRequest;
@@ -18,7 +18,7 @@ import roomescape.model.User;
 import roomescape.service.AuthService;
 import roomescape.service.UserService;
 
-@Controller
+@RestController
 public class UserController {
 
     private final UserService userService;
