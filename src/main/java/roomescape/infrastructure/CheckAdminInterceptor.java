@@ -2,11 +2,10 @@ package roomescape.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Role;
-import roomescape.handler.exception.CustomException;
-import roomescape.handler.exception.ExceptionCode;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
@@ -21,7 +20,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Role role = tokenProvider.parseAuthenticationRoleFromCookies(request.getCookies());
         if (role == Role.USER) {
-            throw new CustomException(ExceptionCode.NO_AUTHENTICATION_ACCESS);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return false;
         }
         return true;
     }
