@@ -12,7 +12,7 @@ import roomescape.application.member.MemberService;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.response.MemberResponse;
 import roomescape.application.member.dto.response.TokenResponse;
-import roomescape.auth.LoginMemberId;
+import roomescape.presentation.auth.LoginMemberId;
 
 @RestController
 public class AuthController {

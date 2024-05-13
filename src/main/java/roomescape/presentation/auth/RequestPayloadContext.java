@@ -1,9 +1,10 @@
-package roomescape.auth;
+package roomescape.presentation.auth;
 
+import exception.UnAuthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
-import roomescape.auth.exception.UnAuthorizedException;
+import roomescape.application.auth.TokenManager;
 import roomescape.domain.role.MemberRole;
 import roomescape.domain.role.Role;
 

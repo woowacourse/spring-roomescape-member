@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.presentation.auth;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -8,12 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import roomescape.auth.exception.UnAuthorizedException;
+import exception.UnAuthorizedException;
+import roomescape.application.auth.JwtTokenManager;
+import roomescape.application.auth.TokenManager;
 import roomescape.domain.role.MemberRole;
 import roomescape.domain.role.Role;
 
 class RequestPayloadContextTest {
-    private final TokenManager tokenManager = new TokenManager("test".repeat(20), 10000, Clock.systemDefaultZone());
+    private final TokenManager tokenManager = new JwtTokenManager("test".repeat(20), 10000, Clock.systemDefaultZone());
 
     private RequestPayloadContext context;
 

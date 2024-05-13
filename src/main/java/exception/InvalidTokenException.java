@@ -1,4 +1,4 @@
-package roomescape.auth.exception;
+package exception;
 
 public class InvalidTokenException extends RuntimeException {
 

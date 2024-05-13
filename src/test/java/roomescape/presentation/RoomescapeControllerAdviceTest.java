@@ -16,7 +16,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import roomescape.auth.RequestPayloadContext;
+import roomescape.presentation.auth.RequestPayloadContext;
 import roomescape.presentation.view.AdminController;
 
 @WebMvcTest(AdminController.class)

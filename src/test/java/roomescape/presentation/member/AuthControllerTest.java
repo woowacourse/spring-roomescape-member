@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import roomescape.application.member.MemberService;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.response.TokenResponse;
-import roomescape.auth.RequestPayloadContext;
+import roomescape.presentation.auth.RequestPayloadContext;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(AuthController.class)

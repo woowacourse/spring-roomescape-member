@@ -13,11 +13,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.auth.exception.AuthenticationException;
-import roomescape.auth.exception.AuthenticationInformationNotFoundException;
-import roomescape.auth.exception.ExpiredTokenException;
-import roomescape.auth.exception.InvalidTokenException;
-import roomescape.auth.exception.UnAuthorizedException;
+import exception.AuthenticationException;
+import exception.AuthenticationInformationNotFoundException;
+import exception.ExpiredTokenException;
+import exception.InvalidTokenException;
+import exception.UnAuthorizedException;
 
 @RestControllerAdvice
 public class RoomescapeControllerAdvice {

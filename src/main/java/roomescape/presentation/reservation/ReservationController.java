@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.reservation.ReservationService;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
-import roomescape.auth.LoginMemberId;
+import roomescape.presentation.auth.LoginMemberId;
 
 @RestController
 @RequestMapping("/reservations")

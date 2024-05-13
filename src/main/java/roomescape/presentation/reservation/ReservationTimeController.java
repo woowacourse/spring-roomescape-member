@@ -17,7 +17,7 @@ import roomescape.application.reservation.ReservationTimeService;
 import roomescape.application.reservation.dto.request.ReservationTimeRequest;
 import roomescape.application.reservation.dto.response.AvailableTimeResponse;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
-import roomescape.auth.PermissionRequired;
+import roomescape.presentation.auth.PermissionRequired;
 
 @RestController
 @RequestMapping("/times")

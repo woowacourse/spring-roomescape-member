@@ -1,10 +1,11 @@
-package roomescape.auth;
+package roomescape.presentation.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import exception.UnAuthorizedException;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import roomescape.auth.exception.UnAuthorizedException;
+import roomescape.application.auth.TokenManager;
 import roomescape.domain.role.MemberRole;
 import roomescape.domain.role.Role;
 

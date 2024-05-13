@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.AdminRoleInterceptor;
-import roomescape.auth.LoginMemberIdArgumentResolver;
-import roomescape.auth.PermissionCheckInterceptor;
-import roomescape.auth.RequestPayloadContext;
+import roomescape.presentation.auth.AdminRoleInterceptor;
+import roomescape.presentation.auth.LoginMemberIdArgumentResolver;
+import roomescape.presentation.auth.PermissionCheckInterceptor;
+import roomescape.presentation.auth.RequestPayloadContext;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

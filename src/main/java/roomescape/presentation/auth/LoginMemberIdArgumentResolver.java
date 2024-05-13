@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.presentation.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.ObjectProvider;

@@ -1,4 +1,4 @@
-package roomescape.auth.exception;
+package exception;
 
 public class AuthenticationInformationNotFoundException extends RuntimeException {
 

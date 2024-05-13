@@ -1,13 +1,13 @@
-package roomescape.auth;
+package roomescape.presentation.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import exception.AuthenticationInformationNotFoundException;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import roomescape.auth.exception.AuthenticationInformationNotFoundException;
 
 class AuthInformationExtractorTest {
 
