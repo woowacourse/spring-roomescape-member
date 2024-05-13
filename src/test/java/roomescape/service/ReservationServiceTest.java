@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.EMAIL_FIXTURE;
-import static roomescape.TestFixture.MEMBER_NAME_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
-import static roomescape.TestFixture.PASSWORD_FIXTURE;
 import static roomescape.TestFixture.THEME_NAME_FIXTURE;
 import static roomescape.TestFixture.TIME_FIXTURE;
 import static roomescape.TestFixture.createReservationTime;
@@ -24,9 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.TestFixture;
-import roomescape.domain.Member;
-import roomescape.domain.Name;
-import roomescape.domain.Role;
+import roomescape.dto.request.MemberRequest;
 import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidInputException;
@@ -61,17 +56,17 @@ class ReservationServiceTest {
     @Test
     void findAllMatching() {
         // given
-        Member member = createAndGetMember();
+        MemberRequest memberRequest = createAndGetMemberRequest();
         MemberReservationRequest request = createMemberReservationRequest(
                 LocalDate.of(4000, 12, 12));
         MemberReservationRequest outOfFilterRequest = createMemberReservationRequest(
                 LocalDate.of(4000, 12, 12));
-        ReservationResponse response = reservationService.save(request, member);
-        reservationService.save(outOfFilterRequest, member);
+        ReservationResponse response = reservationService.save(request, memberRequest);
+        reservationService.save(outOfFilterRequest, memberRequest);
         // when
         List<ReservationResponse> filtered = reservationService.findAllMatching(
                 request.themeId(),
-                member.getId(),
+                memberRequest.id(),
                 LocalDate.of(3000, 12, 12),
                 LocalDate.of(5000, 12, 12));
         // then
@@ -83,15 +78,16 @@ class ReservationServiceTest {
     @Test
     void save() {
         // given
-        Member member = createAndGetMember();
+        MemberRequest memberRequest = createAndGetMemberRequest();
         MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
                 DATE_FIXTURE);
         // when
-        ReservationResponse response = reservationService.save(memberReservationRequest, member);
+        ReservationResponse response = reservationService
+                .save(memberReservationRequest, memberRequest);
         // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
-                () -> assertThat(response.member().id()).isEqualTo(member.getId()),
+                () -> assertThat(response.member().id()).isEqualTo(memberRequest.id()),
                 () -> assertThat(response.date()).isEqualTo(DATE_FIXTURE),
                 () -> assertThat(response.time().startAt()).isEqualTo(TIME_FIXTURE),
                 () -> assertThat(response.theme().name()).isEqualTo(THEME_NAME_FIXTURE)
@@ -102,11 +98,11 @@ class ReservationServiceTest {
     @Test
     void pastReservationSave() {
         // given
-        Member member = createAndGetMember();
+        MemberRequest memberRequest = createAndGetMemberRequest();
         MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
                 LocalDate.of(2000, 11, 9));
         // when & then
-        assertThatThrownBy(() -> reservationService.save(memberReservationRequest, member))
+        assertThatThrownBy(() -> reservationService.save(memberReservationRequest, memberRequest))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("지난 날짜에는 예약할 수 없습니다.");
     }
@@ -115,12 +111,12 @@ class ReservationServiceTest {
     @Test
     void duplicatedReservationSave() {
         // given
-        Member member = createAndGetMember();
+        MemberRequest memberRequest = createAndGetMemberRequest();
         MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
                 DATE_FIXTURE);
-        reservationService.save(memberReservationRequest, member);
+        reservationService.save(memberReservationRequest, memberRequest);
         // when & then
-        assertThatThrownBy(() -> reservationService.save(memberReservationRequest, member))
+        assertThatThrownBy(() -> reservationService.save(memberReservationRequest, memberRequest))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약이 이미 존재합니다.");
     }
@@ -129,10 +125,11 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         // given
-        Member member = createAndGetMember();
+        MemberRequest memberRequest = createAndGetMemberRequest();
         MemberReservationRequest memberReservationRequest = createMemberReservationRequest(
                 DATE_FIXTURE);
-        ReservationResponse response = reservationService.save(memberReservationRequest, member);
+        ReservationResponse response = reservationService.save(memberReservationRequest,
+                memberRequest);
         // when
         reservationService.deleteById(response.id());
         // then
@@ -147,10 +144,9 @@ class ReservationServiceTest {
                 .hasMessage("삭제할 예약이 존재하지 않습니다.");
     }
 
-    private Member createAndGetMember() {
+    private MemberRequest createAndGetMemberRequest() {
         Long memberId = TestFixture.createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
-        return new Member(memberId, new Name(MEMBER_NAME_FIXTURE), Role.NORMAL, EMAIL_FIXTURE,
-                PASSWORD_FIXTURE);
+        return new MemberRequest(memberId);
     }
 
     private MemberReservationRequest createMemberReservationRequest(LocalDate date) {

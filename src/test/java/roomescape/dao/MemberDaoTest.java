@@ -54,12 +54,12 @@ class MemberDaoTest {
     }
 
     @Test
-    void findMemberById() {
+    void findById() {
         simpleJdbcInsert.withTableName("member")
                 .execute(MEMBER_PARAMETER_SOURCE);
         Long id = memberDao.find(MEMBER_FIXTURE).getId();
         // when
-        Member foundMember = memberDao.findMemberById(id);
+        Member foundMember = memberDao.findById(id);
         // then
         assertAll(
                 () -> assertThat(foundMember.getNameValue()).isEqualTo(MEMBER_NAME_FIXTURE),

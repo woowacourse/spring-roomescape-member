@@ -17,7 +17,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.TestFixture;
-import roomescape.dto.request.RoomThemeCreateRequest;
+import roomescape.dto.request.RoomThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomThemeControllerTest {
@@ -57,7 +57,7 @@ class RoomThemeControllerTest {
     void createThemeTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest(THEME_NAME_FIXTURE,
+                .body(new RoomThemeRequest(THEME_NAME_FIXTURE,
                         THEME_DESCRIPTION_FIXTURE, THEME_THUMBNAIL_FIXTURE))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
@@ -69,7 +69,7 @@ class RoomThemeControllerTest {
     void createThemeWithNullOrEmptyName(String value) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest(value, "desc", "th.jpg"))
+                .body(new RoomThemeRequest(value, "desc", "th.jpg"))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -80,7 +80,7 @@ class RoomThemeControllerTest {
     void createThemeWithNullOrEmptyDescription(String value) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest("name", value, "th.jpg"))
+                .body(new RoomThemeRequest("name", value, "th.jpg"))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -91,7 +91,7 @@ class RoomThemeControllerTest {
     void createThemeWithNullOrEmptyThumbnail(String value) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest("name", "desc", value))
+                .body(new RoomThemeRequest("name", "desc", value))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }

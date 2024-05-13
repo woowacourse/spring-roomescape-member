@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.request.MemberRequest;
 import roomescape.dto.response.MemberResponse;
 
 @Service
@@ -25,5 +26,9 @@ public class MemberService {
     public Member findMember(LoginRequest loginRequest) {
         Member member = new Member(loginRequest.email(), loginRequest.password());
         return memberDao.find(member);
+    }
+
+    public Member findMember(MemberRequest memberRequest) {
+        return memberDao.findById(memberRequest.id());
     }
 }

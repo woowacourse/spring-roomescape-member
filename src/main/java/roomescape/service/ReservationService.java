@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.MemberRequest;
 import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidInputException;
@@ -52,31 +53,31 @@ public class ReservationService {
     }
 
     public ReservationResponse save(MemberReservationRequest memberReservationRequest,
-                                    Member member) {
+                                    MemberRequest memberRequest) {
         Reservation reservation = getValidatedReservation(
                 memberReservationRequest.date(),
                 memberReservationRequest.timeId(),
                 memberReservationRequest.themeId(),
-                member);
+                memberRequest.id());
         return savedReservationResponse(reservation);
     }
 
     public ReservationResponse save(AdminReservationRequest adminReservationRequest) {
-        Member member = memberDao.findMemberById(adminReservationRequest.memberId());
         Reservation reservation = getValidatedReservation(
                 adminReservationRequest.date(),
                 adminReservationRequest.timeId(),
                 adminReservationRequest.themeId(),
-                member);
+                adminReservationRequest.memberId());
         return savedReservationResponse(reservation);
     }
 
     private Reservation getValidatedReservation(LocalDate date, Long timeId,
-                                                Long themeId, Member member) {
+                                                Long themeId, Long memberId) {
         validateDuplicatedReservation(date, timeId, themeId);
         ReservationTime reservationTime = reservationTimeDao.findById(timeId);
         validateOutdatedDateTime(date, reservationTime.getStartAt());
         RoomTheme roomTheme = roomThemeDao.findById(themeId);
+        Member member = memberDao.findById(memberId);
         return new Reservation(date, member, reservationTime, roomTheme);
     }
 

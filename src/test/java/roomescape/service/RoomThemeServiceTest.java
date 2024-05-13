@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
-import roomescape.dto.request.RoomThemeCreateRequest;
+import roomescape.dto.request.RoomThemeRequest;
 import roomescape.dto.response.RoomThemeResponse;
 import roomescape.exception.TargetNotExistException;
 
@@ -41,18 +41,18 @@ class RoomThemeServiceTest {
     @Test
     void save() {
         // given
-        RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출",
+        RoomThemeRequest roomThemeRequest = new RoomThemeRequest("레벨2 탈출",
                 "우테코 레벨2",
                 "https://i.pinimg.com/236x/6e");
         // when
-        RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
+        RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeRequest);
         // then
         assertAll(
-                () -> assertThat(roomThemeResponse.name()).isEqualTo(roomThemeCreateRequest.name()),
+                () -> assertThat(roomThemeResponse.name()).isEqualTo(roomThemeRequest.name()),
                 () -> assertThat(roomThemeResponse.description()).isEqualTo(
-                        roomThemeCreateRequest.description()),
+                        roomThemeRequest.description()),
                 () -> assertThat(roomThemeResponse.thumbnail()).isEqualTo(
-                        roomThemeCreateRequest.thumbnail())
+                        roomThemeRequest.thumbnail())
         );
     }
 
@@ -69,10 +69,10 @@ class RoomThemeServiceTest {
     @Test
     void delete() {
         // given
-        RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출",
+        RoomThemeRequest roomThemeRequest = new RoomThemeRequest("레벨2 탈출",
                 "우테코 레벨2",
                 "https://i.pinimg.com/236x/6e");
-        RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
+        RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeRequest);
         // when
         roomThemeService.deleteById(roomThemeResponse.id());
         // then

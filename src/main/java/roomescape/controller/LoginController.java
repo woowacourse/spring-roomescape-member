@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.request.MemberRequest;
 import roomescape.dto.response.MemberNameResponse;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
@@ -37,7 +38,8 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberNameResponse> checkMemberProfile(Member member) {
+    public ResponseEntity<MemberNameResponse> checkMemberProfile(MemberRequest memberRequest) {
+        Member member = memberService.findMember(memberRequest);
         MemberNameResponse nameResponse = MemberNameResponse.fromMember(member);
         return ResponseEntity.ok().body(nameResponse);
     }

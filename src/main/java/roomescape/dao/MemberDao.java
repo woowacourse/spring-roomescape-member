@@ -33,7 +33,7 @@ public class MemberDao {
                 MAPPER, member.getEmail(), member.getPassword());
     }
 
-    public Member findMemberById(Long id) {
+    public Member findById(Long id) {
         return jdbcTemplate.queryForObject(
                 "SELECT * FROM member WHERE id = ?", MAPPER, id);
     }

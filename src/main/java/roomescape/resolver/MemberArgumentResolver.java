@@ -8,31 +8,30 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dao.MemberDao;
-import roomescape.domain.Member;
+import roomescape.dto.request.MemberRequest;
 import roomescape.service.AuthService;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthService authService;
-    private final MemberDao memberDao;
 
-    public MemberArgumentResolver(AuthService authService, MemberDao memberDao) {
+    public MemberArgumentResolver(AuthService authService) {
         this.authService = authService;
-        this.memberDao = memberDao;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(MemberRequest.class);
     }
 
     @Override
-    public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public MemberRequest resolveArgument(MethodParameter parameter,
+                                         ModelAndViewContainer mavContainer,
+                                         NativeWebRequest webRequest,
+                                         WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         Long memberId = authService.findMemberId(cookies);
-        return memberDao.findMemberById(memberId);
+        return new MemberRequest(memberId);
     }
 }
