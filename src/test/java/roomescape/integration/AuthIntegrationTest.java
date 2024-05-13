@@ -46,7 +46,7 @@ class AuthIntegrationTest extends IntegrationTest {
         @Test
         void 토큰으로_로그인한_사용자_정보를_조회할_수_있다() {
             LoginCheckResponse response = RestAssured.given().log().all()
-                    .header("Cookie", cookieProvider.getCookie())
+                    .cookies(cookieProvider.getCookies())
                     .when().get("/login/check")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value()).extract().as(LoginCheckResponse.class);
@@ -78,7 +78,7 @@ class AuthIntegrationTest extends IntegrationTest {
         @Test
         void 토큰으로_로그아웃_할_수_있다() {
             RestAssured.given().log().all()
-                    .header("Cookie", cookieProvider.getCookie())
+                    .cookies(cookieProvider.getCookies())
                     .when().post("/logout")
                     .then().log().all()
                     .statusCode(HttpStatus.OK.value());
