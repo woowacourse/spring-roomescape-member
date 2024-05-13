@@ -9,11 +9,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 class RoleTest {
 
     @ParameterizedTest
-    @CsvSource(value = {"ADMIN,true", "USER,false"})
-    @DisplayName("관리자인지 판단한다.")
+    @CsvSource(value = {"ADMIN,false", "USER,true"})
+    @DisplayName("관리자 여부를 판단한다.")
     void isAdmin(Role role, boolean expected) {
         // when
-        boolean result = role.isAdmin();
+        boolean result = role.isNotAdmin();
 
         // then
         assertThat(result).isEqualTo(expected);

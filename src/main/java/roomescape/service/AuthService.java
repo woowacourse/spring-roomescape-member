@@ -47,7 +47,7 @@ public class AuthService {
 
     public boolean hasAdminPermission(String tokenValue) {
         Role role = Role.valueOf(jwtTokenProvider.getTokenRole(tokenValue));
-        if (!role.isAdmin()) {
+        if (role.isNotAdmin()) {
             throw new AuthorizationException("권한이 없습니다.");
         }
         return true;
