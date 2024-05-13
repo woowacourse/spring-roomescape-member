@@ -63,7 +63,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void 테마_이름으로_테마를_찾는다() {
         Theme theme = new Theme("테마1", "설명", "썸네일1");
-        theme = themeRepository.save(theme);
+        themeRepository.save(theme);
 
         assertThat(themeRepository.existsByName("테마1")).isTrue();
     }
@@ -71,12 +71,13 @@ class JdbcThemeRepositoryTest {
     @Test
     @Sql("/reservation.sql")
     void 일주일_기준_예약이_많은_순서대로_테마를_반환한다() {
-        List<Theme> popularThemes = themeRepository.findPopularThemes(LocalDate.parse("2024-05-02"));
+        List<Theme> popularThemes = themeRepository.findPopularThemes(LocalDate.parse("2024-05-05"));
+
         assertAll(
                 () -> assertThat(popularThemes).hasSize(3),
-                () -> assertThat(popularThemes.get(0).getId()).isEqualTo(1),
-                () -> assertThat(popularThemes.get(1).getId()).isEqualTo(3),
-                () -> assertThat(popularThemes.get(2).getId()).isEqualTo(2)
+                () -> assertThat(popularThemes.get(0).getId()).isEqualTo(1L),
+                () -> assertThat(popularThemes.get(1).getId()).isEqualTo(3L),
+                () -> assertThat(popularThemes.get(2).getId()).isEqualTo(2L)
         );
     }
 }
