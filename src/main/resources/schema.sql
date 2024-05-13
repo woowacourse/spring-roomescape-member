@@ -9,7 +9,7 @@ CREATE TABLE member
     name     VARCHAR(255) NOT NULL,
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL,
+    role     VARCHAR(20)  NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (email)
 );
@@ -34,10 +34,10 @@ CREATE TABLE theme
 
 CREATE TABLE reservation
 (
-    id       BIGINT      NOT NULL AUTO_INCREMENT,
-    date     DATE        NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    id        BIGINT NOT NULL AUTO_INCREMENT,
+    date      DATE   NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
     member_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),

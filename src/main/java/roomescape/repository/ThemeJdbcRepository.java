@@ -12,21 +12,21 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.ExistingEntryException;
-import roomescape.exception.ReferencedRowExistsException;
+import roomescape.exception.exceptions.ExistingEntryException;
+import roomescape.exception.exceptions.ReferencedRowExistsException;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
-
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-
     private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
     );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
 
     public ThemeJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

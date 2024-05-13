@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.exceptions.InvalidInputException;
 
 public class Theme {
     private final Long id;

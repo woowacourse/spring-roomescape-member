@@ -10,6 +10,4 @@ public interface MemberRepository {
     Member findByMemberId(Long id);
 
     Member findByEmail(String email);
-
-    Member findByEmailAndPassword(String email, String password);
 }

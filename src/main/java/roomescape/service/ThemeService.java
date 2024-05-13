@@ -7,7 +7,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeResponses;
-import roomescape.exception.NotExistingEntryException;
+import roomescape.exception.exceptions.NotExistingEntryException;
 import roomescape.repository.ThemeRepository;
 
 @Service

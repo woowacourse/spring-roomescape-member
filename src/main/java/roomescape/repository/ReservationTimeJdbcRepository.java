@@ -12,19 +12,19 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ExistingEntryException;
-import roomescape.exception.ReferencedRowExistsException;
+import roomescape.exception.exceptions.ExistingEntryException;
+import roomescape.exception.exceptions.ReferencedRowExistsException;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
-
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-
     private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> new ReservationTime(
             resultSet.getLong("id"),
             LocalTime.parse(resultSet.getString("start_at"))
     );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
 
     public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

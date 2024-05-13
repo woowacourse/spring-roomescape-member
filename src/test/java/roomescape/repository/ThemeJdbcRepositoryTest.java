@@ -16,9 +16,8 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
-import roomescape.exception.ExistingEntryException;
-import roomescape.exception.ReferencedRowExistsException;
+import roomescape.exception.exceptions.ExistingEntryException;
+import roomescape.exception.exceptions.ReferencedRowExistsException;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

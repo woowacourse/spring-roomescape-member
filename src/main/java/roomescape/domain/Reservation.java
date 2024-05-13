@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.exceptions.InvalidInputException;
 
 public class Reservation {
 

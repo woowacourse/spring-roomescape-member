@@ -19,14 +19,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.UserName;
-import roomescape.exception.ExistingEntryException;
+import roomescape.exception.exceptions.ExistingEntryException;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
-
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-
     private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
             LocalDate.parse(resultSet.getString("date")),
@@ -48,6 +44,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     Role.valueOf(resultSet.getString("role"))
             )
     );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
 
     public ReservationJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -166,16 +166,16 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = "";
 
         if (memberId != null) {
-            sql += "AND member_id = " + memberId.toString() + " ";
+            sql += "AND member_id = " + memberId + " ";
         }
         if (themeId != null) {
-            sql += "AND theme_id = " + themeId.toString() + " ";
+            sql += "AND theme_id = " + themeId + " ";
         }
         if (dateFrom != null) {
-            sql += "AND r.date >= '" + dateFrom.toString() + "' ";
+            sql += "AND r.date >= '" + dateFrom + "' ";
         }
         if (dateTo != null) {
-            sql += "AND r.date <= '" + dateTo.toString() + "'";
+            sql += "AND r.date <= '" + dateTo + "'";
         }
         sql += ";";
         return sql;

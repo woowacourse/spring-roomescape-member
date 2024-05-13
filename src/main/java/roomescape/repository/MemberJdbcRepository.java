@@ -1,18 +1,14 @@
 package roomescape.repository;
 
 import java.util.List;
-import javax.sql.DataSource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Email;
 import roomescape.domain.Member;
 import roomescape.domain.Password;
 import roomescape.domain.Role;
 import roomescape.domain.UserName;
-import roomescape.exception.NotExistingEntryException;
 
 @Repository
 public class MemberJdbcRepository implements MemberRepository {
@@ -26,13 +22,9 @@ public class MemberJdbcRepository implements MemberRepository {
     );
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public MemberJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public MemberJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id");
     }
 
     public List<Member> findAll() {
@@ -48,14 +40,5 @@ public class MemberJdbcRepository implements MemberRepository {
     public Member findByEmail(String email) {
         String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
         return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
-    }
-
-    public Member findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT id, name, email, password, role FROM member WHERE email = ? AND password = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotExistingEntryException(email + "은 존재하지 않는 사용자입니다.");
-        }
     }
 }

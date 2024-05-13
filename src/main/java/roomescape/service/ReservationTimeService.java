@@ -6,7 +6,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeCreateRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponses;
-import roomescape.exception.NotExistingEntryException;
+import roomescape.exception.exceptions.NotExistingEntryException;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service

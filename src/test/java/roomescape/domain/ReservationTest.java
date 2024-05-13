@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.exceptions.InvalidInputException;
 
 class ReservationTest {
 
@@ -21,7 +21,7 @@ class ReservationTest {
         Member member = new Member(userName, email, password, Role.USER);
 
         //when & then
-        assertThatThrownBy(() -> new Reservation( null, reservationTime, theme, member))
+        assertThatThrownBy(() -> new Reservation(null, reservationTime, theme, member))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 날짜가 입력되지 않았습니다.");
     }

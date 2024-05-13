@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Date;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.exceptions;
 
 public class ReferencedRowExistsException extends CustomException {
 
