@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -86,12 +88,12 @@ class ReservationAcceptanceTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
+                .body("id", notNullValue())
                 .extract().response();
 
         // then
         JsonPath jsonPath = response.jsonPath();
         assertAll(
-                () -> assertThat(jsonPath.getLong("id")).isNotNull(),
                 () -> assertThat(jsonPath.getString("member.email")).isEqualTo(UserFixture.email),
                 () -> assertThat(jsonPath.getString("date")).isEqualTo(UserFixture.tomorrow.toString()),
                 () -> assertThat(jsonPath.getString("theme.name")).isEqualTo(UserFixture.themeName)
@@ -118,11 +120,11 @@ class ReservationAcceptanceTest {
                 .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
+                .body("id", notNullValue())
                 .extract().response();
 
         // then
         assertAll(
-                () -> assertThat(response.jsonPath().getLong("id")).isNotNull(),
                 () -> assertThat(response.jsonPath().getString("member.name")).isEqualTo(AdminFixture.name),
                 () -> assertThat(response.jsonPath().getString("date")).isEqualTo(AdminFixture.tomorrow.toString()),
                 () -> assertThat(response.jsonPath().getString("theme.name")).isEqualTo(AdminFixture.themeName)
@@ -136,9 +138,17 @@ class ReservationAcceptanceTest {
         public static final String themeName = "망쵸는 망쵸다";
         public static final String email = "mangcho@woowa.net";
 
-        public static final Member member = new Member(2L, name, "mangcho@woowa.net", "nothing", "MEMBER");
-        public static final Theme theme = new Theme(2L, themeName, "설명서", "https://i.postimg" +
-                                                                          ".cc/cLqW2JLB/theme-SOS-SOS.jpg");
+        public static final Member member = new Member(
+                2L,
+                name,
+                "mangcho@woowa.net",
+                "nothing",
+                "MEMBER");
+        public static final Theme theme = new Theme(
+                2L,
+                themeName,
+                "설명서",
+                "https://i.postimg.cc/cLqW2JLB/theme-SOS-SOS.jpg");
         public static final ReservationTime time = new ReservationTime(2L, timeAfterOneHour);
     }
 
@@ -148,9 +158,16 @@ class ReservationAcceptanceTest {
         public static final String name = "피케이";
         public static final String themeName = "피케이는 피케이다";
 
-        public static final Member member = new Member(1L, name, "pkpkpkpk@woowa.net", "anything", "ADMIN");
-        public static final Theme theme = new Theme(1L, themeName, "설명서", "https://i.postimg" +
-                                                                          ".cc/cLqW2JLB/theme-SOS-SOS.jpg");
+        public static final Member member = new Member(
+                1L, name,
+                "pkpkpkpk@woowa.net",
+                "anything",
+                "ADMIN");
+        public static final Theme theme = new Theme(
+                1L,
+                themeName,
+                "설명서",
+                "https://i.postimg.cc/cLqW2JLB/theme-SOS-SOS.jpg");
         public static final ReservationTime time = new ReservationTime(1L, timeAfterOneHour);
     }
 }
