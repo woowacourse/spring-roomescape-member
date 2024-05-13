@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static roomescape.TestFixture.*;
+import static roomescape.TestFixture.RESERVATION_TIME_SIX;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,7 @@ import roomescape.TestFixture;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.ReservationExistenceCheck;
 import roomescape.dto.reservation.ReservationFilterParam;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.ReservationTimeResponse;
@@ -53,12 +54,14 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("동일한 테마, 날짜, 시간에 한 팀 이상 예약하려는 경우 예외가 발생한다.")
+    @DisplayName("동일한 테마, 날짜, 시간에 예약이 초과된 경우 예외가 발생한다.")
     void throwExceptionWhenCreateDuplicatedReservation() {
         // given
         final Theme theme = THEME_HORROR(1L);
         final Reservation reservation = new Reservation(TestFixture.MEMBER_MIA(), DATE_MAY_EIGHTH, RESERVATION_TIME_SIX(), theme);
-        given(reservationDao.findAllByDateAndTimeAndThemeId(LocalDate.parse(DATE_MAY_EIGHTH), RESERVATION_TIME_SIX(), theme.getId()))
+        final ReservationExistenceCheck reservationExistenceCheck
+                = new ReservationExistenceCheck(LocalDate.parse(DATE_MAY_EIGHTH), RESERVATION_TIME_SIX().getId(), theme.getId());
+        given(reservationDao.findAllBy(reservationExistenceCheck))
                 .willReturn(List.of(new Reservation(1L, reservation.getMember(), reservation.getDate(),
                         reservation.getTime(), reservation.getTheme())));
 
@@ -104,12 +107,12 @@ class ReservationServiceTest {
         final ReservationFilterParam reservationFilterParam
                 = new ReservationFilterParam(1L, 1L,
                 LocalDate.parse("2034-05-08"), LocalDate.parse("2034-05-28"));
-        given(reservationDao.findAllByThemeAndMemberAndPeriod(any()))
+        given(reservationDao.findAllBy(reservationFilterParam))
                 .willReturn(List.of(reservation1, reservation2));
 
         // when
         final List<ReservationResponse> reservations
-                = reservationService.findAllByThemeAndMemberAndPeriod(reservationFilterParam);
+                = reservationService.findAllBy(reservationFilterParam);
 
         // then
         assertAll(() -> {

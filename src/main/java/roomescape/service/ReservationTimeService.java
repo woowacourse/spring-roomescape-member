@@ -62,7 +62,7 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTimes(final LocalDate date, final Long themeId) {
-        final List<Long> reservations = reservationDao.findAllTimeIdsByDateAndThemeId(date, themeId);
+        final List<Long> reservations = reservationDao.findTimeIdsByDateAndThemeId(date, themeId);
         final Set<Long> reservedTimeIds = new HashSet<>(reservations);
         final List<ReservationTime> times = reservationTimeDao.findAll();
 

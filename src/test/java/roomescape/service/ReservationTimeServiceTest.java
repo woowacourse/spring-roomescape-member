@@ -105,7 +105,7 @@ class ReservationTimeServiceTest {
         final Long themeId = 1L;
         final ReservationTime reservedTime = RESERVATION_TIME_SIX(1L);
 
-        given(reservationDao.findAllTimeIdsByDateAndThemeId(date, themeId)).willReturn(List.of(1L));
+        given(reservationDao.findTimeIdsByDateAndThemeId(date, themeId)).willReturn(List.of(1L));
         given(reservationTimeDao.findAll())
                 .willReturn(List.of(reservedTime, RESERVATION_TIME_SEVEN(2L)));
 

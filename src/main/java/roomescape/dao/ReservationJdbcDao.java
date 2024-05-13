@@ -12,11 +12,11 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.member.Role;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.ReservationExistenceCheck;
 import roomescape.dto.reservation.ReservationFilterParam;
 
 import javax.sql.DataSource;
 import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -83,7 +83,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAllByThemeAndMemberAndPeriod(final ReservationFilterParam param) {
+    public List<Reservation> findAllBy(final ReservationFilterParam param) {
         String sql = RESERVATION_BASIC_SQL;
         sql += "WHERE 1=1 ";
 
@@ -105,14 +105,14 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndTimeAndThemeId(final LocalDate date, final ReservationTime time, final Long themeId) {
+    public List<Reservation> findAllBy(final ReservationExistenceCheck search) {
         String sql = RESERVATION_BASIC_SQL;
-        sql += "WHERE `date` = :date AND t.start_at = :startAt AND th.id = :themeId";
+        sql += "WHERE `date` = :date AND r.time_id = :timeId AND r.theme_id = :themeId";
 
         final SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("date", Date.valueOf(date))
-                .addValue("startAt", Time.valueOf(time.getStartAt()))
-                .addValue("themeId", themeId);
+                .addValue("date", search.date())
+                .addValue("timeId", search.timeId())
+                .addValue("themeId", search.themeId());
         return jdbcTemplate.query(sql, parameterSource, rowMapper);
     }
 
@@ -142,7 +142,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public List<Long> findAllTimeIdsByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<Long> findTimeIdsByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = "SELECT time_id FROM reservation WHERE date = :date AND theme_id = :themeId";
         final SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("date", Date.valueOf(date))

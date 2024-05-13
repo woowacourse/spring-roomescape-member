@@ -11,6 +11,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.ReservationExistenceCheck;
 import roomescape.dto.reservation.ReservationFilterParam;
 
 import java.time.LocalDate;
@@ -75,7 +76,7 @@ class ReservationDaoTest extends DaoTest {
                 theme.getId(), member.getId(), LocalDate.parse(DATE_MAY_EIGHTH), LocalDate.parse(DATE_MAY_NINTH));
 
         // when
-        final List<Reservation> actual = reservationDao.findAllByThemeAndMemberAndPeriod(reservationFilterParam);
+        final List<Reservation> actual = reservationDao.findAllBy(reservationFilterParam);
 
         // then
         assertThat(actual).hasSize(1);
@@ -84,9 +85,12 @@ class ReservationDaoTest extends DaoTest {
     @Test
     @DisplayName("동일 시간대의 예약 목록을 조회한다.")
     void findAllByDateAndTime() {
+        // given
+        final ReservationExistenceCheck reservationExistenceCheck
+                = new ReservationExistenceCheck(LocalDate.parse(DATE_MAY_EIGHTH), reservationTime.getId(), theme.getId());
+
         // when
-        final List<Reservation> actual = reservationDao.findAllByDateAndTimeAndThemeId(
-                LocalDate.parse(DATE_MAY_EIGHTH), reservationTime, 1L);
+        final List<Reservation> actual = reservationDao.findAllBy(reservationExistenceCheck);
 
         // then
         assertThat(actual).hasSize(1);
@@ -143,7 +147,7 @@ class ReservationDaoTest extends DaoTest {
     @DisplayName("날짜와 themeId로 예약 목록을 조회한다.")
     void findAllByDateAndThemeId() {
         // when
-        final List<Long> actual = reservationDao.findAllTimeIdsByDateAndThemeId(
+        final List<Long> actual = reservationDao.findTimeIdsByDateAndThemeId(
                 LocalDate.parse(DATE_MAY_EIGHTH), theme.getId());
 
         // then

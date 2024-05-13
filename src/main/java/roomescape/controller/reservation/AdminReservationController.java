@@ -54,6 +54,6 @@ public class AdminReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findReservationsByThemeAndMemberAndPeriod (
             @ReservationFilter final ReservationFilterParam reservationFilterParam) {
-        return ResponseEntity.ok(reservationService.findAllByThemeAndMemberAndPeriod(reservationFilterParam));
+        return ResponseEntity.ok(reservationService.findAllBy(reservationFilterParam));
     }
 }
