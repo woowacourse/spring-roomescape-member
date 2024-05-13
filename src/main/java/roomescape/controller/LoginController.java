@@ -33,6 +33,8 @@ public class LoginController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest,
                                       HttpServletResponse response) {
         Cookie cookie = new Cookie("token", authService.createToken(loginRequest));
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
