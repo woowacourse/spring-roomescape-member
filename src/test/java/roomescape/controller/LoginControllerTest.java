@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LoginControllerTest {
-    private static final String EMAIL = "test1@email.com";
+    private static final String EMAIL = "testDB@email.com";
     private static final String PASSWORD = "1234";
 
     @LocalServerPort
@@ -32,7 +32,7 @@ class LoginControllerTest {
     @DisplayName("로그인 작업을 수행한다.")
     @Test
     void given_emailPassword_when_logins_then_statusCodeIsOk() {
-        TokenRequest request = new TokenRequest("test1@email.com", "1234");
+        TokenRequest request = new TokenRequest("testDB@email.com", "1234");
         RestAssured.given().log().all()
                 .contentType("application/json")
                 .body(request)
@@ -61,7 +61,7 @@ class LoginControllerTest {
                 .then().log().all()
                 .statusCode(200).extract().as(MemberResponse.class);
 
-        assertThat(client.name()).isEqualTo("dominic");
+        assertThat(client.name()).isEqualTo("어드민");
     }
 
     @DisplayName("로그아웃을 수행한다.")

@@ -46,7 +46,7 @@ class TimeTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(5));
+                .body("size()", is(9));
 
         RestAssured.given().log().all()
                 .when().delete("/times/4")

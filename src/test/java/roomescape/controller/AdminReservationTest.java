@@ -10,7 +10,9 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.dto.request.TokenRequest;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -22,18 +24,30 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminReservationTest {
+    private static final String EMAIL = "testDB@email.com";
+    private static final String PASSWORD = "1234";
     @LocalServerPort
     int port;
+    private String accessToken;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        accessToken = RestAssured
+                .given().log().all()
+                .body(new TokenRequest(EMAIL, PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
     }
 
     @DisplayName("reservation 페이지 조회 요청이 올바르게 연결된다.")
     @Test
     void given_when_GetReservations_then_statusCodeIsOkay() {
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -51,18 +65,21 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(8));
 
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -79,30 +96,11 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @DisplayName("비어있는 이름으로 예약하는 경우 400 오류를 반환한다.")
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {" ", ""})
-    void given_when_saveInvalidName_then_statusCodeIsBadRequest(String invalidName) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", invalidName);
-        reservation.put("date", "2099-01-01");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body(containsString("[ERROR] 이름은 비워둘 수 없습니다."));
     }
 
     @DisplayName("부적절한 날짜로 예약하는 경우 400 오류를 반환한다.")
@@ -118,6 +116,7 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -139,6 +138,7 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -157,6 +157,7 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -175,6 +176,7 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -195,6 +197,7 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -213,6 +216,7 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -231,6 +235,7 @@ class AdminReservationTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
