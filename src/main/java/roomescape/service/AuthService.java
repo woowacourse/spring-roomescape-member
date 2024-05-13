@@ -30,7 +30,7 @@ public class AuthService {
         return cookie;
     }
 
-    public Long findUserNameByCookies(Cookie[] cookies) {
+    public Long findUserIdByCookie(Cookie[] cookies) {
         Cookie cookie = findCookieIfExist(cookies);
         Claims claims = tokenProvider.getPayload(cookie.getValue());
         String payload = claims.get("user_id", String.class);

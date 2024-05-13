@@ -44,7 +44,7 @@ class AuthServiceTest {
         String token = jwtTokenProvider.createToken(user);
         Cookie[] cookies = new Cookie[]{new Cookie("id", token)};
 
-        assertThatThrownBy(() -> authService.findUserNameByCookies(cookies))
+        assertThatThrownBy(() -> authService.findUserIdByCookie(cookies))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 아이디가 token인 쿠키가 없습니다.");
     }
@@ -56,7 +56,7 @@ class AuthServiceTest {
         String token = jwtTokenProvider.createToken(user);
         Cookie[] cookies = new Cookie[]{new Cookie("token", token)};
 
-        Long userId = authService.findUserNameByCookies(cookies);
+        Long userId = authService.findUserIdByCookie(cookies);
 
         assertThat(userId).isEqualTo(1L);
     }
