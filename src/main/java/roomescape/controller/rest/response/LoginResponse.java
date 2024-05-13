@@ -1,4 +1,4 @@
 package roomescape.controller.rest.response;
 
-public record LoginCheckResponse(String name) {
+public record LoginResponse(String name) {
 }
