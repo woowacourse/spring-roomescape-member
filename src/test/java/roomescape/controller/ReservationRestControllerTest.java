@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.http.Cookies;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
@@ -15,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.MemberRequest;
+import roomescape.config.JwtTokenProvider;
+import roomescape.domain.Role;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -24,8 +24,9 @@ import roomescape.service.ReservationService;
 class ReservationRestControllerTest {
 
     @Autowired
+    private JwtTokenProvider tokenProvider;
+    @Autowired
     private ReservationService reservationService;
-    private Cookies cookies;
 
     @LocalServerPort
     int port;
@@ -38,10 +39,7 @@ class ReservationRestControllerTest {
     @Test
     @DisplayName("관리자가 모든 예약을 조회한다.")
     void getAll() {
-        // given
-        loginAdmin();
-
-        // when
+        // given && when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -56,7 +54,8 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 필터 옵션을 적용한 모든 예약을 조회한다.")
     void getAll_filter() {
         // given
-        loginAdmin();
+        String token = tokenProvider.createToken(1L, "관리자", Role.ADMIN.name());
+        Map<String, String> cookies = Map.of(JwtTokenProvider.TOKEN_COOKIE_NAME, token);
 
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -78,7 +77,8 @@ class ReservationRestControllerTest {
     @DisplayName("사용자가 예약을 생성한다.")
     void create() {
         // given
-        loginMember();
+        String token = tokenProvider.createToken(1L, "사용자1", Role.MEMBER.name());
+        Map<String, String> cookies = Map.of(JwtTokenProvider.TOKEN_COOKIE_NAME, token);
         Map<String, String> params = Map.of(
                 "date", "2099-12-31",
                 "timeId", "1",
@@ -104,7 +104,8 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 예약을 생성한다.")
     void adminCreate() {
         // given
-        loginAdmin();
+        String token = tokenProvider.createToken(1L, "관리자", Role.ADMIN.name());
+        Map<String, String> cookies = Map.of(JwtTokenProvider.TOKEN_COOKIE_NAME, token);
         Map<String, String> params = Map.of(
                 "date", "2099-12-31",
                 "timeId", "1",
@@ -131,7 +132,8 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 예약을 같은 날짜, 테마, 시간에 중복된 예약을 생성하려고 하면 BAD_REQUEST를 반환한다.")
     void adminCreate_duplicate_badRequest() {
         // given
-        loginAdmin();
+        String token = tokenProvider.createToken(1L, "관리자", Role.ADMIN.name());
+        Map<String, String> cookies = Map.of(JwtTokenProvider.TOKEN_COOKIE_NAME, token);
         Map<String, String> params = Map.of(
                 "date", "2024-05-10",
                 "timeId", "1",
@@ -139,7 +141,7 @@ class ReservationRestControllerTest {
                 "memberId", "1"
         );
 
-        // when
+        // when && then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookies(cookies)
@@ -153,7 +155,8 @@ class ReservationRestControllerTest {
     @DisplayName("관리자가 해당 id의 예약을 삭제한다.")
     void delete() {
         // given
-        loginAdmin();
+        String token = tokenProvider.createToken(1L, "관리자", Role.ADMIN.name());
+        Map<String, String> cookies = Map.of(JwtTokenProvider.TOKEN_COOKIE_NAME, token);
 
         // when
         RestAssured.given().log().all()
@@ -165,31 +168,5 @@ class ReservationRestControllerTest {
 
         // then
         assertThat(reservations).hasSize(9);
-    }
-
-    void loginAdmin() {
-        MemberRequest memberRequest = new MemberRequest("password", "admin@email.com");
-
-        cookies = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(memberRequest)
-                .when().post("/login")
-                .then().log().all()
-                .extract()
-                .response()
-                .getDetailedCookies();
-    }
-
-    void loginMember() {
-        MemberRequest memberRequest = new MemberRequest("password1", "member1@email.com");
-
-        cookies = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(memberRequest)
-                .when().post("/login")
-                .then().log().all()
-                .extract()
-                .response()
-                .getDetailedCookies();
     }
 }
