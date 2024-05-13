@@ -16,7 +16,7 @@ import io.restassured.http.ContentType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class AdminLoadControllerTest {
+class AdminPageControllerTest {
     @LocalServerPort
     private int port;
 
