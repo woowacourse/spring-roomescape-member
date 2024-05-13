@@ -1,4 +1,4 @@
-package util;
+package roomescape.util;
 
 import io.restassured.RestAssured;
 import org.springframework.http.MediaType;

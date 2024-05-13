@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import util.TokenGenerator;
+import roomescape.util.TokenGenerator;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -27,10 +27,8 @@ public class ReservationApiControllerTest {
     @Test
     @DisplayName("관리자 예약 페이지 요청이 정상적으로 수행된다.")
     void moveToReservationPage_Success() {
-        String token = TokenGenerator.makeAdminToken();
-
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie("token", TokenGenerator.makeAdminToken())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
