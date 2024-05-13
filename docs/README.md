@@ -451,3 +451,25 @@ Content-Type: application/json
     ]
 }
 ```
+
+### API 별 권한
+
+| API Path                  | 권한     |
+|---------------------------|--------|
+| POST /times               | ADMIN  |
+| GET /times                | -      |
+| GET /times/available      | -      |
+| DELETE /times/{id}        | ADMIN  |
+| POST /reservations        | MEMBER |
+| GET /reservations         | ADMIN  |
+| DELETE /reservations/{id} | ADMIN  |
+| GET /admin/reservations   | ADMIN  |
+| POST /admin/reservations  | ADMIN  |
+| POST /themes              | ADMIN  |
+| GET /themes               | -      |
+| GET /themes/tops          | -      |
+| DELETE /themes/{id}       | ADMIN  |
+| GET /members              | ADMIN  |
+| POST /login               | -      |
+| GET /login/check          | -      |
+| GET /logout               | -      |
