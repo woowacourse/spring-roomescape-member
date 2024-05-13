@@ -49,7 +49,7 @@ public class ReservationController {
         return ResponseEntity.created(createdUri(response.id())).body(response);
     }
 
-    private static URI createdUri(Long reservationId) {
+    private URI createdUri(Long reservationId) {
         return URI.create("/reservations/" + reservationId);
     }
 
