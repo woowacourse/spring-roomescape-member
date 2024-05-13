@@ -14,6 +14,8 @@ import roomescape.exception.AuthorizationException;
 public class JwtTokenProvider {
 
     public static final String TOKEN_NAME = "token";
+    private static final String MEMBER_NAME_KEY = "name";
+    private static final String MEMBER_ROLE_KEY = "role";
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
@@ -30,8 +32,8 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole().name())
+                .claim(MEMBER_NAME_KEY, member.getName())
+                .claim(MEMBER_ROLE_KEY, member.getRole().name())
                 .setExpiration(validity)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
@@ -54,7 +56,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return (String) body.get("role");
+        return (String) body.get(MEMBER_ROLE_KEY);
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
