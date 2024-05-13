@@ -21,11 +21,14 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         Role role = authService.findRoleByCookie(request.getCookies());
-        if (role == null || role.equals(Role.ADMIN)) {
-
+        if (isAdmin(role)) {
             return true;
         }
         response.setStatus(HttpStatus.FORBIDDEN.value());
         return false;
+    }
+
+    private boolean isAdmin(Role role) {
+        return role == Role.ADMIN;
     }
 }
