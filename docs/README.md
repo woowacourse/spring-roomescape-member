@@ -55,7 +55,8 @@
   - [x] `HandlerMethodArgumentResolver` 사용하여 쿠키를 `Member` 객체로 변환 
 - [x] 예약 생성 API 리팩터링
 
-### 리팩토링 목록
+## 6단계
 
-- [ ] `findBy...()` 메서드 `try-catch` 구문으로 감싸기
-- 
+- [ ] 어드민 진입 권한 제한
+  - [ ] HandlerInterceptor를 사용해 권한 확인
+- [ ] 예약자, 테마, from, to 를 선택해 예약 검색
