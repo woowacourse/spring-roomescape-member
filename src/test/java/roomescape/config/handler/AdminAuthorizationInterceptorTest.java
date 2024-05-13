@@ -21,13 +21,13 @@ import roomescape.auth.exception.AdminAuthorizationException;
 import roomescape.auth.service.AuthService;
 
 @ExtendWith(MockitoExtension.class)
-class AdminAuthenticationInterceptorTest {
+class AdminAuthorizationInterceptorTest {
     @Mock
     private TokenCookieManager tokenCookieManager;
     @Mock
     private AuthService authService;
     @InjectMocks
-    private AdminAuthenticationInterceptor adminAuthenticationInterceptor;
+    private AdminAuthorizationInterceptor adminAuthorizationInterceptor;
 
     @DisplayName("관리자는 접근이 가능하다.")
     @Test
@@ -38,7 +38,7 @@ class AdminAuthenticationInterceptorTest {
         given(tokenCookieManager.getToken(any())).willReturn(null);
         given(authService.findLoggedInMember(any())).willReturn(member);
 
-        boolean actual = adminAuthenticationInterceptor.preHandle(request, response, null);
+        boolean actual = adminAuthorizationInterceptor.preHandle(request, response, null);
 
         assertThat(actual).isTrue();
     }
@@ -52,7 +52,7 @@ class AdminAuthenticationInterceptorTest {
         given(tokenCookieManager.getToken(any())).willReturn(null);
         given(authService.findLoggedInMember(any())).willReturn(member);
 
-        assertThatThrownBy(() -> adminAuthenticationInterceptor.preHandle(request, response, null))
+        assertThatThrownBy(() -> adminAuthorizationInterceptor.preHandle(request, response, null))
                 .isInstanceOf(AdminAuthorizationException.class);
     }
 }

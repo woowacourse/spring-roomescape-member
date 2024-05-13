@@ -10,11 +10,11 @@ import roomescape.auth.exception.AdminAuthorizationException;
 import roomescape.auth.service.AuthService;
 
 @Component
-public class AdminAuthenticationInterceptor implements HandlerInterceptor {
+public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     private final TokenCookieManager tokenCookieManager;
     private final AuthService authService;
 
-    public AdminAuthenticationInterceptor(TokenCookieManager tokenCookieManager, AuthService authService) {
+    public AdminAuthorizationInterceptor(TokenCookieManager tokenCookieManager, AuthService authService) {
         this.tokenCookieManager = tokenCookieManager;
         this.authService = authService;
     }

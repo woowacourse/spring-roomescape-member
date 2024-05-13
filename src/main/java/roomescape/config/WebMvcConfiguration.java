@@ -5,18 +5,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.config.handler.AdminAuthenticationInterceptor;
+import roomescape.config.handler.AdminAuthorizationInterceptor;
 import roomescape.config.handler.AuthenticationArgumentResolver;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final AuthenticationArgumentResolver authenticationArgumentResolver;
-    private final AdminAuthenticationInterceptor adminAuthenticationInterceptor;
+    private final AdminAuthorizationInterceptor adminAuthorizationInterceptor;
 
     public WebMvcConfiguration(AuthenticationArgumentResolver authenticationArgumentResolver,
-                               AdminAuthenticationInterceptor adminAuthenticationInterceptor) {
+                               AdminAuthorizationInterceptor adminAuthorizationInterceptor) {
         this.authenticationArgumentResolver = authenticationArgumentResolver;
-        this.adminAuthenticationInterceptor = adminAuthenticationInterceptor;
+        this.adminAuthorizationInterceptor = adminAuthorizationInterceptor;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminAuthenticationInterceptor)
+        registry.addInterceptor(adminAuthorizationInterceptor)
                 .addPathPatterns("/admin/**");
     }
 }
