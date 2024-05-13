@@ -13,14 +13,14 @@ import roomescape.service.JwtService;
 import roomescape.utils.CookieUtils;
 
 @Component
-public class JwtAuthInterceptor implements HandlerInterceptor {
+public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private static final String AUTHORITY = "role";
     private static final String TOKEN = "token";
 
     private final JwtService jwtService;
 
-    public JwtAuthInterceptor(JwtService jwtService) {
+    public AdminCheckInterceptor(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 

@@ -10,12 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
-    private final JwtAuthInterceptor jwtAuthInterceptor;
+    private final AdminCheckInterceptor adminCheckInterceptor;
 
     public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver,
-                     JwtAuthInterceptor jwtAuthInterceptor) {
+                     AdminCheckInterceptor adminCheckInterceptor) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
-        this.jwtAuthInterceptor = jwtAuthInterceptor;
+        this.adminCheckInterceptor = adminCheckInterceptor;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtAuthInterceptor)
+        registry.addInterceptor(adminCheckInterceptor)
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/error", "/css/**");
     }
