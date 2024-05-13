@@ -57,6 +57,6 @@
 
 ## 6단계
 
-- [ ] 어드민 진입 권한 제한
-  - [ ] HandlerInterceptor를 사용해 권한 확인
+- [x] 어드민 진입 권한 제한
+  - [x] HandlerInterceptor를 사용해 권한 확인
 - [ ] 예약자, 테마, from, to 를 선택해 예약 검색
