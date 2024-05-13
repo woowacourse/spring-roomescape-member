@@ -31,11 +31,12 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public List<Reservation> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        System.out.println("reservations.size() = " + reservations.size());
         return reservations.stream()
                 .filter(reservation -> reservation.getTheme().getId() == themeId
                         && reservation.getMember().getId() == memberId
-                        && dateFrom.isAfter(reservation.getDate())
-                        && dateTo.isBefore(reservation.getDate()))
+                        && dateTo.isAfter(reservation.getDate())
+                        && dateFrom.isBefore(reservation.getDate()))
                 .toList();
     }
 
@@ -84,5 +85,10 @@ public class FakeReservationDao implements ReservationDao {
     public void clear() {
         index.set(1L);
         reservations.clear();
+    }
+
+    public int size() {
+        System.out.println("reservations = " + reservations);
+        return reservations.size();
     }
 }
