@@ -15,7 +15,7 @@ import org.springframework.http.MediaType;
 import roomescape.service.dto.LoginCheckResponse;
 import roomescape.service.dto.LoginRequest;
 
-class AuthIntegrationTest extends IntegrationTest {
+class LoginIntegrationTest extends IntegrationTest {
     @Nested
     @DisplayName("로그인 API")
     class Login {

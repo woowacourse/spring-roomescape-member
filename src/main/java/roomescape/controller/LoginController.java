@@ -12,25 +12,25 @@ import roomescape.controller.helper.CookieExtractor;
 import roomescape.controller.helper.LoginMember;
 import roomescape.controller.helper.RoleAllowed;
 import roomescape.domain.Member;
-import roomescape.service.AuthService;
+import roomescape.service.LoginService;
 import roomescape.service.dto.LoginCheckResponse;
 import roomescape.service.dto.LoginRequest;
 import roomescape.service.dto.SignupRequest;
 import roomescape.service.dto.SignupResponse;
 
 @RestController
-public class AuthController {
-    private final AuthService authService;
+public class LoginController {
+    private final LoginService loginService;
     private final CookieExtractor cookieExtractor;
 
-    public AuthController(AuthService authService, CookieExtractor cookieExtractor) {
-        this.authService = authService;
+    public LoginController(LoginService loginService, CookieExtractor cookieExtractor) {
+        this.loginService = loginService;
         this.cookieExtractor = cookieExtractor;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String token = authService.login(request);
+        String token = loginService.login(request);
         Cookie cookie = cookieExtractor.createCookie(token);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
@@ -39,7 +39,7 @@ public class AuthController {
     @RoleAllowed
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> loginCheck(@LoginMember Member member) {
-        LoginCheckResponse response = authService.loginCheck(member);
+        LoginCheckResponse response = loginService.loginCheck(member);
         return ResponseEntity.ok().body(response);
     }
 
@@ -53,7 +53,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
-        SignupResponse response = authService.signup(request);
+        SignupResponse response = loginService.signup(request);
         return ResponseEntity.created(URI.create("/members/" + response.getId())).body(response);
     }
 }

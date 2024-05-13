@@ -14,11 +14,11 @@ import roomescape.service.dto.SignupResponse;
 import roomescape.service.helper.JwtTokenProvider;
 
 @Service
-public class AuthService {
+public class LoginService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public LoginService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
