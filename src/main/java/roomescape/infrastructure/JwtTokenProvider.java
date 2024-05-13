@@ -1,5 +1,6 @@
 package roomescape.infrastructure;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -40,20 +41,11 @@ public class JwtTokenProvider {
 
     public Member getMember(String token) {
         try {
-            Long id = Long.parseLong(Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody()
+            Long id = Long.parseLong(getBody(token)
                     .getSubject());
-            String name = Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody()
+            String name = getBody(token)
                     .get("name", String.class);
-            Role role = Role.of(Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody()
+            Role role = Role.of(getBody(token)
                     .get("role", String.class));
 
             return new Member(id, name, role);
@@ -62,5 +54,12 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException exception) {
             throw new AuthorizationException("인증 정보를 확인할 수 없습니다.");
         }
+    }
+
+    private Claims getBody(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
