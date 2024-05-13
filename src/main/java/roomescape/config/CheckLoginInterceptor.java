@@ -27,6 +27,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         final Cookie[] cookies = request.getCookies();
         final String token = extractTokenFromCookie(cookies);
         if (token == null) {
+            response.sendRedirect("/login");
             return false;
         }
         try {
