@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,19 +15,26 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.member.domain.Member;
+import roomescape.member.security.crypto.JwtTokenProvider;
 import roomescape.theme.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class ThemeIntegrationTest {
+class ThemeIntegrationTest {
 
     @LocalServerPort
     private int port;
 
+    private String token;
+
     @BeforeEach
-    void setPort() {
+    void setUp() {
         RestAssured.port = port;
+        Member member = new Member("valid", "e@m.com", "pass");
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("secret-key", 99999999999L);
+        token = jwtTokenProvider.createToken(member, new Date());
     }
 
     @Test
@@ -36,6 +44,7 @@ public class ThemeIntegrationTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(themeRequest)
                 .when()
                 .post("/themes")
@@ -43,6 +52,7 @@ public class ThemeIntegrationTest {
                 .statusCode(201);
 
         RestAssured.given()
+                .cookie("token", token)
                 .when()
                 .get("/themes")
                 .then()
@@ -55,12 +65,14 @@ public class ThemeIntegrationTest {
     void deleteReservationTheme_ShouldReturnNOCONTENT_WhenDeleteSuccessfully() {
 
         RestAssured.given()
+                .cookie("token", token)
                 .when()
                 .delete("/themes/2")
                 .then()
                 .statusCode(204);
 
         RestAssured.given()
+                .cookie("token", token)
                 .when()
                 .get("/themes")
                 .then()

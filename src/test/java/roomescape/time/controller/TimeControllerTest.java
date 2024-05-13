@@ -13,17 +13,22 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.member.security.service.MemberAuthService;
+import roomescape.member.service.MemberService;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
 import roomescape.time.service.TimeService;
 
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(TimeController.class)
 class TimeControllerTest {
 
@@ -34,6 +39,10 @@ class TimeControllerTest {
 
     @MockBean
     private TimeService timeService;
+    @MockBean
+    private MemberService memberService;
+    @MockBean
+    private MemberAuthService memberAuthService;
 
     @Test
     @DisplayName("시간을 잘 저장하는지 확인한다.")

@@ -9,9 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,7 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.member.domain.Member;
+import roomescape.member.security.crypto.JwtTokenProvider;
+import roomescape.member.security.service.MemberAuthService;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -29,6 +37,8 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 @WebMvcTest(ReservationController.class)
+@TestPropertySource(properties = {"security.jwt.token.secret-key=test_secret_key",
+                                  "security.jwt.token.expire-length=3600000"})
 class ReservationControllerTest {
 
     private final Reservation reservation = new Reservation(1L, "polla", LocalDate.MAX,
@@ -40,11 +50,24 @@ class ReservationControllerTest {
 
     @MockBean
     private ReservationService reservationService;
+    @MockBean
+    private MemberService memberService;
+    @MockBean
+    private MemberAuthService memberAuthService;
+
+    private String token;
+
+    @BeforeEach
+    void setUp() {
+        Member member = new Member("valid", "e@m.com", "pass");
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("secret-key", 99999999999L);
+        token = jwtTokenProvider.createToken(member, new Date());
+    }
 
     @Test
     @DisplayName("예약 정보를 정상적으로 저장하는지 확인한다.")
     void createReservation() throws Exception {
-        Mockito.when(reservationService.addReservation(any()))
+        Mockito.when(reservationService.addReservation(any(), any()))
                 .thenReturn(ReservationResponse.fromReservation(reservation));
 
         String content = new ObjectMapper()
@@ -52,6 +75,7 @@ class ReservationControllerTest {
                 .writeValueAsString(new ReservationRequest(reservation.getDate(), "polla", 1L, 1L));
 
         mockMvc.perform(post("/reservations")
+                        .cookie(new Cookie("token", token))
                         .content(content)
                         .contentType("application/Json")
                         .accept(MediaType.APPLICATION_JSON)

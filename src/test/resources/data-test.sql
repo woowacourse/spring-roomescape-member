@@ -27,7 +27,3 @@ VALUES ('도비', 'kimdobby@wootaeco.com', 'pass1'),
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('도비', CURRENT_DATE(), 1, 1),
        ('피케이', CURRENT_DATE(), 2, 1);
-
-INSERT INTO member_reservation(member_id, reservation_id)
-VALUES (3, 1),
-       (3, 2);
