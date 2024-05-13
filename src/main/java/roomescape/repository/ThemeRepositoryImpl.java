@@ -26,12 +26,18 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public Long save(final Theme theme) {
+    public Theme save(final Theme theme) {
         final SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Theme(
+                id,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
     }
 
     @Override

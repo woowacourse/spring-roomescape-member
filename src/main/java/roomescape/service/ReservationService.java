@@ -75,8 +75,7 @@ public class ReservationService {
 
         validateDateTimeIsNotPast(reservation, time);
         validateDuplicatedReservation(reservation, time);
-        final Long id = reservationRepository.save(reservation);
-        return new Reservation(id, member, reservation.getDate(), time, theme);
+        return reservationRepository.save(reservation);
     }
 
     private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {

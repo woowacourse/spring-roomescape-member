@@ -28,13 +28,20 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Long save(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         final SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTimeId())
                 .addValue("theme_id", reservation.getThemeId())
                 .addValue("member_id", reservation.getMemberId());
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Reservation(
+                id,
+                reservation.getMember(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override

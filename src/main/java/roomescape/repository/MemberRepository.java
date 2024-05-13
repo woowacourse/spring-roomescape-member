@@ -4,7 +4,7 @@ import java.util.List;
 import roomescape.domain.Member;
 
 public interface MemberRepository {
-    Long save(final Member member);
+    Member save(final Member member);
 
     boolean hasDuplicateEmail(final String email);
 

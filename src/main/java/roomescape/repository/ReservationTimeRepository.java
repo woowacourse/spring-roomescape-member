@@ -5,7 +5,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationTimeWithStateDto;
 
 public interface ReservationTimeRepository {
-    Long save(final ReservationTime reservationTime);
+    ReservationTime save(final ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
 

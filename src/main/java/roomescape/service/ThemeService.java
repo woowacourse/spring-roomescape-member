@@ -23,8 +23,7 @@ public class ThemeService {
     public Theme create(final ThemeRequestDto request) {
         final Theme theme = new Theme(request.getName(), request.getDescription(), request.getThumbnail());
         validateDuplicatedName(theme);
-        final Long id = themeRepository.save(theme);
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)

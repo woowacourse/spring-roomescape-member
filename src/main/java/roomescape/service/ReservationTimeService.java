@@ -31,8 +31,7 @@ public class ReservationTimeService {
     public ReservationTime create(final ReservationTimeRequestDto request) {
         final ReservationTime time = new ReservationTime(request.getStartAt());
         validateDuplicatedStartAt(time);
-        final Long id = reservationTimeRepository.save(time);
-        return new ReservationTime(id, time.getStartAt());
+        return reservationTimeRepository.save(time);
     }
 
     @Transactional(readOnly = true)

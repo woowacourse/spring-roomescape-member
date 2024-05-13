@@ -26,14 +26,7 @@ public class MemberService {
                 Role.MEMBER
         );
         validateDuplicatedEmail(member.getEmail());
-        final Long id = memberRepository.save(member);
-        return new Member(
-                id,
-                request.getName(),
-                request.getEmail(),
-                request.getPassword(),
-                Role.MEMBER
-        );
+        return memberRepository.save(member);
     }
 
     @Transactional(readOnly = true)

@@ -26,13 +26,20 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Long save(final Member member) {
+    public Member save(final Member member) {
         final SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
                 .addValue("role", member.getRoleName());
-        return jdbcInsert.executeAndReturnKey(parameters).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Member(
+                id,
+                member.getName(),
+                member.getEmail(),
+                member.getPassword(),
+                member.getRoleName()
+        );
     }
 
     @Override

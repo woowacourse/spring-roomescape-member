@@ -4,7 +4,7 @@ import java.util.List;
 import roomescape.domain.Theme;
 
 public interface ThemeRepository {
-    Long save(final Theme theme);
+    Theme save(final Theme theme);
 
     List<Theme> findAll();
 
