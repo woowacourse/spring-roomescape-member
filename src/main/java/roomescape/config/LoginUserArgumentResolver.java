@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -10,6 +10,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.MemberId;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
+import roomescape.infrastructure.TokenProvider;
 
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {

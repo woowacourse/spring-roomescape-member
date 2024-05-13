@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Role;
+import roomescape.infrastructure.TokenProvider;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
