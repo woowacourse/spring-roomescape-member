@@ -28,7 +28,7 @@ public class MemberAuthValidateInterceptor implements HandlerInterceptor {
                 .orElseThrow(AuthenticationException::new);
 
         Role role = tokenParser.getRole(accessToken);
-        if (!role.isMember()) {
+        if (!role.isMember() && !role.isAdmin()) {
             throw new AuthorizationException();
         }
 
