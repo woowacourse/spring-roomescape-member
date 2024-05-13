@@ -27,9 +27,9 @@ public class JwtProvider {
         Instant expiredAt = Instant.now().plusSeconds(expirationSeconds);
 
         return Jwts.builder()
-                .subject(String.valueOf(authUser.id()))
-                .claim(NAME, authUser.name())
-                .claim(ROLE, authUser.role())
+                .subject(String.valueOf(authUser.getId()))
+                .claim(NAME, authUser.getName())
+                .claim(ROLE, authUser.getRole())
                 .expiration(Date.from(expiredAt))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
