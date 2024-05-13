@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,12 +39,11 @@ public class JwtTokenProvider {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(TOKEN)) {
-                return cookie.getValue();
-            }
-        }
-        throw new IllegalArgumentException("토큰이 존재하지 않습니다");
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(TOKEN))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다"))
+                .getValue();
     }
 
     public String getRoleByCookie(Cookie[] cookies) {
