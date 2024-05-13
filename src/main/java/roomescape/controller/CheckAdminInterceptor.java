@@ -9,11 +9,11 @@ import roomescape.exception.AuthorizationException;
 import roomescape.util.JwtTokenProvider;
 
 @Component
-public class CheckAuthInterceptor implements HandlerInterceptor {
+public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider tokenProvider;
 
-    public CheckAuthInterceptor(JwtTokenProvider tokenProvider) {
+    public CheckAdminInterceptor(JwtTokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
