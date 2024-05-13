@@ -12,6 +12,7 @@ import roomescape.member.dto.MemberProfileInfo;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.AdminReservationRequest;
+import roomescape.reservation.dto.ReservationConditionSearchRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeAvailabilityResponse;
@@ -50,14 +51,15 @@ public class ReservationService {
         Time time = timeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
         Member member = memberDao.findById(reservationRequest.memberId());
-        Reservation reservation = new Reservation(member.getName(),reservationRequest.date(), time, theme);
+        Reservation reservation = new Reservation(member.getName(), reservationRequest.date(), time, theme);
         Reservation savedReservation = reservationDao.save(reservation);
         reservationDao.saveMemberReservation(savedReservation.getId(), member.getId());
         return ReservationResponse.fromReservation(savedReservation);
     }
 
     private void validateReservationRequest(ReservationRequest reservationRequest, Time time) {
-        if (reservationRequest.date().isBefore(LocalDate.now())) {
+        if (reservationRequest.date()
+                .isBefore(LocalDate.now())) {
             throw new IllegalReservationDateTimeRequestException("지난 날짜의 예약을 시도하였습니다.");
         }
         validateDuplicateReservation(reservationRequest, time);
@@ -84,6 +86,17 @@ public class ReservationService {
 
         return allTimes.stream()
                 .map(time -> ReservationTimeAvailabilityResponse.fromTime(time, isTimeBooked(time, bookedTimes)))
+                .toList();
+    }
+
+    public List<ReservationResponse> findReservationsByConditions(ReservationConditionSearchRequest request) {
+        List<Long> reservationIds = reservationDao.findReservationIdsByMemberId(request.memberId());
+        List<Reservation> reservations = reservationIds.stream()
+                .map(reservationDao::findByIdOrderByDate)
+                .toList();
+        return reservations.stream()
+                .filter(reservation -> reservation.isReservedAtPeriod(request.dateFrom(), request.dateTo()))
+                .map(ReservationResponse::fromReservation)
                 .toList();
     }
 

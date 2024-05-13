@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.dto.MemberProfileInfo;
 import roomescape.reservation.dto.AdminReservationRequest;
+import roomescape.reservation.dto.ReservationConditionSearchRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeAvailabilityResponse;
@@ -39,14 +40,30 @@ public class ReservationController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody AdminReservationRequest adminReservationRequest) {
-        ReservationResponse reservationUpdateResponse = reservationService.addReservation(adminReservationRequest);
-        return ResponseEntity.ok(reservationUpdateResponse);
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody AdminReservationRequest adminReservationRequest) {
+        ReservationResponse reservationCreateResponse = reservationService.addReservation(adminReservationRequest);
+        URI uri = URI.create("/reservations/" + reservationCreateResponse.id());
+        return ResponseEntity.created(uri)
+                .body(reservationCreateResponse);
     }
+
 
     @GetMapping("/reservations")
     public List<ReservationResponse> reservaionList() {
         return reservationService.findReservations();
+    }
+
+    @GetMapping("/admin/reservations/search")
+    public List<ReservationResponse> reservationListInCondition(
+            @RequestParam("themeId") long themeId,
+            @RequestParam("memberId") long memberId,
+            @RequestParam("dateFrom") LocalDate dateFrom,
+            @RequestParam("dateTo") LocalDate dateTo
+    ) {
+        ReservationConditionSearchRequest request = new ReservationConditionSearchRequest(memberId, themeId, dateFrom,
+                dateTo);
+        return reservationService.findReservationsByConditions(request);
     }
 
     @GetMapping("/reservations/times/{themeId}")

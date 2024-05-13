@@ -90,6 +90,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public boolean isReservedAtPeriod(LocalDate start, LocalDate end) {
+        return  date.isAfter(start) && date.isBefore(end);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
