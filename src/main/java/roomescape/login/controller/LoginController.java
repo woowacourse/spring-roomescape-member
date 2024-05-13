@@ -11,24 +11,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.login.dto.LoginRequest;
-import roomescape.login.service.LoginService;
 import roomescape.member.dto.MemberNameResponse;
+import roomescape.member.service.MemberService;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
 
     private static final String TOKEN = "token";
-    private final LoginService loginService;
+    private final MemberService memberService;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response)
             throws AuthenticationException {
-        String token = loginService.createLoginToken(loginRequest);
+        String token = memberService.createMemberToken(loginRequest);
 
         Cookie cookie = new Cookie(TOKEN, token);
         cookie.setPath("/");
