@@ -43,7 +43,6 @@ class ThemeApiTest {
     @Test
     void 테마_단일_조회() {
         ThemeRequest themeRequest = createThemeRequest();
-
         addTheme(themeRequest);
 
         RestAssured.given().log().all()
@@ -62,7 +61,6 @@ class ThemeApiTest {
     @Test
     void 테마_전체_조회() {
         ThemeRequest themeRequest = createThemeRequest();
-
         addTheme(themeRequest);
 
         RestAssured.given().log().all()
@@ -78,7 +76,6 @@ class ThemeApiTest {
     @Test
     void 테마_삭제() {
         ThemeRequest themeRequest = createThemeRequest();
-
         addTheme(themeRequest);
 
         RestAssured.given().log().all()
