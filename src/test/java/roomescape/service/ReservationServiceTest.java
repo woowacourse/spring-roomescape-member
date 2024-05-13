@@ -6,28 +6,27 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.dao.JdbcMemberDao;
 import roomescape.dao.JdbcReservationDao;
 import roomescape.dao.JdbcReservationTimeDao;
 import roomescape.dao.JdbcThemeDao;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.fixture.MemberFixtures;
 import roomescape.fixture.ReservationFixtures;
 import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
@@ -43,6 +42,8 @@ class ReservationServiceTest {
     @Autowired
     private JdbcThemeDao themeDao;
     @Autowired
+    private JdbcMemberDao memberDao;
+    @Autowired
     private ReservationService reservationService;
 
     @Test
@@ -50,10 +51,11 @@ class ReservationServiceTest {
     void findAll() {
         //given
         Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
+        Member member = memberDao.create(MemberFixtures.createUserMember("daon"));
         ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
         ReservationTime time2 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:20"));
-        Reservation reservation1 = ReservationFixtures.createReservation(time1, theme);
-        Reservation reservation2 = ReservationFixtures.createReservation(time2, theme);
+        Reservation reservation1 = ReservationFixtures.createReservation(member, time1, theme);
+        Reservation reservation2 = ReservationFixtures.createReservation(member, time2, theme);
         reservationDao.create(reservation1);
         reservationDao.create(reservation2);
 
@@ -62,7 +64,6 @@ class ReservationServiceTest {
 
         //then
         assertThat(results).hasSize(2);
-
     }
 
     @Test
@@ -74,14 +75,15 @@ class ReservationServiceTest {
         ReservationTime reservationTime1 = ReservationTimeFixtures.createReservationTime("12:02");
         ReservationTime reservationTime2 = ReservationTimeFixtures.createReservationTime("12:20");
 
+        Member member = memberDao.create(MemberFixtures.createUserMember("daon"));
         Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
         ReservationTime time1 = reservationTimeDao.create(reservationTime1);
         reservationTimeDao.create(reservationTime2);
-        reservationDao.create(ReservationFixtures.createReservation(today.toString(), time1, theme));
+        reservationDao.create(ReservationFixtures.createReservation(member, today.toString(), time1, theme));
 
         //when
         List<AvailableReservationResponse> responses
-                = reservationService.findTimeByDateAndThemeID(today.toString(), theme.getId(), now);
+                = reservationService.findTimeByDateAndThemeID(today.toString(), theme.getId());
         AvailableReservationResponse alreadyBooked = responses.get(0);
         AvailableReservationResponse notBooked = responses.get(1);
 
@@ -104,20 +106,19 @@ class ReservationServiceTest {
             LocalDate tomorrow = today.plusDays(1);
             String givenName = "wooteco";
             String givenDate = tomorrow.toString();
+            Member member = memberDao.create(MemberFixtures.createUserMember(givenName));
             ReservationTime reservationTime =
                     reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest givenRequest =
-                    ReservationFixtures.createReservationCreateRequest(
-                            givenName, givenDate, reservationTime.getId(), theme.getId()
-                    );
+            ReservationCreateRequest request =
+                    ReservationFixtures.getReservationCreateRequest(givenDate, reservationTime.getId(), theme.getId());
 
             //when
-            ReservationResponse result = reservationService.add(givenRequest, now);
+            ReservationResponse result = reservationService.add(member, request, now);
 
             //then
             assertAll(
-                    () -> assertThat(result.getName()).isEqualTo(givenName),
+                    () -> assertThat(result.getMember().getName()).isEqualTo(givenName),
                     () -> assertThat(result.getDate()).isEqualTo(givenDate),
                     () -> assertThat(reservationService.findAll()).hasSize(1)
             );
@@ -128,13 +129,15 @@ class ReservationServiceTest {
         void addNotExistTimeId() {
             //given
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             long given = -1L;
-            ReservationCreateRequest givenRequest = ReservationFixtures.createReservationCreateRequest(given, 1L);
+            ReservationCreateRequest givenRequest = ReservationFixtures.getReservationCreateRequest(given, 1L);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(givenRequest, now))
-                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> reservationService.add(member, givenRequest, now))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
         }
 
         @Test
@@ -142,98 +145,15 @@ class ReservationServiceTest {
         void addNotExistThemeId() {
             //given
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:24"));
             long given = -1L;
-            ReservationCreateRequest givenRequest = ReservationFixtures.createReservationCreateRequest(1L, given);
+            ReservationCreateRequest givenRequest = ReservationFixtures.getReservationCreateRequest(1L, given);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(givenRequest, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @DisplayName("예약자명에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
-        void createReservationByNullOrEmptyName(String given) {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
-            LocalDate tomorrow = today.plusDays(1);
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest(given, tomorrow.toString(), 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @DisplayName("예약 날짜에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
-        void createReservationByNullOrEmptyDate(String given) {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", given, 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {"24-02-04", "2024;04;24"})
-        @DisplayName("예약 날짜가 yyyy-MM-dd 형식이 아닌 경우 예외가 발생한다.")
-        void createReservationByInvalidDate(String given) {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", given, 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("지나간 날짜에 대한 예약을 추가하면 예외가 발생한다.")
-        void createReservationByPastDate() {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
-            LocalDate pastDay = today.minusDays(1);
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", pastDay.toString(), 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("지나간 시간에 대한 예약을 추가하면 예외가 발생한다.")
-        void createReservationByPastTime() {
-            //given
-            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
-            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
-            LocalTime currentTime = LocalTime.of(now.getHour(), now.getMinute());
-            LocalTime pastTime = currentTime.minusHours(1);
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime(pastTime.toString()));
-            themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", today.toString(), 1L, 1L);
-
-            //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> reservationService.add(member, givenRequest, now))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("테마 아이디에 해당하는 테마가 존재하지 않습니다.");
         }
 
         @Test
@@ -243,14 +163,16 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            reservationService.add(member, request, now);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request, now))
-                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> reservationService.add(member, request, now))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("이미 예약이 있어 추가할 수 없습니다.");
         }
     }
 
@@ -264,10 +186,11 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            reservationService.add(member, request, now);
             long givenId = 1L;
 
             //when
@@ -285,15 +208,17 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            reservationService.add(member, request, now);
             Long givenId = null;
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 아이디는 비어있을 수 없습니다.");
         }
 
         @Test
@@ -303,15 +228,17 @@ class ReservationServiceTest {
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
             LocalDate tomorrow = today.plusDays(1);
+            Member member = memberDao.create(MemberFixtures.createUserMember("다온"));
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
-            reservationService.add(request, now);
+            ReservationCreateRequest request = ReservationCreateRequest.of(tomorrow.toString(), 1L, 1L);
+            reservationService.add(member, request, now);
             long givenId = -1L;
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("예약 아이디에 해당하는 예약이 존재하지 않습니다.");
         }
     }
 }

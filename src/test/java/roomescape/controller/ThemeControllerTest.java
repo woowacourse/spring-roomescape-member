@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,7 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +20,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.config.AuthenticationExtractor;
+import roomescape.domain.member.Member;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.fixture.MemberFixtures;
+import roomescape.service.AuthService;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
@@ -30,6 +37,17 @@ class ThemeControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private ThemeService themeService;
+    @MockBean
+    private AuthService authService;
+    @MockBean
+    private AuthenticationExtractor authenticationExtractor;
+
+    @BeforeEach
+    void setUp() {
+        Member member = MemberFixtures.createUserMember("daon");
+        given(authService.findAuthInfo(anyString())).willReturn(member);
+        given(authenticationExtractor.extractAuthInfo(any(HttpServletRequest.class))).willReturn(member);
+    }
 
     @Test
     @DisplayName("전체 테마를 조회한다.")

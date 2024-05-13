@@ -306,3 +306,50 @@ id : long
     - [x] `일주일을 기준으로` 예약이 많은 테마 10개 확인
         - 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회
     - [x] 테스트 만들기
+
+## 4단계 요구사항
+
+- [x] 사용자 도메인을 추가
+  - name: 사용자 이름
+  - email: 이메일
+  - password: 비밀번호
+  - email을 로그인의 id로, password를 비밀번호로 사용
+- [x] GET /login 요청 시 로그인 폼이 있는 페이지 응답(templates/login.html)
+- [x] GET /signup 요청 시 회원가입 폼이 있는 페이지 응답(templates/signup.html)
+- [x] POST /signup 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - 응답 시 201 created 응답
+  - /login 으로 로케이터 지정
+  - 이메일이 중복시 예외 발생
+- [x] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - JWT 토큰 의존성 `build.gradle`에 추가하기 
+  - 토큰 발급하기
+  - 응답 헤더 `Set-Cookie`에 `token:{access_token}`값으로 토큰을 포함
+- [x] 인증 정보 조회
+  - 사용자의 정보를 조회하는 API 구현
+  - Cookie를 이용하여 로그인 사용자의 정보를 확인
+
+## 5단계 요구사항
+
+- [x] 로그인 리팩터링
+  - Cookie에 담긴 인증 정보를 이용하여 멤버 객체를 만드는 로직을 분리
+  - HandlerMethodArgumentResolver을 활용
+- [x] 사용자 예약 생성 기능 변경
+  - 사용자가 예약 생성 시 로그인한 사용자 정보를 활용하도록 리팩터링
+  - reservation.html, user-reservation.js 파일의 TODO 주석을 참고
+- [x] 예약 생성 기능 변경 - 관리자
+  - 관리자가 예약 생성 시 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
+  - admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라 js 파일을 변경
+    - AS-IS: /js/reservation-new.js
+    - TO-BE: /js/reservation-with-member.js
+
+## 6단계 요구사항
+
+- [x] 접근 권한 제어
+  - Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근 가능
+  - `HandlerInterceptor`를 활용하여 권한이 없는 경우 요청에 대한 거부 응답
+- [x] 예약 목록 검색
+  - 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색 기능 추가
+
+## 추가된 요구사항
+
+- [x] 로그아웃 기능

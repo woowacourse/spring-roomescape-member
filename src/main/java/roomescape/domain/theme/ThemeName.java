@@ -17,7 +17,7 @@ public class ThemeName {
 
     private static void validateNull(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("테마명은 공백일 수 없습니다.");
+            throw new IllegalArgumentException("테마명은 비어있을 수 없습니다.");
         }
     }
 

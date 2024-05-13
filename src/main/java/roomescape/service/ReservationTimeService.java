@@ -35,7 +35,7 @@ public class ReservationTimeService {
 
     private void validateDuplicateStartAt(ReservationTime reservationTime) {
         if (reservationTimeDao.exist(reservationTime)) {
-            throw new IllegalArgumentException("동일한 예약 시간이 존재합니다.");
+            throw new IllegalArgumentException("이미 동일한 예약 시간이 있어 추가할 수 없습니다.");
         }
     }
 
@@ -54,13 +54,13 @@ public class ReservationTimeService {
 
     private void validateNotExist(Long id) {
         if (!reservationTimeDao.exist(id)) {
-            throw new IllegalArgumentException("해당 아이디를 가진 예약 시간이 존재하지 않습니다.");
+            throw new IllegalArgumentException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
         }
     }
 
     private void validateExistReservationByTimeId(Long id) {
         if (reservationDao.existByTimeId(id)) {
-            throw new IllegalArgumentException("해당 예약시간을 사용하는 예약이 존재합니다.");
+            throw new IllegalArgumentException("해당 예약시간을 사용하는 예약이 존재하여 삭제할 수 없습니다.");
         }
     }
 }

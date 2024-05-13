@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -22,7 +23,9 @@ public class ReservationService {
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao,
+                              ReservationTimeDao reservationTimeDao,
+                              ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
@@ -35,21 +38,20 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId, LocalDateTime now) {
+    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId) {
         ReservationDate reservationDate = ReservationDate.from(date);
         List<ReservationTime> allTimes = reservationTimeDao.readAll();
-        List<ReservationTime> filteredTimes = reservationDate.filterPastTime(allTimes, now);
         List<ReservationTime> times = reservationDao.readTimesByDateAndThemeId(reservationDate, themeId);
-        return filteredTimes.stream()
+        return allTimes.stream()
                 .map(filteredTime -> getAvailableReservationResponse(filteredTime, times))
                 .toList();
     }
 
-    public ReservationResponse add(ReservationCreateRequest request, LocalDateTime now) {
-        ReservationTime reservationTime = findReservationTimeBy(request);
-        Theme theme = findThemeBy(request);
-        Reservation reservation = request.toDomain(reservationTime, theme);
-        reservation.validatePast(reservationTime, now);
+    public ReservationResponse add(Member member, ReservationCreateRequest request, LocalDateTime now) {
+        ReservationTime reservationTime = findReservationTimeBy(request.getTimeId());
+        Theme theme = findThemeBy(request.getThemeId());
+        Reservation reservation = request.toDomain(member, reservationTime, theme);
+        reservation.validatePast(now);
         validateDuplicate(reservation);
         return ReservationResponse.from(reservationDao.create(reservation));
     }
@@ -62,7 +64,7 @@ public class ReservationService {
 
     private void validateDuplicate(Reservation reservation) {
         if (reservationDao.hasSame(reservation)) {
-            throw new IllegalArgumentException("중복된 예약을 생성할 수 없습니다.");
+            throw new IllegalArgumentException("이미 예약이 있어 추가할 수 없습니다.");
         }
     }
 
@@ -72,26 +74,31 @@ public class ReservationService {
         }
     }
 
+    private boolean isAlreadyBooked(ReservationTime filteredTime, List<ReservationTime> times) {
+        return times.stream()
+                .anyMatch(time -> Objects.equals(time.getId(), filteredTime.getId()));
+    }
+
     private AvailableReservationResponse getAvailableReservationResponse(ReservationTime filteredTime,
                                                                          List<ReservationTime> times) {
         return AvailableReservationResponse.of(
                 filteredTime,
-                times.stream().anyMatch(time -> Objects.equals(time.getId(), filteredTime.getId()))
+                isAlreadyBooked(filteredTime, times)
         );
     }
 
     private Reservation findReservationBy(Long id) {
         return reservationDao.readById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("예약 아이디에 해당하는 예약이 존재하지 않습니다."));
     }
 
-    private ReservationTime findReservationTimeBy(ReservationCreateRequest request) {
-        return reservationTimeDao.readById(request.getTimeId())
+    private ReservationTime findReservationTimeBy(Long id) {
+        return reservationTimeDao.readById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다."));
     }
 
-    private Theme findThemeBy(ReservationCreateRequest request) {
-        return themeDao.readById(request.getThemeId())
+    private Theme findThemeBy(Long id) {
+        return themeDao.readById(id)
                 .orElseThrow(() -> new IllegalArgumentException("테마 아이디에 해당하는 테마가 존재하지 않습니다."));
     }
 }

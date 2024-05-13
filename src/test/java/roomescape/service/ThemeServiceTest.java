@@ -7,18 +7,23 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.dao.JdbcReservationDao;
+import roomescape.dao.JdbcReservationTimeDao;
 import roomescape.dao.JdbcThemeDao;
+import roomescape.dao.MemberDao;
+import roomescape.domain.member.Member;
+import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.fixture.MemberFixtures;
+import roomescape.fixture.ReservationFixtures;
+import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -27,6 +32,12 @@ class ThemeServiceTest {
 
     @Autowired
     private JdbcThemeDao themeDao;
+    @Autowired
+    private MemberDao memberDao;
+    @Autowired
+    private JdbcReservationDao reservationDao;
+    @Autowired
+    private JdbcReservationTimeDao timeDao;
     @Autowired
     private ThemeService themeService;
 
@@ -74,45 +85,6 @@ class ThemeServiceTest {
         );
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   ",})
-    @DisplayName("테마명이 공백이면 예외가 발생한다.")
-    void createThemeByNullOrEmptyName(String given) {
-        //given
-        ThemeCreateRequest request = ThemeFixtures.createThemeCreateRequest(given, "방탈출 설명", "방탈출 썸네일");
-
-        //when //then
-        assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   ",})
-    @DisplayName("테마 설명이 공백이면 예외가 발생한다.")
-    void createThemeByNullOrEmptyDescription(String given) {
-        //given
-        ThemeCreateRequest request = ThemeFixtures.createThemeCreateRequest("방탈출명", given, "방탈출 썸네일");
-
-        //when //then
-        assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   ",})
-    @DisplayName("테마 썸네일이 공백이면 예외가 발생한다.")
-    void createThemeByNullOrEmptyThumbnail(String given) {
-        //given
-        ThemeCreateRequest request = ThemeFixtures.createThemeCreateRequest("방탈출명", "방탈출 설명", given);
-
-        //when //then
-        assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
     @Test
     @DisplayName("동일한 테마명이 존재하면 예외가 발생한다.")
     void createThemeWhenExistedThemeName() {
@@ -123,7 +95,8 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 동일한 테마명이 있어 추가할 수 없습니다.");
     }
 
     @Test
@@ -152,7 +125,8 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("테마 아이디는 비어있을 수 없습니다.");
     }
 
     @Test
@@ -165,6 +139,23 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("테마 아이디에 해당하는 테마가 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("테마 삭제시 예약이 존재한다면 예외가 발생한다.")
+    void deleteExistReservation() {
+        //given
+        Member member = memberDao.create(MemberFixtures.createUserMember("daon"));
+        Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
+        ReservationTime time = timeDao.create(ReservationTimeFixtures.createReservationTime("12:12"));
+        reservationDao.create(ReservationFixtures.createReservation(member, time, theme));
+        Long id = theme.getId();
+
+        //when //then
+        assertThatThrownBy(() -> themeService.delete(id))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 테마를 사용하는 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

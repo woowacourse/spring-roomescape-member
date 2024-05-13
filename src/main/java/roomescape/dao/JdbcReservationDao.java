@@ -13,9 +13,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberEmail;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberPassword;
+import roomescape.domain.member.MemberRole;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -37,7 +41,11 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role,
                     r.`date`,
                     t.id AS time_id,
                     t.start_at AS time_value,
@@ -48,13 +56,65 @@ public class JdbcReservationDao implements ReservationDao {
                 FROM
                     reservation r
                 INNER JOIN
+                    member m ON r.member_id = m.id
+                INNER JOIN
                     reservation_time t ON r.time_id = t.id
                 INNER JOIN
                     theme th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> getReservation(resultSet, getReservationTime(resultSet), getTheme(resultSet))
+                (resultSet, rowNum) -> getReservation(
+                        resultSet,
+                        getMember(resultSet),
+                        getReservationTime(resultSet),
+                        getTheme(resultSet)
+                )
+        );
+    }
+
+    @Override
+    public List<Reservation> readAllByMemberAndThemeAndDateBetweenFromAndTo(Member member,
+                                                                            Theme theme,
+                                                                            ReservationDate from,
+                                                                            ReservationDate to) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role,
+                    r.`date`,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation r
+                INNER JOIN
+                    member m ON r.member_id = m.id
+                INNER JOIN
+                    reservation_time t ON r.time_id = t.id
+                INNER JOIN
+                    theme th ON r.theme_id = th.id
+                WHERE r.member_id = ? AND r.theme_id = ? AND r.date BETWEEN ? AND ?;
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> getReservation(
+                        resultSet,
+                        getMember(resultSet),
+                        getReservationTime(resultSet),
+                        getTheme(resultSet)
+                ),
+                member.getId(),
+                theme.getId(),
+                from.toStringDate(),
+                to.toStringDate()
         );
     }
 
@@ -63,7 +123,11 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role,
                     r.`date`,
                     t.id AS time_id,
                     t.start_at AS time_value,
@@ -74,6 +138,8 @@ public class JdbcReservationDao implements ReservationDao {
                 FROM
                     reservation r
                 INNER JOIN
+                    member m ON r.member_id = m.id
+                INNER JOIN
                     reservation_time t ON r.time_id = t.id
                 INNER JOIN
                     theme th ON r.theme_id = th.id
@@ -81,7 +147,12 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
         List<Reservation> reservations = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> getReservation(resultSet, getReservationTime(resultSet), getTheme(resultSet)),
+                (resultSet, rowNum) -> getReservation(
+                        resultSet,
+                        getMember(resultSet),
+                        getReservationTime(resultSet),
+                        getTheme(resultSet)
+                ),
                 id
         );
         if (reservations.isEmpty()) {
@@ -140,7 +211,7 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 INSERT
                 INTO reservation
-                    (name, date, time_id, theme_id)
+                    (member_id, date, time_id, theme_id)
                 VALUES
                     (?, ?, ?, ?)
                 """;
@@ -148,7 +219,7 @@ public class JdbcReservationDao implements ReservationDao {
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                    ps.setString(1, reservation.getName().getValue());
+                    ps.setLong(1, reservation.getMember().getId());
                     ps.setDate(2, Date.valueOf(reservation.getDate().getValue()));
                     ps.setLong(3, reservation.getReservationTime().getId());
                     ps.setLong(4, reservation.getTheme().getId());
@@ -159,7 +230,7 @@ public class JdbcReservationDao implements ReservationDao {
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Reservation(
                 id,
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme()
@@ -221,14 +292,24 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
     }
 
-    private Reservation getReservation(ResultSet resultSet, ReservationTime reservationTime, Theme theme)
+    private Reservation getReservation(ResultSet resultSet, Member member, ReservationTime reservationTime, Theme theme)
             throws SQLException {
         return new Reservation(
                 resultSet.getLong("id"),
-                new ReservationName(resultSet.getString("name")),
+                member,
                 ReservationDate.from(resultSet.getString("date")),
                 reservationTime,
                 theme
+        );
+    }
+
+    private Member getMember(ResultSet resultSet) throws SQLException {
+        return new Member(
+                resultSet.getLong("member_id"),
+                new MemberName(resultSet.getString("member_name")),
+                new MemberEmail(resultSet.getString("member_email")),
+                new MemberPassword(resultSet.getString("member_password")),
+                MemberRole.from(resultSet.getString("member_role"))
         );
     }
 

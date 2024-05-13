@@ -17,7 +17,7 @@ public class ThemeThumbnail {
 
     private static void validateNull(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("테마 썸네일 URL은 공백일 수 없습니다.");
+            throw new IllegalArgumentException("테마 썸네일은 비어있을 수 없습니다.");
         }
     }
 

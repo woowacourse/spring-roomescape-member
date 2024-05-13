@@ -3,8 +3,6 @@ package roomescape.domain.reservation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import roomescape.domain.reservationtime.ReservationTime;
 
 public class ReservationDate {
 
@@ -39,25 +37,20 @@ public class ReservationDate {
         return isSame(today);
     }
 
-    public boolean isBefore(LocalDateTime dateTime) {
+    public boolean isAfter(LocalDateTime dateTime) {
         LocalDate today = LocalDate.of(dateTime.getYear(), dateTime.getMonthValue(), dateTime.getDayOfMonth());
-        return isBefore(today);
+        return isAfter(today);
     }
 
-    public List<ReservationTime> filterPastTime(List<ReservationTime> reservationTimes, LocalDateTime dateTime) {
-        if (isSame(dateTime)) {
-            return reservationTimes.stream()
-                    .filter(time -> !time.isBefore(dateTime))
-                    .toList();
-        }
-        return reservationTimes;
+    public boolean isAfter(ReservationDate other) {
+        return this.value.isAfter(other.value);
     }
 
     private boolean isSame(LocalDate date) {
         return value.equals(date);
     }
 
-    private boolean isBefore(LocalDate date) {
+    private boolean isAfter(LocalDate date) {
         return value.isBefore(date);
     }
 
