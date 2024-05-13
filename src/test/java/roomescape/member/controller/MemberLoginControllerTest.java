@@ -22,7 +22,7 @@ import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberLoginResponse;
 import roomescape.member.security.service.MemberAuthService;
-import roomescape.member.service.MemberLoginService;
+import roomescape.member.service.MemberService;
 
 @WebMvcTest(MemberLoginController.class)
 public class MemberLoginControllerTest {
@@ -31,7 +31,7 @@ public class MemberLoginControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private MemberLoginService memberLoginService;
+    private MemberService memberService;
 
     @MockBean
     private MemberAuthService memberAuthService;
@@ -43,7 +43,7 @@ public class MemberLoginControllerTest {
         Member memberInfo = new Member("User", "user@example.com", "password");
         String token = "mocked-token";
 
-        when(memberLoginService.findMember(any())).thenReturn(memberInfo);
+        when(memberService.findMember(any())).thenReturn(memberInfo);
         when(memberAuthService.publishToken(any())).thenReturn(token);
 
         mockMvc.perform(post("/login")

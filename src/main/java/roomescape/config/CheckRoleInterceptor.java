@@ -10,17 +10,17 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
 import roomescape.member.dto.MemberProfileInfo;
 import roomescape.member.security.service.MemberAuthService;
-import roomescape.member.service.MemberLoginService;
+import roomescape.member.service.MemberService;
 
 @Component
 public class CheckRoleInterceptor implements HandlerInterceptor {
 
-    private MemberAuthService memberAuthService;
-    private MemberLoginService memberLoginService;
+    private final MemberAuthService memberAuthService;
+    private final MemberService memberService;
 
-    public CheckRoleInterceptor(MemberAuthService memberAuthService, MemberLoginService memberLoginService) {
+    public CheckRoleInterceptor(MemberAuthService memberAuthService, MemberService memberService) {
         this.memberAuthService = memberAuthService;
-        this.memberLoginService = memberLoginService;
+        this.memberService = memberService;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
                 .getCookies();
         if (memberAuthService.isLoginMember(cookies)) {
             MemberProfileInfo memberProfile = memberAuthService.extractPayload(cookies);
-            Member member = memberLoginService.findMemberById(memberProfile.id());
+            Member member = memberService.findMemberById(memberProfile.id());
             return member.getRole() == MemberRole.ADMIN;
         }
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);

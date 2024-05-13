@@ -17,7 +17,7 @@ import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
 
 @ExtendWith(MockitoExtension.class)
-class MemberLoginServiceTest {
+class MemberServiceTest {
 
     private static final String USERNAME = "username";
     private static final String USER_EXAMPLE_COM = "user@example.com";
@@ -26,7 +26,7 @@ class MemberLoginServiceTest {
     private MemberJdbcDao memberJdbcDao;
 
     @InjectMocks
-    private MemberLoginService memberLoginService;
+    private MemberService memberService;
 
     @Test
     @DisplayName("등록된 이메일로 회원 정보를 정상적으로 조회한다")
@@ -39,7 +39,7 @@ class MemberLoginServiceTest {
         when(memberJdbcDao.findByEmail(USER_EXAMPLE_COM)).thenReturn(registeredMember);
 
         // Then
-        Member actualInfo = memberLoginService.findMember(request);
+        Member actualInfo = memberService.findMember(request);
         assertAll(() -> {
             assertEquals(registeredMember.getName(), actualInfo.getName());
 
@@ -58,7 +58,7 @@ class MemberLoginServiceTest {
 
         // Then
         assertThrows(BadRequestException.class, () -> {
-            memberLoginService.findMember(request);
+            memberService.findMember(request);
         });
     }
 

@@ -13,23 +13,23 @@ import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberLoginResponse;
 import roomescape.member.security.service.MemberAuthService;
-import roomescape.member.service.MemberLoginService;
+import roomescape.member.service.MemberService;
 
 @RestController
 @RequestMapping("/login")
 public class MemberLoginController {
 
-    private final MemberLoginService memberLoginService;
+    private final MemberService memberService;
     private final MemberAuthService memberAuthService;
 
-    public MemberLoginController(MemberAuthService memberAuthService, MemberLoginService memberLoginService) {
+    public MemberLoginController(MemberAuthService memberAuthService, MemberService memberService) {
         this.memberAuthService = memberAuthService;
-        this.memberLoginService = memberLoginService;
+        this.memberService = memberService;
     }
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody MemberLoginRequest memberRequest, HttpServletResponse response) {
-        Member member = memberLoginService.findMember(memberRequest);
+        Member member = memberService.findMember(memberRequest);
 
         memberAuthService.validateAuthentication(member, memberRequest);
         String token = memberAuthService.publishToken(member);
