@@ -27,8 +27,7 @@ public class ReservationController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> addReservationByAdmin(
-            @RequestBody ReservationRequest reservationRequest,
-            LoginMember loginMember) {
+            @RequestBody ReservationRequest reservationRequest) {
         Long savedId = reservationService.addReservation(reservationRequest);
         ReservationResponse reservationResponse = reservationService.getReservation(savedId);
         return ResponseEntity.created(URI.create("/reservations/" + savedId)).body(reservationResponse);
@@ -47,18 +46,13 @@ public class ReservationController {
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getAllReservations(ReservationFilter reservationFilter) {
         if (reservationFilter.existFilter()) {
-            List<ReservationResponse> reservationResponses = reservationService.getReservationsByFilter(reservationFilter);
+            List<ReservationResponse> reservationResponses = reservationService.getReservationsByFilter(
+                    reservationFilter);
             return ResponseEntity.ok(reservationResponses);
         }
         List<ReservationResponse> reservationResponses = reservationService.getAllReservations();
         return ResponseEntity.ok(reservationResponses);
     }
-
-//    @GetMapping("/reservations")
-//    public ResponseEntity<List<ReservationResponse>> getReservationByFilter(ReservationFilter reservationFilter) {
-//        List<ReservationResponse> reservationResponses = reservationService.getReservationsByFilter(reservationFilter);
-//        return ResponseEntity.ok(reservationResponses);
-//    }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
