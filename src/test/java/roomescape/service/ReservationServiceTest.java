@@ -83,7 +83,7 @@ class ReservationServiceTest {
         LocalDate startDate = LocalDate.of(2099, 1, 1);
         LocalDate endDate = LocalDate.of(2099, 12, 31);
         Mockito.when(reservationRepository.findByMemberAndThemeAndDateBetween(
-                1L, 1L, startDate, endDate
+                1L, 1L, startDate, endDate.plusDays(1)
         )).thenReturn(List.of(Fixtures.reservationFixture));
 
         // when

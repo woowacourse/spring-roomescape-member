@@ -101,7 +101,7 @@ public class ReservationService {
             LocalDate startDateInclusive, LocalDate endDateInclusive
     ) {
         return reservationRepository.findByMemberAndThemeAndDateBetween(
-                        memberId, themeId, startDateInclusive, endDateInclusive).stream()
+                        memberId, themeId, startDateInclusive, endDateInclusive.plusDays(1)).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

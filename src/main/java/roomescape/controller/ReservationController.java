@@ -61,7 +61,7 @@ public class ReservationController {
             @RequestParam(value = "endDate") LocalDate endDate
     ) {
         List<ReservationResponse> response = reservationService.findFilteredBy(
-                memberId, themeId, startDate, endDate.plusDays(1)
+                memberId, themeId, startDate, endDate
         );
         return ResponseEntity.ok(response);
     }
