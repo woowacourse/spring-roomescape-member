@@ -7,7 +7,7 @@ import static roomescape.fixture.LocalDateFixture.BEFORE_ONE_DAYS_DATE;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 class ReservationAddRequestTest {
 
@@ -21,7 +21,7 @@ class ReservationAddRequestTest {
     @Test
     void should_throw_ClientIllegalArgumentException_when_date_is_past() {
         assertThatThrownBy(() -> new ReservationAddRequest(BEFORE_ONE_DAYS_DATE, 1L, 1L, 1L))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage(BEFORE_ONE_DAYS_DATE + ": 예약 날짜는 현재 보다 이전일 수 없습니다");
     }
 }

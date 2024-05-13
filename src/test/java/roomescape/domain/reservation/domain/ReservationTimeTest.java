@@ -7,7 +7,7 @@ import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 class ReservationTimeTest {
 
@@ -22,7 +22,7 @@ class ReservationTimeTest {
     @Test
     void should_throw_ClientIllegalArgumentException_when_time_is_null() {
         assertThatThrownBy(() -> new ReservationTime(null, null))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("예약 가능 시각은 null일 수 없습니다");
     }
 }

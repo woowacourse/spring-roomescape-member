@@ -1,7 +1,7 @@
 package roomescape.domain.member.domain;
 
 import java.util.Objects;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 public class Name {
 
@@ -14,10 +14,10 @@ public class Name {
 
     private void validateNonBlank(String name) {
         if (name == null) {
-            throw new ClientIllegalArgumentException("이름은 비어있을 수 없습니다.");
+            throw new EscapeApplicationException("이름은 비어있을 수 없습니다.");
         }
         if (name.trim().isEmpty()) {
-            throw new ClientIllegalArgumentException("이름의 길이는 공백을 제외한 1이상이어야합니다.");
+            throw new EscapeApplicationException("이름의 길이는 공백을 제외한 1이상이어야합니다.");
         }
     }
 

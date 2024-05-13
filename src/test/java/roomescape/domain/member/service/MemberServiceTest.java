@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.repository.MemberRepository;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 class MemberServiceTest {
 
@@ -43,7 +43,7 @@ class MemberServiceTest {
     @Test
     void should_throw_exception_when_find_by_non_exist_id() {
         assertThatThrownBy(() -> memberService.findMemberById(2L))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("없는 member를 조회 했습니다.");
     }
 
@@ -61,7 +61,7 @@ class MemberServiceTest {
     @Test
     void should_throw_exception_when_find_member_by_non_exist_email() {
         assertThatThrownBy(() -> memberService.findMemberByEmailAndPassword("wrongEmail@gmail.com", "123456"))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("이메일 또는 비밀번호를 잘못 입력했습니다.");
     }
 
@@ -69,7 +69,7 @@ class MemberServiceTest {
     @Test
     void should_throw_exception_when_find_member_by_wrong_password() {
         assertThatThrownBy(() -> memberService.findMemberByEmailAndPassword("admin@gmail.com", "1234567"))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("이메일 또는 비밀번호를 잘못 입력했습니다.");
     }
 }

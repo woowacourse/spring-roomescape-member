@@ -21,7 +21,7 @@ import roomescape.domain.reservation.dto.BookableTimesRequest;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.theme.service.FakeThemeRepository;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 class ReservationServiceTest {
 
@@ -58,7 +58,7 @@ class ReservationServiceTest {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(AFTER_ONE_DAYS_DATE, 1L, 1L, 1L);//
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("존재 하지 않는 멤버로 예약할 수 없습니다.");
     }
 
@@ -69,7 +69,7 @@ class ReservationServiceTest {
         fakeMemberRepository.insert(ADMIN_MEMBER);
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(AFTER_ONE_DAYS_DATE, 1L, 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("존재 하지 않는 테마로 예약할 수 없습니다");
     }
 
@@ -113,7 +113,7 @@ class ReservationServiceTest {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(AFTER_TWO_DAYS_DATE, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("존재 하지 않는 예약시각으로 예약할 수 없습니다.");
     }
 
@@ -129,7 +129,7 @@ class ReservationServiceTest {
         ReservationAddRequest conflictRequest = new ReservationAddRequest(AFTER_ONE_DAYS_DATE, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(conflictRequest))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("예약 날짜와 예약시간 그리고 테마가 겹치는 예약은 할 수 없습니다.");
     }
 
@@ -137,7 +137,7 @@ class ReservationServiceTest {
     @Test
     void should_throw_ClientIllegalArgumentException_when_remove_reservation_with_non_exist_id() {
         assertThatThrownBy(() -> reservationService.removeReservation(1L))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("해당 id를 가진 예약이 존재하지 않습니다.");
     }
 }

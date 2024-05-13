@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.domain.Name;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 class NameTest {
 
@@ -22,7 +22,7 @@ class NameTest {
     @Test
     void should_throw_ClientIllegalArgumentException_when_name_is_null() {
         assertThatThrownBy(() -> new Name(null))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("이름은 비어있을 수 없습니다.");
     }
 
@@ -30,7 +30,7 @@ class NameTest {
     @Test
     void should_throw_ClientIllegalArgumentException_when_name_is_blank() {
         assertThatThrownBy(() -> new Name(" "))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("이름의 길이는 공백을 제외한 1이상이어야합니다.");
     }
 }

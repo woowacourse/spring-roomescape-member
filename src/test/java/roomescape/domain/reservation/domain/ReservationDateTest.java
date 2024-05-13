@@ -7,7 +7,7 @@ import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.domain.reservation.ReservationDate;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 class ReservationDateTest {
 
@@ -22,7 +22,7 @@ class ReservationDateTest {
     @Test
     void should_throw_ClientIllegalArgumentException_when_date_is_null() {
         assertThatThrownBy(() -> new ReservationDate(null))
-                .isInstanceOf(ClientIllegalArgumentException.class)
+                .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("날짜는 null일 수 없습니다");
     }
 }

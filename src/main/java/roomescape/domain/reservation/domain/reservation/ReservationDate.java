@@ -2,7 +2,7 @@ package roomescape.domain.reservation.domain.reservation;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 public class ReservationDate {
 
@@ -19,7 +19,7 @@ public class ReservationDate {
 
     private void validateNonNull(LocalDate date) {
         if (date == null) {
-            throw new ClientIllegalArgumentException("날짜는 null일 수 없습니다");
+            throw new EscapeApplicationException("날짜는 null일 수 없습니다");
         }
     }
 

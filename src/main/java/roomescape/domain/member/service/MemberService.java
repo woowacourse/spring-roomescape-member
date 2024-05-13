@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.repository.MemberRepository;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.EscapeApplicationException;
 
 @Service
 public class MemberService {
@@ -21,11 +21,11 @@ public class MemberService {
 
     public Member findMemberById(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new ClientIllegalArgumentException("없는 member를 조회 했습니다."));
+                .orElseThrow(() -> new EscapeApplicationException("없는 member를 조회 했습니다."));
     }
 
     public Member findMemberByEmailAndPassword(String email, String password) {
         return memberRepository.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new ClientIllegalArgumentException("이메일 또는 비밀번호를 잘못 입력했습니다."));
+                .orElseThrow(() -> new EscapeApplicationException("이메일 또는 비밀번호를 잘못 입력했습니다."));
     }
 }

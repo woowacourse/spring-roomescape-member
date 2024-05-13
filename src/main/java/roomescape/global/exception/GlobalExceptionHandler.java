@@ -12,8 +12,8 @@ import org.springframework.web.client.HttpServerErrorException.InternalServerErr
 public class GlobalExceptionHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler(ClientIllegalArgumentException.class)
-    public ResponseEntity<String> handleClientIllegalArgumentException(ClientIllegalArgumentException e) {
+    @ExceptionHandler(EscapeApplicationException.class)
+    public ResponseEntity<String> handleClientIllegalArgumentException(EscapeApplicationException e) {
         log.info(e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
