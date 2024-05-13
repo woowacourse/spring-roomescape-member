@@ -3,19 +3,15 @@ package roomescape.domain.reservation;
 public class Theme {
 
     private final Long id;
-    private final ThemeName name;
-    private final ThemeDescription description;
-    private final ThemeThumbnail thumbnail;
+    private final String name;
+    private final String description;
+    private final String thumbnail;
 
-    public Theme(Long id, ThemeName name, ThemeDescription description, ThemeThumbnail thumbnail) {
+    public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
-    }
-
-    public Theme(Long id, String name, String description, String thumbnail) {
-        this(id, new ThemeName(name), new ThemeDescription(description), new ThemeThumbnail(thumbnail));
     }
 
     public Long getId() {
@@ -23,14 +19,14 @@ public class Theme {
     }
 
     public String getName() {
-        return name.getValue();
+        return name;
     }
 
     public String getDescription() {
-        return description.getValue();
+        return description;
     }
 
     public String getThumbnail() {
-        return thumbnail.getValue();
+        return thumbnail;
     }
 }

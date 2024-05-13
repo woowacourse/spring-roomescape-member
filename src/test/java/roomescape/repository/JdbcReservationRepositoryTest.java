@@ -19,7 +19,6 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
-import roomescape.domain.reservation.ThemeName;
 import roomescape.repository.rowmapper.MemberRowMapper;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
@@ -54,13 +53,13 @@ class JdbcReservationRepositoryTest {
 
     private final Reservation reservation1 = new Reservation(
             null, new Member(1L, "t1@t1.com", "1234", "러너덕", "MEMBER"),
-            new Theme(1L, (ThemeName) null, null, null),
+            new Theme(1L, null, null, null),
             new ReservationDate("2023-09-08"),
             new ReservationTime(1L, (LocalTime) null)
     );
     private final Reservation reservation2 = new Reservation(
             null, new Member(2L, "t2@t2.com", "12345", "재즈", "MEMBER"),
-            new Theme(2L, (ThemeName) null, null, null),
+            new Theme(2L, null, null, null),
             new ReservationDate("2024-04-22"),
             new ReservationTime(2L, (LocalTime) null)
     );
@@ -188,7 +187,7 @@ class JdbcReservationRepositoryTest {
         Reservation inputReservation = new Reservation(
                 3L,
                 new Member(3L, "t3@t3.com", "12", "재즈덕", "MEMBER"),
-                new Theme(1L, (ThemeName) null, null, null),
+                new Theme(1L, null, null, null),
                 new ReservationDate("2023-09-08"),
                 new ReservationTime(1L, (LocalTime) null)
         );
