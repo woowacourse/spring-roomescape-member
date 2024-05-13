@@ -5,6 +5,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  sql:
+    init:
+      data-locations: init.sql
 
 jwt:
   secret: prinroomescapeprinroomescapeprinroomescapeprinroomescapeprinroomescapeprinroomescape
