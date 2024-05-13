@@ -24,7 +24,7 @@ public class AdminViewControllerTest extends ControllerTest {
         jdbcTemplate.update(
                 "insert into member (name, email, password, role) values ('어드민', 'admin@gmail.com', '123456', 'ADMIN')");
         jdbcTemplate.update(
-                "insert into member (name, email, password, role) values ('멤버', 'dodo@gmail.com', '123456', 'MEMBER')");
+                "insert into member (name, email, password, role) values ('멤버', 'dodo@gmail.com', '123123', 'MEMBER')");
         LoginRequest loginRequest = new LoginRequest(ADMIN_EMAIL, ADMIN_PASSWORD);
         LoginRequest memberLoginRequest = new LoginRequest(MEMBER_EMAIL, MEMBER_PASSWORD);
     }

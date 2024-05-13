@@ -23,7 +23,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(payload);
         claims.put("userId", 2);
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime validity = now.plusNanos(validityInSeconds);
+        LocalDateTime validity = now.plusSeconds(validityInSeconds);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
