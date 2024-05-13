@@ -27,7 +27,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = authorizationManager.getAuthorization(httpServletRequest);
         return tokenProvider.extractAuthInfo(token);
     }
