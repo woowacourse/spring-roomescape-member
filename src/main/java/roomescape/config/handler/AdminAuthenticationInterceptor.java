@@ -4,25 +4,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.controller.TokenCookieConvertor;
+import roomescape.auth.controller.TokenCookieManager;
 import roomescape.auth.dto.LoggedInMember;
-import roomescape.auth.dto.RequestCookies;
 import roomescape.auth.exception.AdminAuthenticationException;
 import roomescape.auth.service.AuthService;
 
 @Component
 public class AdminAuthenticationInterceptor implements HandlerInterceptor {
-    private final TokenCookieConvertor tokenCookieConvertor;
+    private final TokenCookieManager tokenCookieManager;
     private final AuthService authService;
 
-    public AdminAuthenticationInterceptor(TokenCookieConvertor tokenCookieConvertor, AuthService authService) {
-        this.tokenCookieConvertor = tokenCookieConvertor;
+    public AdminAuthenticationInterceptor(TokenCookieManager tokenCookieManager, AuthService authService) {
+        this.tokenCookieManager = tokenCookieManager;
         this.authService = authService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = tokenCookieConvertor.getToken(request.getCookies());
+        String token = tokenCookieManager.getToken(request.getCookies());
         LoggedInMember member = authService.findLoggedInMember(token);
         if (member.isAdmin()) {
             return true;

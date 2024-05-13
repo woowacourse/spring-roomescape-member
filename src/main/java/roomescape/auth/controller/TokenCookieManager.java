@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import roomescape.auth.exception.NotLoginAuthenticationException;
 
 @Component
-public class TokenCookieConvertor {
+public class TokenCookieManager {
     private static final String ACCESS_TOKEN_KEY = "token";
     private static final int MIN = 60;
     private static final int ACCESS_TOKEN_MAX_AGE = 30 * MIN;

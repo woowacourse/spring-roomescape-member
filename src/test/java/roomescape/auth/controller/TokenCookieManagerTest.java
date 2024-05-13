@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseCookie;
 import roomescape.auth.exception.NotLoginAuthenticationException;
 
-class TokenCookieConvertorTest {
-    private final TokenCookieConvertor tokenCookieConvertor = new TokenCookieConvertor();
+class TokenCookieManagerTest {
+    private final TokenCookieManager tokenCookieManager = new TokenCookieManager();
 
     @DisplayName("토큰이 쿠키에 있을 경우, 토큰 값을 반환한다.")
     @Test
@@ -20,7 +20,7 @@ class TokenCookieConvertorTest {
         Cookie[] cookies = new Cookie[]{
                 new Cookie("token", token), new Cookie("notThing", "exist")};
 
-        String actual = tokenCookieConvertor.getToken(cookies);
+        String actual = tokenCookieManager.getToken(cookies);
 
         assertThat(actual).isEqualTo(token);
     }
@@ -31,7 +31,7 @@ class TokenCookieConvertorTest {
         Cookie[] cookies = new Cookie[]{
                 new Cookie("not", "thing"), new Cookie("notThing", "exist")};
 
-        assertThatThrownBy(() -> tokenCookieConvertor.getToken(cookies))
+        assertThatThrownBy(() -> tokenCookieManager.getToken(cookies))
                 .isInstanceOf(NotLoginAuthenticationException.class);
     }
 
@@ -40,7 +40,7 @@ class TokenCookieConvertorTest {
     void getTokenTest_whenTokenIsNull() {
         Cookie[] cookies = null;
 
-        assertThatThrownBy(() -> tokenCookieConvertor.getToken(cookies))
+        assertThatThrownBy(() -> tokenCookieManager.getToken(cookies))
                 .isInstanceOf(NotLoginAuthenticationException.class);
     }
 
@@ -49,7 +49,7 @@ class TokenCookieConvertorTest {
     void createResponseCookieTest() {
         String token = "abc";
 
-        ResponseCookie actual = tokenCookieConvertor.createResponseCookie(token);
+        ResponseCookie actual = tokenCookieManager.createResponseCookie(token);
 
         assertAll(
                 () -> assertThat(actual.getName()).isEqualTo("token"),
