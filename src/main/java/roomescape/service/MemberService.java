@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.user.Member;
+import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
@@ -24,6 +25,9 @@ public class MemberService {
     }
 
     public MemberCreateOutput createMember(final MemberCreateInput memberCreateInput) {
+        if (memberDao.isExistByEmail(memberCreateInput.email())) {
+            throw new AlreadyExistsException(String.format("%s 는 이미 존재합니다.", memberCreateInput.email()));
+        }
         final Member member = memberDao.create(memberCreateInput.toMember());
         return MemberCreateOutput.toOutput(member);
     }

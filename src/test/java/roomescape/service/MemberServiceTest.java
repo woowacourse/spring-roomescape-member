@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dao.MemberDao;
 import roomescape.domain.user.Member;
+import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.MemberLoginInput;
@@ -68,5 +69,13 @@ class MemberServiceTest {
         final var result = sut.createMember(input);
         assertThatCode(() -> memberDao.findById(result.id())
                 .get()).doesNotThrowAnyException();
+    }
+    @Test
+    @DisplayName("이미 존재하는 이메일로 회원가입 시, 예외를 발생한다.")
+    void throw_exception_when_already_exist_email() {
+        final var input = new MemberCreateInput("조이썬", "sample@naver.com", "password1234");
+        sut.createMember(input);
+        Assertions.assertThatThrownBy(() -> sut.createMember(input))
+                .isInstanceOf(AlreadyExistsException.class);
     }
 }

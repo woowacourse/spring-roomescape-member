@@ -20,6 +20,7 @@ import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.input.MemberCreateInput;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.util.TokenProvider;
@@ -50,7 +51,7 @@ class ReservationApiControllerTest {
     void setUp() {
         RestAssured.port = port;
         databaseCleaner.initialize();
-        final var output = memberService.createMember(MemberFixture.getUserCreateInput());
+        final var output = memberService.createMember(new MemberCreateInput("조이선", "joyson@gmail.com", "password1234"));
         token = tokenProvider.generateToken(Member.fromMember(output.id(), output.name(), output.email(), output.password()));
     }
 
@@ -69,7 +70,7 @@ class ReservationApiControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .cookie("token",token)
+                .cookie("token", token)
                 .body(reservation)
                 .when()
                 .post("/reservations")
@@ -92,7 +93,7 @@ class ReservationApiControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .cookie("token",token)
+                .cookie("token", token)
                 .body(reservation)
                 .when()
                 .post("/reservations")
@@ -104,7 +105,7 @@ class ReservationApiControllerTest {
     @DisplayName("특정 예약이 존재하지 않는데, 그 예약을 삭제하려 할 때 404을 반환한다.")
     void return_404_when_not_exist_id() {
         RestAssured.given()
-                .cookie("token",token)
+                .cookie("token", token)
                 .delete("/reservations/-1")
                 .then()
                 .statusCode(404);
@@ -128,7 +129,7 @@ class ReservationApiControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .cookie("token",token)
+                .cookie("token", token)
                 .body(reservation)
                 .when()
                 .post("/reservations")
@@ -151,7 +152,7 @@ class ReservationApiControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
-                .cookie("token",token)
+                .cookie("token", token)
                 .body(reservation)
                 .when()
                 .post("/reservations")

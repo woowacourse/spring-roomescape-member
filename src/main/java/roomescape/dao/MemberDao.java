@@ -38,6 +38,10 @@ public class MemberDao {
                 .longValue();
         return Member.fromMember(id, member.getName(), member.getEmail(), member.getPassword());
     }
+    public boolean isExistByEmail(final String email) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM member WHERE email = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email));
+    }
 
     public Optional<Member> findByEmail(final String email) {
         final String sql = "SELECT id, name, email, password,role FROM member WHERE email = ?";
@@ -61,6 +65,7 @@ public class MemberDao {
         final String sql = "SELECT id, name, email, password,role FROM member";
         return jdbcTemplate.query(sql, rowMapper);
     }
+
 
 
 }
