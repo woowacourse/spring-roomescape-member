@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -245,32 +244,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
             ON r.member_id = m.id
         """;
 
-        List<Object> param = new ArrayList<>();
+        QueryBuilder queryBuilder = QueryBuilder.build(sql)
+                .addCondition(dateFrom, "r.date >= ?")
+                .addCondition(dateTo, "r.date <= ?")
+                .addCondition(themeId, "t.id = ?")
+                .addCondition(memberId, "m.id = ?");
 
-        if (dateFrom != null || dateTo != null || themeId != null || memberId != null) {
-            sql += "WHERE";
-        }
-
-        if (dateFrom != null) {
-            sql += " r.date >= ? AND";
-            param.add(dateFrom);
-        }
-        if (dateTo != null) {
-            sql += " r.date <= ? AND";
-            param.add(dateTo);
-        }
-        if (themeId != null) {
-            sql += " t.id = ? AND";
-            param.add(themeId);
-        }
-        if (memberId != null) {
-            sql += " m.id = ? AND";
-            param.add(memberId);
-        }
-        if (dateFrom != null || dateTo != null || themeId != null || memberId != null) {
-            sql = sql.substring(0, sql.length() - 4);
-        }
-
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, param.toArray());
+        return jdbcTemplate.query(queryBuilder.getQuery(), RESERVATION_ROW_MAPPER, queryBuilder.getParam());
     }
 }
