@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.AuthService;
-import roomescape.application.dto.MemberResponse;
+import roomescape.domain.member.Member;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
+import roomescape.dto.member.MemberResponse;
 
 @RestController
 public class TokenLoginController {
@@ -43,9 +44,9 @@ public class TokenLoginController {
         Cookie[] cookies = request.getCookies();
         String tokenValue = extractTokenFromCookie(List.of(cookies));
 
-        MemberResponse response = authService.findMemberByToken(tokenValue);
+        Member member = authService.findMemberByToken(tokenValue);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new MemberResponse(member.getMemberName().getValue()));
     }
 
     private String extractTokenFromCookie(List<Cookie> cookies) {
