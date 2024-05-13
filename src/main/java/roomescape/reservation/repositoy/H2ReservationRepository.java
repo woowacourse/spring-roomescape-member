@@ -25,8 +25,9 @@ public class H2ReservationRepository implements ReservationRepository {
   }
 
   @Override
-  public List<Reservation> findAll() {
-    final String sql = """
+  public List<Reservation> findAll(LocalDate dateFrom, LocalDate dateTo, Long themeId,
+      Long memberId) {
+    StringBuilder sqlBuilder = new StringBuilder("""
         SELECT 
         r.id as reservation_id, r.date as reservation_date,
         m.id as member_id, m.name as member_name, m.email as member_email, m.password as member_password, 
@@ -42,9 +43,38 @@ public class H2ReservationRepository implements ReservationRepository {
         on r.theme_id = th.id
         inner join role as ro
         on m.role_id = ro.id
-        """;
+        """);
 
-    return template.query(sql, itemRowMapper());
+    // WHERE 절 추가 (동적 쿼리)
+    sqlBuilder.append("WHERE 1=1 "); // 1=1은 뒤에 AND를 사용하기 쉽게 하는 용도로 추가
+    final MapSqlParameterSource param = new MapSqlParameterSource();
+
+    if (dateFrom != null && dateTo != null) {
+      sqlBuilder.append("AND r.date BETWEEN :dateFrom AND :dateTo ");
+      param.addValue("dateFrom", dateFrom);
+      param.addValue("dateTo", dateTo);
+    } else if (dateFrom != null && dateTo == null) {
+      sqlBuilder.append("AND r.date >= :dateFrom ");
+      param.addValue("dateFrom", dateFrom);
+    } else if (dateFrom == null && dateTo != null) {
+      sqlBuilder.append("AND r.date <= :dateTo ");
+      param.addValue("dateTo", dateTo);
+    }
+
+    if (themeId != null) {
+      sqlBuilder.append("AND th.id = :themeId ");
+      param.addValue("themeId", themeId);
+    }
+
+    if (memberId != null) {
+      sqlBuilder.append("AND m.id = :memberId ");
+      param.addValue("memberId", memberId);
+    }
+
+    String sql = sqlBuilder.toString();
+
+    // 쿼리 실행 및 결과 반환
+    return template.query(sql, param, itemRowMapper());
   }
 
   private RowMapper<Reservation> itemRowMapper() {

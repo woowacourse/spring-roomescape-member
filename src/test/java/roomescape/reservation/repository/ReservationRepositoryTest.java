@@ -30,10 +30,76 @@ class ReservationRepositoryTest {
   @Test
   void findAllTest() {
     // When
-    final List<Reservation> reservations = reservationRepository.findAll();
+    final List<Reservation> reservations = reservationRepository.findAll(null, null, null, null);
 
     // Then
     assertThat(reservations).hasSize(16);
+  }
+
+  @DisplayName("멤버ID로 예약을 검색한다.")
+  @Test
+  void findAllWithMemberIdTest() {
+    // When
+    final List<Reservation> reservations = reservationRepository.findAll(null, null, null, 1L);
+
+    // Then
+    assertThat(reservations).hasSize(1);
+  }
+
+  @DisplayName("특정 기간 이후 예약을 검색한다.")
+  @Test
+  void findAllWithDateFrom() {
+    // When
+    final List<Reservation> reservations = reservationRepository.findAll(LocalDate.now(),
+        null, null, null);
+
+    // Then
+    assertThat(reservations).hasSize(4);
+  }
+
+  @DisplayName("특정 기간 이전 예약을 검색한다.")
+  @Test
+  void findAllWithDateTo() {
+    // When
+    final List<Reservation> reservations = reservationRepository.findAll(null,
+        LocalDate.now(), null, null);
+
+    // Then
+    assertThat(reservations).hasSize(12);
+  }
+
+  @DisplayName("주어진 기간으로 예약을 검색한다.")
+  @Test
+  void findAllWithDateFromAndDateTo() {
+    // When
+    final List<Reservation> reservations = reservationRepository.findAll(LocalDate.now(),
+        LocalDate.now().plusDays(3), null, null);
+
+    // Then
+    assertThat(reservations).hasSize(2);
+  }
+
+  @DisplayName("주어진 기간과 멤버ID로 예약을 검색한다.")
+  @Test
+  void findAllWithDateFromAndDateToAndMemberId() {
+    // When
+    final List<Reservation> reservations = reservationRepository.findAll(LocalDate.now(),
+        LocalDate.now().plusDays(3), null, 13L);
+
+    // Then
+    assertThat(reservations).hasSize(1);
+  }
+
+  @DisplayName("주어진 기간과 멤버ID로 예약을 검색한다.")
+  @Test
+  void findAllWithDateFromAndDateToAndThemeId() {
+    // When
+    final List<Reservation> reservations = reservationRepository.findAll(
+        LocalDate.now().minusDays(4),
+        LocalDate.now().plusDays(3), 10L, null);
+
+    // Then
+    assertThat(reservations).hasSize(2);
   }
 
   @DisplayName("특정 예약 정보를 조회한다.")
@@ -66,7 +132,7 @@ class ReservationRepositoryTest {
     final Reservation savedReservation = reservationRepository.save(reservation);
 
     // Then
-    final List<Reservation> reservations = reservationRepository.findAll();
+    final List<Reservation> reservations = reservationRepository.findAll(null, null, null, null);
     assertAll(
         () -> assertThat(reservations).hasSize(17),
         () -> assertThat(savedReservation.getId()).isEqualTo(17L),
@@ -84,7 +150,7 @@ class ReservationRepositoryTest {
     reservationRepository.deleteById(1L);
 
     // Then
-    final List<Reservation> reservations = reservationRepository.findAll();
+    final List<Reservation> reservations = reservationRepository.findAll(null, null, null, null);
     assertThat(reservations).hasSize(15);
   }
 
