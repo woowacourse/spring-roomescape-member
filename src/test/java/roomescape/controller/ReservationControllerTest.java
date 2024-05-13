@@ -1,7 +1,11 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,11 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-
-import java.time.LocalDate;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/truncate.sql", "/memberData.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -65,14 +64,7 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("처음으로 등록하는 예약의 id는 1이다.")
     void firstPost() {
-        String token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(memberParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String token = loginWith(memberParams);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -100,14 +92,7 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("하나의 예약만 등록한 경우, 예약 목록 조회 결과 개수는 1개이다.")
     void readReservationsSizeAfterFirstPost() {
-        String token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(memberParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String token = loginWith(memberParams);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -131,14 +116,7 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("하나의 예약만 등록한 경우, 예약 삭제 뒤 예약 목록 조회 결과 개수는 0개이다.")
     void readReservationsSizeAfterPostAndDelete() {
-        String token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(memberParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String token = loginWith(memberParams);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -175,5 +153,16 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    private String loginWith(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
     }
 }

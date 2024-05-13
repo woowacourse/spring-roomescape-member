@@ -3,14 +3,13 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-
-import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/truncate.sql", "/memberData.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
@@ -42,14 +41,7 @@ public class AdminControllerTest {
     @Test
     @DisplayName("관리자로 로그인한 경우, /admin 으로 get 요청을 보내면 응답 코드는 200이다.")
     void getAdminPage() {
-        String token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(adminParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String token = loginWith(adminParams);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -62,14 +54,7 @@ public class AdminControllerTest {
     @Test
     @DisplayName("일반 사용자로 로그인한 경우, /admin 으로 get 요청을 보내면 응답 코드는 403이다.")
     void memberGetAdminPage() {
-        String token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(memberParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String token = loginWith(memberParams);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -82,14 +67,7 @@ public class AdminControllerTest {
     @Test
     @DisplayName("관리자로 로그인한 경우, /admin/reservation 으로 get 요청을 보내면 응답 코드는 200이다.")
     void getAdminReservationPage() {
-        String token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(adminParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String token = loginWith(adminParams);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -102,14 +80,7 @@ public class AdminControllerTest {
     @Test
     @DisplayName("일반 사용자로 로그인한 경우, /admin/reservation 으로 get 요청을 보내면 응답 코드는 403이다.")
     void memberGetAdminReservationPage() {
-        String token = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(memberParams)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String token = loginWith(memberParams);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -117,5 +88,16 @@ public class AdminControllerTest {
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(403);
+    }
+
+    private String loginWith(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
     }
 }
