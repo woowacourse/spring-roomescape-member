@@ -11,12 +11,12 @@ public class PasswordEncoder {
 
     public boolean matches(String rawPassword, String encodedPassword) {
         validateEmpty(rawPassword);
-        String loginPassword = String.valueOf(rawPassword.hashCode());
+        String loginPassword = encode(rawPassword);
         return loginPassword.equals(encodedPassword);
     }
 
     private void validateEmpty(String password) {
-        if (password == null) {
+        if (password == null || password.isEmpty()) {
             throw new IllegalFormatFlagsException("[ERROR] 비밀번호가 없습니다.");
         }
     }
