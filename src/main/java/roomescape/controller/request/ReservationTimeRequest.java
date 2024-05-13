@@ -2,5 +2,9 @@ package roomescape.controller.request;
 
 import java.time.LocalTime;
 
-public record ReservationTimeRequest(LocalTime startAt) {
+import jakarta.annotation.Nonnull;
+
+public record ReservationTimeRequest(
+        @Nonnull
+        LocalTime startAt) {
 }

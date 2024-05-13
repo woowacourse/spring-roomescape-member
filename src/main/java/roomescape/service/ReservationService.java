@@ -49,10 +49,10 @@ public class ReservationService {
     }
 
     public Reservation addReservation(ReservationRequest request, User user) {
-        ReservationTime reservationTime = findReservationTime(request.getDate(), request.getTimeId(),
-                request.getThemeId());
-        Theme theme = themeDao.findThemeById(request.getThemeId());
-        Reservation reservation = new Reservation(request.getDate(), reservationTime, theme, user);
+        ReservationTime reservationTime = findReservationTime(request.date(), request.timeId(),
+                request.themeId());
+        Theme theme = themeDao.findThemeById(request.themeId());
+        Reservation reservation = new Reservation(request.date(), reservationTime, theme, user);
         return reservationDao.addReservation(reservation);
     }
 
