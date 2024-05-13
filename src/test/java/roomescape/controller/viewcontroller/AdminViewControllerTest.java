@@ -28,6 +28,10 @@ class AdminViewControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
     }
 
     @DisplayName("Admin Page 홈화면 접근 성공 테스트")

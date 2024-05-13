@@ -1,6 +1,8 @@
 package roomescape.controller;
 
+import static roomescape.TestFixture.EMAIL_FIXTURE;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
+import static roomescape.TestFixture.PASSWORD_FIXTURE;
 import static roomescape.TestFixture.createMember;
 
 import io.restassured.RestAssured;
@@ -51,7 +53,7 @@ class LoginControllerTest {
     void findMemberProfileByCookie() {
         // given
         createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
-        LoginRequest loginRequest = new LoginRequest("hkim1109@naver.com", "qwer1234");
+        LoginRequest loginRequest = new LoginRequest(EMAIL_FIXTURE, PASSWORD_FIXTURE);
         String cookie = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(loginRequest)

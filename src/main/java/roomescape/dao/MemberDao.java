@@ -7,43 +7,34 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Role;
-import roomescape.exception.InvalidInputException;
 
 @Repository
 public class MemberDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Member> rowMapper = (rs, rowNum) -> new Member(
+    private static final RowMapper<Member> MAPPER = (rs, rowNum) -> new Member(
             rs.getLong("id"),
             new Name(rs.getString("name")),
             Role.valueOf(rs.getString("role")),
             rs.getString("email"),
             rs.getString("password")
     );
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<Member> findAll() {
-        return jdbcTemplate.query("select * from member", rowMapper);
+        return jdbcTemplate.query("select * from member", MAPPER);
     }
 
     public Member find(Member member) {
-        List<Member> members = jdbcTemplate.query(
+        return jdbcTemplate.queryForObject(
                 "SELECT * FROM member WHERE email = ? AND password = ?",
-                rowMapper, member.getEmail(), member.getPassword());
-        if (members.isEmpty()) {
-            throw new InvalidInputException("이메일 혹은 비밀번호가 일치하지 않습니다.");
-        }
-        return members.get(0);
+                MAPPER, member.getEmail(), member.getPassword());
     }
 
     public Member findMemberById(Long id) {
-        List<Member> members = jdbcTemplate.query(
-                "SELECT * FROM member WHERE id = ?", rowMapper, id);
-        if (members.isEmpty()) {
-            throw new InvalidInputException("해당 계정이 존재하지 않습니다.");
-        }
-        return members.get(0);
+        return jdbcTemplate.queryForObject(
+                "SELECT * FROM member WHERE id = ?", MAPPER, id);
     }
 }

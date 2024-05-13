@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.interceptor;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,10 +9,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.service.AuthService;
 
 @Component
-public class CheckLoginInterceptor implements HandlerInterceptor {
+public class CheckAdminInterceptor implements HandlerInterceptor {
     private final AuthService authService;
 
-    public CheckLoginInterceptor(final AuthService authService) {
+    public CheckAdminInterceptor(final AuthService authService) {
         this.authService = authService;
     }
 
@@ -24,6 +24,6 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         if (!isAdmin) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "접근 권한이 없습니다.");
         }
-        return authService.isAdmin(cookies);
+        return isAdmin;
     }
 }

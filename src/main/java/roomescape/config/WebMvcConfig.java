@@ -5,22 +5,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.interceptor.CheckAdminInterceptor;
+import roomescape.resolver.MemberArgumentResolver;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    private final CheckLoginInterceptor checkLoginInterceptor;
+    private final CheckAdminInterceptor checkAdminInterceptor;
     private final MemberArgumentResolver memberArgumentResolver;
 
     public WebMvcConfig(
-            CheckLoginInterceptor checkLoginInterceptor,
+            CheckAdminInterceptor checkAdminInterceptor,
             MemberArgumentResolver memberArgumentResolver) {
-        this.checkLoginInterceptor = checkLoginInterceptor;
+        this.checkAdminInterceptor = checkAdminInterceptor;
         this.memberArgumentResolver = memberArgumentResolver;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(checkLoginInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(checkAdminInterceptor).addPathPatterns("/admin/**");
     }
 
     @Override

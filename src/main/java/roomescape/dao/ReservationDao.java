@@ -39,9 +39,7 @@ public class ReservationDao {
             INNER JOIN theme AS th
             ON r.theme_id = th.id
             """;
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
+    private static final RowMapper<Reservation> MAPPER = (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
             rs.getDate("reservation_date").toLocalDate(),
             new Member(rs.getLong("member_id"),
@@ -54,6 +52,8 @@ public class ReservationDao {
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
                     rs.getString("theme_thumbnail")));
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -63,7 +63,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        return jdbcTemplate.query(SELECT_SQL, rowMapper);
+        return jdbcTemplate.query(SELECT_SQL, MAPPER);
     }
 
     public List<Reservation> findAllMatching(Long themeId, Long memberId,
@@ -71,7 +71,7 @@ public class ReservationDao {
         return jdbcTemplate.query(SELECT_SQL + """
                 WHERE theme_id = ? AND member_id = ?
                 AND date BETWEEN ? AND ?
-                """, rowMapper, themeId, memberId, dateFrom, dateTo);
+                """, MAPPER, themeId, memberId, dateFrom, dateTo);
     }
 
     public boolean exists(LocalDate date, Long timeId, Long themeId) {

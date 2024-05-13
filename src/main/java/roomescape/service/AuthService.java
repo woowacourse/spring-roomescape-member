@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
@@ -36,12 +37,11 @@ public class AuthService {
         if (cookies == null) {
             throw new InvalidInputException("로그인 해주세요.");
         }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return getValidatedToken(cookie);
-            }
-        }
-        throw new InvalidInputException("잘못된 요청입니다.");
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .findAny()
+                .map(this::getValidatedToken)
+                .orElseThrow(() -> new InvalidInputException("잘못된 요청입니다."));
     }
 
     private String getValidatedToken(Cookie cookie) {
@@ -49,6 +49,6 @@ public class AuthService {
         if (jwtTokenProvider.validateToken(token)) {
             return token;
         }
-        throw new InvalidInputException("토큰이 만료되었습니다. 다시 로그인 해주세요.");
+        throw new InvalidInputException("다시 로그인 해주세요.");
     }
 }

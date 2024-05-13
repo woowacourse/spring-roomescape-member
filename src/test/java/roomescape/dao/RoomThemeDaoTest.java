@@ -17,12 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.RoomTheme;
-import roomescape.exception.InvalidInputException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomThemeDaoTest {
@@ -111,8 +111,7 @@ class RoomThemeDaoTest {
     @Test
     void findByNotExistingId() {
         assertThatThrownBy(() -> roomThemeDao.findById(1L))
-                .isInstanceOf(InvalidInputException.class)
-                .hasMessage("해당 테마가 존재하지 않습니다.");
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @DisplayName("테마를 저장한다.")

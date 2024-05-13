@@ -11,15 +11,14 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
-import roomescape.exception.InvalidInputException;
 
 @Repository
 public class ReservationTimeDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) -> new ReservationTime(
+    private static final RowMapper<ReservationTime> MAPPER = (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime());
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -29,7 +28,7 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("SELECT * FROM reservation_time", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM reservation_time", MAPPER);
     }
 
     public List<ReservationTimeWithBookStatusResponse> findAllWithBookStatus(LocalDate bookedDate,
@@ -54,12 +53,8 @@ public class ReservationTimeDao {
     }
 
     public ReservationTime findById(Long id) {
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(
-                "SELECT * FROM reservation_time WHERE id = ?", rowMapper, id);
-        if (reservationTimes.isEmpty()) {
-            throw new InvalidInputException("해당 예약 시간이 존재하지 않습니다.");
-        }
-        return reservationTimes.get(0);
+        return jdbcTemplate.queryForObject(
+                "SELECT * FROM reservation_time WHERE id = ?", MAPPER, id);
     }
 
     public boolean existByStartAt(LocalTime startAt) {

@@ -2,6 +2,7 @@ package roomescape.util;
 
 import java.util.List;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
                 "날짜 혹은 시간 입력 양식이 잘못되었습니다. ex)yyyy-MM-dd, HH:mm"));
     }
 
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ExceptionDto> handleIncorrectResultSizeDataAccessException() {
+        return ResponseEntity.badRequest().body(new ExceptionDto("대상이 존재하지 않습니다."));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ExceptionDto>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e) {
@@ -42,7 +48,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionDto> handleException() {
+    public ResponseEntity<ExceptionDto> handleException(Exception e) {
         return ResponseEntity.internalServerError()
                 .body(new ExceptionDto("서버에서 요청을 처리할 수 없습니다."));
     }
