@@ -15,25 +15,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalUserRequestException.class)
     public ResponseEntity<ProblemDetail> handleIllegalUserRequestException(IllegalUserRequestException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.getBody());
     }
 
     @ExceptionHandler(value = AuthorizationException.class)
     public ResponseEntity<ProblemDetail> handleAuthorizationException(AuthorizationException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.getBody());
     }
 
     @ExceptionHandler(value = ForbiddenException.class)
     public ResponseEntity<ProblemDetail> handleForbiddenException(ForbiddenException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         return ResponseEntity.status(exception.getHttpStatus()).body(exception.getBody());
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 exception.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = JsonMappingException.class)
     public ResponseEntity<ProblemDetail> handleJsonMappingException(JsonMappingException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 exception.getPath().get(0).getFieldName() + " 필드의 값이 유효하지 않습니다.");
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ProblemDetail> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 exception.getParameter().getParameterName() + " URL 파라미터의 값이 유효하지 않습니다.");
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
     public ResponseEntity<ProblemDetail> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 exception.getParameterName() + " URL 파라미터의 값은 비어있을 수 없습니다.");
@@ -73,11 +73,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ProblemDetail> handleRuntimeException(RuntimeException exception) {
-        System.err.println(exception.getMessage());
+        logErrorMessage(exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "서버 에러입니다.");
         problemDetail.setTitle("서버 에러입니다.");
         return ResponseEntity.internalServerError().body(problemDetail);
+    }
+
+    private void logErrorMessage(Exception exception) {
+        exception.printStackTrace(System.err);
     }
 }
