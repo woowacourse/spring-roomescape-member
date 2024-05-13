@@ -82,7 +82,7 @@ function checkDateAndTheme() {
         fetchAvailableTimes(selectedDate, selectedThemeId);
     }
 }
-
+    
 function fetchAvailableTimes(date, themeId) {
     fetch('/reservations/times?date=' + date + '&themeId=' + themeId, {
         method: 'GET',

@@ -47,8 +47,8 @@ public class MemberReservationController {
 
     @GetMapping("/times")
     public ResponseEntity<List<SelectableTimeResponse>> findSelectableTimes(
-            @RequestParam(name = "date") LocalDate date,
-            @RequestParam(name = "themeId") long themeId
+            @RequestParam(name = "date") final LocalDate date,
+            @RequestParam(name = "themeId") final long themeId
     ) {
         return ResponseEntity.ok(reservationService.findSelectableTimes(date, themeId));
     }
