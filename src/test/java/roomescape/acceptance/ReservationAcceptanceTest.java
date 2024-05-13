@@ -74,7 +74,7 @@ class ReservationAcceptanceTest {
         // given
         String token = tokenProvider.createToken(UserFixture.member);
 
-        Map<?, ?> request = Map.of(
+        Map<String, Object> request = Map.of(
                 "date", UserFixture.tomorrow.toString(),
                 "timeId", 2,
                 "themeId", 2);
@@ -106,7 +106,7 @@ class ReservationAcceptanceTest {
         String token = tokenProvider.createToken(AdminFixture.member);
         doReturn(Optional.of(token)).when(tokenProvider).extractToken(any());
 
-        Map<?, ?> request = Map.of(
+        Map<String, Object> request = Map.of(
                 "memberId", 1,
                 "date", AdminFixture.tomorrow.toString(),
                 "timeId", 1,
