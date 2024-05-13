@@ -30,7 +30,7 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         logger.warn(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode().value(), e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode().value(), e.getBindingResult());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
