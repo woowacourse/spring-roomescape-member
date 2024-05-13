@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -11,12 +10,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.domain.Member;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
@@ -80,28 +79,12 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> searchReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        String sql = getBasicSelectQuery() + getSearchConditionQuery(themeId, memberId, dateFrom, dateTo);
-        return jdbcTemplate.query(sql, rowMapper);
-    }
-
-    private String getSearchConditionQuery(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        List<String> conditionQuery = new ArrayList<>();
-        if (themeId != null) {
-            conditionQuery.add("tm.id = " + themeId);
-        }
-        if (memberId != null) {
-            conditionQuery.add("u.id = " + memberId);
-        }
-        if (dateFrom != null) {
-            conditionQuery.add("r.date >= '%s'".formatted(dateFrom));
-        }
-        if (dateTo != null) {
-            conditionQuery.add("r.date <= '%s'".formatted(dateTo));
-        }
-        if (conditionQuery.isEmpty()) {
-            return "";
-        }
-        return "where " + String.join(" and ", conditionQuery);
+        QueryBuilder queryBuilder = QueryBuilder.build(getBasicSelectQuery())
+                .addCondition(themeId, "tm.id = ?")
+                .addCondition(memberId, "u.id = ?")
+                .addCondition(dateFrom, "r.date >= ?")
+                .addCondition(dateTo, "r.date <= ?");
+        return jdbcTemplate.query(queryBuilder.getQuery(), rowMapper, queryBuilder.getParam());
     }
 
     private String getBasicSelectQuery() {
