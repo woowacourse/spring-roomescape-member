@@ -31,18 +31,7 @@ class MemberControllerTest {
     @DisplayName("/reservation 으로 GET 요청을 보내면 방탈출 예약 페이지와 200 OK 를 받는다.")
     void getAdminPage() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.ADMIN));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        String accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String accessTokenCookie = getAdminAccessTokenCookieByLogin("admin@admin.com", "12341234");
 
         memberDao.insert(new Member("이름1", "test@test.com", "password", Role.MEMBER));
         memberDao.insert(new Member("이름2", "test@test.com", "password", Role.MEMBER));
@@ -57,5 +46,23 @@ class MemberControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("data.members.size()", is(5));
+    }
+
+    private String getAdminAccessTokenCookieByLogin(final String email, final String password) {
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().cookie("accessToken");
+
+        return "accessToken=" + accessToken;
     }
 }

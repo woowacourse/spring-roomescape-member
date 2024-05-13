@@ -49,8 +49,7 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("처음으로 등록하는 예약의 id는 1이다.")
     void firstPost() {
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.ADMIN));
-        String accessTokenCookie = getAccessTokenCookieByLogin(member.getEmail(), member.getPassword());
+        String accessTokenCookie = getAdminAccessTokenCookieByLogin("admin@admin.com", "12341234");
 
         reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
@@ -78,8 +77,7 @@ public class ReservationControllerTest {
     @DisplayName("관리자 권한이 있으면 전체 예약정보를 조회할 수 있다.")
     void readEmptyReservations() {
         // given
-        Member admin = memberDao.insert(new Member("name", "email@email.com", "password", Role.ADMIN));
-        String accessTokenCookie = getAccessTokenCookieByLogin(admin.getEmail(), admin.getPassword());
+        String accessTokenCookie = getAdminAccessTokenCookieByLogin("admin@admin.com", "12341234");
 
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
@@ -245,9 +243,7 @@ public class ReservationControllerTest {
                 .statusCode(400);
     }
 
-    private String getAdminAccessTokenCookie() {
-        String email = "admin@admin.com";
-        String password = "12341234";
+    private String getAdminAccessTokenCookieByLogin(final String email, final String password) {
         memberDao.insert(new Member("이름", email, password, Role.ADMIN));
 
         Map<String, String> loginParams = Map.of(
@@ -255,14 +251,14 @@ public class ReservationControllerTest {
                 "password", password
         );
 
-        String accessTokenCookie = RestAssured.given().log().all()
+        String accessToken = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
                 .body(loginParams)
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+                .then().log().all().extract().cookie("accessToken");
 
-        return accessTokenCookie;
+        return "accessToken=" + accessToken;
     }
 
     private String getAccessTokenCookieByLogin(final String email, final String password) {
@@ -271,13 +267,13 @@ public class ReservationControllerTest {
                 "password", password
         );
 
-        String accessTokenCookie = RestAssured.given().log().all()
+        String accessToken = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
                 .body(loginParams)
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+                .then().log().all().extract().cookie("accessToken");
 
-        return accessTokenCookie;
+        return "accessToken=" + accessToken;
     }
 }

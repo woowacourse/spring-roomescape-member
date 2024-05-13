@@ -13,4 +13,7 @@ security:
   jwt:
     token:
       secret-key: daijawligagaf@LIJ$@U)9nagnalkkgalijaddljfi
-      expire-length: 1800000
+      access:
+        expire-length: 1800000 # 30 분
+      refresh:
+        expire-length: 604800000 # 7일

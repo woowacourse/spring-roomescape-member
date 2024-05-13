@@ -16,6 +16,7 @@ public enum ErrorType {
     INVALID_SIGNATURE_TOKEN("잘못된 JWT 토큰 Signature 입니다."),
     ILLEGAL_TOKEN("JWT 토큰의 Claim 이 비어있습니다."),
     INVALID_TOKEN("JWT 토큰이 존재하지 않거나 유효하지 않습니다."),
+    INVALID_REFRESH_TOKEN("유효하지 않은 RefreshToken 입니다."),
 
     // 403 Forbidden
     PERMISSION_DOES_NOT_EXIST("접근 권한이 존재하지 않습니다."),

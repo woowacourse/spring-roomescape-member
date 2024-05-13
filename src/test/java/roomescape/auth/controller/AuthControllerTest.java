@@ -32,7 +32,7 @@ public class AuthControllerTest {
     private int port;
 
     @Test
-    @DisplayName("로그인에 성공하면 JWT accessToken을 Response 받는다.")
+    @DisplayName("로그인에 성공하면 JWT accessToken, refreshToken 을 Response 받는다.")
     void getJwtAccessTokenWhenlogin() {
         // given
         String email = "test@email.com";
@@ -45,45 +45,31 @@ public class AuthControllerTest {
         );
 
         // when
-        String cookie = RestAssured.given().log().all()
+        Map<String, String> cookies = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
                 .body(loginParams)
                 .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+                .then().log().all().extract().cookies();
 
         // then
-        String tokenResponsePrefix = "token=";
-        Assertions.assertThat(cookie.startsWith(tokenResponsePrefix)).isTrue();
+        Assertions.assertThat(cookies.get("accessToken")).isNotNull();
+        Assertions.assertThat(cookies.get("refreshToken")).isNotNull();
     }
 
     @Test
     @DisplayName("로그인 검증 시, 회원의 name을 응답 받는다.")
     void checkLogin() {
         // given
-        String name = "이름";
-        String email = "test@email.com";
+        String email = "test@test.com";
         String password = "12341234";
-        memberDao.insert(new Member(name, email, password, Role.MEMBER));
+        String accessTokenCookie = getAccessTokenCookieByLogin(email, password);
 
-        Map<String, String> loginParams = Map.of(
-                "email", email,
-                "password", password
-        );
-
-        // when
-        String tokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
-
-        // then
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
-                .header("cookie", tokenCookie)
+                .header("cookie", accessTokenCookie)
                 .when().get("/login/check")
                 .then()
                 .body("data.name", is("이름"));
@@ -99,5 +85,41 @@ public class AuthControllerTest {
                 .when().get("/login/check")
                 .then()
                 .statusCode(401);
+    }
+
+    private String getAdminAccessTokenCookie(final String email, final String password) {
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().cookie("accessToken");
+
+        return "accessToken=" + accessToken;
+    }
+
+    private String getAccessTokenCookieByLogin(final String email, final String password) {
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().cookie("accessToken");
+
+        return "accessToken=" + accessToken;
     }
 }

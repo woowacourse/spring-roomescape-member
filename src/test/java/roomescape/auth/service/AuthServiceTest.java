@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.dto.LoginResponse;
 import roomescape.global.auth.jwt.JwtHandler;
+import roomescape.global.auth.jwt.dto.TokenDto;
 import roomescape.global.exception.model.NotFoundException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
@@ -37,12 +37,12 @@ class AuthServiceTest {
         Member member = memberDao.insert(new Member("이름", "test@test.com", "12341234", Role.MEMBER));
 
         // when
-        LoginResponse response = authService.login(new LoginRequest(member.getEmail(), member.getPassword()));
+        TokenDto response = authService.login(new LoginRequest(member.getEmail(), member.getPassword()));
 
         // then
         assertAll(
-                () -> Assertions.assertThat(response.memberId()).isEqualTo(member.getId()),
-                () -> Assertions.assertThat(response.accessToken()).isNotNull()
+                () -> Assertions.assertThat(response.accessToken()).isNotNull(),
+                () -> Assertions.assertThat(response.refreshToken()).isNotNull()
         );
     }
 

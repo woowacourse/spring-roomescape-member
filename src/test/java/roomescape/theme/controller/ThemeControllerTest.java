@@ -3,7 +3,6 @@ package roomescape.theme.controller;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,30 +33,13 @@ class ThemeControllerTest {
     @Autowired
     private MemberDao memberDao;
 
-    private static String adminAccessTokenCookie;
-
-    @BeforeEach
-    void init() {
-        String email = "admin@test.com";
-        String password = "12341234";
-        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
-
-        Map<String, String> loginParams = Map.of(
-                "email", email,
-                "password", password
-        );
-
-        adminAccessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
-    }
-
     @Test
     @DisplayName("모든 테마 정보를 조회한다.")
     void readThemes() {
+        String email = "admin@test.com";
+        String password = "12341234";
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin(email, password);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .header(new Header("Cookie", adminAccessTokenCookie))
@@ -71,6 +53,10 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마를 추가한다.")
     void createThemes() {
+        String email = "admin@test.com";
+        String password = "12341234";
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin(email, password);
+
         Map<String, String> params = Map.of(
                 "name", "테마명",
                 "description", "설명",
@@ -92,6 +78,10 @@ class ThemeControllerTest {
     @Test
     @DisplayName("테마를 삭제한다.")
     void deleteThemes() {
+        String email = "admin@test.com";
+        String password = "12341234";
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin(email, password);
+
         Map<String, String> params = Map.of(
                 "name", "테마명",
                 "description", "설명",
@@ -144,6 +134,10 @@ class ThemeControllerTest {
     @MethodSource("requestValidateSource")
     @DisplayName("테마 생성 시, 요청 값에 공백 또는 null이 포함되어 있으면 400 에러를 발생한다.")
     void validateBlankRequest(Map<String, String> invalidRequestBody) {
+        String email = "admin@test.com";
+        String password = "12341234";
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin(email, password);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .header(new Header("Cookie", adminAccessTokenCookie))
@@ -171,5 +165,23 @@ class ThemeControllerTest {
                         "thumbnail", "http://testsfasdgasd.com"
                 )
         );
+    }
+
+    private String getAdminAccessTokenCookieByLogin(final String email, final String password) {
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().cookie("accessToken");
+
+        return "accessToken=" + accessToken;
     }
 }

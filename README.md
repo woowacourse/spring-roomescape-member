@@ -13,6 +13,7 @@
 |          | GET    | `/login`                                                | 로그인 페이지 요청            | `templates/login.html`                 | `@Controller`     |
 |          | POST   | `/login`                                                | 로그인 요청                |                                        | `@RestController` |
 |          | GET    | `/login/check`                                          | 인증 정보 조회              |                                        | `@RestController` |
+|          | GET    | `/token-reissue`                                        | JWT 토큰 재발급            |                                        | `@RestController` |
 |          | GET    | `/reservations`                                         | 예약 정보 조회              |                                        | `@RestController` |
 |          | GET    | `/reservations/search?themeId&memberId&dateFrom&dateTo` | 예약 정보 조건 검색           |                                        | `@RestController` |
 |          | GET    | `/reservations/themes/{themeId}/reservationTimes?date`  | 특정 날짜의 특정 테마 예약 정보 조회 |                                        | `@RestController` |
@@ -48,7 +49,31 @@ Content-Type: application/json
 HTTP/1.1 200 
 Content-Type: application/json
 Keep-Alive: timeout=60
-Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+Set-Cookie: accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+---
+
+### JWT 토큰 재발급 API
+
+- Request
+
+```
+GET /token-reissue HTTP/1.1
+Cookie:
+accessToken=eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6MSwiaWF0IjoxNzE1NjE1OTMyLCJleHAiOjE3MTU2MTc3MzJ9.nfu6IZlKBccnmBbMtKDTP-5TbNWUMhcVY_ee09aNwhE; 
+refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MTU2MTU5MzIsImV4cCI6MTcxNTYxNzczMn0.U0ZhUSmvOjCAAKD6-9F8dYO1K-LskyxPnMYe7ZJGaQA
+```
+
+- Response
+
+```
+HTTP/1.1 200 
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
 ```
 
 ---
@@ -59,7 +84,8 @@ Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZ
 
 ```
 GET /login/check HTTP/1.1
-cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+Cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; 
+accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM;
 ```
 
 - Response

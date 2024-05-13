@@ -6,37 +6,46 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.global.auth.jwt.dto.TokenDto;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.UnauthorizedException;
 
 import java.util.Date;
 
+//TODO: RefreshToken 로직 작성
 @Component
 public class JwtHandler {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long expireTime;
+    @Value("${security.jwt.token.access.expire-length}")
+    private long accessTokenExpireTime;
+    @Value("${security.jwt.token.refresh.expire-length}")
+    private long refreshTokenExpireTime;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    public String createToken(Long memberId) {
+    public TokenDto createToken(Long memberId) {
         Date date = new Date();
-        Date expiredAt = new Date(date.getTime() + expireTime);
+        Date accessTokenExpiredAt = new Date(date.getTime() + accessTokenExpireTime);
+        Date refreshTokenExpiredAt = new Date(date.getTime() + accessTokenExpireTime);
 
-        return Jwts.builder()
+        String accessToken = Jwts.builder()
                 .claim("memberId", memberId)
                 .setIssuedAt(date)
-                .setExpiration(expiredAt)
+                .setExpiration(accessTokenExpiredAt)
                 .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
                 .compact();
+
+        String refreshToken = Jwts.builder()
+                .setIssuedAt(date)
+                .setExpiration(refreshTokenExpiredAt)
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
+                .compact();
+
+        return new TokenDto(accessToken, refreshToken);
     }
 
-    public Long getMemberIdFromToken(String token) {
+    public Long getMemberIdFromTokenWithValidate(String token) {
         validateToken(token);
 
         return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token)
@@ -44,7 +53,13 @@ public class JwtHandler {
                 .get("memberId", Long.class);
     }
 
-    private void validateToken(String token) {
+    public Long getMemberIdFromTokenWithNotValidate(String token) {
+        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token)
+                .getBody()
+                .get("memberId", Long.class);
+    }
+
+    public void validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token);
         } catch (ExpiredJwtException e) {

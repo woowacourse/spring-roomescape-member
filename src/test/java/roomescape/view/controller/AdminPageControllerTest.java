@@ -26,29 +26,16 @@ class AdminPageControllerTest {
     @LocalServerPort
     private int port;
 
-    String accessTokenCookie;
-
     @Test
     @DisplayName("관리자 권한이 있는 유저가 /admin 으로 GET 요청을 보내면 어드민 페이지와 200 OK 를 받는다.")
     void getAdminPageHasRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.ADMIN));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("admin@admin.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
                 .port(port)
-                .header(new Header("Cookie", accessTokenCookie))
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -58,18 +45,7 @@ class AdminPageControllerTest {
     @DisplayName("관리자 권한이 없는 유저가 /admin 으로 GET 요청을 보내면 어드민 페이지와 200 OK 를 받는다.")
     void getAdminPageHasNotRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.MEMBER));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String accessTokenCookie = getAccessTokenCookieByLogin("member@member.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
@@ -84,23 +60,12 @@ class AdminPageControllerTest {
     @DisplayName("/admin/reservation 으로 GET 요청을 보내면 어드민 예약 관리 페이지와 200 OK 를 받는다.")
     void getAdminReservationPageHasRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.ADMIN));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("admin@admin.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
                 .port(port)
-                .header(new Header("Cookie", accessTokenCookie))
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -110,18 +75,7 @@ class AdminPageControllerTest {
     @DisplayName("관리자 권한이 없는 유저가 /admin/reservation 으로 GET 요청을 보내면 어드민 예약 관리 페이지와 200 OK 를 받는다.")
     void getAdminReservationPageHasNotRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.MEMBER));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String accessTokenCookie = getAccessTokenCookieByLogin("member@member.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
@@ -136,23 +90,12 @@ class AdminPageControllerTest {
     @DisplayName("/admin/time 으로 GET 요청을 보내면 어드민 예약 시간 관리 페이지와 200 OK 를 받는다.")
     void getAdminTimePageHasRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.ADMIN));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("admin@admin.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
                 .port(port)
-                .header(new Header("Cookie", accessTokenCookie))
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
@@ -162,18 +105,7 @@ class AdminPageControllerTest {
     @DisplayName("/admin/time 으로 GET 요청을 보내면 403 Forbidden 을 받는다.")
     void getAdminTimePageHasNotRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.MEMBER));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String accessTokenCookie = getAccessTokenCookieByLogin("member@member.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
@@ -188,23 +120,12 @@ class AdminPageControllerTest {
     @DisplayName("관리자 권한이 있는 유저가 /admin/theme 으로 GET 요청을 보내면 어드민 테마 관리 페이지와 200 OK 를 받는다.")
     void getAdminThemePageHasRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.ADMIN));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("admin@admin.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
                 .port(port)
-                .header(new Header("Cookie", accessTokenCookie))
+                .header(new Header("Cookie", adminAccessTokenCookie))
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
@@ -214,18 +135,7 @@ class AdminPageControllerTest {
     @DisplayName("관리자 권한이 없는 유저가 /admin/theme 으로 GET 요청을 보내면 403 Forbidden 을 받는다.")
     void getAdminThemePageHasNotRole() {
         // given
-        memberDao.insert(new Member("이름", "admin@admin.com", "1234admin", Role.MEMBER));
-        Map<String, String> loginParams = Map.of(
-                "email", "admin@admin.com",
-                "password", "1234admin"
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+        String accessTokenCookie = getAccessTokenCookieByLogin("member@member.com", "12341234");
 
         // when & then
         RestAssured.given().log().all()
@@ -234,5 +144,40 @@ class AdminPageControllerTest {
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(403);
+    }
+
+    private String getAdminAccessTokenCookieByLogin(final String email, final String password) {
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().cookie("accessToken");
+
+        return "accessToken=" + accessToken;
+    }
+
+    private String getAccessTokenCookieByLogin(final String email, final String password) {
+        memberDao.insert(new Member("name", email, password, Role.MEMBER));
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().cookie("accessToken");
+
+        return "accessToken=" + accessToken;
     }
 }

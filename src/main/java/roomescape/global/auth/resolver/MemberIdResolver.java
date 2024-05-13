@@ -15,7 +15,7 @@ import roomescape.global.exception.model.UnauthorizedException;
 
 @Component
 public class MemberIdResolver implements HandlerMethodArgumentResolver {
-    private static final String TOKEN_COOKIE_NAME = "token";
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
     private final JwtHandler jwtHandler;
 
@@ -33,12 +33,12 @@ public class MemberIdResolver implements HandlerMethodArgumentResolver {
         String cookieHeader = webRequest.getHeader("Cookie");
         if (cookieHeader != null) {
             for (Cookie cookie : webRequest.getNativeRequest(HttpServletRequest.class).getCookies()) {
-                if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
+                if (cookie.getName().equals(ACCESS_TOKEN_COOKIE_NAME)) {
                     String accessToken = cookie.getValue();
-                    return jwtHandler.getMemberIdFromToken(accessToken);
+                    return jwtHandler.getMemberIdFromTokenWithValidate(accessToken);
                 }
             }
         }
-        throw new UnauthorizedException(ErrorType.INVALID_TOKEN, "JWT 토큰이 존재하지 않거나 유효하지 않습니다.");
+        throw new UnauthorizedException(ErrorType.INVALID_REFRESH_TOKEN, "JWT 토큰이 존재하지 않거나 유효하지 않습니다.");
     }
 }

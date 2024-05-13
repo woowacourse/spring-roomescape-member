@@ -18,7 +18,7 @@ import roomescape.member.service.MemberService;
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private static final String TOKEN_COOKIE_NAME = "token";
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
     private final MemberService memberService;
     private final JwtHandler jwtHandler;
@@ -42,16 +42,16 @@ public class AdminInterceptor implements HandlerInterceptor {
         String cookieHeader = request.getHeader("Cookie");
         if (cookieHeader != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
+                if (cookie.getName().equals(ACCESS_TOKEN_COOKIE_NAME)) {
                     String accessToken = cookie.getValue();
-                    Long memberId = jwtHandler.getMemberIdFromToken(accessToken);
+                    Long memberId = jwtHandler.getMemberIdFromTokenWithValidate(accessToken);
 
                     Member member = memberService.findMemberById(memberId);
                     return checkRole(member, memberId);
                 }
             }
         }
-        throw new UnauthorizedException(ErrorType.INVALID_TOKEN, "JWT 토큰이 존재하지 않거나 유효하지 않습니다.");
+        throw new UnauthorizedException(ErrorType.INVALID_REFRESH_TOKEN, "JWT 토큰이 존재하지 않거나 유효하지 않습니다.");
     }
 
     private boolean checkRole(final Member member, final Long memberId) {

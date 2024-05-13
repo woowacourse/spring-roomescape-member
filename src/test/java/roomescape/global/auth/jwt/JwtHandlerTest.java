@@ -45,7 +45,7 @@ class JwtHandlerTest {
                 .compact();
 
         // when & then
-        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromToken(accessToken))
+        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromTokenWithValidate(accessToken))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage(EXPIRED_TOKEN.getDescription());
     }
@@ -68,7 +68,7 @@ class JwtHandlerTest {
         String unsupportedAccessToken = splitAccessToken[0] + "." + splitAccessToken[1];
 
         // when & then
-        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromToken(unsupportedAccessToken))
+        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromTokenWithValidate(unsupportedAccessToken))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage(ErrorType.MALFORMED_TOKEN.getDescription());
     }
@@ -90,7 +90,7 @@ class JwtHandlerTest {
                 .compact();
 
         // when & then
-        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromToken(accessToken))
+        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromTokenWithValidate(accessToken))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage(ErrorType.INVALID_SIGNATURE_TOKEN.getDescription());
     }
@@ -102,7 +102,7 @@ class JwtHandlerTest {
         String accessToken = "";
 
         // when & then
-        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromToken(accessToken))
+        Assertions.assertThatThrownBy(() -> jwtHandler.getMemberIdFromTokenWithValidate(accessToken))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage(ErrorType.ILLEGAL_TOKEN.getDescription());
     }

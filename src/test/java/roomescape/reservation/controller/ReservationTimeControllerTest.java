@@ -3,7 +3,6 @@ package roomescape.reservation.controller;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,30 +42,11 @@ public class ReservationTimeControllerTest {
             "startAt", "17:00"
     );
 
-    private static String adminAccessTokenCookie;
-
-    @BeforeEach
-    void init() {
-        String email = "admin@admin.com";
-        String password = "12341234";
-        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
-
-        Map<String, String> loginParams = Map.of(
-                "email", email,
-                "password", password
-        );
-
-        adminAccessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
-    }
-
     @Test
     @DisplayName("처음으로 등록하는 시간의 id는 1이다.")
     void firstPost() {
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("email@email.com", "password");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
@@ -82,6 +62,8 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("아무 시간도 등록 하지 않은 경우, 시간 목록 조회 결과 개수는 0개이다.")
     void readEmptyTimes() {
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("email@email.com", "password");
+
         RestAssured.given().log().all()
                 .port(port)
                 .header(new Header("Cookie", adminAccessTokenCookie))
@@ -94,6 +76,8 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("하나의 시간만 등록한 경우, 시간 목록 조회 결과 개수는 1개이다.")
     void readTimesSizeAfterFirstPost() {
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("email@email.com", "password");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
@@ -117,6 +101,8 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("하나의 시간만 등록한 경우, 시간 삭제 뒤 시간 목록 조회 결과 개수는 0개이다.")
     void readTimesSizeAfterPostAndDelete() {
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("email@email.com", "password");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
@@ -163,6 +149,7 @@ public class ReservationTimeControllerTest {
     @MethodSource("validateRequestDataFormatSource")
     @DisplayName("예약 시간 생성 시, 시간 요청 데이터에 시간 포맷이 아닌 값이 입력되어오면 400 에러를 발생한다.")
     void validateRequestDataFormat(Map<String, String> request) {
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("email@email.com", "password");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -188,6 +175,8 @@ public class ReservationTimeControllerTest {
     @MethodSource("validateBlankRequestSource")
     @DisplayName("예약 시간 생성 시, 요청 값에 공백 또는 null이 포함되어 있으면 400 에러를 발생한다.")
     void validateBlankRequest(Map<String, String> request) {
+        String adminAccessTokenCookie = getAdminAccessTokenCookieByLogin("email@email.com", "password");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .header(new Header("Cookie", adminAccessTokenCookie))
@@ -209,5 +198,23 @@ public class ReservationTimeControllerTest {
                         "startAt", " "
                 )
         );
+    }
+
+    private String getAdminAccessTokenCookieByLogin(final String email, final String password) {
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().cookie("accessToken");
+
+        return "accessToken=" + accessToken;
     }
 }
