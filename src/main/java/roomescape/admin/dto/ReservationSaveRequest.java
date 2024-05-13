@@ -1,4 +1,4 @@
-package roomescape.reservation.dto;
+package roomescape.admin.dto;
 
 import roomescape.global.exception.RoomEscapeException;
 
@@ -11,13 +11,15 @@ import static roomescape.global.exception.ExceptionMessage.*;
 public record ReservationSaveRequest(
         LocalDate date,
         Long timeId,
-        Long themeId
+        Long themeId,
+        Long memberId
 ) {
     public ReservationSaveRequest {
         try {
             Objects.requireNonNull(date, DATE_CANNOT_NULL.getMessage());
             Objects.requireNonNull(timeId, TIME_CANNOT_NULL.getMessage());
             Objects.requireNonNull(themeId, THEME_CANNOT_NULL.getMessage());
+            Objects.requireNonNull(memberId, MEMBER_CANNOT_NULL.getMessage());
         } catch (NullPointerException e) {
             throw new RoomEscapeException(BAD_REQUEST, e.getMessage());
         }

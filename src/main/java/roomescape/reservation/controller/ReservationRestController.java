@@ -2,10 +2,11 @@ package roomescape.reservation.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.dto.ReservationSaveRequest;
-import roomescape.reservation.service.ReservationService;
+import roomescape.admin.dto.ReservationSaveRequest;
 import roomescape.global.auth.AuthUser;
+import roomescape.reservation.dto.MemberReservationSaveRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
 import java.util.List;
@@ -28,9 +29,10 @@ public class ReservationRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveRequest request,
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody MemberReservationSaveRequest request,
                                                                  AuthUser authUser) {
-        ReservationResponse response = reservationService.saveReservation(request, authUser);
+        ReservationSaveRequest saveRequest = request.generateReservationSaveRequest(authUser);
+        ReservationResponse response = reservationService.saveReservation(saveRequest);
 
         URI location = URI.create("/reservations/" + response.id());
         return ResponseEntity.created(location).body(response);

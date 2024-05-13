@@ -1,12 +1,11 @@
 package roomescape.reservation.mapper;
 
-import roomescape.admin.dto.AdminReservationSaveRequest;
+import roomescape.admin.dto.ReservationSaveRequest;
 import roomescape.member.domain.ReservationMember;
 import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.theme.theme.domain.Theme;
 
 public class ReservationMapper {
@@ -22,10 +21,6 @@ public class ReservationMapper {
     }
 
     public Reservation mapToReservation(ReservationSaveRequest request, ReservationMember member, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(null, member, request.date(), reservationTime, theme);
-    }
-
-    public Reservation mapToReservation(AdminReservationSaveRequest request, ReservationMember member, ReservationTime reservationTime, Theme theme) {
         return new Reservation(null, member, request.date(), reservationTime, theme);
     }
 }

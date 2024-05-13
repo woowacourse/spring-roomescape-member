@@ -2,7 +2,7 @@ package roomescape.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.admin.dto.AdminReservationSaveRequest;
+import roomescape.admin.dto.ReservationSaveRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -21,7 +21,7 @@ public class AdminRestController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody AdminReservationSaveRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveRequest request) {
         ReservationResponse response = reservationService.saveReservation(request);
 
         URI location = URI.create("admin/reservations/" + response.id());
