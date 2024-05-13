@@ -25,6 +25,10 @@ public class Member {
         this.role = role;
     }
 
+    public static Member createUser(MemberName name, MemberEmail email, MemberPassword password) {
+        return new Member(name, email, password, MemberRole.USER);
+    }
+
     private void validateName(MemberName name) {
         if (name == null) {
             throw new IllegalArgumentException("사용자 이름은 필수입니다.");

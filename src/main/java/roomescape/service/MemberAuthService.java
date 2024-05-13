@@ -8,7 +8,6 @@ import roomescape.domain.MemberEmail;
 import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
-import roomescape.domain.MemberRole;
 import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.response.MemberAppResponse;
 
@@ -26,11 +25,10 @@ public class MemberAuthService {
             throw new IllegalStateException("해당 이메일의 회원이 이미 존재합니다.");
         }
 
-        Member newMember = new Member(
+        Member newMember = Member.createUser(
             new MemberName(request.name()),
             new MemberEmail(request.email()),
-            new MemberPassword(request.password()),
-            MemberRole.USER);
+            new MemberPassword(request.password()));
 
         Member savedMember = memberRepository.save(newMember);
         return new MemberAppResponse(savedMember.getId(), savedMember.getName().getName(),
