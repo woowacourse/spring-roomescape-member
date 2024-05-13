@@ -29,7 +29,7 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(tokenProvider, memberDao, TEST_SECRET_KEY);
+        authService = new AuthService(tokenProvider, memberDao);
     }
 
     @DisplayName("토큰 생성 시, 해당 멤버가 없을 경우 예외를 던진다.")
@@ -59,6 +59,6 @@ class AuthServiceTest {
         LoginRequest request = new LoginRequest(email, "1234");
         given(memberDao.findMemberByEmail(email))
                 .willReturn(Optional.of(new Member(1L, name, email)));
-        return authService.createAccessToken(request).getValue();
+        return authService.createToken(request);
     }
 }

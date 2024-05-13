@@ -15,18 +15,18 @@ import roomescape.auth.service.AuthService;
 
 @RestController
 public class LoginController {
-
+    private final TokenCookieConvertor tokenCookieConvertor;
     private final AuthService authService;
 
-    public LoginController(AuthService authService) {
+    public LoginController(TokenCookieConvertor tokenCookieConvertor, AuthService authService) {
+        this.tokenCookieConvertor = tokenCookieConvertor;
         this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        AccessTokenCookie token = authService.createAccessToken(request);
-
-        ResponseCookie cookie = token.createResponseCookie();
+        String token = authService.createToken(request);
+        ResponseCookie cookie = tokenCookieConvertor.createResponseCookie(token);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
