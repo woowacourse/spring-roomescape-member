@@ -59,16 +59,16 @@ class ReservationIntegrationTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:22')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출2', '방탈출 2번', '썸네일2')");
 
+        String token = RestAssured.given()
+                .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .getHeader("Set-Cookie");
+
         return List.of(
                 dynamicTest("유저가 예약을 생성한다.", () -> {
                     MemberReservationCreateRequest params =
                             MemberReservationCreateRequest.of(date, 1L, 1L);
-
-                    String token = RestAssured.given()
-                            .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/login")
-                            .getHeader("Set-Cookie");
 
                     RestAssured.given().log().all()
                             .header("Cookie", token)
@@ -86,6 +86,7 @@ class ReservationIntegrationTest {
                             AdminReservationCreateRequest.of(date, 2L, 1L, 2L);
 
                     RestAssured.given().log().all()
+                            .header("Cookie", token)
                             .contentType(ContentType.JSON)
                             .body(params)
                             .when().post("/reservations/admin")
@@ -97,6 +98,7 @@ class ReservationIntegrationTest {
                 }),
                 dynamicTest("모든 예약을 조회한다.", () ->
                         RestAssured.given().log().all()
+                                .header("Cookie", token)
                                 .when().get("/reservations")
                                 .then().log().all()
                                 .statusCode(200)
@@ -104,6 +106,7 @@ class ReservationIntegrationTest {
                 ),
                 dynamicTest("특정 테마의 예약 가능한 시간을 조회한다.", () ->
                         RestAssured.given().log().all()
+                                .header("Cookie", token)
                                 .params("date", date)
                                 .params("themeId", 1)
                                 .when().get("/reservations/available-time")
@@ -115,12 +118,14 @@ class ReservationIntegrationTest {
                 ),
                 dynamicTest("예약을 삭제한다.", () ->
                         RestAssured.given().log().all()
+                                .header("Cookie", token)
                                 .when().delete("/reservations/1")
                                 .then().log().all()
                                 .statusCode(204)
                 ),
                 dynamicTest("존재하지 않는 예약을 삭제하려고 시도하면 Bad Request status를 응답한다.", () ->
                         RestAssured.given().log().all()
+                                .header("Cookie", token)
                                 .when().delete("reservations/1")
                                 .then().log().all()
                                 .statusCode(400)
@@ -131,12 +136,20 @@ class ReservationIntegrationTest {
     @DisplayName("유효하지 않은 값으로 예약 생성 시도 테스트")
     class InvalidRequest {
 
+        private String token;
+
         @BeforeEach
         void setUp() {
             jdbcTemplate.update(
                     "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '방탈출 1번', '썸네일1')");
+
+            token = RestAssured.given()
+                    .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/login")
+                    .getHeader("Set-Cookie");
         }
 
         @Test
@@ -146,6 +159,7 @@ class ReservationIntegrationTest {
             AdminReservationCreateRequest params = AdminReservationCreateRequest.of(pastDate, 1L, 1L, 1L);
 
             RestAssured.given().log().all()
+                    .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations/admin")
@@ -164,6 +178,7 @@ class ReservationIntegrationTest {
                     AdminReservationCreateRequest.of(date, 1L, 2L, 1L);
 
             RestAssured.given().log().all()
+                    .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations/admin")
@@ -176,6 +191,7 @@ class ReservationIntegrationTest {
         @DisplayName("날짜, 유저 ID, 예약 시간 ID, 테마 ID 중 하나라도 공백이면 Bad Request status를 응답한다.")
         void createByNullValue(AdminReservationCreateRequest params) {
             RestAssured.given().log().all()
+                    .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations/admin")
@@ -197,6 +213,7 @@ class ReservationIntegrationTest {
         @DisplayName("유저 ID, 시간 ID, 테마 ID 중 하나라도 존재하지 않으면 Bad Request status를 응답한다.")
         void createByNotExistValue(AdminReservationCreateRequest params) {
             RestAssured.given().log().all()
+                    .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations/admin")

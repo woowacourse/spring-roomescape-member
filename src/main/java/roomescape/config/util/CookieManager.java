@@ -24,6 +24,6 @@ public class CookieManager {
                 .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new AuthorizationException("토큰이 없습니다."));
+                .orElseThrow(() -> new AuthorizationException("로그인이 필요합니다."));
     }
 }
