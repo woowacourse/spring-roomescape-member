@@ -1,6 +1,5 @@
 package roomescape.global.argumentresolver;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -32,19 +31,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory) {
 
-        LoginMember defaultMember = new LoginMember(null, null, null, null);
-
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return defaultMember;
-        }
-
-        String token = jwtManager.extractTokenFromCookies(cookies);
-
-        if (token.isEmpty()) {
-            return defaultMember;
-        }
-        return jwtManager.parse(token);
+        return jwtManager.findMember(request);
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
-import roomescape.global.exception.AuthorizationException;
 
 @Component
 public class JwtManager {
@@ -40,18 +39,22 @@ public class JwtManager {
     }
 
     public LoginMember findMember(HttpServletRequest request) {
+        LoginMember defaultMember = new LoginMember(null, null, null, null);
+
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new AuthorizationException("로그인 후 이용해 주세요.");
+            return defaultMember;
         }
+
         String token = extractTokenFromCookies(cookies);
-        if (token.isEmpty()) {
-            throw new AuthorizationException("토큰이 존재하지 않습니다.");
+        if (token == null) {
+            return defaultMember;
         }
+
         return parse(token);
     }
 
-    public String extractTokenFromCookies(Cookie[] cookies) {
+    private String extractTokenFromCookies(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
@@ -60,7 +63,7 @@ public class JwtManager {
         return "";
     }
 
-    public LoginMember parse(String token) {
+    private LoginMember parse(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(secretKey)
             .parseClaimsJws(token)
