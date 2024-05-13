@@ -30,7 +30,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime create(final ReservationTimeRequestDto request) {
         final ReservationTime time = new ReservationTime(request.getStartAt());
-        validateDuplicatedStartAt(time);
+        validateDuplicatedStartAt(time.getStartAtString());
         return reservationTimeRepository.save(time);
     }
 
@@ -59,8 +59,7 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
-    private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
-        final String startAt = reservationTime.getStartAtString();
+    private void validateDuplicatedStartAt(final String startAt) {
         if (reservationTimeRepository.hasDuplicateReservationTime(startAt)) {
             throw new BadRequestException("해당 시간이 이미 존재합니다.");
         }
