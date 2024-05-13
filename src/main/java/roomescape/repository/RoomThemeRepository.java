@@ -1,6 +1,8 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -10,11 +12,11 @@ import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
 
 @Repository
-public class RoomThemeDao {
+public class RoomThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public RoomThemeDao(JdbcTemplate jdbcTemplate) {
+    public RoomThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
@@ -35,7 +37,7 @@ public class RoomThemeDao {
         return jdbcTemplate.query("""
                 select t.id, t.name, t.description, t.thumbnail from theme as t
                 inner join reservation as r on r.theme_id = t.id
-                WHERE r.date > (NOW() -  8) AND r.date < NOW()
+                WHERE (NOW() -  8) < r.date and r.date < NOW()
                 group by t.id
                 order by count(t.id) desc
                 limit 10
@@ -47,17 +49,22 @@ public class RoomThemeDao {
         ));
     }
 
-    public RoomTheme findById(Long id) {
+    public Optional<RoomTheme> findById(Long id) {
         if (id == null) {
             throw new BadRequestException("id가 빈값일 수 없습니다.");
         }
-        return jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new RoomTheme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                ), id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
+                    (rs, rowNum) -> new RoomTheme(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("thumbnail")
+                    ), id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public RoomTheme save(RoomTheme roomTheme) {

@@ -1,7 +1,9 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -11,11 +13,11 @@ import roomescape.domain.ReservationTime;
 import roomescape.exception.BadRequestException;
 
 @Repository
-public class ReservationTimeDao {
+public class ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
@@ -30,30 +32,36 @@ public class ReservationTimeDao {
                 ));
     }
 
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         if (id == null) {
             throw new BadRequestException("id가 빈값일 수 없습니다.");
         }
-        return jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?",
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                ), id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?",
+                    (rs, rowNum) -> new ReservationTime(
+                            rs.getLong("id"),
+                            rs.getTime("start_at").toLocalTime()
+                    ), id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public boolean existByStartAt(LocalTime startAt) {
         if (startAt == null) {
             throw new BadRequestException("시간이 빈값일 수 없습니다.");
         }
-        return jdbcTemplate.queryForObject(
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT * FROM reservation_time WHERE start_at = ?)",
-                Boolean.class, startAt);
+                Boolean.class, startAt));
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
         if (reservationTime == null) {
             throw new BadRequestException("시간이 빈값일 수 없습니다.");
         }
+
         SqlParameterSource params = new MapSqlParameterSource("start_at",
                 reservationTime.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(params)

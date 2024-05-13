@@ -3,12 +3,14 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.DATE_AFTER_1DAY;
+import static roomescape.TestFixture.DATE_AFTER_2DAY;
+import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
 import static roomescape.TestFixture.VALID_STRING_DATE;
 import static roomescape.TestFixture.VALID_STRING_TIME;
 
-import io.restassured.RestAssured;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,45 +18,49 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
-import roomescape.service.dto.request.ReservationRequest;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.RoomThemeRepository;
+import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private ReservationService reservationService;
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
+            reservationRepository.deleteById(reservation.getId());
         }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
+            reservationTimeRepository.deleteById(reservationTime.getId());
         }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
+        }
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            memberRepository.deleteById(member.getId());
         }
     }
 
@@ -64,17 +70,33 @@ class ReservationServiceTest {
         assertThat(reservationService.findAll()).isEmpty();
     }
 
+    @DisplayName("예약 검색 조건에 빈값을 넣으면 예외를 발생시킨다.")
+    @Test
+    void findByNullException() {
+        assertThatThrownBy(() -> reservationService.findBy(null, null, null, null))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("검색 조건이 빈값일 수 없습니다.");
+    }
+
+    @DisplayName("dateFrom이 dateTo보다 이후 시간이면 예외를 발생시킨다.")
+    @Test
+    void findByDateException() {
+        assertThatThrownBy(() -> reservationService.findBy(1L, 1L, DATE_AFTER_2DAY, DATE_AFTER_1DAY))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("시간을 잘못 입력하셨습니다.");
+    }
+
     @DisplayName("예약 저장")
     @Test
     void save() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(VALID_STRING_DATE);
+        ReservationCreateRequest reservationCreateRequest = createReservationRequest(VALID_STRING_DATE);
         // when
-        ReservationResponse response = reservationService.save(reservationRequest);
+        ReservationResponse response = reservationService.save(reservationCreateRequest);
         // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
-                () -> assertThat(response.name()).isEqualTo("aa"),
+                () -> assertThat(response.member().name()).isEqualTo("브라운"),
                 () -> assertThat(response.date()).isEqualTo(VALID_STRING_DATE),
                 () -> assertThat(response.time().startAt()).isEqualTo(VALID_STRING_TIME)
         );
@@ -84,9 +106,9 @@ class ReservationServiceTest {
     @Test
     void pastReservationSaveThrowsException() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("2000-11-09");
+        ReservationCreateRequest reservationCreateRequest = createReservationRequest("2000-11-09");
         // when & then
-        assertThatThrownBy(() -> reservationService.save(reservationRequest))
+        assertThatThrownBy(() -> reservationService.save(reservationCreateRequest))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약을 생성할 수 없습니다.");
     }
@@ -97,16 +119,17 @@ class ReservationServiceTest {
         // given
         createReservationRequest(VALID_STRING_DATE);
         // when
-        reservationService.deleteById(1);
+        reservationService.deleteById(1L);
         // then
         assertThat(reservationService.findAll()).isEmpty();
     }
 
-    private ReservationRequest createReservationRequest(String date) {
-        ReservationTime savedReservationTime = reservationTimeDao.save(
+    private ReservationCreateRequest createReservationRequest(String date) {
+        Member member = memberRepository.save(MEMBER_BROWN);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(
                 RESERVATION_TIME_10AM);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
-        return new ReservationRequest("aa", LocalDate.parse(date),
+        RoomTheme savedRoomTheme = roomThemeRepository.save(ROOM_THEME1);
+        return new ReservationCreateRequest(member.getId(), LocalDate.parse(date),
                 savedReservationTime.getId(), savedRoomTheme.getId());
     }
 }

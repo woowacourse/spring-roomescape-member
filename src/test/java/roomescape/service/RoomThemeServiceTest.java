@@ -3,35 +3,30 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.RoomThemeCreateRequest;
 import roomescape.service.dto.response.RoomThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomThemeServiceTest {
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private RoomThemeService roomThemeService;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
     }
 

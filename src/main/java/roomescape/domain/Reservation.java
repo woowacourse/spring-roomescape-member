@@ -5,22 +5,22 @@ import roomescape.exception.BadRequestException;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final RoomTheme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, RoomTheme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, RoomTheme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, RoomTheme theme) {
-        validateName(name);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, RoomTheme theme) {
+        validateMember(member);
         validateDate(date);
         validateReservationTime(time);
         validateRoomTheme(theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -44,14 +44,14 @@ public class Reservation {
         }
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("이름에 빈값을 입력할 수 없습니다.");
+    private void validateMember(Member member) {
+        if (member == null) {
+            throw new BadRequestException("사용자에 빈값을 입력할 수 없습니다.");
         }
     }
 
     public Reservation setId(Long id) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, member, date, time, theme);
     }
 
     public boolean hasDateTime(LocalDate date, ReservationTime reservationTime) {
@@ -63,8 +63,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
