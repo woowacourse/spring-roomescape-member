@@ -1,6 +1,13 @@
 DELETE
-FROM reservation;
+FROM reservation
+WHERE EXISTS(SELECT 1 FROM reservation);
 DELETE
-FROM reservation_time;
+FROM reservation_time
+WHERE EXISTS(SELECT 1 FROM reservation_time);
 DELETE
-FROM theme;
+FROM theme
+WHERE EXISTS(SELECT 1 FROM theme);
+DELETE
+FROM member
+WHERE EXISTS(SELECT 1 FROM member);
+
