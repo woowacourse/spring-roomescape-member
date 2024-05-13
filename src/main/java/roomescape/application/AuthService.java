@@ -1,13 +1,10 @@
 package roomescape.application;
 
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
-import roomescape.dto.member.MemberRequest;
-import roomescape.dto.member.MemberResponse;
 import roomescape.infrastructure.JwtTokenProvider;
 
 @Service
@@ -25,15 +22,19 @@ public class AuthService {
             throw new IllegalArgumentException("로그인 정보가 잘못되었습니다.");
         }
 
-        Optional<Member> member = memberRepository.findByEmail(tokenRequest.email());
-        MemberRequest memberRequest = new MemberRequest(member.get().getMemberName());
+        Member member = memberRepository.findByEmail(tokenRequest.email())
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일이 존재하지 않습니다."));
 
-        String accessToken = jwtTokenProvider.createToken(memberRequest.name().getValue());
+        String accessToken = jwtTokenProvider.createToken(member);
         return new TokenResponse(accessToken);
     }
 
-    public MemberResponse findMemberByToken(String token) {
-        String payload = jwtTokenProvider.getPayload(token);
-        return new MemberResponse(payload);
+    public Member findMemberByToken(String token) {
+        String payload = jwtTokenProvider.getPayload(token, "name");
+        System.out.println("payload: " + payload);
+
+        // todo: payload에서 이메일 분리한 뒤 찾기.
+        return memberRepository.findByName(payload)
+                .orElseThrow(() -> new IllegalArgumentException("토큰에 해당하는 정보가 없습니다."));
     }
 }
