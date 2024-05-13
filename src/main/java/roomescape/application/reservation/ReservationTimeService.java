@@ -25,7 +25,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
-            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
+            throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
         ReservationTime reservationTime = reservationTimeRepository.create(request.toReservationTime());
         return ReservationTimeResponse.from(reservationTime);

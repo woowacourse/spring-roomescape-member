@@ -60,7 +60,7 @@ class ReservationTimeServiceTest {
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
         assertThatCode(() -> reservationTimeService.create(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 예약입니다.");
+                .hasMessage("이미 존재하는 시간입니다.");
     }
 
     @DisplayName("예약 시간 조회를 요청하면 저장되어있는 모든 예약 시간대를 반환한다.")
