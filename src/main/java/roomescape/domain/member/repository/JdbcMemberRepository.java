@@ -4,6 +4,9 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberName;
@@ -18,9 +21,25 @@ public class JdbcMemberRepository implements MemberRepository {
     );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public Member save(Member member) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", member.getMemberName().getValue())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword());
+
+        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new Member(id, member.getMemberName(), member.getEmail(), member.getPassword());
     }
 
     @Override
