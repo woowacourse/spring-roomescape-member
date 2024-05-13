@@ -1,6 +1,6 @@
 package roomescape.service.fakedao;
 
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.repository.dao.ThemeDao;
 
 import java.util.ArrayList;

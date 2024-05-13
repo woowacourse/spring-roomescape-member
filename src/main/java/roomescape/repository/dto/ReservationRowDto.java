@@ -1,38 +1,45 @@
 package roomescape.repository.dto;
 
+import roomescape.model.Reservation;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class ReservationSavedDto {
+public class ReservationRowDto {
 
     private final long id;
-    private final String name;
     private final LocalDate date;
     private final long timeId;
     private final long themeId;
+    private final long memberId;
 
-    public ReservationSavedDto(long id, String name, LocalDate date, long timeId, long themeId) {
+    public ReservationRowDto(long id, LocalDate date, long timeId, long themeId, long memberId) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
+        this.memberId = memberId;
     }
 
-    public ReservationSavedDto(String name, LocalDate date, long timeId, long themeId) {
+    public ReservationRowDto(LocalDate date, long timeId, long themeId, long memberId) {
         this.id = 0;
-        this.name = name;
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
+        this.memberId = memberId;
+    }
+
+    public static ReservationRowDto from(Reservation reservation) {
+        return new ReservationRowDto(
+                reservation.getId(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getMember().getId());
     }
 
     public long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -47,27 +54,31 @@ public class ReservationSavedDto {
         return themeId;
     }
 
+    public long getMemberId() {
+        return memberId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ReservationSavedDto that = (ReservationSavedDto) o;
-        return id == that.id && timeId == that.timeId && themeId == that.themeId && Objects.equals(name, that.name) && Objects.equals(date, that.date);
+        ReservationRowDto that = (ReservationRowDto) o;
+        return id == that.id && timeId == that.timeId && themeId == that.themeId && memberId == that.memberId && Objects.equals(date, that.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, timeId, themeId);
+        return Objects.hash(id, date, timeId, themeId, memberId);
     }
 
     @Override
     public String toString() {
         return "ReservationSavedDto{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", date=" + date +
                 ", timeId=" + timeId +
                 ", themeId=" + themeId +
+                ", memberId=" + memberId +
                 '}';
     }
 }

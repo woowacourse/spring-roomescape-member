@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.stereotype.Repository;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ThemeDao;
 

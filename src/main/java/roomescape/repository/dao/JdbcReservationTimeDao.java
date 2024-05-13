@@ -1,6 +1,8 @@
 package roomescape.repository.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
@@ -16,6 +18,10 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
+    public final RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) ->
+            new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime());
 
     public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -34,22 +40,18 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     @Override
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ));
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<ReservationTime> findById(long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ), id);
-        return Optional.ofNullable(reservationTime);
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

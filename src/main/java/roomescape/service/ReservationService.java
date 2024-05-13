@@ -1,15 +1,16 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
+import roomescape.model.member.Member;
+import roomescape.model.theme.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.service.dto.ReservationDto;
+import roomescape.service.dto.ReservationTimeInfoDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,7 +18,6 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -35,12 +35,13 @@ public class ReservationService {
     public Reservation saveReservation(ReservationDto reservationDto) {
         ReservationTime time = findReservationTime(reservationDto);
         Theme theme = findTheme(reservationDto);
+        Member member = findMember(reservationDto);
 
         LocalDate date = reservationDto.getDate();
         validateIsFuture(date, time.getStartAt());
         validateDuplication(date, time.getId(), theme.getId());
 
-        Reservation reservation = Reservation.from(reservationDto, time, theme);
+        Reservation reservation = Reservation.of(reservationDto, time, theme, member);
         return reservationRepository.saveReservation(reservation);
     }
 
@@ -56,30 +57,25 @@ public class ReservationService {
         return theme.orElseThrow(() -> new BadRequestException("[ERROR] 존재하지 않는 데이터입니다."));
     }
 
+    private Member findMember(ReservationDto reservationDto) {
+        long memberId = reservationDto.getMemberId();
+        Optional<Member> member = reservationRepository.findMemberById(memberId);
+        return member.orElseThrow(() -> new BadRequestException("[ERROR] 존재하지 않는 데이터입니다."));
+    }
+
     public void deleteReservation(long id) {
         validateExistence(id);
         reservationRepository.deleteReservationById(id);
     }
 
-    public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, long themeId) {
-        // TODO: themeId <= 0 예외 처리
+    public ReservationTimeInfoDto findReservationTimesInformation(LocalDate date, long themeId) {
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeBooked(date, themeId);
         List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
-        // TODO: map to response 로직 컨트롤러로
-        List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
-        List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
-        return concat(bookedResponse, notBookedResponse);
+        return new ReservationTimeInfoDto(bookedTimes, notBookedTimes);
     }
 
-    private List<MemberReservationTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {
-        return times.stream()
-                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt().truncatedTo(ChronoUnit.SECONDS), isBooked))
-                .toList();
-    }
-
-    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> first,
-                                                       List<MemberReservationTimeResponse> second) {
-        return Stream.concat(first.stream(), second.stream()).toList();
+    public List<Reservation> findReservationsByConditions(long memberId, long themeId, LocalDate from, LocalDate to) {
+        return reservationRepository.findReservationsByMemberIdAndThemeIdAndDate(memberId, themeId, from, to);
     }
 
     private void validateIsFuture(LocalDate date, LocalTime time) {

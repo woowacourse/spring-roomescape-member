@@ -1,11 +1,13 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.controller.response.ThemeResponse;
-import roomescape.exception.BadRequestException;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeDto;
 
@@ -23,7 +25,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> showThemes() {
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<Theme> themes = themeService.findAllThemes();
         List<ThemeResponse> response = themes.stream()
                 .map(ThemeResponse::from)
@@ -32,7 +34,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> addTheme(@Valid @RequestBody ThemeRequest request) {
         ThemeDto themeDto = ThemeDto.from(request);
         Theme theme = themeService.saveTheme(themeDto);
         ThemeResponse response = ThemeResponse.from(theme);
@@ -42,24 +44,17 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
-        validateNull(id);
+    public ResponseEntity<Void> deleteTheme(@NotNull @Min(1) @PathVariable("id") Long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<ThemeResponse>> showPopularThemes() {
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
         List<Theme> themes = themeService.findPopularThemes();
         List<ThemeResponse> response = themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
         return ResponseEntity.ok(response);
-    }
-
-    private void validateNull(Long value) {
-        if (value == null) {
-            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
-        }
     }
 }

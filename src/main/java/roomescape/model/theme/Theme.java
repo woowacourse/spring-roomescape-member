@@ -1,4 +1,4 @@
-package roomescape.model;
+package roomescape.model.theme;
 
 import roomescape.service.dto.ThemeDto;
 
@@ -7,24 +7,23 @@ import java.util.Objects;
 public class Theme {
 
     private long id;
-    private String name;
-    private String description;
-    private String thumbnail;
+    private Name name;
+    private Description description;
+    private Thumbnail thumbnail;
 
     public Theme(long id, String name, String description, String thumbnail) {
-        validate(id, name, description, thumbnail);
+        validateRange(id);
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this.name = new Name(name);
+        this.description = new Description(description);
+        this.thumbnail = new Thumbnail(thumbnail);
     }
 
     private Theme(String name, String description, String thumbnail) {
-        validate(name, description, thumbnail);
         this.id = 0;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this.name = new Name(name);
+        this.description = new Description(description);
+        this.thumbnail = new Thumbnail(thumbnail);
     }
 
     private Theme() {
@@ -34,26 +33,9 @@ public class Theme {
         return new Theme(themeDto.getName(), themeDto.getDescription(), themeDto.getThumbnail());
     }
 
-    private void validate(long id, String name, String description, String thumbnail) {
-        validateRange(id);
-        validate(name, description, thumbnail);
-    }
-
-    private void validate(String name, String description, String thumbnail) {
-        validateNull(name);
-        validateNull(description);
-        validateNull(thumbnail);
-    }
-
     private void validateRange(long id) {
         if (id <= 0) {
-            throw new IllegalStateException("[ERROR] id는 0 이하일 수 없습니다.");
-        }
-    }
-
-    private void validateNull(String value) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalStateException("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+            throw new IllegalStateException("id는 0 이하일 수 없습니다.");
         }
     }
 
@@ -62,15 +44,15 @@ public class Theme {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getDescription() {
-        return description;
+        return description.getValue();
     }
 
     public String getThumbnail() {
-        return thumbnail;
+        return thumbnail.getValue();
     }
 
     @Override
@@ -78,7 +60,10 @@ public class Theme {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Theme theme = (Theme) o;
-        return id == theme.id && Objects.equals(name, theme.name) && Objects.equals(description, theme.description) && Objects.equals(thumbnail, theme.thumbnail);
+        return id == theme.id
+                && Objects.equals(name.getValue(), theme.name.getValue())
+                && Objects.equals(description.getValue(), theme.description.getValue())
+                && Objects.equals(thumbnail.getValue(), theme.thumbnail.getValue());
     }
 
     @Override

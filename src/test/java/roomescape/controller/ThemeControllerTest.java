@@ -52,11 +52,11 @@ class ThemeControllerTest {
         IntStream.range(1, 21).forEach(i -> insertTheme("n" + i, "d" + i, "t" + i));
 
         LocalDate now = LocalDate.now();
-        IntStream.range(1, 2).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 1L));
-        IntStream.range(1, 3).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 2L));
-        IntStream.range(1, 4).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 3L));
-        IntStream.range(1, 5).forEach(i -> insertReservation("n", now.minusDays(i), 2L, 4L));
-        IntStream.range(1, 6).forEach(i -> insertReservation("n", now.minusDays(i), 2L, 5L));
+        IntStream.range(1, 2).forEach(i -> insertReservation(now.minusDays(i), 1L, 1L, 1L));
+        IntStream.range(1, 3).forEach(i -> insertReservation(now.minusDays(i), 1L, 2L, 1L));
+        IntStream.range(1, 4).forEach(i -> insertReservation(now.minusDays(i), 1L, 3L, 1L));
+        IntStream.range(1, 5).forEach(i -> insertReservation(now.minusDays(i), 2L, 4L, 1L));
+        IntStream.range(1, 6).forEach(i -> insertReservation(now.minusDays(i), 2L, 5L, 1L));
     }
 
     private void initDatabase() {
@@ -80,12 +80,12 @@ class ThemeControllerTest {
         timeInsertActor.execute(parameters);
     }
 
-    private void insertReservation(String name, LocalDate date, long timeId, long themeId) {
+    private void insertReservation(LocalDate date, long timeId, long themeId, long memberId) {
         Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("name", name);
         parameters.put("date", date);
         parameters.put("time_id", timeId);
         parameters.put("theme_id", themeId);
+        parameters.put("member_id", memberId);
         reservationInsertActor.execute(parameters);
     }
 
@@ -131,13 +131,13 @@ class ThemeControllerTest {
     @Test
     void should_find_popular_themes_when_more_than_10() {
         LocalDate date = LocalDate.now().minusDays(1);
-        insertReservation("n", date, 1, 6);
-        insertReservation("n", date, 1, 7);
-        insertReservation("n", date, 1, 8);
-        insertReservation("n", date, 1, 9);
-        insertReservation("n", date, 1, 10);
-        insertReservation("n", date, 1, 11);
-        insertReservation("n", date, 1, 12);
+        insertReservation(date, 1, 6, 1);
+        insertReservation(date, 1, 7, 1);
+        insertReservation(date, 1, 8, 1);
+        insertReservation(date, 1, 9, 1);
+        insertReservation(date, 1, 10, 2);
+        insertReservation(date, 1, 11, 2);
+        insertReservation(date, 1, 12, 2);
 
         List<ThemeResponse> popularThemes = RestAssured.given().log().all()
                 .when().get("/themes/rank")
@@ -169,7 +169,6 @@ class ThemeControllerTest {
                 .statusCode(200)
                 .extract().jsonPath().getList(".", ThemeResponse.class);
 
-        System.out.println(popularThemes);
         assertAll(() -> {
             assertThat(popularThemes).hasSize(5);
             assertThat(popularThemes.get(0).getId()).isEqualTo(5);

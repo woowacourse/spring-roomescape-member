@@ -3,7 +3,7 @@ package roomescape.service.fakedao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 
 import java.util.List;
 import java.util.NoSuchElementException;

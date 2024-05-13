@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class StaticUserPageController {
+public class PageController {
 
     @GetMapping
     public String getHome() {
@@ -14,5 +14,10 @@ public class StaticUserPageController {
     @GetMapping("/reservation")
     public String getReservation() {
         return "reservation";
+    }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
     }
 }

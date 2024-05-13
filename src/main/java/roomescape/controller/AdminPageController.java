@@ -6,24 +6,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
-public class StaticAdminPageController {
+public class AdminPageController {
+
     @GetMapping
-    public String getAdminPage() {
+    public String getHome() {
         return "admin/index";
     }
 
     @GetMapping("/reservation")
-    public String getReservationPage() {
+    public String getReservation() {
         return "admin/reservation-new";
     }
 
     @GetMapping("/time")
-    public String getReservationTimePage() {
+    public String getReservationTime() {
         return "admin/time";
     }
 
     @GetMapping("/theme")
-    public String getThemePage() {
+    public String getTheme() {
         return "admin/theme";
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ThemeDto;
 

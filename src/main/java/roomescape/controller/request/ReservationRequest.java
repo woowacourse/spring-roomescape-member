@@ -1,56 +1,38 @@
 package roomescape.controller.request;
 
-import roomescape.exception.BadRequestException;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public class ReservationRequest {
 
-    private final String name;
+    @NotNull(message = "예약 날짜는 null일 수 없습니다.")
+    @FutureOrPresent(message = "예약 날짜는 과거일 수 없습니다.")
     private final LocalDate date;
-    private final long timeId;
-    private final long themeId;
+    @NotNull(message = "시간 아이디는 null일 수 없습니다.")
+    @Min(value = 1, message = "시간 아이디는 1 이상이어야 합니다.")
+    private final Long timeId;
+    @NotNull(message = "테마 아이디는 null일 수 없습니다.")
+    @Min(value = 1, message = "시간 아이디는 1 이상이어야 합니다.")
+    private final Long themeId;
 
-    public ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
-        validate(name, date, timeId, themeId);
-        this.name = name;
+    public ReservationRequest(LocalDate date, Long timeId, Long themeId) {
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
-    }
-
-    private void validate(String name, LocalDate date, Long timeId, Long themeId) {
-        validateName(name);
-        validateNull(date);
-        validateNull(timeId);
-        validateNull(themeId);
-    }
-
-    private void validateNull(Object value) {
-        if (value == null) {
-            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
-        }
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
-        }
     }
 
     public LocalDate getDate() {
         return date;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public long getTimeId() {
+    public Long getTimeId() {
         return timeId;
     }
 
-    public long getThemeId() {
+    public Long getThemeId() {
         return themeId;
     }
 }

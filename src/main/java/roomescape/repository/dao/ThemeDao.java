@@ -1,6 +1,6 @@
 package roomescape.repository.dao;
 
-import roomescape.model.Theme;
+import roomescape.model.theme.Theme;
 
 import java.util.List;
 import java.util.Optional;

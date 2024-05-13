@@ -10,7 +10,7 @@ public class ReservationTimeResponse {
     private final long id;
     private final LocalTime startAt;
 
-    public ReservationTimeResponse(long id, LocalTime startAt) {
+    private ReservationTimeResponse(long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
