@@ -16,6 +16,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.QueryBuilder;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
