@@ -31,6 +31,10 @@ function updateUIBasedOnLogin() {
         return response.json(); // 응답 본문을 JSON으로 파싱
       })
       .then(data => {
+        if (data.name === '' || data.role === '') {
+          throw new Error('Not logged in or other error');
+        }
+
         // 응답에서 사용자 이름을 추출하여 UI 업데이트
         let profileName = data.name;
         if (data.role === 'ADMIN') {

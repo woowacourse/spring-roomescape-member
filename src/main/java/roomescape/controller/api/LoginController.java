@@ -12,7 +12,6 @@ import roomescape.controller.dto.LoginCheckResponse;
 import roomescape.controller.dto.LoginRequest;
 import roomescape.domain.member.LoginMember;
 import roomescape.global.argumentresolver.AuthenticationPrincipal;
-import roomescape.global.exception.AuthorizationException;
 import roomescape.service.LoginService;
 
 @RestController
@@ -42,7 +41,7 @@ public class LoginController {
     @GetMapping("/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(@AuthenticationPrincipal LoginMember member) {
         if (member == null || member.getId() == null) {
-            throw new AuthorizationException("로그인되어 있지 않습니다.");
+            return ResponseEntity.ok(new LoginCheckResponse("", ""));
         }
         return ResponseEntity.ok(new LoginCheckResponse(member.getName(), member.getRole()));
     }
