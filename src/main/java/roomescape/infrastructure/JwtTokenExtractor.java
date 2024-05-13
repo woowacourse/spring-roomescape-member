@@ -19,7 +19,7 @@ public class JwtTokenExtractor {
                 return cookie.getValue();
             }
         }
-        return "";
+        throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
     }
 
     public String extractEmailByToken(String token) {
