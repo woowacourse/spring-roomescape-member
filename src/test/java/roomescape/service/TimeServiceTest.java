@@ -33,7 +33,7 @@ class TimeServiceTest {
     @InjectMocks
     TimeService timeService;
     private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-    private final ReservationTime time2 = new ReservationTime(1L, LocalTime.of(11, 0));
+    private final ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
 
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
