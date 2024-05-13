@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.util.Objects;
+
 import roomescape.domain.util.Validator;
 
 public record Theme(Long id, String name, String description, String thumbnail) {
@@ -17,5 +19,22 @@ public record Theme(Long id, String name, String description, String thumbnail) 
 
     public Theme createWithId(Long id) {
         return new Theme(id, name, description, thumbnail);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Theme theme = (Theme) o;
+        if (id == null || theme.id == null)
+            return Objects.equals(name, theme.name);
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        if (id == null)
+            return Objects.hash(name);
+        return Objects.hash(id);
     }
 }
