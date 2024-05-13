@@ -25,8 +25,12 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("신규 예약을 생성할 수 있다.")
     void createReservation() {
         LocalDate date = nextDate();
-        ReservationRequest request =
-                new ReservationRequest(date.toString(), 1L, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(
+                date.toString(),
+                멤버_1번_어드민_ID,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         assertThatCode(() -> target.createReservation(request))
                 .doesNotThrowAnyException();
@@ -36,8 +40,13 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("중복된 예약은 생성할 수 없다.")
     void duplicated() {
         LocalDate date = nextDate();
-        ReservationRequest request =
-                new ReservationRequest(date.toString(), 1L, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(
+                date.toString(),
+                멤버_1번_어드민_ID,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
+
         target.createReservation(request);
 
         assertThatThrownBy(() -> target.createReservation(request))
@@ -49,9 +58,13 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 사용자에 대한 예약은 생성할 수 없다.")
     void withUnknownMember() {
         LocalDate date = nextDate();
-        Long unknownMemberId = 3L;
-        ReservationRequest request =
-                new ReservationRequest(date.toString(), unknownMemberId, 1L, 1L);
+        Long unknownMemberId = 0L;
+        ReservationRequest request = new ReservationRequest(
+                date.toString(),
+                unknownMemberId,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(NoSuchElementException.class)
@@ -62,9 +75,13 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 테마에 대한 예약은 생성할 수 없다.")
     void withUnknownTheme() {
         LocalDate date = nextDate();
-        Long unknownThemeId = 3L;
-        ReservationRequest request =
-                new ReservationRequest(date.toString(), 1L, 1L, unknownThemeId);
+        Long unknownThemeId = 0L;
+        ReservationRequest request = new ReservationRequest(
+                date.toString(),
+                멤버_1번_어드민_ID,
+                예약_시간_1번_ID,
+                unknownThemeId
+        );
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(NoSuchElementException.class)
@@ -75,9 +92,13 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 시간에 대한 예약은 생성할 수 없다.")
     void withUnknownTime() {
         LocalDate date = nextDate();
-        Long unknownTimeId = 4L;
-        ReservationRequest request =
-                new ReservationRequest(date.toString(), 1L, unknownTimeId, 2L);
+        Long unknownTimeId = 0L;
+        ReservationRequest request = new ReservationRequest(
+                date.toString(),
+                멤버_1번_어드민_ID,
+                unknownTimeId,
+                테마_1번_ID
+        );
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(NoSuchElementException.class)
@@ -88,8 +109,12 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("지나간 날짜에 대한 예약은 생성할 수 없다.")
     void withPreviousDate() {
         LocalDate previousDate = previousDate();
-        ReservationRequest request
-                = new ReservationRequest(previousDate.toString(), 1L, 1L, 1L);
+        ReservationRequest request = new ReservationRequest(
+                previousDate.toString(),
+                멤버_1번_어드민_ID,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(IllegalStateException.class)
@@ -99,11 +124,15 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     @DisplayName("당일이지만, 이전 시간이면 예약을 생성할 수 없다.")
     void withPreviousTime() {
-        ReservationTime previousTime = new ReservationTime(previousTime());
-        ReservationTime time = reservationTimeRepository.save(previousTime);
+        ReservationTime newTime = new ReservationTime(previousTime());
+        ReservationTime previousTime = reservationTimeRepository.save(newTime);
         LocalDate date = today();
-        ReservationRequest request =
-                new ReservationRequest(date.toString(), 1L, time.getId(), 1L);
+        ReservationRequest request = new ReservationRequest(
+                date.toString(),
+                멤버_1번_어드민_ID,
+                previousTime.getId(),
+                테마_1번_ID
+        );
 
         assertThatThrownBy(() -> target.createReservation(request))
                 .isInstanceOf(IllegalStateException.class)

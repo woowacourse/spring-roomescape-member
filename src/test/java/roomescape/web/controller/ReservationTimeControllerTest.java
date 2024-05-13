@@ -28,7 +28,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 가능 시간 목록을 조회한다.")
     void availableTimes() {
         RestAssured.given().log().all()
-                .when().get("/times/available?date=2023-05-04&themeId=1")
+                .when().get("/times/available?date=2023-05-04&themeId=" + 테마_1번_ID)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3))
@@ -41,7 +41,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
         String invalidDate = "2023-05-044";
 
         RestAssured.given().log().all()
-                .when().get("/times/available?date=" + invalidDate + "&themeId=1")
+                .when().get("/times/available?date=" + invalidDate + "&themeId=" + 테마_1번_ID)
                 .then().log().all()
                 .statusCode(400)
                 .body("details.message", hasItem("올바른 날짜 형태가 아닙니다."));
@@ -118,7 +118,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         RestAssured.given().log().all()
-                .when().delete("/times/3")
+                .when().delete("/times/" + 예약_시간_3번_ID)
                 .then().log().all()
                 .statusCode(204);
 
@@ -133,7 +133,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
     @DisplayName("사용되고 있는 시간은 삭제할 수 없다.")
     void usedDelete() {
         RestAssured.given().log().all()
-                .when().delete("/times/2")
+                .when().delete("/times/" + 예약_시간_2번_ID)
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("해당 시간을 사용하고 있는 예약이 존재합니다."));

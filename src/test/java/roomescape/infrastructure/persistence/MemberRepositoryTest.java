@@ -59,7 +59,7 @@ class MemberRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 멤버 id의 데이터를 조회한다.")
     void findById() {
-        Optional<Member> findMember = target.findById(1L);
+        Optional<Member> findMember = target.findById(멤버_1번_어드민_ID);
 
         assertThat(findMember)
                 .map(Member::getName)
@@ -72,7 +72,7 @@ class MemberRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 멤버 id로 데이터를 조회한다.")
     void notFoundById() {
-        Optional<Member> findMember = target.findById(3L);
+        Optional<Member> findMember = target.findById(0L);
 
         assertThat(findMember).isEmpty();
     }

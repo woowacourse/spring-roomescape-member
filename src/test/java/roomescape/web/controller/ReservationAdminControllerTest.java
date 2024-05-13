@@ -19,7 +19,12 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void create() {
         LocalDate date = nextDate();
         ReservationAdminWebRequest request =
-                new ReservationAdminWebRequest(date.toString(), 1L, 1L, 1L);
+                new ReservationAdminWebRequest(
+                        date.toString(),
+                        멤버_1번_어드민_ID,
+                        예약_시간_1번_ID,
+                        테마_1번_ID
+                );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -51,7 +56,12 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void validateDateFormat() {
         String invalidDate = "date";
         ReservationAdminWebRequest invalidRequest
-                = new ReservationAdminWebRequest(invalidDate, 1L, 1L, 1L);
+                = new ReservationAdminWebRequest(
+                invalidDate,
+                멤버_1번_어드민_ID,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -82,7 +92,12 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
         Long invalidTimeId = 0L;
         String date = nextDate().toString();
         ReservationAdminWebRequest invalidRequest =
-                new ReservationAdminWebRequest(date, 1L, invalidTimeId, 1L);
+                new ReservationAdminWebRequest(
+                        date,
+                        멤버_1번_어드민_ID,
+                        invalidTimeId,
+                        테마_1번_ID
+                );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -113,7 +128,12 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
         Long invalidMemberId = 0L;
         String date = nextDate().toString();
         ReservationAdminWebRequest invalidRequest =
-                new ReservationAdminWebRequest(date, invalidMemberId, 1L, 1L);
+                new ReservationAdminWebRequest(
+                        date,
+                        invalidMemberId,
+                        예약_시간_1번_ID,
+                        테마_1번_ID
+                );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -130,7 +150,12 @@ class ReservationAdminControllerTest extends IntegrationTestSupport {
     void onlyAdmin() {
         String date = nextDate().toString();
         ReservationAdminWebRequest request =
-                new ReservationAdminWebRequest(date, 1L, 1L, 1L);
+                new ReservationAdminWebRequest(
+                        date,
+                        멤버_1번_어드민_ID,
+                        예약_시간_1번_ID,
+                        테마_1번_ID
+                );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

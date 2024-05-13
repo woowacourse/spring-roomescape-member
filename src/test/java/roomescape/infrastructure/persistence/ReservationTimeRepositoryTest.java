@@ -40,7 +40,7 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 예약 시간 id의 데이터를 조회한다.")
     void findById() {
-        Optional<ReservationTime> findReservationTime = target.findById(2L);
+        Optional<ReservationTime> findReservationTime = target.findById(예약_시간_2번_ID);
 
         assertThat(findReservationTime)
                 .map(ReservationTime::getStartAt)
@@ -52,7 +52,7 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 예약 시간 id의 데이터를 조회한다.")
     void notFound() {
-        Optional<ReservationTime> findReservationTime = target.findById(5L);
+        Optional<ReservationTime> findReservationTime = target.findById(0L);
 
         assertThat(findReservationTime).isEmpty();
     }
@@ -72,7 +72,7 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 id를 가진 예약 시간을 삭제한다.")
     void delete() {
-        target.removeById(3L);
+        target.removeById(예약_시간_3번_ID);
 
         int countRow = countRow("reservation_time");
         assertThat(countRow).isEqualTo(2);
@@ -104,12 +104,11 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @DisplayName("주어진 날짜와 테마에 대한 사용 가능 시간을 조회할 수 있다.")
     void findAvailableTimes() {
         LocalDate date = LocalDate.parse("2023-05-04");
-        Long themeId = 1L;
 
-        List<AvailableReservationTimeResponse> result = target.findAvailableReservationTimes(date, themeId);
+        List<AvailableReservationTimeResponse> result = target.findAvailableReservationTimes(date, 테마_1번_ID);
 
         AvailableReservationTimeResponse expectedAvailableTime =
-                new AvailableReservationTimeResponse(3L, "13:00", false);
+                new AvailableReservationTimeResponse(예약_시간_3번_ID, "13:00", false);
         assertThat(result)
                 .contains(expectedAvailableTime)
                 .extracting(AvailableReservationTimeResponse::alreadyBooked)

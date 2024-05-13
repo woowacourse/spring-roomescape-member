@@ -23,6 +23,27 @@ import roomescape.service.auth.AuthenticationRequest;
 @Sql(scripts = "/reset_test_data.sql")
 public abstract class IntegrationTestSupport {
 
+    protected static final Long 예약_1번_ID = 1L;
+
+    protected static final Long 예약_2번_ID = 2L;
+
+    protected static final Long 예약_3번_ID = 3L;
+
+
+    protected static final Long 테마_1번_ID = 1L;
+
+    protected static final Long 테마_2번_ID = 2L;
+
+    protected static final Long 멤버_1번_어드민_ID = 1L;
+
+    protected static final Long 멤버_2번_일반_사용자_ID = 2L;
+
+    protected static final Long 예약_시간_1번_ID = 1L;
+
+    protected static final Long 예약_시간_2번_ID = 2L;
+
+    protected static final Long 예약_시간_3번_ID = 3L;
+
     @LocalServerPort
     private int port;
 

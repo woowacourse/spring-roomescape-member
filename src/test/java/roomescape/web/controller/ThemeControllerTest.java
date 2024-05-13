@@ -95,7 +95,7 @@ class ThemeControllerTest extends IntegrationTestSupport {
     @DisplayName("테마를 삭제한다.")
     void delete() {
         RestAssured.given().log().all()
-                .when().delete("/themes/2")
+                .when().delete("/themes/" + 테마_2번_ID)
                 .then().log().all()
                 .statusCode(204);
 
@@ -110,7 +110,7 @@ class ThemeControllerTest extends IntegrationTestSupport {
     @DisplayName("사용되고 있는 테마는 삭제할 수 없다.")
     void usedDelete() {
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/" + 테마_1번_ID)
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("해당 테마를 사용하는 예약이 존재합니다."));

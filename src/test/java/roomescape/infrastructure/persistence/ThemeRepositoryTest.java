@@ -42,9 +42,9 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 테마 id의 데이터를 조회한다.")
     void findById() {
-        Optional<Theme> findReservationTime = target.findById(2L);
+        Optional<Theme> findTheme = target.findById(테마_2번_ID);
 
-        assertThat(findReservationTime)
+        assertThat(findTheme)
                 .map(Theme::getName)
                 .map(ThemeName::value)
                 .isNotEmpty()
@@ -55,7 +55,7 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 테마 id의 데이터를 조회한다.")
     void notFound() {
-        Optional<Theme> findReservationTime = target.findById(5L);
+        Optional<Theme> findReservationTime = target.findById(0L);
 
         assertThat(findReservationTime).isEmpty();
     }
@@ -78,7 +78,7 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 id를 가진 테마를 삭제한다.")
     void delete() {
-        target.removeById(2L);
+        target.removeById(테마_2번_ID);
 
         int countRow = countRow("theme");
         assertThat(countRow).isEqualTo(1);

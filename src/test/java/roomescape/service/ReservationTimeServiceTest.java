@@ -36,9 +36,7 @@ class ReservationTimeServiceTest extends IntegrationTestSupport {
     @Test
     @DisplayName("예약 시간을 사용하는 예약이 존재하면, 삭제하지 않는다.")
     void cantDelete() {
-        Long id = 1L;
-
-        assertThatThrownBy(() -> target.deleteReservationTime(id))
+        assertThatThrownBy(() -> target.deleteReservationTime(예약_시간_1번_ID))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("해당 시간을 사용하고 있는 예약이 존재합니다.");
     }

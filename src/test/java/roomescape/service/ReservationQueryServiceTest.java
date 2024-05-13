@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import org.assertj.core.api.iterable.ThrowingExtractor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,26 +34,26 @@ class ReservationQueryServiceTest extends IntegrationTestSupport {
     @DisplayName("특정 memberId의 예약을 불러온다.")
     void findAllByMemberId() {
         ReservationQueryRequest request =
-                new ReservationQueryRequest(null, 1L, null, null);
+                new ReservationQueryRequest(null, 멤버_1번_어드민_ID, null, null);
 
         List<ReservationResponse> result = target.getReservations(request);
 
         assertThat(result)
                 .extracting(reservationResponse -> reservationResponse.member().id())
-                .allMatch(id -> id == 1L);
+                .allMatch(id -> Objects.equals(id, 멤버_1번_어드민_ID));
     }
 
     @Test
     @DisplayName("특정 themeId의 예약을 불러온다.")
     void findAllByThemeId() {
         ReservationQueryRequest request =
-                new ReservationQueryRequest(1L, null, null, null);
+                new ReservationQueryRequest(테마_1번_ID, null, null, null);
 
         List<ReservationResponse> result = target.getReservations(request);
 
         assertThat(result)
                 .extracting(reservationResponse -> reservationResponse.theme().id())
-                .allMatch(id -> id == 1L);
+                .allMatch(id -> Objects.equals(id, 테마_1번_ID));
     }
 
     @Test

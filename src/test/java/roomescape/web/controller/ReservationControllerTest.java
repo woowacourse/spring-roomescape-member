@@ -28,7 +28,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("특정 사용자가 예약한 주어진 기간 동안의 예약 목록을 조회한다.")
     void getAllByMemberId() {
         RestAssured.given().log().all()
-                .when().get("/reservations?memberId=1&fromDate=2023-05-01&endDate=2023-05-04")
+                .when().get("/reservations?memberId=" + 멤버_1번_어드민_ID + "&fromDate=2023-05-01&endDate=2023-05-04")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));
@@ -59,7 +59,11 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("사용자가 예약을 생성한다.")
     void create() {
         LocalDate date = nextDate();
-        ReservationWebRequest request = new ReservationWebRequest(date.toString(), 1L, 1L);
+        ReservationWebRequest request = new ReservationWebRequest(
+                date.toString(),
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -90,7 +94,11 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 날짜는 올바른 형식이어야 한다.")
     void validateDateFormat() {
         String invalidDate = "date";
-        ReservationWebRequest invalidRequest = new ReservationWebRequest(invalidDate, 1L, 1L);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                invalidDate,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -120,7 +128,11 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonPositiveTimeId() {
         Long invalidTimeId = 0L;
         String date = nextDate().toString();
-        ReservationWebRequest invalidRequest = new ReservationWebRequest(date, invalidTimeId, 1L);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                invalidTimeId,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -135,9 +147,13 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 시간 ID에 대한 예약을 할 수 없다.")
     void nonExistTimeId() {
-        Long nonExistTimeId = 4L;
+        Long nonExistTimeId = 99L;
         String date = nextDate().toString();
-        ReservationWebRequest invalidRequest = new ReservationWebRequest(date, nonExistTimeId, 1L);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                nonExistTimeId,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -167,7 +183,11 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonPositiveThemeId() {
         Long invalidThemeId = 0L;
         String date = nextDate().toString();
-        ReservationWebRequest invalidRequest = new ReservationWebRequest(date, 1L, invalidThemeId);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                예약_시간_1번_ID,
+                invalidThemeId
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -182,9 +202,13 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 테마 ID에 대한 예약을 할 수 없다.")
     void nonExistThemeId() {
-        Long nonExistThemeId = 3L;
+        Long nonExistThemeId = 99L;
         String date = nextDate().toString();
-        ReservationWebRequest invalidRequest = new ReservationWebRequest(date, 1L, nonExistThemeId);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                예약_시간_1번_ID,
+                nonExistThemeId
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -200,7 +224,11 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("중복 예약을 생성할 수 없다.")
     void duplicated() {
         String date = nextDate().toString();
-        ReservationWebRequest request = new ReservationWebRequest(date, 1L, 1L);
+        ReservationWebRequest request = new ReservationWebRequest(
+                date,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -224,7 +252,11 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("지나간 시간에 대한 예약을 할 수 없다.")
     void previousDateTime() {
         String previousDate = previousDate().toString();
-        ReservationWebRequest request = new ReservationWebRequest(previousDate, 1L, 1L);
+        ReservationWebRequest request = new ReservationWebRequest(
+                previousDate,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
