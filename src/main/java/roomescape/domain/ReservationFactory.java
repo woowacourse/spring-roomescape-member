@@ -11,27 +11,31 @@ public class ReservationFactory {
     private final ReservationQueryRepository reservationQueryRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberQueryRepository memberQueryRepository;
     private final Clock clock;
 
     public ReservationFactory(ReservationQueryRepository reservationQueryRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository,
+                              ThemeRepository themeRepository, MemberQueryRepository memberQueryRepository,
                               Clock clock) {
         this.reservationQueryRepository = reservationQueryRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberQueryRepository = memberQueryRepository;
         this.clock = clock;
     }
 
-    public Reservation create(ReservationRequest request) {
+    public Reservation create(long memberId, ReservationRequest request) {
+        Member member = memberQueryRepository.findById(memberId)
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_MEMBER));
         Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_THEME, "존재하지 않는 테마 입니다."));
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_THEME));
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_TIME, "존재하지 않는 예약 시간 입니다."));
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_TIME));
         LocalDateTime dateTime = LocalDateTime.of(request.date(), reservationTime.getStartAt());
         validateRequestDateAfterCurrentTime(dateTime);
         validateUniqueReservation(request);
-        return request.toReservation(reservationTime, theme);
+        return request.toReservation(member, reservationTime, theme);
     }
 
     private void validateRequestDateAfterCurrentTime(LocalDateTime dateTime) {

@@ -10,10 +10,10 @@ class ReservationRequestFixture {
     }
 
     static ReservationRequest of(long timeId, long themeId) {
-        return new ReservationRequest("test", LocalDate.of(2024,1,1), timeId, themeId);
+        return new ReservationRequest(LocalDate.of(2024,1,1), timeId, themeId);
     }
 
     static ReservationRequest of(LocalDate date, long timeId, long themeId) {
-        return new ReservationRequest("test", date, timeId, themeId);
+        return new ReservationRequest(date, timeId, themeId);
     }
 }

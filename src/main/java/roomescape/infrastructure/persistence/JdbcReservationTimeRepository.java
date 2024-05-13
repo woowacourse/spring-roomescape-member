@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.infrastructure.persistence;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.infrastructure.rowmapper.ReservationTimeRowMapper;
+import roomescape.infrastructure.persistence.rowmapper.ReservationTimeRowMapper;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -26,7 +26,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     public Optional<ReservationTime> findById(long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
+        String sql = "select id as reservation_time_id, start_at as reservation_time_start_at from reservation_time where id = ?";
         try {
             ReservationTime findReservationTime = jdbcTemplate.queryForObject(sql, ReservationTimeRowMapper::mapRow, id);
             return Optional.of(Objects.requireNonNull(findReservationTime));

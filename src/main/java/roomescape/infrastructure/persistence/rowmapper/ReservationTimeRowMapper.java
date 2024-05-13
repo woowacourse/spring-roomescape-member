@@ -1,4 +1,4 @@
-package roomescape.infrastructure.rowmapper;
+package roomescape.infrastructure.persistence.rowmapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,14 +11,8 @@ public class ReservationTimeRowMapper {
     }
 
     public static ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
-        long id = rs.getLong("id");
-        String startAt = rs.getString("start_at");
-        return new ReservationTime(id, LocalTime.parse(startAt));
-    }
-
-    public static ReservationTime joinedMapRow(ResultSet rs) throws SQLException {
-        long id = rs.getLong("time_id");
-        String startAt = rs.getString("start_at");
+        long id = rs.getLong("reservation_time_id");
+        String startAt = rs.getString("reservation_time_start_at");
         return new ReservationTime(id, LocalTime.parse(startAt));
     }
 }
