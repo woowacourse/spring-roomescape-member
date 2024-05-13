@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import roomescape.exception.AuthenticationException;
-import roomescape.exception.AuthorizationException;
 
 @Component
 public class AuthenticationExtractor {
@@ -19,7 +18,7 @@ public class AuthenticationExtractor {
         return Arrays.stream(cookies)
                 .filter(cookie -> cookieName.equals(cookie.getName()))
                 .findFirst()
-                .orElseThrow(AuthorizationException::new)
+                .orElseThrow(AuthenticationException::new)
                 .getValue();
     }
 }
