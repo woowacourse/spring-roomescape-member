@@ -42,9 +42,7 @@ public class ReservationService {
     public List<ReservationResponse> findReservationsBy(ReservationFilterRequest reservationFilterRequest) {
         LocalDate dateFrom = reservationFilterRequest.dateFrom();
         LocalDate dateTo = reservationFilterRequest.dateTo();
-        if (dateFrom != null && dateTo != null) {
-            validateDate(dateFrom, dateTo);
-        }
+        validateDate(dateFrom, dateTo);
         return reservationRepository.findBy(reservationFilterRequest.themeId(), reservationFilterRequest.themeId(),
                         dateFrom, dateTo).stream()
                 .map(ReservationResponse::from)
@@ -111,7 +109,7 @@ public class ReservationService {
     }
 
     private void validateDate(LocalDate dateFrom, LocalDate dateTo) {
-        if (dateFrom.isAfter(dateTo)) {
+        if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
             throw new IllegalArgumentException("끝 날짜가 시작 날짜보다 전일 수 없습니다.");
         }
     }
