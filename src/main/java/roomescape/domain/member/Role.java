@@ -1,13 +1,16 @@
 package roomescape.domain.member;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public enum Role {
 
     USER("USER"),
     ADMIN("ADMIN");
 
-    private static final Map<String, Role> CACHE = Map.of(USER.getRoleName(), USER, ADMIN.getRoleName(), ADMIN);
+    private static final Map<String, Role> CACHE = Arrays.stream(values())
+            .collect(Collectors.toMap(Role::getRoleName, role -> role));
 
     private final String roleName;
 
