@@ -88,7 +88,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
-        Member member = memberRepository.findById(loginMember.id());
+        Member member = memberRepository.findByMemberId(loginMember.id());
         Reservation reservation = new Reservation(
                 reservationCreateRequest.date(),
                 reservationTime,
@@ -104,7 +104,7 @@ public class ReservationService {
                 reservationAdminCreateRequest.timeId());
         validateAvailableDateTime(reservationAdminCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationAdminCreateRequest.themeId());
-        Member member = memberRepository.findById(reservationAdminCreateRequest.memberId());
+        Member member = memberRepository.findByMemberId(reservationAdminCreateRequest.memberId());
         Reservation reservation = new Reservation(
                 reservationAdminCreateRequest.date(),
                 reservationTime,

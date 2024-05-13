@@ -21,12 +21,20 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
+    private static String token;
+
     @LocalServerPort
     int serverPort;
 
     @BeforeEach
     public void beforeEach() {
         RestAssured.port = serverPort;
+        Map<String, String> loginParams = Map.of("email", "user_test@example.com", "password", "password1!");
+        token = RestAssured.given().log().all()
+                .when().body(loginParams)
+                .contentType(ContentType.JSON).post("/login")
+                .then().log().all()
+                .extract().cookie("token");
     }
 
     @Test
@@ -42,10 +50,10 @@ class ReservationControllerTest {
     @DisplayName("예약 추가와 삭제의 작동을 확인한다")
     Stream<DynamicTest> reservationCreateAndDelete() {
         Map<String, String> reservationParams = Map.of(
-                "name", "브라운",
                 "date", "2025-08-05",
                 "timeId", "1",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
@@ -65,7 +73,7 @@ class ReservationControllerTest {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .body(reservationTimeParams)
-                            .when().post("/times")
+                            .when().cookie("token", token).post("/times")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -74,7 +82,7 @@ class ReservationControllerTest {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .body(themeParams)
-                            .when().post("/themes")
+                            .when().cookie("token", token).post("/themes")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -82,7 +90,7 @@ class ReservationControllerTest {
                 dynamicTest("예약을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON).body(reservationParams)
-                            .when().post("/reservations")
+                            .when().cookie("token", token).post("/reservations")
                             .then().log().all()
                             .statusCode(201)
                             .header("Location", "/reservations/1");
@@ -90,21 +98,21 @@ class ReservationControllerTest {
 
                 dynamicTest("예약이 정상적으로 추가되었는지 확인한다", () -> {
                     RestAssured.given().log().all()
-                            .when().get("/reservations")
+                            .when().cookie("token", token).get("/reservations")
                             .then().log().all()
                             .statusCode(200).body("responses.size()", is(1));
                 }),
 
                 dynamicTest("id가 1인 예약을 삭제한다", () -> {
                     RestAssured.given().log().all()
-                            .when().delete("/reservations/1")
+                            .when().cookie("token", token).delete("/reservations/1")
                             .then().log().all()
                             .statusCode(204);
                 }),
 
                 dynamicTest("예약이 정상적으로 삭제되었는지 확인한다", () -> {
                     RestAssured.given().log().all()
-                            .when().get("/reservations")
+                            .when().cookie("token", token).get("/reservations")
                             .then().log().all()
                             .statusCode(200).body("responses.size()", is(0));
                 })
@@ -116,10 +124,10 @@ class ReservationControllerTest {
     Stream<DynamicTest> checkReservationUserName() {
 
         Map<String, String> reservationParams = Map.of(
-                "name", "초롱!!",
                 "date", "2023-08-05",
                 "timeId", "1",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
@@ -156,7 +164,7 @@ class ReservationControllerTest {
                 dynamicTest("예약을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON).body(reservationParams)
-                            .when().post("/reservations")
+                            .when().cookie("token", token).post("/reservations")
                             .then().log().all()
                             .statusCode(400);
                 })
@@ -168,10 +176,10 @@ class ReservationControllerTest {
     Stream<DynamicTest> checkReservationDate() {
 
         Map<String, String> reservationParams = Map.of(
-                "name", "초롱",
                 "date", "",
                 "timeId", "1",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
@@ -208,7 +216,7 @@ class ReservationControllerTest {
                 dynamicTest("예약을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON).body(reservationParams)
-                            .when().post("/reservations")
+                            .when().cookie("token", token).post("/reservations")
                             .then().log().all()
                             .statusCode(400);
                 })
@@ -220,10 +228,10 @@ class ReservationControllerTest {
     Stream<DynamicTest> checkReservationTime() {
 
         Map<String, String> reservationParams = Map.of(
-                "name", "초롱",
                 "date", "2024-10-10",
                 "timeId", "시간 선택",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
@@ -272,10 +280,10 @@ class ReservationControllerTest {
     Stream<DynamicTest> checkIsPassedReservationTime() {
 
         Map<String, String> reservationParams = Map.of(
-                "name", "초롱",
                 "date", "2020-05-01",
                 "timeId", "1",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
@@ -312,7 +320,7 @@ class ReservationControllerTest {
                 dynamicTest("예약을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON).body(reservationParams)
-                            .when().post("/reservations")
+                            .when().cookie("token", token).post("/reservations")
                             .then().log().all()
                             .statusCode(400);
                 })
@@ -324,17 +332,17 @@ class ReservationControllerTest {
     Stream<DynamicTest> checkDuplicatedReservationDateTime() {
 
         Map<String, String> reservationParams1 = Map.of(
-                "name", "초롱",
                 "date", "2025-05-01",
                 "timeId", "1",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "1"
         );
 
         Map<String, String> reservationParams2 = Map.of(
-                "name", "메이슨",
                 "date", "2025-05-01",
                 "timeId", "1",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "2"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
@@ -371,7 +379,7 @@ class ReservationControllerTest {
                 dynamicTest("예약을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON).body(reservationParams1)
-                            .when().post("/reservations")
+                            .when().cookie("token", token).post("/reservations")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -379,7 +387,7 @@ class ReservationControllerTest {
                 dynamicTest("중복된 시간에 예약을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON).body(reservationParams2)
-                            .when().post("/reservations")
+                            .when().cookie("token", token).post("/reservations")
                             .then().log().all()
                             .statusCode(400);
                 })
@@ -399,10 +407,10 @@ class ReservationControllerTest {
     @DisplayName("예약 가능한 시간을 조회한다")
     Stream<DynamicTest> checkAvailableReservationTime() {
         Map<String, String> reservationParams = Map.of(
-                "name", "브라운",
                 "date", "2025-08-05",
                 "timeId", "1",
-                "themeId", "1"
+                "themeId", "1",
+                "memberId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
@@ -439,7 +447,7 @@ class ReservationControllerTest {
                 dynamicTest("예약을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON).body(reservationParams)
-                            .when().post("/reservations")
+                            .when().cookie("token", token).post("/reservations")
                             .then().log().all()
                             .statusCode(201)
                             .header("Location", "/reservations/1");

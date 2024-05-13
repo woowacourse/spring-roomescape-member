@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Email;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -29,6 +30,9 @@ class ReservationTimeJdbcRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("중복된 예약 시간 추가가 불가능한 지 확인한다.")
@@ -54,12 +58,12 @@ class ReservationTimeJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
-        UserName userName = new UserName("메이슨");
-
-                reservationRepository.save(new Reservation(
+        Member member = memberRepository.findByMemberId(1L);
+        reservationRepository.save(new Reservation(
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
-                theme
+                theme,
+                member
         ));
 
         //when & then

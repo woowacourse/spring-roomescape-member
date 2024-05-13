@@ -18,7 +18,7 @@ class ReservationTest {
         UserName userName = new UserName("chorong");
         Email email = new Email("chorong@exampl.com");
         Password password = new Password("password2@");
-        Member member = new Member(userName, email, password);
+        Member member = new Member(userName, email, password, Role.USER);
 
         //when & then
         assertThatThrownBy(() -> new Reservation( null, reservationTime, theme, member))

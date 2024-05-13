@@ -7,7 +7,7 @@ public interface MemberRepository {
 
     List<Member> findAll();
 
-    Member findById(Long id);
+    Member findByMemberId(Long id);
 
     Member findByEmail(String email);
 

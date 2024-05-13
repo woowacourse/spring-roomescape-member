@@ -40,7 +40,7 @@ public class MemberJdbcRepository implements MemberRepository {
         return jdbcTemplate.query(sql, memberRowMapper);
     }
 
-    public Member findById(Long id) {
+    public Member findByMemberId(Long id) {
         String sql = "SELECT id, name, email, password, role FROM member WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
     }
