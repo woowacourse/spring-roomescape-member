@@ -19,6 +19,7 @@ import roomescape.domain.reservation.dto.BookableTimeResponse;
 import roomescape.domain.reservation.dto.BookableTimesRequest;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
 import roomescape.domain.reservation.dto.ReservationFindRequest;
+import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
 @RestController
@@ -31,12 +32,14 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<Reservation>> getReservationList() {
-        return ResponseEntity.ok(reservationService.findAllReservation());
+    public ResponseEntity<List<ReservationResponse>> getReservationList() {
+        List<Reservation> reservations = reservationService.findAllReservation();
+        List<ReservationResponse> reservationResponses = ReservationResponse.fromList(reservations);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @GetMapping("/reservations/search")
-    public ResponseEntity<List<Reservation>> getConditionalReservationList(
+    public ResponseEntity<List<ReservationResponse>> getConditionalReservationList(
             @ModelAttribute ReservationFindRequest reservationFindRequest) {
         List<Reservation> reservations = reservationService.findFilteredReservationList(
                 reservationFindRequest.themeId(),
@@ -44,16 +47,22 @@ public class ReservationController {
                 reservationFindRequest.dateFrom(),
                 reservationFindRequest.dateTo()
         );
-        return ResponseEntity.ok(reservations);
+        List<ReservationResponse> reservationResponses = ReservationResponse.fromList(reservations);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationAddRequest reservationAddRequest,
-                                                      @MemberResolver Member member) {
-        reservationAddRequest = new ReservationAddRequest(reservationAddRequest.date(), reservationAddRequest.timeId(),
-                reservationAddRequest.themeId(), member.getId());
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationAddRequest reservationAddRequest,
+                                                              @MemberResolver Member member) {
+        reservationAddRequest = new ReservationAddRequest(
+                reservationAddRequest.date(),
+                reservationAddRequest.timeId(),
+                reservationAddRequest.themeId(),
+                member.getId()
+        );
         Reservation reservation = reservationService.addReservation(reservationAddRequest);
-        return ResponseEntity.created(URI.create("/reservation/" + reservation.getId())).body(reservation);
+        ReservationResponse reservationResponse = ReservationResponse.from(reservation);
+        return ResponseEntity.created(URI.create("/reservation/" + reservation.getId())).body(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")

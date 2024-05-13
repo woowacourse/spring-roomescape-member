@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.login.dto.LoginRequest;
 import roomescape.domain.member.domain.Member;
-import roomescape.domain.member.dto.MemberResponse;
+import roomescape.domain.member.dto.MemberNameResponse;
 import roomescape.domain.member.service.MemberService;
 import roomescape.global.auth.CookieGenerator;
 import roomescape.global.auth.JwtTokenProvider;
@@ -37,8 +37,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(@MemberResolver Member member) {
-        return ResponseEntity.ok(new MemberResponse(member.getName()));
+    public ResponseEntity<MemberNameResponse> checkLogin(@MemberResolver Member member) {
+        return ResponseEntity.ok(new MemberNameResponse(member.getName()));
     }
 
     @PostMapping("/logout")

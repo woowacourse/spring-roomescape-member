@@ -3,6 +3,7 @@ package roomescape.domain.reservation.domain.reservation;
 import java.time.LocalDate;
 import java.util.Objects;
 import roomescape.domain.member.domain.Member;
+import roomescape.domain.member.domain.Role;
 import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 
@@ -42,6 +43,10 @@ public class Reservation {
         return member.getName();
     }
 
+    public ReservationDate getReservationDate() {
+        return date;
+    }
+
     public LocalDate getDate() {
         return date.getDate();
     }
@@ -56,6 +61,14 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public String getMemberEmail() {
+        return member.getEmail();
+    }
+
+    public Role getMemberRole() {
+        return member.getRole();
     }
 
     @Override

@@ -9,6 +9,7 @@ import roomescape.domain.login.controller.MemberResolver;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.reservation.domain.reservation.Reservation;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
+import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
 @RestController
@@ -21,11 +22,12 @@ public class AdminReservationController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationAddRequest reservationAddRequest,
-                                                      @MemberResolver Member member) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationAddRequest reservationAddRequest,
+                                                              @MemberResolver Member member) {
         reservationAddRequest = new ReservationAddRequest(reservationAddRequest.date(), reservationAddRequest.timeId(),
                 reservationAddRequest.themeId(), member.getId());
         Reservation reservation = reservationService.addReservation(reservationAddRequest);
-        return ResponseEntity.created(URI.create("/reservation/" + reservation.getId())).body(reservation);
+        ReservationResponse reservationResponse = ReservationResponse.from(reservation);
+        return ResponseEntity.created(URI.create("/reservation/" + reservation.getId())).body(reservationResponse);
     }
 }
