@@ -47,8 +47,11 @@ public class LoginController {
     @GetMapping("/check")
     public ResponseEntity<MemberNameResponse> checkLogin(HttpServletRequest request) {
         String token = TokenExtractor.extract(request);
-        Member member = authService.findMemberByToken(token);
+        if (token.isBlank()) {
+            return ResponseEntity.noContent().build();
+        }
 
+        Member member = authService.findMemberByToken(token);
         return ResponseEntity.ok()
                 .header(HttpHeaders.DATE, new Date().toString())
                 .body(MemberNameResponse.of(member));
