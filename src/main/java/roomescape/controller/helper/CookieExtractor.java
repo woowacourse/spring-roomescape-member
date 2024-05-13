@@ -3,7 +3,7 @@ package roomescape.controller.helper;
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import roomescape.exception.auth.InvalidTokenException;
+import roomescape.exception.login.InvalidTokenException;
 
 @Component
 public class CookieExtractor {

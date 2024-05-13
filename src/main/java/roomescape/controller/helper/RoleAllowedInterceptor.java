@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.MemberRole;
-import roomescape.exception.auth.AccessDeniedException;
+import roomescape.exception.login.AccessDeniedException;
 import roomescape.service.LoginService;
 
 public class RoleAllowedInterceptor implements HandlerInterceptor {
