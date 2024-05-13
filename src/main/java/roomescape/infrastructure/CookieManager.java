@@ -10,6 +10,7 @@ public class CookieManager {
 
     public Cookie createCookie(final String token) {
         final Cookie cookie = new Cookie(TOKEN_NAME, token);
+        cookie.setMaxAge(3600);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
