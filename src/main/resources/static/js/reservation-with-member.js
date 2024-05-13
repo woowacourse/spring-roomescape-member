@@ -200,14 +200,18 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+  fetch('/admin/reservations?themeId=' + themeId + "&memberId=" + memberId + "&startDate=" + dateFrom + "&endDate=" + dateTo, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
   }).then(response => {
     if (response.status === 200) return response.json();
-    throw new Error('Read failed');
+    else {
+      response.json().then(data => alert(data.detail));
+
+      throw new Error('Read failed');
+    }
   }).then(render)
       .catch(error => console.error("Error fetching available times:", error));
 }
@@ -222,7 +226,11 @@ function requestCreate(reservation) {
   return fetch('/admin/reservations', requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+        else {
+          response.json().then(data => alert(data.detail));
+
+          throw new Error('Create failed');
+        }
       });
 }
 
@@ -233,7 +241,11 @@ function requestDelete(id) {
 
   return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
       .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
+        if (response.status !== 204) {
+          response.json().then(data => alert(data.detail));
+
+          throw new Error('Delete failed');
+        }
       });
 }
 
@@ -241,6 +253,10 @@ function requestRead(endpoint) {
   return fetch(endpoint)
       .then(response => {
         if (response.status === 200) return response.json();
-        throw new Error('Read failed');
+        else {
+            response.json().then(data => alert(data.detail));
+
+            throw new Error('Read failed');
+        }
       });
 }

@@ -14,6 +14,8 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
           window.location.reload();
         } else {
           // 로그아웃 실패 처리
+          response.json().then(data => alert(data.detail));
+
           console.error('Logout failed');
         }
       })
@@ -22,10 +24,13 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       });
 });
 
+const registerBtn = document.getElementById('register-btn');
+if (registerBtn !== null) registerBtn.addEventListener('click', register);
+
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
       .then(response => {
-        if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경우
+        if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경
           throw new Error('Not logged in or other error');
         }
         return response.json(); // 응답 본문을 JSON으로 파싱
@@ -74,8 +79,9 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
+        if (response.status !== 204) {
+          response.json().then(data => alert(data.detail));
+
           throw new Error('Login failed');
         }
       })
@@ -94,6 +100,7 @@ function signup() {
 }
 
 function register(event) {
+  event.preventDefault();
   // 폼 데이터 수집
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -122,23 +129,21 @@ function register(event) {
   })
       .then(response => {
         if (!response.ok) {
-          alert('Signup request failed');
+          response.json().then(data => alert(data.detail));
+
           throw new Error('Signup request failed');
         }
         return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
         // 성공적인 응답 처리
-        console.log('Signup successful:', data);
+        console.log('회원가입에 성공했습니다: ', data);
         window.location.href = '/login';
       })
       .catch(error => {
         // 에러 처리
         console.error('Error during signup:', error);
       });
-
-  // 폼 제출에 의한 페이지 리로드 방지
-  event.preventDefault();
 }
 
 function base64DecodeUnicode(str) {

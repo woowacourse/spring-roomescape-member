@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.config.TestConfig;
+import roomescape.application.config.TestConfig;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
