@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -39,13 +40,21 @@ public class MemberJdbcRepository implements MemberRepository {
 
     @Override
     public Member findByEmail(String email) {
-        String sql = "SELECT id, role, name, email, password FROM member WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
+        try {
+            String sql = "SELECT id, role, name, email, password FROM member WHERE email = ?";
+            return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            throw new IllegalArgumentException("존재하지 않는 이메일입니다.");
+        }
     }
 
     @Override
     public Member findById(Long id) {
-        String sql = "SELECT id, role, name, email, password FROM member WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+        try {
+            String sql = "SELECT id, role, name, email, password FROM member WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new IllegalArgumentException("존재하지 않는 이메일입니다.");
+        }
     }
 }

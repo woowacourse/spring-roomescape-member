@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -42,8 +43,12 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     public ReservationTime findByTimeId(Long timeId) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, timeId);
+        try {
+            String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, timeId);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
+        }
     }
 
     public ReservationTime save(ReservationTime reservationTime) {

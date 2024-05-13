@@ -19,6 +19,9 @@ public class LoginService {
 
     public TokenResponse createToken(MemberCreateRequest memberCreateRequest) {
         Member member = memberRepository.findByEmail(memberCreateRequest.email());
+        if (!memberCreateRequest.password().equals(member.getPassword())) {
+            throw new IllegalArgumentException("패스워드가 일치하지 않습니다.");
+        }
         return new TokenResponse(jwtTokenProvider.createToken(member));
     }
 
