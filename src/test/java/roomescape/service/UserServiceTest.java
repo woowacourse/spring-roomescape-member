@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import roomescape.controller.request.UserLoginRequest;
 import roomescape.exception.AuthenticationException;
-import roomescape.exception.AuthorizationException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.User;
 import roomescape.service.fake.FakeUserDao;
