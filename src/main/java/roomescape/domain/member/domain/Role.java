@@ -19,6 +19,10 @@ public enum Role {
                 .orElseThrow(() -> new ClientIllegalArgumentException("존재하지 않는 역할입니다."));
     }
 
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
+
     public String getValue() {
         return value;
     }
