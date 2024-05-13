@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.global;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.mock.web.MockHttpServletRequest;
 import roomescape.domain.member.Member;
-import roomescape.global.JwtManager;
 import roomescape.service.exception.UnauthorizedException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
