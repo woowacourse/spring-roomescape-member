@@ -1,8 +1,6 @@
 package roomescape.repository.reservation;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +8,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.InitialDataFixture;
-import roomescape.domain.Name;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.member.MemberRepository;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
-import static org.assertj.core.api.Assertions.*;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.InitialDataFixture.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -25,40 +28,40 @@ import static roomescape.InitialDataFixture.*;
 class ReservationH2RepositoryTest {
 
     @Autowired
-    private ReservationH2Repository reservationH2Repository;
-    @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private ThemeRepository themeRepository;
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    private Reservation reservation;
+
+    @BeforeEach
+    void setup() {
+        Member member = memberRepository.save(USER_1);
+        Theme theme = themeRepository.save(THEME_1);
+        ReservationTime time = reservationTimeRepository.save(RESERVATION_TIME_1);
+        reservation = reservationRepository.save(new Reservation(member, LocalDate.now().plusDays(1), time, theme));
+    }
 
     @Test
     @DisplayName("Reservation을 저장하면 id가 포함된 Reservation이 반환된다.")
     void save() {
-        Reservation reservation = new Reservation(
-                new Name("네오"),
-                RESERVATION_2.getDate(),
-                RESERVATION_2.getTime(),
-                THEME_2
-        );
-
-        Reservation save = reservationH2Repository.save(reservation);
-
-        assertThat(save.getId()).isNotNull();
+        assertThat(reservation.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("Reservation을 제거한다.")
     void delete() {
-        reservationH2Repository.delete(RESERVATION_1.getId());
+        Integer beforeCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
+        reservationRepository.delete(reservation.getId());
+        Integer afterCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
-        assertThat(count).isOne();
-    }
-
-    @Test
-    @DisplayName("저장된 모든 Reservation을 반환한다.")
-    void findAll() {
-        List<Reservation> found = reservationH2Repository.findAll();
-
-        assertThat(found).hasSize(2);
+        assertThat(afterCount).isEqualTo(beforeCount - 1);
     }
 }

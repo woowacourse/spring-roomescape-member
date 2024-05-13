@@ -10,6 +10,9 @@ import java.util.List;
 
 @Service
 public class ThemeService {
+
+    public static final int BEFORE_DAYS = 7;
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -27,6 +30,13 @@ public class ThemeService {
 
     public List<ThemeResponse> findThemes() {
         return themeRepository.findAll()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> findPopularThemes(int count) {
+        return themeRepository.findPopularThemes(BEFORE_DAYS, count)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

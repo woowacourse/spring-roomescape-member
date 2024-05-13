@@ -12,6 +12,8 @@ import roomescape.domain.Name;
 import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,6 +70,20 @@ public class ThemeH2Repository implements ThemeRepository{
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(int beforeDays, int count) {
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(*) AS count " +
+                "FROM theme AS t " +
+                "INNER JOIN reservation AS r ON r.theme_id = t.id " +
+                "WHERE date >= ? AND date < ? " +
+                "GROUP BY t.id " +
+                "ORDER BY COUNT " +
+                "DESC LIMIT ?";
+        String from = LocalDate.now().minusDays(beforeDays).format(DateTimeFormatter.ISO_DATE);
+        String to = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+        return jdbcTemplate.query(sql, getThemeRowMapper(), from, to, count);
     }
 
     private RowMapper<Theme> getThemeRowMapper() {

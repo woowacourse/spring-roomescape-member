@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Name;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.THEME_2;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ThemeServiceTest {
 
@@ -34,21 +36,17 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("테마를 조회한다.")
-    void findTheme() {
-        List<ThemeResponse> themes = themeService.findThemes();
-
-        assertThat(themes).hasSize(2);
-    }
-
-    @Test
     @DisplayName("테마를 삭제한다.")
     void deleteTheme() {
-        themeService.deleteTheme(THEME_2.getId());
+        ThemeResponse themeResponse = themeService.addTheme(new ThemeAddRequest("myTestTheme", THEME_2.getDescription(), THEME_2.getThumbnail()));
 
-        List<ThemeResponse> themes = themeService.findThemes();
+        int before = themeService.findThemes().size();
 
-        assertThat(themes).hasSize(1);
+        themeService.deleteTheme(themeResponse.toTheme().getId());
+
+        int after = themeService.findThemes().size();
+
+        assertThat(before - after).isEqualTo(1);
     }
 
     @Test
