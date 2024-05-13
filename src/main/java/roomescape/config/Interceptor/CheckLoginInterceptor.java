@@ -21,9 +21,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        if (request.getCookies() == null) {
-            throw new AuthorizationException("로그인이 필요합니다.");
-        }
+        CookieManager.validateCookieExist(request.getCookies());
         String token = CookieManager.extractTokenFromCookie(request.getCookies());
         Member member = authService.findMemberByToken(token);
         if (member.isNotMember()) {

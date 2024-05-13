@@ -19,6 +19,12 @@ public class CookieManager {
         return new Cookie(COOKIE_NAME, null);
     }
 
+    public static void validateCookieExist(Cookie[] cookies) {
+        if (cookies == null || cookies.length == 0) {
+            throw new AuthorizationException("로그인이 필요합니다.");
+        }
+    }
+
     public static String extractTokenFromCookie(Cookie[] cookies) {
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
