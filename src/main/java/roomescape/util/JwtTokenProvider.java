@@ -24,7 +24,7 @@ public class JwtTokenProvider implements TokenProvider {
         Claims claims = Jwts.claims().setSubject(payload);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime validity = LocalDateTime.now().plus(validityInMilliseconds, ChronoUnit.MILLIS);
-        
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(Date.from(now.atZone(ZoneOffset.UTC).toInstant()))

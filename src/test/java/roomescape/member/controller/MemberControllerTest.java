@@ -18,19 +18,6 @@ import roomescape.util.ControllerTest;
 
 @DisplayName("사용자 API 테스트")
 class MemberControllerTest extends ControllerTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setData() {
-        String sql = """ 
-                  INSERT INTO member(name, email, password, role)
-                  VALUES ('관리자', 'admin@email.com', 'password', 'ADMIN');
-                """;
-        jdbcTemplate.update(sql);
-    }
-
     @DisplayName("로그인 폼 페이지 조회에 성공한다.")
     @Test
     void popularPage() {

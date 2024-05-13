@@ -18,14 +18,6 @@ import roomescape.util.ControllerTest;
 
 @DisplayName("예약 시간 API 통합 테스트")
 class ReservationTimeControllerTest extends ControllerTest {
-    @Autowired
-    ReservationTimeService reservationTimeService;
-
-    @BeforeEach
-    void setData() {
-        reservationTimeService.create(new ReservationTimeRequest("12:00"));
-    }
-
     @DisplayName("시간 생성 시, 201을 반환한다.")
     @Test
     void create() {
@@ -67,7 +59,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(4));
     }
 
     @DisplayName("시간 삭제 시, 200을 반환한다.")
@@ -75,7 +67,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     void delete() {
         //given & when & then
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/4")
                 .then().log().all()
                 .statusCode(200);
     }

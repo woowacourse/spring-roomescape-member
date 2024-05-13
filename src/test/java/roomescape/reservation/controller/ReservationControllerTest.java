@@ -32,24 +32,7 @@ import roomescape.util.ControllerTest;
 @DisplayName("예약 API 통합 테스트")
 class ReservationControllerTest extends ControllerTest {
     @Autowired
-    ReservationTimeRepository reservationTimeRepository;
-    @Autowired
-    ThemeRepository themeRepository;
-    @Autowired
-    MemberRepository memberRepository;
-    @Autowired
     ReservationService reservationService;
-
-    Member member;
-    Theme theme;
-    ReservationTime reservationTime;
-
-    @BeforeEach
-    void setData() {
-        reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.MIDNIGHT));
-        theme = themeRepository.save(new Theme("name", "description", "thumbnail"));
-        member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
-    }
 
     @DisplayName("인기 테마 페이지 조회에 성공한다.")
     @Test
@@ -65,10 +48,9 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void find() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(),
-                theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1L, 1L);
         ReservationResponse reservationResponse = reservationService.create(reservationRequest,
-                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+                new LoginMember(2L, "멤버", "member@email.com", Role.MEMBER));
 
         // when & then
         RestAssured.given().log().all()
@@ -84,12 +66,12 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-08-05");
-        reservation.put("timeId", reservationTime.getId());
-        reservation.put("themeId", theme.getId());
+        reservation.put("timeId", 1L);
+        reservation.put("themeId", 1L);
 
         String accessToken = RestAssured
                 .given().log().all()
-                .body(new LoginRequest(member.getEmail(), member.getPassword()))
+                .body(new LoginRequest("member@email.com", "password"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
@@ -112,8 +94,8 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", date);
-        reservation.put("timeId", reservationTime.getId());
-        reservation.put("themeId", theme.getId());
+        reservation.put("timeId", 1L);
+        reservation.put("themeId", 1L);
 
         //when & then
         RestAssured.given().log().all()
@@ -132,7 +114,7 @@ class ReservationControllerTest extends ControllerTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-12-01");
         reservation.put("timeId", timeId);
-        reservation.put("themeId", theme.getId());
+        reservation.put("themeId", 1L);
 
         //when & then
         RestAssured.given().log().all()
@@ -150,7 +132,7 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-12-01");
-        reservation.put("timeId", reservationTime.getId());
+        reservation.put("timeId", 1L);
         reservation.put("themeId", themeId);
 
         //when & then
@@ -166,10 +148,9 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", reservationTime.getId(),
-                theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1L, 1L);
         ReservationResponse reservationResponse = reservationService.create(reservationRequest,
-                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+                new LoginMember(2L, "멤버", "member@email.com", Role.MEMBER));
         long id = reservationResponse.id();
 
         //when &then

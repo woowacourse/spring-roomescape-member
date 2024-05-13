@@ -29,26 +29,11 @@ class AdminControllerTest extends ControllerTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
-
     @Autowired
     ThemeService themeService;
-    ReservationTimeResponse reservationTimeResponse;
-    ThemeResponse themeResponse;
     String adminToken;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void setData() {
-        String sql = """
-                    INSERT INTO member(name, email, password, role) VALUES
-                    ('관리자', 'admin@email.com', 'password', 'ADMIN'),
-                    ('멤버', 'member@email.com', 'password', 'MEMBER')
-                """;
-        jdbcTemplate.update(sql);
-        reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
-        themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-
         adminToken = RestAssured
                 .given().log().all()
                 .body(new LoginRequest("admin@email.com", "password"))
@@ -87,8 +72,8 @@ class AdminControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", "2099-08-05");
-        reservation.put("timeId", reservationTimeResponse.id());
-        reservation.put("themeId", themeResponse.id());
+        reservation.put("timeId", 1L);
+        reservation.put("themeId", 1L);
         reservation.put("memberId", 1);
 
         //when & then
@@ -108,8 +93,8 @@ class AdminControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("date", date);
-        reservation.put("timeId", reservationTimeResponse.id());
-        reservation.put("themeId", themeResponse.id());
+        reservation.put("timeId", 1L);
+        reservation.put("themeId", 1L);
         reservation.put("memberId", 1);
 
         //when & then
