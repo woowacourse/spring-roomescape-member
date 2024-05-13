@@ -6,21 +6,21 @@ import java.util.Optional;
 
 public interface ReservationRepository {
 
-    Reservation save(final Reservation reservation);
+    Reservation save(Reservation reservation);
 
-    List<Reservation> findAll();
+    Optional<Reservation> findById(Long id);
 
-    Optional<Reservation> findById(final Long id);
+    List<ReservationTime> findTimeByDateAndThemeId(LocalDate date, Long aLong);
 
-    List<ReservationTime> findTimeByDateAndThemeId(final LocalDate date, final Long aLong);
+    boolean existByTimeId(Long timeId);
 
-    boolean existByTimeId(final Long timeId);
+    boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
-    boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId);
+    boolean existByThemeId(Long themeId);
 
-    boolean existByThemeId(final Long themeId);
-
-    void deleteById(final Long id);
+    void deleteById(Long id);
 
     List<Theme> findTopThemesDurationOrderByCount(LocalDate startDate, LocalDate endDate, Integer limit);
+
+    List<Reservation> findByDurationAndThemeIdAndMemberId(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 }

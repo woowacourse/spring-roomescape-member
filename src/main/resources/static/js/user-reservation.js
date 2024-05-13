@@ -91,7 +91,7 @@ function fetchAvailableTimes(date, themeId) {
   TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch(`/times?date=${date}&themeId=${themeId}`, { // 예약 가능 시간 조회 API endpoint
+  fetch(`/times/booked?date=${date}&themeId=${themeId}`, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
+  // const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
 
@@ -165,8 +165,7 @@ function onReservationButtonClick() {
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
-      timeId: selectedTimeId,
-      name: name
+      timeId: selectedTimeId
     };
 
     fetch('/reservations', {

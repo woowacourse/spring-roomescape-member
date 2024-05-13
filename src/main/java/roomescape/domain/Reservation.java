@@ -7,24 +7,24 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public boolean isTime(final ReservationTime time) {
+    public boolean isTime(ReservationTime time) {
         return this.time.equals(time);
     }
 
@@ -40,12 +40,16 @@ public class Reservation {
         return theme.getId();
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -68,7 +72,7 @@ public class Reservation {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Reservation that = (Reservation) o;
+        Reservation that = (Reservation) o;
         return Objects.equals(id, that.id);
     }
 

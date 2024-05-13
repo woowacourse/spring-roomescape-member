@@ -9,46 +9,47 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
+import roomescape.IntegrationTestSupport;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.exception.ReservationBusinessException;
-import roomescape.repository.ThemeJdbcRepository;
+import roomescape.domain.ThemeRepository;
+import roomescape.exception.RoomEscapeBusinessException;
+import roomescape.service.dto.ReservationConditionRequest;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
 
-@SpringBootTest
 @Transactional
-class ReservationServiceTest {
+class ReservationServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ReservationService reservationService;
 
     @Autowired
-    private ReservationRepository reservationRepository;
-
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private ThemeJdbcRepository themeJdbcRepository;
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("예약 저장")
     @Test
     void saveReservation() {
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        Member member = memberRepository.save(Member.createUser("고구마", "email@email.com", "1234"));
 
-        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("고구마",
-                LocalDate.parse("2025-11-11"), time.getId(), theme.getId());
-        final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"),
+                time.getId(), theme.getId());
+        ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
 
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo("고구마"),
+                () -> assertThat(reservationResponse.member().name()).isEqualTo("고구마"),
                 () -> assertThat(reservationResponse.date()).isEqualTo(LocalDate.parse("2025-11-11")),
                 () -> assertThat(reservationResponse.time().id()).isEqualTo(time.getId()),
                 () -> assertThat(reservationResponse.time().startAt()).isEqualTo(time.getStartAt()),
@@ -62,44 +63,35 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약 저장")
     @Test
     void timeForSaveReservationNotFound() {
-        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("고구마",
-                LocalDate.parse("2025-11-11"), 2L, 1L);
+        Member member = memberRepository.save(Member.createUser("고구마", "email@email.com", "1234"));
+
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"), 100L, 1L);
         assertThatThrownBy(() -> {
             reservationService.saveReservation(reservationSaveRequest);
-        }).isInstanceOf(ReservationBusinessException.class);
+        }).isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("예약 삭제")
     @Test
     void deleteReservation() {
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
-        final Reservation savedReservation = reservationRepository.save(
-                new Reservation("감자", LocalDate.parse("2025-05-13"), time, theme));
-
-        reservationService.deleteReservation(savedReservation.getId());
-        assertThat(reservationService.getReservations().size()).isEqualTo(0);
+        reservationService.deleteReservation(1L);
+        assertThat(reservationService.findReservationsByCondition(new ReservationConditionRequest(null, null, null, null))).hasSize(12);
     }
 
     @DisplayName("존재하지 않는 예약 삭제")
     @Test
     void deleteReservationNotFound() {
         assertThatThrownBy(() -> {
-            reservationService.deleteReservation(2L);
-        }).isInstanceOf(ReservationBusinessException.class);
+            reservationService.deleteReservation(100L);
+        }).isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("중복된 예약 저장")
     @Test
     void saveDuplicatedReservation() {
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
-        final Reservation savedReservation = reservationRepository.save(
-                new Reservation("감자", LocalDate.parse("2025-05-13"), time, theme));
-
-        assertThatThrownBy(() -> {
-            reservationService.saveReservation(
-                    new ReservationSaveRequest("호롤로", LocalDate.parse("2025-05-13"), time.getId(), theme.getId()));
-        }).isInstanceOf(ReservationBusinessException.class);
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(1L, LocalDate.parse("2024-05-04"),
+                1L, 1L);
+        assertThatThrownBy(() -> reservationService.saveReservation(reservationSaveRequest))
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 }

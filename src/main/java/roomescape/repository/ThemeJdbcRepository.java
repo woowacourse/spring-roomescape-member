@@ -31,23 +31,23 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(final Theme theme) {
-        final BeanPropertySqlParameterSource themeParameters = new BeanPropertySqlParameterSource(theme);
-        final Long savedThemeId = themeInsert.executeAndReturnKey(themeParameters).longValue();
+    public Theme save(Theme theme) {
+        BeanPropertySqlParameterSource themeParameters = new BeanPropertySqlParameterSource(theme);
+        Long savedThemeId = themeInsert.executeAndReturnKey(themeParameters).longValue();
         return new Theme(savedThemeId, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
     public List<Theme> findAll() {
-        final String sql = "SELECT * FROM theme";
+        String sql = "SELECT * FROM theme";
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }
 
     @Override
-    public Optional<Theme> findById(final Long id) {
-        final String sql = "SELECT * FROM theme WHERE id = ?";
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
         try {
-            final Theme theme = jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
+            Theme theme = jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -55,7 +55,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 }

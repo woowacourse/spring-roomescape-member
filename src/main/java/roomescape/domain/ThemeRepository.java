@@ -5,11 +5,11 @@ import java.util.Optional;
 
 public interface ThemeRepository {
 
-    Theme save(final Theme theme);
+    Theme save(Theme theme);
 
     List<Theme> findAll();
 
-    Optional<Theme> findById(final Long id);
+    Optional<Theme> findById(Long id);
 
-    void deleteById(final Long id);
+    void deleteById(Long id);
 }

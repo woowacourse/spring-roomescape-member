@@ -21,7 +21,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationTimeInsert;
 
-    public ReservationTimeJdbcRepository(final JdbcTemplate jdbcTemplate) {
+    public ReservationTimeJdbcRepository( JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationTimeInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
@@ -29,17 +29,17 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(final ReservationTime reservationTime) {
-        final BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservationTime);
-        final Long savedTimeId = reservationTimeInsert.executeAndReturnKey(parameterSource).longValue();
+    public ReservationTime save(ReservationTime reservationTime) {
+        BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservationTime);
+        Long savedTimeId = reservationTimeInsert.executeAndReturnKey(parameterSource).longValue();
         return new ReservationTime(savedTimeId, reservationTime.getStartAt());
     }
 
     @Override
-    public Optional<ReservationTime> findById(final Long id) {
-        final String selectQuery = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+    public Optional<ReservationTime> findById(Long id) {
+        String selectQuery = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            final ReservationTime time = jdbcTemplate.queryForObject(selectQuery, TIME_ROW_MAPPER, id);
+            ReservationTime time = jdbcTemplate.queryForObject(selectQuery, TIME_ROW_MAPPER, id);
             return Optional.ofNullable(time);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -48,13 +48,13 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        final String selectQuery = "SELECT id, start_at FROM reservation_time";
+        String selectQuery = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(selectQuery, TIME_ROW_MAPPER);
     }
 
     @Override
-    public boolean existByStartAt(final LocalTime startAt) {
-        final String sql = """
+    public boolean existByStartAt(LocalTime startAt) {
+        String sql = """
                 SELECT
                 CASE WHEN EXISTS (
                         SELECT 1
@@ -69,7 +69,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 }

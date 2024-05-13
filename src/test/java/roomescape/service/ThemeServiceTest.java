@@ -10,24 +10,23 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.IntegrationTestSupport;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.exception.ReservationBusinessException;
-import roomescape.repository.ThemeJdbcRepository;
+import roomescape.domain.ThemeRepository;
+import roomescape.exception.RoomEscapeBusinessException;
 import roomescape.service.dto.PopularThemeRequest;
 import roomescape.service.dto.ThemeResponse;
 import roomescape.service.dto.ThemeSaveRequest;
 
-@SpringBootTest
 @Transactional
-class ThemeServiceTest {
+class ThemeServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ThemeService themeService;
@@ -39,15 +38,18 @@ class ThemeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private ThemeJdbcRepository themeJdbcRepository;
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("테마 저장")
     @Test
     void save() {
         // given
-        final ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
+        ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
         // when
-        final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
+        ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
 
         // then
         assertAll(
@@ -60,65 +62,58 @@ class ThemeServiceTest {
     @DisplayName("테마 조회")
     @Test
     void getThemes() {
-        // given
-        final ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
-        final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
+        List<ThemeResponse> themeResponses = themeService.getThemes();
 
-        // when
-        final List<ThemeResponse> themeResponses = themeService.getThemes();
-
-        // then
-        assertThat(themeResponses).hasSize(1)
-                .containsExactly(themeResponse);
+        assertThat(themeResponses).hasSize(13);
     }
 
     @DisplayName("테마 삭제")
     @Test
     void deleteTheme() {
         // given
-        final ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
-        final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
+        ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
+        ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
 
         // when
         themeService.deleteTheme(themeResponse.id());
 
         // then
-        assertThat(themeService.getThemes()).hasSize(0);
+        assertThat(themeService.getThemes()).hasSize(13);
     }
 
     @DisplayName("존재하지 않는 테마 삭제")
     @Test
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("예약이 있는 테마 삭제")
     @Test
     void deleteExistReservation() {
         // given
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
-        reservationRepository.save(new Reservation("감자", LocalDate.parse("2025-05-13"), time, theme));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        Member member = memberRepository.save(Member.createUser("생강", "email@email.com", "1234"));
+        reservationRepository.save(new Reservation(member, LocalDate.parse("2025-05-13"), time, theme));
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
-                .isInstanceOf(ReservationBusinessException.class);
+                .isInstanceOf(RoomEscapeBusinessException.class);
     }
 
     @DisplayName("인기 테마 조회")
     @Test
-    @Sql(scripts = {"/test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void getPopularTheme() {
         // given
-        final PopularThemeRequest popularThemeRequest = new PopularThemeRequest(LocalDate.parse("2024-04-22"), LocalDate.parse("2024-04-29"), 2);
+        PopularThemeRequest popularThemeRequest = new PopularThemeRequest(LocalDate.parse("2024-05-04"), LocalDate.parse("2024-05-10"), 2);
 
         // when
-        final List<ThemeResponse> popularThemes = themeService.getPopularThemes(popularThemeRequest);
+        List<ThemeResponse> popularThemes = themeService.getPopularThemes(popularThemeRequest);
 
         // then
         assertThat(popularThemes).hasSize(2)
-                .containsExactly(new ThemeResponse(1L, "이름1", "설명1", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+                .containsExactlyInAnyOrder(new ThemeResponse(1L, "이름1", "설명1", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
                         new ThemeResponse(2L, "이름2", "설명2", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }
 }

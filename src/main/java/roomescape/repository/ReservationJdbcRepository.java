@@ -12,21 +12,24 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (selectedReservation, rowNum) -> {
-        final ReservationTime time = mapReservationTime(selectedReservation);
-        final Theme theme = mapTheme(selectedReservation);
+        ReservationTime time = mapReservationTime(selectedReservation);
+        Theme theme = mapTheme(selectedReservation);
+        Member member = mapMember(selectedReservation);
 
         return new Reservation(
                 selectedReservation.getLong("id"),
-                selectedReservation.getString("name"),
+                member,
                 LocalDate.parse(selectedReservation.getString("date")),
                 time,
                 theme
@@ -36,14 +39,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> mapTheme(rs);
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (rs, rowNum) -> mapReservationTime(rs);
 
-    private static ReservationTime mapReservationTime(final ResultSet resultSet) throws SQLException {
+    private static ReservationTime mapReservationTime(ResultSet resultSet) throws SQLException {
         return new ReservationTime(
                 resultSet.getLong("time_id"),
                 LocalTime.parse(resultSet.getString("start_at"))
         );
     }
 
-    private static Theme mapTheme(final ResultSet resultSet) throws SQLException {
+    private static Theme mapTheme(ResultSet resultSet) throws SQLException {
         return new Theme(
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
@@ -52,10 +55,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
         );
     }
 
+    private static Member mapMember(ResultSet resultSet) throws SQLException {
+        return new Member(
+                resultSet.getLong("member_id"),
+                resultSet.getString("member_name"),
+                resultSet.getString("email"),
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role"))
+        );
+    }
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationInsert;
 
-    public ReservationJdbcRepository(final JdbcTemplate jdbcTemplate) {
+    public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -63,12 +76,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(final Reservation reservation) {
-        final BeanPropertySqlParameterSource reservationParameters = new BeanPropertySqlParameterSource(reservation);
-        final Long savedReservationId = reservationInsert.executeAndReturnKey(reservationParameters).longValue();
+    public Reservation save(Reservation reservation) {
+        BeanPropertySqlParameterSource reservationParameters = new BeanPropertySqlParameterSource(reservation);
+        Long savedReservationId = reservationInsert.executeAndReturnKey(reservationParameters).longValue();
         return new Reservation(
                 savedReservationId,
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
@@ -76,11 +89,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        final String selectQuery = """
+    public Optional<Reservation> findById(Long id) {
+        String selectQuery = """
             SELECT
                 r.id as reservation_id,
-                r.name,
+                r.member_id,
+                m.name as member_name,
+                m.email,
+                m.password,
+                m.role,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,
@@ -89,37 +106,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 t.description,
                 t.thumbnail
             FROM reservation as r
-            INNER JOIN reservation_time as rt
+            LEFT JOIN reservation_time as rt
             ON r.time_id = rt.id
-            INNER JOIN theme as t
+            LEFT JOIN theme as t
             ON r.theme_id = t.id
-        """;
-        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER);
-    }
-
-    @Override
-    public Optional<Reservation> findById(final Long id) {
-        final String selectQuery = """
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                rt.id as time_id,
-                rt.start_at,
-                t.id as theme_id,
-                t.name as theme_name,
-                t.description,
-                t.thumbnail
-            FROM reservation as r
-            INNER JOIN reservation_time as rt
-            ON r.time_id = rt.id
-            INNER JOIN theme as t
-            ON r.theme_id = t.id
+            LEFT JOIN member as m
+            ON r.member_id = m.id
             WHERE r.id = ?
         """;
 
         try {
-            final Reservation reservation = jdbcTemplate.queryForObject(selectQuery, RESERVATION_ROW_MAPPER, id);
+            Reservation reservation = jdbcTemplate.queryForObject(selectQuery, RESERVATION_ROW_MAPPER, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -127,8 +124,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationTime> findTimeByDateAndThemeId(final LocalDate date, final Long themeId) {
-        final String selectQuery = """
+    public List<ReservationTime> findTimeByDateAndThemeId(LocalDate date, Long themeId) {
+        String selectQuery = """
             SELECT
                 rt.id as time_id,
                 rt.start_at
@@ -144,7 +141,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByTimeId(final Long timeId) {
+    public boolean existByTimeId(Long timeId) {
         String sql = """
                 SELECT 
                 CASE WHEN EXISTS (
@@ -160,7 +157,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByThemeId(final Long themeId) {
+    public boolean existByThemeId(Long themeId) {
         String sql = """
                 SELECT 
                 CASE WHEN EXISTS (
@@ -176,7 +173,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT 
                 CASE WHEN EXISTS (
@@ -192,13 +189,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     @Override
-    public List<Theme> findTopThemesDurationOrderByCount(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
-        final String sql = """
+    public List<Theme> findTopThemesDurationOrderByCount(LocalDate startDate, LocalDate endDate, Integer limit) {
+        String sql = """
                 SELECT 
                     t.id as theme_id, 
                     t.name as theme_name, 
@@ -214,5 +211,45 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
+    }
+
+    @Override
+    public List<Reservation> findByDurationAndThemeIdAndMemberId(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        String sql = """
+            SELECT
+                r.id as reservation_id,
+                r.member_id,
+                m.name as member_name,
+                m.email,
+                m.password,
+                m.role,
+                r.date,
+                rt.id as time_id,
+                rt.start_at,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail
+            FROM reservation as r
+            LEFT JOIN reservation_time as rt
+            ON r.time_id = rt.id
+            LEFT JOIN theme as t
+            ON r.theme_id = t.id
+            LEFT JOIN member as m
+            ON r.member_id = m.id
+        """;
+
+        QueryBuilder queryBuilder = QueryBuilder.build(sql)
+                .addCondition(dateFrom, "r.date >= ?")
+                .addCondition(dateTo, "r.date <= ?")
+                .addCondition(themeId, "t.id = ?")
+                .addCondition(memberId, "m.id = ?");
+
+        return jdbcTemplate.query(queryBuilder.getQuery(), RESERVATION_ROW_MAPPER, queryBuilder.getParam());
     }
 }

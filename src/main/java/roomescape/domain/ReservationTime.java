@@ -8,11 +8,11 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(final LocalTime startAt) {
+    public ReservationTime(LocalTime startAt) {
         this(null, startAt);
     }
 
-    public ReservationTime(final Long id, final LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
@@ -33,7 +33,7 @@ public class ReservationTime {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final ReservationTime that = (ReservationTime) o;
+        ReservationTime that = (ReservationTime) o;
         return Objects.equals(id, that.id);
     }
 

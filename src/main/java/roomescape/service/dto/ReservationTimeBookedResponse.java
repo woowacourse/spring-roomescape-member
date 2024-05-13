@@ -11,7 +11,7 @@ public record ReservationTimeBookedResponse(
         boolean alreadyBooked
 ) {
 
-    public static ReservationTimeBookedResponse of(final ReservationTime time, final boolean alreadyBooked) {
+    public static ReservationTimeBookedResponse of(ReservationTime time, boolean alreadyBooked) {
             return new ReservationTimeBookedResponse(time.getId(), time.getStartAt(), alreadyBooked);
     }
 }
