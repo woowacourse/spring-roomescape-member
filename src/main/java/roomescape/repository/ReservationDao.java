@@ -38,8 +38,54 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
+
+    public Long create(final ReservationRequest reservationRequest) {
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("member_id", reservationRequest.memberId())
+                .addValue("date", reservationRequest.date())
+                .addValue("time_id", reservationRequest.timeId())
+                .addValue("theme_id", reservationRequest.themeId());
+        return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+    }
+
+    public void delete(final Long id) {
+        String sql = "delete from reservation where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     public List<Reservation> findAll() {
-        String sql = """
+        String sql = buildSelectQuery();
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public boolean isExists(final LocalDate date, final Long timeId, final Long themeId) {
+        String sql = buildCountQuery();
+        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) != 0;
+    }
+
+    public boolean isExistsTimeId(final Long timeId) {
+        String sql = "select exists(select 1 from reservation where time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    }
+
+    public boolean isExistsThemeId(final Long themeId) {
+        String sql = "select exists(select 1 from reservation where theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+    }
+
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        String sql = buildSelectQuery() + " where date = ? and theme_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+    }
+
+    public List<Reservation> findAllByMemberAndDateAndTheme(final Long memberId, final Long themeId,
+                                                            final String dateFrom, final String dateTo) {
+        String sql = buildSelectQuery() + buildConditionQuery(memberId, themeId, dateFrom, dateTo);
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    private String buildSelectQuery() {
+        return """
                 SELECT
                     r.id as reservation_id,
                     m.id as member_id,
@@ -57,94 +103,17 @@ public class ReservationDao {
                 FROM reservation as r
                 INNER JOIN member as m ON r.member_id = m.id
                 INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id;
+                INNER JOIN theme as th ON r.theme_id = th.id
                 """;
-        return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Long create(final ReservationRequest reservationRequest) {
-        SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("member_id", reservationRequest.memberId())
-                .addValue("date", reservationRequest.date())
-                .addValue("time_id", reservationRequest.timeId())
-                .addValue("theme_id", reservationRequest.themeId());
-        return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-    }
-
-    public void delete(final Long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    public boolean isExists(final LocalDate date, final Long timeId, final Long themeId) {
-        String sql = """
+    private String buildCountQuery() {
+        return """
                 SELECT
-                count(*)
+                    count(*)
                 FROM reservation
                 WHERE date = ? AND time_id = ? AND theme_id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) != 0;
-    }
-
-    public boolean isExistsTimeId(final Long timeId) {
-        String sql = "select exists(select 1 from reservation where time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
-    }
-
-    public boolean isExistsThemeId(final Long themeId) {
-        String sql = "select exists(select 1 from reservation where theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
-    }
-
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        String sql = """
-                    SELECT
-                    r.id as reservation_id,
-                    m.id as member_id,
-                    m.name as member_name,
-                    m.email as member_email,
-                    m.password as member_password,
-                    m.role as member_role,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as theme_description,
-                    th.thumbnail as theme_thumbnail
-                    FROM reservation as r
-                    INNER JOIN member as m ON r.member_id = m.id
-                    INNER JOIN reservation_time as t ON r.time_id = t.id
-                    INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
-                """;
-        return jdbcTemplate.query(sql, rowMapper, date, themeId);
-    }
-
-    public List<Reservation> findAllByMemberAndDateAndTheme(final Long memberId, final Long themeId,
-                                                            final String dateFrom, final String dateTo) {
-        String sql = """
-                    SELECT
-                      r.id as reservation_id,
-                      m.id as member_id,
-                      m.name as member_name,
-                      m.email as member_email,
-                      m.password as member_password,
-                      m.role as member_role,
-                      r.date,
-                      t.id as time_id,
-                      t.start_at as time_value,
-                      th.id as theme_id,
-                      th.name as theme_name,
-                      th.description as theme_description,
-                      th.thumbnail as theme_thumbnail
-                      FROM reservation as r
-                      INNER JOIN member as m on r.member_id = m.id
-                      inner join reservation_time as t on r.time_id = t.id
-                      inner join theme as th on r.theme_id = th.id                                                                           
-                """;
-        sql += buildConditionQuery(memberId, themeId, dateFrom, dateTo);
-
-        return jdbcTemplate.query(sql, rowMapper);
     }
 
     private String buildConditionQuery(final Long memberId, final Long themeId, final String dateFrom,
@@ -164,6 +133,6 @@ public class ReservationDao {
         if (whereQuery.isEmpty()) {
             return "";
         }
-        return "WHERE " + String.join(" AND ", whereQuery);
+        return " WHERE " + String.join(" AND ", whereQuery);
     }
 }
