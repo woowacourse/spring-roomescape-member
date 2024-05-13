@@ -14,10 +14,10 @@ public class JdbcMemberRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<LoginMember> loginMemberMapper = (rs, rowNum) -> new LoginMember(
-        rs.getLong("id"),
+        rs.getString("id"),
         rs.getString("email"),
         rs.getString("name"),
-        Role.valueOf(rs.getString("role"))
+        rs.getString("role")
     );
 
     public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {

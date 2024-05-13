@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.member.LoginMember;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -96,7 +95,7 @@ class ThemeServiceTest {
             "INSERT INTO member(name, email, password, role) VALUES ('admin', 'admin@a.com', '123a!', 'ADMIN')");
 
         reservationRepository.save(new Reservation(
-            new LoginMember(1L, "admin@a.com", "admin", Role.ADMIN),
+            new LoginMember("1", "admin@a.com", "admin", "ADMIN"),
             "2060-01-01",
             savedTime,
             savedTheme)

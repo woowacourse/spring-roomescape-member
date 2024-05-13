@@ -9,11 +9,40 @@ public final class LoginMember {
     private final String name;
     private final Role role;
 
-    public LoginMember(Long id, String email, String name, Role role) {
-        this.id = id;
+    public LoginMember(String id, String email, String name, String role) {
+        validate(id, email, name, role);
+        this.id = Long.valueOf(id);
         this.email = email;
         this.name = name;
-        this.role = role;
+        this.role = Role.valueOf(role);
+    }
+
+    private void validate(String id, String email, String name, String role) {
+        validateNull(id, email, name, role);
+        validateNumberFormat(id);
+        validateRole(role);
+    }
+
+    private void validateNull(String id, String email, String name, String role) {
+        if (id == null || email == null || name == null || role == null) {
+            throw new IllegalArgumentException("비정상 토큰입니다.");
+        }
+    }
+
+    private static void validateNumberFormat(String id) {
+        try {
+            Long.valueOf(id);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("비정상 토큰입니다.");
+        }
+    }
+
+    private void validateRole(String role) {
+        try {
+            Role.valueOf(role);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("비정상 토큰입니다.");
+        }
     }
 
     public Long getId() {
@@ -37,7 +66,7 @@ public final class LoginMember {
     }
 
     public boolean isNotRegistered() {
-        return role == null;
+        return role == Role.NOT_REGISTERED;
     }
 
     @Override

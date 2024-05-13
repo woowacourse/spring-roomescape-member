@@ -17,7 +17,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.member.LoginMember;
-import roomescape.domain.member.Role;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -46,7 +45,7 @@ class ReservationServiceTest {
 
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
     private final Theme theme = new Theme(1L, "theme1", "desc1", "https://");
-    private final LoginMember member = new LoginMember(1L, "admin@a.com", "admin", Role.ADMIN);
+    private final LoginMember member = new LoginMember("1", "admin@a.com", "admin", "ADMIN");
 
     @BeforeEach
     void beforeEach() {

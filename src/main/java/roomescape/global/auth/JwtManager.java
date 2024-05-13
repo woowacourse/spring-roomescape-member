@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.LoginMember;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.Role;
 
 @Component
 public class JwtManager {
@@ -39,7 +38,7 @@ public class JwtManager {
     }
 
     public LoginMember findMember(HttpServletRequest request) {
-        LoginMember defaultMember = new LoginMember(null, null, null, null);
+        LoginMember defaultMember = new LoginMember("-1", "", "", "NOT_REGISTERED");
 
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -69,12 +68,12 @@ public class JwtManager {
             .parseClaimsJws(token)
             .getBody();
 
-        Long id = Long.valueOf(claims.getSubject());
+        String id = claims.getSubject();
         String name = claims.get(CLAIM_NAME, String.class);
         String email = claims.get(CLAIM_EMAIL, String.class);
         String role = claims.get(CLAIM_ROLE, String.class);
 
-        return new LoginMember(id, email, name, Role.valueOf(role));
+        return new LoginMember(id, email, name, role);
     }
 }
 
