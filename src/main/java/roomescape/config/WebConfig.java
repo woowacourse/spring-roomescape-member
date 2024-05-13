@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.AuthHandlerInterceptor;
+import roomescape.auth.AdminAuthHandlerInterceptor;
 import roomescape.auth.AuthenticatedMemberArgumentResolver;
 
 import java.util.List;
@@ -13,12 +13,12 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
-    private final AuthHandlerInterceptor authHandlerInterceptor;
+    private final AdminAuthHandlerInterceptor adminAuthHandlerInterceptor;
 
     public WebConfig(AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver,
-                     AuthHandlerInterceptor authHandlerInterceptor) {
+                     AdminAuthHandlerInterceptor adminAuthHandlerInterceptor) {
         this.authenticatedMemberArgumentResolver = authenticatedMemberArgumentResolver;
-        this.authHandlerInterceptor = authHandlerInterceptor;
+        this.adminAuthHandlerInterceptor = adminAuthHandlerInterceptor;
     }
 
     @Override
@@ -28,6 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authHandlerInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(adminAuthHandlerInterceptor).addPathPatterns("/admin/**");
     }
 }

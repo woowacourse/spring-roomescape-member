@@ -13,11 +13,11 @@ import roomescape.service.auth.AuthService;
 import java.util.Arrays;
 
 @Component
-public class AuthHandlerInterceptor implements HandlerInterceptor {
+public class AdminAuthHandlerInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
 
-    public AuthHandlerInterceptor(AuthService authService) {
+    public AdminAuthHandlerInterceptor(AuthService authService) {
         this.authService = authService;
     }
 
