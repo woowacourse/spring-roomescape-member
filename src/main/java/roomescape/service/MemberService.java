@@ -6,8 +6,8 @@ import roomescape.dto.LoginMember;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
+import roomescape.infrastructure.TokenGenerator;
 import roomescape.repository.MemberDao;
-import roomescape.utils.TokenGenerator;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class MemberService {
 
     public TokenResponse createToken(final TokenRequest tokenRequest) {
         Member member = memberDao.findByEmailAndPassword(tokenRequest.email(), tokenRequest.password());
-        String accessToken = tokenGenerator.createToken(tokenRequest.email());
+        String accessToken = tokenGenerator.createToken(tokenRequest.email(), member.getRole().name());
         return TokenResponse.from(accessToken);
     }
 

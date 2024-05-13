@@ -11,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/times")
-public class AdminTimeController {
+public class TimeController {
     private final TimeService timeService;
 
-    public AdminTimeController(TimeService timeService) {
+    public TimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 
