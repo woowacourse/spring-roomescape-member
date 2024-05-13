@@ -5,7 +5,6 @@ import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -16,8 +15,12 @@ public class MemberService {
     }
 
     public List<Member> findMemberList() {
-        Optional<List<Member>> membersOptional = memberRepository.findAll();
+        List<Member> members = memberRepository.findAll();
 
-        return membersOptional.orElseThrow(() -> new IllegalArgumentException("멤버가 없습니다."));
+        if (members.isEmpty()) {
+            throw new IllegalArgumentException("멤버가 없습니다.");
+        }
+
+        return members;
     }
 }

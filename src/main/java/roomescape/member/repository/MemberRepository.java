@@ -26,14 +26,9 @@ public class MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<List<Member>> findAll() {
+    public List<Member> findAll() {
         String sql = "SELECT * FROM member";
-        try {
-            List<Member> members = jdbcTemplate.query(sql, ROW_MAPPER);
-            return Optional.of(members);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Optional<Member> findById(long id) {
