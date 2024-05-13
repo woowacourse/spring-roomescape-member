@@ -39,74 +39,28 @@
 - [x] 인기 테마를 조회할 수 있다
     - [x]  최근 일주일을 기준으로 방문 예약이 많은 상위 10개의 테마를 확인한다.
 
----
+### 4단계 기능 요구사항
 
-## API 명세
+- [x] 사용자 도메인을 추가한다.
+- [x] 로그인 기능을 구현한다.
+    - [x] 이메일과 비밀번호를 전달 받고 토큰을 생성한다.
+    - [x] 이메일과 비밀번호가 null이거나 빈 값이 아닌 지 검증한다.
+    - [x] 이메일 형식이 올바른지 검증한다.
+- [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회한다.
+- [x] 사용자가 정보를 입력하고 회원 가입한다.
 
-### 테마 조회 API
+### 5단계 기능 요구사항
 
-request
+- [x] 사용자 정보를 조회하는 로직을 ArgumentResolver를 사용하도록 수정
+- [x] 사용자가 예약 생성 시 로그인한 사용자 정보를 사용하도록 수정
+- [x] 관리자가 예약 생성 시 유저를 조회하여 선택하도록 수정
+    - [x] /admin/reservation-new.html 파일이 reservation-with-member.js 파일을 import 하도록 수정
+    - [x] 관리자가 예약을 생성하는 화면에서 유저의 이름을 선택할 수 있도록 구현
 
-```json
-GET /themes HTTP/1.1
-```
+### 6단계 기능 요구사항
 
-response
-
-```json
-HTTP/1.1 200
-Content-Type: application/json
-
-[
-{
-"id": 1,
-"name": "레벨2 탈출",
-"description": "우테코 레벨2를 탈출하는 내용입니다.",
-"thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-}
-]
-```
-
-### 테마 추가 API
-
-request
-
-```json
-POST /themes HTTP/1.1
-content-type: application/json
-
-{
-"name": "레벨2 탈출",
-"description": "우테코 레벨2를 탈출하는 내용입니다.",
-"thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-}
-```
-
-response
-
-```json
-HTTP/1.1 201
-Location: /themes/1
-Content-Type: application/json
-
-{
-"id": 1,
-"name": "레벨2 탈출",
-"description": "우테코 레벨2를 탈출하는 내용입니다.",
-"thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-}
-```
-
-### 테마 삭제 API
-
-request
-
-```json
-DELETE /themes/1 HTTP/1.1
-```
-
-response
-
-```json
-HTTP/1.1 204
-```
+- [x] admin 권한을 가진 사람만 admin page에 접근하도록 수정
+    - [x] Member에 Role을 저장하는 필드를 추가한다.
+    - [x] Role이 ADMIN인 사람만 /admin으로 시작하는 페이지에 접근하도록 수정한다.
+- [x] 관리자가 조건에 따라 예약을 검색하도록 수정
+    - [x] 예약자별, 테마별, 날짜별 검색 조건에 해당하는 예약을 검색하도록 한다.
