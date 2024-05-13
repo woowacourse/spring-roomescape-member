@@ -11,16 +11,17 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
 import roomescape.exception.AuthenticationException;
 import roomescape.service.auth.AuthService;
-
-import java.util.Arrays;
+import roomescape.service.auth.TokenProvider;
 
 @Component
 public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
+    private final TokenProvider tokenProvider;
 
-    public AuthenticatedMemberArgumentResolver(AuthService authService) {
+    public AuthenticatedMemberArgumentResolver(AuthService authService, TokenProvider tokenProvider) {
         this.authService = authService;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -36,23 +37,11 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
                                   WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = tokenProvider.extractTokenFromCookie(cookies);
 
         if ("".equals(token)) {
             throw new AuthenticationException("로그인해 주세요");
         }
         return authService.findMemberByToken(token);
     }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return "";
-        }
-        return Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse("");
-    }
-
 }

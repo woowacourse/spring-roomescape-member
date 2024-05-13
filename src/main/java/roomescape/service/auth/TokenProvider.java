@@ -2,13 +2,17 @@ package roomescape.service.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 import roomescape.exception.AuthenticationException;
+
+import java.util.Arrays;
 
 @Component
 public class TokenProvider {
 
     private static final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private static final String TOKEN = "token";
 
     public String generateAccessToken(Long memberId) {
         return Jwts.builder()
@@ -26,5 +30,16 @@ public class TokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
+    }
+
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            return "";
+        }
+        return Arrays.stream(cookies)
+                .filter(cookie -> TOKEN.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse("");
     }
 }
