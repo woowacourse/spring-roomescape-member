@@ -27,16 +27,17 @@ public class JwtTokenProvider {
     }
 
     public String createToken(String memberEmail, MemberRole memberRole) {
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
-
         return Jwts.builder()
                 .setSubject(memberEmail)
                 .claim("role", memberRole.name())
-                .setIssuedAt(now)
-                .setExpiration(validity)
+                .setExpiration(calculateExpiredAt())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    private Date calculateExpiredAt() {
+        Date now = new Date();
+        return new Date(now.getTime() + validityInMilliseconds);
     }
 
     public String getMemberEmail(String token) {
