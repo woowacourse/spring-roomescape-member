@@ -15,12 +15,10 @@ public class ThemeService {
 
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
-    private final PopularThemesCriteria popularThemesCriteria;
 
     public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
-        this.popularThemesCriteria = new PopularThemesCriteria();
     }
 
     public ThemeResponse create(ThemeRequest themeRequest) {
@@ -50,9 +48,9 @@ public class ThemeService {
     }
 
     private List<ThemeResponse> findPopularThemes() {
-        LocalDate startDate = popularThemesCriteria.getStartDate();
-        LocalDate endDate = popularThemesCriteria.getEndDate();
-        int countLimit = popularThemesCriteria.getCountLimit();
+        LocalDate startDate = PopularThemesCriteria.getStartDate();
+        LocalDate endDate = PopularThemesCriteria.getEndDate();
+        int countLimit = PopularThemesCriteria.getCountLimit();
 
         return themeRepository.findOrderedByReservationCountInPeriod(startDate, endDate, countLimit).stream()
                 .map(ThemeResponse::from)

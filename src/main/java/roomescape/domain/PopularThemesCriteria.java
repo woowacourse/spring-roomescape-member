@@ -8,15 +8,15 @@ public class PopularThemesCriteria {
     private static final int END_DATE = 1;
     private static final int COUNT_LIMIT = 10;
 
-    public LocalDate getStartDate() {
+    public static LocalDate getStartDate() {
         return LocalDate.now().minusDays(START_DATE);
     }
 
-    public LocalDate getEndDate() {
+    public static LocalDate getEndDate() {
         return LocalDate.now().minusDays(END_DATE);
     }
 
-    public int getCountLimit() {
+    public static int getCountLimit() {
         return COUNT_LIMIT;
     }
 }
