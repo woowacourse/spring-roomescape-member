@@ -22,10 +22,6 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public void printKey() {
-        System.out.println(secretKey);
-    }
-
     public String createToken(Member member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
