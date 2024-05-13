@@ -16,7 +16,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
-import roomescape.exception.ClientErrorExceptionWithLog;
 
 @Sql("/reservation-time-service-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -38,7 +37,7 @@ class ReservationTimeServiceTest {
         //when, then
         ReservationTimeRequest reservationTimeRequest2 = new ReservationTimeRequest(LocalTime.parse("00:00"));
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(reservationTimeRequest2))
-                .isInstanceOf(ClientErrorExceptionWithLog.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -49,7 +48,7 @@ class ReservationTimeServiceTest {
 
         //when, then
         assertThatThrownBy(() -> reservationTimeService.getReservationTime(notExistIdToFind))
-                .isInstanceOf(ClientErrorExceptionWithLog.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -61,7 +60,7 @@ class ReservationTimeServiceTest {
 
         //when, then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
-                .isInstanceOf(ClientErrorExceptionWithLog.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
