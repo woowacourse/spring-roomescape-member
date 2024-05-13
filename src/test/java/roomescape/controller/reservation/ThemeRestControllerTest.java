@@ -28,7 +28,7 @@ import roomescape.service.dto.theme.ThemeResponse;
         DependencyInjectionTestExecutionListener.class
 })
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ThemeApiControllerTest {
+class ThemeRestControllerTest {
 
     @LocalServerPort
     private int port;

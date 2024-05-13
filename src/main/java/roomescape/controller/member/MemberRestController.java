@@ -18,13 +18,13 @@ import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.member.MemberResponse;
 
 @RestController
-public class MemberApiController {
+public class MemberRestController {
 
     private static final String TOKEN = "token";
 
     private final MemberService memberService;
 
-    public MemberApiController(MemberService memberService) {
+    public MemberRestController(MemberService memberService) {
         this.memberService = memberService;
     }
 

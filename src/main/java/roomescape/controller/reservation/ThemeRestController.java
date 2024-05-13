@@ -17,11 +17,11 @@ import roomescape.service.dto.theme.ThemeRequest;
 import roomescape.service.dto.theme.ThemeResponse;
 
 @RestController
-public class ThemeApiController {
+public class ThemeRestController {
 
     private final ThemeService themeService;
 
-    public ThemeApiController(ThemeService themeService) {
+    public ThemeRestController(ThemeService themeService) {
         this.themeService = themeService;
     }
 

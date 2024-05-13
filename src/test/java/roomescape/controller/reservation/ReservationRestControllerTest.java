@@ -32,7 +32,7 @@ import roomescape.service.dto.theme.ThemeResponse;
         DependencyInjectionTestExecutionListener.class
 })
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ReservationApiControllerTest {
+class ReservationRestControllerTest {
 
     @LocalServerPort
     private int port;

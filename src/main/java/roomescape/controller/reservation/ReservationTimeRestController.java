@@ -17,11 +17,11 @@ import roomescape.service.dto.time.AvailableTimeRequest;
 import roomescape.service.dto.time.AvailableTimeResponses;
 
 @RestController
-public class ReservationTimeApiController {
+public class ReservationTimeRestController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeApiController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeRestController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 

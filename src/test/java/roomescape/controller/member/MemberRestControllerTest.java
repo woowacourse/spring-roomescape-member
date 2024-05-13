@@ -24,7 +24,7 @@ import roomescape.service.dto.member.MemberCreateRequest;
         DependencyInjectionTestExecutionListener.class
 })
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class MemberApiControllerTest {
+class MemberRestControllerTest {
 
     @LocalServerPort
     private int port;

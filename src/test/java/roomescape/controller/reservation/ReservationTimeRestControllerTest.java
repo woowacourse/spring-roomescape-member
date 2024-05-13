@@ -30,7 +30,7 @@ import roomescape.service.dto.time.AvailableTimeResponses;
         DependencyInjectionTestExecutionListener.class
 })
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ReservationTimeApiControllerTest {
+class ReservationTimeRestControllerTest {
 
     @LocalServerPort
     private int port;
