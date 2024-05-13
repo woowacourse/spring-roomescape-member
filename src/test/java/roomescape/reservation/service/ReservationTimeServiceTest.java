@@ -35,9 +35,10 @@ class ReservationTimeServiceTest {
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
     MemberRepository memberRepository;
-
     ReservationTimeService reservationTimeService;
     ReservationService reservationService;
+
+    ReservationTime reservationTime;
 
     @BeforeEach
     void setData() {
@@ -49,6 +50,10 @@ class ReservationTimeServiceTest {
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
                 memberRepository);
+
+        long id = 1L;
+        LocalTime localTime = LocalTime.MIDNIGHT;
+        reservationTime = reservationTimeRepository.save(new ReservationTime(id, localTime));
     }
 
     @DisplayName("예약 시간 생성에 성공한다.")
@@ -63,7 +68,7 @@ class ReservationTimeServiceTest {
 
         //then
         assertThat(reservationTimeResponse.startAt()).isEqualTo(localTime);
-        assertThat(reservationTimeRepository.findAll()).hasSize(1);
+        assertThat(reservationTimeRepository.findAll()).hasSize(2);
     }
 
     @DisplayName("예약 시간이 증복일 경우, 예외가 발생한다.")
@@ -82,12 +87,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 조회에 성공한다.")
     @Test
     void findAll() {
-        //given
-        long id = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        reservationTimeRepository.save(new ReservationTime(id, localTime));
-
-        //when
+        //given & when
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
 
         //then
@@ -97,13 +97,8 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 삭제에 성공한다.")
     @Test
     void delete() {
-        //given
-        long id = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        reservationTimeRepository.save(new ReservationTime(id, localTime));
-
         //when
-        reservationTimeService.delete(id);
+        reservationTimeService.delete(reservationTime.getId());
 
         //then
         assertThat(reservationTimeRepository.findAll()).hasSize(0);
@@ -112,17 +107,13 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 예약 시간을 삭제할 경우 예외가 발생한다.")
     @Test
     void deleteTimeWithReservation() {
-        //given
-        long id = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        ReservationTime saveTime = reservationTimeRepository.save(new ReservationTime(id, localTime));
-
-        Reservation reservation = new Reservation(1L, LocalDate.now().plusYears(1), saveTime,
+        // given
+        Reservation reservation = new Reservation(1L, LocalDate.now().plusYears(1), reservationTime,
                 new Theme("name", "description", "thumbnail"));
         reservationRepository.save(reservation);
 
         //when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(id))
+        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -130,7 +121,7 @@ class ReservationTimeServiceTest {
     @Test
     void deleteNotExistTime() {
         // given & when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+        assertThatThrownBy(() -> reservationTimeService.delete(2L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -138,10 +129,6 @@ class ReservationTimeServiceTest {
     @Test
     void findAvailableTimes() {
         //given
-        long id1 = 1L;
-        LocalTime localTime1 = LocalTime.MIDNIGHT;
-        ReservationTime saveTime1 = reservationTimeRepository.save(new ReservationTime(id1, localTime1));
-
         long id2 = 2L;
         LocalTime localTime2 = LocalTime.NOON;
         ReservationTime saveTime2 = reservationTimeRepository.save(new ReservationTime(id2, localTime2));
@@ -161,7 +148,7 @@ class ReservationTimeServiceTest {
         assertAll(
                 () -> assertThat(availableTimeResponses).hasSize(2),
                 () -> assertThat(availableTimeResponses.get(0)).isEqualTo(
-                        new AvailableTimeResponse(id1, localTime1, true)),
+                        new AvailableTimeResponse(reservationTime.getId(), reservationTime.getStartAt(), true)),
                 () -> assertThat(availableTimeResponses.get(1)).isEqualTo(
                         new AvailableTimeResponse(id2, localTime2, false))
         );

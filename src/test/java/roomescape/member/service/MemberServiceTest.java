@@ -19,24 +19,20 @@ import roomescape.reservation.dao.FakeMemberDao;
 class MemberServiceTest {
     MemberRepository memberRepository;
     MemberService memberService;
+    Member member;
 
     @BeforeEach
     void setUp() {
         memberRepository = new FakeMemberDao();
         memberService = new MemberService(memberRepository, new FakeTokenProvider());
+        member = memberRepository.save(new Member("test", "test@email.com", "password", Role.MEMBER));
     }
 
     @DisplayName("로그인에 성공한다.")
     @Test
     void login() {
-        // given
-        String email = "test@email.com";
-        String password = "password";
-        Role role = Role.MEMBER;
-        Member member = memberRepository.save(new Member("test", email, password, role));
-
-        // when
-        String token = memberService.checkLogin(new LoginRequest(email, password));
+        // given & when
+        String token = memberService.checkLogin(new LoginRequest(member.getEmail(), member.getPassword()));
 
         //then
         assertThat(token).isEqualTo(member.getId().toString());
@@ -47,7 +43,7 @@ class MemberServiceTest {
     void loginNotMatch() {
         // given & when & then
         assertThatThrownBy(() ->
-                memberService.checkLogin(new LoginRequest("test@email.com", "password")))
+                memberService.checkLogin(new LoginRequest("testt@email.com", "password")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -55,31 +51,19 @@ class MemberServiceTest {
     @Test
     void findMemberByToken() {
         // given
-        String name = "test";
-        String email = "test@email.com";
-        String password = "password";
-        Role role = Role.MEMBER;
-        memberRepository.save(new Member(name, email, password, role));
-        String token = memberService.checkLogin(new LoginRequest(email, password));
+        String token = memberService.checkLogin(new LoginRequest(member.getEmail(), member.getPassword()));
 
         // when
         LoginCheckResponse loginCheckResponse = memberService.findMemberNameByToken(token);
 
         //then
-        assertThat(loginCheckResponse.name()).isEqualTo(name);
+        assertThat(loginCheckResponse.name()).isEqualTo(member.getName());
     }
 
     @DisplayName("모든 멤버를 조회할 수 있다.")
     @Test
     void findAllMember() {
-        // given
-        String name = "test";
-        String email = "test@email.com";
-        String password = "password";
-        Role role = Role.MEMBER;
-
-        //Member
-        Member member = memberRepository.save(new Member(name, email, password, role));
+        //given & when
         List<Member> memberResponses = memberRepository.findAll();
 
         //then
