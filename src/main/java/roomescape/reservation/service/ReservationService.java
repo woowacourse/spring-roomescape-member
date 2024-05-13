@@ -38,10 +38,16 @@ public class ReservationService {
     }
 
     public List<Reservation> findReservationList() {
-        return reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
+        validateReservationExists(reservations);
+
+        return reservations;
     }
 
     public List<Reservation> findReservationListBySearchInfo(SearchInfo searchInfo) {
+        List<Reservation> reservations = reservationRepository.findAll();
+        validateReservationExists(reservations);
+
         return reservationRepository.findBySearchInfo(searchInfo);
     }
 
@@ -49,6 +55,12 @@ public class ReservationService {
         Integer deleteCount = reservationRepository.deleteById(id);
 
         validateDeletionOccurred(deleteCount);
+    }
+
+    private void validateReservationExists(List<Reservation> reservations) {
+        if (reservations.isEmpty()) {
+            throw new IllegalArgumentException("예약이 없습니다.");
+        }
     }
 
     private void validateFutureReservation(Reservation reservation) {
