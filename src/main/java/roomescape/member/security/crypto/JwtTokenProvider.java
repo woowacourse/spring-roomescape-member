@@ -19,6 +19,14 @@ public class JwtTokenProvider implements TokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    public JwtTokenProvider() {
+    }
+
+    public JwtTokenProvider(String secretKey, long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
+
     @Override
     public String createToken(Member member, Date issuedAt) {
         Claims claims = Jwts.claims()
