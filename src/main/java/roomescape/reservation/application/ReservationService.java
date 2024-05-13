@@ -26,7 +26,8 @@ public class ReservationService {
     }
 
     private void validateReservationDate(Reservation reservation) {
-        if (reservation.isBeforeOrOnToday()) {
+        LocalDate today = LocalDate.now();
+        if (reservation.isBeforeOrOnToday(today)) {
             throw new ViolationException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
         }
     }

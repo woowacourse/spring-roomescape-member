@@ -27,8 +27,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean isBeforeOrOnToday() {
-        LocalDate today = LocalDate.now();
+    public boolean isBeforeOrOnToday(LocalDate today) {
         return date.isBefore(today) || date.equals(today);
     }
 

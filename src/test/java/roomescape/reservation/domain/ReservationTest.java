@@ -21,7 +21,7 @@ class ReservationTest {
         Reservation reservation = new Reservation(USER_MIA(), date, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when
-        boolean actualResult = reservation.isBeforeOrOnToday();
+        boolean actualResult = reservation.isBeforeOrOnToday(MIA_RESERVATION_DATE);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
@@ -29,9 +29,9 @@ class ReservationTest {
 
     private static Stream<Arguments> reservationDate() {
         return Stream.of(
-                Arguments.of(LocalDate.now().minusDays(1), true),
-                Arguments.of(LocalDate.now(), true),
-                Arguments.of(LocalDate.now().plusDays(1), false)
+                Arguments.of(MIA_RESERVATION_DATE.minusDays(1), true),
+                Arguments.of(MIA_RESERVATION_DATE, true),
+                Arguments.of(MIA_RESERVATION_DATE.plusDays(1), false)
         );
     }
 }
