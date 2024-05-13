@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.controller.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 
