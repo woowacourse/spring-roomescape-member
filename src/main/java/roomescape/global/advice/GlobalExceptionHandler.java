@@ -10,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.auth.exception.AccessDeniedException;
+import roomescape.auth.exception.AuthorizationException;
 import roomescape.global.dto.ErrorResponse;
 
 @RestControllerAdvice
@@ -52,10 +54,24 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("이미 존재하는 데이터입니다.");
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuthorizationException(AuthorizationException e) {
+        logger.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleForbiddenException(AccessDeniedException e) {
+        logger.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleServerErrorException(Exception e) {
-        logger.error(e.getMessage());
+        logger.error(e.getMessage(), e);
         return new ErrorResponse("서버 에러입니다. 관리자에게 문의하세요.");
     }
 }

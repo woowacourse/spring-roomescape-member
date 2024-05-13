@@ -8,18 +8,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationTimeCreationRequest;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
-import roomescape.support.extension.TableTruncateExtension;
+import roomescape.support.annotation.ServiceTest;
 
-@SpringBootTest
-@ExtendWith(TableTruncateExtension.class)
+@ServiceTest
 @Sql("/reservation-time.sql")
 public class ReservationTimeServiceTest {
     @Autowired
@@ -69,12 +66,12 @@ public class ReservationTimeServiceTest {
     @Test
     @Sql("/reservation.sql")
     void 테마의_예약_가능한_시간을_조회한다() {
-        LocalDate date = LocalDate.parse("2024-05-01");
+        LocalDate date = LocalDate.parse("2024-04-26");
         List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(2L, date);
 
         assertSoftly(softly -> {
             softly.assertThat(availableTimes.get(0).alreadyBooked()).isTrue();
-            softly.assertThat(availableTimes.get(1).alreadyBooked()).isTrue();
+            softly.assertThat(availableTimes.get(1).alreadyBooked()).isFalse();
             softly.assertThat(availableTimes.get(2).alreadyBooked()).isFalse();
             softly.assertThat(availableTimes.get(3).alreadyBooked()).isFalse();
             softly.assertThat(availableTimes.get(4).alreadyBooked()).isFalse();

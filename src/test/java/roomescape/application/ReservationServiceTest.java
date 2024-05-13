@@ -5,20 +5,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationCreationRequest;
+import roomescape.application.dto.request.ReservationFilteringRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.support.annotation.FixedClock;
-import roomescape.support.extension.MockClockExtension;
-import roomescape.support.extension.TableTruncateExtension;
+import roomescape.support.annotation.ServiceTest;
 
-@SpringBootTest
-@ExtendWith({TableTruncateExtension.class, MockClockExtension.class})
+@ServiceTest
 @FixedClock(date = "2024-04-20")
 @Sql("/reservation.sql")
 public class ReservationServiceTest {
@@ -28,22 +26,22 @@ public class ReservationServiceTest {
     @Test
     void 예약을_성공한다() {
         LocalDate date = LocalDate.parse("2024-04-21");
-        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest(date, 1L, 1L, 1L);
 
         ReservationResponse response = reservationService.reserve(request);
 
         assertAll(
-                () -> assertThat(response.name()).isEqualTo(request.name()),
                 () -> assertThat(response.date()).isEqualTo(request.date()),
                 () -> assertThat(response.time().id()).isEqualTo(request.timeId()),
-                () -> assertThat(response.theme().id()).isEqualTo(request.themeId())
+                () -> assertThat(response.theme().id()).isEqualTo(request.themeId()),
+                () -> assertThat(response.member().id()).isEqualTo(request.memberId())
         );
     }
 
     @Test
     void 최소_1일_전에_예약하지_않으면_예약을_실패한다() {
         LocalDate invalidDate = LocalDate.parse("2024-04-20");
-        ReservationCreationRequest request = new ReservationCreationRequest("liv", invalidDate, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest(invalidDate, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -52,8 +50,8 @@ public class ReservationServiceTest {
 
     @Test
     void 중복된_예약이_있으면_예약을_실패한다() {
-        LocalDate date = LocalDate.parse("2024-05-01");
-        ReservationCreationRequest request = new ReservationCreationRequest("sudal", date, 1L, 1L);
+        LocalDate date = LocalDate.parse("2024-04-27");
+        ReservationCreationRequest request = new ReservationCreationRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isExactlyInstanceOf(DuplicateKeyException.class);
@@ -71,5 +69,16 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.cancel(0L))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 필터링된_예약을_조회한다() {
+        LocalDate dateFrom = LocalDate.parse("2024-04-26");
+        LocalDate dateTo = LocalDate.parse("2024-04-30");
+        ReservationFilteringRequest request = new ReservationFilteringRequest(1L, 1L, dateFrom, dateTo);
+
+        List<ReservationResponse> reservations = reservationService.findReservations(request);
+
+        assertThat(reservations).hasSize(3);
     }
 }

@@ -1,0 +1,3 @@
+jwt:
+  secret: testroomescapetestroomescapetestroomescapetestroomescapetestroomescape
+  expiration: 10000
