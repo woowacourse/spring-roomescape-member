@@ -51,8 +51,7 @@ public class ReservationRestController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/admin/reservations")
-    public ReservationResponse createReservationAdmin(
-            @Valid @RequestBody AdminReservationRequest reservation) {
+    public ReservationResponse createReservationAdmin(@Valid @RequestBody AdminReservationRequest reservation) {
         return reservationService.createReservation(reservation.toCreateReservation());
     }
 

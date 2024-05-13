@@ -8,18 +8,15 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.service.JwtService;
-import roomescape.service.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
     private final JwtService jwtService;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtService jwtService) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
@@ -37,7 +34,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = jwtService.extractToken(request);
         Claims claims = jwtService.verifyToken(token);
         long memberId = Long.parseLong(claims.getSubject());
-        Member member = memberService.findMemberById(memberId);
-        return new LoginMember(member.getId(), member.getEmail(), member.getName(), member.getRole());
+        String name = claims.get("name", String.class);
+        String role = claims.get("role", String.class);
+        return new LoginMember(memberId, name, Role.getRole(role));
     }
 }
