@@ -5,3 +5,11 @@ spring:
       path: /h2-console
   datasource:
     url: jdbc:h2:mem:database
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+security:
+  jwt:
+    secret-key: eyJhbGciOiJIeyJzdWIilowafgfaoTazAGa
+    expiration-time: 36000000

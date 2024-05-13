@@ -94,7 +94,7 @@ function deleteRow(event) {
 
   requestDelete(id)
       .then(() => row.remove())
-      .catch(error => console.error('Error:', error));
+      .catch(error => alert(error.message));
 }
 
 
@@ -136,6 +136,10 @@ function requestDelete(id) {
 
   return fetch(`${API_ENDPOINT}/${id}`, requestOptions)
       .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
-      });
+          if (response.status !== 204) {
+              return response.text().then(text => {
+                  throw new Error(text);
+              });
+          }
+      })
 }

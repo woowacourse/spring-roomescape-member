@@ -11,12 +11,15 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.auth.Role;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberName;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
+import roomescape.reservation.dto.ReservationSearchCondRequest;
 
 @Repository
 public class ReservationRepository {
@@ -28,14 +31,14 @@ public class ReservationRepository {
     }
 
     public Long save(Reservation reservation) {
-        String sql = "insert into reservation (name, date, theme_id, time_id) values (?, ?, ?, ?)";
+        String sql = "insert into reservation (member_id, date, theme_id, time_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     sql, new String[]{"id"}
             );
-            ps.setString(1, reservation.getName());
+            ps.setLong(1, reservation.getMember().getId());
             ps.setString(2, String.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTheme().getId());
             ps.setLong(4, reservation.getTime().getId());
@@ -49,7 +52,11 @@ public class ReservationRepository {
         String sql = """
                 select
                 r.id,
-                r.name as reservation_name,
+                m.id as member_id,
+                m.role,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password,
                 r.date,
                 t.id as theme_id,
                 t.name as theme_name,
@@ -62,6 +69,8 @@ public class ReservationRepository {
                 on r.time_id = rt.id
                 join theme t
                 on r.theme_id = t.id
+                join member m
+                on r.member_id = m.id
                 where r.id = ?
                 """;
         try {
@@ -85,7 +94,11 @@ public class ReservationRepository {
         String sql = """
                 select
                 r.id,
-                r.name as reservation_name,
+                m.id as member_id,
+                m.role,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password,
                 r.date,
                 t.id as theme_id,
                 t.name as theme_name,
@@ -98,9 +111,48 @@ public class ReservationRepository {
                 on r.time_id = rt.id
                 join theme t
                 on r.theme_id = t.id
+                join member m
+                on r.member_id = m.id
                 """;
 
         return jdbcTemplate.query(sql, createReservationRowMapper());
+    }
+
+    public List<Reservation> findAllByThemeIdAndMemberIdAndBetweenStartDateAndEndDate(
+            ReservationSearchCondRequest reservationSearchCondRequest) {
+        String sql = """
+                select
+                r.id,
+                m.id as member_id,
+                m.role,
+                m.name as member_name,
+                m.email as member_email,
+                m.password as member_password,
+                r.date,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail,
+                rt.id as time_id,
+                rt.start_at
+                from reservation r
+                join reservation_time rt
+                on r.time_id = rt.id
+                join theme t
+                on r.theme_id = t.id
+                join member m
+                on r.member_id = m.id
+                where theme_id = ? and member_id = ? and r.date BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                createReservationRowMapper(),
+                reservationSearchCondRequest.themeId(),
+                reservationSearchCondRequest.memberId(),
+                reservationSearchCondRequest.dateFrom(),
+                reservationSearchCondRequest.dateTo()
+        );
     }
 
     public boolean existReservation(Reservation reservation) {
@@ -122,7 +174,13 @@ public class ReservationRepository {
     private RowMapper<Reservation> createReservationRowMapper() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("id"),
-                new ReservationName(rs.getString("reservation_name")),
+                new Member(
+                        rs.getLong("member_id"),
+                        Role.from(rs.getString("role")),
+                        new MemberName(rs.getString("member_name")),
+                        rs.getString("member_email"),
+                        rs.getString("member_password")
+                ),
                 rs.getDate("date").toLocalDate(),
                 new Theme(
                         rs.getLong("theme_id"),

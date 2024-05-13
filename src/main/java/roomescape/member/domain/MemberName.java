@@ -1,14 +1,14 @@
-package roomescape.reservation.domain;
+package roomescape.member.domain;
 
 import java.util.regex.Pattern;
 
-public class ReservationName {
+public class MemberName {
 
-    private final Pattern RESERVATION_NAME_FORMAT = Pattern.compile("^[가-힣]+$");
+    private final Pattern MEMBER_NAME_FORMAT = Pattern.compile("^[가-힣]+$");
     private final int NAME_LENGTH = 4;
     private final String name;
 
-    public ReservationName(String name) {
+    public MemberName(String name) {
         validate(name);
         this.name = name;
     }
@@ -19,8 +19,8 @@ public class ReservationName {
     }
 
     private void validateFormat(String name) {
-        if (!RESERVATION_NAME_FORMAT.matcher(name).matches()) {
-            throw new IllegalArgumentException("예약자명은 한글로만 입력 가능합니다.");
+        if (!MEMBER_NAME_FORMAT.matcher(name).matches()) {
+            throw new IllegalArgumentException("이름은 한글로만 입력 가능합니다.");
         }
     }
 

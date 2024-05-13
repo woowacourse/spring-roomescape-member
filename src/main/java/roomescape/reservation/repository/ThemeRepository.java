@@ -64,7 +64,19 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, createThemeRowMapper());
     }
 
-    public List<Theme> findTopTenThemesDescendingOfLastWeek() {
+    public List<Theme> findThemesThatReservationReferById(Long id) {
+        String sql = """
+                select *
+                from theme t
+                join reservation r
+                on r.theme_id = t.id
+                where t.id = ?
+                """;
+
+        return jdbcTemplate.query(sql, createThemeRowMapper(), id);
+    }
+
+    public List<Theme> findPopularThemesDescOfLastWeekForLimit(int limitCount) {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(*) as cnt
                 from theme t
@@ -73,10 +85,10 @@ public class ThemeRepository {
                 where r.date between timestampadd(week, -1, current_timestamp()) and current_timestamp()
                 group by t.id
                 order by cnt desc
-                limit 10;
+                limit ?;
                 """;
 
-        return jdbcTemplate.query(sql, createThemeRowMapper());
+        return jdbcTemplate.query(sql, createThemeRowMapper(), limitCount);
     }
 
     public void delete(Long id) {

@@ -56,9 +56,10 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id) {
-        reservationTimeRepository.findReservationInSameId(id).ifPresent(empty -> {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findReservationTimesThatReservationReferById(id);
+        if (!reservationTimes.isEmpty()) {
             throw new IllegalArgumentException("해당 시간으로 예약된 내역이 있습니다.");
-        });
+        }
         reservationTimeRepository.delete(id);
     }
 }

@@ -36,19 +36,24 @@ public class ThemeService {
 
     public List<ThemeResponse> findAll() {
         List<Theme> themes = themeRepository.findAll();
+
         return themes.stream()
                 .map(ThemeResponse::toResponse)
                 .toList();
     }
 
-    public List<PopularThemeResponse> findTopTenThemesDescendingOfLastWeek() {
-        List<Theme> popularTheme = themeRepository.findTopTenThemesDescendingOfLastWeek();
+    public List<PopularThemeResponse> findThemesDescOfLastWeekForLimitCount(int limitCount) {
+        List<Theme> popularTheme = themeRepository.findPopularThemesDescOfLastWeekForLimit(limitCount);
         return popularTheme.stream()
                 .map(PopularThemeResponse::toResponse)
                 .toList();
     }
 
     public void delete(Long id) {
+        List<Theme> themes = themeRepository.findThemesThatReservationReferById(id);
+        if (!themes.isEmpty()) {
+            throw new IllegalArgumentException("해당 테마로 예약된 내역이 있습니다.");
+        }
         themeRepository.delete(id);
     }
 }

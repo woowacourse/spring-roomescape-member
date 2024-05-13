@@ -6,12 +6,15 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.dto.LoginMember;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationSaveRequest;
+import roomescape.reservation.dto.ReservationSearchCondRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -30,13 +33,27 @@ public class ReservationApiController {
         return ResponseEntity.ok(reservationResponses);
     }
 
-    @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationSaveRequest reservationSaveRequest) {
-        Long id = reservationService.save(reservationSaveRequest);
+    @GetMapping("/reservations/search")
+    public ResponseEntity<List<ReservationResponse>> findAllBySearchCond(
+            @Valid @ModelAttribute ReservationSearchCondRequest reservationSearchCondRequest
+    ) {
+        List<ReservationResponse> reservationResponses = reservationService.findAllBySearchCond(
+                reservationSearchCondRequest);
+
+        return ResponseEntity.ok(reservationResponses);
+    }
+
+    @PostMapping(path = {"/reservations", "/admin/reservations"})
+    public ResponseEntity<ReservationResponse> createMemberReservation(
+            @Valid @RequestBody ReservationSaveRequest reservationSaveRequest,
+            LoginMember loginMember
+    ) {
+        Long id = reservationService.save(reservationSaveRequest, loginMember);
         ReservationResponse reservationResponse = reservationService.findById(id);
 
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(reservationResponse);
     }
+
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
