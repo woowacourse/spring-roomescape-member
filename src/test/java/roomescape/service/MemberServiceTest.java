@@ -24,11 +24,11 @@ import roomescape.dto.response.MemberResponse;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
-    private final Member member = new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER);
     @Mock
     MemberDao memberDao;
     @InjectMocks
     MemberService memberService;
+    private final Member member = new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER);
 
     @DisplayName("이메일와 비밀번호를 통해 멤버를 읽을 수 있다.")
     @Test
