@@ -1,5 +1,6 @@
 package roomescape.time.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,6 +12,7 @@ import roomescape.time.dto.ReservationTimeStatus;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationTimeRepository {
@@ -47,10 +49,15 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
-    public ReservationTime findById(long id) {
+    public Optional<ReservationTime> findById(long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
+            return Optional.ofNullable(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public int delete(long id) {

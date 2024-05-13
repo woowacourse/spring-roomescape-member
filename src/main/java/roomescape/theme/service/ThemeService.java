@@ -19,11 +19,15 @@ public class ThemeService {
     public Theme saveTheme(Theme theme) {
         long themeId = themeRepository.save(theme);
 
-        return themeRepository.findById(themeId);
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("테마가 없습니다."));
     }
 
     public List<Theme> findThemeList() {
-        return themeRepository.findAll();
+        List<Theme> themes = themeRepository.findAll();
+        validateThemeExists(themes);
+
+        return themes;
     }
 
     public void deleteThemeById(long id) {
@@ -35,7 +39,16 @@ public class ThemeService {
     public List<Theme> findPopularThemeList() {
         LocalDate today = LocalDate.now();
 
-        return themeRepository.findPopular(today.minusWeeks(1), today.minusDays(1));
+        List<Theme> themes = themeRepository.findPopular(today.minusWeeks(1), today.minusDays(1));
+        validateThemeExists(themes);
+
+        return themes;
+    }
+
+    private void validateThemeExists(List<Theme> themes) {
+        if (themes.isEmpty()) {
+            throw new IllegalArgumentException("테마가 없습니다.");
+        }
     }
 
     private void validateDeletionOccurred(int deleteCount) {

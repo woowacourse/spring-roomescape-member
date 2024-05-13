@@ -19,11 +19,15 @@ public class ReservationTimeService {
     public ReservationTime saveTime(ReservationTime reservationTime) {
         long timeId = reservationTimeRepository.save(reservationTime);
 
-        return reservationTimeRepository.findById(timeId);
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("시간이 없습니다."));
     }
 
     public List<ReservationTime> findTimeList() {
-        return reservationTimeRepository.findAll();
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+        validateTimeExists(times);
+
+        return times;
     }
 
     public void deleteTimeById(long id) {
@@ -36,7 +40,13 @@ public class ReservationTimeService {
         return reservationTimeRepository.findByDateAndThemeId(date, themeId);
     }
 
-    private static void validateDeletionOccurred(int deleteCount) {
+    private void validateTimeExists(List<ReservationTime> times) {
+        if (times.isEmpty()) {
+            throw new IllegalArgumentException("시간이 없습니다.");
+        }
+    }
+
+    private void validateDeletionOccurred(int deleteCount) {
         if (deleteCount == 0) {
             throw new NoSuchElementException("해당하는 시간이 없습니다.");
         }

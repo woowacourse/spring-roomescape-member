@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,6 +12,7 @@ import roomescape.theme.domain.Theme;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeRepository {
@@ -46,10 +48,15 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Theme findById(long id) {
+    public Optional<Theme> findById(long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Integer deleteById(long id) {

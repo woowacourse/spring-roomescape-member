@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -35,8 +34,8 @@ public class ReservationService {
 
         long reservationId = reservationRepository.save(reservation);
 
-        Optional<Reservation> reservationOptional = reservationRepository.findByReservationId(reservationId);
-        return reservationOptional.orElseThrow(() -> new IllegalArgumentException("해당하는 ID의 예약이 없습니다."));
+        return reservationRepository.findByReservationId(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("예약이 없습니다."));
     }
 
     public List<Reservation> findReservationList() {
@@ -67,7 +66,8 @@ public class ReservationService {
 
     private void validateFutureReservation(Reservation reservation) {
         Long timeId = reservation.getTime().getId();
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("시간이 없습니다."));
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = currentDateTime.toLocalDate();

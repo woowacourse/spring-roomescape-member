@@ -39,9 +39,9 @@ public class AuthService {
         String token = extractTokenFromCookie(cookies);
 
         Long id = jwtTokenProvider.getId(token);
-        Optional<Member> memberOptional = memberRepository.findById(id);
 
-        return memberOptional.orElseThrow(() -> new IllegalArgumentException("올바르지 않은 토큰입니다."));
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("멤버가 없습니다."));
     }
 
     private void validatePassword(String actualPassword, String expectedPassword) {
