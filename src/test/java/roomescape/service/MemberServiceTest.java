@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +20,13 @@ import roomescape.web.dto.response.member.MemberResponse;
 
 @SpringBootTest
 class MemberServiceTest {
+    private static final Member dummyMember = new Member("name", "email", "password");
     @Autowired
     private MemberService memberService;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private JwtProvider jwtProvider;
-    private Member dummyMember;
-
-    @BeforeEach
-    void setUp() {
-        dummyMember = new Member("name", "email", "password");
-    }
 
     @AfterEach
     void tearDown() {
@@ -111,11 +105,11 @@ class MemberServiceTest {
     @DisplayName("중복된 이메일은 회원가입에 실패한다")
     void signup_ShouldThrowException_WhenDuplicatedEmail() {
         // given
+        SignupRequest signupRequest = new SignupRequest("name2", "email@email.com", "password");
         memberRepository.save(new Member("name", "email@email.com", "password"));
 
         // when & then
-        Assertions.assertThatThrownBy(
-                        () -> memberService.signup(new SignupRequest("name2", "email@email.com", "password")))
+        Assertions.assertThatThrownBy(() -> memberService.signup(signupRequest))
                 .isInstanceOf(DuplicatedEmailException.class);
     }
 

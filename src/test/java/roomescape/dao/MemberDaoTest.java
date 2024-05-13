@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +13,9 @@ import roomescape.domain.Member;
 
 @SpringBootTest
 class MemberDaoTest {
+    private static Member dummyMember = new Member("name", "email", "password");
     @Autowired
     private MemberDao memberDao;
-
-    private Member dummyMember;
-
-    @BeforeEach
-    void setUp() {
-        dummyMember = new Member("name", "email", "password");
-    }
 
     @AfterEach
     void tearDown() {

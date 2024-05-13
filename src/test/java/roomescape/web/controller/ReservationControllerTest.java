@@ -36,13 +36,13 @@ import roomescape.web.dto.response.time.ReservationTimeResponse;
 
 @WebMvcTest(controllers = ReservationController.class)
 class ReservationControllerTest {
+    private static final JwtProvider jwtProvider = new JwtProvider();
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
     private ReservationService reservationService;
-    private final JwtProvider jwtProvider = new JwtProvider();
 
     @Test
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 201Created를 반환한다.")

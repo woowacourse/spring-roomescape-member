@@ -1,7 +1,6 @@
 package roomescape.service.security;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,12 +8,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Role;
 
 class JwtProviderTest {
-    private JwtProvider jwtProvider;
-
-    @BeforeEach
-    void setUp() {
-        jwtProvider = new JwtProvider();
-    }
+    private static final JwtProvider jwtProvider = new JwtProvider();
 
     @Test
     @DisplayName("사용자 정보를 바탕으로 Jwt 토큰을 발행한다")
