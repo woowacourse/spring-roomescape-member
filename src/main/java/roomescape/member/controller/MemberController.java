@@ -14,10 +14,10 @@ import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
+import roomescape.util.JwtTokenProvider;
 
 @Controller
 public class MemberController {
-    private static final String TOKEN = "token";
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -33,12 +33,12 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest,
                                       HttpServletResponse httpServletResponse) {
         String token = memberService.checkLogin(loginRequest);
-        httpServletResponse.addCookie(new Cookie(TOKEN, token));
+        httpServletResponse.addCookie(new Cookie(JwtTokenProvider.TOKEN, token));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(TOKEN) String token) {
+    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(JwtTokenProvider.TOKEN) String token) {
         LoginCheckResponse loginCheckResponse = memberService.findMemberNameByToken(token);
         return ResponseEntity.ok(loginCheckResponse);
     }

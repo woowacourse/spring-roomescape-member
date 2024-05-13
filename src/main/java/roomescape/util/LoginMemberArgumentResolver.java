@@ -14,7 +14,6 @@ import roomescape.member.service.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private static final String TOKEN = "token";
     private final MemberService memberService;
 
     public LoginMemberArgumentResolver(final MemberService memberService) {
@@ -33,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         validateCookie(request);
         String token = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(TOKEN))
+                .filter(cookie -> cookie.getName().equals(JwtTokenProvider.TOKEN))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다."));

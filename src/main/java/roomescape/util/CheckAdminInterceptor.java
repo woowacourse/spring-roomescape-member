@@ -13,7 +13,6 @@ import roomescape.member.service.MemberService;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
-    private static final String TOKEN = "token";
     private final MemberService memberService;
 
     public CheckAdminInterceptor(MemberService memberService) {
@@ -24,7 +23,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(TOKEN))
+                .filter(cookie -> cookie.getName().equals(JwtTokenProvider.TOKEN))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다."));
