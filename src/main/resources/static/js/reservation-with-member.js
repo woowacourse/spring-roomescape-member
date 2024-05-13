@@ -1,8 +1,8 @@
 let isEditing = false;
-const RESERVATION_API_ENDPOINT = '/reservations';
+const RESERVATION_API_ENDPOINT = '/admin/reservations';
 const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
-const MEMBER_API_ENDPOINT = '/members';
+const MEMBER_API_ENDPOINT = '/admin/members';
 const timesOptions = [];
 const themesOptions = [];
 const membersOptions = [];
@@ -45,16 +45,16 @@ function render(response) {
 
 function fetchTimes() {
     requestRead(TIME_API_ENDPOINT)
-        .then(data => {
-            timesOptions.push(...data);
+        .then(response => {
+            timesOptions.push(...response.data);
         })
         .catch(error => console.error('Error fetching time:', error));
 }
 
 function fetchThemes() {
     requestRead(THEME_API_ENDPOINT)
-        .then(data => {
-            themesOptions.push(...data);
+        .then(response => {
+            themesOptions.push(...response.data);
             populateSelect('theme', themesOptions, 'name');
         })
         .catch(error => console.error('Error fetching theme:', error));
@@ -62,8 +62,8 @@ function fetchThemes() {
 
 function fetchMembers() {
     requestRead(MEMBER_API_ENDPOINT)
-        .then(data => {
-            membersOptions.push(...data);
+        .then(response => {
+            membersOptions.push(...response.data);
             populateSelect('member', membersOptions, 'name');
         })
         .catch(error => console.error('Error fetching member:', error));
@@ -201,7 +201,8 @@ function applyFilter(event) {
     TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
           요청 포맷에 맞게 설정
     */
-    fetch('/', { // 예약 검색 API 호출
+    const apiUrl = `${RESERVATION_API_ENDPOINT}/search?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}`;
+    fetch(apiUrl, { // 예약 검색 API 호출
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -220,7 +221,7 @@ function requestCreate(reservation) {
         body: JSON.stringify(reservation)
     };
 
-    return fetch('/admin/reservations', requestOptions)
+    return fetch(RESERVATION_API_ENDPOINT, requestOptions)
         .then(response => {
             if (response.status === 201) return response.json();
             throw new Error('Create failed');

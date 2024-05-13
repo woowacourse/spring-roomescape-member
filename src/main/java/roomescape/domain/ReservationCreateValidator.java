@@ -9,12 +9,14 @@ public class ReservationCreateValidator {
     private final ReservationRequest reservationRequest;
     private final TimeSlot timeSlot;
     private final Theme theme;
+    private final Member member;
 
-    public ReservationCreateValidator(final ReservationRequest reservationRequest, final TimeSlot timeSlot, final Theme theme) {
+    public ReservationCreateValidator(final ReservationRequest reservationRequest, final TimeSlot timeSlot, final Theme theme, final Member member) {
         validatePastDate(reservationRequest, timeSlot);
         this.reservationRequest = reservationRequest;
         this.timeSlot = timeSlot;
         this.theme = theme;
+        this.member = member;
     }
 
     private void validatePastDate(final ReservationRequest reservationRequest, final TimeSlot timeSlot) {
@@ -25,6 +27,6 @@ public class ReservationCreateValidator {
     }
 
     public Reservation create() {
-        return new Reservation(reservationRequest.name(), reservationRequest.date(), timeSlot, theme);
+        return new Reservation(member, reservationRequest.date(), timeSlot, theme);
     }
 }

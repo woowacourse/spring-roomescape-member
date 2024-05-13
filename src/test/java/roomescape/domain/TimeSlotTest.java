@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 import java.time.LocalTime;
 
@@ -14,6 +14,6 @@ class TimeSlotTest {
     @Test
     void given_when_newWithNull_then_throwException() {
         //given, when, then
-        assertThatThrownBy(() -> new TimeSlot(1L, (LocalTime) null)).isInstanceOf(InvalidClientRequestException.class);
+        assertThatThrownBy(() -> new TimeSlot(1L, (LocalTime) null)).isInstanceOf(EmptyValueNotAllowedException.class);
     }
 }

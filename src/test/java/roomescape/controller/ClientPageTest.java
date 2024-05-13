@@ -36,4 +36,24 @@ class ClientPageTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("로그인 페이지 URL 요청이 올바르게 연결된다.")
+    @Test
+    void given_when_GetLoginPage_then_statusCodeIsOkay() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("회원가입 페이지 URL 요청이 올바르게 연결된다.")
+    @Test
+    void given_when_GetSignUpPage_then_statusCodeIsOkay() {
+        RestAssured.given().log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
+
+

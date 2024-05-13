@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const endDate = currentDate.toISOString().split('T')[0];
     currentDate.setDate(currentDate.getDate() - 7);
     const startDate = currentDate.toISOString().split('T')[0];
-    const count = 10;
+    const size = 10;
 
-    const apiUrl = `/themes/rank?startDate=${startDate}&endDate=${endDate}&count=${count}`;
+    const apiUrl = `/themes/rank?startDate=${startDate}&endDate=${endDate}&size=${size}`;
     requestRead(apiUrl) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));

@@ -1,27 +1,20 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.dto.ThemeRequest;
 import roomescape.domain.dto.ThemeResponse;
-import roomescape.domain.dto.ThemeResponses;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
-import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/themes")
-public class ThemeController {
+@RequestMapping("/admin/themes")
+public class AdminThemeController {
     private final ThemeService themeService;
 
-    public ThemeController(final ThemeService themeService) {
+    public AdminThemeController(final ThemeService themeService) {
         this.themeService = themeService;
-    }
-
-    @GetMapping
-    public ResponseEntity<ThemeResponses> findAll() {
-        return ResponseEntity.ok(themeService.findAll());
     }
 
     @PostMapping
@@ -34,10 +27,5 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/rank")
-    public ResponseEntity<ThemeResponses> read(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Long count) {
-        return ResponseEntity.ok(themeService.getPopularThemeList(startDate, endDate, count));
     }
 }

@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,8 +40,11 @@ class ReservationDaoTest {
     @Test
     void given_reservation_when_create_then_returnCreatedReservationId() {
         //given
-        Reservation reservation = new Reservation("name", LocalDate.parse("2099-01-11"),
-                new TimeSlot(1L, LocalTime.parse("10:00")), new Theme(1L, "name", "description", "thumbnail"));
+        Reservation reservation = new Reservation(
+                new Member(1L, "poke@test.com", "poke", "role"),
+                LocalDate.parse("2099-01-11"),
+                new TimeSlot(1L, LocalTime.parse("10:00")),
+                new Theme(1L, "name", "description", "thumbnail"));
         //when, then
         assertThat(reservationDao.create(reservation)).isEqualTo(8);
     }
@@ -75,5 +80,18 @@ class ReservationDaoTest {
     void given_when_isExistThemeId_then_getExistResult() {
         //given, when, then
         assertThat(reservationDao.isExistsThemeId(1L)).isTrue();
+    }
+
+    @Test
+    @DisplayName("memberId, themeId, 기간을 이용하여 예약을 조회할 수 있다.")
+    void given_memberIdThemeIdAndPeriod_when_find_then_Reservations() {
+        //given
+        Long themeId = 2L;
+        Long memberId = 1L;
+        LocalDate dateFrom = LocalDate.parse("2024-04-30");
+        LocalDate dateTo = LocalDate.parse("2024-05-01");
+        //when, then
+        final List<Reservation> reservations = reservationDao.find(themeId, memberId, dateFrom, dateTo);
+        assertThat(reservations.size()).isEqualTo(3);
     }
 }

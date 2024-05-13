@@ -3,7 +3,7 @@ package roomescape.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.clienterror.EmptyValueNotAllowedException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -15,7 +15,7 @@ class ThemeTest {
     void given_when_newWithEmptyValue_then_throwException(String name, String description, String thumbnail) {
         //given, when, then
         assertThatThrownBy(() -> new Theme(1L, name, description, thumbnail))
-                .isInstanceOf(InvalidClientRequestException.class);
+                .isInstanceOf(EmptyValueNotAllowedException.class);
     }
 
 }
