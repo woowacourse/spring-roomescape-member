@@ -59,6 +59,9 @@ class ReservationIntegrationTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:22')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출2', '방탈출 2번', '썸네일2')");
 
+        jdbcTemplate.update(
+                "INSERT INTO member (name, email, password, role) VALUES ('관리자1', 'admin1@wooteco.com', 'admin1', 'ADMIN')");
+
         String token = RestAssured.given()
                 .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -82,14 +85,20 @@ class ReservationIntegrationTest {
                             .body("member.name", is("사용자1"));
                 }),
                 dynamicTest("관리자가 예약을 생성한다.", () -> {
+                    String adminToken = RestAssured.given()
+                            .body(MemberLoginRequest.of("admin1", "admin1@wooteco.com"))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .when().post("/login")
+                            .getHeader("Set-Cookie");
+
                     AdminReservationCreateRequest params =
                             AdminReservationCreateRequest.of(date, 2L, 1L, 2L);
 
                     RestAssured.given().log().all()
-                            .header("Cookie", token)
+                            .header("Cookie", adminToken)
                             .contentType(ContentType.JSON)
                             .body(params)
-                            .when().post("/reservations/admin")
+                            .when().post("/admin/reservations")
                             .then().log().all()
                             .statusCode(201)
                             .header("Location", "/reservations/2")
@@ -141,12 +150,12 @@ class ReservationIntegrationTest {
         @BeforeEach
         void setUp() {
             jdbcTemplate.update(
-                    "INSERT INTO member (name, email, password, role) VALUES ('사용자1', 'user1@wooteco.com', 'user1', 'USER')");
+                    "INSERT INTO member (name, email, password, role) VALUES ('관리자1', 'admin1@wooteco.com', 'admin1', 'ADMIN')");
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('12:12')");
             jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '방탈출 1번', '썸네일1')");
 
             token = RestAssured.given()
-                    .body(MemberLoginRequest.of("user1", "user1@wooteco.com"))
+                    .body(MemberLoginRequest.of("admin1", "admin1@wooteco.com"))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when().post("/login")
                     .getHeader("Set-Cookie");
@@ -162,7 +171,7 @@ class ReservationIntegrationTest {
                     .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
-                    .when().post("/reservations/admin")
+                    .when().post("/admin/reservations")
                     .then().log().all()
                     .statusCode(400);
         }
@@ -181,7 +190,7 @@ class ReservationIntegrationTest {
                     .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
-                    .when().post("/reservations/admin")
+                    .when().post("/admin/reservations")
                     .then().log().all()
                     .statusCode(400);
         }
@@ -194,7 +203,7 @@ class ReservationIntegrationTest {
                     .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
-                    .when().post("/reservations/admin")
+                    .when().post("/admin/reservations")
                     .then().log().all()
                     .statusCode(400);
         }
@@ -216,7 +225,7 @@ class ReservationIntegrationTest {
                     .header("Cookie", token)
                     .contentType(ContentType.JSON)
                     .body(params)
-                    .when().post("/reservations/admin")
+                    .when().post("/admin/reservations")
                     .then().log().all()
                     .statusCode(400);
         }

@@ -209,10 +209,10 @@
 
 ### 관리자 예약 추가
 
-| HTTP Method | POST          |
-|-------------|---------------|
-| End Point   | /reservations |
-| Status Code | 201 Created   |
+| HTTP Method | POST                |
+|-------------|---------------------|
+| End Point   | /admin/reservations |
+| Status Code | 201 Created         |
 
 #### Request Body
 
