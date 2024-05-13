@@ -21,10 +21,6 @@ public class Member {
         this.role = role;
     }
 
-    public boolean hasSameEmail(Member other) {
-        return this.email.equals(other.email);
-    }
-
     public Long getId() {
         return id;
     }
