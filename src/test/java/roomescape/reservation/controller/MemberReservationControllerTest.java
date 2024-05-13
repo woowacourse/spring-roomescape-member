@@ -58,6 +58,7 @@ class MemberReservationControllerTest {
 
         // then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -108,6 +109,7 @@ class MemberReservationControllerTest {
     void getAll() {
         // when & then
         List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()

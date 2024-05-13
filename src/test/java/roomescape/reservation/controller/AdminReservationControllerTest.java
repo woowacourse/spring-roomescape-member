@@ -49,6 +49,7 @@ class AdminReservationControllerTest {
 
         // then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -77,6 +78,6 @@ class AdminReservationControllerTest {
                 .body(reservations)
                 .cookie("token", memberToken)
                 .when().post("/admin/reservations")
-                .then().statusCode(401);
+                .then().statusCode(403);
     }
 }
