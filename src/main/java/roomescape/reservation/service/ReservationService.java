@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -34,7 +35,8 @@ public class ReservationService {
 
         long reservationId = reservationRepository.save(reservation);
 
-        return reservationRepository.findByReservationId(reservationId);
+        Optional<Reservation> reservationOptional = reservationRepository.findByReservationId(reservationId);
+        return reservationOptional.orElseThrow(() -> new IllegalArgumentException("해당하는 ID의 예약이 없습니다."));
     }
 
     public List<Reservation> findReservationList() {

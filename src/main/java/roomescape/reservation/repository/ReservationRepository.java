@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,6 +17,7 @@ import roomescape.time.domain.ReservationTime;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationRepository {
@@ -74,7 +76,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation findByReservationId(long reservationId) {
+    public Optional<Reservation> findByReservationId(long reservationId) {
         String sql = """
                 SELECT r.id AS reservation_id, m.id AS member_id, m.name AS member_name, m.email, m.password, m.role,
                 r.date, rt.id AS time_id, rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail
@@ -84,7 +86,12 @@ public class ReservationRepository {
                 INNER JOIN member m ON r.member_id = m.id
                 WHERE r.id = ?""";
 
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationId);
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationId);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<Reservation> findBySearchInfo(SearchInfo searchInfo) {
