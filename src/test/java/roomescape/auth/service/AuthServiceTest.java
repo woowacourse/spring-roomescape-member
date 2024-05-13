@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.token.AuthenticationToken;
 import roomescape.auth.token.TokenProvider;
 import roomescape.member.model.Member;
 import roomescape.member.model.MemberRole;
@@ -36,10 +35,10 @@ class AuthServiceTest {
         final LoginRequest loginRequest = new LoginRequest("user@mail.com", "userPw1234!");
 
         // When
-        final AuthenticationToken authenticationToken = authService.login(loginRequest);
+        final String authenticationToken = authService.login(loginRequest);
 
         // Then
-        assertThatCode(authenticationToken::getClaims).doesNotThrowAnyException();
+        assertThatCode(() -> tokenProvider.getTokenClaims(authenticationToken)).doesNotThrowAnyException();
     }
 
     @DisplayName("존재하지 않는 회원 이메일 정보를 입력하면 예외가 발생한다.")
@@ -70,8 +69,7 @@ class AuthServiceTest {
     @Test
     void findAuthenticatedMemberTest() {
         // Given
-        final String accessToken = tokenProvider.createToken(3L, MemberRole.USER)
-                .getValue();
+        final String accessToken = tokenProvider.createToken(3L, MemberRole.USER);
 
         // When
         final Member member = authService.findAuthenticatedMember(accessToken);

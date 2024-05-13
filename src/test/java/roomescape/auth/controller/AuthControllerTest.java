@@ -93,7 +93,7 @@ class AuthControllerTest {
         // Given
         final Long memberId = 3L;
         final MemberRole role = MemberRole.USER;
-        final String accessToken = tokenProvider.createToken(memberId, role).getValue();
+        final String accessToken = tokenProvider.createToken(memberId, role);
 
         // When & Then
         RestAssured.given().log().all()
@@ -110,7 +110,7 @@ class AuthControllerTest {
         // Given
         final Long memberId = 10L;
         final MemberRole role = MemberRole.USER;
-        final String accessToken = tokenProvider.createToken(memberId, role).getValue();
+        final String accessToken = tokenProvider.createToken(memberId, role);
 
         // When & Then
         RestAssured.given().log().all()

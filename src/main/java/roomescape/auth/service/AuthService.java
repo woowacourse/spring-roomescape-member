@@ -2,7 +2,6 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.token.AuthenticationToken;
 import roomescape.auth.token.TokenProvider;
 import roomescape.member.encoder.PasswordEncoder;
 import roomescape.member.model.Member;
@@ -27,7 +26,7 @@ public class AuthService {
         this.tokenProvider = tokenProvider;
     }
 
-    public AuthenticationToken login(final LoginRequest request) {
+    public String login(final LoginRequest request) {
         final Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new NoSuchElementException("해당 이메일 정보와 일치하는 회원 정보가 없습니다."));
         checkCredential(member, request.password());
@@ -42,8 +41,7 @@ public class AuthService {
     }
 
     public Member findAuthenticatedMember(final String accessToken) {
-        final AuthenticationToken authenticationToken = tokenProvider.convertAuthenticationToken(accessToken);
-        final Long memberId = Long.parseLong(authenticationToken.getClaims().getSubject());
+        final Long memberId = Long.parseLong(tokenProvider.getTokenClaims(accessToken).getSubject());
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoSuchElementException("해당 회원 아이디와 일치하는 회원 정보가 없습니다."));
     }

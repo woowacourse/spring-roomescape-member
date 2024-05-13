@@ -71,16 +71,10 @@ class AdminWebControllerTest {
     }
 
     private String createUserAccessToken() {
-        return tokenProvider.createToken(
-                3L,
-                MemberRole.USER
-        ).getValue();
+        return tokenProvider.createToken(3L, MemberRole.USER);
     }
 
     private String createAdminAccessToken() {
-        return tokenProvider.createToken(
-                1L,
-                MemberRole.ADMIN
-        ).getValue();
+        return tokenProvider.createToken(1L, MemberRole.ADMIN);
     }
 }

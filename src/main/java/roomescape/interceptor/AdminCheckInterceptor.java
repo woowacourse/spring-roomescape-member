@@ -35,8 +35,8 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
         final String accessToken = CookieParser.findCookie(request, "token")
                 .orElseThrow(() -> new IllegalArgumentException("인증되지 않은 요청입니다."))
                 .getValue();
-        final String role = tokenProvider.convertAuthenticationToken(accessToken)
-                .getClaims()
+
+        final String role = tokenProvider.getTokenClaims(accessToken)
                 .get("role")
                 .toString();
 

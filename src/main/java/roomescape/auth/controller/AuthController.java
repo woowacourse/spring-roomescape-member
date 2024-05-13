@@ -11,7 +11,6 @@ import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.principal.AuthenticatedMember;
 import roomescape.auth.service.AuthService;
-import roomescape.auth.token.AuthenticationToken;
 import roomescape.resolver.Authenticated;
 import roomescape.util.CookieParser;
 
@@ -35,13 +34,13 @@ public class AuthController {
             final HttpServletRequest request,
             final HttpServletResponse response
     ) {
-        final AuthenticationToken authenticationToken = authService.login(loginRequest);
+        final String authenticationToken = authService.login(loginRequest);
 
         deleteCookie(request, response);
         addCookie(
                 response,
                 AUTHENTICATION_COOKIE_NAME,
-                authenticationToken.getValue(),
+                authenticationToken,
                 AUTHENTICATION_COOKIE_MAX_AGE
         );
     }

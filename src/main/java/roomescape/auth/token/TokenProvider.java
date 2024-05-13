@@ -19,11 +19,7 @@ public class TokenProvider {
         this.tokenExpirationPeriod = tokenExpirationPeriod;
     }
 
-    public AuthenticationToken createToken(final Long memberId, final MemberRole role) {
-        return new AuthenticationToken(tokenSecretKey, generateTokenValue(memberId, role));
-    }
-
-    private String generateTokenValue(final Long memberId, final MemberRole role) {
+    public String createToken(final Long memberId, final MemberRole role) {
         final Claims claim = createClaims(memberId, role);
         return Jwts.builder()
                 .claims(claim)
@@ -44,7 +40,11 @@ public class TokenProvider {
         return new Date(new Date().getTime() + tokenExpirationPeriod);
     }
 
-    public AuthenticationToken convertAuthenticationToken(final String accessToken) {
-        return new AuthenticationToken(tokenSecretKey, accessToken);
+    public Claims getTokenClaims(final String token) {
+        return Jwts.parser()
+                .verifyWith(tokenSecretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

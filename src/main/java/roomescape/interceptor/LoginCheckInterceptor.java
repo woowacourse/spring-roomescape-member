@@ -5,7 +5,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.token.AuthenticationToken;
 import roomescape.auth.token.TokenProvider;
 import roomescape.exception.UnauthorizedException;
 import roomescape.util.CookieParser;
@@ -24,13 +23,13 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             final HttpServletResponse response,
             final Object handler
     ) {
-        final AuthenticationToken authenticationToken = parseAuthenticationToken(request);
+        final String authenticationToken = parseAuthenticationToken(request);
         validateToken(authenticationToken);
 
         return true;
     }
 
-    private AuthenticationToken parseAuthenticationToken(final HttpServletRequest request) {
+    private String parseAuthenticationToken(final HttpServletRequest request) {
         final String accessToken = CookieParser.findCookie(request, "token")
                 .orElseThrow(() -> new UnauthorizedException("인증되지 않은 요청입니다."))
                 .getValue();
@@ -39,12 +38,12 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             throw new UnauthorizedException("인증되지 않은 요청입니다.");
         }
 
-        return tokenProvider.convertAuthenticationToken(accessToken);
+        return accessToken;
     }
 
-    private void validateToken(final AuthenticationToken authenticationToken) {
+    private void validateToken(final String authenticationToken) {
         try {
-            authenticationToken.getClaims();
+            tokenProvider.getTokenClaims(authenticationToken);
         } catch (MalformedJwtException e) {
             throw new UnauthorizedException("유효하지 않은 인증 토큰입니다.");
         } catch (ExpiredJwtException e) {

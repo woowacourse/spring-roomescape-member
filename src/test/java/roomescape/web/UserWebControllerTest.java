@@ -58,9 +58,6 @@ class UserWebControllerTest {
     }
 
     private String createUserAccessToken() {
-        return tokenProvider.createToken(
-                3L,
-                MemberRole.USER
-        ).getValue();
+        return tokenProvider.createToken(3L, MemberRole.USER);
     }
 }
