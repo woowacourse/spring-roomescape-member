@@ -82,9 +82,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public boolean existsById(final Long id) {
         String sql = """
-                select count(*)
+                select exists ( select 1 
                 from theme as t
-                where t.id = ? 
+                where t.id = ? )
                 """;
         return jdbcTemplate.queryForObject(sql, Integer.class, id) != 0;
     }
