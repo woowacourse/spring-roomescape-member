@@ -6,13 +6,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.TimeSlot;
+import roomescape.domain.*;
 import roomescape.dto.request.ReservationRequest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -23,7 +21,8 @@ public class ReservationDao {
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
                     new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
-                            resultSet.getString("member_email"), resultSet.getString("member_password")),
+                            resultSet.getString("member_email"), resultSet.getString("member_password"),
+                            Role.valueOf(resultSet.getString("member_role"))),
                     LocalDate.parse(resultSet.getString("date")),
                     new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
                     new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
@@ -47,6 +46,7 @@ public class ReservationDao {
                     m.name as member_name,
                     m.email as member_email,
                     m.password as member_password,
+                    m.role as member_role,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
@@ -104,6 +104,7 @@ public class ReservationDao {
                     m.name as member_name,
                     m.email as member_email,
                     m.password as member_password,
+                    m.role as member_role,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
@@ -117,5 +118,52 @@ public class ReservationDao {
                     INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
                 """;
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
+    }
+
+    public List<Reservation> findAllByMemberAndDateAndTheme(final Long memberId, final Long themeId,
+                                                            final String dateFrom, final String dateTo) {
+        String sql = """
+                    SELECT
+                      r.id as reservation_id,
+                      m.id as member_id,
+                      m.name as member_name,
+                      m.email as member_email,
+                      m.password as member_password,
+                      m.role as member_role,
+                      r.date,
+                      t.id as time_id,
+                      t.start_at as time_value,
+                      th.id as theme_id,
+                      th.name as theme_name,
+                      th.description as theme_description,
+                      th.thumbnail as theme_thumbnail
+                      FROM reservation as r
+                      INNER JOIN member as m on r.member_id = m.id
+                      inner join reservation_time as t on r.time_id = t.id
+                      inner join theme as th on r.theme_id = th.id                                                                           
+                """;
+        sql += buildConditionQuery(memberId, themeId, dateFrom, dateTo);
+
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    private String buildConditionQuery(final Long memberId, final Long themeId, final String dateFrom,
+                                       final String dateTo) {
+        final List<String> whereQuery = new ArrayList<>();
+
+        if (memberId != null) {
+            whereQuery.add("r.member_id = " + memberId);
+        }
+        if (themeId != null) {
+            whereQuery.add("r.theme_id = " + themeId);
+        }
+        if (!dateFrom.isEmpty() && !dateTo.isEmpty()) {
+            whereQuery.add("r.date BETWEEN '" + dateFrom + "' AND '" + dateTo + "'");
+        }
+
+        if (whereQuery.isEmpty()) {
+            return "";
+        }
+        return "WHERE " + String.join(" AND ", whereQuery);
     }
 }

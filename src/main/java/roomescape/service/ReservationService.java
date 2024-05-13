@@ -38,6 +38,14 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findDistinctReservations(final Long memberId, final Long themeId,
+                                                              final String dateFrom, final String dateTo) {
+        return reservationDao.findAllByMemberAndDateAndTheme(memberId, themeId, dateFrom, dateTo)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public ReservationResponse create(final ReservationRequest reservationRequest) {
         Member member = memberDao.findById(reservationRequest.memberId());
         TimeSlot timeSlot = checkTimeSlot(reservationRequest);
