@@ -1,9 +1,12 @@
 package roomescape.advice;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.dto.ErrorResponse;
+import roomescape.advice.dto.ErrorResponse;
+import roomescape.auth.exception.AdminAuthorizationException;
+import roomescape.auth.exception.AuthenticationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,8 +25,20 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(NULL_POINTER_EXCEPTION_ERROR_MESSAGE));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleUnexpectedException(RuntimeException e) {
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(AdminAuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAdminAuthorizationException(AdminAuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse(UNEXPECTED_EXCEPTION_ERROR_MESSAGE));
     }

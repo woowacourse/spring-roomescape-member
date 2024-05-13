@@ -67,3 +67,51 @@
 
 - [x] `ranking.js` render 함수에서 사용할 data에는 (name, thumbnail, description)이 있어야 함
 - [x] `user-reservation.js` renderTheme 함수, fetchAvailableTimes 함수 등 수정
+
+## 4단계 기능 요구 사항
+- [x] 로그인 폼이 있는 페이지를 응답 [GET /login] (templates/login.html 파일을 이용)
+- [x] 사용자 도메인을 추가
+  - [x] name, email, password로 구성
+- [x] 로그인 기능 구현 [POST /login]
+  - [x] 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - [x] 응답 Cookie에 "token"값으로 토큰이 포함
+- [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현 [GET /login/check]
+  - [x] 요청 시 쿠키 값을 요청
+  - [x] 응답 시 이름을 반환
+  - [ ] 응답 형식, 해석 등이 되지 않는 경우 예외 처리를 한다
+
+## 5단계 기능 요구 사항
+- 사용자의 정보를 조회하는 로직 리팩터링
+  - [x] `HandlerMethodArgumentResolver`을 활용하여 회원정보를 객체를 컨트롤러 메서드에 주입
+- 유저 전체 조회 기능
+  - [x] 유저의 id, name을 조회하는 기능
+- 로그인 기능 변경
+  - [x] 비밀번호와 상관없이 이메일이 저장되어 있다면, 로그인이 되도록 수정
+- 예약 테이블 변경
+  - [x] 예약 테이블에서 유저 id를 사용하도록 변경
+- 예약 생성 기능 변경 - 사용자 [POST /reservations]
+  - [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
+  - [x] `reservation.html`, `user-reservation.js` 변경된 명세에 맞게 클라이언트가 동작하도록 변경
+- 예약 생성 기능 변경 - 관리자 [POST /admin/reservations]
+  - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
+  - [x] `admin/reservation-new.html` 파일에서 로딩하는 js 파일을 변경 
+    - `/js/reservation-new.js` -> `/js/reservation-with-member.js`
+
+## 6단계 기능 요구 사항
+- 멤버 권한 추가
+  - [x] 멤버 테이블에 역할 추가
+- 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한
+  - [x] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근
+  - [x] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답
+- 관리자가 조건에 따라 예약을 검색하는 기능
+  - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가
+    - themeId, memberId, startDate, endDate 값을 사용 
+  - [x] `reservation-with-member.js`를 요청 형식에 맞게 수정
+
+## 로그인 계정
+- 로그인 가능한 계정
+  - 관리자 계정 - id : admin@abc.com / pw : 아무거나 입력 가능 / name : 관리자
+  - 일반 유저 계정 - id : bri@abc.com / pw : 아무거나 입력 가능 / name : 브리
+  - 일반 유저 계정 - id : brown@abc.com / pw : 아무거나 입력 가능 / name : 브라운
+  - 일반 유저 계정 - id : duck@abc.com / pw : 아무거나 입력 가능 / name : 오리
+- 추후 패스워드 확인 기능 추가 예정
