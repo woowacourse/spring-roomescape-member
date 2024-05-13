@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.exception.ClientErrorExceptionWithLog;
 
 @Sql("/theme-service-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -36,7 +35,7 @@ class ThemeServiceTest {
 
         //when, then
         ThemeRequest themeRequest2 = new ThemeRequest("테마명", "테마설명테마설명테마설명", "썸네일명.jpg");
-        assertThatThrownBy(() -> themeService.addTheme(themeRequest2)).isInstanceOf(ClientErrorExceptionWithLog.class);
+        assertThatThrownBy(() -> themeService.addTheme(themeRequest2)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -46,7 +45,7 @@ class ThemeServiceTest {
         Long notExistIdToFind = allTheme.size() + 1L;
 
         //when, then
-        assertThatThrownBy(() -> themeService.getTheme(notExistIdToFind)).isInstanceOf(ClientErrorExceptionWithLog.class);
+        assertThatThrownBy(() -> themeService.getTheme(notExistIdToFind)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -57,7 +56,7 @@ class ThemeServiceTest {
         Long themeId = themeResponse.id();
 
         //when, then
-        assertThatThrownBy(() -> themeService.deleteTheme(themeId)).isInstanceOf(ClientErrorExceptionWithLog.class);
+        assertThatThrownBy(() -> themeService.deleteTheme(themeId)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
