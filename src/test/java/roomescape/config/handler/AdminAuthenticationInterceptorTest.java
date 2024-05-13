@@ -40,7 +40,7 @@ class AdminAuthenticationInterceptorTest {
                 .cookies(userCookies)
                 .when().get(TEST_ADMIN_ENDPOINT)
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     private Cookies makeUserCookie() {

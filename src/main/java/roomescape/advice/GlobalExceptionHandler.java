@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.advice.dto.ErrorResponse;
+import roomescape.auth.exception.AdminAuthorizationException;
 import roomescape.auth.exception.AuthenticationException;
 
 @RestControllerAdvice
@@ -27,6 +28,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(AdminAuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAdminAuthorizationException(AdminAuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(e.getMessage()));
     }
 

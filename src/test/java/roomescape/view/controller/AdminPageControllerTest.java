@@ -34,7 +34,7 @@ class AdminPageControllerTest {
                 .cookies(cookies)
                 .when().get(path)
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     private Cookies makeUserCookie() {

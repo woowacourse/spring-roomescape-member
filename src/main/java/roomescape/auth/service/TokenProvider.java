@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.exception.JwtAuthenticationException;
+import roomescape.auth.exception.JwtExpiredException;
 
 @Component
 public class TokenProvider {
@@ -32,7 +33,7 @@ public class TokenProvider {
         try {
             return parseId(token);
         } catch (ExpiredJwtException exception) {
-            throw new JwtAuthenticationException("토큰의 유효 기간이 만료되었습니다."); // TODO 예외 다른 것으로 변경
+            throw new JwtExpiredException();
         } catch (MalformedJwtException exception) {
             throw new JwtAuthenticationException("토큰의 형식이 잘못되었습니다.");
         } catch (InvalidClaimException exception) {

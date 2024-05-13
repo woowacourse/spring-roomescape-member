@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.controller.TokenCookieManager;
 import roomescape.auth.dto.LoggedInMember;
-import roomescape.auth.exception.AdminAuthenticationException;
+import roomescape.auth.exception.AdminAuthorizationException;
 import roomescape.auth.service.AuthService;
 
 @Component
@@ -26,6 +26,6 @@ public class AdminAuthenticationInterceptor implements HandlerInterceptor {
         if (member.isAdmin()) {
             return true;
         }
-        throw new AdminAuthenticationException();
+        throw new AdminAuthorizationException();
     }
 }
