@@ -11,7 +11,6 @@ import java.time.DateTimeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException exception) {
         ErrorResponse data = new ErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage());
@@ -37,5 +36,11 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> handleDateTimeParseException() {
         ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, "잘못된 형식의 날짜 혹은 시간입니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
+    }
+
+    @ExceptionHandler(NotEnoughPermissionException.class)
+    public ResponseEntity<ErrorResponse> handleNotEnoughPermissionException(NotEnoughPermissionException exception) {
+        ErrorResponse data = new ErrorResponse(HttpStatus.FORBIDDEN, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(data);
     }
 }
