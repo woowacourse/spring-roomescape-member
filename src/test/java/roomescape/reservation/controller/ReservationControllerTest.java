@@ -3,7 +3,6 @@ package roomescape.reservation.controller;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,7 +27,6 @@ import java.time.LocalTime;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -47,30 +45,13 @@ public class ReservationControllerTest {
     @LocalServerPort
     private int port;
 
-    private String accessTokenCookie;
-
-    @BeforeEach
-    void init() {
-        String email = "admin@admin.com";
-        String password = "12341234";
-        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
-
-        Map<String, String> loginParams = Map.of(
-                "email", email,
-                "password", password
-        );
-
-        accessTokenCookie = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .port(port)
-                .body(loginParams)
-                .when().post("/login")
-                .then().log().all().extract().header("Set-Cookie").split(";")[0];
-    }
 
     @Test
     @DisplayName("처음으로 등록하는 예약의 id는 1이다.")
     void firstPost() {
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.ADMIN));
+        String accessTokenCookie = getAccessTokenCookieByLogin(member.getEmail(), member.getPassword());
+
         reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
@@ -94,9 +75,12 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("전체 예약정보를 조회한다.")
+    @DisplayName("관리자 권한이 있으면 전체 예약정보를 조회할 수 있다.")
     void readEmptyReservations() {
         // given
+        Member admin = memberDao.insert(new Member("name", "email@email.com", "password", Role.ADMIN));
+        String accessTokenCookie = getAccessTokenCookieByLogin(admin.getEmail(), admin.getPassword());
+
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
         Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
@@ -117,25 +101,67 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("예약 정보를 삭제한다.")
-    void readReservationsSizeAfterPostAndDelete() {
+    @DisplayName("본인의 예약 정보를 삭제할 수 있다.")
+    void canRemoveMyReservation() {
         // given
+        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
+        String accessTokenCookie = getAccessTokenCookieByLogin(member.getEmail(), member.getPassword());
+
         ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
         Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
-        Member member = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
-
         Reservation reservation = reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme, member));
 
-        // when
+        // when & then
         RestAssured.given().log().all()
                 .port(port)
                 .header("Cookie", accessTokenCookie)
                 .when().delete("/reservations/" + reservation.getId())
                 .then().log().all()
                 .statusCode(204);
+    }
 
-        // then
-        assertThat(reservationDao.findAll()).hasSize(0);
+    @Test
+    @DisplayName("본인의 예약이 아니면 예약 정보를 삭제할 수 없으며 403 Forbidden 을 Response 받는다.")
+    void canRemoveAnotherReservation() {
+        // given
+        Member member = memberDao.insert(new Member("name", "member1@email.com", "password", Role.MEMBER));
+        String accessTokenCookie = getAccessTokenCookieByLogin(member.getEmail(), member.getPassword());
+
+        Member anotherMember = memberDao.insert(new Member("name1", "member2@email.com", "password", Role.MEMBER));
+        ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+
+        Reservation reservation = reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme, anotherMember));
+
+        // when & then
+        RestAssured.given().log().all()
+                .port(port)
+                .header("Cookie", accessTokenCookie)
+                .when().delete("/reservations/" + reservation.getId())
+                .then().log().all()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아니더라도 관리자 권한이 있으면 예약 정보를 삭제할 수 있다.")
+    void readReservationsSizeAfterPostAndDelete() {
+        // given
+        Member member = memberDao.insert(new Member("name", "admin@admin.com", "password", Role.ADMIN));
+        String accessTokenCookie = getAccessTokenCookieByLogin(member.getEmail(), member.getPassword());
+
+        ReservationTime reservationTime = reservationTimeDao.insert(new ReservationTime(LocalTime.of(17, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Member anotherMember = memberDao.insert(new Member("name", "email@email.com", "password", Role.MEMBER));
+
+        Reservation reservation = reservationDao.insert(new Reservation(LocalDate.now(), reservationTime, theme, anotherMember));
+
+        // when & then
+        RestAssured.given().log().all()
+                .port(port)
+                .header("Cookie", accessTokenCookie)
+                .when().delete("/reservations/" + reservation.getId())
+                .then().log().all()
+                .statusCode(204);
     }
 
     @Test
@@ -217,5 +243,41 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    private String getAdminAccessTokenCookie() {
+        String email = "admin@admin.com";
+        String password = "12341234";
+        memberDao.insert(new Member("이름", email, password, Role.ADMIN));
+
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessTokenCookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        return accessTokenCookie;
+    }
+
+    private String getAccessTokenCookieByLogin(final String email, final String password) {
+        Map<String, String> loginParams = Map.of(
+                "email", email,
+                "password", password
+        );
+
+        String accessTokenCookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(loginParams)
+                .when().post("/login")
+                .then().log().all().extract().header("Set-Cookie").split(";")[0];
+
+        return accessTokenCookie;
     }
 }

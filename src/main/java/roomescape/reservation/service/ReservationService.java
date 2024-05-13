@@ -3,8 +3,11 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.DataDuplicateException;
+import roomescape.global.exception.model.ForbiddenException;
+import roomescape.global.exception.model.NotFoundException;
 import roomescape.global.exception.model.ValidateException;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.service.MemberService;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
@@ -52,8 +55,23 @@ public class ReservationService {
         return reservationTimeDao.findByDateAndThemeId(date, themeId);
     }
 
-    public void removeReservationById(final Long id) {
-        reservationDao.deleteById(id);
+    public Reservation findReservationById(final Long id) {
+        return reservationDao.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorType.RESERVATION_NOT_FOUND,
+                        String.format("예약(Reservation) 정보가 존재하지 않습니다. [reservationId: %d]", id)));
+    }
+
+    public void removeReservationById(final Long reservationId, final Long requestMemberId) {
+        Member member = memberService.findMemberById(requestMemberId);
+        Reservation reservation = findReservationById(reservationId);
+        Long reservationMemberId = reservation.getMember().getId();
+
+        if (member.isRole(Role.ADMIN) || reservationMemberId.equals(requestMemberId)) {
+            reservationDao.deleteById(reservation.getId());
+        } else {
+            throw new ForbiddenException(ErrorType.PERMISSION_DOES_NOT_EXIST,
+                    "예약(Reservation) 정보에 대한 삭제 권한이 존재하지 않습니다.");
+        }
     }
 
     public ReservationResponse addReservation(final ReservationRequest request, final Long memberId) {

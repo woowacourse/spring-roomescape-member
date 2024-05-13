@@ -73,8 +73,8 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ApiResponse<Void> removeReservation(@PathVariable final Long id) {
-        reservationService.removeReservationById(id);
+    public ApiResponse<Void> removeReservation(@MemberId final Long memberId, @PathVariable("id") final Long reservationId) {
+        reservationService.removeReservationById(reservationId, memberId);
 
         return ApiResponse.success();
     }

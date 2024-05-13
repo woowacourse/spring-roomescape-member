@@ -22,6 +22,7 @@ public enum ErrorType {
 
     // 404 Not Found
     MEMBER_NOT_FOUND("회원(Member) 정보가 존재하지 않습니다."),
+    RESERVATION_NOT_FOUND("예약(Reservation) 정보가 존재하지 않습니다."),
 
     // 405 Method Not Allowed
     METHOD_NOT_ALLOWED("지원하지 않는 HTTP Method 입니다."),
