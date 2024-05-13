@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class ReservationTimeTest {
 
     @Test
-    @DisplayName("예약 시간이 정상적으로 생성된다.")
+    @DisplayName("예약 시간이 생성된다.")
     void createReservationTime() {
         // given
         final String time = START_AT_SIX;
@@ -39,7 +39,6 @@ class ReservationTimeTest {
     @ValueSource(strings = {"", "13-00"})
     @DisplayName("예약 시간 입력 값이 유효하지 않으면 예외가 발생한다.")
     void throwExceptionWhenCannotConvertToLocalTime(final String invalidTime) {
-        // when & then
         assertThatThrownBy(() -> new ReservationTime(invalidTime))
                 .isInstanceOf(IllegalArgumentException.class);
     }
