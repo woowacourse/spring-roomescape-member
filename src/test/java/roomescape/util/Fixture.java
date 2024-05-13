@@ -13,7 +13,13 @@ public final class Fixture {
     public static final String JOJO_EMAIL = "jojo@gmail.com";
     public static final String JOJO_PASSWORD = "12345";
     public static final Member MEMBER_JOJO = new Member(JOJO_NAME, JOJO_EMAIL, JOJO_PASSWORD, Role.MEMBER);
-    
+
+    public static final String ADMIN_EMAIL = "admin@gmail.com";
+    public static final String ADMIN_PASSWORD = "12345";
+
+    public static final String MEMBER_EMAIL = "imjojo@gmail.com";
+    public static final String MEMBER_PASSWORD = "qwer";
+
     public static final String START_AT_16_00 = "16:00";
     public static final ReservationTime RESERVATION_TIME_16_00 = new ReservationTime(START_AT_16_00);
 

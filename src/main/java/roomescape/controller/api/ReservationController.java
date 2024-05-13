@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.LoginMemberDto;
-import roomescape.dto.request.AdminReservationRequestDto;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.ReservationService;
@@ -31,22 +30,13 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponseDto> createReservationByLoginMember(
+    public ResponseEntity<ReservationResponseDto> createReservation(
             @RequestBody @Valid final ReservationRequestDto request,
             final LoginMemberDto loginMember
     ) {
         final Reservation reservation = reservationService.create(request, loginMember);
         final ReservationResponseDto response = new ReservationResponseDto(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + response.getId())).body(response);
-    }
-
-    @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponseDto> createReservationByAdmin(
-            @RequestBody @Valid final AdminReservationRequestDto request
-    ) {
-        final Reservation reservation = reservationService.createByAdmin(request);
-        final ReservationResponseDto response = new ReservationResponseDto(reservation);
-        return ResponseEntity.created(URI.create("/admin/reservations" + response.getId())).body(response);
     }
 
     @GetMapping("/reservations")
