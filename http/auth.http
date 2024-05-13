@@ -1,30 +1,24 @@
 ### 로그인 API
-POST /login
-Host: localhost:8080
+POST {{base-url}}/login
 Content-Type: application/json
 
 {
-  "password": "password",
-  "email": "admin@email.com"
+  "email": "admin@gmail.com",
+  "password": "1234"
 }
 
 ### 로그아웃 API
-POST /logout
-Host: localhost:8080
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MTU1MjE0OTgsImV4cCI6MTcxNTUyNTA5OH0.FWjmIKq9FHy109WqZMrCkTYDHTIbvZhhhVhrxlF8gE8
+POST {{base-url}}/logout
 
 ### 인증 정보 조회 API
-GET /login/check
-Host: localhost:8080
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcxNTUxOTExMiwiZXhwIjoxNzE1NTIyNzEyfQ.bGS7aNXBQ4pDLqDxnAqDRTMGrh1FLo5ss_ZntvUozfM
+GET {{base-url}}/login/check
 
 ### 회원가입 API
-POST /signup
-Host: localhost:8080
+POST {{base-url}}/signup
 Content-Type: application/json
 
 {
-  "email": "user@email.com",
-  "password": "password",
-  "name": "사용자"
+  "email": "user2@gmail.com",
+  "password": "1234",
+  "name": "사용자2"
 }

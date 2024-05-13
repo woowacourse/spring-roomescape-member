@@ -1,12 +1,8 @@
 ### 예약 목록 조회 API (접근 권한: 관리자)
-GET /reservations?theme-id=1&member-id=1&date-from=2024-05-11&date-to=2024-10-31
-Host: localhost:8080
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcxNTUxOTExMiwiZXhwIjoxNzE1NTIyNzEyfQ.bGS7aNXBQ4pDLqDxnAqDRTMGrh1FLo5ss_ZntvUozfM
+GET {{base-url}}/reservations?theme-id=1&member-id=1&date-from=2024-05-11&date-to=2024-10-31
 
 ### 예약 추가 API
-POST /reservations
-Host: localhost:8080
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcxNTUxOTExMiwiZXhwIjoxNzE1NTIyNzEyfQ.bGS7aNXBQ4pDLqDxnAqDRTMGrh1FLo5ss_ZntvUozfM
+POST {{base-url}}/reservations
 Content-Type: application/json
 
 {
@@ -17,9 +13,7 @@ Content-Type: application/json
 }
 
 ### 관리자용 예약 추가 API (접근 권한: 관리자)
-POST /admin/reservations
-Host: localhost:8080
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcxNTUxOTExMiwiZXhwIjoxNzE1NTIyNzEyfQ.bGS7aNXBQ4pDLqDxnAqDRTMGrh1FLo5ss_ZntvUozfM
+POST {{base-url}}/admin/reservations
 Content-Type: application/json
 
 {
@@ -30,6 +24,4 @@ Content-Type: application/json
 }
 
 ### 예약 삭제 API (접근 권한: 관리자)
-DELETE /reservations/1
-Host: localhost:8080
-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcxNTUxOTExMiwiZXhwIjoxNzE1NTIyNzEyfQ.bGS7aNXBQ4pDLqDxnAqDRTMGrh1FLo5ss_ZntvUozfM
+DELETE {{base-url}}/reservations/1
