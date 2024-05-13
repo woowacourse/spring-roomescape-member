@@ -96,7 +96,6 @@ class MemberServiceTest {
                 .hasMessage("회원 비밀번호 길이는 10이상 30이하여만 합니다.");
     }
 
-    // TODO : 이메일 중복 검증 예외 테스트 추가 (기능 추가 필요)
     @DisplayName("이미 존재하는 이메일로 회원가입 요청이 들어오면 예외를 발생시킨다.")
     @Test
     void duplicateEmailTest() {

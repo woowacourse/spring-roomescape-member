@@ -28,7 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(new AuthenticatedMemberArgumentResolver(authService));
     }
 
-    // TODO : 특정 HTTP 메서드의 URI를 제한할 수 있도록 개선
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(new LoginCheckInterceptor(tokenProvider))
