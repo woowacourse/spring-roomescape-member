@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.domain.Member;
 import roomescape.globar.config.AuthenticationPrincipal;
@@ -28,8 +30,13 @@ public class ReservationController {
   }
 
   @GetMapping
-  public List<ReservationResponse> getReservations() {
-    return reservationService.getReservations()
+  public List<ReservationResponse> getReservations(
+      @RequestParam(required = false) LocalDate dateFrom,
+      @RequestParam(required = false) LocalDate dateTo,
+      @RequestParam(required = false) Long themeId,
+      @RequestParam(required = false) Long memberId
+  ) {
+    return reservationService.getReservations(dateFrom, dateTo, themeId, memberId)
         .stream()
         .map(ReservationResponse::from)
         .toList();

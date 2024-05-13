@@ -55,10 +55,11 @@ class ReservationServiceTest {
             theme)
     );
 
-    given(reservationRepository.findAll()).willReturn(savedReservations);
+    given(reservationRepository.findAll(null, null, null, null)).willReturn(savedReservations);
 
     // When
-    final List<Reservation> reservations = reservationService.getReservations();
+    final List<Reservation> reservations = reservationService.getReservations(null, null, null,
+        null);
 
     // Then
     assertThat(reservations).hasSize(savedReservations.size());

@@ -31,10 +31,22 @@ class ReservationServiceIntegrationTest {
   @Test
   void getReservationsTest() {
     // When
-    final List<Reservation> reservations = reservationService.getReservations();
+    final List<Reservation> reservations = reservationService.getReservations(null, null, null,
+        null);
 
     // Then
     assertThat(reservations).hasSize(16);
+  }
+
+  @DisplayName("멤버 ID로 전체 예약 정보를 검색한다.")
+  @Test
+  void getReservationsWithMemberIdTest() {
+    // When
+    final List<Reservation> reservations = reservationService.getReservations(null, null, null,
+        1L);
+
+    // Then
+    assertThat(reservations).hasSize(1);
   }
 
   @DisplayName("예약 정보를 저장한다.")
@@ -51,7 +63,8 @@ class ReservationServiceIntegrationTest {
         saveReservationRequest);
 
     // Then
-    final List<Reservation> reservations = reservationService.getReservations();
+    final List<Reservation> reservations = reservationService.getReservations(null, null, null,
+        null);
     assertAll(
         () -> assertThat(reservations).hasSize(17),
         () -> assertThat(reservation.getId()).isEqualTo(17L),
@@ -83,7 +96,8 @@ class ReservationServiceIntegrationTest {
     reservationService.deleteReservation(1L);
 
     // When & Then
-    final List<Reservation> reservations = reservationService.getReservations();
+    final List<Reservation> reservations = reservationService.getReservations(null, null, null,
+        null);
     assertThat(reservations).hasSize(15);
   }
 
