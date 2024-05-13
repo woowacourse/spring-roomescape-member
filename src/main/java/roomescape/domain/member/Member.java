@@ -28,7 +28,7 @@ public class Member {
         this.password = password;
     }
 
-    public MemberName getUserName() {
+    public MemberName getMemberName() {
         return memberName;
     }
 
