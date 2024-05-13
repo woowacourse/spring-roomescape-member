@@ -6,11 +6,14 @@ import java.lang.reflect.Method;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.application.auth.TokenManager;
 
 public class PermissionCheckInterceptor implements HandlerInterceptor {
-    private final RequestPayloadContext context;
+    private final TokenManager tokenManager;
+    private final CredentialContext context;
 
-    public PermissionCheckInterceptor(ObjectProvider<RequestPayloadContext> contextProvider) {
+    public PermissionCheckInterceptor(TokenManager tokenManager, ObjectProvider<CredentialContext> contextProvider) {
+        this.tokenManager = tokenManager;
         this.context = contextProvider.getObject();
     }
 
@@ -22,8 +25,9 @@ public class PermissionCheckInterceptor implements HandlerInterceptor {
             return true;
         }
         PermissionRequired permissionRequired = method.getAnnotation(PermissionRequired.class);
-        context.setMemberRoleIfNotPresent(request);
-        context.validatePermission(permissionRequired.value());
+        String token = AuthInformationExtractor.extractToken(request);
+        context.setCredentialIfNotPresent(tokenManager.extract(token));
+        context.validatePermission(permissionRequired.role());
         return true;
     }
 }

@@ -22,7 +22,7 @@ import roomescape.domain.role.Role;
 @ExtendWith(MockitoExtension.class)
 class AdminRoleInterceptorTest {
     @Mock
-    private ObjectProvider<RequestPayloadContext> contextProvider;
+    private ObjectProvider<CredentialContext> contextProvider;
 
     @Mock
     private TokenManager tokenManager;
@@ -30,9 +30,9 @@ class AdminRoleInterceptorTest {
     @Test
     @DisplayName("인증되지 않은 사용자의 경우, admin 페이지에 접근 시 403 응답을 반환한다.")
     void unAuthorizedOnNotAdminInterceptorTest() {
-        given(contextProvider.getObject()).willReturn(new RequestPayloadContext(tokenManager));
+        given(contextProvider.getObject()).willReturn(new CredentialContext());
         given(tokenManager.extract(any())).willReturn(new MemberRole(1L, "name", Role.MEMBER));
-        AdminRoleInterceptor interceptor = new AdminRoleInterceptor(contextProvider);
+        AdminRoleInterceptor interceptor = new AdminRoleInterceptor(tokenManager, contextProvider);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -46,9 +46,9 @@ class AdminRoleInterceptorTest {
     @Test
     @DisplayName("인증된 사용자의 경우, admin 페이지에 접근할 수 있다.")
     void authorizedInterceptorTest() {
-        given(contextProvider.getObject()).willReturn(new RequestPayloadContext(tokenManager));
+        given(contextProvider.getObject()).willReturn(new CredentialContext());
         given(tokenManager.extract(any())).willReturn(new MemberRole(1L, "name", Role.ADMIN));
-        AdminRoleInterceptor interceptor = new AdminRoleInterceptor(contextProvider);
+        AdminRoleInterceptor interceptor = new AdminRoleInterceptor(tokenManager, contextProvider);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();

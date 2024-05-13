@@ -4,18 +4,29 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.application.auth.TokenManager;
+import roomescape.domain.role.MemberRole;
 import roomescape.domain.role.Role;
 
 public class AdminRoleInterceptor implements HandlerInterceptor {
-    private final RequestPayloadContext context;
+    private final TokenManager tokenManager;
+    private final CredentialContext context;
 
-    public AdminRoleInterceptor(ObjectProvider<RequestPayloadContext> contextProvider) {
+    public AdminRoleInterceptor(TokenManager tokenManager,
+                                ObjectProvider<CredentialContext> contextProvider) {
+        this.tokenManager = tokenManager;
         this.context = contextProvider.getObject();
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        context.setMemberRoleIfNotPresent(request);
+        if (context.hasCredential()) {
+            context.validatePermission(Role.ADMIN);
+            return true;
+        }
+        String token = AuthInformationExtractor.extractToken(request);
+        MemberRole memberRole = tokenManager.extract(token);
+        context.setCredentialIfNotPresent(memberRole);
         context.validatePermission(Role.ADMIN);
         return true;
     }

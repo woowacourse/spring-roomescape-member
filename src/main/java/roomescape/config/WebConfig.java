@@ -6,29 +6,32 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.application.auth.TokenManager;
 import roomescape.presentation.auth.AdminRoleInterceptor;
 import roomescape.presentation.auth.LoginMemberIdArgumentResolver;
 import roomescape.presentation.auth.PermissionCheckInterceptor;
-import roomescape.presentation.auth.RequestPayloadContext;
+import roomescape.presentation.auth.CredentialContext;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private final ObjectProvider<RequestPayloadContext> payloadContextProvider;
+    private final TokenManager tokenManager;
+    private final ObjectProvider<CredentialContext> payloadContextProvider;
 
-    public WebConfig(ObjectProvider<RequestPayloadContext> payloadContextProvider) {
+    public WebConfig(TokenManager tokenManager, ObjectProvider<CredentialContext> payloadContextProvider) {
+        this.tokenManager = tokenManager;
         this.payloadContextProvider = payloadContextProvider;
     }
 
 
     @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberIdArgumentResolver(payloadContextProvider));
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AdminRoleInterceptor(tokenManager, payloadContextProvider))
+                .addPathPatterns("/admin/**");
+        registry.addInterceptor(new PermissionCheckInterceptor(tokenManager, payloadContextProvider));
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminRoleInterceptor(payloadContextProvider))
-                .addPathPatterns("/admin/**");
-        registry.addInterceptor(new PermissionCheckInterceptor(payloadContextProvider));
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new LoginMemberIdArgumentResolver(tokenManager, payloadContextProvider));
     }
 }

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 import org.springframework.core.annotation.AliasFor;
 import roomescape.domain.role.Role;
 
-@Target(ElementType.METHOD)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PermissionRequired {
 

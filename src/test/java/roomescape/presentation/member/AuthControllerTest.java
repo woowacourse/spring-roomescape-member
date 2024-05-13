@@ -13,10 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import roomescape.application.auth.TokenManager;
 import roomescape.application.member.MemberService;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.response.TokenResponse;
-import roomescape.presentation.auth.RequestPayloadContext;
+import roomescape.presentation.auth.CredentialContext;
 import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(AuthController.class)
@@ -26,7 +27,10 @@ class AuthControllerTest extends ControllerTest {
     private MemberService memberService;
 
     @MockBean
-    private RequestPayloadContext context;
+    private TokenManager tokenManager;
+
+    @MockBean
+    private CredentialContext context;
 
     @Test
     @DisplayName("로그인 시, 토큰이 담긴 쿠키를 반환한다.")

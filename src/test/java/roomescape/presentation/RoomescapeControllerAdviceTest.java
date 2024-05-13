@@ -16,7 +16,8 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import roomescape.presentation.auth.RequestPayloadContext;
+import roomescape.application.auth.TokenManager;
+import roomescape.presentation.auth.CredentialContext;
 import roomescape.presentation.view.AdminController;
 
 @WebMvcTest(AdminController.class)
@@ -28,7 +29,10 @@ class RoomescapeControllerAdviceTest {
     private AdminController controller;
 
     @MockBean
-    private RequestPayloadContext context;
+    private CredentialContext context;
+
+    @MockBean
+    private TokenManager tokenManager;
 
     @BeforeEach
     void setUp() {

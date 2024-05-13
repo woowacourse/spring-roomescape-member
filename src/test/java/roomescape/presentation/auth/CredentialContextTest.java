@@ -2,26 +2,19 @@ package roomescape.presentation.auth;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import jakarta.servlet.http.Cookie;
-import java.time.Clock;
+import exception.UnAuthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import exception.UnAuthorizedException;
-import roomescape.application.auth.JwtTokenManager;
-import roomescape.application.auth.TokenManager;
 import roomescape.domain.role.MemberRole;
 import roomescape.domain.role.Role;
 
-class RequestPayloadContextTest {
-    private final TokenManager tokenManager = new JwtTokenManager("test".repeat(20), 10000, Clock.systemDefaultZone());
-
-    private RequestPayloadContext context;
+class CredentialContextTest {
+    private CredentialContext context;
 
     @BeforeEach
     void setUp() {
-        context = new RequestPayloadContext(tokenManager);
+        context = new CredentialContext();
     }
 
     @Test
@@ -40,13 +33,19 @@ class RequestPayloadContextTest {
     }
 
     @Test
+    @DisplayName("값이 설정돼있을 때, 다시 설정하는 경우 예외를 발생한다.")
+    void setCredentialOnAlreadyExistsTest() {
+        context.setCredentialIfNotPresent(new MemberRole(1L, "test", Role.MEMBER));
+        assertThatCode(() -> context.setCredentialIfNotPresent(new MemberRole(2L, "test", Role.MEMBER)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("이미 인증 정보가 존재합니다.");
+    }
+
+
+    @Test
     @DisplayName("권한을 검증한다.")
     void validatePermissionTest() {
-        String memberToken = tokenManager.createToken(new MemberRole(1L, "name", Role.MEMBER));
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setCookies(new Cookie("token", memberToken));
-        context.setMemberRoleIfNotPresent(request);
-
+        context.setCredentialIfNotPresent(new MemberRole(1L, "test", Role.MEMBER));
         assertThatCode(() -> context.validatePermission(Role.ADMIN))
                 .isInstanceOf(UnAuthorizedException.class);
     }

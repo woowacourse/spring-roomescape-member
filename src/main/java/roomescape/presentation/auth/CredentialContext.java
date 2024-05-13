@@ -1,35 +1,31 @@
 package roomescape.presentation.auth;
 
 import exception.UnAuthorizedException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
-import roomescape.application.auth.TokenManager;
 import roomescape.domain.role.MemberRole;
 import roomescape.domain.role.Role;
 
 @Component
 @RequestScope
-public class RequestPayloadContext {
-    private final TokenManager tokenManager;
+public class CredentialContext {
     private MemberRole memberRole;
 
-    public RequestPayloadContext(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
-    }
-
-    public void setMemberRoleIfNotPresent(HttpServletRequest request) {
-        if (memberRole != null) {
-            return;
+    public void setCredentialIfNotPresent(MemberRole memberRole) {
+        if (this.memberRole != null) {
+            throw new IllegalStateException("이미 인증 정보가 존재합니다.");
         }
-        String token = AuthInformationExtractor.extractToken(request);
-        memberRole = tokenManager.extract(token);
+        this.memberRole = memberRole;
     }
 
     public void validatePermission(Role requiredRole) {
         if (memberRole == null || !memberRole.hasRoleOf(requiredRole)) {
             throw new UnAuthorizedException();
         }
+    }
+
+    public boolean hasCredential() {
+        return memberRole != null;
     }
 
     public long getMemberId() {
