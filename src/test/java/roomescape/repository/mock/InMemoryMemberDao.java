@@ -22,7 +22,7 @@ public class InMemoryMemberDao implements MemberDao {
     }
 
     @Override
-    public Member findByEmailAndPassWord(final String email, final String password) {
+    public Member findByEmailAndPassword(final String email, final String password) {
         return members.stream()
                 .filter(member -> member.getEmail().equals(email) && member.getPassword().equals(password))
                 .findFirst()

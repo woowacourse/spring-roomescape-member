@@ -23,7 +23,7 @@ public class MemberService {
     }
 
     public MemberResponse findBy(final MemberRequest memberRequest) {
-        Member member = memberDao.findByEmailAndPassWord(memberRequest.email(), memberRequest.password());
+        Member member = memberDao.findByEmailAndPassword(memberRequest.email(), memberRequest.password());
         return MemberResponse.from(member);
     }
 

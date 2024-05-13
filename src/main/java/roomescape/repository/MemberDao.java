@@ -8,5 +8,5 @@ public interface MemberDao {
 
     Member findById(Long id);
 
-    Member findByEmailAndPassWord(String email, String password);
+    Member findByEmailAndPassword(String email, String password);
 }
