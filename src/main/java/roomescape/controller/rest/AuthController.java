@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.configuration.resolver.AccessToken;
 import roomescape.controller.rest.request.LoginRequest;
-import roomescape.controller.rest.response.LoginCheckResponse;
+import roomescape.controller.rest.response.LoginResponse;
 import roomescape.domain.Member;
 import roomescape.service.AuthService;
 
@@ -36,8 +36,8 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> check(@AccessToken Member member) {
-        return ResponseEntity.ok().body(new LoginCheckResponse(member.name()));
+    public ResponseEntity<LoginResponse> check(@AccessToken Member member) {
+        return ResponseEntity.ok().body(new LoginResponse(member.name()));
     }
 
     @GetMapping("/logout")
