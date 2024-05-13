@@ -8,7 +8,7 @@ CREATE TABLE role
 CREATE TABLE member
 (
     id      BIGINT       NOT NULL AUTO_INCREMENT,
-    name    VARCHAR(255) NOT NULL UNIQUE,
+    name    VARCHAR(255) NOT NULL,
     role_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (role_id) REFERENCES role (id)
