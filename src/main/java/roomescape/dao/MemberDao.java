@@ -52,17 +52,6 @@ public class MemberDao implements MemberRepository {
     }
 
     @Override
-    public String findNameById(Long id) {
-        String sql = """
-                SELECT member.name
-                FROM member
-                WHERE id = ?
-                """;
-        List<String> name = jdbcTemplate.queryForList(sql, String.class, id);
-        return DataAccessUtils.singleResult(name);
-    }
-
-    @Override
     public Member save(Member member) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", member.getName());

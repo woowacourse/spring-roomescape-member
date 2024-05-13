@@ -10,7 +10,5 @@ public interface MemberRepository {
 
     Optional<Member> findByEmail(String email);
 
-    String findNameById(Long memberId);
-
     Member save(Member member);
 }

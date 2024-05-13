@@ -42,8 +42,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAllReservation(
             Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
-        String name = memberRepository.findNameById(memberId);
-        List<Reservation> reservations = reservationRepository.findAll(name, themeId, dateFrom, dateTo);
+        List<Reservation> reservations = reservationRepository.findAll(memberId, themeId, dateFrom, dateTo);
         return reservations.stream()
                 .map(ReservationResponse::new)
                 .toList();

@@ -38,7 +38,7 @@ public class ReservationRequest {
     }
 
     public Reservation toReservation(Member member, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(member.getName(), date, reservationTime, theme);
+        return new Reservation(date, member, reservationTime, theme);
     }
 
     public LocalDate getDate() {

@@ -19,4 +19,14 @@ public class MemberRowMapper implements RowMapper<Member> {
                 MemberRole.findByName(resultSet.getString("role"))
         );
     }
+
+    public Member mapJoinedRow(ResultSet resultSet) throws SQLException {
+        return new Member(
+                resultSet.getLong("member_id"),
+                resultSet.getString("member_name"),
+                resultSet.getString("member_email"),
+                resultSet.getString("member_password"),
+                MemberRole.findByName(resultSet.getString("member_role"))
+        );
+    }
 }

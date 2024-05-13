@@ -20,9 +20,9 @@ public class DatabaseInitializer {
 
     public void execute() {
         Member member = createMember();
-        Theme theme = createTheme();
         ReservationTime time = createInitTime();
-        Reservation reservation = createInitReservation(time, theme);
+        Theme theme = createTheme();
+        Reservation reservation = createInitReservation(member, time, theme);
     }
 
     private Member createMember() {
@@ -31,20 +31,21 @@ public class DatabaseInitializer {
         return new Member(1L, "어드민", "admin@email.com", "password", MemberRole.ADMIN);
     }
 
+    private ReservationTime createInitTime() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        return new ReservationTime(1L, LocalTime.of(10, 0));
+    }
+
+
     private Theme createTheme() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "레벨2", "내용이다.", "https://www.naver.com/");
         return new Theme(1L, "레벨2", "내용이다.", "https://www.naver.com/");
     }
 
-    private ReservationTime createInitTime() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        return new ReservationTime(1L, LocalTime.of(10, 0));
-    }
-
-    private Reservation createInitReservation(ReservationTime time, Theme theme) {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "어드민", "2024-08-05", "1", "1");
-        return new Reservation(1L, "어드민", LocalDate.of(2024, 8, 5), time, theme);
+    private Reservation createInitReservation(Member member, ReservationTime time, Theme theme) {
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "2024-08-05", "1", "1", "1");
+        return new Reservation(1L, LocalDate.of(2024, 8, 5), member, time, theme);
     }
 }
