@@ -11,9 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.theme.ThemeAggregationLimit;
-import roomescape.domain.theme.ThemeAggregationPeriod;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemePopularFilter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -98,8 +97,8 @@ class ThemeDaoTest extends DaoTest {
     }
 
     @Test
-    @DisplayName("최근 일주일을 기준으로 예약이 많은 순으로 테마 10개를 조회한다.")
-    void findTopThemesByReservationCountDuringPeriod() {
+    @DisplayName("인기 테마 목록을 조회한다.")
+    void findPopularThemes() {
         // given
         final Member member = memberDao.save(MEMBER_MIA());
         final ReservationTime reservationTime1 = reservationTimeDao.save(RESERVATION_TIME_SIX());
@@ -108,11 +107,11 @@ class ThemeDaoTest extends DaoTest {
         reservationDao.save(new Reservation(member, DATE_MAY_EIGHTH, reservationTime1, theme2));
         reservationDao.save(new Reservation(member, DATE_MAY_EIGHTH, reservationTime2, theme2));
         reservationDao.save(new Reservation(member, DATE_MAY_EIGHTH, reservationTime1, theme));
-        final LocalDate period = ThemeAggregationPeriod.calculateAggregationPeriod(LocalDate.parse(DATE_MAY_EIGHTH));
-        final int limit = ThemeAggregationLimit.getAggregationLimit();
+        final ThemePopularFilter themePopularFilter
+                = ThemePopularFilter.getThemePopularFilter(LocalDate.parse(DATE_MAY_EIGHTH));
 
         // when
-        final List<Theme> actual = themeDao.findTopThemesByReservationCountDuringPeriod(period, limit);
+        final List<Theme> actual = themeDao.findPopularThemesBy(themePopularFilter);
 
         // then
         assertThat(actual).extracting(Theme::getName)

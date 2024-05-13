@@ -1,8 +1,8 @@
 package roomescape.dao;
 
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemePopularFilter;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,5 +16,5 @@ public interface ThemeDao {
 
     void deleteById(final Long id);
 
-    List<Theme> findTopThemesByReservationCountDuringPeriod(final LocalDate period, final int limit);
+    List<Theme> findPopularThemesBy(final ThemePopularFilter themePopularFilter);
 }

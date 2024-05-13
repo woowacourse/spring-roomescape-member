@@ -7,8 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static roomescape.TestFixture.THEME_DETECTIVE;
-import static roomescape.TestFixture.THEME_HORROR;
+import static roomescape.TestFixture.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,11 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeAggregationLimit;
-import roomescape.domain.theme.ThemeAggregationPeriod;
 import roomescape.dto.theme.ThemeResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,11 +121,7 @@ class ThemeServiceTest {
     void findAllPopular() {
         // given
         final List<Theme> expectedThemes = List.of(THEME_HORROR(1L), THEME_DETECTIVE(2L));
-        final LocalDate period = ThemeAggregationPeriod.calculateAggregationPeriod(LocalDate.now());
-        final int limit = ThemeAggregationLimit.getAggregationLimit();
-
-        given(themeDao.findTopThemesByReservationCountDuringPeriod(period, limit))
-                .willReturn(expectedThemes);
+        given(themeDao.findPopularThemesBy(any())).willReturn(expectedThemes);
 
         // when
         final List<ThemeResponse> actual = themeService.findPopularThemes();

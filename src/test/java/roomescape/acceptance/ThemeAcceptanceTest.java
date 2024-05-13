@@ -37,7 +37,7 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
     }
 
     @Test
-    @DisplayName("인기 테마를 성공적으로 조히하면 200을 응답한다.")
+    @DisplayName("인기 테마를 성공적으로 조회하면 200을 응답한다.")
     void respondOkWhenFindPopularThemes() {
         saveTheme();
 
