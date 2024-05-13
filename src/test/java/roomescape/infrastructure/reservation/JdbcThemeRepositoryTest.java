@@ -24,8 +24,8 @@ class JdbcThemeRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    @DisplayName("테마를 저장한다.")
     @Test
+    @DisplayName("테마를 저장한다.")
     void shouldSaveTheme() {
         Theme theme = new Theme("테마", "테마 설명", "url");
         themeRepository.create(theme);
@@ -33,8 +33,8 @@ class JdbcThemeRepositoryTest {
         assertThat(rowCount).isEqualTo(1);
     }
 
-    @DisplayName("모든 테마를 조회한다.")
     @Test
+    @DisplayName("모든 테마를 조회한다.")
     void shouldFindAllThemes() {
         jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)",
                 "테마", "테마 설명", "url");
@@ -42,8 +42,8 @@ class JdbcThemeRepositoryTest {
         assertThat(themes).hasSize(1);
     }
 
-    @DisplayName("id로 테마를 조회한다.")
     @Test
+    @DisplayName("id로 테마를 조회한다.")
     void shouldFindThemeById() {
         jdbcTemplate.update("insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)",
                 1L, "테마", "테마 설명", "url");
@@ -51,8 +51,8 @@ class JdbcThemeRepositoryTest {
         assertThat(foundTheme).isPresent();
     }
 
-    @DisplayName("id로 테마를 삭제한다.")
     @Test
+    @DisplayName("id로 테마를 삭제한다.")
     void shouldDeleteThemeById() {
         jdbcTemplate.update("insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)",
                 1L, "테마", "테마 설명", "url");
@@ -62,9 +62,9 @@ class JdbcThemeRepositoryTest {
         assertThat(rowCount).isZero();
     }
 
-    @DisplayName("주어진 날짜 사이에 예약된 갯수를 기준으로 테마를 반환한다.")
     @Test
     @Sql("/insert-reservations.sql")
+    @DisplayName("주어진 날짜 사이에 예약된 갯수를 기준으로 테마를 반환한다.")
     void shouldReturnPopularThemes() {
         LocalDate from = LocalDate.of(1999, 12, 24);
         LocalDate to = LocalDate.of(1999, 12, 29);

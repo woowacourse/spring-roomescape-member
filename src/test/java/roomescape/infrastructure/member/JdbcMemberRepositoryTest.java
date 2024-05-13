@@ -22,8 +22,8 @@ class JdbcMemberRepositoryTest {
     @Autowired
     private JdbcMemberRepository jdbcMemberRepository;
 
-    @DisplayName("회원을 저장한다.")
     @Test
+    @DisplayName("회원을 저장한다.")
     void saveTest() {
         Member member = new Member("name", "email@test.com", "password");
         jdbcMemberRepository.save(member);
@@ -45,8 +45,8 @@ class JdbcMemberRepositoryTest {
         assertThat(actual).hasSize(3);
     }
 
-    @DisplayName("이메일로 회원이 존재하는지 확인한다.")
     @Test
+    @DisplayName("이메일로 회원이 존재하는지 확인한다.")
     void existsByEmailTest() {
         String sql = "insert into member (name, email, password) values ('name', 'email@test.com', 'password')";
         jdbcTemplate.execute(sql);

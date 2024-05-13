@@ -1,9 +1,9 @@
 package roomescape.presentation.auth;
 
+import exception.AuthenticationInformationNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import exception.AuthenticationInformationNotFoundException;
 
 public class AuthInformationExtractor {
     private static final String COOKIE_NAME = "token";

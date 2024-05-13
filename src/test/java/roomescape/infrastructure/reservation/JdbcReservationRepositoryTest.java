@@ -49,31 +49,31 @@ class JdbcReservationRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("id로 예약을 조회한다.")
     @Test
+    @DisplayName("id로 예약을 조회한다.")
     void shouldReturnReservationWhenReservationIdExist() {
         long id = createReservation().getId();
         Optional<Reservation> foundReservation = jdbcReservationRepository.findById(id);
         assertThat(foundReservation).isPresent();
     }
 
-    @DisplayName("id로 예약을 조회시 존재하지 않으면 빈 객체를 반환한다.")
     @Test
+    @DisplayName("id로 예약을 조회시 존재하지 않으면 빈 객체를 반환한다.")
     void shouldEmptyReservationWhenReservationIdNotExist() {
         Optional<Reservation> reservation = jdbcReservationRepository.findById(99L);
         assertThat(reservation).isEmpty();
     }
 
-    @DisplayName("존재하는 모든 예약을 반환한다.")
     @Test
+    @DisplayName("존재하는 모든 예약을 반환한다.")
     void shouldReturnAllReservationsWhenFindAll() {
         createReservation();
         List<Reservation> reservations = jdbcReservationRepository.findAll();
         assertThat(reservations).hasSize(1);
     }
 
-    @DisplayName("예약을 저장하면 id를 가진 예약을 저장 후 반환한다.")
     @Test
+    @DisplayName("예약을 저장하면 id를 가진 예약을 저장 후 반환한다.")
     void shouldReturnReservationWithIdWhenReservationSave() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("theme1", "desc", "url"));
@@ -93,8 +93,8 @@ class JdbcReservationRepositoryTest {
         );
     }
 
-    @DisplayName("id로 예약을 삭제한다.")
     @Test
+    @DisplayName("id로 예약을 삭제한다.")
     void shouldDeleteReservationWhenReservationIdExist() {
         long id = createReservation().getId();
         jdbcReservationRepository.deleteById(id);
@@ -102,16 +102,16 @@ class JdbcReservationRepositoryTest {
         assertThat(totalRowCount).isZero();
     }
 
-    @DisplayName("예약 시간 id를 가진 예약의 개수를 조회한다.")
     @Test
+    @DisplayName("예약 시간 id를 가진 예약의 개수를 조회한다.")
     void shouldReturnCountOfReservationWhenReservationTimeUsed() {
         ReservationTime time = createReservation().getTime();
         boolean exists = jdbcReservationRepository.existsByTimeId(time.getId());
         assertThat(exists).isTrue();
     }
 
-    @DisplayName("날짜, 시간으로 저장된 예약이 있는지 확인한다.")
     @Test
+    @DisplayName("날짜, 시간으로 저장된 예약이 있는지 확인한다.")
     void shouldReturnIsExistReservationWhenReservationsNameAndDateAndTimeIsSame() {
         Reservation reservation = createReservation();
         ReservationTime time = reservation.getTime();

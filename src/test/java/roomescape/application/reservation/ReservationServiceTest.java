@@ -3,6 +3,7 @@ package roomescape.application.reservation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import exception.UnAuthorizedException;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.ServiceTest;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
-import exception.UnAuthorizedException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberFixture;
 import roomescape.domain.member.MemberRepository;
@@ -52,8 +52,8 @@ class ReservationServiceTest {
     @Autowired
     private Clock clock;
 
-    @DisplayName("정상적인 예약 요청을 받아서 저장한다.")
     @Test
+    @DisplayName("정상적인 예약 요청을 받아서 저장한다.")
     void shouldReturnReservationResponseWhenValidReservationRequestSave() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("themeName", "desc", "url"));
@@ -71,8 +71,8 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(1);
     }
 
-    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 예외가 발생한다.")
     @Test
+    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 예외가 발생한다.")
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
         Theme savedTheme = themeRepository.create(new Theme("test", "test", "test"));
         Member member = memberRepository.save(MemberFixture.createMember("아루"));
@@ -104,8 +104,8 @@ class ReservationServiceTest {
     }
 
 
-    @DisplayName("중복된 예약을 하는 경우 예외를 반환한다.")
     @Test
+    @DisplayName("중복된 예약을 하는 경우 예외를 반환한다.")
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.create(new Theme("test", "test", "test"));
@@ -123,8 +123,8 @@ class ReservationServiceTest {
                 .hasMessage("이미 존재하는 예약입니다.");
     }
 
-    @DisplayName("과거 시간을 예약하는 경우 예외를 반환한다.")
     @Test
+    @DisplayName("과거 시간을 예약하는 경우 예외를 반환한다.")
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("test", "test", "test"));
@@ -141,16 +141,16 @@ class ReservationServiceTest {
                 .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
 
-    @DisplayName("모든 예약을 조회한다.")
     @Test
+    @DisplayName("모든 예약을 조회한다.")
     void shouldReturnReservationResponsesWhenReservationsExist() {
         saveReservation();
         List<ReservationResponse> reservationResponses = reservationService.findAll();
         assertThat(reservationResponses).hasSize(1);
     }
 
-    @DisplayName("예약 삭제 요청시 예약이 존재하면 예약을 삭제한다.")
     @Test
+    @DisplayName("예약 삭제 요청시 예약이 존재하면 예약을 삭제한다.")
     void shouldDeleteReservationWhenReservationExist() {
         Reservation reservation = saveReservation();
         Member member = reservation.getMember();
@@ -160,8 +160,8 @@ class ReservationServiceTest {
         assertThat(reservations).isEmpty();
     }
 
-    @DisplayName("다른 사람의 예약을 삭제하는 경우, 예외를 반환한다.")
     @Test
+    @DisplayName("다른 사람의 예약을 삭제하는 경우, 예외를 반환한다.")
     void shouldThrowExceptionWhenDeleteOtherMemberReservation() {
         Reservation reservation = saveReservation();
         Member otherMember = memberRepository.save(MemberFixture.createMember("other"));
@@ -169,8 +169,8 @@ class ReservationServiceTest {
                 .isInstanceOf(UnAuthorizedException.class);
     }
 
-    @DisplayName("관리자가 다른 사람의 예약을 삭제하는 경우, 예약이 삭제된다.")
     @Test
+    @DisplayName("관리자가 다른 사람의 예약을 삭제하는 경우, 예약이 삭제된다.")
     void shouldDeleteReservationWhenAdmin() {
         Reservation reservation = saveReservation();
         Member admin = memberRepository.save(new Member("admin", "admin@admin.com", "12341234"));
@@ -181,8 +181,8 @@ class ReservationServiceTest {
         assertThat(reservations).isEmpty();
     }
 
-    @DisplayName("예약 삭제 요청시 예약이 존재하지 않으면 예외를 반환한다.")
     @Test
+    @DisplayName("예약 삭제 요청시 예약이 존재하지 않으면 예외를 반환한다.")
     void shouldThrowsIllegalArgumentExceptionWhenReservationDoesNotExist() {
         assertThatCode(() -> reservationService.deleteById(1L, 99L))
                 .isInstanceOf(NoSuchElementException.class)

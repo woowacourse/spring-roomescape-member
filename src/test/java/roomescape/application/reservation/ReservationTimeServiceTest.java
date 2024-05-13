@@ -44,8 +44,8 @@ class ReservationTimeServiceTest {
     @Autowired
     private Clock clock;
 
-    @DisplayName("예약 시간을 생성한다.")
     @Test
+    @DisplayName("예약 시간을 생성한다.")
     void shouldReturnReservationTimeResponseWhenCreateReservationTime() {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.parse("10:00"));
         reservationTimeService.create(reservationTimeRequest);
@@ -53,8 +53,8 @@ class ReservationTimeServiceTest {
         assertThat(times).hasSize(1);
     }
 
-    @DisplayName("이미 존재하는 예약 시간을 생성 요청하면 예외가 발생한다.")
     @Test
+    @DisplayName("이미 존재하는 예약 시간을 생성 요청하면 예외가 발생한다.")
     void shouldThrowsIllegalStateExceptionWhenCreateExistStartAtTime() {
         LocalTime startAt = createTime(10, 0).getStartAt();
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
@@ -63,8 +63,8 @@ class ReservationTimeServiceTest {
                 .hasMessage("이미 존재하는 시간입니다.");
     }
 
-    @DisplayName("예약 시간 조회를 요청하면 저장되어있는 모든 예약 시간대를 반환한다.")
     @Test
+    @DisplayName("예약 시간 조회를 요청하면 저장되어있는 모든 예약 시간대를 반환한다.")
     void shouldReturnAllReservationTimesWhenFindAll() {
         ReservationTime time = createTime(10, 0);
         List<ReservationTimeResponse> times = reservationTimeService.findAll();
@@ -73,16 +73,16 @@ class ReservationTimeServiceTest {
         );
     }
 
-    @DisplayName("예약 삭제 요청을 하면, 해당 예약이 저장되어있는지 확인 후 존재하면 삭제한다.")
     @Test
+    @DisplayName("예약 삭제 요청을 하면, 해당 예약이 저장되어있는지 확인 후 존재하면 삭제한다.")
     void shouldDeleteReservationWhenDeleteById() {
         ReservationTime reservationTime = createTime(10, 0);
         reservationTimeService.deleteById(reservationTime.getId());
         assertThat(reservationTimeRepository.findAll()).isEmpty();
     }
 
-    @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, 예외가 발생한다.")
     @Test
+    @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, 예외가 발생한다.")
     void shouldThrowsExceptionReservationWhenReservedInTime() {
         ReservationTime time = createTime(10, 0);
         long timeId = time.getId();

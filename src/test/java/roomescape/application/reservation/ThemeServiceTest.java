@@ -22,8 +22,8 @@ class ThemeServiceTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    @DisplayName("테마를 생성한다.")
     @Test
+    @DisplayName("테마를 생성한다.")
     void shouldReturnCreatedTheme() {
         ThemeRequest request = new ThemeRequest("테마", "테마 설명", "url");
         themeService.create(request);
@@ -31,16 +31,16 @@ class ThemeServiceTest {
         assertThat(themes).hasSize(1);
     }
 
-    @DisplayName("모든 테마를 조회한다.")
     @Test
+    @DisplayName("모든 테마를 조회한다.")
     void shouldReturnAllThemes() {
         createTheme();
         List<ThemeResponse> themes = themeService.findAll();
         assertThat(themes).hasSize(1);
     }
 
-    @DisplayName("id로 테마를 삭제한다.")
     @Test
+    @DisplayName("id로 테마를 삭제한다.")
     void shouldDeleteThemeWhenDeleteWithId() {
         Theme theme = createTheme();
         themeService.deleteById(theme.getId());
@@ -48,8 +48,8 @@ class ThemeServiceTest {
         assertThat(themes).isEmpty();
     }
 
-    @DisplayName("예약이 존재하는 테마를 삭제하는 경우, 예외가 발생한다.")
     @Test
+    @DisplayName("예약이 존재하는 테마를 삭제하는 경우, 예외가 발생한다.")
     @Sql("/insert-single-reservation.sql")
     void shouldThrowEntityReferenceOnDeleteExceptionWhenDeleteThemeWithReservation() {
         assertThatCode(() -> themeService.deleteById(1L))

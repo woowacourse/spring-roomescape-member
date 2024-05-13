@@ -29,23 +29,23 @@ class JdbcReservationTimeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @DisplayName("id를 검색해서 존재하면 예약을 반환한다.")
     @Test
+    @DisplayName("id를 검색해서 존재하면 예약을 반환한다.")
     void shouldReturnOptionalReservationTimeWhenFindById() {
         jdbcTemplate.update(INSERT_SQL, 1L, LocalTime.of(10, 0));
         Optional<ReservationTime> reservationTime = timeRepository.findById(1L);
         assertThat(reservationTime).isPresent();
     }
 
-    @DisplayName("id를 검색해서 존재하지 않으면 빈 옵셔널 객체를 반환한다.")
     @Test
+    @DisplayName("id를 검색해서 존재하지 않으면 빈 옵셔널 객체를 반환한다.")
     void shouldReturnOptionalEmptyWhenReservationTimeDoesNotExist() {
         Optional<ReservationTime> reservationTime = timeRepository.findById(1L);
         assertThat(reservationTime).isEmpty();
     }
 
-    @DisplayName("id가 생성되지 않은 예약 시간을 추가하면, id가 주어진 예약 시간이 저장된다.")
     @Test
+    @DisplayName("id가 생성되지 않은 예약 시간을 추가하면, id가 주어진 예약 시간이 저장된다.")
     void shouldReturnReservationTimeWithIdWhenCreateReservationTimeWithoutId() {
         ReservationTime reservationTimeWithoutId = new ReservationTime(LocalTime.of(10, 0));
         ReservationTime reservationTime = timeRepository.create(reservationTimeWithoutId);
@@ -56,8 +56,8 @@ class JdbcReservationTimeRepositoryTest {
         );
     }
 
-    @DisplayName("특정 시간이 저장소에 존재하면 true를 반환한다.")
     @Test
+    @DisplayName("특정 시간이 저장소에 존재하면 true를 반환한다.")
     void shouldReturnTrueWhenReservationTimeAlreadyExist() {
         LocalTime startAt = LocalTime.of(10, 0);
         jdbcTemplate.update(INSERT_SQL, 1L, startAt);
@@ -65,24 +65,24 @@ class JdbcReservationTimeRepositoryTest {
         assertThat(exists).isTrue();
     }
 
-    @DisplayName("예약 시간을 모두 조회한다.")
     @Test
+    @DisplayName("예약 시간을 모두 조회한다.")
     void shouldReturnReservationsWhenFindAll() {
         jdbcTemplate.update(INSERT_SQL, 1L, LocalTime.of(10, 0));
         List<ReservationTime> reservationTimes = timeRepository.findAll();
         assertThat(reservationTimes).hasSize(1);
     }
 
-    @DisplayName("특정 시간이 저장소에 존재하지 않으면 false를 반환한다.")
     @Test
+    @DisplayName("특정 시간이 저장소에 존재하지 않으면 false를 반환한다.")
     void shouldReturnFalseWhenReservationTimeAlreadyExist() {
         LocalTime startAt = LocalTime.of(10, 0);
         boolean exists = timeRepository.existsByStartAt(startAt);
         assertThat(exists).isFalse();
     }
 
-    @DisplayName("id로 예약 시간을 삭제한다.")
     @Test
+    @DisplayName("id로 예약 시간을 삭제한다.")
     void shouldDeleteTimeById() {
         jdbcTemplate.update(INSERT_SQL, 1L, LocalTime.of(10, 0));
         timeRepository.deleteById(1L);
@@ -90,9 +90,9 @@ class JdbcReservationTimeRepositoryTest {
         assertThat(count).isZero();
     }
 
-    @DisplayName("날짜와 테마 id가 주어지면, 예약 가능한 시간을 반환한다.")
     @Test
     @Sql("/insert-reservations.sql")
+    @DisplayName("날짜와 테마 id가 주어지면, 예약 가능한 시간을 반환한다.")
     void shouldReturnAvailableTimes() {
         LocalDate date = LocalDate.of(2024, 12, 25);
         List<TimeSlot> times = timeRepository.getReservationTimeAvailabilities(date, 1L)

@@ -17,8 +17,8 @@ import roomescape.application.auth.TokenManager;
 import roomescape.application.member.MemberService;
 import roomescape.application.member.dto.request.MemberLoginRequest;
 import roomescape.application.member.dto.response.TokenResponse;
-import roomescape.presentation.auth.CredentialContext;
 import roomescape.presentation.ControllerTest;
+import roomescape.presentation.auth.CredentialContext;
 
 @WebMvcTest(AuthController.class)
 class AuthControllerTest extends ControllerTest {

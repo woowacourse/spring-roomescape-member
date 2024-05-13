@@ -10,9 +10,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class PasswordTest {
 
-    @DisplayName("비밀번호의 길이가 8자에서 20자 사이가 아닌 경우 예외를 발생한다.")
     @ParameterizedTest
     @ValueSource(ints = {7, 21})
+    @DisplayName("비밀번호의 길이가 8자에서 20자 사이가 아닌 경우 예외를 발생한다.")
     void invalidLengthTest(int length) {
         String rawPassword = "a".repeat(length);
         assertThatCode(() -> new Password(rawPassword))
@@ -20,8 +20,8 @@ class PasswordTest {
                 .hasMessage("비밀번호는 8자 이상 20자 이하여야 합니다.");
     }
 
-    @DisplayName("비밀번호가 올바른지 확인한다.")
     @Test
+    @DisplayName("비밀번호가 올바른지 확인한다.")
     void validPasswordTest() {
         String rawPassword = "12345678";
         Password password = new Password(rawPassword);

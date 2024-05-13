@@ -41,8 +41,8 @@ class RoomescapeControllerAdviceTest {
                 .build();
     }
 
-    @DisplayName("어플리케이션에서 처리할 수 없는 예외의 경우, 500 서버 오류를 응답한다.")
     @Test
+    @DisplayName("어플리케이션에서 처리할 수 없는 예외의 경우, 500 서버 오류를 응답한다.")
     void shouldHandleExceptionWithInternalError() throws Exception {
         when(controller.reservationPage()).thenThrow(RuntimeException.class);
         MockHttpServletResponse response = mvc.perform(get("/admin/reservation"))
