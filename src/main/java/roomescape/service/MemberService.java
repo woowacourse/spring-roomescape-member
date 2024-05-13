@@ -24,9 +24,7 @@ public class MemberService {
     public TokenResponse createToken(final TokenRequest request) {
         final Member member = memberDao.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException(request.email() + "에 해당하는 사용자가 없습니다"));
-        if (member.isIncorrectPassword(request.password())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-        }
+        member.checkIncorrectPassword(request.password());
         final String accessToken = jwtTokenProvider.createToken(member);
         return new TokenResponse(accessToken);
     }
