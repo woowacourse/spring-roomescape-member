@@ -1,10 +1,7 @@
 package roomescape.acceptance;
 
-import static org.hamcrest.Matchers.is;
 import static roomescape.TestFixture.*;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.theme.ThemeSaveRequest;
@@ -17,12 +14,7 @@ class ThemeAcceptanceTest extends AcceptanceTest {
         final ThemeSaveRequest request
                 = new ThemeSaveRequest(THEME_HORROR_NAME, THEME_HORROR_DESCRIPTION, THEME_HORROR_THUMBNAIL);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
+        assertCreateResponse(request, "/themes", 201);
     }
 
     @Test
@@ -30,11 +22,7 @@ class ThemeAcceptanceTest extends AcceptanceTest {
     void respondOkWhenFindThemes() {
         saveTheme();
 
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        assertGetResponse("/themes", 200, 1);
     }
 
     @Test
@@ -42,11 +30,7 @@ class ThemeAcceptanceTest extends AcceptanceTest {
     void respondOkWhenFindPopularThemes() {
         saveTheme();
 
-        RestAssured.given().log().all()
-                .when().get("/themes/popular")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        assertGetResponse("/themes/popular", 200, 1);
     }
 
     @Test
@@ -54,10 +38,7 @@ class ThemeAcceptanceTest extends AcceptanceTest {
     void respondNoContentWhenDeleteThemes() {
         final Long themeId = saveTheme();
 
-        RestAssured.given().log().all()
-                .when().delete("/themes/" + themeId)
-                .then().log().all()
-                .statusCode(204);
+        assertDeleteResponse("/themes/", themeId, 204);
     }
 
     @Test
@@ -66,9 +47,6 @@ class ThemeAcceptanceTest extends AcceptanceTest {
         saveTheme();
         final Long notExistingThemeId = 2L;
 
-        RestAssured.given().log().all()
-                .when().delete("/themes/" + notExistingThemeId)
-                .then().log().all()
-                .statusCode(400);
+        assertDeleteResponse("/themes/", notExistingThemeId, 400);
     }
 }

@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static roomescape.TestFixture.*;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.reservation.AdminReservationSaveRequest;
@@ -18,15 +17,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         final Long timeId = saveReservationTime();
         final Long themeId = saveTheme();
         final MemberReservationSaveRequest request = new MemberReservationSaveRequest(DATE_MAY_EIGHTH, timeId, themeId);
-        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
-        RestAssured.given().log().all()
-                .cookie("token", accessToken)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        assertCreateResponseWithToken(request, MEMBER_MIA_EMAIL, "/reservations", 201);
     }
 
     @Test
@@ -35,15 +27,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         final Long timeId = saveReservationTime();
         final Long themeId = saveTheme();
         final AdminReservationSaveRequest request = new AdminReservationSaveRequest(1L, DATE_MAY_EIGHTH, timeId, themeId);
-        final String accessToken = getAccessToken(ADMIN_EMAIL);
 
-        RestAssured.given().log().all()
-                .cookie("token", accessToken)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/admin/reservations")
-                .then().log().all()
-                .statusCode(201);
+        assertCreateResponseWithToken(request, ADMIN_EMAIL, "/admin/reservations", 201);
     }
 
     @Test
@@ -52,15 +37,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         saveReservationTime();
         final Long themeId = saveTheme();
         final MemberReservationSaveRequest request = new MemberReservationSaveRequest(DATE_MAY_EIGHTH, 2L, themeId);
-        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
-        RestAssured.given().log().all()
-                .cookie("token", accessToken)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
+        assertCreateResponseWithToken(request, MEMBER_MIA_EMAIL, "/reservations", 400);
     }
 
     @Test
@@ -69,37 +47,22 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         saveTheme();
         final Long timeId = saveReservationTime();
         final MemberReservationSaveRequest request = new MemberReservationSaveRequest(DATE_MAY_EIGHTH, timeId, 2L);
-        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
-        RestAssured.given().log().all()
-                .cookie("token", accessToken)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
+        assertCreateResponseWithToken(request, MEMBER_MIA_EMAIL, "/reservations", 400);
     }
 
     @Test
     @DisplayName("예약 목록을 성공적으로 조회하면 200을 응답한다.")
     void respondOkWhenFindReservations() {
-        final Long timeId = saveReservationTime();
-        final Long themeId = saveTheme();
-        saveReservation(timeId, themeId);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        saveReservation();
+        
+        assertGetResponse("/reservations", 200, 1);
     }
     
     @Test
     @DisplayName("테마, 사용자, 예약 날짜로 예약 목록을 성공적으로 조회하면 200을 응답한다.")
     void respondOkWhenFilteredFindReservations() {
-        final Long timeId = saveReservationTime();
-        final Long themeId = saveTheme();
-        saveReservation(timeId, themeId);
+        saveReservation();
         final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
         RestAssured.given().log().all()
@@ -117,27 +80,17 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("예약을 성공적으로 삭제하면 204를 응답한다.")
     void respondNoContentWhenDeleteReservation() {
-        final Long timeId = saveReservationTime();
-        final Long themeId = saveTheme();
-        final Long reservationId = saveReservation(timeId, themeId);
+        final Long reservationId = saveReservation();
 
-        RestAssured.given().log().all()
-                .when().delete("/reservations/" + reservationId)
-                .then().log().all()
-                .statusCode(204);
+        assertDeleteResponse("/reservations/", reservationId, 204);
     }
 
     @Test
     @DisplayName("존재하지 않는 예약을 삭제하면 400을 응답한다.")
     void respondBadRequestWhenDeleteNotExistingReservation() {
-        final Long timeId = saveReservationTime();
-        final Long themeId = saveTheme();
-        saveReservation(timeId, themeId);
+        saveReservation();
         final Long notExistingReservationTimeId = 2L;
 
-        RestAssured.given().log().all()
-                .when().delete("/reservations/" + notExistingReservationTimeId)
-                .then().log().all()
-                .statusCode(400);
+        assertDeleteResponse("/reservations/", notExistingReservationTimeId, 400);
     }
 }

@@ -1,11 +1,9 @@
 package roomescape.acceptance;
 
-import static org.hamcrest.Matchers.is;
 import static roomescape.TestFixture.DATE_MAY_EIGHTH;
 import static roomescape.TestFixture.START_AT_SIX;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,12 +18,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     void respondCreatedWhenCreateReservationTime() {
         final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(START_AT_SIX);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
+        assertCreateResponse(request, "/times", 201);
     }
 
     @ParameterizedTest
@@ -35,12 +28,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     void respondBadRequestWhenCreateInvalidReservationTime(final String invalidTime) {
         final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(invalidTime);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(400);
+        assertCreateResponse(request, "/times", 400);
     }
 
     @Test
@@ -48,11 +36,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     void respondOkWhenFindReservationTimes() {
         saveReservationTime();
 
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        assertGetResponse("/times", 200, 1);
     }
 
     @Test
@@ -60,10 +44,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     void respondNoContentWhenDeleteReservationTime() {
         final Long reservationTimeId = saveReservationTime();
 
-        RestAssured.given().log().all()
-                .when().delete("/times/" + reservationTimeId)
-                .then().log().all()
-                .statusCode(204);
+        assertDeleteResponse("/times/", reservationTimeId, 204);
     }
 
     @Test
@@ -72,10 +53,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
         saveReservationTime();
         final Long notExistingReservationTimeId = 2L;
 
-        RestAssured.given().log().all()
-                .when().delete("/times/" + notExistingReservationTimeId)
-                .then().log().all()
-                .statusCode(400);
+        assertDeleteResponse("/times/", notExistingReservationTimeId, 400);
     }
 
     @Test
