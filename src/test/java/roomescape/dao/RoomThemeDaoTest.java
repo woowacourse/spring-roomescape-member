@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
-import static roomescape.TestFixture.RESERVATION_TIME_PARAMETER_SOURCE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_PARAMETER_SOURCE;
+import static roomescape.TestFixture.createMember;
+import static roomescape.TestFixture.createReservationTime;
+import static roomescape.TestFixture.createTheme;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -56,21 +57,9 @@ class RoomThemeDaoTest {
     @Test
     void findAllRanking() {
         // given
-        Long memberId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(MEMBER_PARAMETER_SOURCE)
-                .longValue();
-        Long timeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(RESERVATION_TIME_PARAMETER_SOURCE)
-                .longValue();
-        Long themeId = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(ROOM_THEME_PARAMETER_SOURCE)
-                .longValue();
+        Long memberId = createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
+        Long timeId = createReservationTime(jdbcTemplate);
+        Long themeId = createTheme(jdbcTemplate);
         roomThemeDao.save(new RoomTheme("a", "s", "d"));
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("date", LocalDate.now().minusDays(2))
@@ -86,7 +75,7 @@ class RoomThemeDaoTest {
         // then
         assertThat(ranking).hasSize(1);
         assertThat(ranking.get(0).getName()).isEqualTo(
-                ROOM_THEME_PARAMETER_SOURCE.getValue("name"));
+                ROOM_THEME_FIXTURE.getName());
     }
 
     @DisplayName("해당 id의 테마를 보여준다.")

@@ -10,6 +10,7 @@ import roomescape.util.JwtTokenProvider;
 
 @Service
 public class AuthService {
+    private static final String TOKEN = "token";
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthService(JwtTokenProvider jwtTokenProvider) {
@@ -17,7 +18,7 @@ public class AuthService {
     }
 
     public Cookie generateCookie(Member member) {
-        Cookie cookie = new Cookie("token", jwtTokenProvider.createToken(member));
+        Cookie cookie = new Cookie(TOKEN, jwtTokenProvider.createToken(member));
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
@@ -38,7 +39,7 @@ public class AuthService {
             throw new InvalidInputException("로그인 해주세요.");
         }
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
+                .filter(cookie -> cookie.getName().equals(TOKEN))
                 .findAny()
                 .map(this::getValidatedToken)
                 .orElseThrow(() -> new InvalidInputException("잘못된 요청입니다."));

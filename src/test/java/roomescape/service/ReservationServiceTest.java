@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.TestFixture;
+import roomescape.dto.request.FilteredReservationRequest;
 import roomescape.dto.request.MemberRequest;
 import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.response.ReservationResponse;
@@ -65,10 +66,11 @@ class ReservationServiceTest {
         reservationService.save(outOfFilterRequest, memberRequest);
         // when
         List<ReservationResponse> filtered = reservationService.findAllMatching(
-                request.themeId(),
-                memberRequest.id(),
-                LocalDate.of(3000, 12, 12),
-                LocalDate.of(5000, 12, 12));
+                new FilteredReservationRequest(
+                        request.themeId(),
+                        memberRequest.id(),
+                        LocalDate.of(3000, 12, 12),
+                        LocalDate.of(5000, 12, 12)));
         // then
         assertThat(filtered).hasSize(1);
         assertThat(filtered.get(0).id()).isEqualTo(response.id());
