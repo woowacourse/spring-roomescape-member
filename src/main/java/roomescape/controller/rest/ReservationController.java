@@ -1,6 +1,10 @@
 package roomescape.controller.rest;
 
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,16 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.rest.auth.AuthInfo;
-import roomescape.dto.auth.LoginMember;
+import roomescape.dto.auth.LoginInfo;
 import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.response.ReservationResponse;
 import roomescape.service.ReservationService;
-
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/reservations")
@@ -34,7 +33,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readReservations(@RequestParam Map<String, String> filterConditions) {
+    public ResponseEntity<List<ReservationResponse>> readReservations(
+            @RequestParam Map<String, String> filterConditions) {
         return ResponseEntity.ok(reservationService.findReservationsByCondition(filterConditions));
     }
 
@@ -49,9 +49,10 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody @Valid UserReservationRequest reservationRequest,
-            @AuthInfo LoginMember loginMember
+            @AuthInfo LoginInfo loginInfo
     ) {
-        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest, loginMember.id());
+        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest,
+                loginInfo.id());
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);

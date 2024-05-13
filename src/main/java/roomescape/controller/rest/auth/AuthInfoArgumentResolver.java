@@ -2,18 +2,17 @@ package roomescape.controller.rest.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.dto.auth.LoginMember;
+import roomescape.dto.auth.LoginInfo;
 import roomescape.global.exception.ApplicationException;
 import roomescape.global.exception.ExceptionType;
 import roomescape.global.util.TokenManager;
-
-import java.util.Arrays;
 
 @Component
 public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
@@ -24,8 +23,8 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public LoginMember resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                       NativeWebRequest webRequest, WebDataBinderFactory binderFactory
+    public LoginInfo resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                     NativeWebRequest webRequest, WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
@@ -35,7 +34,7 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
         String memberName = TokenManager.extractClaim(token, "name");
         String memberRole = TokenManager.extractClaim(token, "role");
 
-        return new LoginMember(memberId, memberName, memberRole);
+        return new LoginInfo(memberId, memberName, memberRole);
     }
 
     private String extractToken(Cookie[] cookies) {
