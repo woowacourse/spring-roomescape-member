@@ -3,20 +3,30 @@ package roomescape.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Role;
 
 @Component
+@EnableConfigurationProperties(TokenProperties.class)
 public class JwtTokenProvider {
 
     public static final String TOKEN_COOKIE_NAME = "token";
 
-    @Value("${security.jwt.token.secret-key}")
     private String secretKey;
+
+    public JwtTokenProvider(final TokenProperties tokenProperties) {
+        this.secretKey = tokenProperties.secretKey();
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println("hi" + secretKey);
+    }
 
     public String createToken(final Long id, final String role) {
         return Jwts.builder()
