@@ -40,7 +40,7 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTimes(
-            @ModelAttribute AvailableReservationTimeSearch availableReservationTimeSearch) {
+            @ModelAttribute final AvailableReservationTimeSearch availableReservationTimeSearch) {
         return ResponseEntity.ok(reservationTimeService.findAvailableReservationTimes(availableReservationTimeSearch));
     }
 }
