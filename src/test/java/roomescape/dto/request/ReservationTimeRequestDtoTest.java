@@ -27,9 +27,9 @@ class ReservationTimeRequestDtoTest {
     @DisplayName("startAt이 null이나 빈 값이면 검증에 실패한다")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\n"})
-    void notEmptyViolationWithBlankStartAt(String emptyStartAt) {
-        ReservationTimeRequestDto reservationTimeRequest = new ReservationTimeRequestDto(emptyStartAt);
-        Set<ConstraintViolation<ReservationTimeRequestDto>> violations = validator.validate(reservationTimeRequest);
+    void notEmptyViolationWithBlankStartAt(final String emptyStartAt) {
+        final ReservationTimeRequestDto reservationTimeRequest = new ReservationTimeRequestDto(emptyStartAt);
+        final Set<ConstraintViolation<ReservationTimeRequestDto>> violations = validator.validate(reservationTimeRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
                 .first()

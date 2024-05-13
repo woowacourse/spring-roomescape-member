@@ -1,8 +1,8 @@
 package roomescape.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.util.Fixture.DATE;
-import static roomescape.util.Fixture.ID;
+import static roomescape.util.Fixture.DATE_2024_05_06;
+import static roomescape.util.Fixture.ID_1;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -31,7 +31,7 @@ class ReservationRequestDtoTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\n"})
     void notEmptyViolationWithBlankDate(final String emptyDate) {
-        final ReservationRequestDto reservationRequest = new ReservationRequestDto(emptyDate, ID, ID);
+        final ReservationRequestDto reservationRequest = new ReservationRequestDto(emptyDate, ID_1, ID_1);
         final Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
@@ -42,7 +42,7 @@ class ReservationRequestDtoTest {
     @Test
     @DisplayName("timeId가 null이면 검증에 실패한다")
     void notEmptyViolationWithNullTimeId() {
-        final ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE, null, ID);
+        final ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE_2024_05_06, null, ID_1);
         final Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
@@ -53,7 +53,7 @@ class ReservationRequestDtoTest {
     @Test
     @DisplayName("themeId가 null이면 검증에 실패한다")
     void notEmptyViolationWithNullThemeId() {
-        final ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE, ID, null);
+        final ReservationRequestDto reservationRequest = new ReservationRequestDto(DATE_2024_05_06, ID_1, null);
         final Set<ConstraintViolation<ReservationRequestDto>> violations = validator.validate(reservationRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)

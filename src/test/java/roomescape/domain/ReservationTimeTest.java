@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.util.Fixture.ID;
-import static roomescape.util.Fixture.START_AT;
+import static roomescape.util.Fixture.ID_1;
+import static roomescape.util.Fixture.START_AT_16_00;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,7 @@ class ReservationTimeTest {
     @Test
     @DisplayName("시간을 생성한다")
     void createReservationTime() {
-        assertThatCode(() -> new ReservationTime(ID, START_AT))
+        assertThatCode(() -> new ReservationTime(ID_1, START_AT_16_00))
                 .doesNotThrowAnyException();
     }
 
@@ -31,7 +31,7 @@ class ReservationTimeTest {
     @Test
     @DisplayName("시간 생성 시, startAt아 유효한 시간 형식이 아니면 예외가 발생한다")
     void throwExceptionWhenInvalidTimeFormat() {
-        assertThatThrownBy(() -> new ReservationTime(ID, "1시"))
+        assertThatThrownBy(() -> new ReservationTime(ID_1, "1시"))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("시간 형식이 잘못되었습니다.");
     }
@@ -43,8 +43,8 @@ class ReservationTimeTest {
         final LocalTime futureTime = LocalTime.now().plusMinutes(1);
 
         assertAll(
-                () -> assertThat(new ReservationTime(ID, pastTime).isPast()).isTrue(),
-                () -> assertThat(new ReservationTime(ID, futureTime).isPast()).isFalse()
+                () -> assertThat(new ReservationTime(ID_1, pastTime).isPast()).isTrue(),
+                () -> assertThat(new ReservationTime(ID_1, futureTime).isPast()).isFalse()
         );
     }
 
@@ -52,7 +52,7 @@ class ReservationTimeTest {
     @DisplayName("예약 시간을 HH:mm 형식으로 반환한다.")
     void getStartAtString() {
         final LocalTime time = LocalTime.of(8, 1);
-        final ReservationTime reservationTime = new ReservationTime(ID, time);
+        final ReservationTime reservationTime = new ReservationTime(ID_1, time);
 
         assertThat(reservationTime.getStartAtString()).isEqualTo("08:01");
     }

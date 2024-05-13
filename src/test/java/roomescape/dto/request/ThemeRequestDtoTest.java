@@ -1,9 +1,9 @@
 package roomescape.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.util.Fixture.THEME_DESCRIPTION;
-import static roomescape.util.Fixture.THEME_NAME;
-import static roomescape.util.Fixture.THEME_THUMBNAIL;
+import static roomescape.util.Fixture.LEVEL2_DESCRIPTION;
+import static roomescape.util.Fixture.LEVEL2_NAME;
+import static roomescape.util.Fixture.LEVEL2_THUMBNAIL;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -30,9 +30,9 @@ class ThemeRequestDtoTest {
     @DisplayName("name이 null이나 빈 값이면 검증에 실패한다")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\n"})
-    void notEmptyViolationWithBlankName(String emptyName) {
-        ThemeRequestDto themeRequest = new ThemeRequestDto(emptyName, THEME_DESCRIPTION, THEME_THUMBNAIL);
-        Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(themeRequest);
+    void notEmptyViolationWithBlankName(final String emptyName) {
+        final ThemeRequestDto themeRequest = new ThemeRequestDto(emptyName, LEVEL2_DESCRIPTION, LEVEL2_THUMBNAIL);
+        final Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(themeRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
                 .first()
@@ -43,9 +43,9 @@ class ThemeRequestDtoTest {
     @DisplayName("description이 null이나 빈 값이면 검증에 실패한다")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\n"})
-    void notEmptyViolationWithBlankDescription(String emptyDescription) {
-        ThemeRequestDto themeRequest = new ThemeRequestDto(THEME_NAME, emptyDescription, THEME_THUMBNAIL);
-        Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(themeRequest);
+    void notEmptyViolationWithBlankDescription(final String emptyDescription) {
+        final ThemeRequestDto themeRequest = new ThemeRequestDto(LEVEL2_NAME, emptyDescription, LEVEL2_THUMBNAIL);
+        final Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(themeRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
                 .first()
@@ -56,9 +56,9 @@ class ThemeRequestDtoTest {
     @DisplayName("thumbnail이 null이면 검증에 실패한다")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\n"})
-    void notEmptyViolationWithEmptyThumbnail(String emptyThumbnail) {
-        ThemeRequestDto themeRequest = new ThemeRequestDto(THEME_NAME, THEME_DESCRIPTION, emptyThumbnail);
-        Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(themeRequest);
+    void notEmptyViolationWithEmptyThumbnail(final String emptyThumbnail) {
+        final ThemeRequestDto themeRequest = new ThemeRequestDto(LEVEL2_NAME, LEVEL2_DESCRIPTION, emptyThumbnail);
+        final Set<ConstraintViolation<ThemeRequestDto>> violations = validator.validate(themeRequest);
         assertThat(violations).hasSize(1)
                 .extracting(ConstraintViolation::getMessage)
                 .first()
