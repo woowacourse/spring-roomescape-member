@@ -10,13 +10,13 @@ import roomescape.auth.AuthenticatedMemberArgumentResolver;
 import java.util.List;
 
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class AuthWebConfig implements WebMvcConfigurer {
 
     private final AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
     private final AdminAuthHandlerInterceptor adminAuthHandlerInterceptor;
 
-    public WebConfig(AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver,
-                     AdminAuthHandlerInterceptor adminAuthHandlerInterceptor) {
+    public AuthWebConfig(AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver,
+                         AdminAuthHandlerInterceptor adminAuthHandlerInterceptor) {
         this.authenticatedMemberArgumentResolver = authenticatedMemberArgumentResolver;
         this.adminAuthHandlerInterceptor = adminAuthHandlerInterceptor;
     }
