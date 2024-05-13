@@ -11,9 +11,11 @@ import roomescape.service.AuthService;
 
 public class RoleAllowedInterceptor implements HandlerInterceptor {
     private final AuthService authService;
+    private final CookieExtractor cookieExtractor;
 
-    public RoleAllowedInterceptor(AuthService authService) {
+    public RoleAllowedInterceptor(AuthService authService, CookieExtractor cookieExtractor) {
         this.authService = authService;
+        this.cookieExtractor = cookieExtractor;
     }
 
     @Override
@@ -31,7 +33,10 @@ public class RoleAllowedInterceptor implements HandlerInterceptor {
     private void checkRoleAccess(Method method, HttpServletRequest request) {
         RoleAllowed annotation = method.getAnnotation(RoleAllowed.class);
         MemberRole roleAllowed = annotation.value();
-        MemberRole currentRole = authService.findMemberRoleByCookie(request.getCookies());
+
+        String token = cookieExtractor.getToken(request.getCookies());
+        MemberRole currentRole = authService.findMemberRoleByToken(token);
+
         if (currentRole.isLowerThan(roleAllowed)) {
             throw new AccessDeniedException();
         }

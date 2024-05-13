@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
@@ -12,48 +11,36 @@ import roomescape.service.dto.LoginCheckResponse;
 import roomescape.service.dto.LoginRequest;
 import roomescape.service.dto.SignupRequest;
 import roomescape.service.dto.SignupResponse;
-import roomescape.service.helper.CookieExtractor;
 import roomescape.service.helper.JwtTokenProvider;
 
 @Service
 public class AuthService {
-    private final CookieExtractor cookieExtractor;
-    private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(CookieExtractor cookieExtractor,
-                       JwtTokenProvider jwtTokenProvider,
-                       MemberRepository memberRepository) {
-        this.cookieExtractor = cookieExtractor;
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public Cookie login(LoginRequest request) {
+    public String login(LoginRequest request) {
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(UnauthorizedEmailException::new);
         if (!member.getPassword().equals(request.getPassword())) {
             throw new UnauthorizedPasswordException();
         }
-        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
-        return cookieExtractor.createCookie(token);
+        return jwtTokenProvider.createToken(member.getEmail(), member.getRole());
     }
 
     public LoginCheckResponse loginCheck(Member member) {
         return new LoginCheckResponse(member);
     }
 
-    public Cookie logout() {
-        return cookieExtractor.deleteCookie();
-    }
-
-    public MemberRole findMemberRoleByCookie(Cookie[] cookies) {
-        String token = cookieExtractor.getToken(cookies);
+    public MemberRole findMemberRoleByToken(String token) {
         return jwtTokenProvider.getMemberRole(token);
     }
 
-    public Member findMemberByCookie(Cookie[] cookies) {
-        String token = cookieExtractor.getToken(cookies);
+    public Member findMemberByToken(String token) {
         String email = jwtTokenProvider.getMemberEmail(token);
         return findMemberByEmail(email);
     }

@@ -11,9 +11,11 @@ import roomescape.service.AuthService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthService authService;
+    private final CookieExtractor cookieExtractor;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
+    public LoginMemberArgumentResolver(AuthService authService, CookieExtractor cookieExtractor) {
         this.authService = authService;
+        this.cookieExtractor = cookieExtractor;
     }
 
     @Override
@@ -27,6 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return authService.findMemberByCookie(request.getCookies());
+        String token = cookieExtractor.getToken(request.getCookies());
+        return authService.findMemberByToken(token);
     }
 }
