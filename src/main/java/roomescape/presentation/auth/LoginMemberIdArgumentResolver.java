@@ -1,7 +1,6 @@
 package roomescape.presentation.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -14,9 +13,9 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
     private final TokenManager tokenManager;
     private final CredentialContext context;
 
-    public LoginMemberIdArgumentResolver(TokenManager tokenManager, ObjectProvider<CredentialContext> contextProvider) {
+    public LoginMemberIdArgumentResolver(TokenManager tokenManager, CredentialContext context) {
         this.tokenManager = tokenManager;
-        this.context = contextProvider.getObject();
+        this.context = context;
     }
 
     @Override

@@ -3,7 +3,6 @@ package roomescape.presentation.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.auth.TokenManager;
@@ -12,9 +11,9 @@ public class PermissionCheckInterceptor implements HandlerInterceptor {
     private final TokenManager tokenManager;
     private final CredentialContext context;
 
-    public PermissionCheckInterceptor(TokenManager tokenManager, ObjectProvider<CredentialContext> contextProvider) {
+    public PermissionCheckInterceptor(TokenManager tokenManager, CredentialContext context) {
         this.tokenManager = tokenManager;
-        this.context = contextProvider.getObject();
+        this.context = context;
     }
 
     @Override
