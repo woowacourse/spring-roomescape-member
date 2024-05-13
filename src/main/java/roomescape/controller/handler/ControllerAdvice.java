@@ -21,6 +21,7 @@ public class ControllerAdvice {
         ReservationExistsException.class,
         IllegalArgumentException.class,
         NoSuchElementException.class,
+        IllegalStateException.class,
     })
     public ResponseEntity<String> handleServiceException(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());

@@ -9,7 +9,6 @@ import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
 import roomescape.domain.MemberRole;
-import roomescape.exception.AuthorizationException;
 import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.response.MemberAppResponse;
 
@@ -24,7 +23,7 @@ public class MemberAuthService {
 
     public MemberAppResponse signUp(MemberSignUpAppRequest request) {
         if (memberRepository.isExistsByEmail(request.email())) {
-            throw new AuthorizationException("해당 이메일의 회원이 이미 존재합니다.");
+            throw new IllegalStateException("해당 이메일의 회원이 이미 존재합니다.");
         }
 
         Member newMember = new Member(
@@ -56,6 +55,6 @@ public class MemberAuthService {
         if (memberRepository.isExistsByEmailAndPassword(email, password)) {
             return true;
         }
-        throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
+        throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다.");
     }
 }

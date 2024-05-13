@@ -54,7 +54,7 @@ class MemberAuthControllerTest extends ControllerTest {
             .body(request)
             .when().post("/login")
             .then().log().all()
-            .statusCode(401);
+            .statusCode(400);
     }
 
     @DisplayName("올바르지 않는 이메일 형식으로 로그인을 한다. -> 400")
@@ -142,7 +142,7 @@ class MemberAuthControllerTest extends ControllerTest {
             .body(request)
             .when().post("/signup")
             .then().log().all()
-            .statusCode(401);
+            .statusCode(400);
     }
 
     @DisplayName("잘못된 형식의 이름으로 회원 가입을 한다. -> 400")

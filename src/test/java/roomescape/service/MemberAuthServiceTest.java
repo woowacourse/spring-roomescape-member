@@ -23,7 +23,6 @@ import roomescape.domain.MemberName;
 import roomescape.domain.MemberPassword;
 import roomescape.domain.MemberRepository;
 import roomescape.domain.MemberRole;
-import roomescape.exception.AuthorizationException;
 import roomescape.service.request.MemberSignUpAppRequest;
 import roomescape.service.response.MemberAppResponse;
 
@@ -62,7 +61,7 @@ class MemberAuthServiceTest {
             .thenReturn(true);
 
         assertThatThrownBy(() -> memberAuthService.signUp(request))
-            .isInstanceOf(AuthorizationException.class);
+            .isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("이메일을 통해 회원을 조회한다.")
