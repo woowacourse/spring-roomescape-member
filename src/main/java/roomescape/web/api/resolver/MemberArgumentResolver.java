@@ -10,7 +10,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.web.api.token.TokenParser;
 import roomescape.web.api.token.TokenProvider;
-import roomescape.web.exception.AuthorizationException;
+import roomescape.web.exception.AuthenticationException;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -37,7 +37,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         String token = tokenProvider.extractToken(cookies)
-                .orElseThrow(AuthorizationException::new);
+                .orElseThrow(AuthenticationException::new);
 
         return tokenParser.getPrincipal(token);
     }
