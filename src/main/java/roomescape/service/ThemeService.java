@@ -6,7 +6,6 @@ import roomescape.domain.theme.Theme;
 import roomescape.global.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.SaveThemeDto;
 
 @Service
 public class ThemeService {
@@ -23,14 +22,14 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Theme save(SaveThemeDto request) {
-        Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
-        validateDuplication(request);
+    public Theme save(String name, String description, String thumbnail) {
+        Theme theme = new Theme(name, description, thumbnail);
+        validateDuplication(name);
         return themeRepository.save(theme);
     }
 
-    private void validateDuplication(SaveThemeDto request) {
-        if (themeRepository.isExists(request.name())) {
+    private void validateDuplication(String name) {
+        if (themeRepository.isExists(name)) {
             throw new RoomescapeException("같은 이름의 테마가 이미 존재합니다.");
         }
     }

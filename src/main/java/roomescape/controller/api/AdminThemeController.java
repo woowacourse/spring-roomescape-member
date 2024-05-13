@@ -12,7 +12,6 @@ import roomescape.controller.dto.CreateThemeRequest;
 import roomescape.controller.dto.CreateThemeResponse;
 import roomescape.domain.theme.Theme;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.SaveThemeDto;
 
 @RestController
 @RequestMapping("/admin/themes")
@@ -26,7 +25,7 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<CreateThemeResponse> save(@RequestBody CreateThemeRequest request) {
-        Theme theme = themeService.save(new SaveThemeDto(request.name(), request.description(), request.thumbnail()));
+        Theme theme = themeService.save(request.name(), request.description(), request.thumbnail());
 
         return ResponseEntity.created(URI.create("/themes/" + theme.getId()))
             .body(CreateThemeResponse.from(theme));

@@ -13,7 +13,6 @@ import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.SaveReservationDto;
 
 @Service
 public class ReservationService {
@@ -34,13 +33,14 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public Reservation save(SaveReservationDto dto) {
-        LoginMember member = findMember(dto.memberId());
-        ReservationTime time = findTime(dto.timeId());
-        Theme theme = findTheme(dto.themeId());
-        Reservation reservation = new Reservation(member, dto.date(), time, theme);
-        validatePastReservation(LocalDate.parse(dto.date()), time);
-        validateDuplication(dto.date(), dto.timeId(), dto.themeId());
+    public Reservation save(Long memberId, String date, Long timeId, Long themeId) {
+        LoginMember member = findMember(memberId);
+        ReservationTime time = findTime(timeId);
+        Theme theme = findTheme(themeId);
+        Reservation reservation = new Reservation(member, date, time, theme);
+
+        validatePastReservation(LocalDate.parse(date), time);
+        validateDuplication(date, timeId, themeId);
 
         return reservationRepository.save(reservation);
     }

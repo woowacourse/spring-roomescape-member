@@ -10,7 +10,6 @@ import roomescape.global.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.FindTimeAndAvailabilityDto;
-import roomescape.service.dto.SaveReservationTimeDto;
 
 @Service
 public class ReservationTimeService {
@@ -24,8 +23,8 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTime save(SaveReservationTimeDto dto) {
-        ReservationTime newReservationTime = new ReservationTime(dto.startAt());
+    public ReservationTime save(String startAt) {
+        ReservationTime newReservationTime = new ReservationTime(startAt);
         validateDuplication(newReservationTime.getStartAt());
 
         return reservationTimeRepository.save(newReservationTime);

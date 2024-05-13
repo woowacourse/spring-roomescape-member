@@ -12,7 +12,6 @@ import roomescape.domain.member.LoginMember;
 import roomescape.domain.reservation.Reservation;
 import roomescape.global.argumentresolver.AuthenticationPrincipal;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.SaveReservationDto;
 
 @RestController
 @RequestMapping("/reservations")
@@ -29,8 +28,12 @@ public class UserReservationController {
         @RequestBody CreateUserReservationRequest request,
         @AuthenticationPrincipal LoginMember member) {
 
-        Reservation reservation = reservationService.save(new SaveReservationDto(
-            member.getId(), request.date(), request.timeId(), request.themeId()));
+        Reservation reservation = reservationService.save(
+            member.getId(),
+            request.date(),
+            request.timeId(),
+            request.themeId()
+        );
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
             .body(CreateReservationResponse.from(reservation));
