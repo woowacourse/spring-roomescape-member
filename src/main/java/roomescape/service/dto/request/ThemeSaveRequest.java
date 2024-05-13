@@ -8,7 +8,7 @@ public record ThemeSaveRequest(@NotBlank(message = "테마 이름을 입력해�
                                @NotNull(message = "테마 이름을 입력해주세요.") String description,
                                @NotNull(message = "테마 썸네일을 입력해주세요.") String thumbnail) {
 
-    public static Theme toEntity(ThemeSaveRequest request) {
+    public Theme toEntity(ThemeSaveRequest request) {
         return new Theme(request.name(), request.description(), request.thumbnail());
     }
 }

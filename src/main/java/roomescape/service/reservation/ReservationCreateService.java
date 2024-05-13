@@ -41,7 +41,7 @@ public class ReservationCreateService {
         Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-        Reservation reservation = ReservationAdminSaveRequest.toEntity(request, reservationTime, theme, member);
+        Reservation reservation = request.toEntity(request, reservationTime, theme, member);
         return reservationRepository.save(reservation);
     }
 
@@ -51,7 +51,7 @@ public class ReservationCreateService {
         Theme theme = getValidTheme(request.themeId());
         validateAlreadyBooked(request.date(), request.timeId(), request.themeId());
 
-        Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme, member);
+        Reservation reservation = request.toEntity(request, reservationTime, theme, member);
         return reservationRepository.save(reservation);
     }
 
