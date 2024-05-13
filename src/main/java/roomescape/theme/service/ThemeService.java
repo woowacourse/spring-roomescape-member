@@ -20,7 +20,7 @@ public class ThemeService {
         long themeId = themeRepository.save(theme);
 
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("테마가 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("테마가 없습니다."));
     }
 
     public List<Theme> findThemeList() {
@@ -47,7 +47,7 @@ public class ThemeService {
 
     private void validateThemeExists(List<Theme> themes) {
         if (themes.isEmpty()) {
-            throw new IllegalArgumentException("테마가 없습니다.");
+            throw new NoSuchElementException("테마가 없습니다.");
         }
     }
 

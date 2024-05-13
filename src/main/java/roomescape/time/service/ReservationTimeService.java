@@ -20,7 +20,7 @@ public class ReservationTimeService {
         long timeId = reservationTimeRepository.save(reservationTime);
 
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("시간이 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("시간이 없습니다."));
     }
 
     public List<ReservationTime> findTimeList() {
@@ -42,7 +42,7 @@ public class ReservationTimeService {
 
     private void validateTimeExists(List<ReservationTime> times) {
         if (times.isEmpty()) {
-            throw new IllegalArgumentException("시간이 없습니다.");
+            throw new NoSuchElementException("시간이 없습니다.");
         }
     }
 

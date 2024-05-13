@@ -10,6 +10,7 @@ import roomescape.member.dto.MemberRequest;
 import roomescape.member.repository.MemberRepository;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -41,7 +42,7 @@ public class AuthService {
         Long id = jwtTokenProvider.getId(token);
 
         return memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("멤버가 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("멤버가 없습니다."));
     }
 
     private void validatePassword(String actualPassword, String expectedPassword) {

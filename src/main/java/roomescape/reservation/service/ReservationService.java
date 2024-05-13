@@ -35,7 +35,7 @@ public class ReservationService {
         long reservationId = reservationRepository.save(reservation);
 
         return reservationRepository.findByReservationId(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("예약이 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("예약이 없습니다."));
     }
 
     public List<Reservation> findReservationList() {
@@ -60,14 +60,14 @@ public class ReservationService {
 
     private void validateReservationExists(List<Reservation> reservations) {
         if (reservations.isEmpty()) {
-            throw new IllegalArgumentException("예약이 없습니다.");
+            throw new NoSuchElementException("예약이 없습니다.");
         }
     }
 
     private void validateFutureReservation(Reservation reservation) {
         Long timeId = reservation.getTime().getId();
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("시간이 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("시간이 없습니다."));
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = currentDateTime.toLocalDate();
