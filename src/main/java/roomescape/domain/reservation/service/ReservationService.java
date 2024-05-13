@@ -76,9 +76,7 @@ public class ReservationService {
                 bookableTimesRequest.themeId());
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
         return allTimes.stream()
-                .map(time -> {
-                    return new BookableTimeResponse(time.getStartAt(), time.getId(), isBookedTime(bookedTimes, time));
-                })
+                .map(time -> new BookableTimeResponse(time.getStartAt(), time.getId(), isBookedTime(bookedTimes, time)))
                 .toList();
     }
 
