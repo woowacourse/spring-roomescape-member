@@ -13,8 +13,8 @@ import roomescape.controller.helper.AuthenticationPrincipal;
 import roomescape.controller.helper.LoginMember;
 import roomescape.global.CookieUtils;
 import roomescape.service.MemberService;
-import roomescape.service.dto.member.LoginMemberRequest;
 import roomescape.service.dto.member.MemberCreateRequest;
+import roomescape.service.dto.member.MemberLoginRequest;
 import roomescape.service.dto.member.MemberResponse;
 
 @RestController
@@ -35,7 +35,7 @@ public class MemberRestController {
     }
 
     @PostMapping("/members/login")
-    public void login(@Valid @RequestBody LoginMemberRequest request, HttpServletResponse response) {
+    public void login(@Valid @RequestBody MemberLoginRequest request, HttpServletResponse response) {
         String token = memberService.login(request);
         CookieUtils.addCookie(response, TOKEN, token, 300);
     }

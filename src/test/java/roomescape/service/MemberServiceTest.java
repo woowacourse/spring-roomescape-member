@@ -18,8 +18,8 @@ import roomescape.domain.member.Member;
 import roomescape.global.JwtManager;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.member.LoginMemberRequest;
 import roomescape.service.dto.member.MemberCreateRequest;
+import roomescape.service.dto.member.MemberLoginRequest;
 import roomescape.service.exception.MemberNotFoundException;
 
 @TestExecutionListeners(value = {
@@ -74,7 +74,7 @@ class MemberServiceTest {
     @DisplayName("로그인 시 저장되어있지 않은 이메일이면 에러를 발생시킨다.")
     @Test
     void throw_exception_when_login_not_saved__member_email() {
-        LoginMemberRequest requestDto = new LoginMemberRequest("t4@t4.com", "1212");
+        MemberLoginRequest requestDto = new MemberLoginRequest("t4@t4.com", "1212");
 
         assertThatThrownBy(() -> memberService.login(requestDto))
                 .isInstanceOf(MemberNotFoundException.class)
@@ -86,7 +86,7 @@ class MemberServiceTest {
     void throw_exception_when_is_mismatched_password() {
         memberRepository.insertMember(member3);
 
-        LoginMemberRequest requestDto = new LoginMemberRequest("t3@t3.com", "1212");
+        MemberLoginRequest requestDto = new MemberLoginRequest("t3@t3.com", "1212");
 
         assertThatThrownBy(() -> memberService.login(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -98,7 +98,7 @@ class MemberServiceTest {
     void success_login() {
         Member savedMember = memberRepository.insertMember(member3);
         String expectedToken = jwtManager.generateToken(savedMember);
-        LoginMemberRequest requestDto = new LoginMemberRequest("t3@t3.com", "125");
+        MemberLoginRequest requestDto = new MemberLoginRequest("t3@t3.com", "125");
 
         String actualToken = memberService.login(requestDto);
 

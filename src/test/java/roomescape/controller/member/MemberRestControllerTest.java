@@ -16,8 +16,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.domain.member.Member;
 import roomescape.global.JwtManager;
 import roomescape.repository.DatabaseCleanupListener;
-import roomescape.service.dto.member.LoginMemberRequest;
 import roomescape.service.dto.member.MemberCreateRequest;
+import roomescape.service.dto.member.MemberLoginRequest;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -73,7 +73,7 @@ class MemberRestControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        LoginMemberRequest loginRequest = new LoginMemberRequest("t1@t1.com", "123");
+        MemberLoginRequest loginRequest = new MemberLoginRequest("t1@t1.com", "123");
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(loginRequest)
@@ -96,7 +96,7 @@ class MemberRestControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        LoginMemberRequest loginRequest = new LoginMemberRequest("t1@t1.com", "1234");
+        MemberLoginRequest loginRequest = new MemberLoginRequest("t1@t1.com", "1234");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(loginRequest)
@@ -116,7 +116,7 @@ class MemberRestControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        LoginMemberRequest loginRequest = new LoginMemberRequest("t1@t1.com", "123");
+        MemberLoginRequest loginRequest = new MemberLoginRequest("t1@t1.com", "123");
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(loginRequest)
@@ -143,7 +143,7 @@ class MemberRestControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        LoginMemberRequest loginRequest = new LoginMemberRequest("t1@t1.com", "123");
+        MemberLoginRequest loginRequest = new MemberLoginRequest("t1@t1.com", "123");
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(loginRequest)
@@ -170,7 +170,7 @@ class MemberRestControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        LoginMemberRequest loginRequest = new LoginMemberRequest("t1@t1.com", "123");
+        MemberLoginRequest loginRequest = new MemberLoginRequest("t1@t1.com", "123");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(loginRequest)

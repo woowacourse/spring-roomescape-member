@@ -6,8 +6,8 @@ import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberPassword;
 import roomescape.global.JwtManager;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.member.LoginMemberRequest;
 import roomescape.service.dto.member.MemberCreateRequest;
+import roomescape.service.dto.member.MemberLoginRequest;
 import roomescape.service.dto.member.MemberResponse;
 import roomescape.service.exception.MemberNotFoundException;
 
@@ -29,7 +29,7 @@ public class MemberService {
         memberRepository.insertMember(request.toMember());
     }
 
-    public String login(LoginMemberRequest request) {
+    public String login(MemberLoginRequest request) {
         Member member = memberRepository.findMemberByEmail(request.getEmail())
                 .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
 
