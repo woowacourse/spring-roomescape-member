@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.ReservationExistsException;
+import roomescape.service.exception.ReservationExistsException;
 import roomescape.service.request.ThemeAppRequest;
 import roomescape.service.response.ThemeAppResponse;
 

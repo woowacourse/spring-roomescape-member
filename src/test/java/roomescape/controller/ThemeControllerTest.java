@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.controller.request.ThemeWebRequest;
+import roomescape.web.controller.request.ThemeWebRequest;
 
 
 class ThemeControllerTest extends ControllerTest {

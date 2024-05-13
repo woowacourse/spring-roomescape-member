@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.ReservationExistsException;
+import roomescape.service.exception.ReservationExistsException;
 import roomescape.service.request.ThemeAppRequest;
 
 @ExtendWith(MockitoExtension.class)

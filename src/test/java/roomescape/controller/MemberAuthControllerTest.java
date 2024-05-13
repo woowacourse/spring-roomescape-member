@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.controller.request.MemberSignUpWebRequest;
-import roomescape.controller.request.TokenWebRequest;
 import roomescape.domain.MemberRole;
+import roomescape.web.controller.request.MemberSignUpWebRequest;
+import roomescape.web.controller.request.TokenWebRequest;
 
 class MemberAuthControllerTest extends ControllerTest {
 

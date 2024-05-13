@@ -12,7 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.PastReservationException;
+import roomescape.service.exception.PastReservationException;
 import roomescape.service.request.AdminSearchedReservationAppRequest;
 import roomescape.service.request.ReservationAppRequest;
 import roomescape.service.response.ReservationAppResponse;

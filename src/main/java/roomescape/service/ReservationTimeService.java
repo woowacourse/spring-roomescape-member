@@ -9,7 +9,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.ReservationExistsException;
+import roomescape.service.exception.ReservationExistsException;
 import roomescape.service.request.ReservationTimeAppRequest;
 import roomescape.service.response.BookableReservationTimeAppResponse;
 import roomescape.service.response.ReservationTimeAppResponse;
