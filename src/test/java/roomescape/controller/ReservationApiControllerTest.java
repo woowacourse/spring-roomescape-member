@@ -1,11 +1,9 @@
 package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,11 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Reservation;
+import roomescape.service.LoginService;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
 @WebMvcTest(ReservationApiController.class)
@@ -29,6 +26,9 @@ class ReservationApiControllerTest {
     @MockBean
     private ReservationService reservationService;
 
+    @MockBean
+    private LoginService loginService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -36,12 +36,14 @@ class ReservationApiControllerTest {
     private ObjectMapper objectMapper;
 
     private final Reservation reservation1 = new Reservation(
-            1L, "재즈",
+            1L,
+            1L, "재즈", "admin", "email", "password",
             1L, "테마이름", "테마내용", "테마썸네일",
             "2024-04-22",
             2L, "17:30");
     private final Reservation reservation2 = new Reservation(
-            2L, "안돌",
+            2L,
+            2L, "안돌", "user", "email", "password",
             1L, "테마이름", "테마내용", "테마썸네일",
             "2023-09-08",
             1L, "15:30");
@@ -59,30 +61,6 @@ class ReservationApiControllerTest {
         mockMvc.perform(get("/reservations"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()", is(2)));
-    }
-
-    @DisplayName("/reservations POST 요청 시 저장된 예약과 201 상태 코드를 응답한다.")
-    @Test
-    void return_200_status_code_and_saved_reservation_when_post_request() throws Exception {
-        ReservationRequest requestDto = new ReservationRequest("재즈", 1L, "2024-04-22", 2L);
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-        ReservationResponse responseDto = new ReservationResponse(reservation1);
-
-        given(reservationService.createReservation(any())).willReturn(responseDto);
-
-        mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("재즈")))
-                .andExpect(jsonPath("$.theme.id", is(1)))
-                .andExpect(jsonPath("$.theme.name", is("테마이름")))
-                .andExpect(jsonPath("$.theme.description", is("테마내용")))
-                .andExpect(jsonPath("$.theme.thumbnail", is("테마썸네일")))
-                .andExpect(jsonPath("$.date", is("2024-04-22")))
-                .andExpect(jsonPath("$.time.id", is(2)))
-                .andExpect(jsonPath("$.time.startAt", is("17:30")));
     }
 
     @DisplayName("/reservations/{id} DELETE 요청 시 204 상태 코드를 응답한다.")

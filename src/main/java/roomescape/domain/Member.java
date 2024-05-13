@@ -20,6 +20,10 @@ public class Member {
         this(id, new Name(name), role, email, password);
     }
 
+    public Member(String name) {
+        this(null, new Name(name), null, null, null);
+    }
+
     public Long getId() {
         return id;
     }

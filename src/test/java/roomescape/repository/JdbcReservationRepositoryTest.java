@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
@@ -21,6 +23,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.repository.rowmapper.MemberRowMapper;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 import roomescape.repository.rowmapper.ThemeRowMapper;
@@ -37,19 +40,22 @@ class JdbcReservationRepositoryTest {
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     private final ReservationTime time1 = new ReservationTime(1L, "15:30");
     private final ReservationTime time2 = new ReservationTime(2L, "17:30");
     private final Theme theme1 = new Theme(1L, "테마이름", "테마내용", "테마썸네일");
     private final Theme theme2 = new Theme(2L, "다른테마", "재밌음", "테마.png");
+    private final Member member1 = new Member(1L, "안돌", "admin", "andolemail", "andoleword");
+    private final Member member2 = new Member(2L, "아토", "user", "attomail", "attoword");
 
     private final Reservation reservation1 = new Reservation(
-            null, new Name("안돌"),
+            null, new Member(1L, (Name) null, null, null, null),
             new Theme(1L, null, null, null),
             new ReservationDate("2023-09-08"),
             new ReservationTime(1L, (LocalTime) null));
     private final Reservation reservation2 = new Reservation(
-            null, new Name("재즈"),
+            null, new Member(2L, (Name) null, null, null, null),
             new Theme(2L, null, null, null),
             new ReservationDate("2024-04-22"),
             new ReservationTime(2L, (LocalTime) null));
@@ -59,6 +65,7 @@ class JdbcReservationRepositoryTest {
         reservationRepository = new JdbcReservationRepository(dataSource, new ReservationRowMapper());
         reservationTimeRepository = new JdbcReservationTimeRepository(dataSource, new ReservationTimeRowMapper());
         themeRepository = new JdbcThemeRepository(dataSource, new ThemeRowMapper());
+        memberRepository = new JdbcMemberRepository(dataSource, new MemberRowMapper());
         initializeTimesAndThemeData();
     }
 
@@ -67,6 +74,8 @@ class JdbcReservationRepositoryTest {
         reservationTimeRepository.insertReservationTime(time2);
         themeRepository.insertTheme(theme1);
         themeRepository.insertTheme(theme2);
+        memberRepository.insertMember(member1);
+        memberRepository.insertMember(member2);
     }
 
     @Test
@@ -86,7 +95,7 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = reservationRepository.insertReservation(reservation2);
 
         assertAll(
-                () -> assertThat(reservation.getName()).isEqualTo("재즈"),
+                () -> assertThat(reservation.getName()).isEqualTo("아토"),
                 () -> assertThat(reservation.getTheme().getId()).isEqualTo(2),
                 () -> assertThat(reservation.getTheme().getName()).isEqualTo("다른테마"),
                 () -> assertThat(reservation.getTheme().getDescription()).isEqualTo("재밌음"),
@@ -130,7 +139,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("예약 테이블에 테마, 시간, 날짜가 동일한 예약이 존재하는지 판단한다.")
     void is_exist_reservation_for_theme_at_date_time() {
         Reservation allSameReservation = new Reservation(
-                3L, new Name("atto"), theme1, new ReservationDate("2023-09-08"), time1);
+                3L, new Member("atto"), theme1, new ReservationDate("2023-09-08"), time1);
 
         reservationRepository.insertReservation(reservation1);
 

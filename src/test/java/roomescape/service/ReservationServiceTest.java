@@ -40,12 +40,14 @@ class ReservationServiceTest {
     @Test
     void find_all_reservations_test() {
         Reservation reservation1 = new Reservation(
-                1L, "안돌",
+                1L,
+                1L, "안돌", "admin", "email", "password",
                 1L, "테마이름", "테마내용", "테마썸네일",
                 "2023-09-08",
                 1L, "15:30");
         Reservation reservation2 = new Reservation(
-                1L, "재즈",
+                1L,
+                2L, "재즈", "user", "email", "password",
                 1L, "테마이름", "테마내용", "테마썸네일",
                 "2024-04-22",
                 2L, "17:30");
@@ -64,7 +66,8 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
 
         Reservation reservation = new Reservation(
-                1L, "안돌",
+                1L,
+                1L, "안돌", "admin", "email", "password",
                 1L, "테마이름", "테마내용", "테마썸네일",
                 "2023-09-08",
                 1L, "15:30");

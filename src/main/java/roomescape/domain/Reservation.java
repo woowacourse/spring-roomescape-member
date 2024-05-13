@@ -36,6 +36,10 @@ public class Reservation {
         return member.getId();
     }
 
+    public String getName() {
+        return member.getName().getValue();
+    }
+
     public Theme getTheme() {
         return theme;
     }

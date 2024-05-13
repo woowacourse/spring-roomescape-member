@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
@@ -15,10 +16,14 @@ import roomescape.domain.MemberRepository;
 public class JdbcMemberRepository implements MemberRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Member> rowMapper;
 
     public JdbcMemberRepository(DataSource dataSource, RowMapper<Member> rowMapper) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
         this.rowMapper = rowMapper;
     }
 
@@ -59,5 +64,16 @@ public class JdbcMemberRepository implements MemberRepository {
         Member member = jdbcTemplate.queryForObject(sql, paramMap, rowMapper);
 
         return Optional.ofNullable(member);
+    }
+
+    @Override
+    public void insertMember(Member member) {
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("name", member.getName().getValue())
+                .addValue("role", member.getRole())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword());
+
+        jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 }

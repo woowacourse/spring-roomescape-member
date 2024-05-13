@@ -10,4 +10,6 @@ public interface MemberRepository {
     Optional<Member> findMemberById(Long memberId);
 
     List<Member> findAllMembers();
+
+    void insertMember(Member member);
 }

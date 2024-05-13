@@ -3,7 +3,7 @@ package roomescape.service.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import roomescape.domain.Name;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -66,6 +66,15 @@ public class ReservationRequest {
         if (timeId == null) {
             throw new IllegalArgumentException("시간 아이디는 반드시 입력되어야 합니다.");
         }
+    }
+
+    public Reservation toReservation() {
+        return new Reservation(
+                null,
+                new Member(name),
+                new Theme(themeId, null, null, null),
+                new ReservationDate(date),
+                new ReservationTime(timeId, (LocalTime) null));
     }
 
     public String getName() {

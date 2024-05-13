@@ -14,7 +14,7 @@ import roomescape.service.LoginService;
 
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private static final String SECRET_KEY = "SheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinter";
 
     private final LoginService loginService;
 
