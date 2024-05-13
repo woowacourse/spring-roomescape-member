@@ -104,6 +104,7 @@ class ReservationApiControllerTest {
     @DisplayName("특정 예약이 존재하지 않는데, 그 예약을 삭제하려 할 때 404을 반환한다.")
     void return_404_when_not_exist_id() {
         RestAssured.given()
+                .cookie("token",token)
                 .delete("/reservations/-1")
                 .then()
                 .statusCode(404);

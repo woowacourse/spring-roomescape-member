@@ -42,7 +42,7 @@ class LoginApiControllerTest {
 
         RestAssured.given().contentType(ContentType.JSON).body(new MemberLoginRequest("admin@email.com","password"))
                 .when().post("/login")
-                .then().cookie("token",notNullValue()).statusCode(200);
+                .then().log().all().cookie("token",notNullValue()).statusCode(200);
     }
     @Test
     @DisplayName("쿠키에 토큰을 가지고, /login/check GET 요청시 200 과 이름을 반환한다.")
