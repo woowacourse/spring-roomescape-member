@@ -61,7 +61,7 @@ public class ThemeDaoTest {
     @Test
     @DisplayName("지난 7일 기준 예약이 많은 테마 순으로 조회한다.")
     void getTopReservationThemes() {
-        LocalDate reservationStartDate = LocalDate.of(2024, 4, 25);
+        LocalDate reservationStartDate = LocalDate.now().minusDays(6);
         List<Theme> themes = themeJdbcDao.findByDateOrderByCount(reservationStartDate
                 , reservationStartDate.plusWeeks(1));
 
