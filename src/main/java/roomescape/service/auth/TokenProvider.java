@@ -21,9 +21,9 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String generateAccessToken(Long memberId) {
+    public String generateAccessToken(long memberId) {
         return Jwts.builder()
-                .setSubject(memberId.toString())
+                .setSubject(String.valueOf(memberId))
                 .signWith(key)
                 .compact();
     }
