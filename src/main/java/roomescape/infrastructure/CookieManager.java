@@ -16,7 +16,7 @@ public class CookieManager {
         return cookie;
     }
 
-    public Cookie createExpiredCookie() {
+    public Cookie expireCookie() {
         final Cookie cookie = new Cookie(TOKEN_NAME, null);
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
