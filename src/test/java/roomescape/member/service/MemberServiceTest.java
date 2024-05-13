@@ -1,7 +1,11 @@
 package roomescape.member.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -57,7 +61,37 @@ class MemberServiceTest {
         );
     }
 
-    // TODO : 이메일 중복 검증 예외 테스트 추가 (기능 추가 필요)
+    @DisplayName("유효하지 않은 형식의 비밀번호가 입력되면 예외를 발생시킨다.")
+    @NullAndEmptySource
+    @ParameterizedTest
+    void validatePlainPasswordFormatTest(final String password) {
+        // Given
+        final MemberRole role = MemberRole.USER;
+        final String email = "kelly6bf@gmail.com";
+        final String name = "kelly";
+        final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(email, password, name, role);
 
-    // TODO : 비밀번호 형식 검증 예외 테스트 추가
+        // When & Then
+        Assertions.assertThatThrownBy(() -> memberService.saveMember(saveMemberRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("회원 비밀번호로 공백을 입력할 수 없습니다.");
+    }
+
+    @DisplayName("유효하지 않은 길이의 비밀번호가 입력되면 예외를 발생시킨다.")
+    @ValueSource(strings = {"aabbccdde", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
+    @ParameterizedTest
+    void validatePlainPasswordLengthTest(final String password) {
+        // Given
+        final MemberRole role = MemberRole.USER;
+        final String email = "kelly6bf@gmail.com";
+        final String name = "kelly";
+        final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(email, password, name, role);
+
+        // When & Then
+        Assertions.assertThatThrownBy(() -> memberService.saveMember(saveMemberRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("회원 비밀번호 길이는 10이상 30이하여만 합니다.");
+    }
+
+    // TODO : 이메일 중복 검증 예외 테스트 추가 (기능 추가 필요)
 }
