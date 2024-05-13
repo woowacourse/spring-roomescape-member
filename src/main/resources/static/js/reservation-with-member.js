@@ -204,7 +204,7 @@ function applyFilter(event) {
           요청 포맷에 맞게 설정
     */
 
-    let query = '/admin/reservations?memberId' + memberId + '&themeId=' + themeId + '&from=' + dateFrom + '&to=' + dateTo;
+    let query = '/admin/reservations?memberId=' + memberId + '&themeId=' + themeId + '&from=' + dateFrom + '&to=' + dateTo;
 
     fetch(query, { // 예약 검색 API 호출
         method: 'GET',
