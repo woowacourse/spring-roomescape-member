@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import roomescape.advice.dto.ErrorResponse;
+import roomescape.auth.exception.AdminAuthorizationException;
 import roomescape.auth.exception.AuthenticationException;
 import roomescape.auth.exception.NotLoginAuthenticationException;
 
@@ -38,12 +39,24 @@ class GlobalExceptionHandlerTest {
 
     @DisplayName("인증 에러가 발생하면 401 에러를 반환한다.")
     @Test
-    void handleAuthenticationException() {
+    void handleAuthenticationExceptionTest() {
         AuthenticationException exception = new NotLoginAuthenticationException();
         ResponseEntity<ErrorResponse> expected = ResponseEntity.status(401)
                 .body(new ErrorResponse(exception.getMessage()));
 
         ResponseEntity<ErrorResponse> actual = globalExceptionHandler.handleAuthenticationException(exception);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @DisplayName("인증 에러가 발생하면 401 에러를 반환한다.")
+    @Test
+    void handleAdminAuthorizationExceptionTest() {
+        AdminAuthorizationException exception = new AdminAuthorizationException();
+        ResponseEntity<ErrorResponse> expected = ResponseEntity.status(403)
+                .body(new ErrorResponse(exception.getMessage()));
+
+        ResponseEntity<ErrorResponse> actual = globalExceptionHandler.handleAdminAuthorizationException(exception);
 
         assertThat(actual).isEqualTo(expected);
     }
