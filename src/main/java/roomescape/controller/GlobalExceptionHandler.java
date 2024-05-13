@@ -7,7 +7,6 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.exception.ClientErrorExceptionWithLog;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,11 +20,11 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
-    @ExceptionHandler(value = ClientErrorExceptionWithLog.class)
-    private ProblemDetail handleIllegalArgumentException(ClientErrorExceptionWithLog e) {
-        String data = e.getData();
-        if (data != null) {
-            logger.log(Level.SEVERE, data);
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    private ProblemDetail handleIllegalArgumentException(IllegalArgumentException e) {
+        Throwable cause = e.getCause();
+        if (cause != null) {
+            logger.log(Level.SEVERE, "[IllegalArgumentException] " + cause.getMessage());
         }
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }

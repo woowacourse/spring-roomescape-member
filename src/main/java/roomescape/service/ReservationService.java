@@ -11,7 +11,6 @@ import roomescape.domain.member.Member;
 import roomescape.dto.reservation.ReservationFilter;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -82,33 +81,33 @@ public class ReservationService {
 
     private Reservation findReservationById(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "[ERROR] 잘못된 예약 정보 입니다.",
-                        "reservation_id : " + id
+                        new Throwable("reservation_id : " + id)
                 ));
     }
 
     private ReservationTime findReservationTime(Long timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "[ERROR] 잘못된 예약시간 정보 입니다.",
-                        "time_id : " + timeId
+                        new Throwable("time_id : " + timeId)
                 ));
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "[ERROR] 잘못된 테마 정보 입니다.",
-                        "theme_id : " + themeId
+                        new Throwable("theme_id : " + themeId)
                 ));
     }
 
     private Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "[ERROR] 잘못된 사용자 정보 입니다.",
-                        "member_id : " + memberId
+                        new Throwable("member_id : " + memberId)
                 ));
     }
 
@@ -123,18 +122,18 @@ public class ReservationService {
                 reservation.getTimeId(),
                 reservation.getThemeId())
         ) {
-            throw new ClientErrorExceptionWithLog(
+            throw new IllegalArgumentException(
                     "[ERROR] 해당 시간에 동일한 테마가 예약되어있어 예약이 불가능합니다.",
-                    "생성 예약 정보 : " + reservation
+                    new Throwable("생성 예약 정보 : " + reservation)
             );
         }
     }
 
     private void validateUnPassedDate(LocalDate date, LocalTime time) {
         if (DateUtil.isPastDateTime(date, time)) {
-            throw new ClientErrorExceptionWithLog(
+            throw new IllegalArgumentException(
                     "[ERROR] 지나간 날짜와 시간은 예약이 불가능합니다.",
-                    "생성 예약 시간 : " + date + " " + time
+                    new Throwable("생성 예약 시간 : " + date + " " + time)
             );
         }
     }

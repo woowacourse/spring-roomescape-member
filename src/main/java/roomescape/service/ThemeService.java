@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme.Theme;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.util.DateUtil;
@@ -56,26 +55,26 @@ public class ThemeService {
 
     private Theme findThemeById(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "[ERROR] 잘못된 테마 정보 입니다.",
-                        "theme_id : " + themeId
+                        new Throwable("theme_id : " + themeId)
                 ));
     }
 
     public void validateNameDuplicate(String name) {
         if (themeRepository.existName(name)) {
-            throw new ClientErrorExceptionWithLog(
+            throw new IllegalArgumentException(
                     "[ERROR] 동일한 이름의 테마가 존재해 등록할 수 없습니다.",
-                    "theme_name : " + name
+                    new Throwable("theme_name : " + name)
             );
         }
     }
 
     private void validateDeletable(Theme theme) {
         if (reservationRepository.existThemeId(theme.getId())) {
-            throw new ClientErrorExceptionWithLog(
+            throw new IllegalArgumentException(
                     "[ERROR] 예약되어있는 테마는 삭제할 수 없습니다.",
-                    "theme_id : " + theme.getId()
+                    new Throwable("theme_id : " + theme.getId())
             );
         }
     }

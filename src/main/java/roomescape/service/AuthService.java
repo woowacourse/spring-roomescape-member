@@ -8,7 +8,6 @@ import roomescape.dto.login.LoginMember;
 import roomescape.dto.login.LoginRequest;
 import roomescape.dto.member.MemberPayload;
 import roomescape.dto.token.TokenDto;
-import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.infrastructure.JwtProvider;
 import roomescape.infrastructure.PasswordEncoder;
 import roomescape.repository.MemberRepository;
@@ -51,9 +50,9 @@ public class AuthService {
 
     private Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "[ERROR] 등록된 아이디가 아닙니다.",
-                        "id(email) : " + email
+                        new Throwable("id(email) : " + email)
                 ));
     }
 
@@ -72,7 +71,7 @@ public class AuthService {
 
     private void validatePassword(LoginRequest request, Member memberToLogin) {
         if (!passwordEncoder.matches(request.password(), memberToLogin.getPassword())) {
-            throw new ClientErrorExceptionWithLog("[ERROR] 잘못된 비밀번호 입니다.");
+            throw new IllegalArgumentException("[ERROR] 잘못된 비밀번호 입니다.");
         }
     }
 }

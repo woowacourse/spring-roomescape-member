@@ -10,7 +10,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.reservation.ReservationFilter;
-import roomescape.exception.ClientErrorExceptionWithLog;
 
 @Component
 public class ReservationFilterArgumentResolver implements HandlerMethodArgumentResolver {
@@ -47,12 +46,12 @@ public class ReservationFilterArgumentResolver implements HandlerMethodArgumentR
                 filter.setDateTo(LocalDate.parse(dateTo));
             }
         } catch (NumberFormatException | DateTimeParseException e) {
-            throw new ClientErrorExceptionWithLog(
-                    "[ERROR] 예약 조회 조건이 올바르지 않습니다.",
-                    "memberId = " + memberId +
+            throw new IllegalArgumentException(
+                    "[ERROR] 요청 형식이 올바르지 않습니다.",
+                    new Throwable("memberId = " + memberId +
                             ", themeId = " + themeId +
                             ", dateFrom = " + dateFrom +
-                            ", dateTo = " + dateTo
+                            ", dateTo = " + dateTo)
             );
         }
 

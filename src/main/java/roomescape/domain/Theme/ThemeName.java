@@ -15,7 +15,10 @@ public class ThemeName {
 
     private void validateName(String name) {
         if (name.isEmpty() || name.length() > 20) {
-            throw new IllegalArgumentException("[ERROR] 테마이름은 1~20자만 가능합니다.");
+            throw new IllegalArgumentException(
+                    "[ERROR] 테마이름은 1~20자만 가능합니다.",
+                    new Throwable("theme_name : " + name)
+            );
         }
     }
 }

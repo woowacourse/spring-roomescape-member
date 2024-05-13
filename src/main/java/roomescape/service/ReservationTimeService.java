@@ -8,7 +8,6 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
-import roomescape.exception.ClientErrorExceptionWithLog;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -58,9 +57,9 @@ public class ReservationTimeService {
 
     private ReservationTime findTimeById(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ClientErrorExceptionWithLog(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "[ERROR] 잘못된 잘못된 예약시간 정보 입니다.",
-                        "time_id : " + timeId
+                        new Throwable("time_id : " + timeId)
                 ));
     }
 
@@ -73,17 +72,18 @@ public class ReservationTimeService {
 
     private void validateTimeDuplicate(LocalTime time) {
         if (reservationTimeRepository.existTime(time)) {
-            throw new ClientErrorExceptionWithLog(
+            throw new IllegalArgumentException(
                     "[ERROR] 이미 등록된 시간은 등록할 수 없습니다.",
-                    "등록 시간 : " + time);
+                    new Throwable("등록 시간 : " + time)
+            );
         }
     }
 
     private void validateDeletable(ReservationTime reservationTime) {
         if (reservationRepository.existTimeId(reservationTime.getId())) {
-            throw new ClientErrorExceptionWithLog(
+            throw new IllegalArgumentException(
                     "[ERROR] 해당 시간에 예약이 존재해서 삭제할 수 없습니다.",
-                    "예약 시간 : " + reservationTime.getStartAt()
+                    new Throwable("예약 시간 : " + reservationTime.getStartAt())
             );
         }
     }
