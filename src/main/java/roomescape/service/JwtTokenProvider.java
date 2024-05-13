@@ -29,6 +29,7 @@ public class JwtTokenProvider implements TokenProvider {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
         return Jwts.builder()
+                .subject(user.getId().toString())
                 .claims(claims)
                 .expiration(validity)
                 .issuedAt(now)
@@ -48,7 +49,6 @@ public class JwtTokenProvider implements TokenProvider {
 
     private Map<String, Object> createClaimsByUser(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("user_id", user.getId().toString());
         claims.put("role", user.getRole().toString());
         return claims;
     }

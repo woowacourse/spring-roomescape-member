@@ -20,6 +20,7 @@ public class FakeJwtTokenProvider implements TokenProvider {
     public String createToken(User user) {
         Map<String, ?> claims = createClaimsByUser(user);
         return Jwts.builder()
+                .subject(user.getId().toString())
                 .claims(claims)
                 .signWith(getSecretKey())
                 .compact();
@@ -37,7 +38,6 @@ public class FakeJwtTokenProvider implements TokenProvider {
 
     private Map<String, Object> createClaimsByUser(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("user_id", user.getId().toString());
         claims.put("role", user.getRole().toString());
         return claims;
     }

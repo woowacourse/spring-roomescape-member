@@ -37,8 +37,8 @@ class JwtTokenProviderTest {
 
         Claims claims = jwtTokenProvider.getPayload(token);
 
-        String userId = claims.get("user_id", String.class);
         String role = claims.get("role", String.class);
+        String userId = claims.getSubject();
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(userId).isEqualTo("1");
             softAssertions.assertThat(role).isEqualTo("MEMBER");

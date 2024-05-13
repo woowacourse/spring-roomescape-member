@@ -23,8 +23,8 @@ public class AuthService {
     }
 
     public Cookie createCookieByUser(User user) {
-        String jwt = tokenProvider.createToken(user);
-        Cookie cookie = new Cookie(COOKIE_NAME, jwt);
+        String jwtToken = tokenProvider.createToken(user);
+        Cookie cookie = new Cookie(COOKIE_NAME, jwtToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
@@ -33,8 +33,8 @@ public class AuthService {
     public Long findUserIdByCookie(Cookie[] cookies) {
         Cookie cookie = findCookieIfExist(cookies);
         Claims claims = tokenProvider.getPayload(cookie.getValue());
-        String payload = claims.get("user_id", String.class);
-        validateUser(payload);
+        String payload = claims.getSubject();
+        validatePayload(payload);
         return Long.parseLong(payload);
     }
 
@@ -52,7 +52,7 @@ public class AuthService {
                 .orElseThrow(() -> new BadRequestException("아이디가 %s인 쿠키가 없습니다.".formatted(COOKIE_NAME)));
     }
 
-    private void validateUser(String payLoad) {
+    private void validatePayload(String payLoad) {
         try {
             Long.parseLong(payLoad);
         } catch (NumberFormatException exception) {
