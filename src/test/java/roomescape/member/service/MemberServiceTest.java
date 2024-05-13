@@ -1,12 +1,12 @@
 package roomescape.member.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
@@ -17,6 +17,7 @@ import roomescape.member.model.MemberRole;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -27,6 +28,8 @@ class MemberServiceTest {
     
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private SslAutoConfiguration sslAutoConfiguration;
 
     @DisplayName("모든 회원 정보를 조회한다.")
     @Test
@@ -72,7 +75,7 @@ class MemberServiceTest {
         final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(email, password, name, role);
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberService.saveMember(saveMemberRequest))
+        assertThatThrownBy(() -> memberService.saveMember(saveMemberRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("회원 비밀번호로 공백을 입력할 수 없습니다.");
     }
@@ -88,10 +91,25 @@ class MemberServiceTest {
         final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(email, password, name, role);
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> memberService.saveMember(saveMemberRequest))
+        assertThatThrownBy(() -> memberService.saveMember(saveMemberRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("회원 비밀번호 길이는 10이상 30이하여만 합니다.");
     }
 
     // TODO : 이메일 중복 검증 예외 테스트 추가 (기능 추가 필요)
+    @DisplayName("이미 존재하는 이메일로 회원가입 요청이 들어오면 예외를 발생시킨다.")
+    @Test
+    void duplicateEmailTest() {
+        // Given
+        final String email = "user@mail.com";
+        final String password = "userPw1234!";
+        final MemberRole role = MemberRole.USER;
+        final String name = "kelly";
+        final SaveMemberRequest saveMemberRequest = new SaveMemberRequest(email, password, name, role);
+
+        // When & Then
+        assertThatThrownBy(() -> memberService.saveMember(saveMemberRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 이메일입니다.");
+    }
 }

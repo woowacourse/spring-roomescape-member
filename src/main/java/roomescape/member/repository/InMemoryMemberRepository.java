@@ -89,4 +89,13 @@ public class InMemoryMemberRepository implements MemberRepository {
 
         return member.initializeIndex(savedMemberId);
     }
+
+    @Override
+    public boolean existByEmail(final String email) {
+        final String sql = "SELECT EXISTS(SELECT 1 FROM member WHERE email = :email)";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("email", email);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
 }

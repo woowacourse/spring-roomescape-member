@@ -81,4 +81,17 @@ class InMemoryMemberRepositoryTest {
         // Then
         assertThat(member).isPresent();
     }
+
+    @DisplayName("이미 존재하는 이메일은이 여부를 반환한다.")
+    @Test
+    void existByEmailTest() {
+        // Given
+        final String email = "user@mail.com";
+
+        // When
+        final boolean isExist = memberRepository.existByEmail(email);
+
+        // Then
+        assertThat(isExist).isTrue();
+    }
 }

@@ -23,12 +23,18 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    // TODO : email 중복 검증 추가
     public Member saveMember(final SaveMemberRequest request) {
+        validateEmailDuplicate(request.email());
         validatePlainPassword(request.password());
 
         final Member member = request.toMember(passwordEncoder.encode(request.password()));
         return memberRepository.save(member);
+    }
+
+    private void validateEmailDuplicate(final String email) {
+        if (memberRepository.existByEmail(email)) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
     }
 
     private void validatePlainPassword(final String password) {
