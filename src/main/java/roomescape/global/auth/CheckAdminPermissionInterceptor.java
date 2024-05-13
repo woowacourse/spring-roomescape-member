@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.service.MemberService;
+import roomescape.global.exception.AuthorizationException;
+import roomescape.global.exception.ClientIllegalArgumentException;
 
 @Component
 public class CheckAdminPermissionInterceptor implements HandlerInterceptor {
@@ -25,15 +27,13 @@ public class CheckAdminPermissionInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            response.setStatus(401);
-            return false;
+            throw new ClientIllegalArgumentException("쿠키가 존재하지 않습니다.");
         }
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
         Long memberId = jwtTokenProvider.validateAndGetLongSubject(token);
         Member member = memberService.findMemberById(memberId);
         if (member == null || member.getRole() != ADMIN) {
-            response.setStatus(401);
-            return false;
+            throw new AuthorizationException("허가되지않은 접근입니다.");
         }
         return true;
     }
