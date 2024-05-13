@@ -18,6 +18,7 @@ import roomescape.handler.exception.ExceptionCode;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
+
     private static final RowMapper<Theme> THEME_MAPPER = (resultSet, row) ->
             new Theme(
                     resultSet.getLong("id"),
@@ -73,7 +74,6 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return jdbcTemplate.query(sql, THEME_MAPPER, start.toString(), end.toString(), limit);
     }
-
 
     @Override
     public void delete(Long id) {

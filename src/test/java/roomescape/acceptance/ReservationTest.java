@@ -18,28 +18,46 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.request.ThemeRequest;
+import roomescape.service.dto.request.TokenRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationTest extends AcceptanceTest{
 
+    private String accessToken;
+
     @BeforeEach
     void insert() {
+        TokenRequest tokenRequest = new TokenRequest("password", "admin@email.com");
+        accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(tokenRequest)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
+
+
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservationTimeRequest)
-                .post("/times");
+                .post("/times")
+                .then().log().all()
+                .extract();
 
         ThemeRequest themeRequest = new ThemeRequest("hi", "happy", "abcd.html");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(themeRequest)
                 .post("/themes");
 
-        ReservationRequest reservationRequest = new ReservationRequest("rush", LocalDate.of(2030, 12, 12), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2030, 12, 12), 1L, 1L, 1L);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservationRequest)
                 .post("/reservations");
     }
@@ -50,10 +68,11 @@ class ReservationTest extends AcceptanceTest{
     @DisplayName("예약 추가 API 테스트")
     @Test
     void createReservation() {
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.of(2099, 12, 12), 1L, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -61,6 +80,7 @@ class ReservationTest extends AcceptanceTest{
                 .body("id", is(2));
 
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -71,6 +91,7 @@ class ReservationTest extends AcceptanceTest{
     @Test
     void getReservations() {
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -81,32 +102,17 @@ class ReservationTest extends AcceptanceTest{
     @Test
     void deleteReservation() {
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
-    }
-
-    @DisplayName("올바르지 않은 예약자명 형식으로 입력시 예외처리")
-    @Test
-    void invalidNameFormat() {
-        Map<String, String> reservationRequest = new HashMap<>();
-        reservationRequest.put("name", "12345678900");
-        reservationRequest.put("date", "2025-12-12");
-        reservationRequest.put("timeId", "1");
-        reservationRequest.put("themeId", "1");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationRequest)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
     }
 
     @DisplayName("올바르지 않은 날짜 형식으로 입력시 예외처리")
@@ -120,6 +126,7 @@ class ReservationTest extends AcceptanceTest{
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -137,6 +144,7 @@ class ReservationTest extends AcceptanceTest{
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -154,6 +162,7 @@ class ReservationTest extends AcceptanceTest{
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -171,6 +180,7 @@ class ReservationTest extends AcceptanceTest{
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies("token", accessToken)
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()

@@ -9,11 +9,12 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
 import roomescape.handler.exception.CustomException;
 import roomescape.handler.exception.ExceptionCode;
 
@@ -23,7 +24,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_MAPPER = (resultSet, row) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    new UserName(resultSet.getString("name")),
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"),
+                            Role.of(resultSet.getString("member_role"))
+                    ),
                     resultSet.getDate("reservation_date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -51,7 +58,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number id = jdbcInsert.executeAndReturnKey(parameterSource);
-        return new Reservation(id.longValue(), reservation.getName(), reservation.getReservationDate(),
+        return new Reservation(id.longValue(), reservation.getMember(), reservation.getReservationDate(),
                 reservation.getTime(), reservation.getTheme());
     }
 
@@ -60,8 +67,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """       
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.reservation_date,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
+                    m.role as member_role,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -71,9 +82,37 @@ public class JdbcReservationRepository implements ReservationRepository {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as h on r.theme_id = h.id
+                inner join member as m on r.member_id = m.id
                 """;
 
         return jdbcTemplate.query(sql, RESERVATION_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findAllReservationsByCondition(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.reservation_date,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
+                    m.role as member_role,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    h.id as theme_id,
+                    h.name as theme_name,
+                    h.description as theme_description,
+                    h.thumbnail as theme_thumbnail
+                FROM reservation as r
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as h on r.theme_id = h.id
+                inner join member as m on r.member_id = m.id
+                WHERE t.id = ? and m.id = ? and r.reservation_date BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_MAPPER, themeId, memberId, dateFrom, dateTo);
     }
 
     @Override
@@ -81,17 +120,22 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name,
                     r.reservation_date,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
+                    m.role as member_role,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
                     h.name as theme_name,
                     h.description as theme_description,
-                    h.thumbnail as theme_thumbnail 
+                    h.thumbnail as theme_thumbnail
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as h on r.theme_id = h.id
+                inner join member as m on r.member_id = m.id
                 WHERE r.reservation_date = ? and r.theme_id = ?
                 """;
 
