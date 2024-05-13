@@ -2,12 +2,12 @@ package roomescape.application;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.application.dto.MemberRequest;
-import roomescape.application.dto.MemberResponse;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
+import roomescape.dto.member.MemberRequest;
+import roomescape.dto.member.MemberResponse;
 import roomescape.infrastructure.JwtTokenProvider;
 
 @Service
@@ -26,7 +26,7 @@ public class AuthService {
         }
 
         Optional<Member> member = memberRepository.findByEmail(tokenRequest.email());
-        MemberRequest memberRequest = new MemberRequest(member.get().getUserName());
+        MemberRequest memberRequest = new MemberRequest(member.get().getMemberName());
 
         String accessToken = jwtTokenProvider.createToken(memberRequest.name().getValue());
         return new TokenResponse(accessToken);
