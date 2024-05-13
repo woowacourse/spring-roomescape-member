@@ -156,7 +156,8 @@ function requestCreate(reservation) {
         .then(response => {
             if (response.status === 201) return response.json();
             else {
-                response.text().then(data => alert(data.detail));
+                response.json().then(data => alert(data.detail));
+
                 throw new Error('Create failed');
             }
         });
@@ -170,7 +171,8 @@ function requestDelete(id) {
     return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
         .then(response => {
             if (response.status !== 204) {
-                response.text().then(data => alert(data.detail));
+                response.json().then(data => alert(data.detail));
+
                 throw new Error('Delete failed');
             }
         });
@@ -181,7 +183,8 @@ function requestRead(endpoint) {
         .then(response => {
             if (response.status === 200) return response.json();
             else {
-                response.text().then(data => alert(data.detail));
+                response.json().then(data => alert(data.detail));
+
                 throw new Error('Read failed');
             }
         });

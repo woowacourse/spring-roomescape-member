@@ -14,7 +14,8 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
           window.location.reload();
         } else {
           // 로그아웃 실패 처리
-          response.text().then(data => alert(data.detail));
+          response.json().then(data => alert(data.detail));
+
           console.error('Logout failed');
         }
       })
@@ -30,7 +31,6 @@ function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
       .then(response => {
         if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경
-          response.text().then(data => alert(data.detail));
           throw new Error('Not logged in or other error');
         }
         return response.json(); // 응답 본문을 JSON으로 파싱
@@ -80,7 +80,8 @@ function login() {
   })
       .then(response => {
         if (response.status !== 204) {
-          response.text().then(data => alert(data.detail));
+          response.json().then(data => alert(data.detail));
+
           throw new Error('Login failed');
         }
       })
@@ -128,7 +129,8 @@ function register(event) {
   })
       .then(response => {
         if (!response.ok) {
-          response.text().then(data => alert(data.detail));
+          response.json().then(data => alert(data.detail));
+
           throw new Error('Signup request failed');
         }
         return response.json(); // 여기서 응답을 JSON 형태로 변환
