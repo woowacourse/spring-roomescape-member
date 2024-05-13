@@ -7,8 +7,6 @@ import java.util.Arrays;
 
 public class TokenExtractor {
 
-    private static final String NAME = "token";
-
     private TokenExtractor() {
     }
 
@@ -19,7 +17,7 @@ public class TokenExtractor {
         }
 
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(NAME))
+                .filter(cookie -> cookie.getName().equals(TokenCookieProvider.getCookieName()))
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElse("");

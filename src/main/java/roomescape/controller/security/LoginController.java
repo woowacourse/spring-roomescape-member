@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
+import roomescape.infrastructure.TokenCookieProvider;
 import roomescape.infrastructure.TokenExtractor;
 import roomescape.service.dto.login.LoginRequest;
 import roomescape.service.dto.login.MemberNameResponse;
@@ -33,10 +34,7 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest) {
-        ResponseCookie cookie = ResponseCookie.from("token", authService.createToken(loginRequest))
-                .httpOnly(true)
-                .path("/")
-                .build();
+        ResponseCookie cookie = TokenCookieProvider.createCookie(authService.createToken(loginRequest));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())

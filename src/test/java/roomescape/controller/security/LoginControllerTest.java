@@ -7,7 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.ResponseCookie;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.infrastructure.TokenCookieProvider;
 
 import java.util.Map;
 
@@ -67,12 +69,13 @@ class LoginControllerTest {
 
         String[] parts = header.split(";");
         String token = parts[0].split("=")[1];
+        ResponseCookie cookie = TokenCookieProvider.createCookie(token);
 
         Map<String, String> cookies = Map.of(
                 "_ga", "GA1.1.48222725.1666268105",
                 "_ga_QD3BVX7MKT", "GS1.1.1687746261.15.1.1687747186.0.0.0",
                 "Idea-25a74f9c", "3cbc3411-daca-48c1-8201-51bdcdd93164",
-                "token", token
+                cookie.getName(), cookie.getValue()
         );
 
         RestAssured.given().log().all()

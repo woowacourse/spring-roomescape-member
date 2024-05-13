@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.AuthenticationProvider;
+import roomescape.infrastructure.TokenCookieProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AdminViewControllerTest {
@@ -25,26 +26,27 @@ class AdminViewControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void moveToAdminPage_Success() {
         String token = AuthenticationProvider.loginAdmin();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
@@ -55,26 +57,27 @@ class AdminViewControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void moveToAdminPageWithMember_Success() {
         String token = AuthenticationProvider.loginMember();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(403);

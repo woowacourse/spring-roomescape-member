@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.AuthenticationProvider;
+import roomescape.infrastructure.TokenCookieProvider;
 
 import java.util.Map;
 
@@ -41,13 +42,14 @@ public class ThemeControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void addDeleteThemeWithAdmin_Success() {
         String token = AuthenticationProvider.loginAdmin();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         Map<String, String> params = Map.of("name", "레벨2 탈출",
                 "description", "우테코 레벨2를 탈출하는 내용입니다.",
                 "thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
         String location = RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
@@ -58,20 +60,20 @@ public class ThemeControllerTest {
         String id = location.substring(location.lastIndexOf("/") + 1);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().delete("/themes/" + id)
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
@@ -83,13 +85,14 @@ public class ThemeControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void addDeleteThemeWithMember_Failure() {
         String token = AuthenticationProvider.loginMember();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         Map<String, String> params = Map.of("name", "레벨2 탈출",
                 "description", "우테코 레벨2를 탈출하는 내용입니다.",
                 "thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
@@ -97,20 +100,20 @@ public class ThemeControllerTest {
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)

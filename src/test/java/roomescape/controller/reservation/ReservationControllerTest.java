@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.AuthenticationProvider;
+import roomescape.infrastructure.TokenCookieProvider;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class ReservationControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void findDeleteReservationWithAdmin_Success() {
         String token = AuthenticationProvider.loginAdmin();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         Map<String, Object> reservation = Map.of(
                 "date", LocalDate.now().plusDays(1L).toString(),
                 "timeId", 1,
@@ -48,7 +50,7 @@ public class ReservationControllerTest {
 
         String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie(cookie)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -56,7 +58,7 @@ public class ReservationControllerTest {
                 .extract().header("Location");
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -65,13 +67,13 @@ public class ReservationControllerTest {
         String reservationId = location.substring(location.lastIndexOf("/") + 1);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().delete("/reservations/" + reservationId)
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -83,15 +85,16 @@ public class ReservationControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void findDeleteReservationWithMember_Failure() {
         String token = AuthenticationProvider.loginMember();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(403);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(403);
@@ -102,6 +105,7 @@ public class ReservationControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/theme-time-member-data.sql"})
     void addReservationWithMember_Success() {
         String token = AuthenticationProvider.loginMember();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         Map<String, Object> reservation = Map.of(
                 "date", LocalDate.now().plusDays(1L).toString(),
                 "timeId", 1,
@@ -110,7 +114,7 @@ public class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie(cookie)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()

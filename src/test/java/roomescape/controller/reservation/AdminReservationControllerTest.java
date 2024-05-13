@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.AuthenticationProvider;
+import roomescape.infrastructure.TokenCookieProvider;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -40,6 +41,7 @@ class AdminReservationControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void adminReservation_Success() {
         String token = AuthenticationProvider.loginAdmin();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         Map<String, String> time = Map.of(
                 "startAt", "10:00"
         );
@@ -51,7 +53,7 @@ class AdminReservationControllerTest {
         );
 
         String timeLocation = RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .contentType(ContentType.JSON)
                 .body(time)
                 .when().post("/times")
@@ -60,7 +62,7 @@ class AdminReservationControllerTest {
                 .extract().header("Location");
 
         String themeLocation = RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .contentType(ContentType.JSON)
                 .body(theme)
                 .when().post("/themes")
@@ -79,7 +81,7 @@ class AdminReservationControllerTest {
         );
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
@@ -87,7 +89,7 @@ class AdminReservationControllerTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -99,6 +101,7 @@ class AdminReservationControllerTest {
     @Sql(scripts = {"/truncate-data.sql", "/member-data.sql"})
     void adminReservationWithMember_Failure() {
         String token = AuthenticationProvider.loginMember();
+        String cookie = TokenCookieProvider.createCookie(token).toString();
         Map<String, Object> reservation = Map.of(
                 "date", LocalDate.now().plusDays(1L).toString(),
                 "timeId", 1,
@@ -107,7 +110,7 @@ class AdminReservationControllerTest {
         );
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(cookie)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/admin/reservations")
