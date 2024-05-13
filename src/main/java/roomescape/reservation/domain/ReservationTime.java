@@ -8,8 +8,15 @@ public class ReservationTime {
     private LocalTime startAt;
 
     public ReservationTime(final Long id, final LocalTime startAt) {
+        validateStartAt(startAt);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validateStartAt(final LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("[ERROR] 예약 가능 시간을 입력해주세요.");
+        }
     }
 
     public ReservationTime(final LocalTime startAt) {

@@ -7,10 +7,24 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(final Long id, final ThemeName themeName, final String description, final String thumbnail) {
+        validateDescription(description);
+        validateThumbnail(thumbnail);
         this.id = id;
         this.themeName = themeName;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validateDescription(final String description) {
+        if (description == null || description.length() == 0) {
+            throw new IllegalArgumentException("[ERROR] 테마 설명을 입력해주세요.");
+        }
+    }
+
+    private void validateThumbnail(final String thumbnail) {
+        if (thumbnail == null || thumbnail.length() == 0) {
+            throw new IllegalArgumentException("[ERROR] 테마 썸네일을 입력해주세요.");
+        }
     }
 
     public Theme(final String themeName, final String description, final String thumbnail) {

@@ -19,12 +19,19 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
+        validateDate(date);
         validateIsNotBeforeReservation(date, time);
         this.id = id;
         this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private void validateDate(final LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("[ERROR] 예약 날짜를 입력해주세요.");
+        }
     }
 
     private void validateIsNotBeforeReservation(final LocalDate date, final ReservationTime time) {

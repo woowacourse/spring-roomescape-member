@@ -16,6 +16,9 @@ public class Email {
     }
 
     private void validateEmail(final String value) {
+        if (value == null || value.length() == 0) {
+            throw new IllegalArgumentException("[ERROR] 이메일을 입력해주세요.");
+        }
         if (value.length() > MAX_EMAIL_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 이메일은 " + MAX_EMAIL_LENGTH + "자 이하로 입력해주세요.");
         }
