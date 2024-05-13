@@ -3,6 +3,7 @@ package roomescape.application;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.Member;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -35,7 +36,10 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약된 날짜, 시간입니다.");
         }
 
-        Reservation reservation = new Reservation(request.date(), time, getTheme(request.themeId()));
+        Member member = memberRepository.findByName(request.name())
+                .orElseThrow(() -> new IllegalArgumentException("해당 이름을 찾을 수 없습니다."));
+        Reservation reservation = new Reservation(member, request.date(), time, getTheme(request.themeId()));
+
         return reservationRepository.save(reservation);
     }
 
