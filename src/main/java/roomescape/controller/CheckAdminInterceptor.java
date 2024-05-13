@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static roomescape.config.WebMvcConfiguration.SECRET_KEY;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -10,8 +12,6 @@ import java.io.IOException;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
-
-    private static final String SECRET_KEY = "SheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinter";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)

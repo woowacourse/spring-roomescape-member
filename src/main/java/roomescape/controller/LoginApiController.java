@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static roomescape.config.WebMvcConfiguration.SECRET_KEY;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -17,8 +19,6 @@ import roomescape.service.dto.MemberResponse;
 
 @RestController
 public class LoginApiController {
-
-    private static final String SECRET_KEY = "SheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinter";
 
     private final LoginService loginService;
 

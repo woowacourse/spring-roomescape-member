@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static roomescape.config.WebMvcConfiguration.SECRET_KEY;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -13,8 +15,6 @@ import roomescape.domain.Member;
 import roomescape.service.LoginService;
 
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
-
-    private static final String SECRET_KEY = "SheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinter";
 
     private final LoginService loginService;
 

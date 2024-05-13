@@ -12,6 +12,8 @@ import roomescape.service.LoginService;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+    public static final String SECRET_KEY = "SheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinterSheLikesSpringIPreferWinter";
+
     private final LoginService loginService;
 
     public WebMvcConfiguration(LoginService loginService) {
