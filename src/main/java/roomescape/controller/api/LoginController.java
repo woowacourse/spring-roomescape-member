@@ -1,7 +1,5 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.config.JwtTokenProvider;
-import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberCheckResponse;
+import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
 import roomescape.service.MemberService;
 
@@ -31,7 +29,7 @@ public class LoginController {
     public ResponseEntity<Void> loginPage(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         MemberResponse memberResponse = memberService.findBy(memberRequest);
 
-        String accessToken = jwtTokenProvider.createToken(memberResponse.id(), memberResponse.role());
+        String accessToken = jwtTokenProvider.createToken(memberResponse.id(), memberResponse.name(), memberResponse.role());
 
         Cookie cookie = new Cookie(JwtTokenProvider.TOKEN_COOKIE_NAME, accessToken);
         cookie.setHttpOnly(true);
@@ -62,14 +60,5 @@ public class LoginController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
-    }
-
-    private String extractTokenFromCookie(final Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
