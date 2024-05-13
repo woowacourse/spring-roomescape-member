@@ -3,12 +3,11 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
 import roomescape.dto.LoginCheckResponse;
 import roomescape.dto.LoginRequest;
@@ -18,7 +17,7 @@ import roomescape.dto.SignUpRequest;
 import roomescape.service.AuthenticationService;
 import roomescape.service.MemberService;
 
-@Controller
+@RestController
 public class AuthenticationController {
     private final MemberService memberService;
     private final AuthenticationService authService;
@@ -28,13 +27,8 @@ public class AuthenticationController {
         this.authService = authService;
     }
 
-    @GetMapping("/login")
-    public String getLogin() {
-        return "/login";
-    }
-
     @PostMapping("/login")
-    public HttpEntity<LoginResponse> postLogin(
+    public ResponseEntity<LoginResponse> postLogin(
             @RequestBody LoginRequest request,
             HttpServletResponse httpServletResponse
     ) {
@@ -44,13 +38,13 @@ public class AuthenticationController {
     }
 
     @GetMapping("/login/check")
-    public HttpEntity<LoginCheckResponse> checkLogin(Member member) {
+    public ResponseEntity<LoginCheckResponse> checkLogin(Member member) {
         return ResponseEntity.ok(new LoginCheckResponse(member.getName()));
     }
 
     @PostMapping("/signup")
-    public HttpEntity<MemberResponse> postSignUp(@RequestBody SignUpRequest signUpRequest) {
-        Long id = memberService.addUser(signUpRequest);
+    public ResponseEntity<MemberResponse> postSignUp(@RequestBody SignUpRequest signUpRequest) {
+        Long id = memberService.addMember(signUpRequest);
         Member member = memberService.findById(id);
         return ResponseEntity.created(URI.create("/members/" + id)).body(MemberResponse.from(member));
     }
@@ -61,7 +55,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public HttpEntity<LoginCheckResponse> logout(HttpServletResponse response) {
+    public ResponseEntity<LoginCheckResponse> logout(HttpServletResponse response) {
         response.addCookie(getExpiredCookie(response));
         return ResponseEntity.ok().build();
     }

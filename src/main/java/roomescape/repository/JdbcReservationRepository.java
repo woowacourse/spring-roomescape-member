@@ -151,8 +151,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByConditions(Long themeId, Long memberId, LocalDate dateFrom,
-                                              LocalDate dateTo) {
+    public List<Reservation> findByConditions(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
         String sql = """
                 SELECT *
                 FROM reservation AS r
@@ -165,5 +169,4 @@ public class JdbcReservationRepository implements ReservationRepository {
                  """;
         return jdbcTemplate.query(sql, ROW_MAPPER, themeId, memberId, dateFrom, dateTo);
     }
-
 }

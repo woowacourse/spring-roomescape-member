@@ -2,17 +2,17 @@ package roomescape.controller;
 
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
 import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
-@Controller
+
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
     private final ReservationService reservationService;
@@ -21,28 +21,8 @@ public class AdminController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public String home() {
-        return "admin/index";
-    }
-
-    @GetMapping("/reservation")
-    public String reservation() {
-        return "admin/reservation-new";
-    }
-
-    @GetMapping("/time")
-    public String time() {
-        return "admin/time";
-    }
-
-    @GetMapping("/theme")
-    public String theme() {
-        return "admin/theme";
-    }
-
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(
+    public ResponseEntity<ReservationResponse> createAdminReservation(
             @RequestBody AdminReservationRequest adminReservationRequest,
             Member member
     ) {

@@ -58,6 +58,10 @@ public class Reservation {
         return member;
     }
 
+    public long getMemberId() {
+        return member.getId();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -73,9 +77,5 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public long getMemberId() {
-        return member.getId();
     }
 }

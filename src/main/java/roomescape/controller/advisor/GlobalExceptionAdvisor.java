@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.advisor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionAdvisor {
     private static final String PREFIX = "[ERROR] ";
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)

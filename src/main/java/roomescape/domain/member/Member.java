@@ -22,6 +22,7 @@ public class Member {
         this.name = new Name(name);
         this.email = new Email(email);
         this.password = new Password(password);
+        this.role = Role.MEMBER;
     }
 
     public boolean isAdmin() {

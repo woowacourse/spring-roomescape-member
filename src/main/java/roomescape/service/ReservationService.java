@@ -18,7 +18,6 @@ import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
     private final ThemeRepository themeRepository;
@@ -93,16 +92,26 @@ public class ReservationService {
         if (!member.isAdmin()) {
             throw new IllegalArgumentException("관리자가 아닙니다.");
         }
-        Member user = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
-        Theme theme = themeRepository.findById(adminReservationRequest.themeId()).orElseThrow();
+        Member user = memberRepository.findById(adminReservationRequest.memberId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("아이디가 %d인 유저가 존재하지 않습니다.", adminReservationRequest.memberId())));
+        Theme theme = themeRepository.findById(adminReservationRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("아이디가 %d인 테마가 존재하지 않습니다.", adminReservationRequest.themeId())));
         LocalDate date = adminReservationRequest.date();
-        ReservationTime time = timeRepository.findById(adminReservationRequest.timeId()).orElseThrow();
+        ReservationTime time = timeRepository.findById(adminReservationRequest.timeId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("아이디가 %d인 예약 시간이 존재하지 않습니다.", adminReservationRequest.themeId())));
         Long savedId = reservationRepository.save(new Reservation(user, date, time, theme));
         return savedId;
     }
 
-    public List<ReservationResponse> getFilteredReservations(Long themeId, Long memberId,
-                                                             LocalDate dateFrom, LocalDate dateTo) {
+    public List<ReservationResponse> getFilteredReservations(
+            Long themeId,
+            Long memberId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
         return reservationRepository.findByConditions(themeId, memberId, dateFrom, dateTo)
                 .stream()
                 .map(ReservationResponse::from)

@@ -40,7 +40,7 @@ public class JdbcMemberRepository {
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
-                .addValue("role", member.getPassword()
+                .addValue("role", member.getRole()
                 );
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }

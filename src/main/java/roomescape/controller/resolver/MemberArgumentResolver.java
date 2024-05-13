@@ -34,7 +34,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory) throws Exception {
+            WebDataBinderFactory binderFactory
+    ) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         Cookie[] cookies = Objects.requireNonNull(request.getCookies(), "쿠키가 비어있습니다.");

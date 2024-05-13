@@ -12,12 +12,11 @@ import roomescape.repository.JdbcMemberRepository;
 public class MemberService {
     private final JdbcMemberRepository jdbcMemberRepository;
 
-
     public MemberService(JdbcMemberRepository jdbcMemberRepository) {
         this.jdbcMemberRepository = jdbcMemberRepository;
     }
 
-    public Long addUser(SignUpRequest signUpRequest) {
+    public Long addMember(SignUpRequest signUpRequest) {
         Member member = new Member(signUpRequest.name(), signUpRequest.email(), signUpRequest.password());
         if (jdbcMemberRepository.findByEmail(member.getEmail()).isPresent()) {
             throw new IllegalArgumentException(String.format("%s는 중복되는 이메일입니다. ", signUpRequest.email()));
