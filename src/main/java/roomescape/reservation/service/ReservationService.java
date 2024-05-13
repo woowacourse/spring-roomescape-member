@@ -98,10 +98,9 @@ public class ReservationService {
             LocalDate dateFrom,
             LocalDate dateTo
     ) {
-        return reservationRepository.findAll()
+        return reservationRepository.findAll(themeId, memberId)
                 .stream()
-                .filter(reservation -> reservation.isSameThemeAndMember(themeId, memberId)
-                        && reservation.isBetweenInclusive(dateFrom, dateTo))
+                .filter(reservation -> reservation.isBetweenInclusive(dateFrom, dateTo))
                 .map(ReservationResponse::new)
                 .toList();
     }

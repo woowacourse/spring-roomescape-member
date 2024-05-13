@@ -16,6 +16,7 @@ public class InitialDataFixture {
     public static final int INITIAL_THEME_COUNT = 3;
     public static final int INITIAL_RESERVATION_TIME_COUNT = 3;
     public static final int INITIAL_RESERVATION_COUNT = 6;
+    public static final int THEME2_MEMBER1_RESERVATION_COUNT = 3;
     public static final ReservationTime RESERVATION_TIME_1 = new ReservationTime(1L, LocalTime.parse("09:00"));
     public static final ReservationTime RESERVATION_TIME_2 = new ReservationTime(2L, LocalTime.parse("10:00"));
     public static final ReservationTime NOT_RESERVATION_TIME = new ReservationTime(3L, LocalTime.parse("11:00"));

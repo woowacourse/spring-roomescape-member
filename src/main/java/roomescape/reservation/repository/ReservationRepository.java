@@ -12,6 +12,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findAll(Long themeId, Long memberId);
+
     List<Long> findAlreadyBookedTimeIds(LocalDate date, Long themeId);
 
     boolean isAlreadyBooked(Reservation reservation);

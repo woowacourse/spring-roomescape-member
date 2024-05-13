@@ -39,10 +39,6 @@ public class Reservation {
         return !date.isBefore(dateFrom) && !date.isAfter(dateTo);
     }
 
-    public boolean isSameThemeAndMember(Long themeId, Long memberId) {
-        return theme.isId(themeId) && loginMember.isId(memberId);
-    }
-
     public Long getId() {
         return id;
     }

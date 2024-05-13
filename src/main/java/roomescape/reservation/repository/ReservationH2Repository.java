@@ -63,6 +63,21 @@ public class ReservationH2Repository implements ReservationRepository {
         );
     }
 
+    @Override
+    public List<Reservation> findAll(Long themeId, Long memberId) {
+        return jdbcTemplate.query(
+                "SELECT r.id, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, t.name as theme_name, t.description, t.thumbnail, m.name as member_name, m.email "
+                        + "FROM reservation as r "
+                        + "inner join reservation_time as rt on r.time_id = rt.id "
+                        + "inner join theme as t on r.theme_id = t.id "
+                        + "inner join member as m on r.member_id = m.id "
+                        + "WHERE r.theme_id = ? AND r.member_id = ?",
+                getReservationRowMapper(),
+                themeId,
+                memberId
+        );
+    }
+
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> {
             ReservationTime reservationTime = new ReservationTime(

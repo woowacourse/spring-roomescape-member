@@ -9,8 +9,10 @@ import static roomescape.InitialDataFixture.NO_RESERVATION_DATE;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
 import static roomescape.InitialDataFixture.RESERVATION_3;
+import static roomescape.InitialDataFixture.THEME2_MEMBER1_RESERVATION_COUNT;
 import static roomescape.InitialDataFixture.THEME_2;
 import static roomescape.InitialMemberFixture.LOGIN_MEMBER_1;
+import static roomescape.InitialMemberFixture.MEMBER_1;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -85,6 +87,14 @@ class ReservationH2RepositoryTest {
         List<Reservation> found = reservationH2Repository.findAll();
 
         assertThat(found).hasSize(INITIAL_RESERVATION_COUNT);
+    }
+
+    @Test
+    @DisplayName("저장된 모든 Reservation 중 themeId, memberId가 일치하는 Reservation들만 반환한다.")
+    void findAllWithThemeIdAndMemberId() {
+        List<Reservation> found = reservationH2Repository.findAll(THEME_2.getId() ,MEMBER_1.getId());
+
+        assertThat(found).hasSize(THEME2_MEMBER1_RESERVATION_COUNT);
     }
 
     @Test
