@@ -50,7 +50,7 @@ class JwtTokenProviderTest {
     private JwtTokenProvider createJwtTokenProvider(int validityInMilliseconds) {
         JwtTokenProperties jwtTokenProperties = new JwtTokenProperties();
         jwtTokenProperties.setSecretKey(TEST_SECRET_KEY);
-        jwtTokenProperties.setExpireMinute(validityInMilliseconds);
+        jwtTokenProperties.setExpireMilliseconds(validityInMilliseconds);
         return new JwtTokenProvider(jwtTokenProperties);
     }
 }
