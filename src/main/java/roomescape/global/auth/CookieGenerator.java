@@ -11,7 +11,7 @@ public class CookieGenerator {
         return cookie;
     }
 
-    public static Cookie generateExpiredToken(String name) {
+    public static Cookie generateEmptyCookie(String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

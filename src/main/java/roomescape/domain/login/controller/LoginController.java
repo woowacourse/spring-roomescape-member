@@ -43,7 +43,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logOut(HttpServletResponse response) {
-        Cookie cookie = CookieGenerator.generateExpiredToken(COOKIE_NAME);
+        Cookie cookie = CookieGenerator.generateEmptyCookie(COOKIE_NAME);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }

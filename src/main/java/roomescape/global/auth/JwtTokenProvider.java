@@ -21,6 +21,7 @@ public class JwtTokenProvider {
 
     public String generateToken(String payload) {
         Claims claims = Jwts.claims().setSubject(payload);
+        claims.put("userId", 2);
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime validity = now.plusNanos(validityInSeconds);
         return Jwts.builder()
