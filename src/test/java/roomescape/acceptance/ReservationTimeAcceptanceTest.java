@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.dto.reservation.ReservationTimeSaveRequest;
 
-class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
+class ReservationTimeAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("예약 시간을 성공적으로 생성하면 201을 응답한다.")

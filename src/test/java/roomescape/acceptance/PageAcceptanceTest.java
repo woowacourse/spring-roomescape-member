@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class PageAcceptanceTest extends ApiAcceptanceTest{
+class PageAcceptanceTest extends AcceptanceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/time", "/admin/theme"})

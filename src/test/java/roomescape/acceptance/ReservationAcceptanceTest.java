@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.dto.reservation.AdminReservationSaveRequest;
 import roomescape.dto.reservation.MemberReservationSaveRequest;
 
-class ReservationAcceptanceTest extends ApiAcceptanceTest {
+class ReservationAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("사용자가 예약을 성공적으로 생성하면 201을 응답한다.")

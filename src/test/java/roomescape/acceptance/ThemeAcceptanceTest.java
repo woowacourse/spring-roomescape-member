@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.theme.ThemeSaveRequest;
 
-class ThemeAcceptanceTest extends ApiAcceptanceTest {
+class ThemeAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("테마를 성공적으로 생성하면 201을 응답한다.")

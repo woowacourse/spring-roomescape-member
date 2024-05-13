@@ -15,7 +15,7 @@ import roomescape.dto.auth.TokenResponse;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-abstract class ApiAcceptanceTest {
+abstract class AcceptanceTest {
 
     @LocalServerPort
     private int port;
