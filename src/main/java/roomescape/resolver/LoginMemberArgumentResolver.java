@@ -1,7 +1,6 @@
 package roomescape.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -19,7 +18,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     private final AuthService authService;
     private final LoginMemberService loginMemberService;
 
-    @Autowired
     public LoginMemberArgumentResolver(AuthService authService, LoginMemberService loginMemberService) {
         this.authService = authService;
         this.loginMemberService = loginMemberService;

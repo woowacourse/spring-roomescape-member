@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
@@ -16,7 +15,6 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    @Autowired
     public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
                                   ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;

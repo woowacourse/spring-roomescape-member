@@ -2,7 +2,6 @@ package roomescape.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.service.AuthService;
@@ -15,7 +14,6 @@ public class RoleInterceptor implements HandlerInterceptor {
     private final AuthService authService;
     private final LoginMemberService loginMemberService;
 
-    @Autowired
     public RoleInterceptor(AuthService authService, LoginMemberService loginMemberService) {
         this.authService = authService;
         this.loginMemberService = loginMemberService;

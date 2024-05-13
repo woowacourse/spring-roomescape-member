@@ -2,7 +2,6 @@ package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.infrastructure.JwtTokenExtractor;
 import roomescape.infrastructure.JwtTokenProvider;
@@ -16,7 +15,6 @@ public class AuthService {
     private final JwtTokenExtractor jwtTokenExtractor;
     private final JwtTokenValidator jwtTokenValidator;
 
-    @Autowired
     public AuthService(JwtTokenProvider jwtTokenProvider, JwtTokenExtractor jwtTokenExtractor,
                        JwtTokenValidator jwtTokenValidator) {
         this.jwtTokenProvider = jwtTokenProvider;

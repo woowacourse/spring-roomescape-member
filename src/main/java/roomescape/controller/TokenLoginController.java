@@ -3,7 +3,6 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +21,6 @@ public class TokenLoginController {
     private final AuthService authService;
     private final LoginMemberService loginMemberService;
 
-    @Autowired
     public TokenLoginController(AuthService authService, LoginMemberService loginMemberService) {
         this.authService = authService;
         this.loginMemberService = loginMemberService;
