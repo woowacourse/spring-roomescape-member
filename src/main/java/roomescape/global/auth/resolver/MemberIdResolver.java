@@ -39,6 +39,6 @@ public class MemberIdResolver implements HandlerMethodArgumentResolver {
                 }
             }
         }
-        throw new UnauthorizedException(ErrorType.INVALID_REFRESH_TOKEN, "JWT 토큰이 존재하지 않거나 유효하지 않습니다.");
+        throw new UnauthorizedException(ErrorType.INVALID_TOKEN, "JWT 토큰이 존재하지 않거나 유효하지 않습니다.");
     }
 }

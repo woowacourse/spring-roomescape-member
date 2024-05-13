@@ -5,6 +5,8 @@ import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.global.auth.jwt.JwtHandler;
 import roomescape.global.auth.jwt.dto.TokenDto;
+import roomescape.global.exception.error.ErrorType;
+import roomescape.global.exception.model.UnauthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 
@@ -31,9 +33,13 @@ public class AuthService {
     }
 
     public TokenDto reissueToken(final String accessToken, final String refreshToken) {
-        jwtHandler.validateToken(refreshToken);
-        Long memberId = jwtHandler.getMemberIdFromTokenWithNotValidate(accessToken);
+        try {
+            jwtHandler.validateToken(refreshToken);
+        } catch (UnauthorizedException e) {
+            throw new UnauthorizedException(ErrorType.INVALID_REFRESH_TOKEN, ErrorType.INVALID_REFRESH_TOKEN.getDescription(), e);
+        }
 
+        Long memberId = jwtHandler.getMemberIdFromTokenWithNotValidate(accessToken);
         return jwtHandler.createToken(memberId);
     }
 }
