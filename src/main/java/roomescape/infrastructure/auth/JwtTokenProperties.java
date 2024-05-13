@@ -8,22 +8,23 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProperties {
     private static final int SECOND = 1000;
     private static final int MINUTE = 60;
+
     private String secretKey;
-    private long expireMinute;
+    private long expireMilliseconds;
 
     public String getSecretKey() {
         return secretKey;
     }
 
-    public long getExpireMinute() {
-        return expireMinute;
+    public long getExpireMilliseconds() {
+        return expireMilliseconds;
     }
 
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
     }
 
-    public void setExpireMinute(long expireMinute) {
-        this.expireMinute = expireMinute * MINUTE * SECOND;
+    public void setExpireMilliseconds(long expireMinute) {
+        this.expireMilliseconds = expireMinute * MINUTE * SECOND;
     }
 }
