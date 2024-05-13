@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import roomescape.domain.reservation.domain.reservation.Reservation;
 import roomescape.domain.reservation.dto.BookableTimeResponse;
 import roomescape.domain.reservation.dto.BookableTimesRequest;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
+import roomescape.domain.reservation.dto.ReservationFindRequest;
 import roomescape.domain.reservation.service.ReservationService;
 
 @RestController
@@ -34,12 +36,14 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/search")
-    public ResponseEntity<List<Reservation>> getConditionalReservationList(@RequestParam("themeId") Long themeId,
-                                                                           @RequestParam("memberId") Long memberId,
-                                                                           @RequestParam("dateFrom") LocalDate dateFrom,
-                                                                           @RequestParam("dateTo") LocalDate dateTo) {
-        List<Reservation> reservations = reservationService.findFilteredReservationList(themeId, memberId, dateFrom,
-                dateTo);
+    public ResponseEntity<List<Reservation>> getConditionalReservationList(
+            @ModelAttribute ReservationFindRequest reservationFindRequest) {
+        List<Reservation> reservations = reservationService.findFilteredReservationList(
+                reservationFindRequest.themeId(),
+                reservationFindRequest.memberId(),
+                reservationFindRequest.dateFrom(),
+                reservationFindRequest.dateTo()
+        );
         return ResponseEntity.ok(reservations);
     }
 
