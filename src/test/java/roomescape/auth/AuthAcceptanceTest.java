@@ -61,4 +61,18 @@ public class AuthAcceptanceTest {
                 .when().get("/login/check")
                 .then().statusCode(200);
     }
+
+    @DisplayName("사용자의 인증 토큰을 삭제할 수 있다.")
+    @Test
+    void tokenLogout() {
+        String token = authService.login(new LoginRequestDto("1234", "hotea@hotea.com"));
+        RestAssured.given()
+                .header("Cookie", "token=" + token)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/logout")
+                .then().cookie("token")
+                .statusCode(200)
+                .extract().equals(null);
+    }
 }

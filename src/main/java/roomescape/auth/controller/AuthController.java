@@ -44,4 +44,14 @@ public class AuthController {
         headers.add(HttpHeaders.DATE, new Date().toString());
         return ResponseEntity.ok().headers(headers).body(new LoginResponseDto(member.getName()));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from("token", null)
+                .maxAge(0)
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.ok().headers(headers).build();
+    }
 }
