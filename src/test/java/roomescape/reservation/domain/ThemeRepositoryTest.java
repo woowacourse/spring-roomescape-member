@@ -3,10 +3,13 @@ package roomescape.reservation.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.member.persistence.MemberDao;
+import roomescape.reservation.persistence.ReservationDao;
+import roomescape.reservation.persistence.ReservationTimeDao;
 import roomescape.reservation.persistence.ThemeDao;
 
 import java.sql.Time;
@@ -16,26 +19,27 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
-import static roomescape.TestFixture.WOOTECO_THEME;
 import static roomescape.member.domain.Role.USER;
 
 class ThemeRepositoryTest extends RepositoryTest {
     private ThemeRepository themeRepository;
-    private SimpleJdbcInsert jdbcInsert;
+    private ReservationTimeRepository reservationTimeRepository;
+    private MemberRepository memberRepository;
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void setUp() {
         this.themeRepository = new ThemeDao(jdbcTemplate, dataSource);
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+        this.reservationTimeRepository = new ReservationTimeDao(jdbcTemplate, dataSource);
+        this.memberRepository = new MemberDao(jdbcTemplate, dataSource);
+        this.reservationRepository = new ReservationDao(jdbcTemplate, dataSource);
     }
 
     @Test
     @DisplayName("테마를 저장한다.")
     void save() {
         // given
-        Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme theme = WOOTECO_THEME();
 
         // when
         Theme savedTheme = themeRepository.save(theme);
@@ -48,8 +52,7 @@ class ThemeRepositoryTest extends RepositoryTest {
     @DisplayName("테마 목록을 조회한다.")
     void findAll() {
         // given
-        SqlParameterSource params = new BeanPropertySqlParameterSource(WOOTECO_THEME());
-        jdbcInsert.execute(params);
+        themeRepository.save(WOOTECO_THEME());
 
         // when
         List<Theme> themes = themeRepository.findAll();
@@ -62,11 +65,10 @@ class ThemeRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 테마를 조회한다.")
     void findById() {
         // given
-        SqlParameterSource params = new BeanPropertySqlParameterSource(WOOTECO_THEME());
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        Long themeId = themeRepository.save(WOOTECO_THEME()).getId();
 
         // when
-        Optional<Theme> foundTheme = themeRepository.findById(id);
+        Optional<Theme> foundTheme = themeRepository.findById(themeId);
 
         // then
         assertThat(foundTheme).isNotEmpty();
@@ -89,51 +91,38 @@ class ThemeRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 테마를 삭제한다.")
     void deleteById() {
         // given
-        SqlParameterSource params = new BeanPropertySqlParameterSource(WOOTECO_THEME());
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        Long themeId = themeRepository.save(WOOTECO_THEME()).getId();
 
         // when
-        themeRepository.deleteById(id);
+        themeRepository.deleteById(themeId);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme where id = ?", Integer.class, id);
-        assertThat(count).isEqualTo(0);
+        Optional<Theme> theme = themeRepository.findById(themeId);
+        assertThat(theme).isEmpty();
     }
 
     @Test
     @DisplayName("최근 일주일을 기준으로 예약이 많은 순으로 테마 10개를 조회한다.")
     void findAllOrderByReservationCountInLastWeek() {
         // given
-        String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?), (?)";
-        jdbcTemplate.update(insertTimeSql,
-                Time.valueOf(MIA_RESERVATION_TIME),
-                Time.valueOf(TOMMY_RESERVATION_TIME));
-        String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?), (?, ?, ?)";
-        jdbcTemplate.update(insertThemeSql,
-                WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL,
-                HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        String insertMemberSql = "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
-        jdbcTemplate.update(insertMemberSql,
-                MIA_NAME, MIA_EMAIL, TEST_PASSWORD, USER.name(),
-                TOMMY_NAME, TOMMY_EMAIL, TEST_PASSWORD, USER.name());
+        Theme secondRankTheme = themeRepository.save(WOOTECO_THEME());
+        Theme firstRankTheme = themeRepository.save(WOOTECO_THEME());
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(MIA_RESERVATION_TIME));
+        Member member = memberRepository.save(USER_MIA());
 
-        long secondRankThemeId = 1;
-        long firstRankThemeId = 2;
         LocalDate today = LocalDate.now();
-        String insertReservationSql = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)";
-        jdbcTemplate.update(insertReservationSql,
-                1,today.minusDays(7), 1L, firstRankThemeId,
-                2, today.minusDays(6), 2L, firstRankThemeId,
-                2, today.minusDays(1), 1L, secondRankThemeId);
+        reservationRepository.save(new Reservation(member, today.minusDays(7), reservationTime, firstRankTheme));
+        reservationRepository.save(new Reservation(member, today.minusDays(6), reservationTime, firstRankTheme));
+        reservationRepository.save(new Reservation(member, today.minusDays(1), reservationTime, secondRankTheme));
 
-        LocalDate startDate = LocalDate.now().minusDays(7);
-        LocalDate endDate = LocalDate.now().minusDays(1);
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today.minusDays(1);
 
         // when
         List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllByDateBetweenAndOrderByReservationCount(startDate, endDate, 10);
 
         // then
         assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getId)
-                .containsExactly(firstRankThemeId, secondRankThemeId);
+                .containsExactly(firstRankTheme.getId(), secondRankTheme.getId());
     }
 }

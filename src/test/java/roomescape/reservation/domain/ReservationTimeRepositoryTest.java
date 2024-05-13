@@ -3,9 +3,6 @@ package roomescape.reservation.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
 import roomescape.reservation.persistence.ReservationTimeDao;
 
@@ -17,14 +14,10 @@ import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
 class ReservationTimeRepositoryTest extends RepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
-    private SimpleJdbcInsert jdbcInsert;
 
     @BeforeEach
     void setUp() {
         this.reservationTimeRepository = new ReservationTimeDao(jdbcTemplate, dataSource);
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
     }
 
     @Test
@@ -44,8 +37,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
     @DisplayName("예약 시간 목록을 조회한다.")
     void findAll() {
         // given
-        SqlParameterSource params = new BeanPropertySqlParameterSource(new ReservationTime(MIA_RESERVATION_TIME));
-        jdbcInsert.execute(params);
+        reservationTimeRepository.save(new ReservationTime(MIA_RESERVATION_TIME));
 
         // when
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
@@ -59,8 +51,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 예약 시간을 조회한다.")
     void findById() {
         // given
-        SqlParameterSource params = new BeanPropertySqlParameterSource(new ReservationTime(MIA_RESERVATION_TIME));
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        Long id = reservationTimeRepository.save(new ReservationTime(MIA_RESERVATION_TIME)).getId();
 
         // when
         Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(id);
@@ -86,14 +77,13 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 예약 시간을 삭제한다.")
     void deleteById() {
         // given
-        SqlParameterSource params = new BeanPropertySqlParameterSource(new ReservationTime(MIA_RESERVATION_TIME));
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        Long id = reservationTimeRepository.save(new ReservationTime(MIA_RESERVATION_TIME)).getId();
 
         // when
         reservationTimeRepository.deleteById(id);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time where id = ?", Integer.class, id);
-        assertThat(count).isEqualTo(0);
+        Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(id);
+        assertThat(reservationTime).isEmpty();
     }
 }

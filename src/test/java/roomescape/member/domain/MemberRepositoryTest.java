@@ -3,9 +3,6 @@ package roomescape.member.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.common.RepositoryTest;
 import roomescape.member.persistence.MemberDao;
 
@@ -17,14 +14,10 @@ import static roomescape.TestFixture.*;
 
 class MemberRepositoryTest extends RepositoryTest {
     private MemberRepository memberRepository;
-    private SimpleJdbcInsert jdbcInsert;
 
     @BeforeEach
     void setUp() {
         this.memberRepository = new MemberDao(jdbcTemplate, dataSource);
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id");
     }
 
     @Test
@@ -44,9 +37,7 @@ class MemberRepositoryTest extends RepositoryTest {
     @DisplayName("이메일로 사용자를 조회한다.")
     void findByEmail() {
         // given
-        Member member = USER_MIA();
-        SqlParameterSource params = new BeanPropertySqlParameterSource(member);
-        jdbcInsert.execute(params);
+        memberRepository.save(USER_MIA());
 
         // when
         Optional<Member> foundMember = memberRepository.findByEmail(MIA_EMAIL);
@@ -59,12 +50,10 @@ class MemberRepositoryTest extends RepositoryTest {
     @DisplayName("Id로 사용자를 조회한다.")
     void findById() {
         // given
-        Member member = USER_MIA();
-        SqlParameterSource params = new BeanPropertySqlParameterSource(member);
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        Member member = memberRepository.save(USER_MIA());
 
         // when
-        Optional<Member> foundMember = memberRepository.findById(id);
+        Optional<Member> foundMember = memberRepository.findById(member.getId());
 
         // then
         assertThat(foundMember).isNotEmpty();
@@ -74,10 +63,8 @@ class MemberRepositoryTest extends RepositoryTest {
     @DisplayName("사용자 목록을 조회한다.")
     void findAll() {
         // given
-        SqlParameterSource miaParams = new BeanPropertySqlParameterSource(USER_MIA());
-        SqlParameterSource tommyParams = new BeanPropertySqlParameterSource(USER_TOMMY());
-        jdbcInsert.execute(miaParams);
-        jdbcInsert.execute(tommyParams);
+        memberRepository.save(USER_MIA());
+        memberRepository.save(USER_TOMMY());
 
         // when
         List<Member> members = memberRepository.findAll();
