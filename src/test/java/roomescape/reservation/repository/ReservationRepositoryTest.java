@@ -102,6 +102,17 @@ class ReservationRepositoryTest {
     assertThat(reservations).hasSize(2);
   }
 
+  @DisplayName("주어진 테마ID로 예약을 검색한다.")
+  @Test
+  void findAllWithThemeId() {
+    // When
+    final List<Reservation> reservations = reservationRepository.findAll(
+        null, null, 1L, null);
+
+    // Then
+    assertThat(reservations).hasSize(4);
+  }
+
   @DisplayName("특정 예약 정보를 조회한다.")
   @Test
   void findByIdTest() {
