@@ -29,7 +29,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         final String accessToken = cookieProvider.extractToken(request.getCookies());
         final MemberResponse memberResponse = memberService.findMemberByToken(accessToken);
 
-        if (memberResponse.role() != Role.ADMIN) {
+        if (Role.isNotAdmin(memberResponse.role())) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return false;
         }
