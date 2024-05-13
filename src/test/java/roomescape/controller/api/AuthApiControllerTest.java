@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberIdAndNameResponse;
+import util.TokenGenerator;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class AuthApiControllerTest {
@@ -27,7 +28,7 @@ class AuthApiControllerTest {
     @DisplayName("잘못된 로그인 정보를 입력할 시, 로그인에 실패한다.")
     void authenticatedMemberLogin_Failure() {
         RestAssured.given().log().all()
-                .body(new LoginRequest("wrond@naver.com", "1234"))
+                .body(new LoginRequest("wrong@naver.com", "1234"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .then().log().all()
@@ -37,11 +38,7 @@ class AuthApiControllerTest {
     @Test
     @DisplayName("로그인한 사용자의 인증 정보 조회 시, 성공한다.")
     void authenticatedMemberLoginCheck_Success() {
-        String token = RestAssured.given().log().all()
-                .body(new LoginRequest("user@naver.com", "1234"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().cookies().extract().cookie("token");
+        String token = TokenGenerator.makeUserToken();
 
         MemberIdAndNameResponse response = RestAssured.given().log().all()
                 .cookie("token", token)

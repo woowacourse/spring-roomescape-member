@@ -6,10 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.service.dto.request.LoginRequest;
+import util.TokenGenerator;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -26,13 +25,9 @@ public class ReservationApiControllerTest {
     private ReservationApiController reservationApiController;
 
     @Test
-    @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
+    @DisplayName("관리자 예약 페이지 요청이 정상적으로 수행된다.")
     void moveToReservationPage_Success() {
-        String token = RestAssured.given().log().all()
-                .body(new LoginRequest("admin@naver.com", "1234"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().cookies().extract().cookie("token");
+        String token = TokenGenerator.makeAdminToken();
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -71,7 +66,7 @@ public class ReservationApiControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.cDF0ToCw0beej_PcZZQAhLPSXPZp77-iY8CHOJ9kGLk")
+                .cookie("token", TokenGenerator.makeUserToken())
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
