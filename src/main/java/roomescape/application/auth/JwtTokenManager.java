@@ -67,6 +67,9 @@ public class JwtTokenManager implements TokenManager {
     private void validateNotExpired(DecodedJWT decodedJWT) {
         Date now = Date.from(clock.instant());
         Date expiresAt = decodedJWT.getExpiresAt();
+        if (expiresAt == null) {
+            throw new InvalidTokenException();
+        }
         if (expiresAt.before(now)) {
             throw new ExpiredTokenException();
         }

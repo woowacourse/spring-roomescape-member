@@ -57,7 +57,7 @@ public class RoomescapeControllerAdvice {
             InvalidTokenException.class, ExpiredTokenException.class,
             AuthenticationInformationNotFoundException.class, AuthenticationException.class
     })
-    public ProblemDetail handleUnAuthorizedException(UnAuthorizedException exception) {
+    public ProblemDetail handleUnAuthorizedException(RuntimeException exception) {
         logger.error(exception.getMessage(), exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
