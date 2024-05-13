@@ -18,16 +18,17 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.mock.web.MockHttpServletRequest;
 import roomescape.domain.member.Member;
+import roomescape.global.JwtManager;
 import roomescape.service.exception.UnauthorizedException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class JwtServiceTest {
+class JwtManagerTest {
 
     @LocalServerPort
     private int port;
 
     @Autowired
-    private JwtService jwtService;
+    private JwtManager jwtManager;
 
     private final Member member1 = new Member(1L, "t1@t1.com", "123", "러너덕", "MEMBER");
 
@@ -39,7 +40,7 @@ class JwtServiceTest {
     @DisplayName("회원 정보로 JWT 토큰을 생성한다")
     @Test
     void generate_token() {
-        String token = jwtService.generateToken(member1);
+        String token = jwtManager.generateToken(member1);
 
         assertNotNull(token);
     }
@@ -49,7 +50,7 @@ class JwtServiceTest {
     void throw_exception_when_request_cookies_null() {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
-        assertThatThrownBy(() -> jwtService.extractToken(request))
+        assertThatThrownBy(() -> jwtManager.extractToken(request))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("권한이 없습니다. 로그인을 다시 시도해주세요.");
     }
@@ -60,7 +61,7 @@ class JwtServiceTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setCookies(new Cookie("notToken", "notToken"));
 
-        assertThatThrownBy(() -> jwtService.extractToken(request))
+        assertThatThrownBy(() -> jwtManager.extractToken(request))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("권한이 없습니다. 로그인을 다시 시도해주세요.");
     }
@@ -72,7 +73,7 @@ class JwtServiceTest {
         Cookie cookie = new Cookie("token", "tokenValue");
         request.setCookies(cookie);
 
-        String token = jwtService.extractToken(request);
+        String token = jwtManager.extractToken(request);
 
         assertThat(token).isEqualTo(cookie.getValue());
     }
@@ -80,11 +81,11 @@ class JwtServiceTest {
     @DisplayName("토큰 검증에 실패하면 예외를 발생시킨다.")
     @Test
     void throw_signature_exception_when_invalid_token() {
-        String token = jwtService.generateToken(member1);
+        String token = jwtManager.generateToken(member1);
         token += "invalid";
 
         String testToken = token;
-        assertThatThrownBy(() -> jwtService.verifyToken(testToken))
+        assertThatThrownBy(() -> jwtManager.verifyToken(testToken))
                 .isInstanceOf(JwtException.class)
                 .hasMessage("JWT 토큰 검증에 실패하였습니다.");
     }
@@ -94,7 +95,7 @@ class JwtServiceTest {
     void throw_malformed_jwt_exception_when_invalid_token() {
         String testToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IkpvYnMgRG9lIiwicm9sZSI6IlVTRVIifQ";
 
-        assertThatThrownBy(() -> jwtService.verifyToken(testToken))
+        assertThatThrownBy(() -> jwtManager.verifyToken(testToken))
                 .isInstanceOf(JwtException.class)
                 .hasMessage("JWT 토큰 구성이 올바르지 않습니다.");
     }
@@ -102,9 +103,9 @@ class JwtServiceTest {
     @DisplayName("토큰 검증에 성공하면 payload 가 일치한다.")
     @Test
     void success_verify_token() {
-        String token = jwtService.generateToken(member1);
+        String token = jwtManager.generateToken(member1);
 
-        Claims claims = jwtService.verifyToken(token);
+        Claims claims = jwtManager.verifyToken(token);
         String subject = claims.getSubject();
         String name = claims.get("name", String.class);
         String role = claims.get("role", String.class);

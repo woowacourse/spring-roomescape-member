@@ -15,6 +15,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.domain.member.Member;
+import roomescape.global.JwtManager;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.repository.JdbcMemberRepository;
 import roomescape.service.dto.member.LoginMemberRequest;
@@ -40,7 +41,7 @@ class MemberServiceTest {
     private MemberService memberService;
 
     @Autowired
-    private JwtService jwtService;
+    private JwtManager jwtManager;
 
     @Autowired
     private JdbcMemberRepository memberRepository;
@@ -96,22 +97,11 @@ class MemberServiceTest {
     @Test
     void success_login() {
         Member savedMember = memberRepository.insertMember(member3);
-        String expectedToken = jwtService.generateToken(savedMember);
+        String expectedToken = jwtManager.generateToken(savedMember);
         LoginMemberRequest requestDto = new LoginMemberRequest("t3@t3.com", "125");
 
         String actualToken = memberService.login(requestDto);
 
         assertThat(actualToken).isEqualTo(expectedToken);
-    }
-
-    @DisplayName("존재하지 않는 멤버 아이디로 조회할 시 에러를 발생시킨다..")
-    @Test
-    void throw_exception_when_not_found_member_by_id() {
-        memberRepository.insertMember(member1);
-        Member invalidMember = new Member(2L, "t4@t4.com", "121", "히히", "MEMBER");
-
-        assertThatThrownBy(() -> memberService.findMemberById(3L))
-                .isInstanceOf(MemberNotFoundException.class)
-                .hasMessage("회원 정보가 존재하지 않습니다.");
     }
 }

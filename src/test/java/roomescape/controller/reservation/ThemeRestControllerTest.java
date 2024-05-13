@@ -16,8 +16,8 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.controller.dto.AdminReservationRequest;
 import roomescape.domain.member.Member;
+import roomescape.global.JwtManager;
 import roomescape.repository.DatabaseCleanupListener;
-import roomescape.service.JwtService;
 import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.reservation.ReservationTimeRequest;
 import roomescape.service.dto.theme.ThemeRequest;
@@ -34,7 +34,7 @@ class ThemeRestControllerTest {
     private int port;
 
     @Autowired
-    private JwtService jwtService;
+    private JwtManager jwtManager;
 
     private final ReservationTimeRequest reservationTimeCreate1 = new ReservationTimeRequest("10:00");
     private final ReservationTimeRequest reservationTimeCreate2 = new ReservationTimeRequest("12:00");
@@ -63,7 +63,7 @@ class ThemeRestControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        adminToken = jwtService.generateToken(admin);
+        adminToken = jwtManager.generateToken(admin);
     }
 
     private void create(String path, Object param) {

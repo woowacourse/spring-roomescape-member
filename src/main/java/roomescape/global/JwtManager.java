@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.global;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -13,20 +13,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
-import roomescape.global.CookieUtils;
 import roomescape.service.exception.UnauthorizedException;
 
-@Service
-public class JwtService {
+@Component
+public class JwtManager {
 
     private static final String TOKEN = "token";
 
     private final String tokenSecretKey;
     private final long tokenExpirationPeriod;
 
-    public JwtService(@Value("${security.jwt.secret-key}") String tokenSecretKey,
+    public JwtManager(@Value("${security.jwt.secret-key}") String tokenSecretKey,
                       @Value("${security.jwt.expiration-period}") long tokenExpirationPeriod) {
         this.tokenSecretKey = tokenSecretKey;
         this.tokenExpirationPeriod = tokenExpirationPeriod;

@@ -16,8 +16,8 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.controller.dto.AdminReservationRequest;
 import roomescape.domain.member.Member;
+import roomescape.global.JwtManager;
 import roomescape.repository.DatabaseCleanupListener;
-import roomescape.service.JwtService;
 import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.reservation.ReservationTimeRequest;
 import roomescape.service.dto.reservation.ReservationTimeResponse;
@@ -39,12 +39,12 @@ class ReservationTimeRestControllerTest {
     private String adminToken;
 
     @Autowired
-    private JwtService jwtService;
+    private JwtManager jwtManager;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        adminToken = jwtService.generateToken(admin);
+        adminToken = jwtManager.generateToken(admin);
     }
 
     private final ReservationTimeRequest reservationTimeCreate1 = new ReservationTimeRequest("10:00");

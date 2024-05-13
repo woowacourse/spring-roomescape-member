@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Role;
 import roomescape.global.CookieUtils;
-import roomescape.service.JwtService;
+import roomescape.global.JwtManager;
 
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
@@ -18,10 +18,10 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
     private static final String AUTHORITY = "role";
     private static final String TOKEN = "token";
 
-    private final JwtService jwtService;
+    private final JwtManager jwtManager;
 
-    public AdminCheckInterceptor(JwtService jwtService) {
-        this.jwtService = jwtService;
+    public AdminCheckInterceptor(JwtManager jwtManager) {
+        this.jwtManager = jwtManager;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Claims claims = jwtService.verifyToken(cookie.get().getValue());
+        Claims claims = jwtManager.verifyToken(cookie.get().getValue());
         String role = claims.get(AUTHORITY, String.class);
 
         if (Role.getRole(role) == Role.ADMIN) {

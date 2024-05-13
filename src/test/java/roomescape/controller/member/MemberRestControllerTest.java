@@ -14,8 +14,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.domain.member.Member;
+import roomescape.global.JwtManager;
 import roomescape.repository.DatabaseCleanupListener;
-import roomescape.service.JwtService;
 import roomescape.service.dto.member.LoginMemberRequest;
 import roomescape.service.dto.member.MemberCreateRequest;
 
@@ -30,7 +30,7 @@ class MemberRestControllerTest {
     private int port;
 
     @Autowired
-    private JwtService jwtService;
+    private JwtManager jwtManager;
 
     @BeforeEach
     void setUp() {
@@ -192,7 +192,7 @@ class MemberRestControllerTest {
     @Test
     void return_200_when_find_all_members() {
         Member admin = new Member(2L, "t2@t2.com", "124", "재즈", "ADMIN");
-        String adminToken = jwtService.generateToken(admin);
+        String adminToken = jwtManager.generateToken(admin);
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
@@ -218,7 +218,7 @@ class MemberRestControllerTest {
     @Test
     void return_302_when_not_admin_find_all_members() {
         Member member = new Member(2L, "t2@t2.com", "124", "재즈", "MEMBER");
-        String memberToken = jwtService.generateToken(member);
+        String memberToken = jwtManager.generateToken(member);
 
         RestAssured.given().log().all()
                 .redirects().follow(false)
