@@ -86,12 +86,7 @@ public class ReservationService {
     }
 
     private void rejectDuplicateReservation(Reservation reservation) {
-        List<Reservation> savedReservations = reservationRepository.findAll();
-        boolean isDuplicateReservationPresent = savedReservations.stream()
-                .filter(reservation::hasSameTheme)
-                .anyMatch(reservation::hasSameDateTime);
-
-        if (isDuplicateReservationPresent) {
+        if (reservationRepository.existsByDateTimeAndTheme(reservation)) {
             throw new IllegalArgumentException("중복된 예약이 존재합니다.");
         }
     }

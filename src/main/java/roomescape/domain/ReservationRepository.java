@@ -1,8 +1,6 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import roomescape.domain.Reservation;
-
 import java.util.List;
 
 public interface ReservationRepository {
@@ -17,4 +15,6 @@ public interface ReservationRepository {
     List<Reservation> findByPeriod(LocalDate startDate, LocalDate endDate);
 
     List<Reservation> searchReservations(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
+
+    boolean existsByDateTimeAndTheme(Reservation reservation);
 }

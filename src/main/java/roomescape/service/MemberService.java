@@ -31,11 +31,7 @@ public class MemberService {
     }
 
     private void rejectDuplicateMember(Member member) {
-        List<Member> savedMembers = memberRepository.findAll();
-        boolean isDuplicateReservationTimePresent = savedMembers.stream()
-                .anyMatch(member::hasSameEmail);
-
-        if (isDuplicateReservationTimePresent) {
+        if (memberRepository.existsByEmail(member)) {
             throw new IllegalArgumentException("중복된 이메일의 계정이 존재합니다. 입력한 이메일: " + member.getEmail());
         }
     }

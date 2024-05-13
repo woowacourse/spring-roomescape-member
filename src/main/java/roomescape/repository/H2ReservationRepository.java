@@ -88,6 +88,13 @@ public class H2ReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(queryBuilder.getQuery(), rowMapper, queryBuilder.getParam());
     }
 
+    public boolean existsByDateTimeAndTheme(Reservation reservation) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql, Boolean.class, reservation.getDate(), reservation.getTimeId(), reservation.getThemeId()
+        ));
+    }
+
     private String getBasicSelectQuery() {
         return """
                     select 

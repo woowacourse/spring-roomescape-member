@@ -2,7 +2,6 @@ package roomescape.domain;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Member;
 
 public interface MemberRepository {
     Member save(Member member);
@@ -12,4 +11,6 @@ public interface MemberRepository {
     Optional<Member> findById(Long memberId);
 
     List<Member> findAll();
+
+    boolean existsByEmail(Member member);
 }

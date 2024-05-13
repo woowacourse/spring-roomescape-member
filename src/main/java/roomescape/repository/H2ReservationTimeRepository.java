@@ -64,6 +64,12 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public boolean existsByStartAt(ReservationTime reservationTime) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, reservationTime.getStartAt()));
+    }
+
     private static class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
         @Override
         public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {

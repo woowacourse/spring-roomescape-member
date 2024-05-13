@@ -60,11 +60,7 @@ public class ReservationTimeService {
     }
 
     private void rejectDuplicateReservationTime(ReservationTime reservationTime) {
-        List<ReservationTime> savedReservationTimes = reservationTimeRepository.findAll();
-        boolean isDuplicateReservationTimePresent = savedReservationTimes.stream()
-                .anyMatch(reservationTime::hasSameStartAt);
-
-        if (isDuplicateReservationTimePresent) {
+        if (reservationTimeRepository.existsByStartAt(reservationTime)) {
             throw new IllegalArgumentException("중복된 예약 시간이 존재합니다. 입력한 시간: " + reservationTime.getStartAt());
         }
     }

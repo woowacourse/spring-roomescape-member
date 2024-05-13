@@ -77,6 +77,12 @@ public class H2MemberRepository implements MemberRepository {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    @Override
+    public boolean existsByEmail(Member member) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM user_table WHERE email = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, member.getEmail()));
+    }
+
     private static class MemberRowMapper implements RowMapper<Member> {
         public Member mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Member(
