@@ -12,21 +12,25 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 public class GlobalExceptionHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ExceptionResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException e) {
+        log.warn(e.getMessage());
+        return ResponseEntity.status(e.getHttpStatus()).body(e.getExceptionResponse());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
+        log.warn(e.getMessage());
+        return ResponseEntity.status(ErrorType.INVALID_REQUEST_ERROR.getHttpStatus())
+                .body(new ExceptionResponse(ErrorType.INVALID_REQUEST_ERROR.getMessage()));
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ExceptionResponse> handleHandlerMethodValidationException(
             HandlerMethodValidationException e) {
-        return ResponseEntity.badRequest()
-                .body(new ExceptionResponse(ErrorType.INVALID_REQUEST_FORMAT_ERROR.getMessage()));
+        log.warn(e.getMessage());
+        return ResponseEntity.status(ErrorType.INVALID_REQUEST_ERROR.getHttpStatus())
+                .body(new ExceptionResponse(ErrorType.INVALID_REQUEST_ERROR.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

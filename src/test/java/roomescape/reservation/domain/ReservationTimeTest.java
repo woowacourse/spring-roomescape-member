@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 
 @DisplayName("예약 시간 도메인 테스트")
 class ReservationTimeTest {
@@ -33,6 +35,7 @@ class ReservationTimeTest {
 
         //when & then
         assertThatThrownBy(() -> new ReservationTime(id1, null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.MISSING_REQUIRED_VALUE_ERROR.getMessage());
     }
 }

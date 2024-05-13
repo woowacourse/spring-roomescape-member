@@ -68,10 +68,9 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public boolean deleteById(long timeId) {
+    public void deleteById(long timeId) {
         String sql = "DELETE FROM reservation_time WHERE id = ?;";
-        int deleteId = jdbcTemplate.update(sql, timeId);
-        return deleteId != 0;
+        jdbcTemplate.update(sql, timeId);
     }
 
     @Override
@@ -87,8 +86,8 @@ public class ReservationTimeDao implements ReservationTimeRepository {
                 SELECT * FROM reservation_time 
                 INNER JOIN reservation as re 
                 ON re.time_id = reservation_time.id 
-                INNER JOIN reservation_list as rl 
-                ON re.id = rl.reservation_id 
+                INNER JOIN member_reservation as mr 
+                ON re.id = mr.reservation_id 
                 WHERE re.date = ? AND re.theme_id = ?;
                 """;
 

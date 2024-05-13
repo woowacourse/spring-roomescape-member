@@ -1,9 +1,11 @@
 package roomescape.reservation.domain;
 
 import java.util.Objects;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 
 public class Theme {
-    private Long id;
+    private final Long id;
     private String name;
     private String description;
     private String thumbnail;
@@ -28,7 +30,7 @@ public class Theme {
 
     private void validateString(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("필드는 null이거나 빈 값이 될 수 없습니다.");
+            throw new BusinessException(ErrorType.MISSING_REQUIRED_VALUE_ERROR);
         }
     }
 

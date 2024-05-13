@@ -7,17 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import roomescape.reservation.domain.MemberReservation;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.domain.dto.ReservationMember;
-import roomescape.reservation.domain.repository.ReservationRepository;
+import roomescape.reservation.domain.repository.MemberReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 
 public class FakeThemeDao implements ThemeRepository {
     private final Map<Long, Theme> themes = new HashMap<>();
-    private final ReservationRepository reservationRepository;
+    private final MemberReservationRepository memberReservationRepository;
 
-    public FakeThemeDao(ReservationRepository reservationRepository) {
-        this.reservationRepository = reservationRepository;
+    public FakeThemeDao(MemberReservationRepository memberReservationRepository) {
+        this.memberReservationRepository = memberReservationRepository;
     }
 
     @Override
@@ -27,40 +27,31 @@ public class FakeThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Theme save(final Theme theme) {
+    public Theme save(Theme theme) {
         themes.put((long) themes.size() + 1, theme);
         return new Theme((long) themes.size(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
-    public boolean deleteById(final long themeId) {
-        if (!themes.containsKey(themeId) && containsThemeId(themeId)) {
-            return false;
-        }
+    public void deleteById(long themeId) {
         themes.remove(themeId);
-        return true;
-    }
-
-    private boolean containsThemeId(long themeId) {
-        return reservationRepository.findAllReservationList().stream()
-                .anyMatch(reservationMember -> reservationMember.reservation().getTheme().getId() == themeId);
     }
 
     @Override
-    public Optional<Theme> findById(final long themeId) {
+    public Optional<Theme> findById(long themeId) {
         return Optional.of(themes.get(themeId));
     }
 
     @Override
-    public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, final int limit) {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
 
-        List<ReservationMember> reservationMembers = reservationRepository.findAllReservationList();
+        List<MemberReservation> memberReservations = memberReservationRepository.findBy(null, null, startDate, endDate);
 
-        Map<Long, Long> themeReservationCounts = reservationMembers.stream()
-                .filter(reservationMember -> reservationMember.reservation().getDate().isAfter(startDate)
-                        && reservationMember.reservation().getDate().isBefore(endDate))
+        Map<Long, Long> themeReservationCounts = memberReservations.stream()
+                .filter(reservationMember -> reservationMember.getReservation().getDate().isAfter(startDate)
+                        && reservationMember.getReservation().getDate().isBefore(endDate))
                 .collect(Collectors.groupingBy(
-                        reservationMember -> reservationMember.reservation().getTheme().getId(),
+                        reservationMember -> reservationMember.getReservation().getTheme().getId(),
                         Collectors.counting()
                 ));
 

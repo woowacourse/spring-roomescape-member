@@ -12,11 +12,15 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
+import roomescape.reservation.dao.FakeMemberReservationDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repository.MemberReservationRepository;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 
@@ -24,12 +28,14 @@ import roomescape.reservation.domain.repository.ThemeRepository;
 class ThemeServiceTest {
     ReservationRepository reservationRepository;
     ThemeRepository themeRepository;
+    MemberReservationRepository memberReservationRepository;
     ThemeService themeService;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationDao();
-        themeRepository = new FakeThemeDao(reservationRepository);
+        memberReservationRepository = new FakeMemberReservationDao();
+        themeRepository = new FakeThemeDao(memberReservationRepository);
         themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
@@ -90,7 +96,8 @@ class ThemeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> themeService.delete(theme.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.RESERVATION_NOT_DELETED.getMessage());
     }
 
 
@@ -104,6 +111,7 @@ class ThemeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> themeService.findPopularThemes(startDate, endDate, limit))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.INVALID_REQUEST_ERROR.getMessage());
     }
 }

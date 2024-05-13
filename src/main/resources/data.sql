@@ -32,30 +32,50 @@ VALUES ('20:00');
 INSERT INTO reservation(date, time_id, theme_id)
 VALUES (DATEADD('DAY', -2, CURRENT_DATE()), 1, 1);
 INSERT INTO reservation(date, time_id, theme_id)
-VALUES (DATEADD('YEAR', 1, CURRENT_DATE()), 2, 2);
+VALUES (DATEADD('DAY', 16, CURRENT_DATE()), 1, 2);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('YEAR', 1, CURRENT_DATE()), 2, 1);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('DAY', 1, CURRENT_DATE()), 2, 2);
 INSERT INTO reservation(date, time_id, theme_id)
 VALUES (DATEADD('DAY', -4, CURRENT_DATE()), 3, 3);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('DAY', 4, CURRENT_DATE()), 3, 4);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('MONTH', 1, CURRENT_DATE()), 3, 4);
 INSERT INTO reservation(date, time_id, theme_id)
 VALUES (DATEADD('DAY', 4, CURRENT_DATE()), 3, 4);
 
 
 -- 회원 추가
-INSERT INTO member(name)
-VALUES ('초코칩');
-INSERT INTO member(name)
-VALUES ('이든');
-INSERT INTO member(name)
-VALUES ('클로버');
+INSERT INTO member(name, email, password, role)
+VALUES ('초코칩', 'dev.chocochip@gmail.com', '1234', 'USER');
+INSERT INTO member(name, email, password, role)
+VALUES ('이든', 'dev.eden@gmail.com', '5678', 'USER');
+INSERT INTO member(name, email, password, role)
+VALUES ('클로버', 'dev.clover@gmail.com', 'asdqwe', 'USER');
+INSERT INTO member(name, email, password, role)
+VALUES ('관리자', 'admin@roomescape.com', 'admin', 'ADMIN');
 
 
 -- 예약 목록 추가
-INSERT INTO reservation_list(member_id, reservation_id)
+INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (1, 1);
-INSERT INTO reservation_list(member_id, reservation_id)
+INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (1, 3);
-INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (1, 2);
-INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (2, 3);
-INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (3, 4);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (1, 7);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (2, 2);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (2, 4);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (2, 8);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 3);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 5);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 6);
+INSERT INTO member_reservation(member_id, reservation_id)
+VALUES (3, 7);

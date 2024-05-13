@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
@@ -27,7 +29,7 @@ public class ReservationTimeService {
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
         LocalTime time = LocalTime.parse(reservationTimeRequest.startAt());
         if (reservationTimeRepository.existsByStartAt(time)) {
-            throw new IllegalArgumentException("시간이 중복되었습니다.");
+            throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_TIME_ERROR);
         }
 
         ReservationTime reservationTime = new ReservationTime(time);
@@ -43,13 +45,9 @@ public class ReservationTimeService {
 
     public void delete(long timeId) {
         if (reservationRepository.existsByTimeId(timeId)) {
-            throw new IllegalArgumentException("예약이 존재해 해당 예약 시간을 삭제할 수 없습니다.");
+            throw new BusinessException(ErrorType.RESERVATION_NOT_DELETED);
         }
-
-        if (!reservationTimeRepository.deleteById(timeId)) {
-            throw new IllegalArgumentException(
-                    String.format("잘못된 예약 시간입니다. id %d를 확인해주세요.", timeId));
-        }
+        reservationTimeRepository.deleteById(timeId);
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, long themeId) {

@@ -3,16 +3,20 @@ package roomescape.member.domain;
 import java.util.Objects;
 
 public class Member {
-    private Long id;
-    private Name name;
+    private final Long id;
+    private final Name name;
+    private final String email;
+    private final Role role;
 
-    public Member(Long id, String name) {
+    public Member(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = new Name(name);
+        this.email = email;
+        this.role = role;
     }
 
-    public Member(String name) {
-        this(null, name);
+    public Member(Long id, String name) {
+        this(id, name, null, Role.USER);
     }
 
     public Long getId() {
@@ -21,6 +25,14 @@ public class Member {
 
     public String getName() {
         return name.getName();
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override
@@ -42,9 +54,6 @@ public class Member {
 
     @Override
     public String toString() {
-        return "Member{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "Member{" + "id=" + id + ", name=" + name + ", email='" + email + '\'' + '}';
     }
 }

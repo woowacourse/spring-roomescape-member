@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.member.domain.Name;
 
 @DisplayName("이름 도메인 검증")
 class NameTest {
