@@ -70,4 +70,18 @@ public class JdbcMemberRepository implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Member> findByName(String name) {
+        String query = """
+                SELECT * FROM member 
+                WHERE name = ?
+                """;
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, name));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
