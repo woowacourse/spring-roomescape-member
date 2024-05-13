@@ -20,13 +20,17 @@ public class ReservationDao {
     private final RowMapper<Reservation> rowMapper =
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
-                    new Member(resultSet.getLong("member_id"), resultSet.getString("member_name"),
-                            resultSet.getString("member_email"), resultSet.getString("member_password"),
+                    new Member(resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"),
                             Role.valueOf(resultSet.getString("member_role"))),
                     LocalDate.parse(resultSet.getString("date")),
                     new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
-                    new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
-                            resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
+                    new Theme(resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail"))
             );
 
 
