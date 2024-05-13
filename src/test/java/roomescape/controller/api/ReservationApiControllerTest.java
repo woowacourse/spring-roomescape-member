@@ -42,7 +42,7 @@ public class ReservationApiControllerTest {
     }
 
     @Test
-    @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
+    @DisplayName("관리자 예약 페이지에 권한이 없는 유저는 401을 받는다.")
     void moveToReservationPage_Failure() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")
