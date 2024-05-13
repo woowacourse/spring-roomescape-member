@@ -1,13 +1,12 @@
 package roomescape.service;
 
 import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
+import static roomescape.service.mapper.AvailableTimeResponseMapper.toResponse;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.springframework.stereotype.Service;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.exception.RoomescapeException;
@@ -33,11 +32,5 @@ public class AvailableTimeService {
         return reservationTimeRepository.findAll().stream()
                 .map(reservationTime -> toResponse(alreadyUsedTimes, reservationTime))
                 .toList();
-    }
-
-    private AvailableTimeResponse toResponse(Set<ReservationTime> alreadyUsedTimes, ReservationTime reservationTime) {
-        boolean isBooked = alreadyUsedTimes.contains(reservationTime);
-        long id = reservationTime.getId();
-        return new AvailableTimeResponse(id, reservationTime.getStartAt(), isBooked);
     }
 }

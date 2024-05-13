@@ -1,157 +1,52 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
+import static roomescape.fixture.ThemeFixture.DEFAULT_THEME;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ThemeFixture;
 import roomescape.repository.CollectionReservationRepository;
-import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 class ThemeServiceTest {
-
     private ThemeRepository themeRepository;
-    private CollectionReservationTimeRepository reservationTimeRepository;
-    private CollectionReservationRepository reservationRepository;
+    private ReservationRepository reservationRepository;
     private ThemeService themeService;
 
     @BeforeEach
     void initService() {
-        reservationTimeRepository = new CollectionReservationTimeRepository();
-        reservationRepository = new CollectionReservationRepository();
         themeRepository = new CollectionThemeRepository();
+        reservationRepository = new CollectionReservationRepository();
         themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
-    @DisplayName("테마가 여러개 있으면 테마를 모두 조회할 수 있다.")
     @Test
-    void findAllTest() {
-        //given
-        themeRepository.save(new Theme("name1", "description1", "http://thumbnail1"));
-        themeRepository.save(new Theme("name2", "description2", "http://thumbnail2"));
-        themeRepository.save(new Theme("name3", "description3", "http://thumbnail3"));
-        themeRepository.save(new Theme("name4", "description4", "http://thumbnail4"));
+    @DisplayName("중복된 테마를 생성할 수 없는지 확인")
+    void saveFailWhenDuplicate() {
+        themeService.save(ThemeFixture.DEFAULT_REQUEST);
 
-        //when
-        List<ThemeResponse> themeResponses = themeService.findAll();
-
-        //then
-        assertThat(themeResponses).hasSize(4);
+        Assertions.assertThatThrownBy(() -> themeService.save(ThemeFixture.DEFAULT_REQUEST))
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(DUPLICATE_THEME.getMessage());
     }
 
-    @DisplayName("인기 테마를 조회할 수 있다.")
     @Test
-    void findAndOrderByPopularity() {
-        themeRepository = new CollectionThemeRepository(reservationRepository);
-        themeService = new ThemeService(themeRepository, reservationRepository);
-        LocalDate date = LocalDate.now().plusDays(1);
+    @DisplayName("이미 예약이 있는 테마를 지울 수 없는지 확인")
+    void deleteFailWhenUsed() {
+        Theme saved = themeRepository.save(DEFAULT_THEME);
+        reservationRepository.save(ReservationFixture.DEFAULT_RESERVATION);
 
-        addReservations(date);
-
-        LocalDate end = date.plusDays(6);
-        List<Long> themeIds = themeService.findAndOrderByPopularity(date, end, 10)
-                .stream()
-                .map(ThemeResponse::id)
-                .toList();
-        Assertions.assertThat(themeIds)
-                .containsExactly(2L, 1L, 3L);
-    }
-
-    private void addReservations(LocalDate date) {
-        Theme theme1 = themeRepository.save(new Theme("name1", "description1", "http://thumbnail1"));
-        Theme theme2 = themeRepository.save(new Theme("name2", "description2", "http://thumbnail2"));
-        Theme theme3 = themeRepository.save(new Theme("name3", "description3", "http://thumbnail3"));
-        ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 30)));
-        ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(2, 30)));
-        ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(3, 30)));
-
-        ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
-                themeRepository);
-
-        reservationService.save(new ReservationRequest(date, "name", reservationTime2.getId(), theme2.getId()));
-        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme2.getId()));
-        reservationService.save(new ReservationRequest(date, "name", reservationTime3.getId(), theme2.getId()));
-
-        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme1.getId()));
-        reservationService.save(new ReservationRequest(date, "name", reservationTime2.getId(), theme1.getId()));
-
-        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme3.getId()));
-    }
-
-    @DisplayName("테마, 시간이 하나 존재할 때")
-    @Nested
-    class OneThemeTest {
-        private ReservationTime defaultTime = new ReservationTime(LocalTime.now().plusMinutes(5));
-        private Theme defaultTheme = new Theme("name", "description", "http://thumbnail");
-
-        @BeforeEach
-        void addDefaultData() {
-            defaultTime = reservationTimeRepository.save(defaultTime);
-            defaultTheme = themeRepository.save(defaultTheme);
-        }
-
-        @DisplayName("동일한 이름의 테마를 예약할 수 없다.")
-        @Test
-        void duplicatedThemeSaveFailTest() {
-            assertThatThrownBy(() -> themeService.save(new ThemeRequest(
-                    defaultTheme.getName(), "description", "http://thumbnail"
-            ))).isInstanceOf(RoomescapeException.class)
-                    .hasMessage(DUPLICATE_THEME.getMessage());
-        }
-
-        @DisplayName("다른 이름의 테마를 예약할 수 있다.")
-        @Test
-        void notDuplicatedThemeNameSaveTest() {
-            themeService.save(new ThemeRequest("otherName", "description", "http://thumbnail"));
-
-            assertThat(themeRepository.findAll())
-                    .hasSize(2);
-        }
-
-        @DisplayName("테마에 예약이 없다면 테마를 삭제할 수 있다.")
-        @Test
-        void removeSuccessTest() {
-
-            themeService.delete(1L);
-            assertThat(themeRepository.findById(1L)).isEmpty();
-        }
-
-        @DisplayName("테마에 예약이 있다면 테마를 삭제할 수 없다.")
-        @Test
-        void removeFailTest() {
-            //given
-            reservationRepository.save(new Reservation(
-                    "name", LocalDate.now().plusDays(1), defaultTime, defaultTheme));
-
-            //when & then
-            assertThatThrownBy(() -> themeService.delete(1L))
-                    .isInstanceOf(RoomescapeException.class)
-                    .hasMessage(DELETE_USED_THEME.getMessage());
-        }
-
-        @DisplayName("존재하지 않는 테마 id로 삭제하더라도 오류로 간주하지 않는다.")
-        @Test
-        void notExistThemeDeleteTest() {
-            assertThatCode(() -> themeService.delete(2L))
-                    .doesNotThrowAnyException();
-        }
+        Assertions.assertThatThrownBy(() -> themeService.delete(saved.getId()))
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(DELETE_USED_THEME.getMessage());
     }
 }

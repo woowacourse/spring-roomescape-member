@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
-import static roomescape.exception.ExceptionType.EMPTY_NAME;
+import static roomescape.exception.ExceptionType.EMPTY_MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
 
@@ -13,25 +13,31 @@ import roomescape.exception.RoomescapeException;
 
 public class Reservation implements Comparable<Reservation> {
     private final Long id;
-    private final String name;
+    private final Member reservationMember;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Member reservationMember, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, reservationMember, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public Reservation(Long id, Member reservationMember, LocalDate date, ReservationTime time, Theme theme) {
+        validateMember(reservationMember);
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
         this.id = id;
-        this.name = name;
+        this.reservationMember = reservationMember;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private void validateMember(Member reservationMember) {
+        if (reservationMember == null) {
+            throw new RoomescapeException(EMPTY_MEMBER);
+        }
     }
 
     private void validateTheme(Theme theme) {
@@ -52,14 +58,8 @@ public class Reservation implements Comparable<Reservation> {
         }
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new RoomescapeException(EMPTY_NAME);
-        }
-    }
-
     public Reservation(long id, Reservation reservationBeforeSave) {
-        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time,
+        this(id, reservationBeforeSave.reservationMember, reservationBeforeSave.date, reservationBeforeSave.time,
                 reservationBeforeSave.theme);
     }
 
@@ -82,33 +82,16 @@ public class Reservation implements Comparable<Reservation> {
         return this.id == id;
     }
 
-    public boolean isReservationTimeOf(long id) {
-        return this.time.isIdOf(id);
-    }
-
-    public boolean isDateOf(LocalDate date) {
-        return this.date.equals(date);
-    }
-
-    public boolean isThemeOf(long id) {
-        return this.theme.isIdOf(id);
-    }
-
-    public boolean isSameDateTime(Reservation beforeSave) {
-        return LocalDateTime.of(this.date, this.getTime())
-                .equals(LocalDateTime.of(beforeSave.date, beforeSave.getTime()));
-    }
-
-    public boolean isSameTheme(Reservation reservation) {
-        return this.theme.equals(reservation.theme);
-    }
-
     public long getId() {
         return id;
     }
 
+    public Member getReservationMember() {
+        return reservationMember;
+    }
+
     public String getName() {
-        return name;
+        return reservationMember.getName();
     }
 
     public LocalDate getDate() {
@@ -125,11 +108,7 @@ public class Reservation implements Comparable<Reservation> {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + (time != null ? time.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
@@ -149,10 +128,11 @@ public class Reservation implements Comparable<Reservation> {
     @Override
     public String toString() {
         return "Reservation{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", date=" + date +
-               ", time=" + time +
-               '}';
+                "id=" + id +
+                ", reservationMember=" + reservationMember +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                '}';
     }
 }

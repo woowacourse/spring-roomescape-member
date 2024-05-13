@@ -16,6 +16,7 @@ import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
+//Todo 일부 기능 관리자만 접근할 수 있도록 깔끔하게 하는 방법 생각해보기
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {

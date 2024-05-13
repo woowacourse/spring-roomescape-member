@@ -21,6 +21,15 @@
 
 - [x] 사용자 예약 기능 추가
 - [x] 인기 테마 기능 추가
+- [x] 사용자 로그인 기능 추가
+    - 사용자는 이름, 이메일, 비밀번호를 가진다.
+    - 이메일과 비밀번호를 이용해 로그인 한다.
+- [x] 로그인된 사용자 정보 조회 기능 추가
+- [x] 사용자 개념이 적용된 API로 수정
+    - [x] 관리자 예약 API 추가
+    - [x] 사용자 예약 API 변경
+- [x] 관리자만 관리자 기능에 접근할 수 있도록 수정
+- [x] 관리자의 예약 검색 기능 추가
 
 # API 명세
 
@@ -61,15 +70,17 @@
 ### Request
 
 > POST /reservations HTTP/1.1
->
 > content-type: application/json
+> cookie:
+>
+token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+> host: localhost:8080
 
-```JSON
+```json
 {
-  "date": "2023-08-05",
-  "name": "브라운",
-  "timeId": 1,
-  "themeId": 1
+  "date": "2024-03-01",
+  "themeId": 1,
+  "timeId": 1
 }
 ```
 
@@ -79,6 +90,46 @@
 >
 > Content-Type: application/json
 > Location: /reservations/{id}
+
+```JSON
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2023-08-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail": "썸네일"
+  }
+}
+```
+
+## 관리자 예약 추가 API
+
+### Request
+
+> POST /admin/reservations HTTP/1.1
+> content-type: application/json
+> cookie:
+>
+token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+> host: localhost:8080
+
+```json
+{
+  "date": "2024-03-01",
+  "themeId": 1,
+  "timeId": 1,
+  "memberId": 1
+}
+```
+
+### Response
 
 ```JSON
 {
@@ -245,4 +296,55 @@
     "isBooked": false
   }
 ]
+```
+
+## 로그인 API
+
+### Request
+
+> POST /login HTTP/1.1
+> content-type: application/json
+> host: localhost:8080
+
+```json
+{
+  "password": "password",
+  "email": "admin@email.com"
+}
+```
+
+### Response
+
+> HTTP/1.1 200 OK
+> Content-Type: application/json
+> Keep-Alive: timeout=60
+> Set-Cookie:
+>
+token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI;
+> Path=/; HttpOnly
+
+## 인증 정보 조회 API
+
+### Request
+
+> GET /login/check HTTP/1.1
+> cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0;
+> Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164;
+>
+token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+> host: localhost:8080
+
+### Response
+
+> HTTP/1.1 200 OK
+> Connection: keep-alive
+> Content-Type: application/json
+> Date: Sun, 03 Mar 2024 19:16:56 GMT
+> Keep-Alive: timeout=60
+> Transfer-Encoding: chunked
+
+```json
+{
+  "name": "어드민"
+}
 ```

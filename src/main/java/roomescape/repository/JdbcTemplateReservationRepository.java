@@ -33,9 +33,9 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     private void save(Reservation reservation, KeyHolder keyHolder) {
         jdbcTemplate.update(con -> {
-            String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ( ?,?,?,? )";
+            String sql = "INSERT INTO reservation(member_id, date, time_id, theme_id) VALUES ( ?,?,?,? )";
             PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, reservation.getName());
+            preparedStatement.setLong(1, reservation.getReservationMember().getId());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
             preparedStatement.setLong(3, reservation.getReservationTime().getId());
             preparedStatement.setLong(4, reservation.getTheme().getId());
@@ -48,21 +48,60 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         String query = """
                 SELECT
                    r.id AS reservation_id,
-                   r.name AS reservation_name,
                    r.date AS reservation_date,
                    t.id AS time_id,
                    t.start_at AS time_value,
                    t2.id AS theme_id,
                    t2.name AS theme_name,
                    t2.description AS description,
-                   t2.thumbnail AS thumbnail
+                   t2.thumbnail AS thumbnail,
+                   m.id AS member_id,
+                   m.name AS member_name,
+                   m.email AS email,
+                   m.password AS password,
+                   m.role AS role
                 FROM reservation AS r
                 INNER JOIN reservation_time t
                     ON r.time_id = t.id
                 INNER JOIN theme t2
                     ON t2.id = r.theme_id
+                INNER JOIN member m ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(query, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findByMemberAndThemeBetweenDates(long memberId, long themeId, LocalDate start,
+                                                              LocalDate end) {
+        String query = """
+                SELECT
+                   r.id AS reservation_id,
+                   r.date AS reservation_date,
+                   t.id AS time_id,
+                   t.start_at AS time_value,
+                   t2.id AS theme_id,
+                   t2.name AS theme_name,
+                   t2.description AS description,
+                   t2.thumbnail AS thumbnail,
+                   m.id AS member_id,
+                   m.name AS member_name,
+                   m.email AS email,
+                   m.password AS password,
+                   m.role AS role
+                FROM reservation AS r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme t2
+                    ON t2.id = r.theme_id
+                INNER JOIN member m ON r.member_id = m.id
+                WHERE r.member_id = ?
+                    AND r.theme_id = ?
+                    AND
+                        PARSEDATETIME(r.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd')
+                    AND
+                        PARSEDATETIME(r.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd')
+                """;
+        return jdbcTemplate.query(query, reservationRowMapper, memberId, themeId, start, end);
     }
 
     @Override
