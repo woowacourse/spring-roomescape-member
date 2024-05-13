@@ -10,16 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.ControllerTest;
-import roomescape.domain.login.dto.LoginRequest;
 import roomescape.domain.reservation.dto.ReservationAddRequest;
 
 public class AdminReservationControllerTest extends ControllerTest {
-
-    private static final String EMAIL = "admin@gmail.com";
-    private static final String PASSWORD = "123456";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -44,14 +39,7 @@ public class AdminReservationControllerTest extends ControllerTest {
     @DisplayName("어드민의 예약을 추가를 성공할 시, 201 ok를 응답한다,")
     @Test
     void should_add_reservation_when_post_request_admin_reservations() {
-        LoginRequest loginRequest = new LoginRequest(EMAIL, PASSWORD);
-        String cookie = RestAssured.given().log().all()
-                .body(loginRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+        String cookie = getAdminCookie();
 
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
                 AFTER_THREE_DAYS_DATE, 1L, 1L, null);

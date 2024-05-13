@@ -83,22 +83,22 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String condition = findWhereStatement(themeId, memberId, dateFrom, dateTo);
         String sql = RESERVATION_SQL + condition;
-        return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     private static String findWhereStatement(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         List<String> condition = new ArrayList<>();
         if (themeId != null) {
-            condition.add("r.theme_id = ?");
+            condition.add("r.theme_id = " + themeId);
         }
         if (memberId != null) {
-            condition.add("r.member_id = ?");
+            condition.add("r.member_id = " + memberId);
         }
         if (dateFrom != null) {
-            condition.add("r.date >= ?");
+            condition.add("r.date >= '" + dateFrom + "'");
         }
         if (dateTo != null) {
-            condition.add("r.date <= ?");
+            condition.add("r.date <= '" + dateTo + "'");
         }
         if (condition.isEmpty()) {
             return "";

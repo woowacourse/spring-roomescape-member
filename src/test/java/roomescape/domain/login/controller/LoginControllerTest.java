@@ -11,12 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.ControllerTest;
-import roomescape.domain.login.dto.LoginRequest;
 
 class LoginControllerTest extends ControllerTest {
 
-    private static final String EMAIL = "admin@gmail.com";
-    private static final String PASSWORD = "123456";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -30,14 +27,7 @@ class LoginControllerTest extends ControllerTest {
     @DisplayName("로그인 요청을 하면 쿠키와 함께 응답한다.(200 OK)")
     @Test
     void should_response_with_cookie_when_request_login() {
-        LoginRequest loginRequest = new LoginRequest(EMAIL, PASSWORD);
-        String cookie = RestAssured.given().log().all()
-                .body(loginRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+        String cookie = getAdminCookie();
 
         assertThat(cookie).isNotNull();
     }
@@ -45,15 +35,7 @@ class LoginControllerTest extends ControllerTest {
     @DisplayName("Cookie와 함께 사용자 정보 조회 시, name과 함께 응답받는다.")
     @Test
     void should_response_with_name_when_get_check_member_with_cookie() {
-        LoginRequest loginRequest = new LoginRequest(EMAIL, PASSWORD);
-        String cookie = RestAssured.given().log().all()
-                .body(loginRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
-
+        String cookie = getAdminCookie();
         RestAssured.given().log().all()
                 .header("Cookie", cookie)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -62,5 +44,4 @@ class LoginControllerTest extends ControllerTest {
                 .statusCode(200)
                 .body("name", is("어드민"));
     }
-
 }
