@@ -120,7 +120,7 @@ class ReservationServiceTest {
 
         //then
         boolean isAllMatch = reservationResponses.stream()
-                .allMatch(response -> response.id() == filteringUserId);
+                .allMatch(response -> response.member().id() == filteringUserId);
         assertThat(isAllMatch).isTrue();
     }
 
