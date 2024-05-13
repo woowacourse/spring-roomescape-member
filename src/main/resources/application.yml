@@ -6,4 +6,4 @@ spring:
     url: jdbc:h2:mem:database
 jwt:
   secret-key: c7ebdd90fe49fa88b87d2d2cfa1ec7b9d7d1ec1bbaac644ac38b36d7e8c6d79f55b19e0ae1647774108edee4805d00bcef699b561c3d8147c3269a877b4e687d
-  expiration-milliseconds: 3600000
+  expiration-milliseconds: 3600000 # 60분
