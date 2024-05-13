@@ -22,7 +22,7 @@ public class JwtTokenExtractor {
         throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
     }
 
-    public String extractEmailByToken(String token) {
+    public String extractMemberIdByToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

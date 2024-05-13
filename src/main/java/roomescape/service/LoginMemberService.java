@@ -22,6 +22,11 @@ public class LoginMemberService {
                 .toList();
     }
 
+    public LoginMemberResponse findById(long id) {
+        return new LoginMemberResponse(loginMemberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다.")));
+    }
+
     public void validateLogin(TokenRequest tokenRequest) {
         LoginMember loginMember = findByEmail(tokenRequest);
         validatePassword(tokenRequest, loginMember);
@@ -36,12 +41,5 @@ public class LoginMemberService {
         if (!loginMember.getPassword().equals(tokenRequest.password())) {
             throw new AuthorizationException("잘못된 비밀번호입니다.");
         }
-    }
-
-    public LoginMemberResponse findByEmail(String email) {
-        LoginMember loginMember = loginMemberRepository.findByEmail(email).get();
-        return new LoginMemberResponse(
-                loginMember.getId(), loginMember.getName(), loginMember.getEmail(), loginMember.getPassword(),
-                loginMember.getRole());
     }
 }

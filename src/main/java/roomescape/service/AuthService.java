@@ -3,6 +3,8 @@ package roomescape.service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+import roomescape.dao.LoginMemberRepository;
+import roomescape.domain.LoginMember;
 import roomescape.infrastructure.JwtTokenExtractor;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.infrastructure.JwtTokenValidator;
@@ -11,19 +13,22 @@ import roomescape.service.dto.TokenResponse;
 
 @Service
 public class AuthService {
+    private final LoginMemberRepository loginMemberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenExtractor jwtTokenExtractor;
     private final JwtTokenValidator jwtTokenValidator;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, JwtTokenExtractor jwtTokenExtractor,
-                       JwtTokenValidator jwtTokenValidator) {
+    public AuthService(LoginMemberRepository loginMemberRepository, JwtTokenProvider jwtTokenProvider,
+                       JwtTokenExtractor jwtTokenExtractor, JwtTokenValidator jwtTokenValidator) {
+        this.loginMemberRepository = loginMemberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.jwtTokenExtractor = jwtTokenExtractor;
         this.jwtTokenValidator = jwtTokenValidator;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        String accessToken = jwtTokenProvider.createToken(tokenRequest.email());
+        LoginMember loginMember = loginMemberRepository.findByEmail(tokenRequest.email()).get();
+        String accessToken = jwtTokenProvider.createToken(loginMember);
         return new TokenResponse(accessToken);
     }
 
@@ -47,8 +52,8 @@ public class AuthService {
         return new TokenResponse(token);
     }
 
-    public String extractEmailByToken(TokenResponse tokenResponse) {
-        return jwtTokenExtractor.extractEmailByToken(tokenResponse.token());
+    public String extractMemberIdByToken(TokenResponse tokenResponse) {
+        return jwtTokenExtractor.extractMemberIdByToken(tokenResponse.token());
     }
 
     public void isTokenValid(TokenResponse tokenResponse) {
