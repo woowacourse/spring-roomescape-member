@@ -13,8 +13,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.exceptions.NotDeleteableException;
+import roomescape.theme.domain.Name;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeName;
 
 @Repository
 public class ThemeH2Repository implements ThemeRepository {
@@ -44,7 +44,7 @@ public class ThemeH2Repository implements ThemeRepository {
     }
 
     @Override
-    public boolean hasTheme(ThemeName name) {
+    public boolean hasTheme(Name name) {
         String sql = "SELECT * FROM theme WHERE name = ?";
         return !jdbcTemplate.query(sql, (resultSet, rowNum) -> ANY_INTEGER_FOR_COUNTING, name.name()).isEmpty();
     }
@@ -75,7 +75,7 @@ public class ThemeH2Repository implements ThemeRepository {
     private RowMapper<Theme> getThemeRowMapper() {
         return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
-                new ThemeName(resultSet.getString("name")),
+                new Name(resultSet.getString("name")),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         );

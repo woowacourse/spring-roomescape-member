@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.exceptions.ValidationException;
+import roomescape.theme.domain.Name;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeName;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Sql(scripts = {"/schema.sql", "/initial_test_data.sql"})
@@ -28,7 +28,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("Theme를 저장한다.")
     void save() {
-        Theme theme = new Theme(null, new ThemeName("레벨2"), "레벨2 설명", "레벨2 썸네일");
+        Theme theme = new Theme(null, new Name("레벨2"), "레벨2 설명", "레벨2 썸네일");
 
         Theme saved = themeH2Repository.save(theme);
 

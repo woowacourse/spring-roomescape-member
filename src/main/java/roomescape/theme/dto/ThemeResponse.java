@@ -1,7 +1,7 @@
 package roomescape.theme.dto;
 
+import roomescape.theme.domain.Name;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeName;
 
 public record ThemeResponse(Long id, String name, String description, String thumbnail) {
 
@@ -15,6 +15,6 @@ public record ThemeResponse(Long id, String name, String description, String thu
     }
 
     public Theme toTheme() {
-        return new Theme(id, new ThemeName(name), description, thumbnail);
+        return new Theme(id, new Name(name), description, thumbnail);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Email;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberName;
+import roomescape.member.domain.Name;
 import roomescape.member.domain.Password;
 import roomescape.member.domain.Role;
 
@@ -38,7 +38,7 @@ public class MemberH2Repository implements MemberRepository {
     private RowMapper<Member> getMemberRowMapper() {
         return (resultSet, rowNum) -> new Member(
                 resultSet.getLong("id"),
-                new MemberName(resultSet.getString("name")),
+                new Name(resultSet.getString("name")),
                 new Email(resultSet.getString("email")),
                 new Password(resultSet.getString("password")),
                 Role.findByDbValue(resultSet.getString("role"))

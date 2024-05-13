@@ -2,9 +2,9 @@ package roomescape.member.domain;
 
 import roomescape.exceptions.MissingRequiredFieldException;
 
-public record MemberName(String name) {
+public record Name(String name) {
 
-    public MemberName {
+    public Name {
         validate(name);
     }
 

@@ -4,12 +4,12 @@ import java.util.Objects;
 
 public class Member {
     private final Long id;
-    private final MemberName name;
+    private final Name name;
     private final Email email;
     private final Password password;
     private final Role role;
 
-    public Member(Long id, MemberName name, Email email, Password password, Role role) {
+    public Member(Long id, Name name, Email email, Password password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -17,7 +17,7 @@ public class Member {
         this.role = role;
     }
 
-    public Member(MemberName name, Email email, Password password, Role role) {
+    public Member(Name name, Email email, Password password, Role role) {
         this(null, name, email, password, role);
     }
 
@@ -29,7 +29,7 @@ public class Member {
         return id;
     }
 
-    public MemberName getName() {
+    public Name getName() {
         return name;
     }
 

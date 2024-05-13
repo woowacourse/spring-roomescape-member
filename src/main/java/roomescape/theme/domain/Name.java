@@ -3,9 +3,9 @@ package roomescape.theme.domain;
 import java.util.Objects;
 import roomescape.exceptions.MissingRequiredFieldException;
 
-public record ThemeName(String name) {
+public record Name(String name) {
 
-    public ThemeName {
+    public Name {
         validate(name);
     }
 
@@ -23,7 +23,7 @@ public record ThemeName(String name) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ThemeName name1 = (ThemeName) o;
+        Name name1 = (Name) o;
         return Objects.equals(name, name1.name);
     }
 }

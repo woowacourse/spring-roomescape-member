@@ -13,11 +13,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Email;
 import roomescape.member.domain.LoginMember;
-import roomescape.member.domain.MemberName;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.domain.Name;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeName;
 
 @Repository
 public class ReservationH2Repository implements ReservationRepository {
@@ -72,13 +71,13 @@ public class ReservationH2Repository implements ReservationRepository {
             );
             Theme theme = new Theme(
                     resultSet.getLong("theme_id"),
-                    new ThemeName(resultSet.getString("theme_name")),
+                    new Name(resultSet.getString("theme_name")),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );
             LoginMember loginMember = new LoginMember(
                     resultSet.getLong("member_id"),
-                    new MemberName(resultSet.getString("member_name")),
+                    new roomescape.member.domain.Name(resultSet.getString("member_name")),
                     new Email(resultSet.getString("email"))
             );
             return new Reservation(

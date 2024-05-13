@@ -3,8 +3,8 @@ package roomescape.theme.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import roomescape.theme.domain.Name;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeName;
 
 public interface ThemeRepository {
 
@@ -18,5 +18,5 @@ public interface ThemeRepository {
 
     List<Theme> findTrendings(LocalDate start, LocalDate end, Long limit);
 
-    boolean hasTheme(ThemeName name);
+    boolean hasTheme(Name name);
 }
