@@ -2,10 +2,14 @@ package roomescape.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.user.Member;
+import roomescape.exception.UnauthorizedException;
 
+import java.util.Arrays;
 import java.util.Date;
 
 @Component
@@ -46,5 +50,17 @@ public class TokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject());
+    }
+
+    public String parseToken(final HttpServletRequest request) {
+        final Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new UnauthorizedException();
+        }
+        return Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(UnauthorizedException::new);
     }
 }
