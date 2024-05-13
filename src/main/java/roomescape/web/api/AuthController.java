@@ -12,7 +12,7 @@ import roomescape.domain.token.TokenProvider;
 import roomescape.service.MemberService;
 import roomescape.service.dto.response.MemberResponse;
 import roomescape.web.api.dto.LoginRequest;
-import roomescape.web.exception.AuthorizationException;
+import roomescape.web.exception.AuthenticationException;
 
 @RestController
 public class AuthController {
@@ -44,7 +44,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         String token = tokenProvider.extractToken(request.getCookies())
-                .orElseThrow(AuthorizationException::new);
+                .orElseThrow(AuthenticationException::new);
 
         Long id = tokenParser.getId(token);
         String payload = tokenParser.getEmail(token);

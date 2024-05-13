@@ -1,14 +1,7 @@
 package roomescape.web.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class AuthorizationException extends RuntimeException {
     public AuthorizationException() {
-    }
-
-    public AuthorizationException(String message) {
-        super(message);
+        super("접근 권한이 필요합니다.");
     }
 }

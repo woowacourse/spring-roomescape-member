@@ -57,15 +57,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleAuthorizationException(AuthorizationException e) {
-        String errorMessage = "로그인이 필요합니다.";
-        return new ResponseEntity<>(new ErrorResponse(errorMessage), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleSignatureException(SignatureException e) {
-        String errorMessage = "유효하지 않은 토큰입니다.";
-        return new ResponseEntity<>(new ErrorResponse(errorMessage), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ErrorResponse("유효하지 않은 토큰입니다."), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler
