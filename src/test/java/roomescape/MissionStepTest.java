@@ -11,8 +11,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import roomescape.controller.AdminController;
-import roomescape.domain.Reservation;
+import roomescape.page.controller.AdminController;
+import roomescape.reservation.domain.Reservation;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -23,6 +23,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
+import static roomescape.ReservationFixture.ADMIN_TOKEN;
+import static roomescape.ReservationFixture.MEMBER_TOKEN;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MissionStepTest {
@@ -76,6 +78,7 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
+                .cookie("token", ADMIN_TOKEN)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(HttpStatus.SC_OK);
@@ -84,6 +87,7 @@ public class MissionStepTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
+                .cookie("token", ADMIN_TOKEN)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(HttpStatus.SC_OK);
@@ -109,6 +113,7 @@ public class MissionStepTest {
 
         String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -157,7 +162,7 @@ public class MissionStepTest {
     void 오단계() {
         String reservationTimeId = createReservationTime();
         String themeId = createTheme();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2024-08-05", reservationTimeId, themeId);
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1", "2024-08-05", reservationTimeId, themeId);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -176,7 +181,7 @@ public class MissionStepTest {
         String themeId = createTheme();
 
         Map<String, String> params = Map.of(
-                "name", "브라운",
+                "name", "1",
                 "date", "2024-08-05",
                 "timeId", reservationTimeId,
                 "themeId", themeId
@@ -184,6 +189,7 @@ public class MissionStepTest {
 
         String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -236,7 +242,7 @@ public class MissionStepTest {
         String themeId = createTheme();
 
         Map<String, Object> reservation = Map.of(
-                "name", "브라운",
+                "name", "1",
                 "date", "2024-08-05",
                 "timeId", reservationTimeId,
                 "themeId", themeId
@@ -244,6 +250,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", MEMBER_TOKEN)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()

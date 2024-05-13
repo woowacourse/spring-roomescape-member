@@ -13,6 +13,8 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Map;
 
+import static roomescape.ReservationFixture.MEMBER_TOKEN;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
@@ -33,7 +35,7 @@ class ReservationControllerTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
         Map<String, String> params = Map.of(
-                "name", "",
+                "memberId", "",
                 "date", "",
                 "timeId", "",
                 "themeId", ""
@@ -52,7 +54,7 @@ class ReservationControllerTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
         Map<String, String> params = Map.of(
-                "name", "테니",
+                "memberId", "1",
                 "date", "2024-04-29",
                 "timeId", "1",
                 "themeId", "1"
@@ -60,6 +62,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -71,7 +74,7 @@ class ReservationControllerTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
         Map<String, String> params = Map.of(
-                "name", "테니",
+                "memberId", "1",
                 "date", "2024-04-30",
                 "timeId", "1",
                 "themeId", "1"
@@ -79,6 +82,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -88,10 +92,10 @@ class ReservationControllerTest {
     @Test
     void createReservation_duplicate_bad_request() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "테니", "2024-06-01", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)", 1L, "2024-06-01", 1, 1);
 
         Map<String, String> params = Map.of(
-                "name", "테니",
+                "memberId", "1",
                 "date", "2024-06-01",
                 "timeId", "1",
                 "themeId", "1"
@@ -99,6 +103,7 @@ class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", MEMBER_TOKEN)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()

@@ -1,8 +1,8 @@
 package roomescape.dto;
 
 import org.junit.jupiter.api.Test;
-import roomescape.domain.ReservationTime;
-import roomescape.exception.RoomEscapeException;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.global.exception.RoomEscapeException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

@@ -8,9 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.exception.RoomEscapeException;
+import roomescape.theme.theme.domain.Theme;
+import roomescape.theme.theme.dao.ThemeDao;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -28,9 +31,10 @@ class ThemeDaoTest {
     }
 
     @Test
-    @DisplayName("해당 ID를 가진 테마가 존재하지 않는다면 예외가 발생한다.")
+    @DisplayName("해당 ID를 가진 테마가 존재하지 않는다면 빈값을 반환한다.")
     void findTimeById_AbsenceId_ExceptionThrown() {
-        assertThatThrownBy(() -> themeDao.findById(0L))
-                .isInstanceOf(RoomEscapeException.class);
+        Optional<Theme> optionalTheme = themeDao.findById(0L);
+
+        assertThat(optionalTheme.isEmpty()).isTrue();
     }
 }

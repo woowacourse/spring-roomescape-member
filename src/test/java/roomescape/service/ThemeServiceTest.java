@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ThemeResponse;
+import roomescape.theme.theme.dto.ThemeResponse;
+import roomescape.theme.theme.service.ThemeService;
 
 import java.util.List;
 
@@ -21,7 +22,10 @@ class ThemeServiceTest {
     void findAllThemes() {
         List<ThemeResponse> allThemes = themeService.findAllThemes();
 
-        assertThat(allThemes).containsExactly(new ThemeResponse(1L, "테마1", "설명", "썸네일"));
+        assertThat(allThemes).containsExactly(
+                new ThemeResponse(1L, "테마1", "설명", "썸네일"),
+                new ThemeResponse(2L, "테마2", "설명", "썸네일")
+        );
     }
 
     @Test

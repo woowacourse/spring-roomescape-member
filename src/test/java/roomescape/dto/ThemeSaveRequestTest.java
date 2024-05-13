@@ -2,8 +2,8 @@ package roomescape.dto;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.domain.Theme;
-import roomescape.exception.RoomEscapeException;
+import roomescape.theme.theme.domain.Theme;
+import roomescape.global.exception.RoomEscapeException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

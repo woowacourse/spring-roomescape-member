@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import roomescape.exception.RoomEscapeException;
+import roomescape.reservation.service.ReservationTimeService;
+import roomescape.global.exception.RoomEscapeException;
 
 import java.sql.PreparedStatement;
 
@@ -26,7 +27,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 경우 예약시간을 삭제하면 예외가 발생한다.")
     void deleteTimeById_AbsenceId_ExceptionThrown() {
         long savedId = saveReservationTime();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "테니", "13:00", savedId);
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id) VALUES (?, ?, ?)", 1L, "13:00", savedId);
 
         assertThatThrownBy(() -> reservationTimeService.deleteTimeById(savedId))
                 .isInstanceOf(RoomEscapeException.class);

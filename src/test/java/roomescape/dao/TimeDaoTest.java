@@ -5,12 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.exception.RoomEscapeException;
+import roomescape.reservation.dao.TimeDao;
+import roomescape.reservation.domain.ReservationTime;
 
 import java.time.LocalTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TimeDaoTest {
@@ -22,10 +23,11 @@ class TimeDaoTest {
     private TimeDao timeDao;
 
     @Test
-    @DisplayName("해당 ID를 가진 시간이 존재하지 않는다면 예외가 발생한다.")
-    void findTimeById_AbsenceId_ExceptionThrown() {
-        assertThatThrownBy(() -> timeDao.findById(0L))
-                .isInstanceOf(RoomEscapeException.class);
+    @DisplayName("해당 ID를 가진 시간이 존재하지 않는다면 빈값을 반환한다.")
+    void findTimeById_AbsenceId_isEmpty() {
+        Optional<ReservationTime> optionalTime = timeDao.findById(0L);
+
+        assertThat(optionalTime.isEmpty()).isTrue();
     }
 
     @Test
