@@ -26,10 +26,6 @@ public class Member {
         this(null, new MemberName(name), email, password, role);
     }
 
-    public Member(String name, String email, String password, String role) {
-        this(null, new MemberName(name), email, password, Role.of(role));
-    }
-
     public Long getId() {
         return id;
     }
