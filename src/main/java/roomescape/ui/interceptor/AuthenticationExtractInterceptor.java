@@ -3,12 +3,14 @@ package roomescape.ui.interceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.WebUtils;
 import roomescape.application.AuthService;
 import roomescape.auth.Principal;
 import roomescape.auth.exception.AuthorizationException;
 
+@Component
 public class AuthenticationExtractInterceptor implements HandlerInterceptor {
     public static final String PRINCIPAL_KEY_NAME = "principal";
     private static final String AUTHENTICATION_KEY_NAME = "token";
