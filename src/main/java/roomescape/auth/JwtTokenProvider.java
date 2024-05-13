@@ -5,9 +5,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
@@ -22,8 +20,8 @@ public class JwtTokenProvider {
     }
 
     public String createToken(final Member member) {
-        final Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        final Timestamp validity = Timestamp.valueOf(LocalDateTime.now().plusSeconds(validityInMilliseconds / 1000));
+        final Date now = new Date();
+        final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
                 .claim("name", member.getName())
