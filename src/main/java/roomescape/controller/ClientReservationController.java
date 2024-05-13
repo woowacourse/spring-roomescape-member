@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.LoginMember;
-import roomescape.dto.MemberReservationRequest;
+import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.BookResponse;
 import roomescape.dto.response.ReservationResponse;
