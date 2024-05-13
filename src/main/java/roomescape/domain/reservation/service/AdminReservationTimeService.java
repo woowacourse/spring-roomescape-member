@@ -2,7 +2,7 @@ package roomescape.domain.reservation.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservation.dto.ReservationTimeAddRequest;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.global.exception.ClientIllegalArgumentException;

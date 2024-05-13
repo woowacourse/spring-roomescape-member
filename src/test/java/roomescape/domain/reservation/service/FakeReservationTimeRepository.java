@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {

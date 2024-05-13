@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.service.FakeMemberRepository;
 import roomescape.domain.reservation.domain.reservation.Reservation;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservation.dto.BookableTimeResponse;
 import roomescape.domain.reservation.dto.BookableTimesRequest;
 import roomescape.domain.reservation.dto.ReservationAddRequest;

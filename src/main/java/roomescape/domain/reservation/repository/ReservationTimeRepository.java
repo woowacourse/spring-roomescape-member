@@ -3,7 +3,7 @@ package roomescape.domain.reservation.repository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 
 public interface ReservationTimeRepository {
     List<ReservationTime> findAll();

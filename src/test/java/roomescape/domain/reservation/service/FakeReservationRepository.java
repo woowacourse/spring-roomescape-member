@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.reservation.domain.reservation.Reservation;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.domain.Theme;
 

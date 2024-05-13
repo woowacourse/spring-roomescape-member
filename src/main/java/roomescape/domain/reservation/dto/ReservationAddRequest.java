@@ -3,7 +3,7 @@ package roomescape.domain.reservation.dto;
 import java.time.LocalDate;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.reservation.domain.reservation.Reservation;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 import roomescape.global.exception.ClientIllegalArgumentException;
 

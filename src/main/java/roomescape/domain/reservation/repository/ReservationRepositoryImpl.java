@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +14,26 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.domain.Role;
 import roomescape.domain.reservation.domain.reservation.Reservation;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 
 @Repository
 public class ReservationRepositoryImpl implements ReservationRepository {
 
+    private static final String RESERVATION_SQL = """
+                SELECT *
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                ON r.time_id = t.id
+                INNER JOIN theme
+                ON r.theme_id = theme.id
+                INNER JOIN member as m 
+                ON r.member_id = m.id
+            """;
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("id"),
@@ -63,48 +76,39 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-                    SELECT *
-                    FROM reservation as r 
-                    INNER JOIN reservation_time as t 
-                    ON r.time_id = t.id 
-                    INNER JOIN theme 
-                    ON r.theme_id = theme.id
-                    INNER JOIN member as m 
-                    ON r.member_id = m.id
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(RESERVATION_SQL, rowMapper);
     }
 
     @Override
     public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        String sql = """
-                SELECT *
-                FROM reservation as r
-                INNER JOIN reservation_time as t
-                ON r.time_id = t.id
-                INNER JOIN theme
-                ON r.theme_id = theme.id
-                INNER JOIN member as m 
-                ON r.member_id = m.id
-                WHERE r.theme_id = ? and r.member_id = ? and date between ? and ?
-                """;
+        String condition = findWhereStatement(themeId, memberId, dateFrom, dateTo);
+        String sql = RESERVATION_SQL + condition;
         return jdbcTemplate.query(sql, rowMapper, themeId, memberId, dateFrom, dateTo);
+    }
+
+    private static String findWhereStatement(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        List<String> condition = new ArrayList<>();
+        if (themeId != null) {
+            condition.add("r.theme_id = ?");
+        }
+        if (memberId != null) {
+            condition.add("r.member_id = ?");
+        }
+        if (dateFrom != null) {
+            condition.add("r.date >= ?");
+        }
+        if (dateTo != null) {
+            condition.add("r.date <= ?");
+        }
+        if (condition.isEmpty()) {
+            return "";
+        }
+        return "WHERE " + String.join(" AND ", condition);
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = """
-                SELECT *
-                FROM reservation as r
-                INNER JOIN reservation_time as t
-                ON r.time_id = t.id
-                INNER JOIN theme
-                ON r.theme_id = theme.id
-                INNER JOIN member as m 
-                ON r.member_id = m.id
-                WHERE r.id = ?
-                """;
+        String sql = RESERVATION_SQL + " WHERE r.id = ? ";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {

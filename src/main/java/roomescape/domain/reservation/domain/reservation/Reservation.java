@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import roomescape.domain.member.domain.Member;
 import roomescape.domain.member.domain.Role;
-import roomescape.domain.reservation.domain.reservationTim.ReservationTime;
+import roomescape.domain.reservation.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 
 public class Reservation {
