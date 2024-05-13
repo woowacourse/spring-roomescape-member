@@ -1,4 +1,4 @@
-package roomescape.ui.support;
+package roomescape.ui.interceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

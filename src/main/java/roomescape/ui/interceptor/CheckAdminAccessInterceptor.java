@@ -1,4 +1,4 @@
-package roomescape.ui.support;
+package roomescape.ui.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
