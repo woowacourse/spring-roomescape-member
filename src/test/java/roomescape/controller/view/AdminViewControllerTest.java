@@ -2,8 +2,6 @@ package roomescape.controller.view;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -12,7 +10,6 @@ import io.restassured.http.Cookie;
 import roomescape.util.JwtProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@TestInstance(Lifecycle.PER_METHOD)
 class AdminViewControllerTest {
 
     @Autowired
