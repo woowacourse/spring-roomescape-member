@@ -2,8 +2,11 @@ package roomescape.reservation.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.reservation.dto.ReservationRequestDto;
-import roomescape.reservation.dto.ReservationResponseDto;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.SearchRequest;
 import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
@@ -14,26 +17,52 @@ import java.util.List;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> findAll() {
-        return ResponseEntity.ok(reservationService.findAll());
+    @PostMapping
+    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest reservationRequest, Member member) {
+        Reservation reservation = reservationService.saveReservation(reservationRequest.toReservation(member));
+
+        ReservationResponse reservationResponse = changeToReservationResponse(reservation);
+        String url = "/reservations/" + reservationResponse.id();
+
+        return ResponseEntity.created(URI.create(url)).body(reservationResponse);
     }
 
-    @PostMapping
-    public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto request) {
-        final ReservationResponseDto responseDto = reservationService.save(request);
-        final String url = "/reservations/" + responseDto.id();
-        
-        return ResponseEntity.created(URI.create(url)).body(responseDto);
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> findReservationList() {
+        List<Reservation> reservations = reservationService.findReservationList();
+
+        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
+
+        return ResponseEntity.ok(reservationResponses);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<ReservationResponse>> findReservationListBySearchInfo(@RequestBody SearchRequest searchRequest) {
+        List<Reservation> reservations = reservationService.findReservationListBySearchInfo(searchRequest.toSearchInfo());
+
+        List<ReservationResponse> reservationResponses = changeToReservationResponses(reservations);
+
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity<Void> deleteReservationById(@PathVariable("id") long id) {
+        reservationService.deleteReservationById(id);
+
         return ResponseEntity.noContent().build();
+    }
+
+    private ReservationResponse changeToReservationResponse(Reservation reservation) {
+        return new ReservationResponse(reservation);
+    }
+
+    private List<ReservationResponse> changeToReservationResponses(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(this::changeToReservationResponse)
+                .toList();
     }
 }

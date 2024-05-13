@@ -2,9 +2,7 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationUserTime;
-import roomescape.time.dto.ReservationTimeRequestDto;
-import roomescape.time.dto.ReservationTimeResponseDto;
+import roomescape.time.dto.ReservationTimeStatus;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.util.List;
@@ -12,34 +10,45 @@ import java.util.NoSuchElementException;
 
 @Service
 public class ReservationTimeService {
-
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTimeResponseDto> findAll() {
-        final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        return reservationTimes.stream()
-                .map(ReservationTimeResponseDto::new)
-                .toList();
+    public ReservationTime saveTime(ReservationTime reservationTime) {
+        long timeId = reservationTimeRepository.save(reservationTime);
+
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new NoSuchElementException("시간이 없습니다."));
     }
 
-    public ReservationTimeResponseDto save(final ReservationTimeRequestDto requestDto) {
-        final long id = reservationTimeRepository.save(requestDto.toReservationTime());
-        final ReservationTime reservationTime = reservationTimeRepository.findById(id);
-        return new ReservationTimeResponseDto(id, reservationTime.getStartAt().toString());
+    public List<ReservationTime> findTimeList() {
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+        validateTimeExists(times);
+
+        return times;
     }
 
-    public void deleteById(final long id) {
-        final int deleteCount = reservationTimeRepository.deleteById(id);
-        if (deleteCount == 0) {
-            throw new NoSuchElementException("해당하는 시간이 없습니다.");
+    public void deleteTimeById(long id) {
+        int deleteCount = reservationTimeRepository.delete(id);
+
+        validateDeletionOccurred(deleteCount);
+    }
+
+    public List<ReservationTimeStatus> findTimeListByDateAndThemeId(String date, long themeId) {
+        return reservationTimeRepository.findByDateAndThemeId(date, themeId);
+    }
+
+    private void validateTimeExists(List<ReservationTime> times) {
+        if (times.isEmpty()) {
+            throw new NoSuchElementException("시간이 없습니다.");
         }
     }
 
-    public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {
-        return reservationTimeRepository.findAvailableTime(date, themeId);
+    private void validateDeletionOccurred(int deleteCount) {
+        if (deleteCount == 0) {
+            throw new NoSuchElementException("해당하는 시간이 없습니다.");
+        }
     }
 }

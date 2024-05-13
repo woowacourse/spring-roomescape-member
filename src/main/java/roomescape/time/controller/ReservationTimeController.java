@@ -2,9 +2,11 @@ package roomescape.time.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.time.domain.ReservationUserTime;
-import roomescape.time.dto.ReservationTimeRequestDto;
-import roomescape.time.dto.ReservationTimeResponseDto;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.dto.ReservationTimeRequest;
+import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.ReservationTimeStatus;
+import roomescape.time.dto.ReservationTimeStatusResponse;
 import roomescape.time.service.ReservationTimeService;
 
 import java.net.URI;
@@ -13,34 +15,64 @@ import java.util.List;
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
-
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody final ReservationTimeRequestDto request) {
-        final ReservationTimeResponseDto timeResponseDto = reservationTimeService.save(request);
-        final String url = "/times/" + timeResponseDto.id();
-        
-        return ResponseEntity.created(URI.create(url)).body(timeResponseDto);
+    public ResponseEntity<ReservationTimeResponse> saveTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
+        ReservationTime reservationTime = reservationTimeService.saveTime(reservationTimeRequest.toReservationTime());
+
+        ReservationTimeResponse reservationTimeResponse = changeToReservationTimeResponse(reservationTime);
+        String url = "/times/" + reservationTimeResponse.id();
+
+        return ResponseEntity.created(URI.create(url)).body(reservationTimeResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
+    public ResponseEntity<List<ReservationTimeResponse>> findTimeList() {
+        List<ReservationTime> reservationTimes = reservationTimeService.findTimeList();
+
+        List<ReservationTimeResponse> reservationTimeResponses = changeToReservationTimeResponses(reservationTimes);
+
+        return ResponseEntity.ok(reservationTimeResponses);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        reservationTimeService.deleteById(id);
+    public ResponseEntity<Void> deleteTimeById(@PathVariable("id") long id) {
+        reservationTimeService.deleteTimeById(id);
+
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<ReservationUserTime>> findAvailableTime(@RequestParam("date") final String date, @RequestParam("themeId") final long themeId) {
-        return ResponseEntity.ok(reservationTimeService.findAvailableTime(date, themeId));
+    public ResponseEntity<List<ReservationTimeStatusResponse>> findTimeByDateAndThemeId(@RequestParam("date") String date, @RequestParam("themeId") long themeId) {
+        List<ReservationTimeStatus> reservationTimeStatuses = reservationTimeService.findTimeListByDateAndThemeId(date, themeId);
+
+        List<ReservationTimeStatusResponse> reservationTimeStatusResponses = changeToReservationTimeStatusResponses(reservationTimeStatuses);
+
+        return ResponseEntity.ok(reservationTimeStatusResponses);
+    }
+
+    private ReservationTimeResponse changeToReservationTimeResponse(ReservationTime reservationTime) {
+        return new ReservationTimeResponse(reservationTime);
+    }
+
+    private List<ReservationTimeResponse> changeToReservationTimeResponses(List<ReservationTime> reservationTimes) {
+        return reservationTimes.stream()
+                .map(this::changeToReservationTimeResponse)
+                .toList();
+    }
+
+    private ReservationTimeStatusResponse changeToReservationTimeStatusResponse(ReservationTimeStatus reservationTimeStatus) {
+        return new ReservationTimeStatusResponse(reservationTimeStatus);
+    }
+
+    private List<ReservationTimeStatusResponse> changeToReservationTimeStatusResponses(List<ReservationTimeStatus> reservationTimeStatuses) {
+        return reservationTimeStatuses.stream()
+                .map(this::changeToReservationTimeStatusResponse)
+                .toList();
     }
 }

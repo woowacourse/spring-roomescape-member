@@ -1,41 +1,39 @@
 package roomescape.reservation.domain;
 
 import roomescape.exception.InvalidDateException;
-import roomescape.exception.InvalidNameException;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Reservation {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
-        validateNameExist(name);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         validateDateExist(date);
         this.id = id;
-        this.name = name;
-        this.date = LocalDate.parse(date, DATE_FORMAT);
+        this.member = member;
+        this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validateNameExist(final String name) {
-        if (Objects.isNull(name) || name.isBlank()) {
-            throw new InvalidNameException("예약자명이 비어있습니다.");
-        }
+    public boolean isPast(LocalDate currentDate) {
+        return date.isBefore(currentDate);
     }
 
-    private void validateDateExist(final String date) {
-        if (Objects.isNull(date) || date.isBlank()) {
+    public boolean isDate(LocalDate currentDate) {
+        return date.equals(currentDate);
+    }
+
+    private void validateDateExist(LocalDate date) {
+        if (Objects.isNull(date)) {
             throw new InvalidDateException("날짜가 비어있습니다.");
         }
     }
@@ -44,8 +42,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -65,19 +63,19 @@ public class Reservation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(time, that.time);
+        return Objects.equals(id, that.id) && Objects.equals(member, that.member) && Objects.equals(date, that.date) && Objects.equals(time, that.time) && Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, time);
+        return Objects.hash(id, member, date, time, theme);
     }
 
     @Override
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", member=" + member +
                 ", date=" + date +
                 ", time=" + time +
                 ", theme=" + theme +

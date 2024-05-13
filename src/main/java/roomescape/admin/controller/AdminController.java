@@ -1,29 +1,35 @@
 package roomescape.admin.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.admin.dto.AdminReservationRequest;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.service.ReservationService;
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
-    @GetMapping
-    public String admin() {
-        return "admin/index";
+    private final ReservationService reservationService;
+
+    public AdminController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservation")
-    public String reservation() {
-        return "admin/reservation-new";
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody AdminReservationRequest adminReservationRequest) {
+        Reservation reservation = reservationService.saveReservation(adminReservationRequest.toReservation());
+
+        ReservationResponse reservationResponse = changeToReservationResponse(reservation);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
-    @GetMapping("/time")
-    public String time() {
-        return "admin/time";
-    }
-
-    @GetMapping("/theme")
-    public String theme() {
-        return "admin/theme";
+    private ReservationResponse changeToReservationResponse(Reservation reservation) {
+        return new ReservationResponse(reservation);
     }
 }
