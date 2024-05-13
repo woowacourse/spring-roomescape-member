@@ -16,8 +16,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.domain.member.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.JwtService;
-import roomescape.service.dto.member.CreateMemberRequest;
 import roomescape.service.dto.member.LoginMemberRequest;
+import roomescape.service.dto.member.MemberCreateRequest;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -41,7 +41,7 @@ class MemberApiControllerTest {
     @DisplayName("회원가입에 성공하면 응답과 201 상태코드를 반환한다.")
     @Test
     void return_201_when_signup() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "123", "재즈");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(createRequest)
@@ -53,7 +53,7 @@ class MemberApiControllerTest {
     @DisplayName("회원가입에 실패하면 400 상태코드를 반환한다.")
     @Test
     void return_400_when_fail_signup() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "", "재즈");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(createRequest)
@@ -65,7 +65,7 @@ class MemberApiControllerTest {
     @DisplayName("로그인에 성공하면 200 상태코드와 토큰을 반환한다.")
     @Test
     void return_201_and_token_when_login() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "123", "재즈");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(createRequest)
@@ -88,7 +88,7 @@ class MemberApiControllerTest {
     @DisplayName("로그인에 실패하면 400 상태코드를 반환한다.")
     @Test
     void return_400_when_fail_login() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "123", "재즈");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(createRequest)
@@ -108,7 +108,7 @@ class MemberApiControllerTest {
     @DisplayName("유효한 토큰인지 검증되면 200 상태코드와 로그인된 사용자의 정보를 응답한다.")
     @Test
     void return_200_when_login_check() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "123", "재즈");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(createRequest)
@@ -135,7 +135,7 @@ class MemberApiControllerTest {
     @DisplayName("유효한 토큰이 아니면 401 상태코드를 응답한다.")
     @Test
     void return_401_when_fail_login_check() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "123", "재즈");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(createRequest)
@@ -162,7 +162,7 @@ class MemberApiControllerTest {
     @DisplayName("로그아웃 시 토큰을 만료시키고 200 상태코드를 반환한다.")
     @Test
     void return_200_when_logout() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "123", "재즈");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(createRequest)

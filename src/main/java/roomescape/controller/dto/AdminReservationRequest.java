@@ -1,7 +1,8 @@
-package roomescape.service.dto.reservation;
+package roomescape.controller.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import roomescape.service.dto.reservation.ReservationCreate;
 import roomescape.service.dto.validator.DateFormatConstraint;
 
 public class AdminReservationRequest {
@@ -28,8 +29,8 @@ public class AdminReservationRequest {
         this.timeId = timeId;
     }
 
-    public CreateReservation toCreateReservation() {
-        return new CreateReservation(memberId, themeId, date, timeId);
+    public ReservationCreate toCreateReservation() {
+        return new ReservationCreate(memberId, themeId, date, timeId);
     }
 
     public Long getMemberId() {

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 import roomescape.domain.member.Member;
 
-public class CreateMemberRequest {
+public class MemberCreateRequest {
 
     @Email(message = "이메일 형식이 맞지 않습니다.")
     @NotBlank(message = "이메일은 반드시 입력되어야 합니다.")
@@ -20,7 +20,7 @@ public class CreateMemberRequest {
     @Length(max = 15, message = "이름 길이는 15글자까지 가능합니다.")
     private final String name;
 
-    public CreateMemberRequest(String email, String password, String name) {
+    public MemberCreateRequest(String email, String password, String name) {
         this.email = email;
         this.password = password;
         this.name = name;

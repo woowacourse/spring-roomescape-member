@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberPassword;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.member.CreateMemberRequest;
 import roomescape.service.dto.member.LoginMemberRequest;
+import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.member.MemberResponse;
 import roomescape.service.exception.MemberNotFoundException;
 
@@ -21,7 +21,7 @@ public class MemberService {
         this.jwtService = jwtService;
     }
 
-    public void signup(CreateMemberRequest request) {
+    public void signup(MemberCreateRequest request) {
         if (memberRepository.isMemberExistsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("이미 가입되어 있는 이메일 주소입니다.");
         }

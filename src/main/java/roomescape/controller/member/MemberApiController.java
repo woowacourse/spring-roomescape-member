@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.resolver.AuthenticationPrincipal;
 import roomescape.service.MemberService;
-import roomescape.service.dto.member.CreateMemberRequest;
 import roomescape.service.dto.member.LoginMember;
 import roomescape.service.dto.member.LoginMemberRequest;
+import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.member.MemberResponse;
 import roomescape.utils.CookieUtils;
 
@@ -30,7 +30,7 @@ public class MemberApiController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/members/signup")
-    public void signup(@Valid @RequestBody CreateMemberRequest request) {
+    public void signup(@Valid @RequestBody MemberCreateRequest request) {
         memberService.signup(request);
     }
 

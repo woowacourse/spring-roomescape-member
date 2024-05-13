@@ -17,8 +17,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.domain.member.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.repository.JdbcMemberRepository;
-import roomescape.service.dto.member.CreateMemberRequest;
 import roomescape.service.dto.member.LoginMemberRequest;
+import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.exception.MemberNotFoundException;
 
 @TestExecutionListeners(value = {
@@ -54,7 +54,7 @@ class MemberServiceTest {
     void throw_exception_when_create_duplicated_member_email() {
         memberRepository.insertMember(member1);
 
-        CreateMemberRequest requestDto = new CreateMemberRequest("t1@t1.com", "11", "워니");
+        MemberCreateRequest requestDto = new MemberCreateRequest("t1@t1.com", "11", "워니");
 
         assertThatThrownBy(() -> memberService.signup(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -64,7 +64,7 @@ class MemberServiceTest {
     @DisplayName("회원을 정상적으로 생성한다.")
     @Test
     void success_signup_member() {
-        CreateMemberRequest requestDto = new CreateMemberRequest("t1@t1.com", "11", "워니");
+        MemberCreateRequest requestDto = new MemberCreateRequest("t1@t1.com", "11", "워니");
 
         assertThatNoException()
                 .isThrownBy(() -> memberService.signup(requestDto));

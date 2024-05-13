@@ -7,8 +7,8 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
-import roomescape.service.dto.reservation.CreateReservation;
-import roomescape.service.dto.reservation.ReservationResponseDto;
+import roomescape.service.dto.reservation.ReservationCreate;
+import roomescape.service.dto.reservation.ReservationResponse;
 import roomescape.service.dto.reservation.ReservationSearchParams;
 
 @Service
@@ -23,14 +23,14 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationResponseDto> findAllReservations(ReservationSearchParams request) {
+    public List<ReservationResponse> findAllReservations(ReservationSearchParams request) {
         return reservationRepository.findReservationsWithParams(request)
                 .stream()
-                .map(ReservationResponseDto::new)
+                .map(ReservationResponse::new)
                 .toList();
     }
 
-    public ReservationResponseDto createReservation(CreateReservation reservationInfo) {
+    public ReservationResponse createReservation(ReservationCreate reservationInfo) {
         Reservation reservation = reservationInfo.toReservation();
         if (!reservationTimeRepository.isTimeExistsByTimeId(reservation.getTimeId())) {
             throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");
@@ -46,7 +46,7 @@ public class ReservationService {
         }
 
         Reservation savedReservation = reservationRepository.insertReservation(reservation);
-        return new ReservationResponseDto(savedReservation);
+        return new ReservationResponse(savedReservation);
     }
 
     public void deleteReservation(long id) {

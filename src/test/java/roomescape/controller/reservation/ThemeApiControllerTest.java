@@ -14,11 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.controller.dto.AdminReservationRequest;
 import roomescape.domain.member.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.JwtService;
-import roomescape.service.dto.member.CreateMemberRequest;
-import roomescape.service.dto.reservation.AdminReservationRequest;
+import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.reservation.ReservationTimeRequest;
 import roomescape.service.dto.theme.ThemeRequest;
 import roomescape.service.dto.theme.ThemeResponse;
@@ -43,10 +43,10 @@ class ThemeApiControllerTest {
     private final ThemeRequest themeCreate2 = new ThemeRequest("추리", "추리는 재밌어", "hi.jpg");
     private final ThemeRequest themeCreate3 = new ThemeRequest("탈출", "탈출은 빠르게", "hi.jpg");
 
-    private final CreateMemberRequest memberCreate1 = new CreateMemberRequest("t1@t1.com", "123", "재즈");
-    private final CreateMemberRequest memberCreate2 = new CreateMemberRequest("t2@t2.com", "124", "러너덕");
-    private final CreateMemberRequest memberCreate3 = new CreateMemberRequest("t3@t3.com", "125", "재즈덕");
-    private final CreateMemberRequest memberCreate4 = new CreateMemberRequest("t4@t4.com", "126", "덕");
+    private final MemberCreateRequest memberCreate1 = new MemberCreateRequest("t1@t1.com", "123", "재즈");
+    private final MemberCreateRequest memberCreate2 = new MemberCreateRequest("t2@t2.com", "124", "러너덕");
+    private final MemberCreateRequest memberCreate3 = new MemberCreateRequest("t3@t3.com", "125", "재즈덕");
+    private final MemberCreateRequest memberCreate4 = new MemberCreateRequest("t4@t4.com", "126", "덕");
 
     private final AdminReservationRequest reservationCreate1 = new AdminReservationRequest(1L, 1L,
             "2100-01-01", 1L);

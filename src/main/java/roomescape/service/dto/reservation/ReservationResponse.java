@@ -4,7 +4,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.service.dto.member.MemberResponse;
 import roomescape.service.dto.theme.ThemeResponse;
 
-public class ReservationResponseDto {
+public class ReservationResponse {
 
     private final long id;
     private final MemberResponse member;
@@ -12,8 +12,8 @@ public class ReservationResponseDto {
     private final String date;
     private final ReservationTimeResponse time;
 
-    public ReservationResponseDto(long id, MemberResponse member, ThemeResponse theme, String date,
-                                  ReservationTimeResponse time) {
+    public ReservationResponse(long id, MemberResponse member, ThemeResponse theme, String date,
+                               ReservationTimeResponse time) {
         this.id = id;
         this.member = member;
         this.theme = theme;
@@ -21,7 +21,7 @@ public class ReservationResponseDto {
         this.time = time;
     }
 
-    public ReservationResponseDto(Reservation reservation) {
+    public ReservationResponse(Reservation reservation) {
         this(reservation.getId(),
                 new MemberResponse(reservation),
                 new ThemeResponse(reservation.getTheme()),

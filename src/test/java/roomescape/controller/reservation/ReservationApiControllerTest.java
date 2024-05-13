@@ -14,14 +14,14 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.controller.dto.AdminReservationRequest;
+import roomescape.controller.dto.MemberReservationRequest;
 import roomescape.domain.member.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.JwtService;
-import roomescape.service.dto.member.CreateMemberRequest;
-import roomescape.service.dto.member.MemberReservationRequest;
+import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.member.MemberResponse;
-import roomescape.service.dto.reservation.AdminReservationRequest;
-import roomescape.service.dto.reservation.ReservationResponseDto;
+import roomescape.service.dto.reservation.ReservationResponse;
 import roomescape.service.dto.reservation.ReservationTimeRequest;
 import roomescape.service.dto.reservation.ReservationTimeResponse;
 import roomescape.service.dto.theme.ThemeRequest;
@@ -57,7 +57,7 @@ class ReservationApiControllerTest {
     }
 
     private void initializeMemberData() {
-        CreateMemberRequest createRequest = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+        MemberCreateRequest createRequest = new MemberCreateRequest("t1@t1.com", "123", "재즈");
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
@@ -106,16 +106,16 @@ class ReservationApiControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        List<ReservationResponseDto> actualResponse = RestAssured.given().log().all()
+        List<ReservationResponse> actualResponse = RestAssured.given().log().all()
                 .cookie("token", adminToken)
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
                 .jsonPath()
-                .getList(".", ReservationResponseDto.class);
+                .getList(".", ReservationResponse.class);
 
-        ReservationResponseDto expectedResponse = new ReservationResponseDto(
+        ReservationResponse expectedResponse = new ReservationResponse(
                 1L, new MemberResponse(1L, "재즈"),
                 new ThemeResponse(1L, "공포", "공포는 무서워", "hi.jpg"),
                 "2100-08-05",

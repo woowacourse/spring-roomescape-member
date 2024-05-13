@@ -14,11 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.controller.dto.AdminReservationRequest;
 import roomescape.domain.member.Member;
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.JwtService;
-import roomescape.service.dto.member.CreateMemberRequest;
-import roomescape.service.dto.reservation.AdminReservationRequest;
+import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.reservation.ReservationTimeRequest;
 import roomescape.service.dto.reservation.ReservationTimeResponse;
 import roomescape.service.dto.theme.ThemeRequest;
@@ -52,7 +52,7 @@ class ReservationTimeApiControllerTest {
 
     private final ThemeRequest themeCreate1 = new ThemeRequest("공포", "공포는 무서워", "hi.jpg");
 
-    private final CreateMemberRequest memberCreate1 = new CreateMemberRequest("t1@t1.com", "123", "재즈");
+    private final MemberCreateRequest memberCreate1 = new MemberCreateRequest("t1@t1.com", "123", "재즈");
 
     private final AdminReservationRequest reservationCreate1 = new AdminReservationRequest(1L, 1L,
             "2100-01-01", 1L);
