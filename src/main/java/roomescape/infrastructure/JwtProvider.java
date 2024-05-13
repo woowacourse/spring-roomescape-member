@@ -13,7 +13,6 @@ public class JwtProvider {
     private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E";
 
     public String createToken(MemberPayload memberPayload) {
-
         return Jwts.builder()
                 .setSubject(memberPayload.id())
                 .setIssuedAt(DateUtil.getCurrentTime())
