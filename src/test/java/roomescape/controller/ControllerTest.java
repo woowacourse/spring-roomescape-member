@@ -10,29 +10,32 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
+import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
 import roomescape.config.JwtProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SqlMergeMode(MergeMode.MERGE)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class ControllerTest {
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+abstract class ControllerTest {
 
     @Autowired
-    JwtProvider jwtProvider;
+    protected JdbcTemplate jdbcTemplate;
+    @Autowired
+    private JwtProvider jwtProvider;
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
-    void setPort() {
+    protected void setPort() {
         RestAssured.port = port;
     }
 
-    String getUserToken() {
+    protected String getUserToken() {
         return jwtProvider.createToken(VALID_USER_EMAIL.getEmail());
     }
 
-    String getAdminToken() {
+    protected String getAdminToken() {
         return jwtProvider.createToken(VALID_ADMIN_EMAIL.getEmail());
     }
 }

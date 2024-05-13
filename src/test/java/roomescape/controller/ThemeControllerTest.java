@@ -116,7 +116,7 @@ class ThemeControllerTest extends ControllerTest {
 
     @DisplayName("상위 10개 인기 테마를 조회 한다. -> 200")
     @Test
-    @Sql({"/truncate.sql", "/popularTestData.sql"})
+    @Sql({"/popularTestData.sql"})
     void findPopularTheme() {
         RestAssured.given().log().all()
             .when().get("/themes/popular")
