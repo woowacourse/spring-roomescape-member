@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import roomescape.controller.request.UserLoginRequest;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.AuthorizationException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.User;
@@ -47,7 +48,7 @@ class UserServiceTest {
         UserLoginRequest request = new UserLoginRequest("1111", "sun@email.com");
 
         assertThatThrownBy(() -> userService.findUserByEmailAndPassword(request))
-                .isInstanceOf(AuthorizationException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("아이디를 통해 사용자 이름을 조회한다.")

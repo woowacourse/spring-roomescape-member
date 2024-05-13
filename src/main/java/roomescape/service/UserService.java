@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.controller.request.UserLoginRequest;
-import roomescape.exception.AuthorizationException;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.User;
 import roomescape.repository.UserDao;
@@ -21,7 +21,7 @@ public class UserService {
 
     public User findUserByEmailAndPassword(UserLoginRequest request) {
         return userDao.findUserByEmailAndPassword(request.email(), request.password())
-                .orElseThrow(() -> new AuthorizationException(
+                .orElseThrow(() -> new AuthenticationException(
                         "사용자(email: %s, password: %s)가 존재하지 않습니다.".formatted(request.email(), request.password())));
     }
 

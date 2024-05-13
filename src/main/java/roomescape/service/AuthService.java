@@ -7,7 +7,7 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
-import roomescape.exception.AuthorizationException;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.BadRequestException;
 import roomescape.model.Role;
 import roomescape.model.User;
@@ -56,7 +56,7 @@ public class AuthService {
         try {
             Long.parseLong(payLoad);
         } catch (NumberFormatException exception) {
-            throw new AuthorizationException("인증되지 않은 사용자입니다.");
+            throw new AuthenticationException();
         }
     }
 }

@@ -3,9 +3,9 @@ package roomescape.config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import roomescape.exception.AuthorizationException;
 import roomescape.model.Role;
 import roomescape.service.AuthService;
 
@@ -24,8 +24,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         if (isAdmin(role)) {
             return true;
         }
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        return false;
+        throw new AuthorizationException();
     }
 
     private boolean isAdmin(Role role) {

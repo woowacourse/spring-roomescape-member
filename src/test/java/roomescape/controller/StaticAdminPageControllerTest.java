@@ -32,7 +32,7 @@ class StaticAdminPageControllerTest {
                 .statusCode(403);
     }
 
-    @DisplayName("관리자 권한으로 요청하면 200을 응답한다.") //
+    @DisplayName("관리자 권한으로 요청하면 200을 응답한다.")
     @Test
     void should_status_200_when_admin_role() {
         UserLoginRequest loginRequest = new UserLoginRequest("2222", "pobi@email.com");
