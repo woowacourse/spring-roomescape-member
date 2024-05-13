@@ -56,7 +56,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("예약 시간을 성공적으로 삭제하면 200을 응답한다.")
+    @DisplayName("예약 시간을 성공적으로 삭제하면 204를 응답한다.")
     void respondNoContentWhenDeleteReservationTime() {
         final Long reservationTimeId = saveReservationTime();
 
