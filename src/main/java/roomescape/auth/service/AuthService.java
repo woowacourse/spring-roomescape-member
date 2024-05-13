@@ -18,12 +18,20 @@ import roomescape.member.domain.Member;
 
 @Service
 public class AuthService {
+    private final TokenProvider tokenProvider;
     private final MemberDao memberDao;
     private final String secretKey;
 
-    public AuthService(MemberDao memberDao, @Value("${jwt.secret-key}") String secretKey) {
+    public AuthService(TokenProvider tokenProvider, MemberDao memberDao, @Value("${jwt.secret-key}") String secretKey) {
+        this.tokenProvider = tokenProvider;
         this.memberDao = memberDao;
         this.secretKey = secretKey;
+    }
+
+    public String createToken(LoginRequest request) {
+        Member member = memberDao.findMemberByEmail(request.email())
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+        return tokenProvider.createToken(member.getId());
     }
 
     public AccessTokenCookie createAccessToken(LoginRequest request) {
@@ -40,6 +48,13 @@ public class AuthService {
                 .and()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+    }
+
+    public LoggedInMember findLoggedInMember(String token) {
+        Long memberId = tokenProvider.findMemberId(token);
+        Member member = memberDao.findMemberById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+        return LoggedInMember.from(member);
     }
 
     public LoggedInMember findLoggedInMember(RequestCookies cookies) {

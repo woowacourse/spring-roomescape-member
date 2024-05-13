@@ -20,35 +20,37 @@ import roomescape.member.domain.Member;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
+    private static final String TEST_SECRET_KEY = "this-is-test-secret-key-this-is-test-secret-key";
+
     @Mock
     private MemberDao memberDao;
+    private TokenProvider tokenProvider = new TokenProvider(TEST_SECRET_KEY);
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(memberDao, "this-is-test-secret-key-this-is-test-secret-key");
+        authService = new AuthService(tokenProvider, memberDao, TEST_SECRET_KEY);
     }
 
     @DisplayName("토큰 생성 시, 해당 멤버가 없을 경우 예외를 던진다.")
     @Test
-    void makeTokenTest_whenMemberNotExist() {
+    void createTokenTest_whenMemberNotExist() {
         LoginRequest request = new LoginRequest("not_exist@abc.com", "1234");
         given(memberDao.findMemberByEmail("not_exist@abc.com")).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> authService.createAccessToken(request))
+        assertThatThrownBy(() -> authService.createToken(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("로그인 정보가 잘못 되었습니다.");
+                .hasMessage("해당 멤버가 존재하지 않습니다.");
     }
 
     @DisplayName("해당 토큰의 유저를 찾을 수 있다.")
     @Test
-    void findMember() {
-        Cookie[] cookies = new Cookie[]{new Cookie("token", makeToken("브리", "bri@abc.com"))};
-        RequestCookies requestCookies = new RequestCookies(cookies);
+    void findLoggedInMemberTest() {
+        String token = makeToken("브리", "bri@abc.com");
         given(memberDao.findMemberById(1L)).willReturn(Optional.of(new Member(1L, "브리", "bri@abc.com")));
         LoggedInMember expected = new LoggedInMember(1L, "브리", "bri@abc.com", false);
 
-        LoggedInMember actual = authService.findLoggedInMember(requestCookies);
+        LoggedInMember actual = authService.findLoggedInMember(token);
 
         assertThat(actual).isEqualTo(expected);
     }
