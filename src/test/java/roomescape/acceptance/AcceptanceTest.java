@@ -13,6 +13,8 @@ import roomescape.dto.theme.ThemeSaveRequest;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
 
+import static roomescape.TestFixture.*;
+
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class AcceptanceTest {
@@ -26,7 +28,7 @@ abstract class AcceptanceTest {
     }
 
     protected Long saveReservationTime() {
-        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("18:00");
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(START_AT_SIX);
 
         Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -41,8 +43,8 @@ abstract class AcceptanceTest {
     }
 
     protected Long saveTheme() {
-        final ThemeSaveRequest request = new ThemeSaveRequest("호러", "매우 무섭습니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final ThemeSaveRequest request
+                = new ThemeSaveRequest(THEME_HORROR_NAME, THEME_HORROR_DESCRIPTION, THEME_HORROR_THUMBNAIL);
 
         Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -57,8 +59,8 @@ abstract class AcceptanceTest {
     }
 
     protected Long saveReservation(final Long timeId, final Long themeId) {
-        final String accessToken = getAccessToken("nyangin@email.com");
-        final MemberReservationSaveRequest request = new MemberReservationSaveRequest("2034-05-08", timeId, themeId);
+        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
+        final MemberReservationSaveRequest request = new MemberReservationSaveRequest(DATE_MAY_EIGHTH, timeId, themeId);
 
         Integer id = RestAssured.given().log().all()
                 .cookie("token", accessToken)
@@ -75,7 +77,7 @@ abstract class AcceptanceTest {
 
     protected String getAccessToken(final String email) {
         return RestAssured.given().log().all()
-                .body(new TokenRequest(email, "1234"))
+                .body(new TokenRequest(email, MEMBER_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")

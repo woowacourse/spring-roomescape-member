@@ -1,6 +1,8 @@
 package roomescape.acceptance;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.TestFixture.DATE_MAY_EIGHTH;
+import static roomescape.TestFixture.START_AT_SIX;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -16,7 +18,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("예약 시간을 성공적으로 생성하면 201을 응답한다.")
     void respondCreatedWhenCreateReservationTime() {
-        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("18:00");
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(START_AT_SIX);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -79,7 +81,7 @@ class ReservationTimeAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("예약 가능한 시간 목록을 성공적으로 조회하면 200을 응답한다.")
     void respondOkWhenFindAvailableReservationTimes() {
-        final String date = "2034-05-08";
+        final String date = DATE_MAY_EIGHTH;
         final Long themeId = saveTheme();
 
         RestAssured.given().log().all()

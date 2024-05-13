@@ -1,6 +1,7 @@
 package roomescape.acceptance;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.TestFixture.*;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -13,8 +14,8 @@ class ThemeAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("테마를 성공적으로 생성하면 201을 응답한다.")
     void respondCreatedWhenCreateTheme() {
-        final ThemeSaveRequest request = new ThemeSaveRequest("호러", "매우 무섭습니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final ThemeSaveRequest request
+                = new ThemeSaveRequest(THEME_HORROR_NAME, THEME_HORROR_DESCRIPTION, THEME_HORROR_THUMBNAIL);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

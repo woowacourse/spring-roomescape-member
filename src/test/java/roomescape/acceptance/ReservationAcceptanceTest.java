@@ -1,6 +1,7 @@
 package roomescape.acceptance;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.TestFixture.*;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -16,8 +17,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     void respondCreatedWhenCreateReservation() {
         final Long timeId = saveReservationTime();
         final Long themeId = saveTheme();
-        final MemberReservationSaveRequest request = new MemberReservationSaveRequest("2034-05-08", timeId, themeId);
-        final String accessToken = getAccessToken("mia@email.com");
+        final MemberReservationSaveRequest request = new MemberReservationSaveRequest(DATE_MAY_EIGHTH, timeId, themeId);
+        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
         RestAssured.given().log().all()
                 .cookie("token", accessToken)
@@ -33,8 +34,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     void respondCreatedWhenAdminCreateReservation() {
         final Long timeId = saveReservationTime();
         final Long themeId = saveTheme();
-        final AdminReservationSaveRequest request = new AdminReservationSaveRequest(1L, "2034-05-08", timeId, themeId);
-        final String accessToken = getAccessToken("nyangin@email.com");
+        final AdminReservationSaveRequest request = new AdminReservationSaveRequest(1L, DATE_MAY_EIGHTH, timeId, themeId);
+        final String accessToken = getAccessToken(ADMIN_EMAIL);
 
         RestAssured.given().log().all()
                 .cookie("token", accessToken)
@@ -50,8 +51,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     void respondBadRequestWhenNotExistingReservationTime() {
         saveReservationTime();
         final Long themeId = saveTheme();
-        final MemberReservationSaveRequest request = new MemberReservationSaveRequest("2034-05-08", 2L, themeId);
-        final String accessToken = getAccessToken("nyangin@email.com");
+        final MemberReservationSaveRequest request = new MemberReservationSaveRequest(DATE_MAY_EIGHTH, 2L, themeId);
+        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
         RestAssured.given().log().all()
                 .cookie("token", accessToken)
@@ -67,8 +68,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     void respondBadRequestWhenNotExistingTheme() {
         saveTheme();
         final Long timeId = saveReservationTime();
-        final MemberReservationSaveRequest request = new MemberReservationSaveRequest("2034-05-08", timeId, 2L);
-        final String accessToken = getAccessToken("nyangin@email.com");
+        final MemberReservationSaveRequest request = new MemberReservationSaveRequest(DATE_MAY_EIGHTH, timeId, 2L);
+        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
         RestAssured.given().log().all()
                 .cookie("token", accessToken)
@@ -99,7 +100,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         final Long timeId = saveReservationTime();
         final Long themeId = saveTheme();
         saveReservation(timeId, themeId);
-        final String accessToken = getAccessToken("nyangin@email.com");
+        final String accessToken = getAccessToken(MEMBER_MIA_EMAIL);
 
         RestAssured.given().log().all()
                 .queryParam("themeId", 1L)
