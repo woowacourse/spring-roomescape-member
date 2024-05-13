@@ -16,6 +16,7 @@ import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
+@Auth(role = MemberRole.ADMIN)
 public class AdminController {
 
     private final ReservationService reservationService;
@@ -24,7 +25,6 @@ public class AdminController {
         this.reservationService = reservationService;
     }
 
-    @Auth(role = MemberRole.ADMIN)
     @PostMapping("/admin/reservations")
     public ResponseEntity<Void> reservationSave(@RequestBody AdminReservationRequest adminReservationRequest) {
         reservationService.addAdminReservation(adminReservationRequest);
@@ -33,7 +33,6 @@ public class AdminController {
                 .build();
     }
 
-    @Auth(role = MemberRole.ADMIN)
     @GetMapping("/admin/reservations")
     public List<ReservationResponse> reservationFilteredList(
             @ModelAttribute ReservationFilterRequest reservationFilterRequest) {
