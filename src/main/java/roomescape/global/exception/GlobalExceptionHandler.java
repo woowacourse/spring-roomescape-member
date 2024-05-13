@@ -6,8 +6,6 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -19,13 +17,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(value = SecurityException.class)
-    public ResponseEntity<ErrorResponse> handle(final SecurityException exception) {
+    @ExceptionHandler(value = BusinessException.class)
+    public ResponseEntity<ErrorResponse> handle(final BusinessException exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity(
-                new ErrorResponse(HttpStatus.UNAUTHORIZED, "[ERROR] 접근 권한이 없습니다."),
-                HttpStatusCode.valueOf(401)
-        );
+        return new ResponseEntity(exception.getErrorResponse(), exception.getErrorResponse().getStatusCode());
     }
 
     @ExceptionHandler(value = NoSuchElementException.class)

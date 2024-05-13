@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ErrorType;
 
 public class MemberCheckInterceptor implements HandlerInterceptor {
     private final AuthService authService;
@@ -22,19 +24,19 @@ public class MemberCheckInterceptor implements HandlerInterceptor {
         try {
             authService.findMemberByToken(token);
         } catch (final NoSuchElementException exception) {
-            throw new SecurityException("[ERROR] 접근 권한이 없습니다.");
+            throw new BusinessException(ErrorType.ACCESS_FORBIDDEN);
         }
         return true;
     }
 
     private String extractTokenFromCookies(final Cookie[] cookies) {
         if (cookies == null || cookies.length == 0) {
-            throw new SecurityException("[ERROR] 쿠키에 토큰 정보를 입력해주세요.");
+            throw new BusinessException(ErrorType.UNAUTHORIZED);
         }
         return Arrays.asList(cookies).stream()
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findAny()
-                .orElseThrow(() -> new SecurityException("[ERROR] 쿠키에 토큰 정보를 입력해주세요."))
+                .orElseThrow(() -> new BusinessException(ErrorType.UNAUTHORIZED))
                 .getValue();
     }
 }
