@@ -3,7 +3,6 @@ package roomescape.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -23,14 +22,10 @@ public class JwtTokenProvider {
         this.secretKey = tokenProperties.secretKey();
     }
 
-    @PostConstruct
-    public void init() {
-        System.out.println("hi" + secretKey);
-    }
-
-    public String createToken(final Long id, final String role) {
+    public String createToken(final Long id, final String name, final String role) {
         return Jwts.builder()
                 .setSubject(id.toString())
+                .claim("name", name)
                 .claim("role", role)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
@@ -55,6 +50,11 @@ public class JwtTokenProvider {
     public Long extractMemberId(final HttpServletRequest request) {
         Claims claims = extractClaim(request);
         return Long.valueOf(claims.getSubject());
+    }
+
+    public String extractName(final HttpServletRequest request) {
+        Claims claims = extractClaim(request);
+        return claims.get("name", String.class);
     }
 
     public boolean doesNotRequestHasCookie(final HttpServletRequest request) {

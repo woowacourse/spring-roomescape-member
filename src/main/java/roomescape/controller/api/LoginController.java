@@ -41,15 +41,7 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberCheckResponse> loginCheckPage(HttpServletRequest request) {
-        String token = extractTokenFromCookie(request.getCookies());
-
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-
-        MemberCheckResponse memberCheckResponse = memberService.findById(memberId);
+        MemberCheckResponse memberCheckResponse = new MemberCheckResponse(jwtTokenProvider.extractMemberId(request), jwtTokenProvider.extractName(request));
 
         return ResponseEntity.ok().body(memberCheckResponse);
     }
