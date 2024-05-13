@@ -131,7 +131,7 @@ class ThemeServiceTest {
         reservationTimeRepository.save(new ReservationTime(LocalTime.NOON));
 
         Member member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1, 1);
+        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1L, 1L);
         reservationService.create(reservationRequest,
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 

@@ -10,9 +10,9 @@ public record ReservationRequest(
         String date,
 
         @NotNull
-        long timeId,
+        Long timeId,
 
         @NotNull
-        long themeId
+        Long themeId
 ) {
 }

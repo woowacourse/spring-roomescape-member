@@ -95,14 +95,16 @@ public class ReservationDao implements ReservationRepository {
     }
 
     private String makeFilterSql(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        return Stream.of(
+        String filterSql = Stream.of(
                         themeId != null ? "th.id = " + themeId : null,
                         memberId != null ? "m.id = " + memberId : null,
                         dateFrom != null ? "r.date >= '" + dateFrom + "'" : null,
                         dateTo != null ? "r.date <= '" + dateTo + "'" : null
                 )
                 .filter(Objects::nonNull)
-                .collect(Collectors.joining(" AND ", "WHERE ", ""));
+                .collect(Collectors.joining(" AND "));
+
+        return filterSql.isEmpty() ? "" : "WHERE " + filterSql;
     }
 
 

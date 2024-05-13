@@ -10,12 +10,12 @@ public record ReservationAdminRequest(
         String date,
 
         @NotNull
-        long themeId,
+        Long themeId,
 
         @NotNull
-        long timeId,
+        Long timeId,
 
         @NotNull
-        long memberId
+        Long memberId
 ) {
 }
