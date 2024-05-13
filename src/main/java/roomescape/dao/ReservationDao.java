@@ -85,7 +85,7 @@ public class ReservationDao {
                 JOIN member ON reservation.member_id = member.id
                 JOIN reservation_time ON reservation.time_id = reservation_time.id
                 JOIN theme ON reservation.theme_id = theme.id
-                WHERE reservation.id = ?;
+                WHERE reservation.id = ?
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));

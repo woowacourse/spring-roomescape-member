@@ -33,19 +33,13 @@ class ThemeDaoTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "테마1", "설명1", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "테마2", "설명2", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "테마3", "설명3", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "2024-05-01", 1, 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "2024-04-30", 1, 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "2024-04-30", 1, 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '설명1' ,'https://image.jpg')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마2', '설명2' ,'https://image.jpg')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마3', '설명3' ,'https://image.jpg')");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES ('2024-05-01', 1, 1, 2)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES ('2024-04-30', 1, 1, 2)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES ('2024-04-30', 1, 1, 1)");
     }
 
     @DisplayName("DB에서 테마 목록을 읽을 수 있다.")

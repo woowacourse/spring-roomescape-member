@@ -30,8 +30,7 @@ class ThemeControllerTest {
     void setUp() {
         RestAssured.port = port;
         jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '설명1' ,'https://image.jpg')");
 
         Map<String, String> admin = Map.of(
                 "email", "aaa@naver.com",
@@ -66,7 +65,7 @@ class ThemeControllerTest {
     @Test
     void createTime() {
         ThemeCreateRequest params = new ThemeCreateRequest(
-                "오리와 호랑이2", "오리들과 호랑이들 사이에서 살아남기2", "https://image.jpg");
+                "테마2", "설명2", "https://image.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

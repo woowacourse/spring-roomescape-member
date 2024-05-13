@@ -32,9 +32,8 @@ class AdminControllerTest {
         RestAssured.port = port;
 
         jdbcTemplate.update("INSERT INTO member(name, email, password, role) VALUES ('켬미', 'abc@naver.com', '2222', 'ADMIN')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '설명1' ,'https://image.jpg')");
 
         Map<String, String> admin = Map.of(
                 "email", "abc@naver.com",
