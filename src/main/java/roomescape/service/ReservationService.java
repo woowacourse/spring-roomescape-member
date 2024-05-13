@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.FilteredReservationRequest;
 import roomescape.dto.request.MemberRequest;
 import roomescape.dto.request.MemberReservationRequest;
 import roomescape.dto.response.ReservationResponse;
@@ -44,9 +45,12 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAllMatching(
-            Long themeId, Long memberId,
-            LocalDate dateFrom, LocalDate dateTo) {
-        return reservationDao.findAllMatching(themeId, memberId, dateFrom, dateTo)
+            FilteredReservationRequest filteredReservationRequest) {
+        return reservationDao.findAllMatching(
+                        filteredReservationRequest.themeId(),
+                        filteredReservationRequest.memberId(),
+                        filteredReservationRequest.dateFrom(),
+                        filteredReservationRequest.dateTo())
                 .stream()
                 .map(ReservationResponse::fromReservation)
                 .toList();
