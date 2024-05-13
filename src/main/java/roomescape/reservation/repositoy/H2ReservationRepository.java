@@ -45,8 +45,7 @@ public class H2ReservationRepository implements ReservationRepository {
         on m.role_id = ro.id
         """);
 
-    // WHERE 절 추가 (동적 쿼리)
-    sqlBuilder.append("WHERE 1=1 "); // 1=1은 뒤에 AND를 사용하기 쉽게 하는 용도로 추가
+    sqlBuilder.append("WHERE 1=1 ");
     final MapSqlParameterSource param = new MapSqlParameterSource();
 
     if (dateFrom != null && dateTo != null) {
