@@ -1,6 +1,5 @@
 package roomescape.api;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
@@ -44,10 +43,9 @@ class ReservationTimeApiTest {
     @Test
     void 예약_시간_단일_조회() {
         ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest();
-
         addReservationTime(reservationTimeRequest);
 
-        given().log().all()
+        RestAssured.given().log().all()
                 .port(port)
                 .when().get("/times/1")
                 .then().log().all()
@@ -60,10 +58,9 @@ class ReservationTimeApiTest {
     @Test
     void 예약_시간_전체_조회() {
         ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest();
-
         addReservationTime(reservationTimeRequest);
 
-        given().log().all()
+        RestAssured.given().log().all()
                 .port(port)
                 .when().get("/times")
                 .then().log().all()
@@ -74,9 +71,9 @@ class ReservationTimeApiTest {
     @Sql("/reservation-time-service-test-data.sql")
     @Test
     void 예약_가능한_시간_조회() {
-
         String targetDay = LocalDate.now().plusDays(1).toString();
-        given().log().all()
+
+        RestAssured.given().log().all()
                 .port(port)
                 .when().get("/times/available?date=" + targetDay + "&themeId=1")
                 .then().log().all()
@@ -87,10 +84,9 @@ class ReservationTimeApiTest {
     @Test
     void 예약_시간_삭제() {
         ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest();
-
         addReservationTime(reservationTimeRequest);
 
-        given().log().all()
+        RestAssured.given().log().all()
                 .port(port)
                 .when().delete("/times/1")
                 .then().log().all()
