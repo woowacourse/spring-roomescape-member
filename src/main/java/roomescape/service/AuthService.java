@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.infrastructure.JwtTokenExtractor;
 import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.JwtTokenValidator;
 import roomescape.service.dto.TokenRequest;
 import roomescape.service.dto.TokenResponse;
 
@@ -13,11 +14,14 @@ import roomescape.service.dto.TokenResponse;
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenExtractor jwtTokenExtractor;
+    private final JwtTokenValidator jwtTokenValidator;
 
     @Autowired
-    public AuthService(JwtTokenProvider jwtTokenProvider, JwtTokenExtractor jwtTokenExtractor) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, JwtTokenExtractor jwtTokenExtractor,
+                       JwtTokenValidator jwtTokenValidator) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.jwtTokenExtractor = jwtTokenExtractor;
+        this.jwtTokenValidator = jwtTokenValidator;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
@@ -47,5 +51,9 @@ public class AuthService {
 
     public String extractEmailByToken(TokenResponse tokenResponse) {
         return jwtTokenExtractor.extractEmailByToken(tokenResponse.token());
+    }
+
+    public void isTokenValid(TokenResponse tokenResponse) {
+        jwtTokenValidator.isTokenValid(tokenResponse.token());
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -44,6 +45,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleIllegalArgumentException(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionTemplate> handleExpiredJwtException(ExpiredJwtException exception) {
         return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
     }
 

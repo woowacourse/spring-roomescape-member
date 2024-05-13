@@ -27,6 +27,7 @@ public class RoleInterceptor implements HandlerInterceptor {
         TokenResponse tokenResponse = authService.extractTokenByCookies(request);
         String email = authService.extractEmailByToken(tokenResponse);
         LoginMemberResponse loginMemberResponse = loginMemberService.findByEmail(email);
+        authService.isTokenValid(tokenResponse);
         if (loginMemberResponse == null || !loginMemberResponse.role().equals("ADMIN")) {
             response.setStatus(401);
             return false;
