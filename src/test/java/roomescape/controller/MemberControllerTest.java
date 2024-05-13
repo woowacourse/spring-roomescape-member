@@ -46,14 +46,14 @@ class MemberControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+                .extract().cookie("token");
     }
 
     @DisplayName("사용자 목록을 읽을 수 있다.")
     @Test
     void readMembers() {
         int size = RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/members")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -71,7 +71,7 @@ class MemberControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .body(params)
                 .when().post("/members")
                 .then().log().all()

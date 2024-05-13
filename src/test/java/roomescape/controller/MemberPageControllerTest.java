@@ -39,14 +39,14 @@ class MemberPageControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+                .extract().cookie("token");
     }
 
     @DisplayName("인기 테마 페이지를 열 수 있다.")
     @Test
     void loadPopularThemePage() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/")
                 .then().log().all()
                 .statusCode(200);
@@ -56,7 +56,7 @@ class MemberPageControllerTest {
     @Test
     void loadUserReservationPage() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);

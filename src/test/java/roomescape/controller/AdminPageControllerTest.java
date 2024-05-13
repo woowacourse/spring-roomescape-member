@@ -40,14 +40,14 @@ class AdminPageControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+                .extract().cookie("token");
     }
 
     @DisplayName("관리자 페이지를 열 수 있다.")
     @Test
     void loadAdminPage() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -57,7 +57,7 @@ class AdminPageControllerTest {
     @Test
     void loadReservationPage() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -67,7 +67,7 @@ class AdminPageControllerTest {
     @Test
     void loadTimePage() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
@@ -77,7 +77,7 @@ class AdminPageControllerTest {
     @Test
     void loadThemePage() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);

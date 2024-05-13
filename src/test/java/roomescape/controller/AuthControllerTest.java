@@ -89,10 +89,10 @@ class AuthControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+                .extract().cookie("token");
 
         String name = RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -110,8 +110,8 @@ class AuthControllerTest {
                 .when().post("/logout")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+                .extract().cookie("token");
 
-        assertThat(cookie).isEqualTo("token=");
+        assertThat(cookie).isEqualTo("");
     }
 }

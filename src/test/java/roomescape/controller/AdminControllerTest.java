@@ -46,8 +46,7 @@ class AdminControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
-
+                .extract().cookie("token");
     }
 
     @DisplayName("예약을 DB에 추가할 수 있다.")
@@ -58,7 +57,7 @@ class AdminControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .body(params)
                 .when().post("/admin/reservations")
                 .then().log().all()

@@ -43,14 +43,14 @@ class ThemeControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+                .extract().cookie("token");
     }
 
     @DisplayName("테마 목록을 읽을 수 있다.")
     @Test
     void readReservations() {
         int size = RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -70,7 +70,7 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
@@ -84,7 +84,7 @@ class ThemeControllerTest {
     @Test
     void deleteTime() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);

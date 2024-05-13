@@ -22,6 +22,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ProblemDetail> systemHandleException(Exception e) {
+        System.out.println(e);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         return ResponseEntity
                 .internalServerError()

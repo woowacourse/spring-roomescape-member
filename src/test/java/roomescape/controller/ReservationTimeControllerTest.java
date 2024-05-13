@@ -51,14 +51,14 @@ class ReservationTimeControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().header("Set-Cookie").split(";")[0];
+                .extract().cookie("token");
     }
 
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
     void readTimes() {
         int size = RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -77,7 +77,7 @@ class ReservationTimeControllerTest {
                 new AvailableTimeResponse(new TimeResponse(2L, LocalTime.of(11, 0)), false)
         );
         List<AvailableTimeResponse> response = RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().get("/times/available?date=2023-08-05&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -93,7 +93,7 @@ class ReservationTimeControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -108,7 +108,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteTime() {
         RestAssured.given().log().all()
-                .header("cookie", cookie)
+                .cookie("token", cookie)
                 .when().delete("/times/2")
                 .then().log().all()
                 .statusCode(204);
