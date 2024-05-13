@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS member
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     name     VARCHAR(10)  NOT NULL,
+    role     VARCHAR(5)   NOT NULL,
     PRIMARY KEY (id)
 );
 
