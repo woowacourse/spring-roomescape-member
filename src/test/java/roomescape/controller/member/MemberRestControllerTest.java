@@ -102,7 +102,7 @@ class MemberRestControllerTest {
                 .body(loginRequest)
                 .when().post("/members/login")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(401);
     }
 
     @DisplayName("유효한 토큰인지 검증되면 200 상태코드와 로그인된 사용자의 정보를 응답한다.")

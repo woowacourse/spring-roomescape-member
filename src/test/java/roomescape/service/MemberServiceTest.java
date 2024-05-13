@@ -20,7 +20,8 @@ import roomescape.repository.DatabaseCleanupListener;
 import roomescape.repository.JdbcMemberRepository;
 import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.member.MemberLoginRequest;
-import roomescape.service.exception.MemberNotFoundException;
+import roomescape.service.exception.UnauthorizedEmailException;
+import roomescape.service.exception.UnauthorizedPasswordException;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -77,8 +78,8 @@ class MemberServiceTest {
         MemberLoginRequest requestDto = new MemberLoginRequest("t4@t4.com", "1212");
 
         assertThatThrownBy(() -> memberService.login(requestDto))
-                .isInstanceOf(MemberNotFoundException.class)
-                .hasMessage("회원 정보가 존재하지 않습니다.");
+                .isInstanceOf(UnauthorizedEmailException.class)
+                .hasMessage("이메일이 존재하지 않습니다.");
     }
 
     @DisplayName("로그인 시 비밀번호가 일치하지 않으면 에러를 발생시킨다.")
@@ -89,8 +90,8 @@ class MemberServiceTest {
         MemberLoginRequest requestDto = new MemberLoginRequest("t3@t3.com", "1212");
 
         assertThatThrownBy(() -> memberService.login(requestDto))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이메일 또는 비밀번호가 일치하지 않습니다.");
+                .isInstanceOf(UnauthorizedPasswordException.class)
+                .hasMessage("비밀번호가 올바르지 않습니다.");
     }
 
     @DisplayName("로그인이 정상적으로 완료되고 토큰을 발급한다.")

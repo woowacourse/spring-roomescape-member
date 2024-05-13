@@ -9,7 +9,8 @@ import roomescape.repository.JdbcMemberRepository;
 import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.member.MemberLoginRequest;
 import roomescape.service.dto.member.MemberResponse;
-import roomescape.service.exception.MemberNotFoundException;
+import roomescape.service.exception.UnauthorizedEmailException;
+import roomescape.service.exception.UnauthorizedPasswordException;
 
 @Service
 public class MemberService {
@@ -31,11 +32,11 @@ public class MemberService {
 
     public String login(MemberLoginRequest request) {
         Member member = memberRepository.findMemberByEmail(request.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException("회원 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new UnauthorizedEmailException("이메일이 존재하지 않습니다."));
 
         MemberPassword requestPassword = new MemberPassword(request.getPassword());
         if (member.isMismatchedPassword(requestPassword)) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new UnauthorizedPasswordException("비밀번호가 올바르지 않습니다.");
         }
         return jwtManager.generateToken(member);
     }
