@@ -14,19 +14,17 @@ import roomescape.auth.core.token.TokenProvider;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final AuthorizationManager authorizationManager;
-    private final AuthenticationPrincipalArgumentResolver handlerMethodArgumentResolver;
     private final TokenProvider tokenProvider;
 
     public WebMvcConfiguration(final AuthorizationManager authorizationManager, final TokenProvider tokenProvider) {
         this.authorizationManager = authorizationManager;
         this.tokenProvider = tokenProvider;
-        this.handlerMethodArgumentResolver = new AuthenticationPrincipalArgumentResolver(tokenProvider, authorizationManager);
     }
 
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
         WebMvcConfigurer.super.addArgumentResolvers(resolvers);
-        resolvers.add(handlerMethodArgumentResolver);
+        resolvers.add(new AuthenticationPrincipalArgumentResolver(tokenProvider, authorizationManager));
     }
 
     @Override
