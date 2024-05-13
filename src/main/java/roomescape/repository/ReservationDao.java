@@ -11,6 +11,8 @@ public interface ReservationDao {
 
     Reservation addReservation(Reservation reservation);
 
+    List<Reservation> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo);
+
     void deleteReservation(long id);
 
     long countReservationById(long id);

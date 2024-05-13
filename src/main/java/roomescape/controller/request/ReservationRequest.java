@@ -2,50 +2,17 @@ package roomescape.controller.request;
 
 import java.time.LocalDate;
 
-import roomescape.exception.BadRequestException;
+import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.Positive;
 
-public class ReservationRequest {
+import org.springframework.format.annotation.DateTimeFormat;
 
-    private final String name;
-    private final LocalDate date;
-    private final long timeId;
-    private final long themeId;
-
-    public ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
-        validateName(name, "name");
-        validateId(timeId, "timeId");
-        validateId(themeId, "themeId");
-        this.name = name;
-        this.date = date;
-        this.timeId = timeId;
-        this.themeId = themeId;
-    }
-
-    private void validateName(String name, String fieldName) {
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException(name, fieldName);
-        }
-    }
-
-    private void validateId(Long id, String fieldName) {
-        if (id < 0) {
-            throw new BadRequestException(id.toString(), fieldName);
-        }
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public long getTimeId() {
-        return timeId;
-    }
-
-    public long getThemeId() {
-        return themeId;
-    }
+public record ReservationRequest(
+        @Nonnull
+        @DateTimeFormat
+        LocalDate date,
+        @Positive(message = "[ERROR] timeId의 값이 1보다 작을 수 없습니다.")
+        long timeId,
+        @Positive(message = "[ERROR] themeId의 값이 1보다 작을 수 없습니다.")
+        long themeId) {
 }

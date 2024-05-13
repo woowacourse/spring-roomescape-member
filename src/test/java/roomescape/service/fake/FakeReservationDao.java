@@ -23,10 +23,21 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public Reservation addReservation(Reservation reservation) {
-        Reservation newReservation = new Reservation(index.getAndIncrement(), reservation.getName(),
-                reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        Reservation newReservation = new Reservation(index.getAndIncrement(),
+                reservation.getDate(), reservation.getTime(), reservation.getTheme(), reservation.getMember());
         reservations.add(newReservation);
         return newReservation;
+    }
+
+    @Override
+    public List<Reservation> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        System.out.println("reservations.size() = " + reservations.size());
+        return reservations.stream()
+                .filter(reservation -> reservation.getTheme().getId() == themeId
+                        && reservation.getMember().getId() == memberId
+                        && dateTo.isAfter(reservation.getDate())
+                        && dateFrom.isBefore(reservation.getDate()))
+                .toList();
     }
 
     @Override
@@ -57,7 +68,7 @@ public class FakeReservationDao implements ReservationDao {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().isEqual(date)
                         && reservation.getTime().getId() == timeId
-                        && reservation.getTheme().getThemeId() == themeId)
+                        && reservation.getTheme().getId() == themeId)
                 .count();
     }
 
@@ -65,7 +76,7 @@ public class FakeReservationDao implements ReservationDao {
     public List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId) {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date)
-                        && reservation.getTheme().getThemeId() == themeId)
+                        && reservation.getTheme().getId() == themeId)
                 .map(reservation -> new ReservationTime(reservation.getTime().getId(),
                         reservation.getTime().getStartAt()))
                 .toList();
@@ -74,5 +85,10 @@ public class FakeReservationDao implements ReservationDao {
     public void clear() {
         index.set(1L);
         reservations.clear();
+    }
+
+    public int size() {
+        System.out.println("reservations = " + reservations);
+        return reservations.size();
     }
 }

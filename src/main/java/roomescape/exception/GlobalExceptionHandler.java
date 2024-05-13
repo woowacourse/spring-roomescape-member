@@ -22,6 +22,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException exception) {
+        return ResponseEntity.status(401).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<String> handleAuthorizationException(AuthorizationException exception) {
+        return ResponseEntity.status(403).body(exception.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleRunTimeException(Exception exception) {
         return ResponseEntity.internalServerError().body("예상치 못한 오류가 발생했습니다.");

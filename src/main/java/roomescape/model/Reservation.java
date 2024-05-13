@@ -3,44 +3,31 @@ package roomescape.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import roomescape.exception.BadRequestException;
-
 public class Reservation {
 
     private Long id;
-    private String name;
     private LocalDate date;
     private ReservationTime time;
     private Theme theme;
+    private User member;
 
     private Reservation() {
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateNullOrBlank(name, "name");
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, User member) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
-    }
-
-    private void validateNullOrBlank(String value, String fieldName) {
-        if (value == null || value.isBlank()) {
-            throw new BadRequestException(value, fieldName);
-        }
+    public Reservation(LocalDate date, ReservationTime time, Theme theme, User user) {
+        this(null, date, time, theme, user);
     }
 
     public long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -55,6 +42,10 @@ public class Reservation {
         return theme;
     }
 
+    public User getMember() {
+        return member;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -64,26 +55,24 @@ public class Reservation {
             return false;
         }
         Reservation that = (Reservation) object;
-        return Objects.equals(getId(), that.getId())
-                && Objects.equals(getName(), that.getName())
-                && Objects.equals(getDate(), that.getDate())
-                && Objects.equals(getTime(), that.getTime())
-                && Objects.equals(getTheme(), that.getTheme());
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getDate(), that.getDate())
+                && Objects.equals(getTime(), that.getTime()) && Objects.equals(getTheme(),
+                that.getTheme()) && Objects.equals(getMember(), that.getMember());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDate(), getTime(), getTheme());
+        return Objects.hash(getId(), getDate(), getTime(), getTheme(), getMember());
     }
 
     @Override
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", date=" + date +
                 ", time=" + time +
                 ", theme=" + theme +
+                ", member=" + member +
                 '}';
     }
 }

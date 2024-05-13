@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.util.List;
 
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
@@ -10,14 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.controller.request.AdminReservationRequest;
 import roomescape.controller.request.ReservationRequest;
-import roomescape.model.Reservation;
+import roomescape.controller.request.UserLoginRequest;
+import roomescape.controller.response.ReservationResponse;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
     @Autowired
@@ -26,25 +29,106 @@ class ReservationControllerTest {
     @DisplayName("예약을 조회한다.")
     @Test
     void should_get_reservations() {
-        List<Reservation> reservations = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".", ReservationResponse.class);
     }
 
-    @DisplayName("예약을 추가할 수 있다.")
+    @DisplayName("예약을 검색한다.")
     @Test
-    void should_insert_reservation() {
+    void should_search_reservations() {
+        UserLoginRequest loginRequest = new UserLoginRequest("2222", "pobi@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
+        RestAssured.given().log().all()
+                .cookie(cookie)
+                .when().get("/admin/reservations?themeId=1&memberId=1&dateFrom=2024-05-05&dateTo=2024-05-10")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", ReservationResponse.class);
+    }
+
+    @DisplayName("사용자가 예약을 추가할 수 있다.")
+    @Test
+    void should_insert_reservation_when_user_request() {
+        UserLoginRequest loginRequest = new UserLoginRequest("1234", "sun@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
         ReservationRequest request = new ReservationRequest(
-                "브라운",
-                LocalDate.of(2030, 8, 5),
-                6L,
-                10L);
+                LocalDate.of(2030, 8, 5), 6L, 10L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
+                .cookie(cookie)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/reservations/7");
+    }
+
+    @DisplayName("관리자가 예약을 추가할 수 있다.")
+    @Test
+    void should_insert_reservation_when_admin_request() {
+        UserLoginRequest loginRequest = new UserLoginRequest("2222", "pobi@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
+        AdminReservationRequest request = new AdminReservationRequest(
+                LocalDate.of(2030, 8, 5), 10L, 6L, 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie(cookie)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/reservations/7");
+    }
+
+    @DisplayName("예약을 추가할 수 있다.")
+    @Test
+    void should_add_reservation_when_admin_request() {
+        UserLoginRequest loginRequest = new UserLoginRequest("1234", "sun@email.com");
+
+        String cookie = RestAssured
+                .given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().statusCode(200)
+                .extract().header("Set-Cookie");
+
+        ReservationRequest request = new ReservationRequest(
+                LocalDate.of(2030, 8, 5), 6L, 10L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .cookie(cookie)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)

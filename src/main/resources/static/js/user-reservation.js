@@ -37,7 +37,7 @@ function renderTheme(themes) {
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
     const name = theme.name;
-    const themeId = theme.themeId;
+    const themeId = theme.id;
     /*
     TODO: 완료 [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
@@ -153,20 +153,19 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
+  // const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
 
     /*
     TODO: [3단계] 사용자 예약 - 예약 요청 API 호출
-          [5단계] 예약 생성 기능 변경 - 사용자
+          완료  [5단계] 예약 생성 기능 변경 - 사용자
           request 명세에 맞게 설정
     */
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
-      timeId: selectedTimeId,
-      name: name
+      timeId: selectedTimeId
     };
 
     fetch('/reservations', {

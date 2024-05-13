@@ -1,20 +1,22 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
+import roomescape.model.User;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -26,7 +28,6 @@ public class JdbcReservationDao implements ReservationDao {
     private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -37,6 +38,11 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getString("theme_name"),
                             resultSet.getString("description"),
                             resultSet.getString("thumbnail")
+                    ),
+                    new User(
+                            resultSet.getLong("user_id"),
+                            resultSet.getString("user_name"),
+                            Role.valueOf(resultSet.getString("role"))
                     )
             );
 
@@ -58,27 +64,59 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT 
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_start_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description,
-                    th.thumbnail
+                    th.thumbnail,
+                    u.id AS user_id,
+                    u.name AS user_name,
+                    u.role
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN users AS u ON r.user_id = u.id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
+    public List<Reservation> searchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = """
+                SELECT 
+                    r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail,
+                    u.id AS user_id,
+                    u.name AS user_name,
+                    u.role
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN users AS u ON r.user_id = u.id
+                WHERE th.id = ? AND u.id = ? 
+                AND r.date BETWEEN ? AND ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, themeId, memberId, dateFrom, dateTo);
+    }
+
+    @Override
     public Reservation addReservation(Reservation reservation) {
-        SqlParameterSource parameters = new BeanPropertySqlParameterSource(reservation);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("date", String.valueOf(reservation.getDate()));
+        parameters.put("time_id", String.valueOf(reservation.getTime().getId()));
+        parameters.put("theme_id", String.valueOf(reservation.getTheme().getId()));
+        parameters.put("user_id", String.valueOf(reservation.getMember().getId()));
         Number newId = insertActor.executeAndReturnKey(parameters);
-        return new Reservation(newId.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return new Reservation(newId.longValue(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme(), reservation.getMember());
     }
 
     @Override
