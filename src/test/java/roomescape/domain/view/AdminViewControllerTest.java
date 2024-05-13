@@ -7,14 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.ControllerTest;
-import roomescape.domain.login.dto.LoginRequest;
 
 public class AdminViewControllerTest extends ControllerTest {
-
-    private static final String ADMIN_EMAIL = "admin@gmail.com";
-    private static final String ADMIN_PASSWORD = "123456";
-    private static final String MEMBER_EMAIL = "dodo@gmail.com";
-    private static final String MEMBER_PASSWORD = "123456";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -25,18 +19,16 @@ public class AdminViewControllerTest extends ControllerTest {
                 "insert into member (name, email, password, role) values ('어드민', 'admin@gmail.com', '123456', 'ADMIN')");
         jdbcTemplate.update(
                 "insert into member (name, email, password, role) values ('멤버', 'dodo@gmail.com', '123123', 'MEMBER')");
-        LoginRequest loginRequest = new LoginRequest(ADMIN_EMAIL, ADMIN_PASSWORD);
-        LoginRequest memberLoginRequest = new LoginRequest(MEMBER_EMAIL, MEMBER_PASSWORD);
     }
 
-    @DisplayName("/admin 으로 시작하는 요청 시 admin권한이 없으면 접근할 수 없다(201 Unauthorized)")
+    @DisplayName("/admin 으로 시작하는 요청 시 admin권한이 없으면 접근할 수 없다(403 Forbidden)")
     @Test
-    void should_response_401_when_request_admin_prefix_with_not_having_admin_role() {
+    void should_response_403_when_request_admin_prefix_with_not_having_admin_role() {
         RestAssured.given().log().all()
                 .header("Cookie", getMemberCookie())
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     @DisplayName("/admin get 요청 시 응답할 수 있다")

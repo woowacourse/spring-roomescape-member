@@ -24,6 +24,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ForBiddenException.class)
+    public ResponseEntity<String> handleForbiddenException(ForBiddenException e) {
+        log.info(e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(InternalServerError.class)
     public ResponseEntity<String> handleInternalServerError(Exception e) {
         log.error(e.getMessage());

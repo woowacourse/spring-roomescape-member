@@ -10,7 +10,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.member.service.MemberService;
 import roomescape.global.auth.JwtTokenProvider;
-import roomescape.global.exception.ClientIllegalArgumentException;
+import roomescape.global.exception.AuthorizationException;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -35,7 +35,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookie = request.getCookies();
         if (cookie == null) {
-            throw new ClientIllegalArgumentException("쿠키가 존재하지 않습니다.");
+            throw new AuthorizationException("로그인 해야 합니다.");
         }
         String token = jwtTokenProvider.extractTokenFromCookie(request.getCookies());
         Long memberId = jwtTokenProvider.validateAndGetLongSubject(token);
