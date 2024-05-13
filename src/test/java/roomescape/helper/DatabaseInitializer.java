@@ -13,20 +13,16 @@ import roomescape.domain.Theme;
 @Component
 public class DatabaseInitializer {
     private final JdbcTemplate jdbcTemplate;
-    private Member member;
-    private Theme theme;
-    private ReservationTime time;
-    private Reservation reservation;
 
     public DatabaseInitializer(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public void execute() {
-        member = createMember();
-        theme = createTheme();
-        time = createInitTime();
-        reservation = createInitReservation(time, theme);
+        Member member = createMember();
+        Theme theme = createTheme();
+        ReservationTime time = createInitTime();
+        Reservation reservation = createInitReservation(time, theme);
     }
 
     private Member createMember() {

@@ -21,7 +21,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
         @Test
         void 시간_목록을_조회할_수_있다() {
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .when().get("/times")
                     .then().log().all()
                     .statusCode(200)
@@ -70,7 +70,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
             params.put("startAt", "11:00");
 
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/times")
@@ -86,7 +86,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
             params.put("startAt", null);
 
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/times")
@@ -100,7 +100,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
             params.put("startAt", "25:00");
 
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/times")
@@ -114,7 +114,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
             params.put("startAt", "10:00");
 
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/times")
@@ -131,7 +131,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
             jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", 1);
 
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(204);
@@ -144,7 +144,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
         @Test
         void 존재하지_않는_시간은_삭제할_수_없다() {
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .when().delete("/times/13")
                     .then().log().all()
                     .statusCode(404);
@@ -153,7 +153,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
         @Test
         void 예약이_존재하는_시간은_삭제할_수_없다() {
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .when().delete("/times/1")
                     .then().log().all()
                     .statusCode(400);

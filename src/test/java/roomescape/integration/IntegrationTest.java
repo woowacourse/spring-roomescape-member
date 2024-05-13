@@ -44,7 +44,6 @@ public abstract class IntegrationTest {
         RestAssured.port = port;
         databaseCleaner.execute();
         databaseInitializer.execute();
-        cookieProvider.execute();
         given(clock.instant()).willReturn(Instant.parse("1999-09-19T19:19:00Z"));
         given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
     }

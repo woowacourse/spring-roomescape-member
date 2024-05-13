@@ -14,7 +14,7 @@ class MemberControllerTest extends IntegrationTest {
         @Test
         void 사용자_목록을_조회할_수_있다() {
             RestAssured.given().log().all()
-                    .cookies(cookieProvider.getCookies())
+                    .cookies(cookieProvider.createCookies())
                     .when().get("/members")
                     .then().log().all()
                     .statusCode(200)
