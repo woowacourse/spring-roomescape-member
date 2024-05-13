@@ -22,12 +22,8 @@ public class UserThemeController {
     public ResponseEntity<List<FindThemeResponse>> findAll() {
         List<FindThemeResponse> response = themeService.findAll()
             .stream()
-            .map(theme -> new FindThemeResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail())
-            ).toList();
+            .map(FindThemeResponse::from)
+            .toList();
 
         return ResponseEntity.ok().body(response);
     }
@@ -36,12 +32,8 @@ public class UserThemeController {
     public ResponseEntity<List<FindThemeResponse>> findPopular() {
         List<FindThemeResponse> response = themeService.findPopular()
             .stream()
-            .map(theme -> new FindThemeResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail())
-            ).toList();
+            .map(FindThemeResponse::from)
+            .toList();
 
         return ResponseEntity.ok().body(response);
     }

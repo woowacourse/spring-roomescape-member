@@ -48,10 +48,8 @@ public class AdminReservationTimeController {
     public ResponseEntity<List<FindTimeResponse>> findAll() {
         List<FindTimeResponse> response = reservationTimeService.findAll()
             .stream()
-            .map(time -> new FindTimeResponse(
-                time.getId(),
-                time.getStartAt()
-            )).toList();
+            .map(FindTimeResponse::from)
+            .toList();
 
         return ResponseEntity.ok(response);
     }

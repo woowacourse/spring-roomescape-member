@@ -31,43 +31,29 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<CreateReservationResponse> save(@RequestBody CreateReservationRequest request) {
-        Reservation newReservation = reservationService.save(new SaveReservationDto(request.memberId(),
+        Reservation reservation = reservationService.save(new SaveReservationDto(
+            request.memberId(),
             request.date(),
             request.timeId(),
             request.themeId())
         );
 
-        Long id = newReservation.getId();
-
-        CreateReservationResponse response = new CreateReservationResponse(
-            id,
-            newReservation.getLoginMember().getName(),
-            newReservation.getDate(),
-            newReservation.getTime().getStartAt(),
-            newReservation.getTheme().getName()
-        );
-
-        return ResponseEntity.created(URI.create("/reservations/" + id)).body(response);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+            .body(CreateReservationResponse.from(reservation));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
-
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
     public ResponseEntity<List<FindReservationResponse>> findAll() {
         List<Reservation> reservations = reservationService.findAll();
-        List<FindReservationResponse> createReservationResponse = reservations.stream().
-            map(reservation -> new FindReservationResponse(
-                reservation.getId(),
-                reservation.getLoginMember().getName(),
-                reservation.getDate(),
-                reservation.getTime().getStartAt(),
-                reservation.getTheme().getName()
-            )).toList();
+        List<FindReservationResponse> createReservationResponse = reservations.stream()
+            .map(FindReservationResponse::from)
+            .toList();
 
         return ResponseEntity.ok(createReservationResponse);
     }
@@ -80,14 +66,9 @@ public class AdminReservationController {
         @RequestParam LocalDate dateTo) {
 
         List<Reservation> reservations = reservationService.findAllBy(themeId, memberId, dateFrom, dateTo);
-        List<FindReservationResponse> response = reservations.stream().
-            map(reservation -> new FindReservationResponse(
-                reservation.getId(),
-                reservation.getLoginMember().getName(),
-                reservation.getDate(),
-                reservation.getTime().getStartAt(),
-                reservation.getTheme().getName()
-            )).toList();
+        List<FindReservationResponse> response = reservations.stream()
+            .map(FindReservationResponse::from)
+            .toList();
 
         return ResponseEntity.ok(response);
     }

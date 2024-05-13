@@ -32,14 +32,7 @@ public class UserReservationController {
         Reservation reservation = reservationService.save(new SaveReservationDto(
             member.getId(), request.date(), request.timeId(), request.themeId()));
 
-        CreateReservationResponse response = new CreateReservationResponse(
-            reservation.getId(),
-            reservation.getLoginMember().getName(),
-            reservation.getDate(),
-            reservation.getTime().getStartAt(),
-            reservation.getTheme().getName());
-
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
-            .body(response);
+            .body(CreateReservationResponse.from(reservation));
     }
 }

@@ -26,17 +26,10 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<CreateThemeResponse> save(@RequestBody CreateThemeRequest request) {
-        Theme newTheme = themeService.save(
-            new SaveThemeDto(request.name(), request.description(), request.thumbnail()));
-        Long id = newTheme.getId();
+        Theme theme = themeService.save(new SaveThemeDto(request.name(), request.description(), request.thumbnail()));
 
-        return ResponseEntity.created(URI.create("/themes/" + id))
-            .body(new CreateThemeResponse(
-                id,
-                newTheme.getName(),
-                newTheme.getDescription(),
-                newTheme.getThumbnail()
-            ));
+        return ResponseEntity.created(URI.create("/themes/" + theme.getId()))
+            .body(CreateThemeResponse.from(theme));
     }
 
     @DeleteMapping("/{id}")
