@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.token.TokenParser;
-import roomescape.domain.token.TokenProvider;
 import roomescape.service.MemberService;
 import roomescape.service.dto.response.MemberResponse;
 import roomescape.web.api.dto.LoginRequest;
+import roomescape.web.api.token.TokenParser;
+import roomescape.web.api.token.TokenProvider;
 import roomescape.web.exception.AuthenticationException;
 
 @RestController

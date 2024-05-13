@@ -19,7 +19,7 @@ import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
-import roomescape.domain.token.TokenProvider;
+import roomescape.web.api.token.TokenProvider;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

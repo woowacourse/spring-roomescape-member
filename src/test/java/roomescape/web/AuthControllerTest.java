@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.member.Member;
-import roomescape.domain.token.TokenProvider;
+import roomescape.web.api.token.TokenProvider;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;

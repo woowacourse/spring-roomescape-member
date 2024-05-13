@@ -1,4 +1,4 @@
-package roomescape.domain.token;
+package roomescape.web.api.token;
 
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;

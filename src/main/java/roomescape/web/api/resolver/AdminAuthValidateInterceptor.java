@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Role;
-import roomescape.domain.token.TokenParser;
-import roomescape.domain.token.TokenProvider;
+import roomescape.web.api.token.TokenParser;
+import roomescape.web.api.token.TokenProvider;
 import roomescape.web.exception.AuthenticationException;
 import roomescape.web.exception.AuthorizationException;
 

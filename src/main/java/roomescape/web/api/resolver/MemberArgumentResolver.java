@@ -8,8 +8,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.token.TokenParser;
-import roomescape.domain.token.TokenProvider;
+import roomescape.web.api.token.TokenParser;
+import roomescape.web.api.token.TokenProvider;
 import roomescape.web.exception.AuthorizationException;
 
 @Component
@@ -34,7 +34,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         String token = tokenProvider.extractToken(cookies)
                 .orElseThrow(AuthorizationException::new);
