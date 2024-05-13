@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -38,19 +40,31 @@ public class JdbcUserDao implements UserDao {
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) {
         String sql = "SELECT id, name, role, email, password FROM users WHERE email = ? AND password = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, email, password));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, email, password));
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<String> findUserNameByUserId(Long userId) {
         String sql = "SELECT name FROM users WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, userId));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, String.class, userId));
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<User> findUserById(Long userId) {
         String sql = "SELECT id, name, role, email, password FROM users WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, userId));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, userRowMapper, userId));
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -58,4 +72,5 @@ public class JdbcUserDao implements UserDao {
         String sql = "SELECT id, name, role, email, password FROM users";
         return jdbcTemplate.query(sql, userRowMapper);
     }
+
 }

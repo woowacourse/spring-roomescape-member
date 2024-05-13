@@ -2,9 +2,11 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -57,7 +59,11 @@ public class JdbcThemeDao implements ThemeDao {
     @Override
     public Theme findThemeById(long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        try {
+            return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -71,6 +77,10 @@ public class JdbcThemeDao implements ThemeDao {
                 ORDER BY COUNT(r.theme_id) DESC
                 limit ? 
                 """;
-        return jdbcTemplate.query(sql, themeRowMapper, before, after, limit);
+        try {
+            return jdbcTemplate.query(sql, themeRowMapper, before, after, limit);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
     }
 }
