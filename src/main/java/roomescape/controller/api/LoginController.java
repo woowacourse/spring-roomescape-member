@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import java.time.Duration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class LoginController {
         ResponseCookie cookie = ResponseCookie.from("token", token)
             .httpOnly(true)
             .path("/")
+            .maxAge(Duration.ofMinutes(30))
             .build();
 
         return ResponseEntity.ok()
