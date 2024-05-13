@@ -71,8 +71,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleServerErrorException(Exception e) {
-        logger.error(e.getMessage());
-        e.printStackTrace();
+        logger.error(e.getMessage(), e);
         return new ErrorResponse("서버 에러입니다. 관리자에게 문의하세요.");
     }
 }
