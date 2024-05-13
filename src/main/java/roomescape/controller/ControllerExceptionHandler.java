@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import roomescape.domain.exception.AuthFailException;
 import roomescape.domain.exception.IllegalNullArgumentException;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
-    @ExceptionHandler({IllegalArgumentException.class, IllegalNullArgumentException.class})
+    @ExceptionHandler({IllegalNullArgumentException.class, IllegalRequestArgumentException.class})
     public ResponseEntity<ProblemDetail> bedRequestHandleException(RuntimeException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.domain.exception.AuthFailException;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 import roomescape.dto.MemberModel;
 import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.request.MemberFindRequest;
@@ -43,7 +44,8 @@ public class MemberService {
 
     public MemberResponse createMember(MemberCreateRequest request) {
         if (memberDao.existsMemberByEmail(request.email())) {
-            throw new IllegalArgumentException(("해당 이메일을 사용하는 사용자가 존재합니다."));
+            throw new
+                    IllegalRequestArgumentException(("해당 이메일을 사용하는 사용자가 존재합니다."));
         }
         Member member = request.createMember();
         member = memberDao.createMember(member, request.password());

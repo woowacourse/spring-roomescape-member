@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.ThemeResponse;
 
@@ -80,7 +81,7 @@ class ThemeServiceTest {
                 .thenReturn(true);
 
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("해당 테마를 사용하는 예약이 존재합니다.");
     }
 }

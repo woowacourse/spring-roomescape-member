@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 import roomescape.dto.request.TimeCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.TimeResponse;
@@ -86,7 +87,7 @@ class TimeServiceTest {
                 .thenReturn(true);
 
         assertThatThrownBy(() -> timeService.deleteTime(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("해당 시간을 사용하는 예약이 존재합니다.");
     }
 }

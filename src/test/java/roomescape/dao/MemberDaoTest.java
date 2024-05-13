@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 import roomescape.domain.Member;
 import roomescape.domain.Role;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -35,7 +36,7 @@ class MemberDaoTest {
     @Test
     void readMemberById() {
         Member member = memberDao.readMemberById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id에 멤버는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalRequestArgumentException("해당 id에 멤버는 존재하지 않습니다."));
 
         Member expected = new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER);
         assertThat(member).isEqualTo(expected);
@@ -45,7 +46,7 @@ class MemberDaoTest {
     @Test
     void readMemberByEmailAndPassword() {
         Member member = memberDao.readMemberByEmailAndPassword("aaa@naver.com", "1111")
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일과 비밀번호인 멤버는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalRequestArgumentException("해당 이메일과 비밀번호인 멤버는 존재하지 않습니다."));
 
         Member expected = new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER);
         assertThat(member).isEqualTo(expected);

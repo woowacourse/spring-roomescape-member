@@ -13,6 +13,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeProvider.TimeProvider;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.dto.request.ReservationDetailRequest;
 import roomescape.dto.response.ReservationResponse;
@@ -56,11 +57,11 @@ public class ReservationService {
 
     private Reservation createReservationFromDto(ReservationAdminCreateRequest dto) {
         ReservationTime time = timeDao.readTimeById(dto.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalRequestArgumentException("해당 예약 시간이 존재하지 않습니다."));
         Theme theme = themeDao.readThemeById(dto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalRequestArgumentException("해당 테마가 존재하지 않습니다."));
         Member member = memberDao.readMemberById(dto.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자는 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalRequestArgumentException("해당 사용자는 존재하지 않습니다."));
 
         Reservation reservation = dto.createReservation(member, time, theme);
         validateAvailableReservation(reservation);
@@ -69,12 +70,12 @@ public class ReservationService {
 
     private void validateAvailableReservation(Reservation reservation) {
         if (reservation.isBefore(timeProvider.getCurrentDateTime())) {
-            throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
+            throw new IllegalRequestArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
 
         if (reservationDao.existsReservationByDateAndTimeIdAndThemeId(
                 reservation.date(), reservation.getTimeId(), reservation.getThemeId())) {
-            throw new IllegalArgumentException("해당 시간대 해당 테마 예약은 이미 존재합니다.");
+            throw new IllegalRequestArgumentException("해당 시간대 해당 테마 예약은 이미 존재합니다.");
         }
     }
 

@@ -28,6 +28,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 import roomescape.dto.MemberModel;
 import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.dto.response.ReservationResponse;
@@ -115,7 +116,7 @@ class ReservationServiceTest {
                 new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("예약은 현재 시간 이후여야 합니다.");
     }
 
@@ -139,7 +140,7 @@ class ReservationServiceTest {
                 new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("해당 시간대 해당 테마 예약은 이미 존재합니다.");
     }
 
@@ -163,7 +164,7 @@ class ReservationServiceTest {
                 new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("해당 사용자는 존재하지 않습니다.");
     }
 
@@ -187,7 +188,7 @@ class ReservationServiceTest {
                 new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("해당 예약 시간이 존재하지 않습니다.");
     }
 
@@ -211,7 +212,7 @@ class ReservationServiceTest {
                 new ReservationAdminCreateRequest(date, 1L, 1L, 1L);
 
         assertThatThrownBy(() -> service.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("해당 테마가 존재하지 않습니다.");
     }
 

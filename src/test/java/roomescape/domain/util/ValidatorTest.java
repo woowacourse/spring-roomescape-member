@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import roomescape.domain.exception.IllegalNullArgumentException;
+import roomescape.domain.exception.IllegalRequestArgumentException;
 
 class ValidatorTest {
     @DisplayName("인자 중 null이 있을 시 예외를 던진다.")
@@ -27,7 +28,7 @@ class ValidatorTest {
     @Test
     void validateEmpty() {
         assertThatThrownBy(() -> Validator.notEmpty("", "안녕"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("비어있는 값이 존재합니다.");
     }
 
@@ -42,7 +43,7 @@ class ValidatorTest {
     @Test
     void validateOverSize() {
         assertThatThrownBy(() -> Validator.overSize(3, "안녕", "안녕하세요"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalRequestArgumentException.class)
                 .hasMessage("문자열(%s) 최대 길이인 %d를 초과했습니다.".formatted("안녕하세요", 3));
     }
 
