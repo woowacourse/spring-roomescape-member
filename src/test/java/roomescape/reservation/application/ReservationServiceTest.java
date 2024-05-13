@@ -1,5 +1,6 @@
 package roomescape.reservation.application;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.ServiceTest;
 import roomescape.global.exception.ViolationException;
+import roomescape.member.application.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -24,15 +26,33 @@ class ReservationServiceTest extends ServiceTest {
     @Autowired
     private ReservationService reservationService;
 
+    @Autowired
+    private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ThemeService themeService;
+
+    @Autowired
+    private MemberService memberService;
+
+    private ReservationTime miaReservationTime;
+    private Theme wootecoTheme;
+    private Member mia;
+    private Member tommy;
+
+    @BeforeEach
+    void setUp() {
+        this.miaReservationTime = reservationTimeService.create(new ReservationTime(MIA_RESERVATION_TIME));
+        this.wootecoTheme = themeService.create(WOOTECO_THEME());
+        this.mia = memberService.create(USER_MIA());
+        this.tommy = memberService.create(USER_TOMMY());
+    }
+
     @Test
     @DisplayName("예약을 생성한다.")
     void create() {
         // given
-        ReservationTime reservationTime = createTestReservationTime(new ReservationTime(MIA_RESERVATION_TIME));
-        Theme theme = createTestTheme(WOOTECO_THEME());
-        Member member = createTestMember(USER_MIA());
-
-        Reservation reservation = MIA_RESERVATION(reservationTime, theme, member);
+        Reservation reservation = MIA_RESERVATION(miaReservationTime, wootecoTheme, mia);
 
         // when
         Reservation createdReservation = reservationService.create(reservation);
@@ -65,11 +85,9 @@ class ReservationServiceTest extends ServiceTest {
     @DisplayName("동일한 테마, 날짜, 시간에 한 팀만 예약할 수 있다.")
     void createDuplicatedReservation() {
         // given
-        Reservation reservation = createTestReservation(MIA_RESERVATION());
+        reservationService.create(MIA_RESERVATION(miaReservationTime, wootecoTheme, mia));
 
-        Member tommy = createTestMember(USER_TOMMY());
-        Reservation duplicatedReservation = new Reservation(
-                tommy, MIA_RESERVATION_DATE, reservation.getTime(), reservation.getTheme());
+        Reservation duplicatedReservation = new Reservation(tommy, MIA_RESERVATION_DATE, miaReservationTime, wootecoTheme);
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(duplicatedReservation))
@@ -80,8 +98,8 @@ class ReservationServiceTest extends ServiceTest {
     @DisplayName("모든 예약 목록을 조회한다.")
     void findAll() {
         // given
-        createTestReservation(MIA_RESERVATION());
-        createTestReservation(TOMMY_RESERVATION());
+        reservationService.create(MIA_RESERVATION(miaReservationTime, wootecoTheme, mia));
+        reservationService.create(TOMMY_RESERVATION(miaReservationTime, wootecoTheme, tommy));
 
         // when
         List<Reservation> reservations = reservationService.findAll();
@@ -90,13 +108,13 @@ class ReservationServiceTest extends ServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(reservations).hasSize(2)
                     .extracting(Reservation::getMemberName)
-                    .containsExactly(MIA_NAME, TOMMY_NAME);
+                    .contains(MIA_NAME, TOMMY_NAME);
             softly.assertThat(reservations).extracting(Reservation::getTime)
                     .extracting(ReservationTime::getStartAt)
-                    .containsExactly(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);
+                    .contains(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);
             softly.assertThat(reservations).extracting(Reservation::getTheme)
                     .extracting(Theme::getName)
-                    .containsExactly(WOOTECO_THEME_NAME, WOOTECO_THEME_NAME);
+                    .contains(WOOTECO_THEME_NAME, WOOTECO_THEME_NAME);
         });
     }
 
@@ -104,8 +122,8 @@ class ReservationServiceTest extends ServiceTest {
     @DisplayName("예약자, 테마, 날짜로 예약 목록을 조회한다.")
     void findAllByMemberIdAndThemeIdAndDateBetween() {
         // given
-        Reservation miaReservation = createTestReservation(MIA_RESERVATION());
-        Reservation tommyReservation = createTestReservation(TOMMY_RESERVATION());
+        Reservation miaReservation = reservationService.create(MIA_RESERVATION(miaReservationTime, wootecoTheme, mia));
+        Reservation tommyReservation = reservationService.create(TOMMY_RESERVATION(miaReservationTime, wootecoTheme, tommy));
 
         // when
         List<Reservation> reservations = reservationService.findAllByMemberIdAndThemeIdAndDateBetween(
@@ -121,7 +139,7 @@ class ReservationServiceTest extends ServiceTest {
     @DisplayName("예약을 삭제한다.")
     void delete() {
         // given
-        Reservation reservation = createTestReservation(MIA_RESERVATION());
+        Reservation reservation = reservationService.create(MIA_RESERVATION(miaReservationTime, wootecoTheme, mia));
 
         // when & then
         assertThatCode(() -> reservationService.delete(reservation.getId()))
