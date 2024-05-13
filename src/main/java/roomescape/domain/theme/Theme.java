@@ -1,7 +1,6 @@
 package roomescape.domain.theme;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public class Theme {
     private final Long id;
