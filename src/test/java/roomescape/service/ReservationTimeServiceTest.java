@@ -18,15 +18,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.dao.MemberDao;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.ReservationAvailabilityTimeRequest;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.ReservationAvailabilityTimeResponse;
@@ -38,31 +38,31 @@ class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
+            reservationRepository.deleteById(reservation.getId());
         }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
+            reservationTimeRepository.deleteById(reservationTime.getId());
         }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
-        List<Member> members = memberDao.findAll();
+        List<Member> members = memberRepository.findAll();
         for (Member member : members) {
-            memberDao.deleteById(member.getId());
+            memberRepository.deleteById(member.getId());
         }
     }
 
@@ -77,15 +77,15 @@ class ReservationTimeServiceTest {
     void findReservationAvailabilityTimesWhenReservationTimeExist() {
         // given
         // 시간 저장
-        ReservationTime savedReservationTime10AM = reservationTimeDao.save(RESERVATION_TIME_10AM);
-        ReservationTime savedReservationTime11AM = reservationTimeDao.save(RESERVATION_TIME_11AM);
-        Member member = memberDao.save(MEMBER_BROWN);
+        ReservationTime savedReservationTime10AM = reservationTimeRepository.save(RESERVATION_TIME_10AM);
+        ReservationTime savedReservationTime11AM = reservationTimeRepository.save(RESERVATION_TIME_11AM);
+        Member member = memberRepository.save(MEMBER_BROWN);
 
         // 테마 저장
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
+        RoomTheme savedRoomTheme = roomThemeRepository.save(ROOM_THEME1);
 
         // 예약 저장
-        reservationDao.save(new Reservation(member, DATE_AFTER_1DAY, savedReservationTime10AM, savedRoomTheme));
+        reservationRepository.save(new Reservation(member, DATE_AFTER_1DAY, savedReservationTime10AM, savedRoomTheme));
 
         ReservationAvailabilityTimeRequest timeRequest = new ReservationAvailabilityTimeRequest(
                 DATE_AFTER_1DAY, savedRoomTheme.getId());
@@ -112,16 +112,16 @@ class ReservationTimeServiceTest {
     void findReservationTimesWithBookStatus() {
         // given
         // 시간 저장
-        ReservationTime savedReservationTime10AM = reservationTimeDao.save(RESERVATION_TIME_10AM);
-        ReservationTime savedReservationTime11AM = reservationTimeDao.save(RESERVATION_TIME_11AM);
-        Member member = memberDao.save(MEMBER_BROWN);
+        ReservationTime savedReservationTime10AM = reservationTimeRepository.save(RESERVATION_TIME_10AM);
+        ReservationTime savedReservationTime11AM = reservationTimeRepository.save(RESERVATION_TIME_11AM);
+        Member member = memberRepository.save(MEMBER_BROWN);
 
         // 테마 저장
-        RoomTheme savedRoomTheme1 = roomThemeDao.save(ROOM_THEME1);
-        RoomTheme savedRoomTheme2 = roomThemeDao.save(ROOM_THEME2);
+        RoomTheme savedRoomTheme1 = roomThemeRepository.save(ROOM_THEME1);
+        RoomTheme savedRoomTheme2 = roomThemeRepository.save(ROOM_THEME2);
 
         // 예약 저장
-        reservationDao.save(new Reservation(member, DATE_AFTER_1DAY, savedReservationTime10AM, savedRoomTheme1));
+        reservationRepository.save(new Reservation(member, DATE_AFTER_1DAY, savedReservationTime10AM, savedRoomTheme1));
 
         ReservationAvailabilityTimeRequest timeRequest = new ReservationAvailabilityTimeRequest(
                 DATE_AFTER_1DAY, savedRoomTheme2.getId());

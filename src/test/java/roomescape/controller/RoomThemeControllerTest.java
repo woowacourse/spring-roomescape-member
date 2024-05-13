@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.RoomThemeCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -22,14 +22,14 @@ class RoomThemeControllerTest {
     private int port;
 
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
     }
 
@@ -56,7 +56,7 @@ class RoomThemeControllerTest {
     @Test
     void deleteTheme() {
         // given
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
+        RoomTheme savedRoomTheme = roomThemeRepository.save(ROOM_THEME1);
         // when & then
         RestAssured.given().log().all()
                 .when().delete("/themes/" + savedRoomTheme.getId())

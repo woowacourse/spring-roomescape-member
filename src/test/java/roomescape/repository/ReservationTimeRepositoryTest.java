@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -21,60 +21,60 @@ import roomescape.domain.RoomTheme;
 import roomescape.exception.NotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ReservationTimeDaoTest {
+class ReservationTimeRepositoryTest {
 
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
+            reservationRepository.deleteById(reservation.getId());
         }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
+            reservationTimeRepository.deleteById(reservationTime.getId());
         }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
-        List<Member> members = memberDao.findAll();
+        List<Member> members = memberRepository.findAll();
         for (Member member : members) {
-            memberDao.deleteById(member.getId());
+            memberRepository.deleteById(member.getId());
         }
     }
 
     @DisplayName("모든 예약 시간을 보여준다")
     @Test
     void findAll() {
-        assertThat(reservationTimeDao.findAll()).isEmpty();
+        assertThat(reservationTimeRepository.findAll()).isEmpty();
     }
 
     @DisplayName("예약 시간을 저장한다.")
     @Test
     void save() {
         // given & when
-        reservationTimeDao.save(RESERVATION_TIME_10AM);
+        reservationTimeRepository.save(RESERVATION_TIME_10AM);
         // then
-        assertThat(reservationTimeDao.findAll()).hasSize(1);
+        assertThat(reservationTimeRepository.findAll()).hasSize(1);
     }
 
     @DisplayName("해당 id의 예약 시간을 보여준다.")
     @Test
     void findById() {
         // given & when
-        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(RESERVATION_TIME_10AM);
         Long id = savedReservationTime.getId();
         // then
-        ReservationTime reservationTime = reservationTimeDao.findById(id)
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약시간을 찾을 수 없습니다."));
         assertThat(reservationTime.getStartAt()).isEqualTo(TIME);
     }
@@ -83,10 +83,10 @@ class ReservationTimeDaoTest {
     @Test
     void existsByStartAt() {
         // given
-        boolean existsFalse = reservationTimeDao.existByStartAt(TIME);
-        reservationTimeDao.save(RESERVATION_TIME_10AM);
+        boolean existsFalse = reservationTimeRepository.existByStartAt(TIME);
+        reservationTimeRepository.save(RESERVATION_TIME_10AM);
         // when
-        boolean existsTrue = reservationTimeDao.existByStartAt(TIME);
+        boolean existsTrue = reservationTimeRepository.existByStartAt(TIME);
         // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
@@ -98,34 +98,34 @@ class ReservationTimeDaoTest {
     @Test
     void deleteById() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        ReservationTime reservationTime = reservationTimeRepository.save(RESERVATION_TIME_10AM);
         // when
-        reservationTimeDao.deleteById(reservationTime.getId());
+        reservationTimeRepository.deleteById(reservationTime.getId());
         // then
-        assertThat(reservationTimeDao.findAll()).isEmpty();
+        assertThat(reservationTimeRepository.findAll()).isEmpty();
     }
 
     @DisplayName("해당 id의 예약 시간을 삭제하는 경우, 그 id를 참조하는 예약도 삭제한다.")
     @Test
     void deleteByIdDeletesReservationAlso() {
         // given
-        Member member = memberDao.save(MEMBER_BROWN);
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
-        reservationDao.save(new Reservation(member, DATE_AFTER_1DAY, reservationTime, roomTheme));
+        Member member = memberRepository.save(MEMBER_BROWN);
+        ReservationTime reservationTime = reservationTimeRepository.save(RESERVATION_TIME_10AM);
+        RoomTheme roomTheme = roomThemeRepository.save(ROOM_THEME1);
+        reservationRepository.save(new Reservation(member, DATE_AFTER_1DAY, reservationTime, roomTheme));
         // when
-        reservationTimeDao.deleteById(reservationTime.getId());
+        reservationTimeRepository.deleteById(reservationTime.getId());
         // then
-        assertThat(reservationDao.findAll()).isEmpty();
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @DisplayName("삭제 대상이 존재하면 true를 반환한다.")
     @Test
     void returnTrueWhenDeleted() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        ReservationTime reservationTime = reservationTimeRepository.save(RESERVATION_TIME_10AM);
         // when
-        boolean deleted = reservationTimeDao.deleteById(reservationTime.getId());
+        boolean deleted = reservationTimeRepository.deleteById(reservationTime.getId());
         // then
         assertThat(deleted).isTrue();
     }
@@ -134,7 +134,7 @@ class ReservationTimeDaoTest {
     @Test
     void returnFalseWhenNotDeleted() {
         // given & when
-        boolean deleted = reservationTimeDao.deleteById(1L);
+        boolean deleted = reservationTimeRepository.deleteById(1L);
         // then
         assertThat(deleted).isFalse();
     }

@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +14,7 @@ import roomescape.domain.Role;
 import roomescape.exception.BadRequestException;
 
 @Repository
-public class MemberDao {
+public class MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -26,7 +26,7 @@ public class MemberDao {
             rs.getString("member_password"),
             Role.findBy(rs.getString("member_role")));
 
-    public MemberDao(JdbcTemplate jdbcTemplate) {
+    public MemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")

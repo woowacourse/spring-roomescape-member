@@ -9,8 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.RoomThemeCreateRequest;
 import roomescape.service.dto.response.RoomThemeResponse;
 
@@ -20,13 +20,13 @@ class RoomThemeServiceTest {
     @Autowired
     private RoomThemeService roomThemeService;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
 
     @BeforeEach
     void setUp() {
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
     }
 

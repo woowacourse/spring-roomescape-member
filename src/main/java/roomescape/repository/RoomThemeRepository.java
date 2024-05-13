@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +12,11 @@ import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
 
 @Repository
-public class RoomThemeDao {
+public class RoomThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public RoomThemeDao(JdbcTemplate jdbcTemplate) {
+    public RoomThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")

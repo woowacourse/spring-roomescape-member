@@ -18,15 +18,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.dao.MemberDao;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
@@ -36,31 +36,31 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
+            reservationRepository.deleteById(reservation.getId());
         }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
+            reservationTimeRepository.deleteById(reservationTime.getId());
         }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
-        List<Member> members = memberDao.findAll();
+        List<Member> members = memberRepository.findAll();
         for (Member member : members) {
-            memberDao.deleteById(member.getId());
+            memberRepository.deleteById(member.getId());
         }
     }
 
@@ -125,10 +125,10 @@ class ReservationServiceTest {
     }
 
     private ReservationCreateRequest createReservationRequest(String date) {
-        Member member = memberDao.save(MEMBER_BROWN);
-        ReservationTime savedReservationTime = reservationTimeDao.save(
+        Member member = memberRepository.save(MEMBER_BROWN);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(
                 RESERVATION_TIME_10AM);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
+        RoomTheme savedRoomTheme = roomThemeRepository.save(ROOM_THEME1);
         return new ReservationCreateRequest(member.getId(), LocalDate.parse(date),
                 savedReservationTime.getId(), savedRoomTheme.getId());
     }

@@ -2,28 +2,28 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.RoomThemeCreateRequest;
 import roomescape.service.dto.response.RoomThemeResponse;
 
 @Service
 public class RoomThemeService {
-    private final RoomThemeDao roomThemeDao;
+    private final RoomThemeRepository roomThemeRepository;
 
-    public RoomThemeService(RoomThemeDao roomThemeDao) {
-        this.roomThemeDao = roomThemeDao;
+    public RoomThemeService(RoomThemeRepository roomThemeRepository) {
+        this.roomThemeRepository = roomThemeRepository;
     }
 
     public List<RoomThemeResponse> findAll() {
-        return roomThemeDao.findAll()
+        return roomThemeRepository.findAll()
                 .stream()
                 .map(RoomThemeResponse::from)
                 .toList();
     }
 
     public List<RoomThemeResponse> findByRanking() {
-        return roomThemeDao.findAllRanking()
+        return roomThemeRepository.findAllRanking()
                 .stream()
                 .map(RoomThemeResponse::from)
                 .toList();
@@ -31,11 +31,11 @@ public class RoomThemeService {
 
     public RoomThemeResponse save(RoomThemeCreateRequest roomThemeCreateRequest) {
         RoomTheme roomTheme = roomThemeCreateRequest.toRoomTheme();
-        RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
+        RoomTheme savedRoomTheme = roomThemeRepository.save(roomTheme);
         return RoomThemeResponse.from(savedRoomTheme);
     }
 
     public boolean deleteById(Long id) {
-        return roomThemeDao.deleteById(id);
+        return roomThemeRepository.deleteById(id);
     }
 }

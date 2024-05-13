@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +16,7 @@ import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
 
 @Repository
-public class ReservationDao {
+public class ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -66,7 +66,7 @@ public class ReservationDao {
             )
     );
 
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")

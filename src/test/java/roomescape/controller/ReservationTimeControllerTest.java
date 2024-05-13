@@ -22,14 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import roomescape.dao.MemberDao;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.ReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,32 +38,32 @@ class ReservationTimeControllerTest {
     private int port;
 
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
+            reservationRepository.deleteById(reservation.getId());
         }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
+            reservationTimeRepository.deleteById(reservationTime.getId());
         }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
-        List<Member> members = memberDao.findAll();
+        List<Member> members = memberRepository.findAll();
         for (Member member : members) {
-            memberDao.deleteById(member.getId());
+            memberRepository.deleteById(member.getId());
         }
     }
 
@@ -113,7 +113,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTImeSuccess() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        ReservationTime reservationTime = reservationTimeRepository.save(RESERVATION_TIME_10AM);
         Long id = reservationTime.getId();
         // when & then
         RestAssured.given().log().all()
@@ -136,10 +136,10 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTimeDeletesReservationAlso() {
         // given
-        Member member = memberDao.save(MEMBER_BROWN);
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
-        reservationDao.save(
+        Member member = memberRepository.save(MEMBER_BROWN);
+        ReservationTime reservationTime = reservationTimeRepository.save(RESERVATION_TIME_10AM);
+        RoomTheme roomTheme = roomThemeRepository.save(ROOM_THEME1);
+        reservationRepository.save(
                 new Reservation(member, DATE_AFTER_1DAY, reservationTime, roomTheme));
         Long timeId = reservationTime.getId();
         // when

@@ -22,14 +22,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import roomescape.dao.MemberDao;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.request.ReservationCreateRequest;
 
@@ -39,32 +39,32 @@ class ReservationControllerTest {
     private int port;
 
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private RoomThemeDao roomThemeDao;
+    private RoomThemeRepository roomThemeRepository;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
+            reservationRepository.deleteById(reservation.getId());
         }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
+            reservationTimeRepository.deleteById(reservationTime.getId());
         }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        List<RoomTheme> roomThemes = roomThemeRepository.findAll();
         for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
+            roomThemeRepository.deleteById(roomTheme.getId());
         }
-        List<Member> members = memberDao.findAll();
+        List<Member> members = memberRepository.findAll();
         for (Member member : members) {
-            memberDao.deleteById(member.getId());
+            memberRepository.deleteById(member.getId());
         }
     }
 
@@ -80,7 +80,7 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         // given
-        Member member = memberDao.save(ADMIN_ZEZE);
+        Member member = memberRepository.save(ADMIN_ZEZE);
 
         String accessToken = RestAssured
                 .given().log().all()
@@ -106,7 +106,7 @@ class ReservationControllerTest {
     @ValueSource(strings = {"20223-10-11", "2024-13-1"})
     void invalidDateReservation(String value) {
         // given
-        Member member = memberDao.save(MEMBER_BROWN);
+        Member member = memberRepository.save(MEMBER_BROWN);
 
         String accessToken = RestAssured
                 .given().log().all()
@@ -131,7 +131,7 @@ class ReservationControllerTest {
     @Test
     void outdatedReservation() {
         // given
-        Member member = memberDao.save(MEMBER_BROWN);
+        Member member = memberRepository.save(MEMBER_BROWN);
 
         String accessToken = RestAssured
                 .given().log().all()
@@ -156,7 +156,7 @@ class ReservationControllerTest {
     @Test
     void duplicateReservation() {
         // given
-        Member member = memberDao.save(MEMBER_BROWN);
+        Member member = memberRepository.save(MEMBER_BROWN);
 
         String accessToken = RestAssured
                 .given().log().all()
@@ -189,7 +189,7 @@ class ReservationControllerTest {
     @Test
     void noPrimaryKeyReservation() {
         // given
-        Member member = memberDao.save(ADMIN_ZEZE);
+        Member member = memberRepository.save(ADMIN_ZEZE);
 
         String accessToken = RestAssured
                 .given().log().all()
@@ -212,11 +212,11 @@ class ReservationControllerTest {
     @Test
     void deleteReservationSuccess() {
         // given
-        Member member = memberDao.save(MEMBER_BROWN);
-        ReservationTime savedReservationTime = reservationTimeDao.save(
+        Member member = memberRepository.save(MEMBER_BROWN);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(
                 new ReservationTime(TIME));
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
-        Reservation savedReservation = reservationDao.save(
+        RoomTheme savedRoomTheme = roomThemeRepository.save(ROOM_THEME1);
+        Reservation savedReservation = reservationRepository.save(
                 new Reservation(member, DATE_AFTER_1DAY, savedReservationTime, savedRoomTheme));
         // when & then
         Long id = savedReservation.getId();
@@ -237,9 +237,9 @@ class ReservationControllerTest {
     }
 
     private Map createReservationRequest(Member member, String date) {
-        Member savedMember = memberDao.save(member);
-        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
+        Member savedMember = memberRepository.save(member);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(RESERVATION_TIME_10AM);
+        RoomTheme savedRoomTheme = roomThemeRepository.save(ROOM_THEME1);
 
         return Map.of(
                 "memberId", savedMember.getId(),
