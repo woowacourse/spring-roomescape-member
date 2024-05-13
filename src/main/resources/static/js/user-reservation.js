@@ -37,7 +37,7 @@ function renderTheme(themes) {
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
     const name = theme.name;
-    const themeId = theme.themeId;
+    const themeId = theme.id;
     themeSlots.appendChild(createSlot('theme', name, themeId));
   });
 }
@@ -140,7 +140,6 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
     const reservationData = {

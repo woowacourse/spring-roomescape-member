@@ -46,6 +46,15 @@ function updateUIBasedOnLogin() {
 }
 
 // 드롭다운 메뉴 토글
+// window.onload = function () {
+//   document.getElementById("navbarDropdown").addEventListener('click', function (e) {
+//   e.preventDefault();
+//   const dropdownMenu = e.target.closest('.nav-item.dropdown').querySelector('.dropdown-menu');
+//   dropdownMenu.classList.toggle('show'); // Bootstrap 4에서는 data-toggle 사용, Bootstrap 5에서는 JS로 처리
+// });
+// };
+
+let elementById = document.getElementById("navbarDropdown");
 document.getElementById("navbarDropdown").addEventListener('click', function (e) {
   e.preventDefault();
   const dropdownMenu = e.target.closest('.nav-item.dropdown').querySelector('.dropdown-menu');
@@ -74,7 +83,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (response.status !== 200) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
