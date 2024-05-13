@@ -17,6 +17,7 @@ import roomescape.domain.Reservation;
 import roomescape.service.dto.request.ReservationAdminSaveRequest;
 import roomescape.service.dto.request.ReservationSaveRequest;
 import roomescape.service.dto.response.ReservationResponse;
+import roomescape.service.reservation.AdminReservationCreateService;
 import roomescape.service.reservation.ReservationCreateService;
 import roomescape.service.reservation.ReservationDeleteService;
 import roomescape.service.reservation.ReservationFindService;
@@ -29,15 +30,18 @@ import java.util.List;
 @RestController
 public class ReservationApiController {
 
-    private final ReservationFindService reservationFindService;
     private final ReservationCreateService reservationCreateService;
+    private final AdminReservationCreateService adminReservationCreateService;
+    private final ReservationFindService reservationFindService;
     private final ReservationDeleteService reservationDeleteService;
 
-    public ReservationApiController(ReservationFindService reservationFindService,
-                                    ReservationCreateService reservationCreateService,
+    public ReservationApiController(ReservationCreateService reservationCreateService,
+                                    AdminReservationCreateService adminReservationCreateService,
+                                    ReservationFindService reservationFindService,
                                     ReservationDeleteService reservationDeleteService) {
-        this.reservationFindService = reservationFindService;
         this.reservationCreateService = reservationCreateService;
+        this.adminReservationCreateService = adminReservationCreateService;
+        this.reservationFindService = reservationFindService;
         this.reservationDeleteService = reservationDeleteService;
     }
 
@@ -68,15 +72,14 @@ public class ReservationApiController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> addReservationByUser(@RequestBody @Valid ReservationSaveRequest request,
                                                                     @AuthenticatedMember Member member) {
-        Reservation newReservation = reservationCreateService.createReservationByUser(request, member);
+        Reservation newReservation = reservationCreateService.createReservation(request, member);
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId()))
                 .body(new ReservationResponse(newReservation));
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> addReservationByAdmin(@RequestBody @Valid ReservationAdminSaveRequest request,
-                                                                     @AuthenticatedMember Member member) {
-        Reservation newReservation = reservationCreateService.createReservationByAdmin(request, member);
+    public ResponseEntity<ReservationResponse> addReservationByAdmin(@RequestBody @Valid ReservationAdminSaveRequest request) {
+        Reservation newReservation = adminReservationCreateService.createReservation(request);
         return ResponseEntity.created(URI.create("/admin/reservations/" + newReservation.getId()))
                 .body(new ReservationResponse(newReservation));
     }

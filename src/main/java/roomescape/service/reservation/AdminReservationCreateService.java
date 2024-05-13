@@ -6,25 +6,25 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
-import roomescape.service.dto.request.ReservationSaveRequest;
+import roomescape.service.dto.request.ReservationAdminSaveRequest;
 
 @Service
-public class ReservationCreateService {
+public class AdminReservationCreateService {
 
-    private final ReservationCreateValidator reservationCreateValidator;
     private final ReservationRepository reservationRepository;
+    private final ReservationCreateValidator reservationCreateValidator;
 
-    public ReservationCreateService(ReservationCreateValidator reservationCreateValidator,
-                                    ReservationRepository reservationRepository) {
-        this.reservationCreateValidator = reservationCreateValidator;
+    public AdminReservationCreateService(ReservationRepository reservationRepository, ReservationCreateValidator reservationCreateValidator) {
         this.reservationRepository = reservationRepository;
+        this.reservationCreateValidator = reservationCreateValidator;
     }
 
-    public Reservation createReservation(ReservationSaveRequest request, Member member) {
+    public Reservation createReservation(ReservationAdminSaveRequest request) {
         ReservationTime reservationTime = reservationCreateValidator.getValidReservationTime(request.timeId());
         reservationCreateValidator.validateDateIsFuture(request.date(), reservationTime);
         Theme theme = reservationCreateValidator.getValidTheme(request.themeId());
         reservationCreateValidator.validateAlreadyBooked(request.date(), request.timeId(), request.themeId());
+        Member member = reservationCreateValidator.getValidMember(request.memberId());
 
         Reservation reservation = request.toEntity(request, reservationTime, theme, member);
         return reservationRepository.save(reservation);
