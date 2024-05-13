@@ -16,6 +16,7 @@ import roomescape.controller.helper.LoginMember;
 import roomescape.controller.helper.RoleAllowed;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRole;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
@@ -23,9 +24,11 @@ import roomescape.service.dto.ReservationResponse;
 @RestController
 public class ReservationController {
     private final ReservationService reservationService;
+    private final MemberService memberService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, MemberService memberService) {
         this.reservationService = reservationService;
+        this.memberService = memberService;
     }
 
     @RoleAllowed(value = MemberRole.ADMIN)
@@ -51,7 +54,8 @@ public class ReservationController {
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> saveAdminReservation(@RequestBody AdminReservationRequest request) {
         ReservationRequest input = new ReservationRequest(request);
-        ReservationResponse response = reservationService.saveAdminReservation(input, request.getMemberId());
+        Member member = memberService.findById(request.getMemberId());
+        ReservationResponse response = reservationService.saveReservation(input, member);
         return ResponseEntity.created(URI.create("/reservations/" + response.getId())).body(response);
     }
 
