@@ -17,6 +17,7 @@ import roomescape.domain.MemberId;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationConditionRequest;
 import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.request.UserReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
 
@@ -32,9 +33,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> postReservation(
-            @RequestBody @Valid ReservationRequest reservationRequest,
+            @RequestBody @Valid UserReservationRequest userReservationRequest,
             @MemberId Long id
     ) {
+        ReservationRequest reservationRequest = userReservationRequest.toReservationRequest(id);
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest, id);
         URI location = UriComponentsBuilder.newInstance()
                 .path("/reservations/{id}")
