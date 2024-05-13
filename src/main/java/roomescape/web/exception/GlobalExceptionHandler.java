@@ -42,7 +42,7 @@ class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(UnauthorizedException exception) {
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.UNAUTHORIZED);
     }
