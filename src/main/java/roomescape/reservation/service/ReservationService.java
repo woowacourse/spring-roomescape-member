@@ -3,12 +3,15 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.exception.SaveDuplicateContentException;
 import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberProfileInfo;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeAvailabilityResponse;
@@ -40,6 +43,16 @@ public class ReservationService {
         Reservation reservation = reservationRequest.toReservation(time, theme);
         Reservation savedReservation = reservationDao.save(reservation);
         reservationDao.saveMemberReservation(savedReservation.getId(), memberProfileInfo.id());
+        return ReservationResponse.fromReservation(savedReservation);
+    }
+
+    public ReservationResponse addReservation(@RequestBody AdminReservationRequest reservationRequest) {
+        Time time = timeDao.findById(reservationRequest.timeId());
+        Theme theme = themeDao.findById(reservationRequest.themeId());
+        Member member = memberDao.findById(reservationRequest.memberId());
+        Reservation reservation = new Reservation(member.getName(),reservationRequest.date(), time, theme);
+        Reservation savedReservation = reservationDao.save(reservation);
+        reservationDao.saveMemberReservation(savedReservation.getId(), member.getId());
         return ReservationResponse.fromReservation(savedReservation);
     }
 
