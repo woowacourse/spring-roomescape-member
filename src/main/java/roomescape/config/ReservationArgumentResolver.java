@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Objects;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -21,7 +20,6 @@ import roomescape.member.dto.MemberProfileInfo;
 import roomescape.member.security.service.MemberAuthService;
 import roomescape.reservation.dto.ReservationRequest;
 
-@Component
 public class ReservationArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberAuthService memberAuthService;

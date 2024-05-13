@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception exception) {
         logger.error(exception.getMessage());
+        exception.printStackTrace();
         return ResponseEntity.internalServerError()
                 .body("문제가 발생했습니다.");
     }

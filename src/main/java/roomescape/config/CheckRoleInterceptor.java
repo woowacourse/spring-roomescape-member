@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRole;
@@ -12,7 +11,7 @@ import roomescape.member.dto.MemberProfileInfo;
 import roomescape.member.security.service.MemberAuthService;
 import roomescape.member.service.MemberService;
 
-@Component
+
 public class CheckRoleInterceptor implements HandlerInterceptor {
 
     private final MemberAuthService memberAuthService;
