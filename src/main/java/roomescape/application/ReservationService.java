@@ -3,34 +3,39 @@ package roomescape.application;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.repository.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
-import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationInfo;
 
 @Service
 public class ReservationService {
     private final ReservationTimeService reservationTimeService;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationTimeService reservationTimeService,
                               ReservationRepository reservationRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository) {
         this.reservationTimeService = reservationTimeService;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public Reservation reserve(ReservationRequest request) {
+    public Reservation reserve(ReservationInfo request) {
         ReservationTime time = reservationTimeService.getReservationTime(request.timeId());
         if (reservationRepository.existsByReservationDateTimeAndTheme(request.date(), time.getId(),
                 request.themeId())) {
             throw new IllegalArgumentException("이미 예약된 날짜, 시간입니다.");
         }
-        Reservation reservation = new Reservation(request.name(), request.date(), time, getTheme(request.themeId()));
+
+        Reservation reservation = new Reservation(request.date(), time, getTheme(request.themeId()));
         return reservationRepository.save(reservation);
     }
 
