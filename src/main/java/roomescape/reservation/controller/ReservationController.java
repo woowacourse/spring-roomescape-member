@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.domain.AuthInfo;
+import roomescape.auth.core.AuthenticationPrincipal;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
@@ -31,9 +33,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<CreateReservationResponse> createReservation(
+            @AuthenticationPrincipal AuthInfo authInfo,
             @Valid @RequestBody CreateReservationRequest createReservationRequest) {
         CreateReservationResponse createReservationResponse =
-                reservationService.createReservation(createReservationRequest);
+                reservationService.createReservation(authInfo, createReservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + createReservationResponse.id()))
                 .body(createReservationResponse);
     }
@@ -52,6 +55,14 @@ public class ReservationController {
     public ResponseEntity<List<FindAvailableTimesResponse>> getAvailableTimes(@RequestParam LocalDate date,
                                                                               @RequestParam Long themeId) {
         return ResponseEntity.ok(reservationService.getAvailableTimes(date, themeId));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FindReservationResponse>> searchBy(@RequestParam(required = false) Long themeId,
+                                                                  @RequestParam(required = false) Long memberId,
+                                                                  @RequestParam(required = false) LocalDate dateFrom,
+                                                                  @RequestParam(required = false) LocalDate dateTo) {
+        return ResponseEntity.ok(reservationService.searchBy(themeId, memberId, dateFrom, dateTo));
     }
 
     @DeleteMapping("/{id}")

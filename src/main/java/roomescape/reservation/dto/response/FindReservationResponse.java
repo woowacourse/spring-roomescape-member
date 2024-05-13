@@ -5,7 +5,7 @@ import roomescape.reservation.model.Reservation;
 
 public record FindReservationResponse(
         Long id,
-        String name,
+        FindMemberOfReservationResponse member,
         LocalDate date,
         FindTimeOfReservationsResponse time,
         FindThemeOfReservationResponse theme) {
@@ -13,7 +13,7 @@ public record FindReservationResponse(
     public static FindReservationResponse from(final Reservation reservation) {
         return new FindReservationResponse(
                 reservation.getId(),
-                reservation.getName().getValue(),
+                FindMemberOfReservationResponse.from(reservation.getMember()),
                 reservation.getDate(),
                 FindTimeOfReservationsResponse.from(reservation.getReservationTime()),
                 FindThemeOfReservationResponse.from(reservation.getTheme())
@@ -23,7 +23,7 @@ public record FindReservationResponse(
     public static FindReservationResponse of(final Long id, Reservation reservation) {
         return new FindReservationResponse(
                 id,
-                reservation.getName().getValue(),
+                FindMemberOfReservationResponse.from(reservation.getMember()),
                 reservation.getDate(),
                 FindTimeOfReservationsResponse.from(reservation.getReservationTime()),
                 FindThemeOfReservationResponse.from(reservation.getTheme())

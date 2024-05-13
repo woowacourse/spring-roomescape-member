@@ -24,8 +24,8 @@ public class ReservationTime {
         }
     }
 
-    public boolean isBefore(final LocalTime time) {
-        return this.time.isBefore(time);
+    public boolean isNotAfter(final LocalTime time) {
+        return this.time.isBefore(time) || isSameStartAt(time);
     }
 
     public boolean isSameTo(final Long timeId) {

@@ -12,35 +12,37 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
+import roomescape.fixture.MemberFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
+import roomescape.fixture.ThemeFixture;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.JdbcMemberRepository;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ReservationTimeFixture;
-import roomescape.util.ThemeFixture;
 
-@ActiveProfiles("test")
-@JdbcTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcRepositoryTest
 class JdbcReservationRepositoryTest {
 
     private final ReservationRepository jdbcReservationRepository;
     private final ReservationTimeRepository jdbcReservationTimeRepository;
     private final ThemeRepository jdbcThemeRepository;
+    private final MemberRepository jdbcMemberRepository;
 
     @Autowired
     JdbcReservationRepositoryTest(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate, dataSource);
         this.jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate, dataSource);
         this.jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate, dataSource);
+        this.jdbcMemberRepository = new JdbcMemberRepository(jdbcTemplate, dataSource);
     }
 
     @Test
@@ -58,11 +60,12 @@ class JdbcReservationRepositoryTest {
                 .map(jdbcReservationTimeRepository::save)
                 .toList();
         Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.getOne());
+        Member savedMember = jdbcMemberRepository.save(MemberFixture.getOne());
 
         Reservation saveReservation1 = jdbcReservationRepository.save(
-                ReservationFixture.getOne(savedTimes.get(0), savedTheme));
+                ReservationFixture.getOneWithMemberTimeTheme(savedMember, savedTimes.get(0), savedTheme));
         Reservation saveReservation2 = jdbcReservationRepository.save(
-                ReservationFixture.getOne(savedTimes.get(1), savedTheme));
+                ReservationFixture.getOneWithMemberTimeTheme(savedMember, savedTimes.get(1), savedTheme));
 
         // when & then
         assertThat(jdbcReservationRepository.findAll())
@@ -73,9 +76,11 @@ class JdbcReservationRepositoryTest {
     @DisplayName("Reservation 테이블의 주어진 id와 동일한 데이터를 조회한다.")
     void findById() {
         // given
+        Member savedMember = jdbcMemberRepository.save(MemberFixture.getOne());
         ReservationTime savedTime = jdbcReservationTimeRepository.save(ReservationTimeFixture.getOne());
         Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.getOne());
-        Reservation savedReservation = jdbcReservationRepository.save(ReservationFixture.getOne(savedTime, savedTheme));
+        Reservation savedReservation = jdbcReservationRepository.save(
+                new Reservation(null, savedMember, LocalDate.now(), savedTime, savedTheme));
 
         // when
         Optional<Reservation> reservation = jdbcReservationRepository.findById(savedReservation.getId());
@@ -94,13 +99,14 @@ class JdbcReservationRepositoryTest {
     @DisplayName("Reservation 테이블의 주어진 date, theme_id와 동일한 데이터를 조회한다.")
     void findAllByDateAndThemeId() {
         // given
+        Member savedMember = jdbcMemberRepository.save(MemberFixture.getOne());
         Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.getOne());
         ReservationTime savedTimes = jdbcReservationTimeRepository.save(ReservationTimeFixture.getOne());
 
         Reservation reservation1 = jdbcReservationRepository.save(
-                ReservationFixture.getOne(LocalDate.parse("2024-02-01"), savedTimes, savedTheme));
+                ReservationFixture.getOneWithDateTimeTheme(LocalDate.parse("2024-02-01"), savedTimes, savedTheme));
         Reservation reservation2 = jdbcReservationRepository.save(
-                ReservationFixture.getOne(LocalDate.parse("2024-10-01"), savedTimes, savedTheme));
+                ReservationFixture.getOneWithDateTimeTheme(LocalDate.parse("2024-10-01"), savedTimes, savedTheme));
 
         // when
         List<Reservation> reservations =
@@ -146,7 +152,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("해당 테마 id값과 일치하는 예약이 존재하는 경우 참을 반환한다.")
     void existsByThemeId() {
         Theme theme = jdbcThemeRepository.save(ThemeFixture.getOne());
-        jdbcReservationRepository.save(ReservationFixture.getOne(theme));
+        jdbcReservationRepository.save(ReservationFixture.getOneWithTheme(theme));
 
         assertTrue(jdbcReservationRepository.existsByThemeId(1L));
     }
@@ -163,9 +169,9 @@ class JdbcReservationRepositoryTest {
         Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.getOne());
         ReservationTime savedTime = jdbcReservationTimeRepository.save(ReservationTimeFixture.getOne());
         Reservation saveReservation = jdbcReservationRepository.save(
-                ReservationFixture.getOne(LocalDate.parse("2024-01-01"), savedTime, savedTheme));
+                ReservationFixture.getOneWithDateTimeTheme(LocalDate.parse("2024-01-01"), savedTime, savedTheme));
 
-        assertTrue(jdbcReservationRepository.existsByDateAndTimeAndTheme(
+        assertTrue(jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(
                 saveReservation.getDate(),
                 savedTime.getId(),
                 savedTheme.getId()));
@@ -174,7 +180,7 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("날짜 또는 시간 중 하나라도 다를 경우 거짓을 반환한다.")
     void existsByDateAndTime_isFalse() {
-        assertFalse(jdbcReservationRepository.existsByDateAndTimeAndTheme(
+        assertFalse(jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(
                 ReservationFixture.getOne().getDate(),
                 ReservationTimeFixture.getOne().getId(),
                 ThemeFixture.getOne().getId()));

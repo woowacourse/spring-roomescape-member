@@ -3,53 +3,82 @@ package roomescape.reservation.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.member.domain.Member;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
 
 public class Reservation {
     private final Long id;
-    private final ReservationName name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
     public Reservation(final Long id,
-                       final ReservationName name,
+                       final Member member,
                        final LocalDate date,
                        final ReservationTime reservationTime,
                        final Theme theme) {
+        validateReservationMemberIsNull(member);
         validateReservationDateIsNull(date);
         validateReservationTimeIsNull(reservationTime);
         validateReservationThemeIsNull(theme);
 
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
     public static Reservation of(final Long id,
-                                 final String name,
-                                 final LocalDate date,
-                                 final ReservationTime reservationTime,
-                                 final Theme theme) {
+                                 final Reservation reservation) {
         return new Reservation(
                 id,
-                new ReservationName(name),
+                reservation.getMember(),
+                reservation.getDate(),
+                reservation.getReservationTime(),
+                reservation.getTheme());
+    }
+
+    public static Reservation create(final Member member,
+                                     final LocalDate date,
+                                     final ReservationTime reservationTime,
+                                     final Theme theme) {
+        validateCreateTimeIsPast(date, reservationTime);
+        return new Reservation(
+                null,
+                member,
                 date,
                 reservationTime,
                 theme);
     }
 
-    public static Reservation of(final Long id,
-                                 final Reservation reservation) {
-        return new Reservation(
-                id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getReservationTime(),
-                reservation.getTheme());
+    private static void validateCreateTimeIsPast(final LocalDate dateToCreate, final ReservationTime reservationTime) {
+        LocalDateTime now = LocalDateTime.now();
+        checkDateToCreateIsPast(dateToCreate, now.toLocalDate());
+        checkTimeToCreateIsPastWhenSameDate(now, dateToCreate, reservationTime);
+    }
+
+    private static void checkDateToCreateIsPast(final LocalDate dateToCreate, final LocalDate now) {
+        if (dateToCreate.isBefore(now)) {
+            throw new IllegalArgumentException(dateToCreate + "는 지나간 시간임으로 예약 생성이 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
+        }
+    }
+
+    private static void checkTimeToCreateIsPastWhenSameDate(final LocalDateTime now,
+                                                            final LocalDate dateToCreate,
+                                                            final ReservationTime timeToCreate) {
+        LocalDateTime newDateTime = LocalDateTime.of(dateToCreate, timeToCreate.getTime());
+        if (newDateTime.isEqual(now) || newDateTime.isBefore(now)) {
+            throw new IllegalArgumentException(newDateTime + "는 현재보다 동일하거나 지나간 시간임으로 예약 생성이 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
+        }
+    }
+
+    private void validateReservationMemberIsNull(final Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("예약 생성 시 예약자는 필수입니다.");
+        }
     }
 
     private void validateReservationDateIsNull(final LocalDate date) {
@@ -70,43 +99,16 @@ public class Reservation {
         }
     }
 
-    public boolean isSameId(Long id) {
-        return Objects.equals(this.id, id);
-    }
-
     public boolean isSameTime(final ReservationTime reservationTime) {
         return this.reservationTime.isSameTo(reservationTime.getId());
-    }
-
-    public boolean isSameTimeId(final Long timeId) {
-        return this.reservationTime.isSameTo(timeId);
-    }
-
-    public boolean isSameTheme(final Long themeId) {
-        return this.theme.isSameTo(themeId);
-    }
-
-    public boolean isSameDate(final LocalDate date) {
-        return Objects.equals(this.date, date);
-    }
-
-    public boolean isBeforeDateTimeThanNow(final LocalDateTime now) {
-        if (date.isBefore(now.toLocalDate())) {
-            return true;
-        }
-
-        if (date.isAfter(now.toLocalDate())) {
-            return false;
-        }
-        return reservationTime.isBefore(now.toLocalTime());
     }
 
     public Long getId() {
         return id;
     }
 
-    public ReservationName getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

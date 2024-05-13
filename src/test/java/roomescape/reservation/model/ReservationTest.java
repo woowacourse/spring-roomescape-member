@@ -1,18 +1,17 @@
 package roomescape.reservation.model;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.fixture.MemberFixture;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
+import roomescape.fixture.ThemeFixture;
 import roomescape.reservationtime.model.ReservationTime;
-import roomescape.util.ReservationTimeFixture;
-import roomescape.util.ThemeFixture;
 
 class ReservationTest {
 
@@ -20,57 +19,38 @@ class ReservationTest {
     class createReservation {
 
         @Test
-        @DisplayName("예약 객체 생성 시 예약자 명이 공백인 경우 예외를 반환한다.")
+        @DisplayName("예약 객체 생성 시 예약자가 없는 경우 예외를 반환한다.")
         void createReservation_WhenNameIsBlank() {
             assertThatThrownBy(
-                    () -> Reservation.of(
-                            1L,
-                            null,
-                            LocalDate.parse("2024-02-02"),
-                            ReservationTimeFixture.getOne(),
-                            ThemeFixture.getOne()))
+                    () -> ReservationFixture.getOneWithMember(null))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("예약자 명은 공백 문자가 불가능합니다.");
+                    .hasMessage("예약 생성 시 예약자는 필수입니다.");
         }
 
         @Test
         @DisplayName("예약 객체 생성 시 예약자 명이 공백인 경우 예외를 반환한다.")
         void createReservation_WhenNameOverLength() {
             assertThatThrownBy(
-                    () -> Reservation.of(
-                            1L,
-                            "a".repeat(256),
-                            LocalDate.parse("2024-02-02"),
-                            ReservationTimeFixture.getOne(),
-                            ThemeFixture.getOne()))
+                    () -> ReservationFixture.getOneWithMember(null))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("예약자 명은 최대 255자까지 입력이 가능합니다.");
+                    .hasMessage("예약 생성 시 예약자는 필수입니다.");
         }
 
         @Test
-        @DisplayName("예약 객체 생성 시 예약자 명이 공백인 경우 예외를 반환한다.")
+        @DisplayName("예약 객체 생성 시 예약 날짜가 공백인 경우 예외를 반환한다.")
         void createReservation_WhenReservationDateIsNull() {
             assertThatThrownBy(
-                    () -> Reservation.of(
-                            1L,
-                            "몰리",
-                            null,
-                            ReservationTimeFixture.getOne(),
+                    () -> ReservationFixture.getOneWithDateTimeTheme(null, ReservationTimeFixture.getOne(),
                             ThemeFixture.getOne()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약 생성 시 예약 날짜는 필수입니다.");
         }
 
         @Test
-        @DisplayName("예약 객체 생성 시 예약자 명이 공백인 경우 예외를 반환한다.")
+        @DisplayName("예약 객체 생성 시 예약 시간이 공백인 경우 예외를 반환한다.")
         void createReservation_WhenReservationTimeIsNull() {
             assertThatThrownBy(
-                    () -> Reservation.of(
-                            1L,
-                            "몰리",
-                            LocalDate.parse("2024-02-02"),
-                            null,
-                            ThemeFixture.getOne()))
+                    () -> ReservationFixture.getOneWithTimeTheme(null, ThemeFixture.getOne()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약 생성 시 예약 시간은 필수입니다.");
         }
@@ -79,71 +59,36 @@ class ReservationTest {
         @DisplayName("예약 객체 생성 시 예약 테마가 공백인 경우 예외를 반환한다.")
         void createReservation_WhenReservationThemeIsNull() {
             assertThatThrownBy(
-                    () -> Reservation.of(
-                            1L,
-                            "몰리",
-                            LocalDate.parse("2024-02-02"),
-                            ReservationTimeFixture.getOne(),
-                            null))
+                    () -> ReservationFixture.getOneWithTheme(null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약 생성 시 예약 테마는 필수입니다.");
         }
-    }
-
-    @Nested
-    class isBeforeDateTimeThanNow {
 
         @Test
-        @DisplayName("주어진 날짜와 시간보다 예약의 날짜와 시간이 이전인 경우 참을 반환한다.")
-        void isBeforeDateTimeThanNow() {
-            Reservation reservation = Reservation.of(
-                    1L,
-                    "아서",
-                    LocalDate.parse("2024-04-23"),
-                    new ReservationTime(null, LocalTime.parse("10:00")),
-                    ThemeFixture.getOne());
-            assertTrue(reservation.isBeforeDateTimeThanNow(LocalDateTime.parse("2024-05-23T10:15:30")));
+        @DisplayName("예약 객체 생성 시 예약하려는 날짜가 과거인 경우 예외를 반환한다.")
+        void createReservation_WhenReservationDateInPast() {
+            assertThatThrownBy(
+                    () -> Reservation.create(
+                            MemberFixture.getOne(),
+                            LocalDate.parse("2024-01-01"),
+                            ReservationTimeFixture.getOne(),
+                            ThemeFixture.getOne()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("2024-01-01는 지나간 시간임으로 예약 생성이 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
         }
 
         @Test
-        @DisplayName("주어진 날짜와 시간보다 예약의 날짜가 이후인 경우 거짓을 반환한다.")
-        void isBeforeDateTimeThanNow_WhenDataIsAfter() {
-            Reservation reservation = Reservation.of(
-                    1L,
-                    "아서",
-                    LocalDate.parse("2024-04-23"),
-                    new ReservationTime(null, LocalTime.parse("10:00")),
-                    ThemeFixture.getOne());
-            assertFalse(
-                    reservation.isBeforeDateTimeThanNow(
-                            LocalDateTime.of(LocalDate.parse("2024-01-23"), LocalTime.parse("09:00"))));
-        }
-
-        @Test
-        @DisplayName("주어진 날짜와 시간보다 예약의 시간이 이후인 경우 거짓을 반환한다.")
-        void isBeforeDateTimeThanNow_WhenTimeIsAfter() {
-            LocalDate sameDate = LocalDate.parse("2024-04-23");
-            Reservation reservation = Reservation.of(
-                    1L,
-                    "아서",
-                    sameDate,
-                    new ReservationTime(null, LocalTime.parse("10:00")),
-                    ThemeFixture.getOne());
-            assertFalse(reservation.isBeforeDateTimeThanNow(LocalDateTime.of(sameDate, LocalTime.parse("09:00"))));
-        }
-
-        @Test
-        @DisplayName("주어진 날짜와 시간보다 예약의 날짜와 시간이 동일한 경우 거짓을 반환한다.")
-        void isBeforeDateTimeThanNow_WhenDataTimeIsSame() {
-            LocalDate sameDate = LocalDate.parse("2024-04-23");
-            LocalTime sameTime = LocalTime.parse("10:00");
-            Reservation reservation = Reservation.of(
-                    1L,
-                    "아서",
-                    sameDate,
-                    new ReservationTime(null, sameTime),
-                    ThemeFixture.getOne());
-            assertFalse(reservation.isBeforeDateTimeThanNow(LocalDateTime.of(sameDate, sameTime)));
+        @DisplayName("예약 객체 생성 시 예약하려는 날짜가 과거인 경우 예외를 반환한다.")
+        void createReservation_WhenReservationTimeInPast() {
+            LocalDateTime now = LocalDateTime.now();
+            assertThatThrownBy(
+                    () -> Reservation.create(
+                            MemberFixture.getOne(),
+                            now.toLocalDate(),
+                            new ReservationTime(null, now.toLocalTime().minusHours(1)),
+                            ThemeFixture.getOne()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage(now.minusHours(1) + "는 현재보다 동일하거나 지나간 시간임으로 예약 생성이 불가능합니다. 현재 이후 날짜로 재예약해주세요.");
         }
     }
 }

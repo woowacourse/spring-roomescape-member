@@ -1,6 +1,8 @@
 SET REFERENTIAL_INTEGRITY FALSE;
 truncate table reservation_time;
 truncate table reservation;
+truncate table member;
+truncate table theme;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
@@ -21,16 +23,19 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('오락', '재밌어', 
 INSERT INTO theme (name, description, thumbnail) VALUES ('판타지', '말이 안돼', 'https://i.postimg.cc/8k2PQ4yv/theme.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('감성', '감동적', 'https://sherlock-holmes.co.kr/attach/theme/16788523411.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '아서', '2024-04-23', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '몰리', '2024-04-24', 2, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '마크', '2024-04-25', 3, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '비밥', '2024-04-26', 4, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '러너덕', '2024-04-27', 5, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '현구막', '2024-04-28', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '찰리', '2024-04-29', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '네오', '2024-04-30', 3, 3);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '포비', '2024-05-01', 4, 3);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '솔라', '2024-05-02', 5, 4);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '브리', '2024-05-03', 1, 4);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '리사', '2024-05-04', 2, 5);
-INSERT INTO reservation (name, date, time_id, theme_id) values ( '왼손', '2024-05-05', 3, 6);
+INSERT INTO member (name, role, email, password) values ( '몰리', 'USER', 'hihi@naver.com', 'hihi');
+INSERT INTO member (name, role, email, password) values ( '비밥', 'ADMIN', 'bibap@naver.com', 'hihi');
+INSERT INTO member (name, role, email, password) values ( '포비', 'USER', 'test@naver.com', 'hihi');
+
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2024-04-23', 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 2, '2024-04-24', 2, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 3, '2024-04-25', 3, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2024-04-26', 4, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 2, '2024-04-27', 5, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 3, '2024-04-28', 1, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2024-04-29', 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 2, '2024-04-30', 3, 3);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 3, '2024-05-01', 4, 3);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 1, '2024-05-02', 5, 4);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 2, '2024-05-03', 1, 4);
+INSERT INTO reservation (member_id, date, time_id, theme_id) values ( 3, '2024-05-04', 2, 5);

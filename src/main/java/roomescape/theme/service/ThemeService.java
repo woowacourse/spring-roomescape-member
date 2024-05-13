@@ -2,7 +2,6 @@ package roomescape.theme.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.dto.request.CreateThemeRequest;
@@ -18,8 +17,8 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeService(@Qualifier("jdbcThemeRepository") final ThemeRepository themeRepository,
-                        @Qualifier("jdbcReservationRepository") final ReservationRepository reservationRepository) {
+    public ThemeService(final ThemeRepository themeRepository,
+                        final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -36,8 +35,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<FindPopularThemesResponse> getPopularThemes() {
-        return themeRepository.findOrderByReservation().stream()
+    public List<FindPopularThemesResponse> getPopularThemes(int size) {
+        return themeRepository.findOrderByReservation(size).stream()
                 .map(FindPopularThemesResponse::from)
                 .toList();
     }
@@ -51,13 +50,13 @@ public class ThemeService {
 
     private void validateExistTheme(final Long id) {
         if (!themeRepository.existsById(id)) {
-            throw new NoSuchElementException("삭제하려는 테마가 존재하지 않습니다.");
+            throw new NoSuchElementException("식별자 " + id + "에 해당하는 테마가 존재하지 않습니다. 삭제가 불가능합니다.");
         }
     }
 
     private void validateThemeUsage(final Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalStateException("삭제하려는 테마를 사용 중인 예약이 존재합니다.");
+            throw new IllegalStateException("식별자 " + id + "인 테마를 사용 중인 예약이 존재합니다. 삭제가 불가능합니다.");
         }
     }
 }

@@ -32,7 +32,7 @@ class ThemeTest {
     void createTheme_WhenThemeThumbnailIsBlank(String thumbnail) {
         assertThatThrownBy(() -> new Theme(1L, "aa", "설명이다", thumbnail))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("다테마 생성 시 썸네일은 필수입니다.");
+                .hasMessage("테마 생성 시 썸네일은 필수입니다.");
     }
 
 }

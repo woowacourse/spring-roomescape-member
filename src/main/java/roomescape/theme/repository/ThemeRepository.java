@@ -12,7 +12,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(Long id);
 
-    List<Theme> findOrderByReservation();
+    List<Theme> findOrderByReservation(int size);
 
     boolean existsById(Long id);
 

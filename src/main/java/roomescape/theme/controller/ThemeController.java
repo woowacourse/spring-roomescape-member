@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.request.CreateThemeRequest;
 import roomescape.theme.dto.response.CreateThemeResponse;
@@ -39,12 +40,12 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<FindPopularThemesResponse>> getPopularThemes() {
-        return ResponseEntity.ok(themeService.getPopularThemes());
+    public ResponseEntity<List<FindPopularThemesResponse>> getPopularThemes(@RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(themeService.getPopularThemes(size));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> createTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

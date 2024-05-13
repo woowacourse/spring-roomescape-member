@@ -64,19 +64,19 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public boolean existsById(final Long id) {
         String sql = """
-                select count(*)
+                select exists ( select 1
                 from reservation_time as r
-                where r.id = ? 
+                where r.id = ? ) 
                 """;
-        return jdbcTemplate.queryForObject(sql, Integer.class, id) != 0;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
     public boolean existsByStartAt(final LocalTime time) {
         String sql = """
-                select count(*)
+                select exists ( select 1
                 from reservation_time as r
-                where r.start_at = ? 
+                where r.start_at = ? )
                 """;
         return jdbcTemplate.queryForObject(sql, Integer.class, time) != 0;
     }

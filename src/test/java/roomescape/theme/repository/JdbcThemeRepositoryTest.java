@@ -5,31 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
-import roomescape.reservation.model.Reservation;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ThemeFixture;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.testutil.JdbcRepositoryTest;
 import roomescape.theme.model.Theme;
-import roomescape.util.ReservationFixture;
-import roomescape.util.ThemeFixture;
 
-@ActiveProfiles("test")
-@JdbcTest
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcRepositoryTest
 class JdbcThemeRepositoryTest {
 
     private final ThemeRepository themeRepository;
@@ -79,14 +69,14 @@ class JdbcThemeRepositoryTest {
                 .toList();
 
         Theme topTheme = savedThemes.get(3);
-        reservationRepository.save(ReservationFixture.getOne(topTheme));
-        reservationRepository.save(ReservationFixture.getOne(topTheme));
+        reservationRepository.save(ReservationFixture.getOneWithTheme(topTheme));
+        reservationRepository.save(ReservationFixture.getOneWithTheme(topTheme));
 
         Theme secondTheme = savedThemes.get(0);
-        reservationRepository.save(ReservationFixture.getOne(secondTheme));
+        reservationRepository.save(ReservationFixture.getOneWithTheme(secondTheme));
 
         // when
-        List<Theme> orderByReservations = themeRepository.findOrderByReservation();
+        List<Theme> orderByReservations = themeRepository.findOrderByReservation(10);
 
         // then
         assertAll(
