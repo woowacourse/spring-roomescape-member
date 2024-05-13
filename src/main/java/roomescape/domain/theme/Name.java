@@ -1,7 +1,7 @@
 package roomescape.domain.theme;
 
 import java.util.Objects;
-import roomescape.exception.RoomescapeException;
+import roomescape.global.exception.RoomescapeException;
 
 public class Name {
 

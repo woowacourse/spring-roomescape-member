@@ -11,7 +11,7 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       .then(response => {
         if(response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
-          window.location.reload();
+          window.location.replace("/");
         } else {
           // 로그아웃 실패 처리
           console.error('Logout failed');
@@ -31,10 +31,22 @@ function updateUIBasedOnLogin() {
         return response.json(); // 응답 본문을 JSON으로 파싱
       })
       .then(data => {
+        if (data.name === '' || data.role === '') {
+          throw new Error('Not logged in or other error');
+        }
+
         // 응답에서 사용자 이름을 추출하여 UI 업데이트
-        document.getElementById('profile-name').textContent = data.name; // 프로필 이름 설정
+        let profileName = data.name;
+        if (data.role === 'ADMIN') {
+          profileName += '(관리자)';
+        }
+        document.getElementById('profile-name').textContent = profileName; // 프로필 이름 설정
         document.querySelector('.nav-item.dropdown').style.display = 'block'; // 드롭다운 메뉴 표시
         document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
+
+        if (data.role === 'ADMIN' && document.querySelector('.nav-admin')) {
+          document.querySelector('.nav-admin').style.display = 'block'; // Admin 버튼 표시
+        }
       })
       .catch(error => {
         // 에러 처리 또는 로그아웃 상태일 때 UI 업데이트
@@ -74,7 +86,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (response.status !== 200) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }

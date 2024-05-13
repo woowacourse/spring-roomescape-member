@@ -2,24 +2,24 @@ package roomescape.domain.reservation;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import roomescape.domain.member.Name;
+import roomescape.domain.member.LoginMember;
 import roomescape.domain.theme.Theme;
 
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final LoginMember loginMember;
     private final Date date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String rawName, String rawDate, ReservationTime time, Theme theme) {
-        this(null, rawName, rawDate, time, theme);
+    public Reservation(LoginMember loginMember, String rawDate, ReservationTime time, Theme theme) {
+        this(null, loginMember, rawDate, time, theme);
     }
 
-    public Reservation(Long id, String rawName, String rawDate, ReservationTime time, Theme theme) {
+    public Reservation(Long id, LoginMember loginMember, String rawDate, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = new Name(rawName);
+        this.loginMember = loginMember;
         this.date = new Date(rawDate);
         this.time = time;
         this.theme = theme;
@@ -30,7 +30,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.getValue();
+        return loginMember.getName();
     }
 
     public LocalDate getDate() {
@@ -45,6 +45,10 @@ public class Reservation {
         return theme;
     }
 
+    public LoginMember getLoginMember() {
+        return loginMember;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -54,13 +58,13 @@ public class Reservation {
             return false;
         }
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+        return Objects.equals(id, that.id) && Objects.equals(loginMember, that.loginMember)
             && Objects.equals(date, that.date) && Objects.equals(time, that.time)
             && Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, time, theme);
+        return Objects.hash(id, loginMember, date, time, theme);
     }
 }
