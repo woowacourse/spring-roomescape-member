@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,11 +19,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.member.model.Member;
+import roomescape.member.model.Role;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
+import roomescape.util.JwtTokenHelper;
 
-@Disabled
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/delete-data.sql", "/data.sql"})
@@ -33,22 +34,105 @@ class RoomEscapeApplicationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private JwtTokenHelper jwtTokenHelper;
+
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void beforeEach() {
+        RestAssured.port = this.port;
+    }
+
+    @Test
+    @DisplayName("관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성")
+    void createReservationRequest() {
+        final String token = jwtTokenHelper.createToken(new Member(1L, "name", "email", "pw", Role.ADMIN));
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2125-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("memberId", 1);
+
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .cookie("token", token)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/reservations/4");
+    }
+
+    @Nested
+    class LoginTest {
+
+            @Test
+            @DisplayName("로그인 한다.")
+            void postLogin() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("email", "email1@woowa.com");
+                params.put("password", "password");
+
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .body(params)
+                        .when().post("/login")
+                        .then().log().all()
+                        .statusCode(200)
+                        .cookie("token");
+            }
+
+            @Test
+            @DisplayName("틀린 이메일와 패스워드로 로그인을 시도하면 실패한다.")
+            void postLogin_InvalidEmailAndPassword() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("email", "none@woowa.com");
+                params.put("password", "none");
+
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .body(params)
+                        .when().post("/login")
+                        .then().log().all()
+                        .statusCode(401);
+            }
+
+            @Test
+            @DisplayName("로그인한 사용자의 정보를 조회한다.")
+            void getAuthInfo() {
+                final String token = jwtTokenHelper.createToken(new Member(1L, "마크", "email", "pw", Role.USER));
+
+                RestAssured.given().log().all()
+                        .cookie("token", token)
+                        .when().get("/login/check")
+                        .then().log().all()
+                        .statusCode(200)
+                        .body("name", Matchers.is("마크"));
+            }
+
+            @Test
+            @DisplayName("로그아웃 하면 token 쿠키가 삭제된다.")
+            void postLogout() {
+                RestAssured.given().log().all()
+                        .when().post("/logout")
+                        .then().log().all()
+                        .statusCode(200)
+                        .cookie("token", "");
+            }
+    }
+
     @Nested
     class ReservationTest {
 
-        @LocalServerPort
-        private int port;
-
-        @BeforeEach
-        void beforeEach() {
-            RestAssured.port = this.port;
-        }
-
         @Test
-        @DisplayName("예약을 생성한다.")
+        @DisplayName("쿠키를 이용해 예약을 생성한다.")
         void postReservation() {
+            final String token = jwtTokenHelper.createToken(new Member(1L, "name", "email", "pw", Role.USER));
+
             Map<String, Object> params = new HashMap<>();
-            params.put("name", "브라운");
             params.put("date", "2025-08-05");
             params.put("timeId", 1);
             params.put("themeId", 1);
@@ -56,10 +140,11 @@ class RoomEscapeApplicationTest {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
+                    .cookie("token", token)
                     .when().post("/reservations")
                     .then().log().all()
                     .statusCode(201)
-                    .header("Location", "/reservations/14");
+                    .header("Location", "/reservations/4");
         }
 
         @Test
@@ -110,14 +195,6 @@ class RoomEscapeApplicationTest {
 
     @Nested
     class ReservationTimeTest {
-
-        @LocalServerPort
-        private int port;
-
-        @BeforeEach
-        void beforeEach() {
-            RestAssured.port = this.port;
-        }
 
         @Test
         @DisplayName("예약 시간을 생성한다.")
@@ -230,7 +307,7 @@ class RoomEscapeApplicationTest {
                     .when().get("/themes/popular")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", Matchers.is(6));
+                    .body("size()", Matchers.is(3));
         }
 
         @Test
@@ -263,5 +340,4 @@ class RoomEscapeApplicationTest {
                     .statusCode(409);
         }
     }
-
 }
