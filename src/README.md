@@ -79,7 +79,7 @@
 | DELETE      | `/themes/{id}`       | 테마 삭제        | 
 | GET         | `/login`             | 로그인 페이지      | 
 | POST        | `/login`             | 로그인 요청       | 
-| GET         | `/login/check`       | 인증 정보 조회     | 
+| GET         | `/login/member`      | 인증 정보 조회     | 
 | GET         | `/members`           | 회원 목록 조회     | 
 | POST        | `/members`           | 회원 추가        | 
 | DELETE      | `/members/{id}`      | 회원 삭제        | 

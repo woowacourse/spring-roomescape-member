@@ -37,7 +37,7 @@ public class LoginController {
         response.addCookie(cookie);
     }
 
-    @GetMapping("/login/check")
+    @GetMapping("/login/member")
     public ResponseEntity<MemberResponse> checkLogin(@LoginMemberArgument Member member) {
         return ResponseEntity.ok()
                 .body(MemberResponse.from(member));
