@@ -70,8 +70,8 @@ class ReservationDaoTest extends DaoTest {
     }
 
     @Test
-    @DisplayName("테마, 사용자, 예약 날짜에 따른 예약 목록을 조회한다.")
-    void findAllByThemeAndMemberAndPeriod() {
+    @DisplayName("검색 조건에 따른 예약 목록을 조회한다.")
+    void findAllByFilterParameter() {
         // given
         final ReservationFilterParam reservationFilterParam = new ReservationFilterParam(
                 theme.getId(), member.getId(), LocalDate.parse(DATE_MAY_EIGHTH), LocalDate.parse(DATE_MAY_NINTH));
@@ -145,7 +145,7 @@ class ReservationDaoTest extends DaoTest {
     }
 
     @Test
-    @DisplayName("날짜와 themeId로 예약 목록을 조회한다.")
+    @DisplayName("예약 가능한 시간 목록을 조회한다.")
     void findAllByDateAndThemeId() {
         // given
         final AvailableReservationTimeSearch availableReservationTimeSearch

@@ -83,24 +83,22 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAllBy(final ReservationFilterParam param) {
-        String sql = RESERVATION_BASIC_SQL;
-        sql += "WHERE 1=1 ";
+        final StringBuilder sqlBuilder = new StringBuilder(RESERVATION_BASIC_SQL);
+        sqlBuilder.append("WHERE 1=1 ");
 
         final MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        if (param.themeId() != null) {
-            sql += "AND r.theme_id = :themeId " ;
-            parameterSource.addValue("themeId", param.themeId());
+        addFilterCondition(parameterSource, sqlBuilder, param.themeId(), "themeId", "AND r.theme_id = :themeId ");
+        addFilterCondition(parameterSource, sqlBuilder, param.memberId(), "memberId", "AND r.member_id = :memberId ");
+        addFilterCondition(parameterSource, sqlBuilder, param.dateFrom(), "dateFrom", "AND (r.date BETWEEN :dateFrom ");
+        addFilterCondition(parameterSource, sqlBuilder, param.dateTo(), "dateTo", "AND :dateTo) ");
+        return jdbcTemplate.query(sqlBuilder.toString(), parameterSource, rowMapper);
+    }
+    private void addFilterCondition(final MapSqlParameterSource parameterSource, final StringBuilder sqlBuilder, final Object param,
+                                    final String paramName, final String condition) {
+        if (param != null) {
+            sqlBuilder.append(condition);
+            parameterSource.addValue(paramName, param);
         }
-        if (param.memberId() != null) {
-            sql += "AND r.member_id = :memberId " ;
-            parameterSource.addValue("memberId", param.memberId());
-        }
-        if (param.dateFrom() != null && param.dateTo() != null) {
-            sql += "AND (r.date BETWEEN :dateFrom AND :dateTo) " ;
-            parameterSource.addValue("dateFrom", param.dateFrom());
-            parameterSource.addValue("dateTo", param.dateTo());
-        }
-        return jdbcTemplate.query(sql, parameterSource, rowMapper);
     }
 
     @Override

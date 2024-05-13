@@ -99,8 +99,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("테마, 사용자, 예약 날짜에 따른 예약 목록을 조회한다.")
-    void findAllByThemeAndMemberAndPeriod() {
+    @DisplayName("검색 조건에 따른 예약 목록을 조회한다.")
+    void findAllByFilterParameter() {
         // given
         final Reservation reservation1 = new Reservation(TestFixture.MEMBER_MIA(), DATE_MAY_EIGHTH, RESERVATION_TIME_SIX(), THEME_HORROR());
         final Reservation reservation2 = new Reservation(TestFixture.MEMBER_MIA(), DATE_MAY_NINTH, RESERVATION_TIME_SIX(), THEME_HORROR());
