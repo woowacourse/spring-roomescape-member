@@ -19,12 +19,14 @@ public class JwtTokenProvider {
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
+    @Value("${security.jwt.token.expire-length}")
+    private long validityInMilliseconds;
 
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim(ROLE, member.getRole())
-                .setExpiration(new Date(System.currentTimeMillis()+60*10000))
+                .setExpiration(new Date(System.currentTimeMillis() + validityInMilliseconds))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
