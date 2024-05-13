@@ -4,13 +4,17 @@ GET http://localhost:8080/reservations
 ### RESERVATION create
 POST http://localhost:8080/reservations
 Content-Type: application/json
-Cookie: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6ZXVzQHdvb3dhLmNvbSIsImlhdCI6MTcxNTUzMzM3OSwiZXhwIjoxNzE1NTM2OTc5fQ.-Jaj0TQCll4jZAOx6VC-aDucO-ag9UPDIVVzcupQWGk
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6ZXVzQHdvb3dhLmNvbSIsImlhdCI6MTcxNTUzMzM3OSwiZXhwIjoxNzE1NTM2OTc5fQ.-Jaj0TQCll4jZAOx6VC-aDucO-ag9UPDIVVzcupQWGk
 
 {
   "date": "2024-06-01",
   "timeId": 1,
   "themeId": 1
 }
+
+### RESERVATION search
+GET http://localhost:8080/admin/reservations?memberId=1&themeId=4&dateFrom=2024-05-02&dateTo=2024-05-05
+Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkB3b293YS5jb20iLCJpYXQiOjE3MTU1ODU3OTQsImV4cCI6MTcxNTU4OTM5NH0.Zdy5T7LPJix7XIs88Mq0lsfZs1ErwC0IqgD9HR2GrOo
 
 ### RESERVATION_TIME getAll
 GET http://localhost:8080/times

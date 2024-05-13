@@ -99,4 +99,8 @@ public class ReservationService {
             throw new IllegalArgumentException("Cannot create a reservation for a past date and time.");
         }
     }
+
+    public List<Reservation> search(long memberId, long themeId, LocalDate from, LocalDate to) {
+        return reservationDao.search(memberId, themeId, from, to);
+    }
 }

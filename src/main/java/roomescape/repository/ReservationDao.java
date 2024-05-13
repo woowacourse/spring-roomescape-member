@@ -30,9 +30,9 @@ public class ReservationDao {
             new Member(
                     resultSet.getLong("member_id"),
                     resultSet.getString("member_email"),
-                    resultSet.getString("member_password"),
+                    null,
                     resultSet.getString("member_name"),
-                    Role.from(resultSet.getString("role"))
+                    Role.from(resultSet.getString("member_role"))
             ),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -57,8 +57,7 @@ public class ReservationDao {
         String query = "SELECT "
                 + "r.id, r.date, "
                 + "member_id, member.email AS member_email, "
-                + "member.password AS member_password, member.name AS member_name,"
-                + "member.role AS member_role, "
+                + "member.name AS member_name, member.role AS member_role, "
                 + "time_id, time.start_at AS time_start_at, "
                 + "theme_id, theme.name AS theme_name, "
                 + "theme.description AS theme_description, theme.thumbnail as theme_thumbnail "
@@ -76,7 +75,7 @@ public class ReservationDao {
         String query = "SELECT "
                 + "r.id, r.date, "
                 + "member_id, member.email AS member_email, "
-                + "member.password AS member_password, member.name AS member_name, "
+                + "member.name AS member_name, member.role AS member_role, "
                 + "time_id, time.start_at AS time_start_at, "
                 + "theme_id, theme.name AS theme_name, "
                 + "theme.description AS theme_description, theme.thumbnail as theme_thumbnail "
@@ -128,5 +127,24 @@ public class ReservationDao {
     public boolean existsByAttributes(LocalDate date, long timeId, long themeId) {
         String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE DATE = ? AND TIME_ID = ? AND THEME_ID = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId));
+    }
+
+    public List<Reservation> search(long memberId, long themeId, LocalDate from, LocalDate to) {
+        String query = "SELECT "
+                + "r.id, r.date, "
+                + "member_id, member.email AS member_email, "
+                + "member.name AS member_name, member.role AS member_role, "
+                + "time_id, time.start_at AS time_start_at, "
+                + "theme_id, theme.name AS theme_name, "
+                + "theme.description AS theme_description, theme.thumbnail as theme_thumbnail "
+                + "FROM RESERVATION AS r "
+                + "INNER JOIN MEMBER "
+                + "ON r.member_id = ? AND r.member_id = member.id "
+                + "INNER JOIN THEME "
+                + "ON r.theme_id = ? AND r.theme_id = theme.id "
+                + "INNER JOIN RESERVATION_TIME AS time "
+                + "ON r.time_id = time.id "
+                + "WHERE r.date BETWEEN ? AND ?";
+        return jdbcTemplate.query(query, reservationRowMapper, memberId, themeId, from, to);
     }
 }
