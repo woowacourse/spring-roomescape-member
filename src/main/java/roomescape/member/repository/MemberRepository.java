@@ -26,10 +26,14 @@ public class MemberRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Member> findAll() {
+    public Optional<List<Member>> findAll() {
         String sql = "SELECT * FROM member";
-
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        try {
+            List<Member> members = jdbcTemplate.query(sql, ROW_MAPPER);
+            return Optional.of(members);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Member> findById(long id) {
@@ -37,7 +41,7 @@ public class MemberRepository {
         try {
             Member member = jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
             return Optional.ofNullable(member);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -47,7 +51,7 @@ public class MemberRepository {
         try {
             Member member = jdbcTemplate.queryForObject(sql, ROW_MAPPER, email);
             return Optional.ofNullable(member);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
