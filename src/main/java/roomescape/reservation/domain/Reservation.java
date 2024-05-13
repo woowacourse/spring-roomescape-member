@@ -28,7 +28,8 @@ public class Reservation {
     }
 
     public boolean isBeforeOrOnToday() {
-        return date.isBefore(LocalDate.now()) || date.equals(LocalDate.now());
+        LocalDate today = LocalDate.now();
+        return date.isBefore(today) || date.equals(today);
     }
 
     public Long getReservationTimeId() {

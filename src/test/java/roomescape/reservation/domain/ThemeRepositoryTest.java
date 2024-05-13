@@ -119,11 +119,12 @@ class ThemeRepositoryTest extends RepositoryTest {
 
         long secondRankThemeId = 1;
         long firstRankThemeId = 2;
+        LocalDate today = LocalDate.now();
         String insertReservationSql = "INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(insertReservationSql,
-                1, LocalDate.now().minusDays(7), 1L, firstRankThemeId,
-                2, LocalDate.now().minusDays(6), 2L, firstRankThemeId,
-                2, LocalDate.now().minusDays(1), 1L, secondRankThemeId);
+                1,today.minusDays(7), 1L, firstRankThemeId,
+                2, today.minusDays(6), 2L, firstRankThemeId,
+                2, today.minusDays(1), 1L, secondRankThemeId);
 
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now().minusDays(1);
