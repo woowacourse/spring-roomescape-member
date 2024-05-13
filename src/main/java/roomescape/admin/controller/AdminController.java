@@ -16,7 +16,7 @@ import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
-@Auth(role = MemberRole.ADMIN)
+@Auth(roles = MemberRole.ADMIN)
 public class AdminController {
 
     private final ReservationService reservationService;

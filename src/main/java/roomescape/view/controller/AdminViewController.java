@@ -7,7 +7,7 @@ import roomescape.global.annotation.Auth;
 import roomescape.member.role.MemberRole;
 
 @Controller
-@Auth(role = MemberRole.ADMIN)
+@Auth(roles = MemberRole.ADMIN)
 @RequestMapping("/admin")
 public class AdminViewController {
 
@@ -25,7 +25,7 @@ public class AdminViewController {
     public String timePage() {
         return "admin/time";
     }
-    
+
     @GetMapping("/theme")
     public String themePage() {
         return "admin/theme";

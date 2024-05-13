@@ -45,7 +45,7 @@ public class MemberRoleInterceptor implements HandlerInterceptor {
     }
 
     private boolean isSameRole(Auth auth, long memberId) {
-        MemberRole[] permittedRole = auth.role();
+        MemberRole[] permittedRole = auth.roles();
         return memberService.findMemberRole(memberId).hasSameRoleFrom(permittedRole);
     }
 

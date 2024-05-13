@@ -10,5 +10,5 @@ import roomescape.member.role.MemberRole;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Auth {
 
-    MemberRole[] role() default MemberRole.MEMBER;
+    MemberRole[] roles() default MemberRole.MEMBER;
 }
