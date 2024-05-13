@@ -20,7 +20,6 @@ public class JwtTokenProvider {
         Date expiration = new Date(now.getTime() + expireLength);
         return Jwts.builder()
                 .setSubject(email)
-                .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
