@@ -1,6 +1,7 @@
 package roomescape.controller.rest;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.configuration.resolver.AccessToken;
@@ -59,5 +61,15 @@ public class ReservationController {
                                                      @RequestBody ReservationRequest request) {
         Reservation createdReservation = reservationService.createByAdmin(admin, request);
         return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
+    }
+
+    @GetMapping("/admin/reservations")
+    public ResponseEntity<List<Reservation>> search(
+            @RequestParam long memberId,
+            @RequestParam long themeId,
+            @RequestParam LocalDate dateFrom,
+            @RequestParam LocalDate dateTo
+    ) {
+        return ResponseEntity.ok(reservationService.search(memberId, themeId, dateFrom, dateTo));
     }
 }
