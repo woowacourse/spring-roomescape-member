@@ -62,15 +62,10 @@ public class ReservationService {
     }
 
     public ReservationResponse createByAdmin(ReservationAdminRequest reservationAdminRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationAdminRequest.timeId());
-        Theme theme = themeRepository.findById(reservationAdminRequest.themeId());
-        LocalDate date = LocalDate.parse(reservationAdminRequest.date());
-
-        validateTimeExist(reservationTime, reservationAdminRequest.timeId());
-        validateThemeExist(theme, reservationAdminRequest.themeId());
-        validateReservationDuplicate(date, reservationAdminRequest.timeId(), reservationAdminRequest.memberId());
-
-        return saveReservation(date, reservationTime, theme, reservationAdminRequest.memberId());
+        ReservationRequest request = new ReservationRequest(reservationAdminRequest.date(),
+                reservationAdminRequest.timeId(), reservationAdminRequest.themeId());
+        LoginMember loginMember = new LoginMember(reservationAdminRequest.memberId());
+        return create(request, loginMember);
     }
 
     public void delete(long reservationId) {
