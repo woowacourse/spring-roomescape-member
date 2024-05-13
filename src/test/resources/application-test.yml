@@ -7,10 +7,6 @@ spring:
     console:
       enabled: true
       path: /h2-console
-  sql:
-    init:
-      schema-locations: classpath:schema-test.sql
-      data-locations: classpath:data-test.sql
 security:
   jwt:
     token:

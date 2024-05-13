@@ -309,10 +309,10 @@ class ReservationControllerTest {
     @DisplayName("사용자 id로 예약 목록을 조회한다.")
     void findReservationsWithMemberId() {
         RestAssured.given().log().all()
-                .when().get("/reservations?memberId=1")
+                .when().get("/reservations?member-id=2")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
     }
 
     @Test
@@ -332,14 +332,14 @@ class ReservationControllerTest {
                 .when().get("/reservations?date-from=2024-05-06&date-to=2024-05-07")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
     }
 
     @Test
     @DisplayName("사용자 id, 테마 id, 날짜 구간으로 예약 목록을 조회한다.")
     void findReservationsWithConditions() {
         RestAssured.given().log().all()
-                .when().get("/reservations?member-id=1&theme-id=1&date-from=2024-05-05")
+                .when().get("/reservations?member-id=1&theme-id=2&date-from=2024-05-05")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

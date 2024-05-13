@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static roomescape.util.Fixture.THEME_DESCRIPTION;
 import static roomescape.util.Fixture.THEME_NAME;
 import static roomescape.util.Fixture.THEME_THUMBNAIL;
-import static roomescape.util.Fixture.YESTERDAY;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -129,13 +128,11 @@ class ThemeControllerTest {
     @Test
     @DisplayName("지난 한 주 동안의 인기 테마 목록을 조회한다.")
     void findPopularThemesInLastWeek() {
-        insertReservation(YESTERDAY, 1, 1, 1);
-
         RestAssured.given().log().all()
                 .when().get("/themes/popular?period-day=7")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(4));
     }
 
     @Test
