@@ -12,12 +12,11 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.member.Role;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.AvailableReservationTimeSearch;
 import roomescape.dto.reservation.ReservationExistenceCheck;
 import roomescape.dto.reservation.ReservationFilterParam;
 
 import javax.sql.DataSource;
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -141,12 +140,11 @@ public class ReservationJdbcDao implements ReservationDao {
         return jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
     }
 
-    @Override
-    public List<Long> findTimeIdsByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<Long> findTimeIds(final AvailableReservationTimeSearch search) {
         final String sql = "SELECT time_id FROM reservation WHERE date = :date AND theme_id = :themeId";
         final SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("date", Date.valueOf(date))
-                .addValue("themeId", themeId);
+                .addValue("date", search.date())
+                .addValue("themeId", search.themeId());
         return jdbcTemplate.query(sql, parameterSource,
                 (resultSet, rowNumber) -> resultSet.getLong("time_id"));
     }

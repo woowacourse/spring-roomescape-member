@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.dto.reservation.AvailableReservationTimeResponse;
+import roomescape.dto.reservation.AvailableReservationTimeSearch;
 import roomescape.dto.reservation.ReservationTimeResponse;
 import roomescape.dao.ReservationTimeDao;
 
@@ -101,17 +102,16 @@ class ReservationTimeServiceTest {
     @DisplayName("선택한 날짜와 테마로 예약 가능한 시간 목록을 조회한다.")
     void findAvailableReservationTimes() {
         // given
-        final LocalDate date = LocalDate.parse(DATE_MAY_EIGHTH);
-        final Long themeId = 1L;
         final ReservationTime reservedTime = RESERVATION_TIME_SIX(1L);
-
-        given(reservationDao.findTimeIdsByDateAndThemeId(date, themeId)).willReturn(List.of(1L));
+        final AvailableReservationTimeSearch availableReservationTimeSearch
+                = new AvailableReservationTimeSearch(LocalDate.parse(DATE_MAY_EIGHTH), 1L);
+        given(reservationDao.findTimeIds(availableReservationTimeSearch)).willReturn(List.of(1L));
         given(reservationTimeDao.findAll())
                 .willReturn(List.of(reservedTime, RESERVATION_TIME_SEVEN(2L)));
 
         // when
         final List<AvailableReservationTimeResponse> availableReservationTimes
-                = reservationTimeService.findAvailableReservationTimes(date, themeId);
+                = reservationTimeService.findAvailableReservationTimes(availableReservationTimeSearch);
 
         // then
         assertAll(() -> {

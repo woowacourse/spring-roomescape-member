@@ -1,10 +1,10 @@
 package roomescape.dao;
 
 import roomescape.domain.reservation.Reservation;
+import roomescape.dto.reservation.AvailableReservationTimeSearch;
 import roomescape.dto.reservation.ReservationExistenceCheck;
 import roomescape.dto.reservation.ReservationFilterParam;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservationDao {
@@ -23,5 +23,5 @@ public interface ReservationDao {
 
     int countByTimeId(final Long timeId);
 
-    List<Long> findTimeIdsByDateAndThemeId(final LocalDate date, final Long themeId);
+    List<Long> findTimeIds(final AvailableReservationTimeSearch availableReservationTimeSearch);
 }
