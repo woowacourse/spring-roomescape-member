@@ -1,5 +1,7 @@
 package roomescape.controller.helper;
 
+import static roomescape.global.Constants.TOKEN_NAME;
+
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +18,6 @@ import roomescape.global.JwtManager;
 public class AdminCheckInterceptor implements HandlerInterceptor {
 
     private static final String AUTHORITY = "role";
-    private static final String TOKEN = "token";
 
     private final JwtManager jwtManager;
 
@@ -27,7 +28,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
-        Optional<Cookie> cookie = CookieUtils.findCookie(request, TOKEN);
+        Optional<Cookie> cookie = CookieUtils.findCookie(request, TOKEN_NAME);
 
         if (cookie.isEmpty()) {
             response.sendRedirect("/login");

@@ -1,5 +1,7 @@
 package roomescape.controller.member;
 
+import static roomescape.global.Constants.TOKEN_NAME;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -20,8 +22,6 @@ import roomescape.service.dto.member.MemberResponse;
 @RestController
 public class MemberRestController {
 
-    private static final String TOKEN = "token";
-
     private final MemberService memberService;
 
     public MemberRestController(MemberService memberService) {
@@ -37,7 +37,7 @@ public class MemberRestController {
     @PostMapping("/members/login")
     public void login(@Valid @RequestBody MemberLoginRequest request, HttpServletResponse response) {
         String token = memberService.login(request);
-        CookieUtils.addCookie(response, TOKEN, token, 300);
+        CookieUtils.addCookie(response, TOKEN_NAME, token, 300);
     }
 
     @GetMapping("/members/login/check")
@@ -47,7 +47,7 @@ public class MemberRestController {
 
     @PostMapping("/members/logout")
     public void logout(HttpServletResponse response) {
-        CookieUtils.deleteCookie(response, TOKEN);
+        CookieUtils.deleteCookie(response, TOKEN_NAME);
     }
 
     @GetMapping("/admin/members")
