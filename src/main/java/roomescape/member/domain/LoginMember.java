@@ -7,27 +7,25 @@ public class LoginMember {
     private final Long id;
     private final Name name;
     private final Email email;
+    private final Role role;
 
-    public LoginMember(Long id, Name name, Email email) {
+    public LoginMember(Long id, Name name, Email email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.role = role;
     }
 
-    public LoginMember(Name name, Email email) {
-        this(null, name, email);
+    public LoginMember(Name name, Email email, Role role) {
+        this(null, name, email, role);
     }
 
-    public LoginMember(Long id, String name, String email) {
-        this(id, new Name(name), new Email(email));
+    public LoginMember(Long id, String name, String email, String role) {
+        this(id, new Name(name), new Email(email), Role.getByDbValue(role));
     }
 
-    public LoginMember(Member member) {
-        this(member.getId(), member.getName(), member.getEmail());
-    }
-
-    public boolean isId(Long id) {
-        return this.id == id;
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
     }
 
     public Long getId() {
@@ -40,6 +38,10 @@ public class LoginMember {
 
     public Email getEmail() {
         return email;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override

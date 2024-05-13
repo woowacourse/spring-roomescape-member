@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Email;
 import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.domain.Name;
@@ -47,14 +48,9 @@ public class ReservationH2Repository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        jdbcTemplate.update("DELETE FROM RESERVATION WHERE id = ?", id);
-    }
-
-    @Override
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-                "SELECT r.id, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, t.name as theme_name, t.description, t.thumbnail, m.name as member_name, m.email "
+                "SELECT r.id, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, t.name as theme_name, t.description, t.thumbnail, m.name as member_name, m.email, m.role "
                         + "FROM reservation as r "
                         + "inner join reservation_time as rt on r.time_id = rt.id "
                         + "inner join theme as t on r.theme_id = t.id "
@@ -66,7 +62,7 @@ public class ReservationH2Repository implements ReservationRepository {
     @Override
     public List<Reservation> findAll(Long themeId, Long memberId) {
         return jdbcTemplate.query(
-                "SELECT r.id, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, t.name as theme_name, t.description, t.thumbnail, m.name as member_name, m.email "
+                "SELECT r.id, r.date, r.time_id, r.theme_id, r.member_id, rt.start_at, t.name as theme_name, t.description, t.thumbnail, m.name as member_name, m.email, m.role "
                         + "FROM reservation as r "
                         + "inner join reservation_time as rt on r.time_id = rt.id "
                         + "inner join theme as t on r.theme_id = t.id "
@@ -93,7 +89,8 @@ public class ReservationH2Repository implements ReservationRepository {
             LoginMember loginMember = new LoginMember(
                     resultSet.getLong("member_id"),
                     new roomescape.member.domain.Name(resultSet.getString("member_name")),
-                    new Email(resultSet.getString("email"))
+                    new Email(resultSet.getString("email")),
+                    Role.getByDbValue(resultSet.getString("role"))
             );
             return new Reservation(
                     resultSet.getLong("id"),
@@ -124,5 +121,11 @@ public class ReservationH2Repository implements ReservationRepository {
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()
         ).isEmpty();
+    }
+
+
+    @Override
+    public void delete(Long id) {
+        jdbcTemplate.update("DELETE FROM RESERVATION WHERE id = ?", id);
     }
 }

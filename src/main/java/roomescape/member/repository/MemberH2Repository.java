@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Email;
-import roomescape.member.domain.Member;
+import roomescape.member.domain.LoginMember;
 import roomescape.member.domain.Name;
 import roomescape.member.domain.Password;
 import roomescape.member.domain.Role;
@@ -22,33 +22,32 @@ public class MemberH2Repository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findById(Long id) {
+    public Optional<LoginMember> findById(Long id) {
         try {
-            Member member = jdbcTemplate.queryForObject(
+            LoginMember loginMember = jdbcTemplate.queryForObject(
                     "SELECT * FROM member WHERE id = ?",
                     getMemberRowMapper(),
                     id
             );
-            return Optional.ofNullable(member);
+            return Optional.ofNullable(loginMember);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    private RowMapper<Member> getMemberRowMapper() {
-        return (resultSet, rowNum) -> new Member(
+    private RowMapper<LoginMember> getMemberRowMapper() {
+        return (resultSet, rowNum) -> new LoginMember(
                 resultSet.getLong("id"),
                 new Name(resultSet.getString("name")),
                 new Email(resultSet.getString("email")),
-                new Password(resultSet.getString("password")),
-                Role.findByDbValue(resultSet.getString("role"))
+                Role.getByDbValue(resultSet.getString("role"))
         );
     }
 
     @Override
-    public Optional<Member> findByEmail(Email email) {
+    public Optional<LoginMember> findByEmail(Email email) {
         try {
-            Member member = jdbcTemplate.queryForObject(
+            LoginMember member = jdbcTemplate.queryForObject(
                     "SELECT * FROM member WHERE email = ?",
                     getMemberRowMapper(),
                     email.email()
@@ -60,11 +59,22 @@ public class MemberH2Repository implements MemberRepository {
     }
 
     @Override
-    public List<Member> findAll() {
+    public List<LoginMember> findAll() {
         return jdbcTemplate.query(
                 "SELECT * FROM member",
                 getMemberRowMapper()
         );
+    }
+
+    @Override
+    public boolean isCorrectPassword(Email email, Password password) {
+        int matchingCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM member WHERE email = ? AND password = ?",
+                Integer.class,
+                email.email(),
+                password.password()
+        );
+        return matchingCount > 0;
     }
 
     @Override

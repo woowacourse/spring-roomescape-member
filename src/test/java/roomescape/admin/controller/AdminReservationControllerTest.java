@@ -2,8 +2,9 @@ package roomescape.admin.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.InitialDataFixture.INITIAL_RESERVATION_COUNT;
-import static roomescape.InitialMemberFixture.MEMBER_1;
-import static roomescape.InitialMemberFixture.MEMBER_4;
+import static roomescape.InitialMemberFixture.COMMON_PASSWORD;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_1;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_4;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -42,8 +43,8 @@ class AdminReservationControllerTest {
     @DisplayName("관리자가 아닌 사용자가 관리자 예약을 시도하면 예외가 발생한다.")
     void throwExceptionWhenNormalUserAddAdminReservation() {
         Map<String, String> memberParam = new HashMap<>();
-        memberParam.put("password", MEMBER_1.getPassword().password());
-        memberParam.put("email", MEMBER_1.getEmail().email());
+        memberParam.put("password", COMMON_PASSWORD.password());
+        memberParam.put("email", LOGIN_MEMBER_1.getEmail().email());
 
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -72,8 +73,8 @@ class AdminReservationControllerTest {
     @DisplayName("관리자가 예약 요칭 시, 요청 Body에 담긴 정보를 바탕으로 예약을 추가한다.")
     void AdminAddReservationFromRequestBody() {
         Map<String, String> memberParam = new HashMap<>();
-        memberParam.put("password", MEMBER_4.getPassword().password());
-        memberParam.put("email", MEMBER_4.getEmail().email());
+        memberParam.put("password", COMMON_PASSWORD.password());
+        memberParam.put("email", LOGIN_MEMBER_4.getEmail().email());
 
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

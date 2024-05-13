@@ -9,6 +9,7 @@ public class TokenExtractor {
     private TokenExtractor() {
     }
 
+    // TODO: depth 줄이기
     public static String extractTokenFromCookie(Cookie[] cookies) throws AuthenticationException {
         if (cookies != null) {
             for (Cookie cookie : cookies) {

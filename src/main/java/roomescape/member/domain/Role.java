@@ -14,7 +14,7 @@ public enum Role {
         this.dbValue = dbValue;
     }
 
-    public static Role findByDbValue(String dbValue) {
+    public static Role getByDbValue(String dbValue) {
         List<Role> matchingRoles = Arrays.stream(Role.values())
                 .filter(role -> role.getDbValue().equals(dbValue))
                 .toList();

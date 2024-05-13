@@ -1,7 +1,8 @@
 package roomescape.admin.controller;
 
-import static roomescape.InitialMemberFixture.MEMBER_1;
-import static roomescape.InitialMemberFixture.MEMBER_4;
+import static roomescape.InitialMemberFixture.COMMON_PASSWORD;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_1;
+import static roomescape.InitialMemberFixture.LOGIN_MEMBER_4;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -34,8 +35,8 @@ class AdminPageControllerTest {
     @DisplayName("관리자 권한이 없는 토큰으로 /admin 페이지에 접근하면 예외가 발생한다.")
     void throwExceptionIfNotAdmin(String url) {
         Map<String, String> memberParam = new HashMap<>();
-        memberParam.put("password", MEMBER_1.getPassword().password());
-        memberParam.put("email", MEMBER_1.getEmail().email());
+        memberParam.put("password", COMMON_PASSWORD.password());
+        memberParam.put("email", LOGIN_MEMBER_1.getEmail().email());
 
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -57,8 +58,8 @@ class AdminPageControllerTest {
     @DisplayName("관리자 권한이 있는 토큰으로 /admin 페이지에 접근하면 접근이 가능하다.")
     void AdminCanAccessAdminPage(String url) {
         Map<String, String> memberParam = new HashMap<>();
-        memberParam.put("password", MEMBER_4.getPassword().password());
-        memberParam.put("email", MEMBER_4.getEmail().email());
+        memberParam.put("password", COMMON_PASSWORD.password());
+        memberParam.put("email", LOGIN_MEMBER_4.getEmail().email());
 
         String token = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

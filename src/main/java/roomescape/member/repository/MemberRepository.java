@@ -3,15 +3,18 @@ package roomescape.member.repository;
 import java.util.List;
 import java.util.Optional;
 import roomescape.member.domain.Email;
-import roomescape.member.domain.Member;
+import roomescape.member.domain.LoginMember;
+import roomescape.member.domain.Password;
 
 public interface MemberRepository {
 
-    Optional<Member> findById(Long id);
+    Optional<LoginMember> findById(Long id);
 
-    Optional<Member> findByEmail(Email email);
+    Optional<LoginMember> findByEmail(Email email);
 
-    List<Member> findAll();
+    List<LoginMember> findAll();
+
+    boolean isCorrectPassword(Email email, Password password);
 
     void delete(Long id);
 }

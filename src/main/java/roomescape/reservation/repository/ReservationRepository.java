@@ -8,8 +8,6 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    void delete(Long id);
-
     List<Reservation> findAll();
 
     List<Reservation> findAll(Long themeId, Long memberId);
@@ -17,4 +15,6 @@ public interface ReservationRepository {
     List<Long> findAlreadyBookedTimeIds(LocalDate date, Long themeId);
 
     boolean isAlreadyBooked(Reservation reservation);
+
+    void delete(Long id);
 }

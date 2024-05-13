@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.dto.MemberResponse;
+import roomescape.member.dto.MemberIdNameResponse;
 import roomescape.member.service.MemberService;
 
 @RestController
@@ -18,7 +18,7 @@ public class MemberController {
     }
 
     @GetMapping
-    public List<MemberResponse> findMembers() {
+    public List<MemberIdNameResponse> findMembers() {
         return memberService.findMembers();
     }
 }

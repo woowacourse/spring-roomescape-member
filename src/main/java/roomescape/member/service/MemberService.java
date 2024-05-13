@@ -1,22 +1,20 @@
 package roomescape.member.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.List;
-import java.util.Objects;
 import javax.naming.AuthenticationException;
 import org.springframework.stereotype.Service;
 import roomescape.exceptions.NotFoundException;
 import roomescape.login.dto.LoginRequest;
 import roomescape.member.domain.Email;
 import roomescape.member.domain.LoginMember;
-import roomescape.member.domain.Member;
 import roomescape.member.domain.Password;
-import roomescape.member.domain.Role;
 import roomescape.member.dto.LoginMemberRequest;
+import roomescape.member.dto.MemberIdNameResponse;
 import roomescape.member.dto.MemberNameResponse;
-import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberRepository;
 
 
@@ -32,60 +30,60 @@ public class MemberService {
 
     public LoginMember getLoginMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .map(LoginMember::new)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 id입니다. memberId = " + memberId));
     }
 
-    public List<MemberResponse> findMembers() {
+    public List<MemberIdNameResponse> findMembers() {
         return memberRepository.findAll()
                 .stream()
-                .map(MemberResponse::new)
+                .map(MemberIdNameResponse::new)
                 .toList();
     }
 
     public String createMemberToken(LoginRequest loginRequest) throws AuthenticationException {
-        Member member = memberRepository.findByEmail(new Email(loginRequest.email()))
+        LoginMember loginMember = memberRepository.findByEmail(new Email(loginRequest.email()))
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
 
-        if (Objects.equals(member.getPassword(), new Password(loginRequest.password()))) {
-            return parseToToken(member);
+        if (memberRepository.isCorrectPassword(loginMember.getEmail(), new Password(loginRequest.password()))) {
+            return parseToToken(loginMember);
         }
         throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
     }
 
-    private String parseToToken(Member member) {
+    private String parseToToken(LoginMember loginMember) {
         return Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName().name())
-                .claim("email", member.getEmail().email())
+                .setSubject(loginMember.getId().toString())
+                .claim("name", loginMember.getName().name())
+                .claim("email", loginMember.getEmail().email())
+                .claim("role", loginMember.getRole().getDbValue())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
 
     public MemberNameResponse getMemberNameResponseByToken(String token) throws AuthenticationException {
-        Long memberId = parseTokenToMemberId(token);
-
-        return memberRepository.findById(memberId)
-                .map(member -> new MemberNameResponse(member.getName().name()))
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
+        LoginMember loginMember = parseTokenToLoginMember(token);
+        return new MemberNameResponse(loginMember);
     }
 
     public boolean isAdminToken(String token) throws AuthenticationException {
-        Long memberId = parseTokenToMemberId(token);
+        LoginMember loginMember = parseTokenToLoginMember(token);
 
-        return Role.ADMIN == memberRepository.findById(memberId)
-                .map(Member::getRole)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원 토큰입니다. token = " + token));
+        return loginMember.isAdmin();
     }
 
-    private Long parseTokenToMemberId(String token) throws AuthenticationException {
+    private LoginMember parseTokenToLoginMember(String token) throws AuthenticationException {
         try {
-            return Long.valueOf(Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                     .build()
                     .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject()
+                    .getBody();
+
+            return new LoginMember(
+                    Long.valueOf(claims.getSubject()),
+                    (String) claims.get("name"),
+                    (String) claims.get("email"),
+                    (String) claims.get("role")
             );
         } catch (JwtException | IllegalArgumentException e) {
             throw new AuthenticationException("유효하지 않은 토큰입니다.");
@@ -93,10 +91,8 @@ public class MemberService {
     }
 
     public LoginMemberRequest getLoginMemberRequestByToken(String token) throws AuthenticationException {
-        Long memberId = parseTokenToMemberId(token);
+        LoginMember loginMember = parseTokenToLoginMember(token);
 
-        return memberRepository.findById(memberId)
-                .map(LoginMemberRequest::new)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 로그인 정보입니다. token = " + token));
+        return new LoginMemberRequest(loginMember);
     }
 }

@@ -30,8 +30,10 @@ class ReservationServiceTest {
     private final LoginMemberRequest loginMemberRequest = new LoginMemberRequest(
             LOGIN_MEMBER_1.getId(),
             LOGIN_MEMBER_1.getName().name(),
-            LOGIN_MEMBER_1.getEmail().email()
+            LOGIN_MEMBER_1.getEmail().email(),
+            LOGIN_MEMBER_1.getRole().getDbValue()
     );
+
     @Autowired
     private ReservationService reservationService;
     @Autowired
