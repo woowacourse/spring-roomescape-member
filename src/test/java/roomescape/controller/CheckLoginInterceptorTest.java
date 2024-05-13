@@ -6,11 +6,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import roomescape.config.CheckLoginInterceptor;
+import roomescape.controller.api.dto.request.TokenContextRequest;
 import roomescape.domain.user.Role;
 import roomescape.exception.UnauthorizedException;
 import roomescape.service.MemberService;
@@ -33,7 +34,7 @@ class CheckLoginInterceptorTest {
 
     @BeforeEach
     void setUp() {
-        sut = new CheckLoginInterceptor(memberService, tokenProvider, new RequestTokenContext());
+        sut = new CheckLoginInterceptor(memberService, tokenProvider, new TokenContextRequest());
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
 

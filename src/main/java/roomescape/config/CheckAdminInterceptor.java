@@ -1,10 +1,11 @@
-package roomescape.controller;
+package roomescape.config;
 
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.controller.api.dto.request.TokenContextRequest;
 import roomescape.exception.ForbiddenException;
 import roomescape.service.MemberService;
 import roomescape.service.dto.output.TokenLoginOutput;
@@ -14,12 +15,12 @@ import roomescape.util.TokenProvider;
 public class CheckAdminInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
-    private final RequestTokenContext requestTokenContext;
+    private final TokenContextRequest tokenContextRequest;
 
-    public CheckAdminInterceptor(final MemberService memberService, final TokenProvider tokenProvider, final RequestTokenContext requestTokenContext) {
+    public CheckAdminInterceptor(final MemberService memberService, final TokenProvider tokenProvider, final TokenContextRequest tokenContextRequest) {
         this.memberService = memberService;
         this.tokenProvider = tokenProvider;
-        this.requestTokenContext = requestTokenContext;
+        this.tokenContextRequest = tokenContextRequest;
     }
 
     @Override
@@ -27,7 +28,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         final String token = tokenProvider.parseToken(request);
         final TokenLoginOutput output = memberService.loginToken(token);
         if (output.isAdmin()) {
-            requestTokenContext.setTokenLoginOutput(output);
+            tokenContextRequest.setTokenLoginOutput(output);
             return true;
         }
         throw new ForbiddenException(request.getRequestURI());

@@ -9,16 +9,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.api.dto.request.LoginMemberRequest;
+import roomescape.controller.api.dto.request.TokenContextRequest;
 import roomescape.service.dto.output.TokenLoginOutput;
 
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final RequestTokenContext requestTokenContext;
+    private final TokenContextRequest tokenContextRequest;
 
-    public LoginMemberArgumentResolver(final RequestTokenContext requestTokenContext) {
-        this.requestTokenContext = requestTokenContext;
+    public LoginMemberArgumentResolver(final TokenContextRequest tokenContextRequest) {
+        this.tokenContextRequest = tokenContextRequest;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public LoginMemberRequest resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer, final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) throws Exception {
-        final TokenLoginOutput output = requestTokenContext.getTokenLoginOutput();
+        final TokenLoginOutput output = tokenContextRequest.getTokenLoginOutput();
         return new LoginMemberRequest(output.id(),output.email(), output.password(), output.name());
     }
 }

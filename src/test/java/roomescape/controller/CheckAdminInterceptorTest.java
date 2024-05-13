@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import roomescape.config.CheckAdminInterceptor;
+import roomescape.controller.api.dto.request.TokenContextRequest;
 import roomescape.domain.user.Role;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.UnauthorizedException;
@@ -33,7 +35,7 @@ class CheckAdminInterceptorTest {
 
     @BeforeEach
     void setUp() {
-        sut = new CheckAdminInterceptor(memberService, tokenProvider, new RequestTokenContext());
+        sut = new CheckAdminInterceptor(memberService, tokenProvider, new TokenContextRequest());
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
 

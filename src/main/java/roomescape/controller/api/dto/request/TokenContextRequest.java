@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api.dto.request;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -9,7 +9,7 @@ import static org.springframework.web.context.WebApplicationContext.SCOPE_REQUES
 
 @Component
 @Scope(value = SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class RequestTokenContext {
+public class TokenContextRequest {
     private TokenLoginOutput tokenLoginOutput;
     public TokenLoginOutput getTokenLoginOutput() {
         return tokenLoginOutput;

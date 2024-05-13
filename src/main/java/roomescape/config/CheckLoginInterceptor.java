@@ -1,8 +1,9 @@
-package roomescape.controller;
+package roomescape.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.controller.api.dto.request.TokenContextRequest;
 import roomescape.service.MemberService;
 import roomescape.service.dto.output.TokenLoginOutput;
 import roomescape.util.TokenProvider;
@@ -13,16 +14,16 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
     private static final List<String> CHECK_LIST = initializeCheckList();
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
-    private final RequestTokenContext requestTokenContext;
+    private final TokenContextRequest tokenContextRequest;
 
     private static List<String> initializeCheckList() {
         return List.of("/login/check");
     }
 
-    public CheckLoginInterceptor(final MemberService memberService, final TokenProvider tokenProvider, final RequestTokenContext requestTokenContext) {
+    public CheckLoginInterceptor(final MemberService memberService, final TokenProvider tokenProvider, final TokenContextRequest tokenContextRequest) {
         this.memberService = memberService;
         this.tokenProvider = tokenProvider;
-        this.requestTokenContext = requestTokenContext;
+        this.tokenContextRequest = tokenContextRequest;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
         }
         final String token = tokenProvider.parseToken(request);
         final TokenLoginOutput output = memberService.loginToken(token);
-        requestTokenContext.setTokenLoginOutput(output);
+        tokenContextRequest.setTokenLoginOutput(output);
         return true;
     }
 }
