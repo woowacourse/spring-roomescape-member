@@ -10,10 +10,10 @@ import roomescape.controller.helper.RoleAllowedInterceptor;
 import roomescape.service.AuthService;
 
 @Configuration
-public class WebMvcConfig implements WebMvcConfigurer {
+public class AuthWebMvcConfig implements WebMvcConfigurer {
     private final AuthService authService;
 
-    public WebMvcConfig(AuthService authService) {
+    public AuthWebMvcConfig(AuthService authService) {
         this.authService = authService;
     }
 
