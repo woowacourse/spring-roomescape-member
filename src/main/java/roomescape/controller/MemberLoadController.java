@@ -15,7 +15,7 @@ public class MemberLoadController {
         return "/login";
     }
 
-    @GetMapping("signup")
+    @GetMapping("/signup")
     public String loadSignUpPage() {
         return "/signup";
     }
