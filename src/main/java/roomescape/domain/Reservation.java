@@ -23,12 +23,12 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean hasSameTheme(Reservation reservation) {
-        return theme.equals(reservation.theme);
+    public boolean hasSameTheme(Reservation other) {
+        return this.theme.equals(other.theme);
     }
 
-    public boolean hasSameDateTime(Reservation reservation) {
-        return getDateTime().equals(reservation.getDateTime());
+    public boolean hasSameDateTime(Reservation other) {
+        return getDateTime().equals(other.getDateTime());
     }
 
     public boolean isBeforeNow() {
