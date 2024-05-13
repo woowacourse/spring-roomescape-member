@@ -2,8 +2,8 @@ package roomescape.service.dto.reservation;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import roomescape.controller.helper.validator.TimeFormatConstraint;
 import roomescape.domain.reservation.ReservationTime;
-import roomescape.service.dto.validator.TimeFormatConstraint;
 
 public class ReservationTimeRequest {
 

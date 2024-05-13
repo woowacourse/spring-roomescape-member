@@ -2,7 +2,7 @@ package roomescape.controller.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import roomescape.service.dto.validator.DateFormatConstraint;
+import roomescape.controller.helper.validator.DateFormatConstraint;
 
 public class MemberReservationRequest {
 

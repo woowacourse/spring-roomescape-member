@@ -1,4 +1,4 @@
-package roomescape.service.dto.validator;
+package roomescape.controller.helper.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

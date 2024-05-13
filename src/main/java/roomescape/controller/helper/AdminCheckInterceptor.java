@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.controller.helper;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
@@ -9,8 +9,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Role;
+import roomescape.global.CookieUtils;
 import roomescape.service.JwtService;
-import roomescape.utils.CookieUtils;
 
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {

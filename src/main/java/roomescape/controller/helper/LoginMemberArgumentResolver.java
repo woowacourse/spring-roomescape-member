@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.controller.helper;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,11 +8,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.controller.resolver.AuthenticationPrincipal;
 import roomescape.domain.member.Member;
 import roomescape.service.JwtService;
 import roomescape.service.MemberService;
-import roomescape.service.dto.member.LoginMember;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {

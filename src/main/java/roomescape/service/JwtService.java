@@ -15,8 +15,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
+import roomescape.global.CookieUtils;
 import roomescape.service.exception.UnauthorizedException;
-import roomescape.utils.CookieUtils;
 
 @Service
 public class JwtService {

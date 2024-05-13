@@ -1,4 +1,4 @@
-package roomescape.controller.resolver;
+package roomescape.controller.helper;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

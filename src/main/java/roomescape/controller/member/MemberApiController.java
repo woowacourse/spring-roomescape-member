@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.resolver.AuthenticationPrincipal;
+import roomescape.controller.helper.AuthenticationPrincipal;
+import roomescape.controller.helper.LoginMember;
+import roomescape.global.CookieUtils;
 import roomescape.service.MemberService;
-import roomescape.service.dto.member.LoginMember;
 import roomescape.service.dto.member.LoginMemberRequest;
 import roomescape.service.dto.member.MemberCreateRequest;
 import roomescape.service.dto.member.MemberResponse;
-import roomescape.utils.CookieUtils;
 
 @RestController
 public class MemberApiController {

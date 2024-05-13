@@ -2,12 +2,12 @@ package roomescape.service.dto.reservation;
 
 import java.time.LocalTime;
 import roomescape.controller.dto.MemberReservationRequest;
+import roomescape.controller.helper.LoginMember;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
-import roomescape.service.dto.member.LoginMember;
 
 public class ReservationCreate {
 
