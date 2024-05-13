@@ -13,6 +13,8 @@ import roomescape.exception.AuthorizationException;
 @Component
 public class JwtTokenProvider {
 
+    public static final String TOKEN_NAME = "token";
+
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
@@ -60,7 +62,7 @@ public class JwtTokenProvider {
             throw new AuthorizationException("접근 권한이 없습니다.");
         }
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
+            if (cookie.getName().equals(TOKEN_NAME)) {
                 return cookie.getValue();
             }
         }
