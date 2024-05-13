@@ -18,6 +18,8 @@ import roomescape.web.dto.request.member.MemberInfo;
 
 @RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+    private final JwtProvider jwtProvider;
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(MemberInfo.class);
@@ -28,7 +30,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractCookie(request.getCookies(), "token");
-        return new MemberInfo(new JwtProvider().extractId(token));
+        return new MemberInfo(jwtProvider.extractId(token));
     }
 
     private String extractCookie(Cookie[] cookies, String targetCookie) {

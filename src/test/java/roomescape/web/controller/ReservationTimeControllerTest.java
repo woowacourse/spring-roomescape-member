@@ -1,6 +1,8 @@
 package roomescape.web.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalTime;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,7 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.service.AuthService;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.time.ReservationTimeRequest;
 import roomescape.web.dto.response.time.ReservationTimeResponse;
 
@@ -28,10 +33,20 @@ import roomescape.web.dto.response.time.ReservationTimeResponse;
 class ReservationTimeControllerTest {
     @MockBean
     private ReservationTimeService reservationTimeService;
+    @MockBean
+    private AuthService authService;
+    @MockBean
+    private JwtProvider jwtProvider;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        Mockito.when(authService.verifyPermission(anyString(), anySet()))
+                .thenReturn(true);
+    }
 
     @Test
     @DisplayName("예약시간 저장 시 모든 필드에 유효한 값이라면 201Created를 반환한다.")

@@ -1,6 +1,8 @@
 package roomescape.web.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -8,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,7 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.service.AuthService;
 import roomescape.service.ThemeService;
+import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.theme.ThemeRequest;
 import roomescape.web.dto.response.theme.ThemeResponse;
 
@@ -26,10 +31,20 @@ import roomescape.web.dto.response.theme.ThemeResponse;
 class ThemeControllerTest {
     @MockBean
     private ThemeService themeService;
+    @MockBean
+    private AuthService authService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @MockBean
+    private JwtProvider jwtProvider;
+
+    @BeforeEach
+    void setUp() {
+        Mockito.when(authService.verifyPermission(anyString(), anySet()))
+                .thenReturn(true);
+    }
 
     @Test
     @DisplayName("예약 테마 저장 시 모든 필드가 유효한 값이면 201Created 상태코드를 반환한다.")

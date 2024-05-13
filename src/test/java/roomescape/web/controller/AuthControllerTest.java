@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import roomescape.domain.Member;
 import roomescape.domain.Role;
+import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.LoginRequest;
@@ -39,7 +40,10 @@ class AuthControllerTest {
     @MockBean
     private MemberService memberService;
     @MockBean
+    private AuthService authService;
+    @MockBean
     private JwtProvider jwtProvider;
+
 
     @Test
     @DisplayName("로그인에 성공하면 200OK를 반환한다.")
@@ -62,7 +66,7 @@ class AuthControllerTest {
         // given
         LoginRequest request = new LoginRequest("aaaa.aaa.aa", "password");
         ObjectMapper objectMapper = new ObjectMapper();
-        Mockito.when(memberService.login(request))
+        Mockito.when(authService.login(request))
                 .thenReturn("");
 
         // when & then
@@ -80,7 +84,7 @@ class AuthControllerTest {
         // given
         LoginRequest request = new LoginRequest("aaaa.aaa.aa", "  ");
         ObjectMapper objectMapper = new ObjectMapper();
-        Mockito.when(memberService.login(request))
+        Mockito.when(authService.login(request))
                 .thenReturn("");
 
         // when & then
@@ -98,7 +102,6 @@ class AuthControllerTest {
         // given
         Member member = new Member(1L, "name", "email@email.com", "password", Role.NORMAL);
         MemberResponse response = new MemberResponse(member.getId(), member.getName());
-        String token = new JwtProvider().encode(member);
         Mockito.when(jwtProvider.extractName(any()))
                 .thenReturn("name");
         Mockito.when(jwtProvider.extractId(any()))
@@ -106,7 +109,7 @@ class AuthControllerTest {
 
         // when & then
         mockMvc.perform(get("/login/check")
-                        .cookie(new Cookie("token", token)))
+                        .cookie(new Cookie("token", "")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));

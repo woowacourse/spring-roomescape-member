@@ -19,12 +19,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
-import roomescape.service.security.JwtProvider;
 import roomescape.web.controller.ReservationController;
 import roomescape.web.dto.response.reservation.ReservationResponse;
 
 class MissionStepTest extends AcceptanceTest {
-    private static final String TOKEN = new JwtProvider().encode(new Member(1L, "a", "B", "c", Role.ADMIN));
 
     @Autowired
     private ReservationController reservationController;
@@ -33,7 +31,7 @@ class MissionStepTest extends AcceptanceTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
-                .cookie("token", TOKEN)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -42,7 +40,7 @@ class MissionStepTest extends AcceptanceTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
-                .cookie("token", TOKEN)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -65,7 +63,7 @@ class MissionStepTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .cookie("token", TOKEN)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -108,7 +106,7 @@ class MissionStepTest extends AcceptanceTest {
                 "2023-08-05", "1", "1", "1");
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
-                .cookie("token", TOKEN)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -131,7 +129,7 @@ class MissionStepTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .cookie("token", TOKEN)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -189,7 +187,7 @@ class MissionStepTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .cookie("token", TOKEN)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);

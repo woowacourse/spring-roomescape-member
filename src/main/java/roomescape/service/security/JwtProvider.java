@@ -1,5 +1,8 @@
 package roomescape.service.security;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -11,16 +14,22 @@ import roomescape.exception.member.AuthenticationFailureException;
 
 @Component
 public class JwtProvider {
-    private static final String SECRET_KEY = "hellowootecoworldhihowareyouiamfinethankyouandyou";
     private static final String ROLE_CLAIM_KEY = "role";
     private static final String NAME_CLAIM_KEY = "name";
-    
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
+    @Value("${security.jwt.token.expire-length}")
+    private Long expireMillisecond;
+
+
     public String encode(Member user) {
+        Date now = new Date();
         return Jwts.builder()
                 .subject(user.getId().toString())
                 .claim(ROLE_CLAIM_KEY, user.getRoleAsString())
                 .claim(NAME_CLAIM_KEY, user.getName())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .expiration(new Date(now.getTime() + expireMillisecond))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
@@ -41,7 +50,7 @@ public class JwtProvider {
             token = token.replace("token=", "");
 
             return Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();

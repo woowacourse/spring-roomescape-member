@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
-import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.member.DuplicatedEmailException;
 import roomescape.service.security.JwtProvider;
-import roomescape.web.dto.request.member.LoginRequest;
 import roomescape.web.dto.request.member.SignupRequest;
 import roomescape.web.dto.response.member.MemberResponse;
 
@@ -25,13 +23,6 @@ public class MemberService {
                 .stream()
                 .map(member -> new MemberResponse(member.getId(), member.getName()))
                 .toList();
-    }
-
-    public String login(LoginRequest loginRequest) {
-        Member findMember = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
-                .orElseThrow(AuthenticationFailureException::new);
-
-        return "token=" + jwtProvider.encode(findMember);
     }
 
     public long signup(SignupRequest signupRequest) {

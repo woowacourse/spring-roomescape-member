@@ -2,6 +2,8 @@ package roomescape.web.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,6 +16,7 @@ import java.time.LocalTime;
 
 import jakarta.servlet.http.Cookie;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import roomescape.domain.Member;
+import roomescape.service.AuthService;
 import roomescape.service.ReservationService;
 import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.reservation.ReservationRequest;
@@ -36,20 +40,28 @@ import roomescape.web.dto.response.time.ReservationTimeResponse;
 
 @WebMvcTest(controllers = ReservationController.class)
 class ReservationControllerTest {
-    private static final JwtProvider jwtProvider = new JwtProvider();
+    @MockBean
+    private ReservationService reservationService;
+    @MockBean
+    private AuthService authService;
+    @MockBean
+    private JwtProvider jwtProvider;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @MockBean
-    private ReservationService reservationService;
+
+    @BeforeEach
+    void setUp() {
+        Mockito.when(authService.verifyPermission(anyString(), anySet()))
+                .thenReturn(true);
+    }
 
     @Test
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 201Created를 반환한다.")
     void saveReservation_ShouldReturn201StatusCode_WhenInsertAllValidateField() throws Exception {
         // given
         Member member = new Member(1L, "name", "email", "password");
-        String token = jwtProvider.encode(member);
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
@@ -63,7 +75,7 @@ class ReservationControllerTest {
         mockMvc.perform(
                         post("/reservations")
                                 .content(objectMapper.writeValueAsString(request))
-                                .cookie(new Cookie("token", token))
+                                .cookie(new Cookie("token", ""))
                                 .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated());
@@ -73,7 +85,6 @@ class ReservationControllerTest {
     @DisplayName("예약 저장 시 모든 필드가 유효한 값이라면 location 헤더가 추가된다.")
     void saveReservation_ShouldRedirect_WhenInsertAllValidateField() throws Exception {
         // given
-        String token = jwtProvider.encode(new Member(1L, "a", "b", "c"));
         ReservationRequest request = new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L, 1L);
         Mockito.when(reservationService.saveReservation(any(ReservationRequest.class)))
                 .thenReturn(
@@ -86,7 +97,7 @@ class ReservationControllerTest {
         // when & then
         mockMvc.perform(
                         post("/reservations")
-                                .cookie(new Cookie("token", token))
+                                .cookie(new Cookie("token", ""))
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(APPLICATION_JSON)
                 )

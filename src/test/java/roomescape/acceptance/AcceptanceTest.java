@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import io.restassured.RestAssured;
 import roomescape.helper.DatabaseCleaner;
 import roomescape.helper.DatabaseInitializer;
+import roomescape.service.security.JwtProvider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -21,6 +22,8 @@ public abstract class AcceptanceTest {
     protected DatabaseCleaner databaseCleaner;
     @Autowired
     protected DatabaseInitializer databaseInitializer;
+    @Autowired
+    protected JwtProvider jwtProvider;
     @LocalServerPort
     int port;
 

@@ -19,10 +19,6 @@ public enum Role {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public boolean isAdmin() {
-        return this == Role.ADMIN;
-    }
-
     public String getValue() {
         return value;
     }

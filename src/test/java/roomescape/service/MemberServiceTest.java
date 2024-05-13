@@ -11,10 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
-import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.member.DuplicatedEmailException;
 import roomescape.service.security.JwtProvider;
-import roomescape.web.dto.request.member.LoginRequest;
 import roomescape.web.dto.request.member.SignupRequest;
 import roomescape.web.dto.response.member.MemberResponse;
 
@@ -31,45 +29,6 @@ class MemberServiceTest {
     @AfterEach
     void tearDown() {
         memberRepository.deleteAll();
-    }
-
-    @Test
-    @DisplayName("이메일과 비밀번호로 로그인 기능을 제공한다")
-    void login_ShouldProvideLoginFeature() {
-        // given
-        Member member = new Member("name", "hello", "password");
-        LoginRequest request = new LoginRequest("hello", "password");
-        Member savedMember = memberRepository.save(member);
-
-        // when
-        String token = memberService.login(request);
-
-        // then
-        Assertions.assertThat(jwtProvider.extractId(token)).isEqualTo(savedMember.getId());
-    }
-
-    @Test
-    @DisplayName("이메일이 없는 정보라면 로그인 중 예외를 발생시킨다")
-    void login_ShouldFailed_WhenEmailDoesNotExist() {
-        // given
-        LoginRequest request = new LoginRequest("hello", "password");
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> memberService.login(request))
-                .isInstanceOf(AuthenticationFailureException.class);
-    }
-
-    @Test
-    @DisplayName("비밀번호가 틀리면 로그인 중 예외를 발생시킨다")
-    void login_ShouldFailed_WhenInvalidLoginInfo() {
-        // given
-        Member member = new Member("name", "hello", "password");
-        LoginRequest request = new LoginRequest("hello", "world");
-        memberRepository.save(member);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> memberService.login(request))
-                .isInstanceOf(AuthenticationFailureException.class);
     }
 
     @Test
