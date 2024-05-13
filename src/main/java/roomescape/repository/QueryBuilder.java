@@ -23,13 +23,13 @@ public class QueryBuilder {
         if (condition == null) {
             return this;
         }
-        param.add(condition);
-        if (hasWhere) {
-            query += " AND " + sql;
-            return this;
-        }
-        query += " WHERE " + sql;
+
+        query += hasWhere ? " AND " : " WHERE ";
+        query += sql;
+
         hasWhere = true;
+        param.add(condition);
+
         return this;
     }
 
