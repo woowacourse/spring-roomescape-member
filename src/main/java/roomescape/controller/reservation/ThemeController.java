@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
-
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {

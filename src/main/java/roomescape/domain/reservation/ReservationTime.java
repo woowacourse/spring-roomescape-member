@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 public class ReservationTime {
-    private final static long NO_ID = 0;
+    private static final long NO_ID = 0;
 
     private final long id;
     private final LocalTime startAt;
