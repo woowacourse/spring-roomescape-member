@@ -22,6 +22,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     private ProblemDetail handleIllegalArgumentException(IllegalArgumentException e) {
+        Throwable cause = e.getCause();
+        if (cause != null) {
+            logger.log(Level.SEVERE, "[IllegalArgumentException] " + cause.getMessage());
+        }
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 

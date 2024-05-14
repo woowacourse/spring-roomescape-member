@@ -1,29 +1,34 @@
-package roomescape.dto;
+package roomescape.dto.reservation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
+import roomescape.domain.member.Member;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.member.MemberResponse;
 
 public record ReservationResponse(
         Long id,
-        String name,
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         ReservationTimeResponse time,
-        ThemeResponse theme
+        ThemeResponse theme,
+        MemberResponse member
 ) {
 
     public static ReservationResponse from(Reservation reservation) {
         ReservationTimeResponse reservationTimeResponse = getReservationTimeResponse(reservation.getTime());
         ThemeResponse themeResponse = getThemeResponse(reservation.getTheme());
+        MemberResponse memberResponse = getMemberResponse(reservation.getMember());
 
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
                 reservation.getDate(),
                 reservationTimeResponse,
-                themeResponse
+                themeResponse,
+                memberResponse
         );
     }
 
@@ -37,9 +42,18 @@ public record ReservationResponse(
     private static ThemeResponse getThemeResponse(Theme theme) {
         return new ThemeResponse(
                 theme.getId(),
-                theme.getName().getName(),
-                theme.getDescription().getDescription(),
-                theme.getThumbnail().getThumbnail()
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
+    }
+
+    private static MemberResponse getMemberResponse(Member member) {
+        return new MemberResponse(
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
         );
     }
 }

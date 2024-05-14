@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -11,10 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.reservation.ReservationFilter;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.theme.ThemeResponse;
 
 @Sql("/reservation-service-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -37,7 +39,7 @@ class ReservationServiceTest {
         Long notExistTimeId = allReservationTimes.size() + 1L;
 
         ReservationRequest reservationRequest = new ReservationRequest(
-                "name", LocalDate.now(), notExistTimeId, 1L);
+                LocalDate.now(), notExistTimeId, 1L, 1L);
 
         //when, then
         assertThatThrownBy(() -> reservationService.addReservation(reservationRequest))
@@ -51,7 +53,7 @@ class ReservationServiceTest {
         Long notExistIdToFind = allTheme.size() + 1L;
 
         ReservationRequest reservationRequest = new ReservationRequest(
-                "name", LocalDate.now(), 1L, notExistIdToFind);
+                LocalDate.now(), 1L, notExistIdToFind, 1L);
 
         //when, then
         assertThatThrownBy(() -> reservationService.addReservation(reservationRequest))
@@ -62,12 +64,12 @@ class ReservationServiceTest {
     void 날짜와_시간대와_테마가_모두_동일한_예약을_추가할_경우_예외_발생() {
         //given
         ReservationRequest reservationRequest1 = new ReservationRequest(
-                "테드", LocalDate.now().plusDays(1), 1L, 1L);
+                LocalDate.now().plusDays(1), 1L, 1L, 1L);
         reservationService.addReservation(reservationRequest1);
 
         //when, then
         ReservationRequest reservationRequest2 = new ReservationRequest(
-                "종이", LocalDate.now().plusDays(1), 1L, 1L);
+                LocalDate.now().plusDays(1), 1L, 1L, 2L);
         assertThatThrownBy(() -> reservationService.addReservation(reservationRequest2))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -76,7 +78,7 @@ class ReservationServiceTest {
     void 지나간_날짜로_예약을_추가할_경우_예외_발생() {
         //given
         ReservationRequest reservationRequest = new ReservationRequest(
-                "테드", LocalDate.now().minusDays(1), 1L, 1L);
+                LocalDate.now().minusDays(1), 1L, 1L, 1L);
 
         //when, then
         assertThatThrownBy(() -> reservationService.addReservation(reservationRequest))
@@ -103,5 +105,48 @@ class ReservationServiceTest {
         //when, then
         assertThatThrownBy(() -> reservationService.deleteReservation(notExistIdToFind))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Sql("/reservation-filter-api-test-data.sql")
+    @Test
+    void 특정_사용자로_필터링_후_예약_조회() {
+        //given
+        Long filteringUserId = 1L;
+        ReservationFilter reservationFilter = new ReservationFilter();
+        reservationFilter.setMemberId(filteringUserId);
+
+        //when
+        List<ReservationResponse> reservationResponses = reservationService.getReservationsByFilter(reservationFilter);
+
+        //then
+        boolean isAllMatch = reservationResponses.stream()
+                .allMatch(response -> response.member().id() == filteringUserId);
+        assertThat(isAllMatch).isTrue();
+    }
+
+    @Sql("/reservation-filter-api-test-data.sql")
+    @Test
+    void 특정_테마와_날짜로_필터링_후_예약_조회() {
+        //given
+        Long filteringThemeId = 1L;
+        LocalDate dateFrom = LocalDate.of(2024, 5, 2);
+        LocalDate dateTo = LocalDate.of(2024, 5, 3);
+
+        ReservationFilter reservationFilter = new ReservationFilter();
+        reservationFilter.setThemeId(filteringThemeId);
+        reservationFilter.setDateFrom(dateFrom);
+        reservationFilter.setDateTo(dateTo);
+
+        //when
+        List<ReservationResponse> reservationResponses = reservationService.getReservationsByFilter(reservationFilter);
+
+        //then
+        boolean isAllMatch = reservationResponses.stream()
+                .allMatch(response ->
+                        response.theme().id() == filteringThemeId &&
+                        (response.date().isEqual(dateFrom) || response.date().isAfter(dateFrom)) &&
+                        (response.date().isEqual(dateTo) || response.date().isBefore(dateTo))
+                );
+        assertThat(isAllMatch).isTrue();
     }
 }

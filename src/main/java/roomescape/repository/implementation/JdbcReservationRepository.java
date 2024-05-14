@@ -2,8 +2,11 @@ package roomescape.repository.implementation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 import roomescape.repository.ReservationRepository;
 
 @Repository
@@ -21,7 +26,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
@@ -32,6 +36,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                             resultSet.getString("theme_name"),
                             resultSet.getString("theme_description"),
                             resultSet.getString("theme_thumbnail")
+                    ),
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"),
+                            Role.valueOf(resultSet.getString("member_role"))
                     )
             );
 
@@ -48,10 +59,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Long save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getThemeId())
+                .addValue("member_id", reservation.getMemberId());
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 
@@ -60,40 +71,55 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -111,36 +137,79 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<Reservation> findByDateAndTheme(LocalDate date, Long themeId) {
         String sql = """
                 SELECT
-                     r.id AS reservation_id,
-                     r.name,
-                     r.date,
-                     t.id AS time_id,
-                     t.start_at AS time_value,
-                     th.id AS theme_id,
-                     th.name AS theme_name,
-                     th.description AS theme_description,
-                     th.thumbnail AS theme_thumbnail
+                    r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
                 WHERE r.date = ? AND th.id = ?
                  """;
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public List<Reservation> findByMemberAndThemeAndDateRange(Long memberId, Long themeId, LocalDate dateFrom,
+                                                              LocalDate dateTo) {
+        List<Object> parameters = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("""
+                SELECT
+                r.id AS reservation_id,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    m.role AS member_role
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                INNER JOIN member AS m ON r.member_id = m.id
+                WHERE 1=1
+                """);
+
+        if (memberId != null) {
+            sql.append(" AND m.id = ?");
+            parameters.add(memberId);
+        }
+        if (themeId != null) {
+            sql.append(" AND th.id = ?");
+            parameters.add(themeId);
+        }
+        if (dateFrom != null && dateTo != null) {
+            sql.append(" AND r.date BETWEEN ? AND ?");
+            parameters.add(dateFrom);
+            parameters.add(dateTo);
+        }
+
+        return jdbcTemplate.query(sql.toString(), ROW_MAPPER, parameters.toArray());
     }
 
     @Override
-    public Boolean existId(Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    public void delete(Long id) {
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

@@ -12,7 +12,6 @@ INSERT INTO theme (name, description, thumbnail) VALUES
 ('세번째밤', '압박감.긴장감.계속해서 반복되는 악몽에 나는 매일 밤 잠을 이루지 못한다. 그리고 오늘 꿈에 새로운 메세지가 나타나는데...', 'https://postfiles.pstatic.net/MjAxOTA4MDJfMTY1/MDAxNTY0NzQ3MjE1ODc0.a5N5ABCpIcLeSdyQsUVyuVFvp_8g2ncJjipT1jOJyZMg.Iru-57C5Qy1Qw84KM25gIvKbbCl8lDZ9rZI40PGwHYwg.JPEG.qhfk1017/15512484261.jpg?type=w773'),
 ('육식주의자', '미국 플로리다주 마이애미, 여자들이 실종됐다. 오래된 정육점 근처에서 여자들의 비명소리를 들었다는 증언이 나오고 정육점 주인이 수사망에 오른다. 그러나 수사를 진행하던 요원들은 괴항의 습격으로 정신을 잃게 되는데-', 'https://postfiles.pstatic.net/MjAxOTA4MDJfMjAx/MDAxNTY0NzQ3NzMyNjc3.DmgP1L4x-7bVsOOV3zxlV5SS-ET_8qPq57f7_FQebxQg.7YTqFWnl7sg3BR-YbSO6zP9CiFQwQeKsqgM5EeEAG_Ag.JPEG.qhfk1017/SE-0c7906e1-8eb6-4c53-bf25-c60cd2478ef6.jpg?type=w773');
 
-
 INSERT INTO reservation_time (start_at) VALUES
 ('10:00'),
 ('12:00'),
@@ -20,23 +19,31 @@ INSERT INTO reservation_time (start_at) VALUES
 ('16:00'),
 ('18:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES
-('테드', CURRENT_DATE() - INTERVAL '1' DAY, 1, 1),
-('테드', CURRENT_DATE() - INTERVAL '3' DAY, 2, 1),
-('테드', CURRENT_DATE() - INTERVAL '7' DAY, 3, 1),
-('종이', CURRENT_DATE() - INTERVAL '1' DAY, 1, 2),
-('종이', CURRENT_DATE() - INTERVAL '3' DAY, 2, 2),
-('종이', CURRENT_DATE() - INTERVAL '7' DAY, 3, 3),
-('범블비', CURRENT_DATE() - INTERVAL '1' DAY, 1, 3),
-('범블비', CURRENT_DATE() - INTERVAL '3' DAY, 2, 4),
-('범블비', CURRENT_DATE() - INTERVAL '7' DAY, 3, 5),
-('제이', CURRENT_DATE() - INTERVAL '1' DAY, 1, 6),
-('제이', CURRENT_DATE() - INTERVAL '2' DAY, 2, 7),
-('제이', CURRENT_DATE() - INTERVAL '3' DAY, 3, 8),
-('제이', CURRENT_DATE() - INTERVAL '4' DAY, 1, 9),
-('제이', CURRENT_DATE() - INTERVAL '5' DAY, 2, 10),
-('제이', CURRENT_DATE() - INTERVAL '7' DAY, 3, 11),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
-('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12);
+INSERT INTO member(name, email, password, role) VALUES
+('테드', 'test1@email.com', '1450575459', 'USER'),
+('종리', 'test2@email.com', '1450575459', 'USER'),
+('범블비', 'test3@email.com', '1450575459', 'USER'),
+('제이', 'test4@email.com', '1450575459', 'USER'),
+('관리자', 'admin@email.com', '1450575459', 'ADMIN');
+
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES
+(CURRENT_DATE() - INTERVAL '1' DAY, 1, 1, 1),
+(CURRENT_DATE() - INTERVAL '3' DAY, 2, 1, 1),
+(CURRENT_DATE() - INTERVAL '7' DAY, 3, 1, 1),
+(CURRENT_DATE() - INTERVAL '1' DAY, 1, 2, 2),
+(CURRENT_DATE() - INTERVAL '3' DAY, 2, 2, 2),
+(CURRENT_DATE() - INTERVAL '7' DAY, 3, 3, 2),
+(CURRENT_DATE() - INTERVAL '1' DAY, 1, 3, 3),
+(CURRENT_DATE() - INTERVAL '3' DAY, 2, 4, 3),
+(CURRENT_DATE() - INTERVAL '7' DAY, 3, 5, 3),
+(CURRENT_DATE() - INTERVAL '1' DAY, 1, 6, 4),
+(CURRENT_DATE() - INTERVAL '2' DAY, 2, 7, 4),
+(CURRENT_DATE() - INTERVAL '3' DAY, 3, 8, 4),
+(CURRENT_DATE() - INTERVAL '4' DAY, 1, 9, 4),
+(CURRENT_DATE() - INTERVAL '5' DAY, 2, 10, 4),
+(CURRENT_DATE() - INTERVAL '7' DAY, 3, 11, 4),
+(CURRENT_DATE() - INTERVAL '8' DAY, 3, 12, 4),
+(CURRENT_DATE() - INTERVAL '8' DAY, 3, 12, 4),
+(CURRENT_DATE() - INTERVAL '8' DAY, 3, 12, 4),
+(CURRENT_DATE() - INTERVAL '8' DAY, 3, 12, 4);
+

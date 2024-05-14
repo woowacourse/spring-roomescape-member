@@ -1,7 +1,9 @@
 package roomescape.repository.implementation;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -35,9 +37,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Long save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName().getName())
-                .addValue("description", theme.getDescription().getDescription())
-                .addValue("thumbnail", theme.getThumbnail().getThumbnail());
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 
@@ -48,9 +50,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

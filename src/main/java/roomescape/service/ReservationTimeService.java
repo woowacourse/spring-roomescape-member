@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.reservationtime.ReservationTimeRequest;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -37,13 +37,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse getReservationTime(Long id) {
-        validateIdExist(id);
-        ReservationTime reservationTime = reservationTimeRepository.findById(id);
+        ReservationTime reservationTime = findTimeById(id);
         return ReservationTimeResponse.from(reservationTime);
     }
 
     public List<ReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        List<Long> bookedTimeIds = getTimeIdForDateAndTheme(date, themeId);
+        List<Long> bookedTimeIds = findTimeIdForDateAndTheme(date, themeId);
         List<ReservationTime> availableTimes = reservationTimeRepository.findByIdsNotIn(bookedTimeIds);
         return availableTimes.stream()
                 .map(ReservationTimeResponse::from)
@@ -51,33 +50,41 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        validateIdExist(id);
-        validateDeletable(id);
-        reservationRepository.delete(id);
+        ReservationTime reservationTime = findTimeById(id);
+        validateDeletable(reservationTime);
+        reservationRepository.delete(reservationTime.getId());
     }
 
-    private List<Long> getTimeIdForDateAndTheme(LocalDate date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+    private ReservationTime findTimeById(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "[ERROR] 잘못된 잘못된 예약시간 정보 입니다.",
+                        new Throwable("time_id : " + timeId)
+                ));
+    }
+
+    private List<Long> findTimeIdForDateAndTheme(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme(date, themeId);
         return reservations.stream()
-                .map(reservation -> reservation.getTime().getId())
+                .map(Reservation::getTimeId)
                 .toList();
-    }
-
-    private void validateIdExist(Long id) {
-        if (!reservationTimeRepository.existId(id)) {
-            throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
-        }
     }
 
     private void validateTimeDuplicate(LocalTime time) {
         if (reservationTimeRepository.existTime(time)) {
-            throw new IllegalArgumentException("[ERROR] 이미 등록된 시간 입니다. : " + time);
+            throw new IllegalArgumentException(
+                    "[ERROR] 이미 등록된 시간은 등록할 수 없습니다.",
+                    new Throwable("등록 시간 : " + time)
+            );
         }
     }
 
-    private void validateDeletable(Long id) {
-        if (reservationRepository.existTimeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
+    private void validateDeletable(ReservationTime reservationTime) {
+        if (reservationRepository.existTimeId(reservationTime.getId())) {
+            throw new IllegalArgumentException(
+                    "[ERROR] 해당 시간에 예약이 존재해서 삭제할 수 없습니다.",
+                    new Throwable("예약 시간 : " + reservationTime.getStartAt())
+            );
         }
     }
 }

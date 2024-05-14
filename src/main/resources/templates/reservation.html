@@ -6,7 +6,7 @@
   <title>방탈출 예약 페이지</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/flatpickr.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <link rel="stylesheet" href="/css/reservation.css">
   <link rel="stylesheet" href="/css/style.css">
@@ -28,21 +28,21 @@
         <a class="nav-link" href="/reservation">Reservation</a>
       </li>
       <!--      TODO: [4단계] 사용자 로그인 - 로그인 기능 구현 후 활성화-->
-      <!--      <li class="nav-item">-->
-      <!--        <a class="nav-link" href="/login">Login</a>-->
-      <!--      </li>-->
-      <!--      <li class="nav-item dropdown">-->
-      <!--        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"-->
-      <!--           aria-haspopup="true" aria-expanded="false">-->
-      <!--          <img class="profile-image" src="/image/default-profile.png" alt="Profile">-->
-      <!--          <span id="profile-name">Profile</span> &lt;!&ndash; 프로필 이름을 넣을 span 추가 &ndash;&gt;-->
-      <!--        </a>-->
-      <!--        <div class="dropdown-menu" aria-labelledby="navbarDropdown">-->
-      <!--          <a class="dropdown-item" href="/reservation-mine">My Reservation</a>-->
-      <!--          <div class="dropdown-divider"></div>-->
-      <!--          <a class="dropdown-item" href="#" id="logout-btn">Logout</a>-->
-      <!--        </div>-->
-      <!--      </li>-->
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                 aria-haspopup="true" aria-expanded="false">
+                <img class="profile-image" src="/image/default-profile.png" alt="Profile">
+                <span id="profile-name">Profile</span> <!-- 프로필 이름을 넣을 span 추가 -->
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/reservation-mine">My Reservation</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" id="logout-btn">Logout</a>
+              </div>
+            </li>
     </ul>
   </div>
 </nav>
@@ -81,10 +81,10 @@
         적용 후 아래에 있는 User Name Input 삭제
   -->
   <!-- User Name Input -->
-  <div class="input-group mb-3 mt-4">
-    <span class="input-group-text" id="name">예약자명</span>
-    <input id="user-name" type="text" class="form-control" aria-label="Username" aria-describedby="name">
-  </div>
+<!--  <div class="input-group mb-3 mt-4">-->
+<!--    <span class="input-group-text" id="name">예약자명</span>-->
+<!--    <input id="user-name" type="text" class="form-control" aria-label="Username" aria-describedby="name">-->
+<!--  </div>-->
 
   <!-- Reservation Button -->
   <div class="button-group float-right">
@@ -94,9 +94,9 @@
 </div>
 
 <!--TODO: [4단계] 사용자 로그인 - 로그인 기능 구현 후 활성화-->
-<!--<script src="/js/user-scripts.js"></script>-->
+<script src="/js/user-scripts.js"></script>
 
-<script src="/js/flatpickr.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="/js/user-reservation.js"></script>
 </body>
 </html>

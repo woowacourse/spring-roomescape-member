@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.theme.ThemeRequest;
 
 @Sql("/theme-api-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -43,7 +43,6 @@ class ThemeApiTest {
     @Test
     void 테마_단일_조회() {
         ThemeRequest themeRequest = createThemeRequest();
-
         addTheme(themeRequest);
 
         RestAssured.given().log().all()
@@ -62,7 +61,6 @@ class ThemeApiTest {
     @Test
     void 테마_전체_조회() {
         ThemeRequest themeRequest = createThemeRequest();
-
         addTheme(themeRequest);
 
         RestAssured.given().log().all()
@@ -78,7 +76,6 @@ class ThemeApiTest {
     @Test
     void 테마_삭제() {
         ThemeRequest themeRequest = createThemeRequest();
-
         addTheme(themeRequest);
 
         RestAssured.given().log().all()
