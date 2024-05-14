@@ -60,8 +60,7 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> search(final long themeId, final long memberId, final String dateFrom, final String dateTo
-    ) {
+    public List<Reservation> search(final long themeId, final long memberId, final String dateFrom, final String dateTo) {
         ReservationDate startDate = new ReservationDate(dateFrom);
         ReservationDate endDate = new ReservationDate(dateTo);
         return reservationDao.search(themeId, memberId, startDate.getDate(), endDate.getDate());

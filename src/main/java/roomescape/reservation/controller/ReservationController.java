@@ -5,7 +5,6 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -52,8 +51,8 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponseDto>> search(
             @RequestParam("themeId") @Min(value = 1, message = "올바른 테마 ID를 입력해야 합니다.") long themeId,
             @RequestParam("memberId") @Min(value = 1, message = "올바른 사용자 ID를 입력해야 합니다.") long memberId,
-            @RequestParam("dateFrom") @NotBlank(message = "시작 날짜를 입력해 주세요.") String dateFrom,
-            @RequestParam("dateTo") @NotBlank(message = "시작 날짜를 입력해 주세요.") String dateTo) {
+            @RequestParam(value = "dateFrom", defaultValue = "#{T(java.time.LocalDate).now().toString()}") String dateFrom,
+            @RequestParam(value = "dateTo", defaultValue = "#{T(java.time.LocalDate).now().toString()}") String dateTo) {
         List<ReservationResponseDto> responseDtos = reservationService.search(themeId, memberId, dateFrom, dateTo)
                 .stream()
                 .map(ReservationResponseDto::new)
