@@ -75,7 +75,7 @@ public class ThemeJdbcDao implements ThemeDao {
                 LEFT OUTER JOIN reservation r
                 ON r.theme_id = th.id  AND r.date BETWEEN :startDate AND :endDate
                 GROUP BY th.id
-                ORDER BY COUNT(r.id) DESC
+                ORDER BY COUNT(r.id) DESC, th.id
                 LIMIT :limit
                 """;
         final SqlParameterSource parameterSource = new MapSqlParameterSource()

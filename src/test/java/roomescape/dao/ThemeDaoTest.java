@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
@@ -96,25 +97,19 @@ class ThemeDaoTest extends DaoTest {
         assertThat(actual).hasSize(0);
     }
 
+    @Sql("/popular-theme-data.sql")
     @Test
     @DisplayName("인기 테마 목록을 조회한다.")
     void findPopularThemes() {
         // given
-        final Member member = memberDao.save(MEMBER_MIA());
-        final ReservationTime reservationTime1 = reservationTimeDao.save(RESERVATION_TIME_SIX());
-        final ReservationTime reservationTime2 = reservationTimeDao.save(RESERVATION_TIME_SEVEN());
-        final Theme theme2 = themeDao.save(THEME_HORROR());
-        reservationDao.save(new Reservation(member, DATE_MAY_EIGHTH, reservationTime1, theme2));
-        reservationDao.save(new Reservation(member, DATE_MAY_EIGHTH, reservationTime2, theme2));
-        reservationDao.save(new Reservation(member, DATE_MAY_EIGHTH, reservationTime1, theme));
         final ThemePopularFilter themePopularFilter
-                = ThemePopularFilter.getThemePopularFilter(LocalDate.parse(DATE_MAY_EIGHTH));
+                = ThemePopularFilter.getThemePopularFilter(LocalDate.parse("2034-05-12"));
 
         // when
         final List<Theme> actual = themeDao.findPopularThemesBy(themePopularFilter);
 
         // then
-        assertThat(actual).extracting(Theme::getName)
-                .containsExactly(theme2.getName(), theme.getName());
+        assertThat(actual).extracting(Theme::getId)
+                .containsExactly(2L, 1L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
     }
 }
