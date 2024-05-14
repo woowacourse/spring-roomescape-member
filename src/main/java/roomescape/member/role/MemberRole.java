@@ -24,11 +24,7 @@ public enum MemberRole {
     }
 
     public boolean hasSameRoleFrom(MemberRole[] roles) {
-        for (MemberRole memberRole : roles) {
-            if (this.equals(memberRole)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.asList(roles)
+                .contains(this);
     }
 }
