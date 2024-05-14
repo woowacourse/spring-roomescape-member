@@ -42,7 +42,7 @@ public class Member {
     public void validateCredential(String credential) {
         if (!password.equals(credential)) {
             throw new CustomException(CustomUnauthorized.INCORRECT_PASSWORD);
-        };
+        }
     }
 
     public boolean isAdmin() {
