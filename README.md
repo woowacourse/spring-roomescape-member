@@ -4,10 +4,10 @@
 
 ### 전체 예약 조회
 
-| HTTP Method | GET           |
-|-------------|---------------|
-| End Point   | /reservations |
-| Status Code | 200 OK        |
+| HTTP Method | GET                 |
+|-------------|---------------------|
+| End Point   | /admin/reservations |
+| Status Code | 200 OK              |
 
 #### Response Body
 
@@ -55,10 +55,10 @@
 
 ### 필터링 예약 조회
 
-| HTTP Method | GET                                                                                     |
-|-------------|-----------------------------------------------------------------------------------------|
-| End Point   | /reservations?themeId={themeId}&memberId={memberId}&dateFrom={dateFrom}&dateTo={dateTo} |
-| Status Code | 200 OK                                                                                  |
+| HTTP Method | GET                                                                                           |
+|-------------|-----------------------------------------------------------------------------------------------|
+| End Point   | /admin/reservations?themeId={themeId}&memberId={memberId}&dateFrom={dateFrom}&dateTo={dateTo} |
+| Status Code | 200 OK                                                                                        |
 
 #### Response Body
 
