@@ -1,7 +1,13 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,14 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import roomescape.Fixtures;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 @Sql(value = {"/data-reset.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,7 +51,7 @@ class ReservationControllerTest {
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("auth_token", token)
+                .cookie(Fixtures.AUTH_COOKIE_NAME, token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -60,7 +59,7 @@ class ReservationControllerTest {
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .cookie("auth_token", token)
+                .cookie(Fixtures.AUTH_COOKIE_NAME, token)
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
                 .then()

@@ -2,6 +2,7 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.auth.MemberTokenConverter;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -13,6 +14,8 @@ import java.util.List;
 import roomescape.service.member.dto.MemberLoginRequest;
 
 public class Fixtures {
+    public static final String AUTH_COOKIE_NAME = MemberTokenConverter.AUTH_COOKIE_NAME;
+
     public static final LocalDate DATE_AFTER_6_MONTH_LATER = LocalDate.now().plusMonths(6);
 
     public static final LocalTime TIME_10_10 = LocalTime.of(10, 10);
@@ -91,6 +94,6 @@ public class Fixtures {
                 .when().post("/login")
                 .then().log().all()
                 .extract()
-                .cookie("auth_token");
+                .cookie(AUTH_COOKIE_NAME);
     }
 }

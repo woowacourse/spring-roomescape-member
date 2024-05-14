@@ -26,7 +26,7 @@ class AdminControllerTest {
     @Test
     void readAdminPage() {
         RestAssured.given().log().all()
-                .cookie("auth_token", adminToken)
+                .cookie(Fixtures.AUTH_COOKIE_NAME, adminToken)
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -36,7 +36,7 @@ class AdminControllerTest {
     @Test
     void readReservations() {
         RestAssured.given().log().all()
-                .cookie("auth_token", adminToken)
+                .cookie(Fixtures.AUTH_COOKIE_NAME, adminToken)
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -46,7 +46,7 @@ class AdminControllerTest {
     @Test
     void readTimes() {
         RestAssured.given().log().all()
-                .cookie("auth_token", adminToken)
+                .cookie(Fixtures.AUTH_COOKIE_NAME, adminToken)
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
@@ -56,7 +56,7 @@ class AdminControllerTest {
     @Test
     void readTheme() {
         RestAssured.given().log().all()
-                .cookie("auth_token", adminToken)
+                .cookie(Fixtures.AUTH_COOKIE_NAME, adminToken)
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
@@ -69,7 +69,7 @@ class AdminControllerTest {
         String password = "22222";
 
         RestAssured.given().log().all()
-                .cookie("auth_token", Fixtures.login(email, password))
+                .cookie(Fixtures.AUTH_COOKIE_NAME, Fixtures.login(email, password))
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(403);

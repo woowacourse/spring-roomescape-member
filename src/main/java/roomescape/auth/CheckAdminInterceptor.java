@@ -10,17 +10,17 @@ import roomescape.service.member.dto.MemberResponse;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
-    private final TokenManager tokenManager;
+    private final MemberTokenConverter memberTokenConverter;
     private final MemberService memberService;
 
-    public CheckAdminInterceptor(TokenManager tokenManager, MemberService memberService) {
-        this.tokenManager = tokenManager;
+    public CheckAdminInterceptor(MemberTokenConverter memberTokenConverter, MemberService memberService) {
+        this.memberTokenConverter = memberTokenConverter;
         this.memberService = memberService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        MemberResponse member = tokenManager.getMemberResponseFromCookies(request.getCookies());
+        MemberResponse member = memberTokenConverter.getMemberResponseFromCookies(request.getCookies());
         if (memberService.checkAdmin(member.id())) {
             return true;
         }

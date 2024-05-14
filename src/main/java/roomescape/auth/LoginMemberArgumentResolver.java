@@ -13,11 +13,11 @@ import roomescape.service.member.dto.MemberResponse;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final TokenManager tokenManager;
+    private final MemberTokenConverter memberTokenConverter;
     private final MemberService memberService;
 
-    public LoginMemberArgumentResolver(TokenManager tokenManager, MemberService memberService) {
-        this.tokenManager = tokenManager;
+    public LoginMemberArgumentResolver(MemberTokenConverter memberTokenConverter, MemberService memberService) {
+        this.memberTokenConverter = memberTokenConverter;
         this.memberService = memberService;
     }
 
@@ -32,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        MemberResponse member = tokenManager.getMemberResponseFromCookies(request.getCookies());
+        MemberResponse member = memberTokenConverter.getMemberResponseFromCookies(request.getCookies());
         return AuthenticatedMember.from(memberService.get(member.id()));
     }
 }

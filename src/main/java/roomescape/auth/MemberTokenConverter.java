@@ -17,12 +17,12 @@ import roomescape.service.member.dto.MemberTokenResponse;
 import roomescape.utils.CookieParser;
 
 @Component
-public class TokenManager {
-    private static final String AUTH_COOKIE_NAME = "auth_token";
+public class MemberTokenConverter {
+    public static final String AUTH_COOKIE_NAME = "auth_token";
 
     private final SecretKey secretKey;
 
-    public TokenManager(@Value("${jwt.secret}") String secret) {
+    public MemberTokenConverter(@Value("${jwt.secret}") String secret) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 

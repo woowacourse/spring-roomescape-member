@@ -13,17 +13,17 @@ import roomescape.service.member.dto.MemberLoginRequest;
 import roomescape.service.member.dto.MemberResponse;
 import roomescape.service.member.dto.MemberSignUpRequest;
 import roomescape.service.member.dto.MemberTokenResponse;
-import roomescape.auth.TokenManager;
+import roomescape.auth.MemberTokenConverter;
 
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final TokenManager tokenManager;
+    private final MemberTokenConverter memberTokenConverter;
     private final RoleRepository roleRepository;
 
-    public MemberService(MemberRepository memberRepository, TokenManager tokenManager, RoleRepository roleRepository) {
+    public MemberService(MemberRepository memberRepository, MemberTokenConverter memberTokenConverter, RoleRepository roleRepository) {
         this.memberRepository = memberRepository;
-        this.tokenManager = tokenManager;
+        this.memberTokenConverter = memberTokenConverter;
         this.roleRepository = roleRepository;
     }
 
@@ -41,7 +41,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new LoginException("이메일 혹은 비밀번호가 잘못되었습니다."));
         checkPasswordMatches(member, request.password());
-        return tokenManager.generateToken(member);
+        return memberTokenConverter.generateToken(member);
     }
 
     private void checkPasswordMatches(Member member, String password) {
