@@ -37,5 +37,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError()
                 .body(new ApiExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, "예측하지 못한 예외가 발생했습니다."));
     }
-
 }
