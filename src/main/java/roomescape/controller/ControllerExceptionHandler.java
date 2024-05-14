@@ -20,20 +20,20 @@ public class ControllerExceptionHandler {
                 .body(problemDetail);
     }
 
+    @ExceptionHandler({AuthFailException.class})
+    public ResponseEntity<ProblemDetail> authFailException(Exception e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NON_AUTHORITATIVE_INFORMATION, e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NON_AUTHORITATIVE_INFORMATION)
+                .body(problemDetail);
+    }
+
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ProblemDetail> systemHandleException(Exception e) {
         System.out.println(e);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         return ResponseEntity
                 .internalServerError()
-                .body(problemDetail);
-    }
-
-    @ExceptionHandler({AuthFailException.class})
-    public ResponseEntity<ProblemDetail> authFailException(Exception e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NON_AUTHORITATIVE_INFORMATION, e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NON_AUTHORITATIVE_INFORMATION)
                 .body(problemDetail);
     }
 }
