@@ -2,15 +2,17 @@ package roomescape.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationSaveRequest;
-import roomescape.exception.ErrorResponse;
+import roomescape.global.dto.ErrorResponse;
+import roomescape.member.domain.Member;
+import roomescape.reservation.dto.request.ReservationSaveRequest;
+import roomescape.reservation.dto.response.ReservationResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,9 +20,10 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-import static roomescape.TestFixture.*;
+import static roomescape.TestFixture.MIA_NAME;
+import static roomescape.TestFixture.MIA_RESERVATION_DATE;
 
-class ReservationAcceptanceTest extends ApiAcceptanceTest {
+class ReservationAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("[Step2, Step5] 예약 목록을 조회한다.")
     void findReservations() {
@@ -42,13 +45,19 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @Test
     @DisplayName("[Step3, Step6, Step8] 예약을 추가한다.")
     void createOneReservation() {
-        // given & when
-        Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
-        Long timeId = saveReservationTime(MIA_RESERVATION_TIME);
+        // given
+        Member member = createTestMember();
+        String token = createTestToken(member);
+        Long themeId = createTestTheme();
+        Long timeId = createTestReservationTime();
 
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, timeId, themeId);
+        Cookie cookie = new Cookie.Builder("token", token).build();
+
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(cookie)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -59,20 +68,26 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         assertSoftly(softly -> {
             checkHttpStatusCreated(softly, response);
             softly.assertThat(reservationResponse.id()).isNotNull();
-            softly.assertThat(reservationResponse.name()).isEqualTo(USER_MIA);
+            softly.assertThat(reservationResponse.memberName()).isEqualTo(MIA_NAME);
         });
     }
 
     @Test
-    @DisplayName("[Step3, Step6, Step8] 잘못된 형식의 예약을 추가한다.")
+    @DisplayName("[Step3, Step6, Step8] 예약 날짜가 없는 예약을 추가한다.")
     void createInvalidReservation() {
-        // given & when
-        Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
-        Long timeId = saveReservationTime(MIA_RESERVATION_TIME);
+        // given
+        Member member = createTestMember();
+        String token = createTestToken(member);
+        Long themeId = createTestTheme();
+        Long timeId = createTestReservationTime();
 
-        ReservationSaveRequest request = new ReservationSaveRequest(null, MIA_RESERVATION_DATE, timeId, themeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(null, timeId, themeId);
+        Cookie cookie = new Cookie.Builder("token", token).build();
+
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(cookie)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -89,13 +104,19 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @Test
     @DisplayName("[Step3, Step6, Step8] 존재하지 않는 예약 시간에 예약을 추가한다.")
     void createReservationWithNotExistingTime() {
-        // given & when
+        // given
+        Member member = createTestMember();
+        String token = createTestToken(member);
         Long notExistingTimeId = 1L;
-        Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
+        Long themeId = createTestTheme();
 
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        Cookie cookie = new Cookie.Builder("token", token).build();
+
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(cookie)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()

@@ -8,9 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.exception.ErrorResponse;
+import roomescape.global.dto.ErrorResponse;
+import roomescape.reservation.dto.request.ReservationTimeSaveRequest;
+import roomescape.reservation.dto.response.ReservationTimeResponse;
 
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -21,14 +21,15 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
-class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
+class ReservationTimeAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("[Step7] 예약 시간을 추가한다.")
     void createReservationTime() {
-        // given & when
+        // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
 
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -48,9 +49,10 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @Test
     @DisplayName("[Step7] 잘못된 형식의 예약 시간을 추가한다.")
     void createReservationTime2() {
-        // given & when
+        // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(15, 3));
 
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -74,8 +76,7 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
                 .when().get("/times")
                 .then().log().all()
                 .extract();
-        List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(
-                        response.as(ReservationTimeResponse[].class))
+        List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(response.as(ReservationTimeResponse[].class))
                 .toList();
 
         // then
