@@ -43,7 +43,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
-    @Permission(role = Role.NONE)
+    @Permission(role = Role.GUEST)
     public ResponseEntity<List<ReservationTimeAvailabilityResponse>> getReservationTimeAvailability(@RequestParam LocalDate date,
                                                                                                     @RequestParam Long themeId) {
         List<ReservationTimeAvailabilityResponse> reservationTimeAvailabilities =

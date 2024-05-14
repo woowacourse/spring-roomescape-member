@@ -1,5 +1,5 @@
 INSERT INTO role (name)
-VALUES ('NONE'),
+VALUES ('GUEST'),
        ('MEMBER'),
        ('ADMIN');
 

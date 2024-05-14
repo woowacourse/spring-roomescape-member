@@ -31,7 +31,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    @Permission(role = Role.NONE)
+    @Permission(role = Role.GUEST)
     public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<ThemeResponse> themeResponses = themeService.findThemes().stream()
                 .map(ThemeResponse::of)
@@ -40,7 +40,7 @@ public class ThemeController {
     }
 
     @GetMapping("/ranks")
-    @Permission(role = Role.NONE)
+    @Permission(role = Role.GUEST)
     public ResponseEntity<List<ThemeResponse>> getThemeRanks() {
         List<ThemeResponse> themeResponses = themeService.findTop10Recent7Days().stream()
                 .map(ThemeResponse::of)

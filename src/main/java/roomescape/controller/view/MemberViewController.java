@@ -6,7 +6,7 @@ import roomescape.controller.security.Permission;
 import roomescape.domain.member.Role;
 
 @Controller
-@Permission(role = Role.NONE)
+@Permission(role = Role.GUEST)
 public class MemberViewController {
     @GetMapping("/reservation")
     public String reservationUserPage() {

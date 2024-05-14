@@ -25,7 +25,7 @@ public class CheckPermissionInterceptor implements HandlerInterceptor {
         }
 
         Role resourceRole = extractResourceRole((HandlerMethod) handler);
-        if (resourceRole.equals(Role.NONE)) {
+        if (resourceRole.equals(Role.GUEST)) {
             return true;
         }
 
@@ -43,7 +43,7 @@ public class CheckPermissionInterceptor implements HandlerInterceptor {
         Permission classAnnotation = handler.getBean().getClass().getAnnotation(Permission.class);
         Permission methodAnnotation = handler.getMethod().getAnnotation(Permission.class);
         if (classAnnotation == null && methodAnnotation == null) {
-            return Role.NONE;
+            return Role.GUEST;
         }
 
         if (methodAnnotation != null) {

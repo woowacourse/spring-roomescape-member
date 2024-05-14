@@ -23,7 +23,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/login")
-@Permission(role = Role.NONE)
+@Permission(role = Role.GUEST)
 public class LoginController {
 
     private final AuthService authService;

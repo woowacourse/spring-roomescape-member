@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Target(value = {ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Permission {
-    Role role() default Role.NONE;
+    Role role() default Role.GUEST;
 }

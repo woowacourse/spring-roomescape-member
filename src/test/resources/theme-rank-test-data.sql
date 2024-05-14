@@ -28,7 +28,7 @@ VALUES (1, '10:00'),
        (11, '20:00');
 
 INSERT INTO role
-VALUES (1, 'NONE'),
+VALUES (1, 'GUEST'),
        (2, 'MEMBER'),
        (3, 'ADMIN');
 
