@@ -48,4 +48,8 @@ public class Member {
     public String getRole() {
         return role.name();
     }
+
+    public boolean hasPassword(String password) {
+        return this.password.isSame(password);
+    }
 }

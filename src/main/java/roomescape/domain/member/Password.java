@@ -21,6 +21,10 @@ public class Password {
         }
     }
 
+    public boolean isSame(String password){
+        return this.password.equals(password);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(password);
