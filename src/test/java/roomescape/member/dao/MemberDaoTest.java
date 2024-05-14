@@ -32,4 +32,12 @@ class MemberDaoTest {
 
         assertEquals(id, Optional.of(1L));
     }
+
+    @Test
+    @DisplayName("없는 id일 경우 빈 값을 가져온다.")
+    void getNotExistMemberId() {
+        Optional<Long> id = memberJdbcDao.findIdByEmailAndPassword("email@ndkd.com", "password");
+
+        assertEquals(id, Optional.empty());
+    }
 }
