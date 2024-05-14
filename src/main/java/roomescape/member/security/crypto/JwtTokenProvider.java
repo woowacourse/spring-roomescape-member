@@ -14,15 +14,12 @@ import roomescape.member.domain.Member;
 @Component
 public class JwtTokenProvider implements TokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final String secretKey;
+    private final long validityInMilliseconds;
 
-    public JwtTokenProvider() {
-    }
-
-    public JwtTokenProvider(String secretKey, long validityInMilliseconds) {
+    public JwtTokenProvider(
+            @Value("${security.jwt.token.secret-key}") String secretKey,
+            @Value("${security.jwt.token.expire-length}") long validityInMilliseconds) {
         this.secretKey = secretKey;
         this.validityInMilliseconds = validityInMilliseconds;
     }
