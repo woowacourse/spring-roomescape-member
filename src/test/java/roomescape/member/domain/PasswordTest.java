@@ -12,7 +12,7 @@ import roomescape.member.exception.MemberExceptionCode;
 
 class PasswordTest {
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "잘못된 형식의 비밀번호인 {0}일 경우 예외를 던진다.")
     @ValueSource(strings = {" ", "Polla99", "polla"})
     @DisplayName("잘못된 형식의 비밀번호인 경우 예외를 던진다.")
     void validation_ShouldThrowException_WhenIllegalPassword(String password) {
@@ -21,7 +21,7 @@ class PasswordTest {
         assertEquals(illegalPassword.getMessage(), MemberExceptionCode.ILLEGAL_PASSWORD_FORM_EXCEPTION.getMessage());
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "정상적인 형식의 비밀번호인 {0}일 경우 예외를 던진다.")
     @ValueSource(strings = {"polla99", "0polla"})
     @DisplayName("정상적인 형식의 비밀번호일 경우 생성한다.")
     void makePassword(String password) {
