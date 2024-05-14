@@ -33,8 +33,8 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> create(@RequestBody @Valid MemberRequestDto memberRequestDto) {
-        long id = memberService.save(memberRequestDto);
+        long id = memberService.save(memberRequestDto)
+                .getId();
         return ResponseEntity.created(URI.create("/signup/" + id)).build();
     }
-
 }

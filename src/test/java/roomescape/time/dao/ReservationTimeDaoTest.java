@@ -39,7 +39,7 @@ class ReservationTimeDaoTest {
     @DisplayName("예약 시간을 생성할 수 있다.")
     @Test
     void save() {
-        assertThat(reservationTimeDao.save(reservationTime)).isEqualTo(1L);
+        assertThat(reservationTimeDao.save(reservationTime).getId()).isEqualTo(1L);
     }
 
     @DisplayName("특정 예약 시간을 조회할 수 있다.")

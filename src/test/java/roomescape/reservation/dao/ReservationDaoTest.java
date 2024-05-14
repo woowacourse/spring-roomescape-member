@@ -54,7 +54,7 @@ class ReservationDaoTest {
     @DisplayName("특정 예약을 생성할 수 있다.")
     @Test
     void save() {
-        assertThat(reservationDao.save(reservation)).isEqualTo(1L);
+        assertThat(reservationDao.save(reservation).getId()).isEqualTo(1L);
     }
 
     @DisplayName("예약을 모두 조회할 수 있다.")

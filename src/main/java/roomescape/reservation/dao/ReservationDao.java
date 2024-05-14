@@ -68,13 +68,14 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public long save(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", reservation.getReservationDate().getDate().toString())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Reservation(id, reservation);
     }
 
     public List<Reservation> search(final long themeId, final long memberId, final LocalDate startDate, final LocalDate endDate) {

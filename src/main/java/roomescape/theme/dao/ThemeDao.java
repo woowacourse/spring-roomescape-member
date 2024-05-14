@@ -49,12 +49,13 @@ public class ThemeDao {
         }
     }
 
-    public long save(final Theme theme) {
+    public Theme save(final Theme theme) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Theme(id, theme);
     }
 
     public int deleteById(final long id) {

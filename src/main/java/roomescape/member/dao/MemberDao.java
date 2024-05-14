@@ -54,13 +54,14 @@ public class MemberDao {
         }
     }
 
-    public long save(final Member member) {
+    public Member save(final Member member) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword())
                 .addValue("role", member.getRole().name());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Member(id, member);
     }
 
     public List<Member> findAll() {

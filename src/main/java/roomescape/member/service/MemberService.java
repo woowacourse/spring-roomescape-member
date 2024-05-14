@@ -24,7 +24,7 @@ public class MemberService {
         return memberDao.findAll();
     }
 
-    public long save(final MemberRequestDto memberRequestDto) {
+    public Member save(final MemberRequestDto memberRequestDto) {
         return memberDao.save(memberRequestDto.toMember());
     }
 }

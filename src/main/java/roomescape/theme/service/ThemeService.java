@@ -30,8 +30,7 @@ public class ThemeService {
         if (themeDao.checkExistThemes(theme)) {
             throw new RoomEscapeException("이미 해당 테마가 존재합니다.");
         }
-        final long id = themeDao.save(theme);
-        return new Theme(id, theme);
+        return themeDao.save(theme);
     }
 
     public void deleteById(final long id) {

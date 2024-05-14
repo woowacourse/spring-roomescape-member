@@ -37,10 +37,11 @@ public class ReservationTimeDao {
             resultSet.getString("start_at"),
             resultSet.getBoolean("already_booked")));
 
-    public long save(final ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt().toString());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new ReservationTime(id, reservationTime);
     }
 
     public ReservationTime getById(final long id) {

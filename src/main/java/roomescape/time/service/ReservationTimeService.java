@@ -32,8 +32,7 @@ public class ReservationTimeService {
         if (reservationTimeDao.checkExistTime(reservationTime)) {
             throw new RoomEscapeException("이미 해당 시간이 존재합니다.");
         }
-        final long id = reservationTimeDao.save(requestDto.toReservationTime());
-        return new ReservationTime(id, reservationTime);
+        return reservationTimeDao.save(requestDto.toReservationTime());
     }
 
     public void deleteById(final long id) {

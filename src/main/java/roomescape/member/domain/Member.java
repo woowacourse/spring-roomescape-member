@@ -32,6 +32,10 @@ public class Member {
         this(id, name, email, null, role);
     }
 
+    public Member(final Long id, final Member member) {
+        this(id, member.name, member.email, member.password, member.role);
+    }
+
     private void validateInvalidName(final String name) {
         if (Objects.isNull(name) || name.isEmpty()) {
             throw new RoomEscapeException("사용자 명이 null 이거나 공백으로 이루어질 수 없습니다.");
