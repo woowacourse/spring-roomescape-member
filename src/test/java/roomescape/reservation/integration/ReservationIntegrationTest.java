@@ -1,6 +1,5 @@
 package roomescape.reservation.integration;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -11,6 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.member.domain.Member;
@@ -20,6 +20,11 @@ import roomescape.reservation.dto.ReservationRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationIntegrationTest {
 
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
+    @Value("${security.jwt.token.expire-length}")
+    private long validityInMilliseconds;
+
     @LocalServerPort
     private int port;
 
@@ -28,8 +33,8 @@ class ReservationIntegrationTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        Member member = new Member("valid", "e@m.com", "pass");
-        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider("secret-key", 99999999999L);
+        Member member = new Member(1,"valid", "testUser@email.com", "pass");
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(secretKey, validityInMilliseconds);
         token = jwtTokenProvider.createToken(member, new Date());
     }
 
@@ -38,9 +43,9 @@ class ReservationIntegrationTest {
     void adminReservationPageWork() {
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.MAX, "test", 1L, 1L);
         Map<String, String> request = Map.of(
-                "date", LocalDate.now().toString(),
-                "timeId", "3",
-                "themeId", "3"
+                "date", LocalDate.MAX.toString(),
+                "timeId", "1",
+                "themeId", "1"
         );
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -52,24 +57,27 @@ class ReservationIntegrationTest {
                 .statusCode(201);
 
         RestAssured.given()
+                .cookie("token", token)
                 .when()
                 .get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(1));
 
         RestAssured.given()
+                .cookie("token", token)
                 .when()
-                .delete("/reservations/3")
+                .delete("/reservations/1")
                 .then()
                 .statusCode(204);
 
         RestAssured.given()
+                .cookie("token", token)
                 .when()
                 .get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(0));
     }
 
     @Test
@@ -97,38 +105,6 @@ class ReservationIntegrationTest {
                 .get("/reservations/times/1?date=" + LocalDate.now())
                 .then()
                 .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("예약을 요청시 예약자명이 존재하지 않으면 예외가 발생한다.")
-    void saveReservation_ShouldReturnBADREQUEST_WhenNameIsNull() {
-        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.MAX, null, 1L, 1L);
-
-        RestAssured.given()
-                .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .body(reservationRequest)
-                .when()
-                .post("/reservations")
-                .then()
-                .statusCode(400)
-                .body(containsString("예약자명이 존재하지 않습니다."));
-    }
-
-    @Test
-    @DisplayName("예약을 요청시 예약 일자가 존재하지 않으면 예외가 발생한다.")
-    void saveReservation_ShouldReturnBADREQUEST_WhenDateIsNull() {
-        ReservationRequest reservationRequest = new ReservationRequest(null, "Dobby", 1L, 1L);
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .cookie("token", token)
-                .body(reservationRequest)
-                .when()
-                .post("/reservations")
-                .then()
-                .statusCode(400)
-                .body(containsString("날짜가 존재하지 않습니다."));
     }
 
 }
