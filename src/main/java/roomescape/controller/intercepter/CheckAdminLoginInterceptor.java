@@ -24,6 +24,7 @@ public class CheckAdminLoginInterceptor implements HandlerInterceptor {
         if (cookie == null) {
             throw new AuthFailException("접근할 수 없는 페이지입니다.");
         }
+
         Role role = tokenService.findRole(cookie);
         if (role.isAdmin()) {
             return true;
