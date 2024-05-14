@@ -21,13 +21,13 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ThemeResponse> findAllThemes() {
+    public List<ThemeResponse> findAll() {
         List<Theme> themes = themeDao.findAll();
 
         return ThemeResponse.fromThemes(themes);
     }
 
-    public List<ThemeResponse> findRankThemes() {
+    public List<ThemeResponse> findRank() {
         List<Theme> themesByDescOrder = themeDao.findThemesByDescOrder();
 
         return ThemeResponse.fromThemes(themesByDescOrder);
@@ -43,7 +43,7 @@ public class ThemeService {
         return themeDao.save(theme);
     }
 
-    public void deleteThemeById(Long id) {
+    public void deleteById(Long id) {
         if (reservationDao.existByThemeId(id)) {
             throw new ExistReservationException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
         }

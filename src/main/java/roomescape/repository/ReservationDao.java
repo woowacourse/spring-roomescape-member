@@ -9,13 +9,15 @@ public interface ReservationDao {
 
     Reservation findById(long id);
 
-    boolean existByDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId);
+    List<Reservation> findAll(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 
-    long save(Reservation reservation);
+    List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId);
+
+    Reservation save(Reservation reservation);
 
     void deleteById(Long id);
 
-    List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId);
+    boolean existByDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId);
 
     boolean existByTimeId(Long id);
 

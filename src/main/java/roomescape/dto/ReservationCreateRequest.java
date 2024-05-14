@@ -1,17 +1,14 @@
 package roomescape.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 public record ReservationCreateRequest(
         Long id,
-
-        @NotBlank(message = "[ERROR] 예약자 이름은 비어있을 수 없습니다.")
-        String name,
 
         @NotNull(message = "[ERROR] 날짜는 비어있을 수 없습니다.")
         LocalDate date,
@@ -23,8 +20,8 @@ public record ReservationCreateRequest(
         Long themeId
 ) {
 
-    public static Reservation toReservation(final ReservationCreateRequest request, final ReservationTime time,
-                                            final Theme theme) {
-        return new Reservation(request.id(), request.name(), request.date(), time, theme);
+    public static Reservation toReservation(final LocalDate date, final ReservationTime time, final Theme theme,
+                                            final Member member) {
+        return new Reservation(null, date, time, theme, member);
     }
 }

@@ -1,8 +1,9 @@
-package roomescape.repository;
+package roomescape.repository.repositoryImpl;
 
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.TimeDao;
 
 @Repository
 public class JdbcTimeDao implements TimeDao {
@@ -41,7 +43,7 @@ public class JdbcTimeDao implements TimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다.");
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간입니다.");
         }
     }
 

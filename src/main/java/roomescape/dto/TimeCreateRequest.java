@@ -6,7 +6,7 @@ import roomescape.domain.ReservationTime;
 
 public record TimeCreateRequest(
         Long id,
-        @NotNull(message = "[ERROR] 시간은 비어있을 수 없습니다.") // TODO: illegal? method exception?
+        @NotNull(message = "[ERROR] 시간은 비어있을 수 없습니다.")
         LocalTime startAt
 ) {
 

@@ -20,6 +20,12 @@ public class InMemoryReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findAll(final Long memberId, final Long themeId, final LocalDate dateFrom,
+                                     final LocalDate dateTo) {
+        return List.of();
+    }
+
+    @Override
     public Reservation findById(final long id) {
         return reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
@@ -37,9 +43,9 @@ public class InMemoryReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         reservations.add(reservation);
-        return reservations.size();
+        return reservations.get(reservations.size() - 1);
     }
 
     @Override

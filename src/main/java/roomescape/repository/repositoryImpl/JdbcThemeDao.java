@@ -1,8 +1,9 @@
-package roomescape.repository;
+package roomescape.repository.repositoryImpl;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.repository.ThemeDao;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
@@ -49,7 +51,7 @@ public class JdbcThemeDao implements ThemeDao {
         try {
             return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 테마입니다.");
         }
     }
 
