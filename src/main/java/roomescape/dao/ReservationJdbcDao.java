@@ -93,7 +93,7 @@ public class ReservationJdbcDao implements ReservationDao {
         addFilterCondition(parameterSource, sqlBuilder, param.dateTo(), "dateTo", "AND :dateTo) ");
         return jdbcTemplate.query(sqlBuilder.toString(), parameterSource, rowMapper);
     }
-    
+
     private void addFilterCondition(final MapSqlParameterSource parameterSource, final StringBuilder sqlBuilder, final Object param,
                                     final String paramName, final String condition) {
         if (param != null) {
