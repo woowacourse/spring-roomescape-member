@@ -19,9 +19,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.acceptance.Fixture.adminToken;
-import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_THEME_1;
-import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_THEME_2;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.PRE_INSERTED_THEME_1;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.PRE_INSERTED_THEME_2;
 
 class ThemeAcceptanceTest extends BaseAcceptanceTest {
 
@@ -32,7 +31,7 @@ class ThemeAcceptanceTest extends BaseAcceptanceTest {
         };
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", tokenFixture.adminToken)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
@@ -49,7 +48,7 @@ class ThemeAcceptanceTest extends BaseAcceptanceTest {
 
         RestAssured.given().log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .cookie("token", adminToken)
+                .cookie("token", tokenFixture.adminToken)
                 .body(themeRequest)
                 .when().post("/themes")
                 .then().log().all()

@@ -17,9 +17,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.acceptance.Fixture.customerToken;
-import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_RESERVATION_TIME_1;
-import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_THEME_1;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.PRE_INSERTED_RESERVATION_TIME_1;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.PRE_INSERTED_THEME_1;
 
 class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
@@ -91,7 +90,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
         private ValidatableResponse sendPostRequest(MemberReservationRequest requestBody) {
             return RestAssured.given().log().ifValidationFails()
-                    .cookie("token", customerToken)
+                    .cookie("token", tokenFixture.customerToken)
                     .contentType(ContentType.JSON)
                     .body(requestBody)
                     .when().post("/reservations")

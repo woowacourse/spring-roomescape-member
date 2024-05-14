@@ -10,8 +10,6 @@ import roomescape.dto.MemberPreviewResponse;
 
 import java.util.List;
 
-import static roomescape.acceptance.Fixture.adminToken;
-
 class MemberAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자가 간소화된 사용자 목록을 조회한다.")
@@ -21,7 +19,7 @@ class MemberAcceptanceTest extends BaseAcceptanceTest {
         };
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", tokenFixture.adminToken)
                 .when().get("/members")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())

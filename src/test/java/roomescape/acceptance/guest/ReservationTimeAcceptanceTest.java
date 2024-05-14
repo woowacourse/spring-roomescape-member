@@ -14,7 +14,7 @@ import roomescape.dto.AvailableReservationTimeResponse;
 import java.time.LocalDate;
 import java.util.List;
 
-import static roomescape.acceptance.PreInsertedData.*;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.*;
 
 class ReservationTimeAcceptanceTest extends BaseAcceptanceTest {
 

@@ -19,8 +19,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-import static roomescape.acceptance.Fixture.secretKey;
-import static roomescape.acceptance.PreInsertedData.PRE_INSERTED_ADMIN;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.PRE_INSERTED_ADMIN;
 
 class AuthAcceptanceTest extends BaseAcceptanceTest {
 
@@ -68,7 +67,7 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
 
     private Claims parseToken(String token) {
         return Jwts.parser()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes())).build()
+                .verifyWith(Keys.hmacShaKeyFor(tokenFixture.secretKey.getBytes())).build()
                 .parseSignedClaims(token)
                 .getPayload();
     }

@@ -11,8 +11,7 @@ import roomescape.dto.ReservationResponse;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.acceptance.Fixture.adminToken;
-import static roomescape.acceptance.PreInsertedData.*;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.*;
 
 @DisplayName("관리자가 예약을 필터링해서 조회한다.")
 class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
@@ -90,7 +89,7 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
         };
 
         return RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", tokenFixture.adminToken)
                 .when().get("/reservations/filter" + path)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())

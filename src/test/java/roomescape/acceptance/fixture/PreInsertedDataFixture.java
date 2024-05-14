@@ -1,11 +1,11 @@
-package roomescape.acceptance;
+package roomescape.acceptance.fixture;
 
 import roomescape.domain.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class PreInsertedData {
+public class PreInsertedDataFixture {
 
     public static final ReservationTime PRE_INSERTED_RESERVATION_TIME_1 = new ReservationTime(
             1L,

@@ -19,8 +19,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.acceptance.Fixture.adminToken;
-import static roomescape.acceptance.PreInsertedData.*;
+import static roomescape.acceptance.fixture.PreInsertedDataFixture.*;
 
 class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
@@ -31,7 +30,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
         };
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", tokenFixture.adminToken)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
@@ -50,7 +49,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
             );
 
             RestAssured.given().log().all()
-                    .cookie("token", adminToken)
+                    .cookie("token", tokenFixture.adminToken)
                     .contentType(ContentType.JSON)
                     .body(requestBody)
                     .when().post("/admin/reservations")
@@ -111,7 +110,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
         private ValidatableResponse sendPostRequest(AdminReservationRequest requestBody) {
             return RestAssured.given().log().all()
-                    .cookie("token", adminToken)
+                    .cookie("token", tokenFixture.adminToken)
                     .contentType(ContentType.JSON)
                     .body(requestBody)
                     .when().post("/admin/reservations")
@@ -149,7 +148,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
         private ValidatableResponse sendDeleteRequest(Long id) {
             return RestAssured.given().log().all()
-                    .cookie("token", adminToken)
+                    .cookie("token", tokenFixture.adminToken)
                     .when().delete("/reservations/" + id)
                     .then().log().all();
         }

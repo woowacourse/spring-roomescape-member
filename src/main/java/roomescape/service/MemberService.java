@@ -40,7 +40,7 @@ public class MemberService {
 
     public Member getUserByToken(String token) {
         Long memberId = Long.valueOf(
-                Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes())).build()
+                Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes())).build()
                         .parseSignedClaims(token)
                         .getPayload()
                         .getSubject());
