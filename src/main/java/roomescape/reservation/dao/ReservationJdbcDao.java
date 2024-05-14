@@ -17,7 +17,7 @@ import roomescape.time.domain.Time;
 @Component
 public class ReservationJdbcDao implements ReservationDao {
 
-    public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum)
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum)
             -> Reservation.reservationOf(
             resultSet.getLong("id"),
             resultSet.getDate("date")
@@ -37,7 +37,7 @@ public class ReservationJdbcDao implements ReservationDao {
             )
     );
 
-    public static final String getAllSql = """
+    private static final String getAllSql = """
                 SELECT r.id, r.date,
                     t.id AS timeId, t.start_at,
                     th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
