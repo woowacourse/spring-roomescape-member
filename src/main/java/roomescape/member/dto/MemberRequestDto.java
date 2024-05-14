@@ -24,7 +24,7 @@ public record MemberRequestDto(
         this.role = role == null ? Role.USER : role;
     }
 
-    public Member toMember() {
+    public Member toMemberOf(final String password) {
         return new Member(email, password, name, role);
     }
 }
