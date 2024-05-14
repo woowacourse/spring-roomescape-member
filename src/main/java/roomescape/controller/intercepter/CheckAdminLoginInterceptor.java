@@ -1,4 +1,4 @@
-package roomescape.intercepter;
+package roomescape.controller.intercepter;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

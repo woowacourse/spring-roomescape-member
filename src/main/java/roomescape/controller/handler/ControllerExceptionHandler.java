@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

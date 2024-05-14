@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import roomescape.domain.Role;
 import roomescape.domain.exception.AuthFailException;
+import roomescape.domain.infrastructure.JwtTokenProvider;
 import roomescape.dto.MemberModel;
 import roomescape.dto.response.TokenResponse;
-import roomescape.infrastructure.JwtTokenProvider;
 
 @Service
 public class TokenService {

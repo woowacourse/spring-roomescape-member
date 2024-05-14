@@ -1,4 +1,4 @@
-package roomescape.resolver;
+package roomescape.controller.resolver;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

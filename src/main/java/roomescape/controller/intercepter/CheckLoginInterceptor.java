@@ -1,4 +1,4 @@
-package roomescape.intercepter;
+package roomescape.controller.intercepter;
 
 import java.util.Arrays;
 
