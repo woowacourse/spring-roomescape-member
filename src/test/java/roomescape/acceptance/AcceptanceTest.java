@@ -16,7 +16,7 @@ import roomescape.dto.auth.TokenResponse;
 import static org.hamcrest.Matchers.is;
 import static roomescape.TestFixture.*;
 
-@Sql("/test-schema.sql")
+@Sql({"/test-schema.sql", "/member-data.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class AcceptanceTest {
 

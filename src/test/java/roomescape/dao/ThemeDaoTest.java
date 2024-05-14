@@ -2,16 +2,12 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
-import static roomescape.TestFixture.RESERVATION_TIME_SEVEN;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.member.Member;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemePopularFilter;
 
@@ -22,16 +18,7 @@ import java.util.Optional;
 class ThemeDaoTest extends DaoTest {
 
     @Autowired
-    private MemberDao memberDao;
-
-    @Autowired
-    private ReservationTimeDao reservationTimeDao;
-
-    @Autowired
     private ThemeDao themeDao;
-
-    @Autowired
-    private ReservationDao reservationDao;
 
     private Theme theme;
 
@@ -97,7 +84,7 @@ class ThemeDaoTest extends DaoTest {
         assertThat(actual).hasSize(0);
     }
 
-    @Sql("/popular-theme-data.sql")
+    @Sql({"/popular-theme-data.sql"})
     @Test
     @DisplayName("인기 테마 목록을 조회한다.")
     void findPopularThemes() {

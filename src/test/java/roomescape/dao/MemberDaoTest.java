@@ -23,6 +23,8 @@ class MemberDaoTest extends DaoTest {
 
     @BeforeEach
     void setUp() {
+        memberDao.save(ADMIN());
+        memberDao.save(MEMBER_MIA());
         member = memberDao.save(MEMBER_BROWN());
     }
 
