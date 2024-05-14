@@ -23,19 +23,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ReservationTimeIntegrationTest {
+class ReservationTimeIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @LocalServerPort
-    private int port;
-
+    @Override
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
+        super.setUp();
     }
 
     @TestFactory

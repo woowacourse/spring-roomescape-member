@@ -17,8 +17,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.exception.InvalidValueException;
@@ -32,9 +30,7 @@ import roomescape.dto.reservation.MemberReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.exception.InvalidRequestException;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ReservationServiceTest {
+class ReservationServiceTest extends BaseServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

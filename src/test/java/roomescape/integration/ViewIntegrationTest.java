@@ -13,18 +13,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.member.MemberLoginRequest;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ViewIntegrationTest {
-
-    @LocalServerPort
-    private int port;
+class ViewIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
+        super.setUp();
     }
 
     @Test

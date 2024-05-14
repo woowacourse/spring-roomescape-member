@@ -29,22 +29,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.theme.ThemeCreateRequest;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(value = "classpath:clean_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ThemeIntegrationTest {
+class ThemeIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @LocalServerPort
-    private int port;
-
     @MockBean
     private Clock clock;
 
+    @Override
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
+        super.setUp();
         given(clock.instant()).willReturn(Instant.parse("2024-05-10T00:00:00Z"));
         given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
     }
