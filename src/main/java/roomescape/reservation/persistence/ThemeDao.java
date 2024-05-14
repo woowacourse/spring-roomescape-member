@@ -23,8 +23,8 @@ public class ThemeDao implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate, DataSource source) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ThemeDao(DataSource source) {
+        this.jdbcTemplate = new JdbcTemplate(source);
         this.jdbcInsert = new SimpleJdbcInsert(source)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");

@@ -28,11 +28,11 @@ class ReservationRepositoryTest extends RepositoryTest {
 
     @BeforeEach
     void setUp() {
-        this.reservationRepository = new ReservationDao(jdbcTemplate, dataSource);
+        this.reservationRepository = new ReservationDao(dataSource);
 
-        ReservationTimeRepository reservationTimeRepository = new ReservationTimeDao(jdbcTemplate, dataSource);
-        ThemeRepository themeRepository = new ThemeDao(jdbcTemplate, dataSource);
-        MemberRepository memberRepository = new MemberDao(jdbcTemplate, dataSource);
+        ReservationTimeRepository reservationTimeRepository = new ReservationTimeDao(dataSource);
+        ThemeRepository themeRepository = new ThemeDao(dataSource);
+        MemberRepository memberRepository = new MemberDao(dataSource);
         this.reservationTime = reservationTimeRepository.save(new ReservationTime(MIA_RESERVATION_TIME));
         this.wootecoTheme = themeRepository.save(WOOTECO_THEME());
         this.horrorTheme = themeRepository.save(HORROR_THEME());

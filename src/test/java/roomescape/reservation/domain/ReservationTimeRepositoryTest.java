@@ -17,7 +17,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
 
     @BeforeEach
     void setUp() {
-        this.reservationTimeRepository = new ReservationTimeDao(jdbcTemplate, dataSource);
+        this.reservationTimeRepository = new ReservationTimeDao(dataSource);
     }
 
     @Test
@@ -43,8 +43,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(reservationTimes.size()).isEqualTo(count);
+        assertThat(reservationTimes).hasSize(1);
     }
 
     @Test

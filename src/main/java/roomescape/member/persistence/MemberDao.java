@@ -22,8 +22,8 @@ public class MemberDao implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public MemberDao(JdbcTemplate jdbcTemplate, DataSource source) {
-        this.jdbcTemplate = jdbcTemplate;
+    public MemberDao(DataSource source) {
+        this.jdbcTemplate = new JdbcTemplate(source);
         this.jdbcInsert = new SimpleJdbcInsert(source)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");

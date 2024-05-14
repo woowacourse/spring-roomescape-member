@@ -29,10 +29,10 @@ class ThemeRepositoryTest extends RepositoryTest {
 
     @BeforeEach
     void setUp() {
-        this.themeRepository = new ThemeDao(jdbcTemplate, dataSource);
-        this.reservationTimeRepository = new ReservationTimeDao(jdbcTemplate, dataSource);
-        this.memberRepository = new MemberDao(jdbcTemplate, dataSource);
-        this.reservationRepository = new ReservationDao(jdbcTemplate, dataSource);
+        this.themeRepository = new ThemeDao(dataSource);
+        this.reservationTimeRepository = new ReservationTimeDao(dataSource);
+        this.memberRepository = new MemberDao(dataSource);
+        this.reservationRepository = new ReservationDao(dataSource);
     }
 
     @Test

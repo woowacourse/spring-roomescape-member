@@ -17,7 +17,7 @@ class MemberRepositoryTest extends RepositoryTest {
 
     @BeforeEach
     void setUp() {
-        this.memberRepository = new MemberDao(jdbcTemplate, dataSource);
+        this.memberRepository = new MemberDao(dataSource);
     }
 
     @Test
