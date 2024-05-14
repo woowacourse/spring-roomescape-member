@@ -68,8 +68,11 @@ public class AuthService {
         throw new CustomException(CustomUnauthorized.NO_LOGIN_TOKEN);
     }
 
-    public boolean checkAdmin(String email) {
-        return findByEmail(email).isAdmin();
+    public void checkAdmin(Cookie cookie) {
+        Member member = findByEmail(parseEmail(cookie));
+        if (!member.isAdmin()) {
+            throw new CustomException(CustomUnauthorized.NOT_AUTHORIZED);
+        }
     }
 
     public Member findById(Long id) {
