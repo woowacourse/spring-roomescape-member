@@ -15,7 +15,7 @@ import roomescape.member.security.crypto.JwtTokenProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class AdminIntegrationTest {
+class AdminIntegrationTest {
 
     @LocalServerPort
     private int port;
