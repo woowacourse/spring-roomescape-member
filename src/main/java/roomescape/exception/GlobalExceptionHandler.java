@@ -1,8 +1,11 @@
 package roomescape.exception;
 
+import java.util.Optional;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.dto.ErrorResponse;
@@ -43,4 +46,14 @@ public class GlobalExceptionHandler {
         ErrorResponse data = new ErrorResponse(HttpStatus.FORBIDDEN, exception.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(data);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exception) {
+        String message = Optional.ofNullable(exception.getBindingResult().getFieldError())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse("요청 형식이 잘못되었습니다.");
+        ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, message);
+        return ResponseEntity.badRequest().body(data);
+    }
+
 }
