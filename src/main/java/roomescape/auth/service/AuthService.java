@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import roomescape.auth.dto.LoginRequestDto;
 import roomescape.auth.jwt.JwtTokenProvider;
-import roomescape.exception.AuthorizationException;
+import roomescape.exception.UnAuthorizationException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 
@@ -27,7 +27,7 @@ public class AuthService {
 
     public Member loginCheck(final String token) {
         if (jwtTokenProvider.verifyTokenAvailable(token)) {
-            throw new AuthorizationException("기한이 유효하지 않은 토큰입니다.");
+            throw new UnAuthorizationException("기한이 유효하지 않은 토큰입니다.");
         }
         long id = jwtTokenProvider.getPayload(token);
         return memberDao.getById(id);

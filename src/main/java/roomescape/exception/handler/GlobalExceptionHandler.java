@@ -10,8 +10,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import roomescape.exception.AuthorizationException;
+import roomescape.exception.ForbiddenException;
 import roomescape.exception.RoomEscapeException;
+import roomescape.exception.UnAuthorizationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,9 +22,14 @@ public class GlobalExceptionHandler {
         return ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).build();
     }
 
-    @ExceptionHandler(value = AuthorizationException.class)
-    public ErrorResponse handleAuthorizationException(final AuthorizationException ex) {
+    @ExceptionHandler(value = UnAuthorizationException.class)
+    public ErrorResponse handleUnAuthorizationException(final UnAuthorizationException ex) {
         return ErrorResponse.builder(ex, HttpStatus.UNAUTHORIZED, ex.getMessage()).build();
+    }
+
+    @ExceptionHandler(value = ForbiddenException.class)
+    public ErrorResponse handleForbiddenException(final ForbiddenException ex) {
+        return ErrorResponse.builder(ex, HttpStatus.FORBIDDEN, ex.getMessage()).build();
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
