@@ -9,15 +9,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.member.Member;
+import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.AuthService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
+    public LoginMemberArgumentResolver(AuthService authService, JwtTokenProvider jwtTokenProvider) {
         this.authService = authService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -37,7 +40,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
         String token = authService.extractTokenFromCookie(cookies);
-        if (token == null || token.isBlank()) {
+        if (token == null || token.isBlank() || jwtTokenProvider.isExpired(token)) {
             return null;
         }
         return authService.findMemberByToken(token);

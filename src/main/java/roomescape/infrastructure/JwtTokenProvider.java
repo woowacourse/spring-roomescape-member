@@ -1,6 +1,7 @@
 package roomescape.infrastructure;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -34,6 +35,15 @@ public class JwtTokenProvider {
     public Long getPayload(String token) {
         validateToken(token);
         return Long.valueOf(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject());
+    }
+
+    public boolean isExpired(String token) {
+        try {
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            return false;
+        } catch (ExpiredJwtException | IllegalArgumentException e) {
+            return true;
+        }
     }
 
     private void validateToken(String token) {
