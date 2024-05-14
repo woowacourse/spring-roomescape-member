@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
 import roomescape.exception.UnauthorizedException;
@@ -12,15 +12,17 @@ import roomescape.exception.UnauthorizedException;
 import java.util.Date;
 
 @Component
+@EnableConfigurationProperties(TokenProperties.class)
 public class TokenProvider {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validTime = 3600000;
+    private final TokenProperties tokenProperties;
+
+    public TokenProvider(TokenProperties tokenProperties) {
+        this.tokenProperties = tokenProperties;
+    }
 
     public String create(Member member) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validTime);
+        Date validity = new Date(now.getTime() + tokenProperties.expireLength());
 
         return Jwts.builder()
                 .claim("id", member.getId())
@@ -28,7 +30,7 @@ public class TokenProvider {
                 .claim("email", member.getEmail())
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
+                .signWith(SignatureAlgorithm.HS256, tokenProperties.secretKey().getBytes())
                 .compact();
     }
 
@@ -50,7 +52,7 @@ public class TokenProvider {
     public Claims getPayload(String token) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(secretKey.getBytes())
+                    .setSigningKey(tokenProperties.secretKey().getBytes())
                     .parseClaimsJws(token)
                     .getBody();
             validateExpiration(claims);
