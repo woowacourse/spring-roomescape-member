@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Schedule {
@@ -10,6 +11,10 @@ public class Schedule {
     public Schedule(ReservationDate date, ReservationTime time) {
         this.date = date;
         this.time = time;
+    }
+
+    public boolean isBeforeNow() {
+        return LocalDateTime.of(date.getDate(), time.getStartAt()).isBefore(LocalDateTime.now());
     }
 
     public LocalDate getDate() {
