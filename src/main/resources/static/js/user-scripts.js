@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   updateUIBasedOnLogin();
 });
 
+
 document.getElementById('logout-btn').addEventListener('click', function (event) {
   event.preventDefault();
   fetch('/logout', {
@@ -9,8 +10,9 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
     credentials: 'include' // 쿠키를 포함시키기 위해 필요
   })
       .then(response => {
-        if(response.ok) {
+        if (response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
+          alert("Logout!")
           window.location.reload();
         } else {
           // 로그아웃 실패 처리
@@ -21,6 +23,10 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
         console.error('Error:', error);
       });
 });
+
+const registerBtn = document.getElementById('register-btn');
+if (registerBtn !== null) registerBtn.addEventListener('click', register);
+
 
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
@@ -52,7 +58,6 @@ document.getElementById("navbarDropdown").addEventListener('click', function (e)
   dropdownMenu.classList.toggle('show'); // Bootstrap 4에서는 data-toggle 사용, Bootstrap 5에서는 JS로 처리
 });
 
-
 function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -74,7 +79,7 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (response.status !== 200) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
@@ -94,6 +99,9 @@ function signup() {
 }
 
 function register(event) {
+  // 폼 제출에 의한 페이지 리로드 방지
+  event.preventDefault();
+
   // 폼 데이터 수집
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -113,7 +121,7 @@ function register(event) {
   };
 
   // AJAX 요청 생성 및 전송
-  fetch('/members', {
+  fetch('/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -136,9 +144,6 @@ function register(event) {
         // 에러 처리
         console.error('Error during signup:', error);
       });
-
-  // 폼 제출에 의한 페이지 리로드 방지
-  event.preventDefault();
 }
 
 function base64DecodeUnicode(str) {

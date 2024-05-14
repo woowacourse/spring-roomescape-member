@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.ReservationExistsException;
+import roomescape.service.exception.ReservationExistsException;
 import roomescape.service.request.ReservationTimeAppRequest;
 import roomescape.service.response.ReservationTimeAppResponse;
 

@@ -3,15 +3,16 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.ReservationExistsException;
+import roomescape.service.exception.ReservationExistsException;
 import roomescape.service.request.ReservationTimeAppRequest;
+import roomescape.service.response.BookableReservationTimeAppResponse;
 import roomescape.service.response.ReservationTimeAppResponse;
-import roomescape.service.response.ReservationTimeAppResponseWithBookable;
 
 @Service
 public class ReservationTimeService {
@@ -52,14 +53,19 @@ public class ReservationTimeService {
             .toList();
     }
 
-    public List<ReservationTimeAppResponseWithBookable> findAllWithBookAvailability(LocalDate date, Long themeId) {
+    public List<BookableReservationTimeAppResponse> findAllWithBookAvailability(LocalDate date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         List<ReservationTime> reservedTimes = reservations.stream()
             .map(Reservation::getReservationTime)
             .toList();
 
         return reservationTimeRepository.findAll().stream()
-            .map(time -> ReservationTimeAppResponseWithBookable.of(time, reservedTimes.contains(time)))
+            .map(time -> BookableReservationTimeAppResponse.of(time, isBooked(reservedTimes, time)))
             .toList();
+    }
+
+    private boolean isBooked(List<ReservationTime> reservedTimes, ReservationTime time) {
+        return reservedTimes.stream()
+            .anyMatch(reservationTime -> Objects.equals(reservationTime.getId(), time.getId()));
     }
 }
