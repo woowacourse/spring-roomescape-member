@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.dto.SearchReservationRequest;
 import roomescape.domain.exception.InvalidValueException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
@@ -66,11 +67,12 @@ class ReservationServiceTest extends BaseServiceTest {
         @Sql(value = {"classpath:clean_data.sql", "classpath:test_data.sql"})
         @DisplayName("테마 아이디, 멤버 아이디, 날짜 범위로 필터링된 예약 정보를 조회한다.")
         void findFiltered() {
-            List<ReservationResponse> filtered = reservationService.findFiltered(
+            SearchReservationRequest request = new SearchReservationRequest(
                     1L,
                     1L,
                     LocalDate.of(2024, 5, 3),
                     LocalDate.of(2024, 5, 9));
+            List<ReservationResponse> filtered = reservationService.findFiltered(request);
 
             assertThat(filtered).hasSize(1);
         }

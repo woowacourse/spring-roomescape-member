@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.controller.dto.SearchReservationRequest;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -50,12 +51,9 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationResponse> findFiltered(
-            Long themeId,
-            Long memberId,
-            LocalDate dateFrom,
-            LocalDate dateTo) {
-        return reservationDao.readFilteredReservation(themeId, memberId, dateFrom, dateTo).stream()
+    public List<ReservationResponse> findFiltered(SearchReservationRequest request) {
+        return reservationDao.readFilteredReservation(request.themeId(), request.memberId(), request.dateFrom(), request.dateTo())
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
