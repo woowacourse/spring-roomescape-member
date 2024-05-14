@@ -31,4 +31,16 @@ class MemberRoleTest {
                 () -> assertFalse(MemberRole.ADMIN.hasSameRoleFrom(memberRoles))
         );
     }
+
+    @Test
+    @DisplayName("여러개의 권한 중 하나라도 포함이 되면 true를 반환한다.")
+    void hasSameRule() {
+        MemberRole[] memberRoles = new MemberRole[]{MemberRole.MEMBER, MemberRole.ADMIN};
+
+        assertAll(
+                () -> assertTrue(MemberRole.MEMBER.hasSameRoleFrom(memberRoles)),
+                () -> assertTrue(MemberRole.ADMIN.hasSameRoleFrom(memberRoles)),
+                () -> assertFalse(MemberRole.NON_MEMBER.hasSameRoleFrom(memberRoles))
+        );
+    }
 }
