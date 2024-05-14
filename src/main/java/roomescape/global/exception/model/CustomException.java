@@ -10,6 +10,11 @@ public class CustomException extends RuntimeException {
         this.errorType = errorType;
     }
 
+    public CustomException(final ErrorType errorType, final String message, final Throwable cause) {
+        super(message, cause);
+        this.errorType = errorType;
+    }
+
     public ErrorType getErrorType() {
         return errorType;
     }
