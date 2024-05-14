@@ -9,11 +9,11 @@ public class MemberName {
     private static final int MAXIMUM_NAME_LENGTH = 20;
     private static final String INVALID_NAME_LENGTH = String.format("이름은 %d자 이상, %d자 이하여야 합니다.", MINIMUM_NAME_LENGTH, MAXIMUM_NAME_LENGTH);
 
-    private final String value;
+    private final String name;
 
-    public MemberName(String value) {
-        validate(value);
-        this.value = value;
+    public MemberName(String name) {
+        validate(name);
+        this.name = name;
     }
 
     private void validate(String name) {
@@ -24,7 +24,7 @@ public class MemberName {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(name);
     }
 
     @Override
@@ -36,10 +36,10 @@ public class MemberName {
             return false;
         }
         final MemberName memberName = (MemberName) o;
-        return Objects.equals(value, memberName.value);
+        return Objects.equals(name, memberName.name);
     }
 
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 }

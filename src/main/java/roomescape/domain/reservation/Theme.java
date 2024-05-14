@@ -32,14 +32,14 @@ public class Theme {
     }
 
     public String getName() {
-        return name.getValue();
+        return name.getName();
     }
 
     public String getDescription() {
-        return description.getValue();
+        return description.getDescription();
     }
 
     public String getThumbnail() {
-        return thumbnail.getValue();
+        return thumbnail.getThumbnail();
     }
 }

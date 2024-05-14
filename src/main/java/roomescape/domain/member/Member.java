@@ -34,15 +34,15 @@ public class Member {
     }
 
     public String getMemberName() {
-        return memberName.getValue();
+        return memberName.getName();
     }
 
     public String getEmail() {
-        return email.getValue();
+        return email.getEmail();
     }
 
     public String getPassword() {
-        return password.getValue();
+        return password.getPassword();
     }
 
     public String getRole() {

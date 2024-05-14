@@ -8,22 +8,22 @@ public class Password {
     private static final int MINIMUM_PASSWORD_LENGTH = 6;
     private static final int MAXIMUM_PASSWORD_LENGTH = 12;
 
-    private final String value;
+    private final String password;
 
-    public Password(String value) {
-        validate(value);
-        this.value = value;
+    public Password(String password) {
+        validate(password);
+        this.password = password;
     }
 
-    private void validate(String value) {
-        if (value.length() < MINIMUM_PASSWORD_LENGTH || value.length() > MAXIMUM_PASSWORD_LENGTH) {
+    private void validate(String password) {
+        if (password.length() < MINIMUM_PASSWORD_LENGTH || password.length() > MAXIMUM_PASSWORD_LENGTH) {
             throw new InvalidMemberException("비밀번호는 6자 이상 12자 이하여야 합니다.");
         }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(password);
     }
 
     @Override
@@ -31,10 +31,10 @@ public class Password {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Password password = (Password) o;
-        return Objects.equals(value, password.value);
+        return Objects.equals(this.password, password.password);
     }
 
-    public String getValue() {
-        return value;
+    public String getPassword() {
+        return password;
     }
 }

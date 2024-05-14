@@ -9,11 +9,11 @@ public class ThemeName {
     private static final int MAXIMUM_NAME_LENGTH = 20;
     private static final String INVALID_NAME_LENGTH = String.format("이름은 %d자 이상, %d자 이하여야 합니다.", MINIMUM_NAME_LENGTH, MAXIMUM_NAME_LENGTH);
 
-    private final String value;
+    private final String name;
 
-    public ThemeName(String value) {
-        validate(value);
-        this.value = value;
+    public ThemeName(String name) {
+        validate(name);
+        this.name = name;
     }
 
     private void validate(String name) {
@@ -24,7 +24,7 @@ public class ThemeName {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(name);
     }
 
     @Override
@@ -36,10 +36,10 @@ public class ThemeName {
             return false;
         }
         ThemeName themeName = (ThemeName) o;
-        return Objects.equals(value, themeName.value);
+        return Objects.equals(name, themeName.name);
     }
 
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 }

@@ -13,7 +13,7 @@ public class Schedule {
     }
 
     public LocalDate getDate() {
-        return date.getValue();
+        return date.getDate();
     }
 
     public LocalTime getTime() {

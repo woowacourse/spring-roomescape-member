@@ -7,16 +7,16 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class ReservationDate {
-    private final LocalDate value;
+    private final LocalDate date;
 
-    public ReservationDate(String value) {
-        validate(value);
-        this.value = LocalDate.parse(value);
+    public ReservationDate(String date) {
+        validate(date);
+        this.date = LocalDate.parse(date);
     }
 
-    private void validate(String value) {
+    private void validate(String date) {
         try {
-            LocalDate.parse(value);
+            LocalDate.parse(date);
         } catch (DateTimeParseException e) {
             throw new InvalidReservationException("올바르지 않은 날짜입니다.");
         }
@@ -24,7 +24,7 @@ public class ReservationDate {
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(date);
     }
 
     @Override
@@ -36,10 +36,10 @@ public class ReservationDate {
             return false;
         }
         final ReservationDate that = (ReservationDate) o;
-        return Objects.equals(value, that.value);
+        return Objects.equals(date, that.date);
     }
 
-    public LocalDate getValue() {
-        return value;
+    public LocalDate getDate() {
+        return date;
     }
 }

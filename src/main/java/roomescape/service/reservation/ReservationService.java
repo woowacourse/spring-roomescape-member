@@ -70,7 +70,7 @@ public class ReservationService {
     }
 
     private void validateIfBefore(ReservationDate date, ReservationTime time) {
-        LocalDateTime value = LocalDateTime.of(date.getValue(), time.getStartAt());
+        LocalDateTime value = LocalDateTime.of(date.getDate(), time.getStartAt());
         if (value.isBefore(LocalDateTime.now())) {
             throw new InvalidReservationException("현재보다 이전으로 일정을 설정할 수 없습니다.");
         }
