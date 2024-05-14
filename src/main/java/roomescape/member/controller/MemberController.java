@@ -6,7 +6,6 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +15,6 @@ import roomescape.member.dto.MemberRequestDto;
 import roomescape.member.dto.MemberResponseDto;
 import roomescape.member.service.MemberService;
 
-@Validated
 @RestController
 public class MemberController {
     private final MemberService memberService;
