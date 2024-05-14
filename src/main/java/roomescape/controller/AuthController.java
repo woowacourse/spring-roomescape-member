@@ -61,6 +61,7 @@ public class AuthController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 }

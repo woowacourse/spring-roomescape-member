@@ -35,6 +35,7 @@ public class MemberController {
         MemberResponse response = service.createMember(request);
 
         URI location = URI.create("/members/" + response.id());
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location)
+                .build();
     }
 }

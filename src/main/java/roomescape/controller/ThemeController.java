@@ -42,16 +42,14 @@ public class ThemeController {
         ThemeResponse response = themeService.createTheme(request);
 
         URI location = URI.create("/themes/" + response.id());
-        return ResponseEntity
-                .created(location)
+        return ResponseEntity.created(location)
                 .body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
-        return ResponseEntity
-                .noContent()
+        return ResponseEntity.noContent()
                 .build();
     }
 }

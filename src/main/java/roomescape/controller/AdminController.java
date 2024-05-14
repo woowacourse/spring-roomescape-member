@@ -26,8 +26,7 @@ public class AdminController {
         ReservationResponse response = service.createReservation(dto);
 
         URI location = URI.create("/admin/reservations/" + response.id());
-        return ResponseEntity
-                .created(location)
+        return ResponseEntity.created(location)
                 .body(response);
     }
 }

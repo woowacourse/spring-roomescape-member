@@ -45,16 +45,14 @@ public class ReservationController {
         ReservationResponse response = reservationService.createReservation(request);
 
         URI location = URI.create("/reservations/" + response.id());
-        return ResponseEntity
-                .created(location)
+        return ResponseEntity.created(location)
                 .body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
-        return ResponseEntity
-                .noContent()
+        return ResponseEntity.noContent()
                 .build();
     }
 }

@@ -44,16 +44,14 @@ public class TimeController {
         TimeResponse response = service.createTime(dto);
 
         URI location = URI.create("/times/" + response.id());
-        return ResponseEntity
-                .created(location)
+        return ResponseEntity.created(location)
                 .body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         service.deleteTime(id);
-        return ResponseEntity
-                .noContent()
+        return ResponseEntity.noContent()
                 .build();
     }
 }
