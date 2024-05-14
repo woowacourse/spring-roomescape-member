@@ -37,6 +37,17 @@ public class ReservationJdbcDao implements ReservationDao {
             )
     );
 
+    public static final String getAllSql = """
+                SELECT r.id, r.date,
+                    t.id AS timeId, t.start_at,
+                    th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
+                    m.id AS memberId, m.name AS memberName, m.email, m.password, m.role
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                INNER JOIN member m ON r.member_id = m.id
+            """;
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -62,32 +73,14 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAllReservationOrderByDateAndTimeStartAt() {
-        String findAllReservationSql = """
-                SELECT r.id, r.date,
-                    t.id AS timeId, t.start_at,
-                    th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
-                    m.id AS memberId, m.name AS memberName, m.email, m.password, m.role
-                FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id
-                INNER JOIN theme th ON r.theme_id = th.id
-                INNER JOIN member m ON r.member_id = m.id
-                ORDER BY r.date ASC, t.start_at ASC
-                """;
+        String findAllReservationSql = getAllSql + " ORDER BY r.date ASC, t.start_at ASC";
 
         return jdbcTemplate.query(findAllReservationSql, RESERVATION_ROW_MAPPER);
     }
 
     @Override
     public List<Reservation> findAllByThemeIdAndDate(long themeId, LocalDate date) {
-        String findAllByThemeIdAndDateSql = """
-                SELECT r.id, r.date,
-                    t.id AS timeId, t.start_at,
-                    th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
-                    m.id AS memberId, m.name AS memberName, m.email, m.password, m.role
-                FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id
-                INNER JOIN theme th ON r.theme_id = th.id
-                INNER JOIN member m ON r.member_id = m.id
+        String findAllByThemeIdAndDateSql = getAllSql + """
                 WHERE r.date = ? AND r.theme_id = ?
                 ORDER BY r.date ASC, t.start_at ASC
                 """;
@@ -143,15 +136,7 @@ public class ReservationJdbcDao implements ReservationDao {
     @Override
     public List<Reservation> findAllByUserIdAndThemeIdBetweenDate(long userId, long themeId, LocalDate fromDate,
                                                                   LocalDate toDate) {
-        String findReservationsInOrderSql = """
-                SELECT r.id, r.date,
-                    t.id AS timeId, t.start_at,
-                    th.id AS themeId, th.name AS themeName, th.description, th.thumbnail,
-                    m.id AS memberId, m.name AS memberName, m.email, m.password, m.role
-                FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id
-                INNER JOIN theme th ON r.theme_id = th.id
-                INNER JOIN member m ON r.member_id = m.id
+        String findReservationsInOrderSql = getAllSql + """
                 WHERE m.id = ? AND th.id = ? AND DATE BETWEEN ? AND ?
                 ORDER BY r.date ASC, t.start_at ASC
                 """;
