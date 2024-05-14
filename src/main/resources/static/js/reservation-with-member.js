@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add-button').addEventListener('click', addInputRow);
   document.getElementById('filter-form').addEventListener('submit', applyFilter);
 
-  requestRead(RESERVATION_API_ENDPOINT)
+  requestRead(`/admin${RESERVATION_API_ENDPOINT}`)
       .then(render)
       .catch(error => console.error('Error fetching reservations:', error));
 
@@ -193,7 +193,7 @@ function applyFilter(event) {
   const dateTo = document.getElementById('date-to').value;
 
   const requrl = new URLSearchParams({themeId, memberId, dateFrom, dateTo});
-  fetch(`/reservations?${requrl}`, { // 예약 검색 API 호출
+  fetch(`/admin/reservations?${requrl}`, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

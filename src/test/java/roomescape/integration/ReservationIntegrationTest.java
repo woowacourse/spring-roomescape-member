@@ -60,6 +60,12 @@ class ReservationIntegrationTest extends BaseIntegrationTest {
                 .when().post("/login")
                 .getHeader("Set-Cookie");
 
+        String adminToken = RestAssured.given()
+                .body(MemberLoginRequest.of("admin1", "admin1@wooteco.com"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .getHeader("Set-Cookie");
+
         return List.of(
                 dynamicTest("유저가 예약을 생성한다.", () -> {
                     MemberReservationCreateRequest params =
@@ -77,12 +83,6 @@ class ReservationIntegrationTest extends BaseIntegrationTest {
                             .body("member.name", is("사용자1"));
                 }),
                 dynamicTest("관리자가 예약을 생성한다.", () -> {
-                    String adminToken = RestAssured.given()
-                            .body(MemberLoginRequest.of("admin1", "admin1@wooteco.com"))
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/login")
-                            .getHeader("Set-Cookie");
-
                     AdminReservationCreateRequest params =
                             AdminReservationCreateRequest.of(date, 2L, 1L, 2L);
 
@@ -99,8 +99,8 @@ class ReservationIntegrationTest extends BaseIntegrationTest {
                 }),
                 dynamicTest("모든 예약을 조회한다.", () ->
                         RestAssured.given().log().all()
-                                .header("Cookie", token)
-                                .when().get("/reservations")
+                                .header("Cookie", adminToken)
+                                .when().get("/admin/reservations")
                                 .then().log().all()
                                 .statusCode(200)
                                 .body("size()", is(2))
