@@ -8,7 +8,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.config.util.CookieManager;
 import roomescape.domain.member.Member;
 import roomescape.service.AuthService;
 
@@ -37,7 +36,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         if (cookies == null || cookies.length == 0) {
             return null;
         }
-        String token = CookieManager.extractTokenFromCookie(cookies);
+        String token = authService.extractTokenFromCookie(cookies);
         if (token == null || token.isBlank()) {
             return null;
         }
