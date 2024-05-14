@@ -47,9 +47,7 @@ public class AuthService {
 
     private void validateLogin(String principal, String credential) {
         Member member = findByEmail(principal);
-        if (!member.hasCredential(credential)) {
-            throw new CustomException(CustomUnauthorized.INCORRECT_PASSWORD);
-        }
+        member.validateCredential(credential);
     }
 
     public Member findByEmail(String email) {

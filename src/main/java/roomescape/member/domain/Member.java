@@ -2,6 +2,7 @@ package roomescape.member.domain;
 
 import roomescape.handler.exception.CustomBadRequest;
 import roomescape.handler.exception.CustomException;
+import roomescape.handler.exception.CustomUnauthorized;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -38,12 +39,14 @@ public class Member {
         }
     }
 
-    public boolean isAdmin() {
-        return role.equals(MemberRole.ADMIN);
+    public void validateCredential(String credential) {
+        if (!password.equals(credential)) {
+            throw new CustomException(CustomUnauthorized.INCORRECT_PASSWORD);
+        };
     }
 
-    public boolean hasCredential(String credential) {
-        return password.equals(credential);
+    public boolean isAdmin() {
+        return role.equals(MemberRole.ADMIN);
     }
 
     public Long getId() {
