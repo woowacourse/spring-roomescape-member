@@ -19,11 +19,18 @@ VALUES ('우테코 수료 대장정',
         '자고 있는 사이에 캠퍼스 문이 닫혀버렸다! 잠실 캠퍼스 탈출기',
         'https://velog.velcdn.com/images/jangws/post/7199f6ba-b3a8-4e2f-b86a-e5406b166bcd/image.jpeg');
 
-INSERT INTO reservation (name, date, time_id, theme_id, created_at)
-VALUES ('알알알', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 1, 1, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
-       ('산초', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
-       ('칸쵸', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
-       ('찰리', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 3, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
-       ('러너덕', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
-       ('위브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 4, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
-       ('아래브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 3, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP()));
+INSERT INTO member (name, email, password, role)
+VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
+       ('알파카', 'alpaca@email.com', 'password', 'USER'),
+       ('산초', 'sancho@email.com', 'password', 'USER'),
+       ('알파고', 'alpago@email.com', 'password', 'USER'),
+       ('키자루', 'monkey@email.com', 'password', 'USER'),
+       ('고죠사토루', 'beomboo@email.com', 'password', 'USER');
+
+INSERT INTO reservation (member_id, date, time_id, theme_id, created_at)
+VALUES (1, FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 1, 1, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       (2, FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       (3, FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       (4, FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 3, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       (5, FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       (6, FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 4, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP()));

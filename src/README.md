@@ -53,6 +53,11 @@
 - 테마를 삭제할 수 있다.
     - 테마에 예약한 사람이 한명이라도 있는 경우, 삭제하지 못한다.
 
+### 로그인 페이지
+
+- `/login` 으로 접속할 수 있다.
+- 이메일, 비밀번호를 입력해 로그인을 요청할 수 있다.
+
 ## API 명세서
 
 | HTTP Method | URI                  | Description  |
@@ -72,3 +77,9 @@
 | GET         | `/themes`            | 테마 목록 조회     |
 | POST        | `/themes`            | 테마 추가        |
 | DELETE      | `/themes/{id}`       | 테마 삭제        | 
+| GET         | `/login`             | 로그인 페이지      | 
+| POST        | `/login`             | 로그인 요청       | 
+| GET         | `/login/member`      | 인증 정보 조회     | 
+| GET         | `/members`           | 회원 목록 조회     | 
+| POST        | `/members`           | 회원 추가        | 
+| DELETE      | `/members/{id}`      | 회원 삭제        | 
