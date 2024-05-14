@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,29 +36,56 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, 
+                SELECT reservation.id, reservation.date, 
+                member.id AS member_id, member.name AS member_name, member.email AS member_email, 
+                member.password AS member_password, member.role AS member_role, 
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
                 theme.id AS theme_id, theme.name AS theme_name, 
                 theme.description AS theme_description, theme.thumbnail AS theme_thumbnail 
                 FROM reservation 
+                INNER JOIN member ON reservation.member_id = member.id 
                 INNER JOIN reservation_time AS `time` ON reservation.time_id = `time`.id 
                 INNER JOIN theme ON reservation.theme_id = theme.id
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        String whereClause = buildWhereClause(memberId, themeId, dateFrom, dateTo);
+        return jdbcTemplate.query(sql + whereClause, reservationRowMapper);
+    }
+
+    private String buildWhereClause(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        List<String> conditions = new ArrayList<>();
+        if (memberId != null) {
+            conditions.add("reservation.member_id = " + memberId);
+        }
+        if (themeId != null) {
+            conditions.add("reservation.theme_id = " + themeId);
+        }
+        if (dateFrom != null) {
+            conditions.add("reservation.date >= '" + dateFrom + "'");
+        }
+        if (dateTo != null) {
+            conditions.add("reservation.date <= '" + dateTo + "'");
+        }
+        if (conditions.isEmpty()) {
+            return "";
+        }
+        return "WHERE " + String.join(" AND ", conditions);
     }
 
     @Override
     public Optional<Reservation> findById(long id) {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, 
+                SELECT reservation.id, reservation.date, 
+                member.id AS member_id, member.name AS member_name, member.email AS member_email, 
+                member.password AS member_password, member.role AS member_role, 
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
                 theme.id AS theme_id, theme.name AS theme_name, 
                 theme.description AS theme_description, theme.thumbnail AS theme_thumbnail 
                 FROM reservation 
+                INNER JOIN member ON reservation.member_id = member.id 
                 INNER JOIN reservation_time AS `time` ON reservation.time_id = `time`.id 
-                INNER JOIN theme ON reservation.theme_id = theme.id
+                INNER JOIN theme ON reservation.theme_id = theme.id 
                 WHERE reservation.id = ?
                 """;
         List<Reservation> reservation = jdbcTemplate.query(sql, reservationRowMapper, id);
@@ -109,13 +137,13 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
+        parameters.put("member_id", reservation.getMember().getId());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
         long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Reservation(
-                id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+                id, reservation.getDate(), reservation.getMember(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override

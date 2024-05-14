@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository {
-    List<Reservation> findAll();
+    List<Reservation> findAll(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 
     Optional<Reservation> findById(long id);
 

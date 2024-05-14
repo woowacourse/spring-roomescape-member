@@ -4,33 +4,33 @@ import java.time.LocalDate;
 
 public class Reservation {
     private Long id;
-    private String name;
     private LocalDate date;
+    private Member member;
     private ReservationTime time;
     private Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(LocalDate date, Member member, ReservationTime time, Theme theme) {
+        this(null, date, member, time, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public LocalDate getDate() {
         return date;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public ReservationTime getTime() {

@@ -1,9 +1,11 @@
 package roomescape.service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -35,21 +37,22 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public List<ReservationResponse> findAllReservation() {
-        List<Reservation> reservations = reservationRepository.findAll();
+    public List<ReservationResponse> findAllReservation(
+            Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Reservation> reservations = reservationRepository.findAll(memberId, themeId, dateFrom, dateTo);
         return reservations.stream()
                 .map(ReservationResponse::new)
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationRequest request) {
+    public ReservationResponse saveReservation(ReservationRequest request, Member member) {
         ReservationTime time = findReservationTimeById(request.getTimeId());
         Theme theme = findThemeById(request.getThemeId());
 
         validateDateTimeReservation(request, time);
         validateDuplicateReservation(request);
 
-        Reservation reservation = request.toReservation(time, theme);
+        Reservation reservation = request.toReservation(member, time, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
         return new ReservationResponse(savedReservation);
     }
