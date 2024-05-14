@@ -3,6 +3,7 @@ package roomescape.member.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.global.exception.ViolationException;
@@ -31,6 +32,16 @@ class MemberTest {
     void validateEmail(String invalidEmail) {
         // when & then
         assertThatThrownBy(() -> new Member(MIA_NAME, invalidEmail, TEST_PASSWORD, USER))
+                .isInstanceOf(ViolationException.class);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("사용자 비밀번호는 비어있을 수 없다.")
+    void validatePassword(String password) {
+        // when & then
+        assertThatThrownBy(() -> new Member(MIA_NAME, MIA_EMAIL, password, USER))
                 .isInstanceOf(ViolationException.class);
     }
 

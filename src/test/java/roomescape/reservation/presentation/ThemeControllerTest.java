@@ -2,6 +2,9 @@ package roomescape.reservation.presentation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -53,6 +56,23 @@ class ThemeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.description").value(WOOTECO_THEME_DESCRIPTION))
                 .andExpect(jsonPath("$.thumbnail").value(THEME_THUMBNAIL))
                 .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("테마 생성 POST 요청 시 테마 이름이 비어 있다면 상태코드 400을 반환한다.")
+    void createThemeWithInvalidName(String invalidName) throws Exception {
+        // given
+        ThemeSaveRequest request = new ThemeSaveRequest(invalidName, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        // when & then
+        mockMvc.perform(post("/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test

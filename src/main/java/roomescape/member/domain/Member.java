@@ -27,6 +27,7 @@ public class Member {
     public Member(Long id, String name, String email, String password, Role role) {
         validateName(name);
         validateEmail(email);
+        validatePassword(password);
         this.id = id;
         this.name = name;
         this.email = email;
@@ -54,6 +55,12 @@ public class Member {
         Matcher matcher = EMAIL_PATTERN.matcher(email);
         if (!matcher.matches()) {
             throw new ViolationException("이메일 형식에 맞지 않습니다.");
+        }
+    }
+
+    private void validatePassword(String password) {
+        if (password == null || password.isBlank()) {
+            throw new ViolationException("비밀번호는 비어있을 수 없습니다.");
         }
     }
 
