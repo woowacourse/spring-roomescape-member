@@ -30,7 +30,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory) throws Exception {
+            WebDataBinderFactory binderFactory) {
         HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = servletRequest.getCookies();
         if (cookies == null || cookies.length == 0) {
