@@ -35,7 +35,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory) {
         String[] cookies = webRequest.getHeaderValues(HttpHeaders.COOKIE);
         String token = getTokenBy(cookies);
-        return authService.loginCheck(token);
+        return authService.extractMemberOf(token);
     }
 
     private String getTokenBy(final String[] cookies) {
@@ -47,7 +47,6 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
                 .filter(cookie -> cookie.startsWith("token"))
                 .findFirst()
                 .orElseThrow(() -> new UnAuthorizationException("토큰이 존재하지 않습니다."));
-        token = token.substring("token=".length());
-        return token;
+        return token.substring("token=".length());
     }
 }

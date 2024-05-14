@@ -33,7 +33,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     private boolean checkAdmin(final String token) {
         try {
-            Role role = adminService.loginCheck(token.substring("token=".length())).getRole();
+            Role role = adminService.extractMemberOf(token.substring("token=".length())).getRole();
             if (role == Role.ADMIN) {
                 return true;
             }

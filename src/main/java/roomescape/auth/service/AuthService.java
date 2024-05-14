@@ -25,7 +25,7 @@ public class AuthService {
         return token;
     }
 
-    public Member loginCheck(final String token) {
+    public Member extractMemberOf(final String token) {
         if (jwtTokenProvider.verifyTokenAvailable(token)) {
             throw new UnAuthorizationException("기한이 유효하지 않은 토큰입니다.");
         }
