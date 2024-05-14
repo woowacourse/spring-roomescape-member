@@ -40,27 +40,15 @@ public class ReservationService {
     }
 
     private ReservationResponse createReservation(long timeId, long themeId, long memberId, String date) {
-        ReservationTime reservationTime = findTimeById(timeId);
-        Theme theme = findThemeById(themeId);
-        Member member = findMemberById(memberId);
+        ReservationTime reservationTime = reservationTimeRepository.getById(timeId);
+        Theme theme = themeRepository.getById(themeId);
+        Member member = memberRepository.getById(memberId);
 
         validate(date, reservationTime, theme);
 
         Reservation reservation = new Reservation(date, member, reservationTime, theme);
 
         return new ReservationResponse(reservationRepository.save(reservation));
-    }
-
-    private ReservationTime findTimeById(long timeId) {
-        return reservationTimeRepository.getById(timeId);
-    }
-
-    private Theme findThemeById(long themeId) {
-        return themeRepository.getById(themeId);
-    }
-
-    private Member findMemberById(long memberId) {
-        return memberRepository.getById(memberId);
     }
 
     private void validate(String date, ReservationTime reservationTime, Theme theme) {
