@@ -4,11 +4,11 @@ import java.time.LocalDate;
 
 public record ReservationDate(LocalDate date) {
 
-    public boolean isPastDate() {
-        return date.isBefore(LocalDate.now());
+    public boolean isBefore(LocalDate limitDate) {
+        return date.isBefore(limitDate);
     }
 
-    public boolean isPresentDate() {
-        return date.isEqual(LocalDate.now());
+    public boolean isLimitDate(LocalDate limitDate) {
+        return date.isEqual(limitDate);
     }
 }

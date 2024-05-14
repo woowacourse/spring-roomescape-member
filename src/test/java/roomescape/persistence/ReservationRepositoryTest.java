@@ -2,7 +2,6 @@ package roomescape.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,17 +15,19 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 /*
  * 테스트 데이터베이스 초기 데이터
- * {ID=1, NAME=브라운, DATE=2024-05-04, TIME={ID=1, START_AT="10:00"}}
- * {ID=2, NAME=엘라, DATE=2024-05-04, TIME={ID=2, START_AT="11:00"}}
- * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}}
+ * {ID=1, MEMBER_ID=1, DATE=2024-05-04, TIME={ID=1, START_AT="10:00"}, THEME_ID=1}
+ * {ID=2, MEMBER_ID=1, DATE=2024-05-04, TIME={ID=2, START_AT="11:00"}, THEME_ID=1}
+ * {ID=3, MEMBER_ID=1, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME_ID=1}
  */
 @JdbcTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
@@ -55,26 +56,31 @@ class ReservationRepositoryTest {
     @Test
     @DisplayName("특정 예약 id의 데이터를 조회한다.")
     void findById() {
-        // when
-        Reservation findReservations = reservationRepository.findById(2L);
-
-        // then
-        assertAll(
-                () -> assertThat(findReservations.getName().value()).isEqualTo("엘라"),
-                () -> assertThat(findReservations.getDate().date()).isEqualTo("2024-05-04")
+        // given
+        Reservation targetReservation = new Reservation(
+                2L,
+                new Member(1L, new Name("test"), "test@gmail.com", Role.USER),
+                new ReservationDate(LocalDate.parse("2024-05-04")),
+                new ReservationTime(LocalTime.parse("10:00")),
+                new Theme(null, null, null)
         );
 
+        // when
+        Reservation findReservation = reservationRepository.findById(targetReservation.getId());
+
+        // then
+        assertThat(findReservation).isEqualTo(targetReservation);
     }
 
     @Test
     @DisplayName("새로운 예약을 생성한다.")
     void create() {
         // given
-        Name name = new Name("브라운");
+        Member member = new Member(1L, new Name("test"), "test@gmail.com", Role.USER);
         ReservationDate date = new ReservationDate(LocalDate.parse("2023-08-05"));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, null, null, null);
-        Reservation createReservation = new Reservation(name, date, reservationTime, theme);
+        Reservation createReservation = new Reservation(member, date, reservationTime, theme);
 
         // when
         reservationRepository.create(createReservation);
@@ -101,16 +107,33 @@ class ReservationRepositoryTest {
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 있는지 확인한다.")
     void hasDuplicateDateTimeThemeReservation() {
         // given
-        Name name = new Name("아톰");
+        Member member = new Member(1L, new Name("test"), "test@gmail.com", Role.USER);
         ReservationDate date = new ReservationDate(LocalDate.parse("2024-05-04"));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "테마1", "테마1설명", "테마1이미지");
-        Reservation reservation = new Reservation(name, date, reservationTime, theme);
+        Reservation reservation = new Reservation(member, date, reservationTime, theme);
 
         // when
         boolean result = reservationRepository.hasDuplicateReservation(reservation);
 
         // then
         assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("특정 회원, 테마 기간 조건의 예약 목록을 가져온다.")
+    void findReservationWithMemberThemePeriod() {
+        // given
+        Long memberId = 1L;
+        Long themeId = 1L;
+        LocalDate dateFrom = LocalDate.parse("2024-05-03");
+        LocalDate dateTo = LocalDate.parse("2024-05-05");
+
+        // when
+        List<Reservation> reservations =
+                reservationRepository.findByMemberThemePeriod(memberId, themeId, dateFrom, dateTo);
+
+        // then
+        assertThat(reservations).hasSize(2);
     }
 }

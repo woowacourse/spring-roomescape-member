@@ -13,7 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.service.request.ReservationRequest;
+import roomescape.service.request.MemberLoginRequest;
+import roomescape.service.request.MemberReservationRequest;
 
 /*
  * 테스트 데이터베이스 초기 데이터
@@ -28,9 +29,17 @@ class ReservationIntegrationTest {
     @LocalServerPort
     private int port;
 
+    private String token;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new MemberLoginRequest("user1@gmail.com", "user1"))
+                .when().post("/login")
+                .then().log().all()
+                .extract().cookie("token");
     }
 
     @Test
@@ -44,19 +53,19 @@ class ReservationIntegrationTest {
     }
 
     @Test
-    @DisplayName("예약을 생성한다.")
+    @DisplayName("쿠키에 저장된 토큰을 활용해 예약을 생성한다.")
     void createReservation() {
         LocalDate reservationDate = LocalDate.now().plusDays(1);
-        ReservationRequest createDto = new ReservationRequest("브라운", reservationDate.toString(), 1L, 1L);
+        MemberReservationRequest request = new MemberReservationRequest(reservationDate.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(createDto)
+                .cookies("token", token)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", startsWith("/reservations/"))
-                .body("name", is("브라운"))
                 .body("date", is(reservationDate.toString()));
     }
 

@@ -2,6 +2,7 @@ package roomescape.web.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
-import roomescape.service.request.ReservationRequest;
+import roomescape.service.request.LoginMember;
+import roomescape.service.request.MemberReservationRequest;
 import roomescape.service.response.ReservationResponse;
 
 @RestController
@@ -26,8 +29,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.createReservation(request);
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody MemberReservationRequest request,
+                                                                 LoginMember loginMember) {
+        ReservationResponse response = reservationService.createReservation(request, loginMember);
         URI uri = URI.create("/reservations/" + response.id());
 
         return ResponseEntity.created(uri).body(response);
@@ -43,6 +47,17 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations() {
         List<ReservationResponse> responses = reservationService.getAllReservations();
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping(params = {"memberId", "themeId", "dateFrom", "dateTo"})
+    public ResponseEntity<List<ReservationResponse>> findReservationsWithMemberThemePeriod(
+            @RequestParam Long memberId, @RequestParam Long themeId,
+            @RequestParam LocalDate dateFrom, @RequestParam LocalDate dateTo
+    ) {
+        List<ReservationResponse> responses =
+                reservationService.findReservationsWithMemberThemePeriod(memberId, themeId, dateFrom, dateTo);
 
         return ResponseEntity.ok(responses);
     }

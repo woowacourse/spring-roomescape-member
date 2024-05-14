@@ -12,7 +12,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.service.request.ReservationRequest;
+import roomescape.service.request.LoginMember;
+import roomescape.service.request.MemberReservationRequest;
 
 @SpringBootTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
@@ -28,11 +29,12 @@ class ReservationServiceTest {
     @DisplayName("지나간 날짜에 대한 예약은 생성할 수 없다.")
     void cantCreateReservationWithPreviousDate() {
         // given
+        LoginMember loginMember = new LoginMember(1L);
         LocalDate date = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest("엘라", date.toString(), 1L, 1L);
+        MemberReservationRequest request = new MemberReservationRequest(date.toString(), 1L, 1L);
 
         // when, then
-        assertThatThrownBy(() -> reservationService.createReservation(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request, loginMember))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -40,13 +42,14 @@ class ReservationServiceTest {
     @DisplayName("당일이지만, 이전 시간이면 예약을 생성할 수 없다.")
     void cantCreateReservationWithPreviousTime() {
         // given
+        LoginMember loginMember = new LoginMember(1L);
         ReservationTime reservationTime = reservationTimeRepository.create(
                 new ReservationTime(LocalTime.now().minusHours(1)));
         LocalDate date = LocalDate.now();
-        ReservationRequest request = new ReservationRequest("엘라", date.toString(), reservationTime.getId(), 1L);
+        MemberReservationRequest request = new MemberReservationRequest(date.toString(), reservationTime.getId(), 1L);
 
         // when, then
-        assertThatThrownBy(() -> reservationService.createReservation(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request, loginMember))
                 .isInstanceOf(IllegalStateException.class);
     }
 }
