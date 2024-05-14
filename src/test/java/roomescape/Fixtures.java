@@ -1,14 +1,41 @@
 package roomescape;
 
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.auth.dto.LoginMember;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 public class Fixtures {
+
+    public static final Member memberFixture = new Member(
+            1L,
+            "클로버",
+            "clover@gmail.com",
+            "password"
+    );
+
+    public static final List<Member> memberFixtures = List.of(
+            new Member(2L, "클로버2", "test2@gmail.com", "password"),
+            new Member(3L, "클로버3", "test3@gmail.com", "password"),
+            new Member(3L, "클로버3", "test3@gmail.com", "password"),
+            new Member(4L, "클로버4", "test4@gmail.com", "password"),
+            new Member(5L, "클로버5", "test5@gmail.com", "password"),
+            new Member(6L, "클로버6", "test6@gmail.com", "password"),
+            new Member(7L, "클로버7", "test7@gmail.com", "password"),
+            new Member(8L, "클로버8", "test8@gmail.com", "password"),
+            new Member(9L, "클로버9", "test9@gmail.com", "password"),
+            new Member(10L, "클로버10", "test10@gmail.com", "password")
+    );
+
+    public static final LoginMember loginMemberFixture = new LoginMember(
+            memberFixture.getId(),
+            memberFixture.getEmail()
+    );
 
     public static final ReservationTime reservationTimeFixture = new ReservationTime(
             1L,
@@ -23,8 +50,11 @@ public class Fixtures {
     );
 
     public static final Reservation reservationFixture = new Reservation(
-            1L, "클로버", LocalDate.now().plusMonths(6),
-            reservationTimeFixture, themeFixture
+            1L,
+            memberFixture,
+            LocalDate.now().plusMonths(6),
+            reservationTimeFixture,
+            themeFixture
     );
 
     public static final List<Theme> themeFixtures = List.of(
@@ -50,25 +80,25 @@ public class Fixtures {
     );
 
     public static final List<Reservation> reservationFixturesForPopularTheme = List.of(
-            new Reservation(1L, "예약자명1", LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(0)),
-            new Reservation(2L, "예약자명2", LocalDate.now().minusDays(3), timeFixtures.get(1), themeFixtures.get(0)),
-            new Reservation(3L, "예약자명3", LocalDate.now().minusDays(3), timeFixtures.get(2), themeFixtures.get(0)),
-            new Reservation(4L, "예약자명4", LocalDate.now().minusDays(3), timeFixtures.get(3), themeFixtures.get(0)),
-            new Reservation(5L, "예약자명5", LocalDate.now().minusDays(3), timeFixtures.get(4), themeFixtures.get(0)),
-            new Reservation(6L, "예약자명6", LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(1)),
-            new Reservation(7L, "예약자명7", LocalDate.now().minusDays(3), timeFixtures.get(1), themeFixtures.get(1)),
-            new Reservation(8L, "예약자명8", LocalDate.now().minusDays(3), timeFixtures.get(2), themeFixtures.get(1)),
-            new Reservation(9L, "예약자명9", LocalDate.now().minusDays(3), timeFixtures.get(3), themeFixtures.get(1)),
-            new Reservation(10L, "예약자명10", LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(2)),
-            new Reservation(11L, "예약자명11", LocalDate.now().minusDays(3), timeFixtures.get(1), themeFixtures.get(2)),
-            new Reservation(12L, "예약자명12", LocalDate.now().minusDays(3), timeFixtures.get(2), themeFixtures.get(2)),
-            new Reservation(13L, "예약자명13", LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(3)),
-            new Reservation(14L, "예약자명14", LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(4)),
-            new Reservation(15L, "예약자명15", LocalDate.now().minusDays(3), timeFixtures.get(1), themeFixtures.get(4)),
-            new Reservation(16L, "예약자명16", LocalDate.now().minusDays(3), timeFixtures.get(2), themeFixtures.get(4)),
-            new Reservation(17L, "예약자명17", LocalDate.now().minusDays(3), timeFixtures.get(3), themeFixtures.get(4)),
-            new Reservation(18L, "예약자명18", LocalDate.now().minusDays(3), timeFixtures.get(4), themeFixtures.get(4)),
-            new Reservation(19L, "예약자명19", LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(4)),
-            new Reservation(20L, "예약자명20", LocalDate.now().minusDays(3), timeFixtures.get(1), themeFixtures.get(4))
+            new Reservation(1L, memberFixtures.get(0), LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(0)),
+            new Reservation(2L, memberFixtures.get(1), LocalDate.now().minusDays(3), timeFixtures.get(1), themeFixtures.get(0)),
+            new Reservation(3L, memberFixtures.get(2), LocalDate.now().minusDays(3), timeFixtures.get(2), themeFixtures.get(0)),
+            new Reservation(4L, memberFixtures.get(3), LocalDate.now().minusDays(3), timeFixtures.get(3), themeFixtures.get(0)),
+            new Reservation(5L, memberFixtures.get(4), LocalDate.now().minusDays(3), timeFixtures.get(4), themeFixtures.get(0)),
+            new Reservation(6L, memberFixtures.get(5), LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(1)),
+            new Reservation(7L, memberFixtures.get(6), LocalDate.now().minusDays(3), timeFixtures.get(1), themeFixtures.get(1)),
+            new Reservation(8L, memberFixtures.get(7), LocalDate.now().minusDays(3), timeFixtures.get(2), themeFixtures.get(1)),
+            new Reservation(9L, memberFixtures.get(8), LocalDate.now().minusDays(3), timeFixtures.get(3), themeFixtures.get(1)),
+            new Reservation(10L, memberFixtures.get(9), LocalDate.now().minusDays(3), timeFixtures.get(0), themeFixtures.get(2)),
+            new Reservation(11L, memberFixtures.get(0), LocalDate.now().minusDays(4), timeFixtures.get(1), themeFixtures.get(2)),
+            new Reservation(12L, memberFixtures.get(1), LocalDate.now().minusDays(4), timeFixtures.get(2), themeFixtures.get(2)),
+            new Reservation(13L, memberFixtures.get(2), LocalDate.now().minusDays(4), timeFixtures.get(0), themeFixtures.get(3)),
+            new Reservation(14L, memberFixtures.get(3), LocalDate.now().minusDays(4), timeFixtures.get(0), themeFixtures.get(4)),
+            new Reservation(15L, memberFixtures.get(4), LocalDate.now().minusDays(4), timeFixtures.get(1), themeFixtures.get(4)),
+            new Reservation(16L, memberFixtures.get(5), LocalDate.now().minusDays(4), timeFixtures.get(2), themeFixtures.get(4)),
+            new Reservation(17L, memberFixtures.get(6), LocalDate.now().minusDays(4), timeFixtures.get(3), themeFixtures.get(4)),
+            new Reservation(18L, memberFixtures.get(7), LocalDate.now().minusDays(4), timeFixtures.get(4), themeFixtures.get(4)),
+            new Reservation(19L, memberFixtures.get(8), LocalDate.now().minusDays(4), timeFixtures.get(0), themeFixtures.get(4)),
+            new Reservation(20L, memberFixtures.get(9), LocalDate.now().minusDays(4), timeFixtures.get(1), themeFixtures.get(4))
     );
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.dto.ErrorResponse;
@@ -47,5 +48,29 @@ public class GlobalExceptionHandler {
                 .getDefaultMessage();
         ErrorResponse data = new ErrorResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException exception) {
+        ErrorResponse data = new ErrorResponse(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(data);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException exception) {
+        ErrorResponse data = new ErrorResponse(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(data);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRequestParameterException() {
+        ErrorResponse data = new ErrorResponse("모든 파라미터를 입력해야 합니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException() {
+        ErrorResponse data = new ErrorResponse("서버에 오류가 발생했습니다.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(data);
     }
 }
