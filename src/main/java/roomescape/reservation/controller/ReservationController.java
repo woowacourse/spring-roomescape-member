@@ -48,7 +48,6 @@ public class ReservationController {
                 .body(reservationCreateResponse);
     }
 
-
     @GetMapping("/reservations")
     public List<ReservationResponse> reservaionList() {
         return reservationService.findReservations();

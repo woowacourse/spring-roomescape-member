@@ -3,7 +3,6 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.exception.SaveDuplicateContentException;
 import roomescape.member.dao.MemberDao;
@@ -47,7 +46,7 @@ public class ReservationService {
         return ReservationResponse.fromReservation(savedReservation);
     }
 
-    public ReservationResponse addReservation(@RequestBody AdminReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(AdminReservationRequest reservationRequest) {
         Time time = timeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
         Member member = memberDao.findById(reservationRequest.memberId());
