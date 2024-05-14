@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.Theme;
-import roomescape.domain.VisitDate;
+import roomescape.domain.reservation.Theme;
+import roomescape.domain.reservation.VisitDate;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.ThemeInput;
@@ -18,8 +18,8 @@ import static roomescape.exception.ExceptionDomainType.THEME;
 @Service
 public class ThemeService {
 
-    final ThemeDao themeDao;
-    final ReservationDao reservationDao;
+    private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
     public ThemeService(final ThemeDao themeDao, final ReservationDao reservationDao) {
         this.themeDao = themeDao;

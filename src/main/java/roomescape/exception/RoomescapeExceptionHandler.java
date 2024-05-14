@@ -12,11 +12,11 @@ public class RoomescapeExceptionHandler {
         private static final boolean ERROR_STATUS = false;
         private final String message;
 
-        public ErrorResponse(Exception e) {
+        public ErrorResponse(final Exception e) {
             this.message = e.getMessage();
         }
 
-        public ErrorResponse(String message) {
+        public ErrorResponse(final String message) {
             this.message = message;
         }
 
@@ -47,10 +47,9 @@ public class RoomescapeExceptionHandler {
                 .body(new ErrorResponse(exception));
     }
 
-
     @ExceptionHandler(value = ExistReservationException.class)
     public ResponseEntity<ErrorResponse> handleExistReservationException(final ExistReservationException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(exception));
     }
 
@@ -66,4 +65,23 @@ public class RoomescapeExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(exception));
     }
+
+    @ExceptionHandler(value = UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnAuthorizationException(final UnauthorizedException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(exception));
+    }
+
+    @ExceptionHandler(value = ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(final ForbiddenException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(exception));
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(final Exception exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(exception));
+    }
+
 }

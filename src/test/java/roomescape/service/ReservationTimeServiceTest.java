@@ -14,21 +14,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
+import roomescape.domain.user.Member;
 import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.NotExistException;
+import roomescape.fixture.MemberFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.AvailableReservationTimeInput;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.AvailableReservationTimeOutput;
+import roomescape.service.dto.output.MemberCreateOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
+import roomescape.util.DatabaseCleaner;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 class ReservationTimeServiceTest {
 
     @Autowired
@@ -43,20 +47,20 @@ class ReservationTimeServiceTest {
     ThemeService themeService;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    MemberService memberService;
+
+    @Autowired
+    DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
+        databaseCleaner.initialize();
     }
 
     @Test
     @DisplayName("유효한 값을 입력하면 예외를 발생하지 않는다.")
     void create_reservationTime() {
-        ReservationTimeInput input = new ReservationTimeInput("10:00");
+        final ReservationTimeInput input = new ReservationTimeInput("10:00");
         assertThatCode(() -> reservationTimeService.createReservationTime(input))
                 .doesNotThrowAnyException();
     }
@@ -64,7 +68,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("유효하지 않은 값을 입력하면 예외를 발생한다.")
     void throw_exception_when_input_is_invalid() {
-        ReservationTimeInput input = new ReservationTimeInput("");
+        final ReservationTimeInput input = new ReservationTimeInput("");
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(input))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -79,15 +83,17 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("특정 시간에 대한 예약이 존재하면 그 시간을 삭제하려 할 때 예외를 발생한다.")
     void throw_exception_when_delete_id_that_exist_reservation() {
-        ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
+        final ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
                 new ReservationTimeInput("10:00"));
-        ThemeOutput themeOutput = themeService.createTheme(ThemeFixture.getInput());
+        final ThemeOutput themeOutput = themeService.createTheme(ThemeFixture.getInput());
+        final MemberCreateOutput memberOutput = memberService.createMember(MemberFixture.getUserCreateInput());
+
         reservationDao.create(Reservation.from(
                 null,
-                "제리",
                 "2024-04-30",
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
+                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail()),
+                Member.fromMember(memberOutput.id(), memberOutput.name(), memberOutput.email(), memberOutput.password())
         ));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeOutput.id()))
@@ -112,7 +118,8 @@ class ReservationTimeServiceTest {
                 .id();
         long themeId = themeService.createTheme(ThemeFixture.getInput())
                 .id();
-        reservationService.createReservation(new ReservationInput("조이썬", "2025-01-01", timeId2, themeId));
+        long memberId = memberService.createMember(MemberFixture.getUserCreateInput()).id();
+        reservationService.createReservation(new ReservationInput("2025-01-01", timeId2, themeId,memberId));
 
         List<AvailableReservationTimeOutput> actual = reservationTimeService.getAvailableTimes(
                 new AvailableReservationTimeInput(themeId, LocalDate.parse("2025-01-01")));

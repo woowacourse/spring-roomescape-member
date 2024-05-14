@@ -2,7 +2,7 @@ package roomescape.service.dto.output;
 
 import java.util.List;
 
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Theme;
 
 public record ThemeOutput(long id, String name, String description, String thumbnail) {
 

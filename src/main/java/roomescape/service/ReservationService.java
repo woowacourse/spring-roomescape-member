@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.Reservation;
+import roomescape.domain.reservation.Reservation;
 import roomescape.exception.*;
 import roomescape.service.dto.input.ReservationInput;
+import roomescape.service.dto.input.ReservationSearchInput;
 import roomescape.service.dto.output.ReservationOutput;
 
 import static roomescape.exception.ExceptionDomainType.*;
@@ -32,6 +33,12 @@ public class ReservationService {
     public List<ReservationOutput> getAllReservations() {
         final List<Reservation> reservations = reservationDao.getAll();
         return ReservationOutput.toOutputs(reservations);
+    }
+
+    public List<ReservationOutput> searchReservation(final ReservationSearchInput input) {
+        final List<Reservation> themeReservations = reservationDao.getThemeAndMemberReservationWithPeriod(
+                input.themeId(), input.memberId(), input.fromDate(), input.toDate());
+        return ReservationOutput.toOutputs(themeReservations);
     }
 
     public void deleteReservation(final long id) {

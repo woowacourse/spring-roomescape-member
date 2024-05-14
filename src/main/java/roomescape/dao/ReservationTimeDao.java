@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.dao.dto.AvailableReservationTimeResult;
 import roomescape.dao.mapper.AvailableReservationTimeMapper;
 import roomescape.dao.mapper.ReservationTimeRowMapper;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationTime;
 
 @Repository
 public class ReservationTimeDao {

@@ -1,6 +1,6 @@
 package roomescape.fixture;
 
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Theme;
 import roomescape.service.dto.input.ThemeInput;
 
 public class ThemeFixture {
