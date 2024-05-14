@@ -31,17 +31,17 @@ public class ReservationService {
     }
 
     public ReservationResponse create(AdminReservationRequest adminReservationRequest) {
-        return createReservation(adminReservationRequest.timeId(), adminReservationRequest.themeId(), adminReservationRequest.memberId(), adminReservationRequest.date());
+        Member member = memberRepository.getById(adminReservationRequest.memberId());
+        return createReservation(adminReservationRequest.timeId(), adminReservationRequest.themeId(), member, adminReservationRequest.date());
     }
 
-    public ReservationResponse create(ReservationRequest reservationRequest, long memberId) {
-        return createReservation(reservationRequest.timeId(), reservationRequest.themeId(), memberId, reservationRequest.date());
+    public ReservationResponse create(ReservationRequest reservationRequest, Member member) {
+        return createReservation(reservationRequest.timeId(), reservationRequest.themeId(), member, reservationRequest.date());
     }
 
-    private ReservationResponse createReservation(long timeId, long themeId, long memberId, String date) {
+    private ReservationResponse createReservation(long timeId, long themeId, Member member, String date) {
         ReservationTime reservationTime = reservationTimeRepository.getById(timeId);
         Theme theme = themeRepository.getById(themeId);
-        Member member = memberRepository.getById(memberId);
 
         validate(date, reservationTime, theme);
 
@@ -79,8 +79,8 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public void deleteById(long reservationId, long memberId) {
-        validateAuthority(reservationId, memberId);
+    public void deleteById(long reservationId, Member member) {
+        validateAuthority(reservationId, member.getId());
         reservationRepository.deleteById(reservationId);
     }
 

@@ -7,15 +7,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AdminRoleHandlerInterceptor;
 import roomescape.auth.LoginMemberIdArgumentResolver;
 import roomescape.auth.TokenProvider;
+import roomescape.service.member.MemberService;
 
 import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final TokenProvider tokenProvider;
+    private final MemberService memberService;
 
-    public WebMvcConfiguration(TokenProvider tokenProvider) {
+    public WebMvcConfiguration(TokenProvider tokenProvider, MemberService memberService) {
         this.tokenProvider = tokenProvider;
+        this.memberService = memberService;
     }
 
     @Override
@@ -27,6 +30,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberIdArgumentResolver(tokenProvider));
+        resolvers.add(new LoginMemberIdArgumentResolver(tokenProvider, memberService));
     }
 }
