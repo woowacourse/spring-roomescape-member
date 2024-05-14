@@ -18,32 +18,32 @@ public class ReservationFilter {
     }
 
     public boolean apply(Reservation reservation) {
-        return hasThemeId(reservation) && hasMemberId(reservation)
-                && hasDateAfterFrom(reservation) && hasDateBeforeTo(reservation);
+        return checkThemeCondition(reservation) && checkMemberCondition(reservation)
+                && checkDateIsAfterDateFrom(reservation) && checkDateIsBeforeDateTo(reservation);
     }
 
-    private boolean hasThemeId(Reservation reservation) {
+    private boolean checkThemeCondition(Reservation reservation) {
         if (themeId == null) {
             return true;
         }
         return reservation.getTheme().getId().equals(themeId);
     }
 
-    private boolean hasMemberId(Reservation reservation) {
+    private boolean checkMemberCondition(Reservation reservation) {
         if (memberId == null) {
             return true;
         }
         return reservation.getMember().getId().equals(memberId);
     }
 
-    private boolean hasDateAfterFrom(Reservation reservation) {
+    private boolean checkDateIsAfterDateFrom(Reservation reservation) {
         if (dateFrom == null) {
             return true;
         }
         return !reservation.getDate().isBefore(dateFrom);
     }
 
-    private boolean hasDateBeforeTo(Reservation reservation) {
+    private boolean checkDateIsBeforeDateTo(Reservation reservation) {
         if (dateTo == null) {
             return true;
         }
