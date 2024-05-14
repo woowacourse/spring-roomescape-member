@@ -35,10 +35,6 @@ class ReservationTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        insert();
-    }
-
-    void insert() {
         insertReservationTime();
         insertTheme();
         insertReservation();
