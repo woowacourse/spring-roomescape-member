@@ -15,7 +15,7 @@ public class ThemeCreateService {
     }
 
     public Theme createTheme(ThemeSaveRequest request) {
-        Theme theme = ThemeSaveRequest.toEntity(request);
+        Theme theme = request.toEntity(request);
         return themeRepository.save(theme);
     }
 }

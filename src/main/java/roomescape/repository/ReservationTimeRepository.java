@@ -45,7 +45,7 @@ public class ReservationTimeRepository {
         return new ReservationTime(keyHolder.getKey().longValue(), time.getStartAt());
     }
 
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(long id) {
         String sql = "SELECT id, start_at " +
                 "FROM reservation_time " +
                 "WHERE id = ?";
@@ -61,7 +61,7 @@ public class ReservationTimeRepository {
         return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
     }
 
-    public List<ReservationTime> findReservedBy(LocalDate date, Long themeId) {
+    public List<ReservationTime> findReservedBy(LocalDate date, long themeId) {
         String sql = "SELECT rt.id, rt.start_at " +
                 "FROM reservation_time AS rt " +
                 "INNER JOIN reservation AS r " +
@@ -77,7 +77,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM reservation_time " +
                 "WHERE id = ?";
         jdbcTemplate.update(con -> {

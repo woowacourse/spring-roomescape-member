@@ -23,7 +23,7 @@ public class ReservationStatus {
 
     private static boolean isReserved(List<ReservationTime> reservedTimes, ReservationTime reservationTime) {
         return reservedTimes.stream()
-                .anyMatch(reservedTime -> reservedTime.isSameReservationTime(reservationTime.getId()));
+                .anyMatch(reservedTime -> reservedTime.equals(reservationTime));
     }
 
     public Boolean findReservationStatusBy(ReservationTime reservationTime) {
@@ -35,10 +35,10 @@ public class ReservationStatus {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ReservationStatus that = (ReservationStatus) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        ReservationStatus that = (ReservationStatus) object;
         return Objects.equals(reservationStatus, that.reservationStatus);
     }
 

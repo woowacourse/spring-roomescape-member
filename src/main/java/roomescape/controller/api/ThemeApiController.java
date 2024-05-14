@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -22,15 +22,15 @@ import java.util.List;
 
 @Validated
 @RestController
-public class ThemeController {
+public class ThemeApiController {
 
     private final ThemeCreateService themeCreateService;
     private final ThemeFindService themeFindService;
     private final ThemeDeleteService themeDeleteService;
 
-    public ThemeController(ThemeCreateService themeCreateService,
-                           ThemeFindService themeFindService,
-                           ThemeDeleteService themeDeleteService) {
+    public ThemeApiController(ThemeCreateService themeCreateService,
+                              ThemeFindService themeFindService,
+                              ThemeDeleteService themeDeleteService) {
         this.themeCreateService = themeCreateService;
         this.themeFindService = themeFindService;
         this.themeDeleteService = themeDeleteService;
@@ -65,7 +65,7 @@ public class ThemeController {
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable
-                                            @Positive(message = "1 이상의 값만 입력해주세요.") Long id) {
+                                            @Positive(message = "1 이상의 값만 입력해주세요.") long id) {
         themeDeleteService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }

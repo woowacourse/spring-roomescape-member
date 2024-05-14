@@ -19,7 +19,7 @@ public class ReservationTimeCreateService {
             throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
         }
 
-        ReservationTime newReservationTime = ReservationTimeSaveRequest.toEntity(request);
+        ReservationTime newReservationTime = request.toEntity(request);
         return reservationTimeRepository.save(newReservationTime);
     }
 }

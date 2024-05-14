@@ -12,7 +12,7 @@ public class ReservationDeleteService {
         this.reservationRepository = reservationRepository;
     }
 
-    public void deleteReservation(Long id) {
+    public void deleteReservation(long id) {
         reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 아이디 입니다."));
         reservationRepository.deleteById(id);

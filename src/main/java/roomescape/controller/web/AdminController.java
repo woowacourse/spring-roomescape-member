@@ -1,10 +1,10 @@
-package roomescape.controller;
+package roomescape.controller.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class ViewController {
+public class AdminController {
 
     @GetMapping("/admin")
     public String adminPage() {
@@ -24,15 +24,5 @@ public class ViewController {
     @GetMapping("/admin/theme")
     public String themeAdminPage() {
         return "admin/theme";
-    }
-
-    @GetMapping("/reservation")
-    public String reservationUserPage() {
-        return "reservation";
-    }
-
-    @GetMapping
-    public String mainUserPage() {
-        return "index";
     }
 }

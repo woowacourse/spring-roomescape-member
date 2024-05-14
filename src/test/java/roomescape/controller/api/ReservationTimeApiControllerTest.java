@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationTimeControllerTest {
+public class ReservationTimeApiControllerTest {
 
     @Test
     @DisplayName("예약 시간 추가, 조회, 삭제를 정상적으로 수행한다.")

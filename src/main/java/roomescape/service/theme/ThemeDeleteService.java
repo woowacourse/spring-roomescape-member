@@ -16,7 +16,7 @@ public class ThemeDeleteService {
         this.reservationRepository = reservationRepository;
     }
 
-    public void deleteTheme(Long id) {
+    public void deleteTheme(long id) {
         themeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 아이디 입니다."));
 

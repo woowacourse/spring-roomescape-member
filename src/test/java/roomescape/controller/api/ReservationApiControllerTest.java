@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.util.TokenGenerator;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -18,18 +19,28 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationControllerTest {
+public class ReservationApiControllerTest {
 
     @Autowired
-    private ReservationController reservationController;
+    private ReservationApiController reservationApiController;
 
     @Test
-    @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
+    @DisplayName("관리자 예약 페이지 요청이 정상적으로 수행된다.")
     void moveToReservationPage_Success() {
         RestAssured.given().log().all()
+                .cookie("token", TokenGenerator.makeAdminToken())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("관리자 예약 페이지에 권한이 없는 유저는 401을 받는다.")
+    void moveToReservationPage_Failure() {
+        RestAssured.given().log().all()
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(401);
     }
 
     @Test
@@ -53,6 +64,7 @@ public class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", TokenGenerator.makeUserToken())
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -86,7 +98,7 @@ public class ReservationControllerTest {
     void layerRefactoring() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : reservationApiController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;
@@ -94,22 +106,5 @@ public class ReservationControllerTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
-    }
-
-    @Test
-    @DisplayName("이름이 빈칸인 경우 400 상태 코드를 반환한다.")
-    void nameBlankStatusCode400() {
-        Map<String, String> reservationParams = Map.of("name", "",
-                "date", LocalDate.now().plusDays(2).toString(),
-                "timeId", "1",
-                "themeId", "1"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
     }
 }

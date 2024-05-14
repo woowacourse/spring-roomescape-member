@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
+import roomescape.domain.Role;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -23,9 +26,13 @@ class ReservationCreateServiceTest {
     @Autowired
     public ReservationCreateServiceTest(JdbcTemplate jdbcTemplate) {
         reservationCreateService = new ReservationCreateService(
-                new ReservationRepository(jdbcTemplate),
-                new ReservationTimeRepository(jdbcTemplate),
-                new ThemeRepository(jdbcTemplate)
+                new ReservationCreateValidator(
+                        new ReservationRepository(jdbcTemplate),
+                        new ReservationTimeRepository(jdbcTemplate),
+                        new ThemeRepository(jdbcTemplate),
+                        new MemberRepository(jdbcTemplate)
+                ),
+                new ReservationRepository(jdbcTemplate)
         );
     }
 
@@ -33,9 +40,10 @@ class ReservationCreateServiceTest {
     @DisplayName("예약 가능한 시간인 경우 성공한다.")
     void checkDuplicateReservationTime_Success() {
         ReservationSaveRequest request = new ReservationSaveRequest(
-                "capy", LocalDate.now().plusDays(1L), 2L, 2L);
+                LocalDate.now().plusDays(1L), 2L, 2L);
+        Member member = new Member(1L, "capy", "test@naver.com", "1234", Role.USER);
 
-        assertThatCode(() -> reservationCreateService.createReservation(request))
+        assertThatCode(() -> reservationCreateService.createReservation(request, member))
                 .doesNotThrowAnyException();
     }
 
@@ -43,9 +51,10 @@ class ReservationCreateServiceTest {
     @DisplayName("이미 예약된 시간인 경우 예외가 발생한다.")
     void checkDuplicateReservationTime_Failure() {
         ReservationSaveRequest request = new ReservationSaveRequest(
-                "capy", LocalDate.now().plusDays(1L), 1L, 1L);
+                LocalDate.now().plusDays(1L), 1L, 1L);
+        Member member = new Member("capy", "abc@gmail.com", "1234", Role.USER);
 
-        assertThatThrownBy(() -> reservationCreateService.createReservation(request))
+        assertThatThrownBy(() -> reservationCreateService.createReservation(request, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간에 이미 예약된 테마입니다.");
     }
@@ -54,9 +63,10 @@ class ReservationCreateServiceTest {
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성시 예외가 발생한다.")
     void checkReservationDateTimeIsFuture_Failure() {
         ReservationSaveRequest request = new ReservationSaveRequest(
-                "capy", LocalDate.now().minusDays(1L), 2L, 2L);
+                LocalDate.now().minusDays(1L), 2L, 2L);
+        Member member = new Member("capy", "abc@gmail.com", "1234", Role.USER);
 
-        assertThatThrownBy(() -> reservationCreateService.createReservation(request))
+        assertThatThrownBy(() -> reservationCreateService.createReservation(request, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }

@@ -20,10 +20,6 @@ public class Theme {
         this(null, name, description, thumbnail);
     }
 
-    public boolean isSameTheme(Long id) {
-        return this.id.equals(id);
-    }
-
     public Long getId() {
         return id;
     }
@@ -41,15 +37,18 @@ public class Theme {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Theme theme = (Theme) object;
+        return Objects.equals(id, theme.id) &&
+                Objects.equals(name, theme.name) &&
+                Objects.equals(description, theme.description) &&
+                Objects.equals(thumbnail, theme.thumbnail);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, description, thumbnail);
     }
 }
