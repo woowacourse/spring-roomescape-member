@@ -101,8 +101,8 @@ class ReservationServiceTest {
         //given
         Reservation reservation = new Reservation(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), member, reservationTime, theme);
         reservationRepository.save(reservation);
-        long notMemberthemeId = theme.getId() + 1;
-        ReservationFindRequest reservationFindRequest = new ReservationFindRequest(member.getId(), notMemberthemeId, null, null);
+        long notMemberThemeId = theme.getId() + 1;
+        ReservationFindRequest reservationFindRequest = new ReservationFindRequest(member.getId(), notMemberThemeId, null, null);
 
         //when
         List<ReservationResponse> reservations = reservationService.findByCondition(reservationFindRequest);

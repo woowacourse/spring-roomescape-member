@@ -33,6 +33,10 @@ public class Reservation {
         this(NO_ID, member, new Schedule(new ReservationDate(reservationDate), reservationTime), theme);
     }
 
+    public boolean isNotByMember(long memberId) {
+        return member.getId() != memberId;
+    }
+
     public long getId() {
         return id;
     }
