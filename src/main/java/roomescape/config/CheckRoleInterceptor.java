@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberRole;
 import roomescape.member.dto.MemberProfileInfo;
 import roomescape.member.security.service.MemberAuthService;
 import roomescape.member.service.MemberService;
@@ -29,7 +28,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         if (memberAuthService.isLoginMember(cookies)) {
             MemberProfileInfo memberProfile = memberAuthService.extractPayload(cookies);
             Member member = memberService.findMemberById(memberProfile.id());
-            return member.getRole() == MemberRole.ADMIN;
+            return memberAuthService.isAdmin(member);
         }
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return false;
