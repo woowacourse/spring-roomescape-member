@@ -19,13 +19,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 class ThemeJdbcRepositoryTest {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     private ThemeRepository themeRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private MemberRepository memberRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {

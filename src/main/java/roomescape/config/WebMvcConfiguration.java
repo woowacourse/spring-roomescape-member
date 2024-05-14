@@ -12,7 +12,6 @@ import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-
     private final TokenProvider tokenProvider;
 
     public WebMvcConfiguration(TokenProvider tokenProvider) {

@@ -2,6 +2,7 @@ package roomescape.domain.reservation;
 
 public class Theme {
     private static final long NO_ID = 0;
+
     private final long id;
     private final ThemeName name;
     private final Description description;

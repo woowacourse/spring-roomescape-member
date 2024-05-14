@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberServiceTest {
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private MemberService memberService;
 

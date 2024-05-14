@@ -7,7 +7,6 @@ import roomescape.exception.InvalidReservationException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class ReservationTimeTest {
-
     @DisplayName("올바르지 않은 시간으로 설정하면 예외를 던진다.")
     @Test
     void invalidDateSchedule() {

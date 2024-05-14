@@ -19,13 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class ReservationJdbcRepositoryTest {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
     private MemberRepository memberRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {

@@ -20,13 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class ReservationTimeJdbcRepositoryTest {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
     private MemberRepository memberRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {

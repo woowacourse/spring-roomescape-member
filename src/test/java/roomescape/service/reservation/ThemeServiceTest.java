@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Sql(scripts = {"classpath:truncate-with-guests.sql"})
 class ThemeServiceTest {
-
     @Autowired
     private ThemeService themeService;
     @Autowired

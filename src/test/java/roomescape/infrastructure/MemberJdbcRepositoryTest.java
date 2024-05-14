@@ -17,10 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class MemberJdbcRepositoryTest {
-    private MemberJdbcRepository memberJdbcRepository;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private MemberJdbcRepository memberJdbcRepository;
 
     @BeforeEach
     void setUp() {

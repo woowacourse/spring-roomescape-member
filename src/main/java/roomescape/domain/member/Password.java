@@ -7,6 +7,7 @@ import java.util.Objects;
 public class Password {
     private static final int MINIMUM_PASSWORD_LENGTH = 6;
     private static final int MAXIMUM_PASSWORD_LENGTH = 12;
+
     private final String value;
 
     public Password(String value) {

@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 public class Thumbnail {
     private static final String THUMBNAIL_REGEX = "^$|(https?|ftp)://.*\\.(jpeg|jpg|png|gif|bmp)$";
+
     private final String value;
 
     public Thumbnail(String value) {

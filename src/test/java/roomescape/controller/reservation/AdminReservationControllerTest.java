@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.is;
 class AdminReservationControllerTest {
     @LocalServerPort
     private int port;
-
     private String date;
     private long timeId;
     private long themeId;
