@@ -18,6 +18,9 @@ import roomescape.member.exception.MemberExceptionCode;
 @ExtendWith(MockitoExtension.class)
 class MemberRepositoryTest {
 
+    private static final String TEST_EMAIL = "email";
+    private static final String TEST_PASSWORD = "password";
+
     @InjectMocks
     private MemberRepository memberRepository;
 
@@ -27,12 +30,23 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("일치하는 멤버가 없는 경우 예외를 던진다.")
     void shouldThrowException_WhenIdNotFound() {
-        when(memberJdbcDao.findIdByEmailAndPassword("email", "password"))
+        when(memberJdbcDao.findIdByEmailAndPassword(TEST_EMAIL, TEST_PASSWORD))
                 .thenReturn(Optional.ofNullable(null));
 
         Throwable noneMatchMember = assertThrows(RoomEscapeException.class,
-                () -> memberRepository.findIdByEmailAndPassword("email", "password"));
+                () -> memberRepository.findIdByEmailAndPassword(TEST_EMAIL, TEST_PASSWORD));
 
         assertEquals(noneMatchMember.getMessage(), MemberExceptionCode.ID_AND_PASSWORD_NOT_MATCH_OR_EXIST.getMessage());
+    }
+
+    @Test
+    @DisplayName("일치하는 멤버를 가져올 수 있다.")
+    void getJoinedMember() {
+        when(memberJdbcDao.findIdByEmailAndPassword(TEST_EMAIL, TEST_PASSWORD))
+                .thenReturn(Optional.of(1L));
+
+        Long id = memberRepository.findIdByEmailAndPassword(TEST_EMAIL, TEST_PASSWORD);
+
+        assertEquals(id, 1L);
     }
 }
