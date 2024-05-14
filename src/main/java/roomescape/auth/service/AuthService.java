@@ -21,8 +21,7 @@ public class AuthService {
 
     public String login(final LoginRequestDto loginRequestDto) {
         final Member member = memberDao.getByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password());
-        final String token = jwtTokenProvider.createToken(member);
-        return token;
+        return jwtTokenProvider.createToken(member);
     }
 
     public Member extractMemberOf(final String token) {
