@@ -15,12 +15,12 @@ import roomescape.service.member.MemberService;
 import roomescape.util.CookieUtils;
 
 @Component
-public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
     @Autowired
-    public LoginMemberIdArgumentResolver(TokenProvider tokenProvider, MemberService memberService) {
+    public LoginMemberArgumentResolver(TokenProvider tokenProvider, MemberService memberService) {
         this.tokenProvider = tokenProvider;
         this.memberService = memberService;
     }

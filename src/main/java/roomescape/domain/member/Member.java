@@ -52,4 +52,12 @@ public class Member {
     public boolean hasPassword(String password) {
         return this.password.isSame(password);
     }
+
+    public boolean isAdmin() {
+        return role.isAdmin();
+    }
+
+    public boolean isGuest() {
+        return role.isGuest();
+    }
 }

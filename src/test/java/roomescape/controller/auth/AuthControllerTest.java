@@ -53,8 +53,15 @@ class AuthControllerTest {
                 .when().post("/signup")
                 .then().log().all();
 
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new LoginRequest("lini123", "lini@email.com"))
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+
         //when&then
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/logout")
                 .then().log().all()
