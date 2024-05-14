@@ -9,7 +9,7 @@ import roomescape.model.IntegrationTest;
 class MemberIntegrationTest extends IntegrationTest {
 
     @Test
-    @DisplayName("가입한 회원들의 이름들을 가져올 수 있다.")
+    @DisplayName("가입한 회원들의 아이디릁 가져올 수 있다.")
     void memberList() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
