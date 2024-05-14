@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.infrastructure.TokenCookieProvider;
 
@@ -17,7 +16,7 @@ import roomescape.infrastructure.TokenCookieProvider;
 public class LogoutController {
 
     @PostMapping
-    public ResponseEntity<Void> logout(Member member) {
+    public ResponseEntity<Void> logout() {
         ResponseCookie cookie = TokenCookieProvider.createCookie("");
 
         return ResponseEntity.ok()
