@@ -1,14 +1,11 @@
 package roomescape.service;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.config.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.dto.LogInRequest;
 import roomescape.dto.MemberPreviewResponse;
-import roomescape.infrastructure.JdbcMemberRepository;
 import roomescape.service.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -16,36 +13,29 @@ import java.util.List;
 @Service
 public class MemberService {
 
-    @Value("${jwt.secret-key.prod}")
-    private String secretKey;
-
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(JdbcMemberRepository jdbcMemberRepository) {
-        this.memberRepository = jdbcMemberRepository;
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String logIn(LogInRequest logInRequest) {
         String email = logInRequest.email();
         String password = logInRequest.password();
+        Member member = getValidatedUserByEmailAndPassword(email, password);
 
-        Member member = memberRepository.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new ResourceNotFoundException("일치하는 이메일과 비밀번호가 없습니다."));
-
-        return Jwts.builder().subject(member.getId().toString())
-                .claim("role", member.getRole().name())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+        return jwtTokenProvider.createToken(member);
     }
 
-    public Member getUserByToken(String token) {
-        Long memberId = Long.valueOf(
-                Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes())).build()
-                        .parseSignedClaims(token)
-                        .getPayload()
-                        .getSubject());
+    private Member getValidatedUserByEmailAndPassword(String email, String password) {
+        return memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new ResourceNotFoundException("일치하는 이메일과 비밀번호가 없습니다."));
+    }
 
-        return findValidatedSiteUserById(memberId);
+    public Member getUserById(Long id) {
+        return findValidatedSiteUserById(id);
     }
 
     private Member findValidatedSiteUserById(Long memberId) {

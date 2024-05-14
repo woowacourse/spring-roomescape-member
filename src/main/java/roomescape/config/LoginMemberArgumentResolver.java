@@ -13,9 +13,11 @@ import roomescape.service.MemberService;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -26,8 +28,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String token = getToken(webRequest);
+        String subject = jwtTokenProvider.getSubject(token);
+        long id = Long.parseLong(subject);
 
-        return memberService.getUserByToken(token);
+        return memberService.getUserById(id);
     }
 
     private String getToken(NativeWebRequest webRequest) {

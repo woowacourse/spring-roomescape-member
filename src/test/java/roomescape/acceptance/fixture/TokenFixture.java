@@ -20,11 +20,13 @@ public class TokenFixture {
 
         this.adminToken = Jwts.builder()
                 .subject(PRE_INSERTED_ADMIN.getId().toString())
+                .claim("role", PRE_INSERTED_ADMIN.getRole().name())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
 
         this.customerToken = Jwts.builder()
                 .subject(PRE_INSERTED_CUSTOMER_1.getId().toString())
+                .claim("role", PRE_INSERTED_CUSTOMER_1.getRole().name())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }

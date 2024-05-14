@@ -14,6 +14,7 @@ import roomescape.domain.Role;
 import roomescape.dto.LogInRequest;
 import roomescape.dto.MemberPreviewResponse;
 
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +31,8 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
                 PRE_INSERTED_ADMIN.getEmail(),
                 PRE_INSERTED_ADMIN.getPassword()
         );
+
+        System.out.println("무야호" + tokenFixture.secretKey);
 
         return Stream.of(
                 dynamicTest("로그인한다.", () -> {
@@ -67,7 +70,8 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
 
     private Claims parseToken(String token) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(tokenFixture.secretKey.getBytes())).build()
+                .verifyWith(Keys.hmacShaKeyFor(tokenFixture.secretKey.getBytes(StandardCharsets.UTF_8)))
+                .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
