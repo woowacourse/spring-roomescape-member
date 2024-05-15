@@ -69,8 +69,8 @@ public class MemberDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, member.name());
-            preparedStatement.setString(2, member.email());
+            preparedStatement.setString(1, member.getName());
+            preparedStatement.setString(2, member.getEmail());
             preparedStatement.setString(3, password);
             return preparedStatement;
         }, keyHolder);

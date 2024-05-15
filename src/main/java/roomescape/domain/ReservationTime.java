@@ -5,13 +5,19 @@ import java.util.Objects;
 
 import roomescape.domain.util.Validator;
 
-public record ReservationTime(Long id, LocalTime startAt) {
+public class ReservationTime {
+    private final Long id;
+    private final LocalTime startAt;
+
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
     }
 
-    public ReservationTime {
+    public ReservationTime(Long id, LocalTime startAt) {
         Validator.nonNull(startAt);
+
+        this.id = id;
+        this.startAt = startAt;
     }
 
     public ReservationTime createWithId(Long id) {
@@ -20,6 +26,14 @@ public record ReservationTime(Long id, LocalTime startAt) {
 
     public boolean isBefore(LocalTime currentTime) {
         return startAt.isBefore(currentTime);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalTime getStartAt() {
+        return startAt;
     }
 
     @Override

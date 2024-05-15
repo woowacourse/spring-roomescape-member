@@ -12,10 +12,10 @@ public record ReservationResponse(Long id,
                                   MemberModel member, TimeResponse time, ThemeResponse theme) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
-                reservation.id(),
-                reservation.date(),
-                MemberModel.from(reservation.member()),
-                TimeResponse.from(reservation.time()),
-                ThemeResponse.from(reservation.theme()));
+                reservation.getId(),
+                reservation.getDate(),
+                MemberModel.from(reservation.getMember()),
+                TimeResponse.from(reservation.getTime()),
+                ThemeResponse.from(reservation.getTheme()));
     }
 }

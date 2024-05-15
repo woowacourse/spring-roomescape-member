@@ -6,14 +6,26 @@ import java.util.Objects;
 
 import roomescape.domain.util.Validator;
 
-public record Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
+public class Reservation {
+
+    private final Long id;
+    private final LocalDate date;
+    private final Member member;
+    private final ReservationTime time;
+    private final Theme theme;
 
     public Reservation(LocalDate date, Member member, ReservationTime time, Theme theme) {
         this(null, date, member, time, theme);
     }
 
-    public Reservation {
+    public Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
         Validator.nonNull(date, member, time, theme);
+
+        this.id = id;
+        this.date = date;
+        this.member = member;
+        this.time = time;
+        this.theme = theme;
     }
 
     public boolean isBefore(LocalDateTime currentDateTime) {
@@ -27,16 +39,36 @@ public record Reservation(Long id, LocalDate date, Member member, ReservationTim
         return time.isBefore(currentDateTime.toLocalTime());
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
     public Long getMemberId() {
-        return member.id();
+        return member.getId();
     }
 
     public Long getTimeId() {
-        return time.id();
+        return time.getId();
     }
 
     public Long getThemeId() {
-        return theme.id();
+        return theme.getId();
     }
 
     @Override

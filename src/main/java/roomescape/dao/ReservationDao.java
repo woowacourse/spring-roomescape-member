@@ -133,7 +133,7 @@ public class ReservationDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setObject(1, reservation.date());
+            preparedStatement.setObject(1, reservation.getDate());
             preparedStatement.setLong(2, reservation.getMemberId());
             preparedStatement.setLong(3, reservation.getTimeId());
             preparedStatement.setLong(4, reservation.getThemeId());
