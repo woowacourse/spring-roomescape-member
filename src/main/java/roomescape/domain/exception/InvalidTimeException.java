@@ -4,7 +4,7 @@ import roomescape.exception.BadRequestException;
 
 public class InvalidTimeException extends BadRequestException {
 
-    public InvalidTimeException(final String message) {
+    public InvalidTimeException(String message) {
         super(message);
     }
 }

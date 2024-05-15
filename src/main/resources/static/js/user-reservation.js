@@ -2,8 +2,8 @@ const THEME_API_ENDPOINT = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
   requestRead(THEME_API_ENDPOINT)
-    .then(renderTheme)
-    .catch(error => console.error('Error fetching times:', error));
+      .then(renderTheme)
+      .catch(error => console.error('Error fetching times:', error));
 
   flatpickr("#datepicker", {
     inline: true,
@@ -67,8 +67,8 @@ function checkDate() {
     timeSlots.innerHTML = '';
 
     requestRead(THEME_API_ENDPOINT)
-      .then(renderTheme)
-      .catch(error => console.error('Error fetching times:', error));
+        .then(renderTheme)
+        .catch(error => console.error('Error fetching times:', error));
   }
 }
 
@@ -82,17 +82,14 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-  fetch('/times?' + new URLSearchParams({date, themeId}), { // 예약 가능 시간 조회 API endpoint
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-
+  const params = new URLSearchParams({date, themeId});
+  fetch(`${THEME_API_ENDPOINT}?${params}`, { // 예약 가능 시간 조회 API endpoint
+    method: 'GET'
   }).then(response => {
     if (response.status === 200) return response.json();
     throw new Error('Read failed');
   }).then(renderAvailableTimes)
-    .catch(error => console.error("Error fetching available times:", error));
+      .catch(error => console.error("Error fetching available times:", error));
 }
 
 function renderAvailableTimes(times) {
@@ -141,19 +138,12 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
-
-    /*
-    TODO: [5단계] 예약 생성 기능 변경 - 사용자
-          request 명세에 맞게 설정
-    */
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
-      timeId: selectedTimeId,
-      name: name
+      timeId: selectedTimeId
     };
 
     fetch('/reservations', {
@@ -163,18 +153,18 @@ function onReservationButtonClick() {
       },
       body: JSON.stringify(reservationData)
     })
-      .then(response => {
-        if (!response.ok) throw new Error('Reservation failed');
-        return response.json();
-      })
-      .then(data => {
-        alert("Reservation successful!");
-        location.reload();
-      })
-      .catch(error => {
-        alert("An error occurred while making the reservation.");
-        console.error(error);
-      });
+        .then(response => {
+          if (!response.ok) throw new Error('Reservation failed');
+          return response.json();
+        })
+        .then(data => {
+          alert("Reservation successful!");
+          location.reload();
+        })
+        .catch(error => {
+          alert("An error occurred while making the reservation.");
+          console.error(error);
+        });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");
   }
@@ -182,8 +172,8 @@ function onReservationButtonClick() {
 
 function requestRead(endpoint) {
   return fetch(endpoint)
-    .then(response => {
-      if (response.status === 200) return response.json();
-      throw new Error('Read failed');
-    });
+      .then(response => {
+        if (response.status === 200) return response.json();
+        throw new Error('Read failed');
+      });
 }

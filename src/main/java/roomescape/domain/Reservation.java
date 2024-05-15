@@ -8,62 +8,53 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final ReserveName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
-    public Reservation(final Long id, final ReserveName name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, Member member) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
-        validateDateBlank(date);
-        validateDateFormat(date);
-
-        this.id = id;
-        this.name = new ReserveName(name);
-        this.date = LocalDate.parse(date);
-        this.time = time;
-        this.theme = theme;
+    public Reservation(Long id, String date, ReservationTime time, Theme theme, Member member) {
+        this(id, validateDateAndParse(date), time, theme, member);
     }
 
-    private static void validateDateFormat(final String date) {
+    public Reservation(Long id, String date, long timeId, long themeId, long memberId) {
+        this(id, date, new ReservationTime(timeId), new Theme(themeId), new Member(memberId));
+    }
+
+    private static LocalDate validateDateAndParse(String date) {
         try {
-            LocalDate.parse(date);
+            return LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
             throw new InvalidDateException("날짜 형식이 올바르지 않습니다.");
         }
     }
 
-    private static void validateDateBlank(final String date) {
-        if (date == null || date.isBlank()) {
-            throw new InvalidDateException("날짜는 공백일 수 없습니다.");
-        }
+    public Reservation assignId(Long id) {
+        return new Reservation(id, date, time, theme, member);
     }
 
-    public Reservation assignId(final Long id) {
-        return new Reservation(id, name, date, time, theme);
+    public Reservation assignTime(ReservationTime time) {
+        return new Reservation(id, date, time, theme, member);
     }
 
-    public Reservation assignTime(final ReservationTime time) {
-        return new Reservation(id, name, date, time, theme);
+    public Reservation assignTheme(Theme theme) {
+        return new Reservation(id, date, time, theme, member);
     }
 
-    public Reservation assignTheme(final Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+    public Reservation assignMember(Member member) {
+        return new Reservation(id, date, time, theme, member);
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name.value();
     }
 
     public LocalDate getDate() {
@@ -78,26 +69,30 @@ public class Reservation {
         return theme;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final Reservation that = (Reservation) o;
+        Reservation that = (Reservation) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
                 Objects.equals(date, that.date) &&
                 Objects.equals(time, that.time) &&
-                Objects.equals(theme, that.theme);
+                Objects.equals(theme, that.theme) &&
+                Objects.equals(member, that.member);
     }
 
     @Override
     public int hashCode() {
         int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(name);
         result = 31 * result + Objects.hashCode(date);
         result = 31 * result + Objects.hashCode(time);
         result = 31 * result + Objects.hashCode(theme);
+        result = 31 * result + Objects.hashCode(member);
         return result;
     }
 
@@ -105,10 +100,10 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name=" + name +
                 ", date=" + date +
                 ", time=" + time +
                 ", theme=" + theme +
+                ", member=" + member +
                 '}';
     }
 }

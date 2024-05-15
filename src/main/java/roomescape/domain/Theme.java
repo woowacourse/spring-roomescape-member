@@ -1,27 +1,27 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidRequestException;
+import roomescape.domain.exception.InvalidNameException;
 
 import java.util.Objects;
 
 public class Theme {
 
-    public static final String DEFAULT_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
+    private static final String DEFAULT_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
 
     private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
-    public Theme(final Long id) {
+    public Theme(Long id) {
         this.id = id;
         this.name = null;
         this.description = null;
         this.thumbnail = null;
     }
 
-    public Theme(final Long id, final String name, final String description, final String thumbnail) {
-        validateNull(name);
+    public Theme(Long id, String name, String description, String thumbnail) {
+        validateName(name);
 
         this.id = id;
         this.name = name;
@@ -29,20 +29,20 @@ public class Theme {
         this.thumbnail = getDefaultThumbnailIfNotExists(thumbnail);
     }
 
-    private static String getDefaultThumbnailIfNotExists(final String thumbnail) {
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidNameException("이름은 공백일 수 없습니다.");
+        }
+    }
+
+    private String getDefaultThumbnailIfNotExists(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             return DEFAULT_THUMBNAIL;
         }
         return thumbnail;
     }
 
-    private static void validateNull(final String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidRequestException("공백일 수 없습니다.");
-        }
-    }
-
-    public Theme assignId(final Long id) {
+    public Theme assignId(Long id) {
         return new Theme(id, name, description, thumbnail);
     }
 
@@ -63,11 +63,11 @@ public class Theme {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final Theme theme = (Theme) o;
+        Theme theme = (Theme) o;
         return Objects.equals(id, theme.id) &&
                 Objects.equals(name, theme.name) &&
                 Objects.equals(description, theme.description) &&

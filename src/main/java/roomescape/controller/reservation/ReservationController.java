@@ -1,15 +1,11 @@
 package roomescape.controller.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import roomescape.service.ReservationService;
+import roomescape.controller.RequestParams;
+import roomescape.controller.login.LoginMember;
+import roomescape.service.reservation.ReservationService;
 
 import java.net.URI;
 import java.util.List;
@@ -20,19 +16,25 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
     @GetMapping
-    public List<ReservationResponse> getReservations() {
-        return reservationService.getReservations();
+    public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParams SearchReservationRequest request) {
+        if (request == null || !request.isValid()) {
+            return ResponseEntity.ok(reservationService.getReservations());
+        }
+        return ResponseEntity.ok(reservationService.getReservations(request));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody final ReservationRequest request) {
-        final ReservationResponse reservation = reservationService.addReservation(request);
-        final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+    public ResponseEntity<ReservationResponse> addReservation(
+            @RequestBody CreateReservationRequest request,
+            LoginMember member) {
+        CreateReservationRequest assignedMemberRequest = request.assignMemberId(member.id());
+        ReservationResponse reservation = reservationService.addReservation(assignedMemberRequest);
+        URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())
                 .toUri();
 
@@ -41,13 +43,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservations(@PathVariable final Long id) {
-        final int deletedCount = reservationService.deleteReservation(id);
-        if (deletedCount == 0) {
-            return ResponseEntity.notFound()
-                    .build();
-        }
-        return ResponseEntity.noContent()
-                .build();
+    public ResponseEntity<Void> deleteReservations(@PathVariable Long id, LoginMember member) {
+        reservationService.deleteReservation(id, member);
+        return ResponseEntity.noContent().build();
     }
 }

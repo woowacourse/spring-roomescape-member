@@ -6,3 +6,9 @@ spring:
   h2:
     console:
       enabled: true
+
+security:
+  jwt:
+    token:
+      secret-key: P@ssw0rd
+      expire-length: 3600000

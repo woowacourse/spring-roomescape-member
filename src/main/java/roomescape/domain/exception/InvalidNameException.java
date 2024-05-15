@@ -4,7 +4,7 @@ import roomescape.exception.BadRequestException;
 
 public class InvalidNameException extends BadRequestException {
 
-    public InvalidNameException(final String message) {
+    public InvalidNameException(String message) {
         super(message);
     }
 }

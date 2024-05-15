@@ -26,7 +26,7 @@ class ReservationTimeRepositoryTest {
     );
 
     @Autowired
-    private ReservationTimeRepository timeRepository;
+    ReservationTimeRepository timeRepository;
 
     @Test
     @DisplayName("모든 예약 시간 목록을 조회한다.")
@@ -35,8 +35,8 @@ class ReservationTimeRepositoryTest {
         sampleTimes.forEach(timeRepository::save);
 
         // when
-        final List<ReservationTime> actual = timeRepository.findAllByOrderByStartAt();
-        final List<ReservationTime> expected = sampleTimes.stream()
+        List<ReservationTime> actual = timeRepository.findAllByOrderByStartAt();
+        List<ReservationTime> expected = sampleTimes.stream()
                 .map(time -> time.assignId(
                         actual.stream()
                                 .filter(t -> t.getStartAt().equals(time.getStartAt()))
@@ -54,13 +54,13 @@ class ReservationTimeRepositoryTest {
     @DisplayName("특정 id를 통해 예약 시간 데이터를 조회한다.")
     void findByIdPresent() {
         // given
-        final ReservationTime time = sampleTimes.get(0);
-        final ReservationTime savedTime = timeRepository.save(time);
-        final Long savedId = savedTime.getId();
+        ReservationTime time = sampleTimes.get(0);
+        ReservationTime savedTime = timeRepository.save(time);
+        Long savedId = savedTime.getId();
 
         // when
-        final Optional<ReservationTime> actual = timeRepository.findById(savedId);
-        final ReservationTime expected = time.assignId(savedId);
+        Optional<ReservationTime> actual = timeRepository.findById(savedId);
+        ReservationTime expected = time.assignId(savedId);
 
         // then
         assertThat(actual).hasValue(expected);
@@ -70,10 +70,10 @@ class ReservationTimeRepositoryTest {
     @DisplayName("존재하지 않는 예약 시간 데이터를 조회할 경우 빈 값을 반환한다.")
     void findByIdNotExist() {
         // given
-        final long notExistId = 1L;
+        long notExistId = 1L;
 
         // when
-        final Optional<ReservationTime> actual = timeRepository.findById(notExistId);
+        Optional<ReservationTime> actual = timeRepository.findById(notExistId);
 
         // then
         assertThat(actual).isEmpty();
@@ -83,11 +83,11 @@ class ReservationTimeRepositoryTest {
     @DisplayName("시간이 이미 존재하는지 확인한다.")
     void existByStartAt() {
         // given
-        final ReservationTime time = sampleTimes.get(0);
+        ReservationTime time = sampleTimes.get(0);
         timeRepository.save(time);
 
         // when
-        final boolean actual = timeRepository.existByStartAt(time.getStartAt());
+        boolean actual = timeRepository.existByStartAt(time.getStartAt());
 
         // then
         assertThat(actual).isTrue();
@@ -97,11 +97,11 @@ class ReservationTimeRepositoryTest {
     @DisplayName("예약 시간을 저장한다.")
     void save() {
         // given
-        final ReservationTime time = new ReservationTime(null, LocalTime.of(13, 30));
+        ReservationTime time = new ReservationTime(null, LocalTime.of(13, 30));
 
         // when
-        final ReservationTime actual = timeRepository.save(time);
-        final ReservationTime expected = time.assignId(actual.getId());
+        ReservationTime actual = timeRepository.save(time);
+        ReservationTime expected = time.assignId(actual.getId());
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -111,8 +111,8 @@ class ReservationTimeRepositoryTest {
     @DisplayName("등록된 예약 시간 번호로 삭제한다.")
     void deletePresent() {
         // given
-        final ReservationTime savedTime = timeRepository.save(sampleTimes.get(0));
-        final Long existId = savedTime.getId();
+        ReservationTime savedTime = timeRepository.save(sampleTimes.get(0));
+        Long existId = savedTime.getId();
 
         // when & then
         assertThat(timeRepository.findById(existId)).isPresent();
@@ -124,7 +124,7 @@ class ReservationTimeRepositoryTest {
     @DisplayName("존재하지 않는 예약 시간 번호로 삭제할 경우 아무런 영향이 없다.")
     void deleteNotExist() {
         // given
-        final long notExistId = 1L;
+        long notExistId = 1L;
 
         // when & then
         assertThat(timeRepository.findById(notExistId)).isEmpty();

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import roomescape.service.TimeService;
+import roomescape.service.time.TimeService;
 
 import java.net.URI;
 import java.util.List;
@@ -22,35 +22,33 @@ public class TimeController {
 
     private final TimeService timeService;
 
-    public TimeController(final TimeService timeService) {
+    public TimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 
     @GetMapping
-    public List<TimeResponse> getTimes(
-            @RequestParam(value = "date", required = false) final String date,
-            @RequestParam(value = "themeId", required = false) final Long themeId) {
+    public ResponseEntity<List<TimeResponse>> getTimes(
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "themeId", required = false) Long themeId) {
         if (Objects.isNull(date) || Objects.isNull(themeId)) {
-            return timeService.getTimes();
+            return ResponseEntity.ok(timeService.getTimes());
         }
-        return timeService.getTimesWithBooked(date, themeId);
+        return ResponseEntity.ok(timeService.getTimesWithBooked(date, themeId));
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
-        final TimeResponse time = timeService.addTime(timeRequest);
-        final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+    public ResponseEntity<TimeResponse> addTime(@RequestBody TimeRequest timeRequest) {
+        TimeResponse time = timeService.addTime(timeRequest);
+        URI uri = UriComponentsBuilder.fromPath("/times/{id}")
                 .buildAndExpand(time.id())
                 .toUri();
 
-        return ResponseEntity.created(uri)
-                .body(time);
+        return ResponseEntity.created(uri).body(time);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable final Long id) {
+    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         timeService.deleteTime(id);
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }
