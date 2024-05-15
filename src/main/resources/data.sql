@@ -8,6 +8,11 @@ VALUES ('14:00');
 
 INSERT INTO member (name, email, password)
 VALUES ('레모네', 'lemone@wooteco.com', 'lemone1234');
+INSERT INTO member (name, email, password)
+VALUES ('프린', 'prin@wooteco.com', 'prin1234');
 
 INSERT INTO reservation (reservation_date, member_id, time_id, theme_id)
 VALUES ('2024-05-30', 1L, 1L, 1L);
+
+INSERT INTO reservation (reservation_date, member_id, time_id, theme_id)
+VALUES ('2024-05-31', 2L, 2L, 1L);
