@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.exception.AuthorizationException;
 import roomescape.service.AuthService;
 import roomescape.service.LoginMemberService;
 import roomescape.service.dto.LoginMemberResponse;
@@ -26,9 +27,8 @@ public class RoleInterceptor implements HandlerInterceptor {
         authService.isTokenValid(tokenResponse);
         String memberId = authService.extractMemberIdByToken(tokenResponse);
         LoginMemberResponse loginMemberResponse = loginMemberService.findById(Long.parseLong(memberId));
-        if (loginMemberResponse == null || !loginMemberResponse.role().equals("ADMIN")) {
-            response.setStatus(401);
-            return false;
+        if (!loginMemberResponse.role().equals("ADMIN")) {
+            throw new AuthorizationException("관리자가 아닙니다.");
         }
         return true;
     }
