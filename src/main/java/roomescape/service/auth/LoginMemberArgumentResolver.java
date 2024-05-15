@@ -3,6 +3,7 @@ package roomescape.service.auth;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -10,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.login.LoginMember;
 import roomescape.domain.Member;
 
+@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthorizationExtractor<String> authorizationExtractor;

@@ -1,36 +1,37 @@
 package roomescape.config;
 
+import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.service.QueryStringArgumentResolver;
-import roomescape.service.auth.AuthService;
 import roomescape.service.auth.LoginMemberArgumentResolver;
 import roomescape.service.auth.VerifyAdminInterceptor;
-
-import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final AuthService authService;
+    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final QueryStringArgumentResolver queryStringArgumentResolver;
+    private final VerifyAdminInterceptor verifyAdminInterceptor;
 
-    public WebConfig(AuthService authService,
-                     QueryStringArgumentResolver queryStringArgumentResolver) {
-        this.authService = authService;
+    public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver,
+                     QueryStringArgumentResolver queryStringArgumentResolver,
+                     VerifyAdminInterceptor verifyAdminInterceptor) {
+        this.loginMemberArgumentResolver = loginMemberArgumentResolver;
         this.queryStringArgumentResolver = queryStringArgumentResolver;
+        this.verifyAdminInterceptor = verifyAdminInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(authService));
+        resolvers.add(loginMemberArgumentResolver);
         resolvers.add(queryStringArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new VerifyAdminInterceptor(authService)).addPathPatterns("/admin/**");
+        registry.addInterceptor(verifyAdminInterceptor).addPathPatterns("/admin/**");
     }
 }

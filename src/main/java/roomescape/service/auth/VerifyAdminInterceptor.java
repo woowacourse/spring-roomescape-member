@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
@@ -13,9 +16,7 @@ import roomescape.exception.ErrorResponse;
 import roomescape.service.auth.exception.InvalidTokenException;
 import roomescape.service.auth.exception.MemberNotFoundException;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
+@Component
 public class VerifyAdminInterceptor implements HandlerInterceptor {
 
     private final AuthorizationExtractor<String> authorizationExtractor;
