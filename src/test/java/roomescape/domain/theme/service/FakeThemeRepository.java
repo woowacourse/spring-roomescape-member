@@ -9,7 +9,7 @@ import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
-    Map<Long, Theme> themes = new HashMap<>();
+    public Map<Long, Theme> themes = new HashMap<>();
     AtomicLong atomicLong = new AtomicLong(0);
 
 
