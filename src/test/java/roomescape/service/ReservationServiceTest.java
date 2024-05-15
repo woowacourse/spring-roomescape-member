@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
 import roomescape.repository.DatabaseCleanupListener;
@@ -59,7 +59,7 @@ class ReservationServiceTest {
     private final Member member = new Member(1L, "t1@t1.com", "123", "러너덕", "MEMBER");
     private final ReservationTime time = new ReservationTime(1L, "11:00");
     private final Theme theme = new Theme(1L, "공포", "공포는 무서워", "hi.jpg");
-    private final ReservationDate date = new ReservationDate("2025-11-30");
+    private final LocalDate date = LocalDate.parse("2025-11-30");
 
     @DisplayName("저장되어있지 않은 예약 시간에 예약을 시도하면 에러를 발생시킨다.")
     @Test
@@ -71,7 +71,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(reservationDto))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 하려는 시간이 저장되어 있지 않습니다.");
+                .hasMessage("예약하려는 시간을 찾을 수 없습니다.");
     }
 
     @DisplayName("이미 지나간 날짜에 예약을 시도하면 에러를 발생시킨다.")

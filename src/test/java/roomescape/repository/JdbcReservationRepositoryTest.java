@@ -16,7 +16,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
 import roomescape.repository.rowmapper.MemberRowMapper;
@@ -54,13 +53,13 @@ class JdbcReservationRepositoryTest {
     private final Reservation reservation1 = new Reservation(
             null, new Member(1L, "t1@t1.com", "1234", "러너덕", "MEMBER"),
             new Theme(1L, null, null, null),
-            new ReservationDate("2023-09-08"),
+            LocalDate.parse("2023-09-08"),
             new ReservationTime(1L, (LocalTime) null)
     );
     private final Reservation reservation2 = new Reservation(
             null, new Member(2L, "t2@t2.com", "12345", "재즈", "MEMBER"),
             new Theme(2L, null, null, null),
-            new ReservationDate("2024-04-22"),
+            LocalDate.parse("2024-04-22"),
             new ReservationTime(2L, (LocalTime) null)
     );
 
@@ -188,7 +187,7 @@ class JdbcReservationRepositoryTest {
                 3L,
                 new Member(3L, "t3@t3.com", "12", "재즈덕", "MEMBER"),
                 new Theme(1L, null, null, null),
-                new ReservationDate("2023-09-08"),
+                LocalDate.parse("2023-09-08"),
                 new ReservationTime(1L, (LocalTime) null)
         );
         reservationRepository.insertReservation(reservation1);

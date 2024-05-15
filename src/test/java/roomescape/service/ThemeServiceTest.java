@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
 import roomescape.repository.DatabaseCleanupListener;
@@ -67,7 +67,7 @@ class ThemeServiceTest {
     void throw_exception_when_delete_theme_with_existing_reservation() {
         Member member = new Member(1L, "t1@t1.com", "123", "러너덕", "MEMBER");
         Theme theme = new Theme(1L, "공포", "공포는 무서워", "hi.jpg");
-        ReservationDate date = new ReservationDate("2025-11-30");
+        LocalDate date = LocalDate.parse("2025-11-30");
         ReservationTime time = new ReservationTime(1L, "11:00");
         Reservation reservation = new Reservation(1L, member, theme, date, time);
 

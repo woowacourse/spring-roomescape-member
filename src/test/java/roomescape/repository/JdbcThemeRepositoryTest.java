@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
 import roomescape.repository.rowmapper.MemberRowMapper;
@@ -111,17 +111,17 @@ class JdbcThemeRepositoryTest {
     void find_top_themes_desc_by_reservation_count_between_dates() {
         Theme savedTheme1 = themeRepository.insertTheme(theme1);
         Theme savedTheme2 = themeRepository.insertTheme(theme2);
-        ReservationTime savedTime1 = timeRepository.insertReservationTime(time1);
+        ReservationTime savedTime1 = timeRepository.insertReservationTime(time1).get();
         Member savedMember1 = memberRepository.insertMember(member1);
         Member savedMember2 = memberRepository.insertMember(member2);
         Member savedMember3 = memberRepository.insertMember(member3);
 
         Reservation reservation1 = new Reservation(
-                null, savedMember1, savedTheme1, new ReservationDate("2024-05-01"), savedTime1);
+                null, savedMember1, savedTheme1, LocalDate.parse("2024-05-01"), savedTime1);
         Reservation reservation2 = new Reservation(
-                null, savedMember2, savedTheme2, new ReservationDate("2024-05-02"), savedTime1);
+                null, savedMember2, savedTheme2, LocalDate.parse("2024-05-02"), savedTime1);
         Reservation reservation3 = new Reservation(
-                null, savedMember3, savedTheme2, new ReservationDate("2024-05-03"), savedTime1);
+                null, savedMember3, savedTheme2, LocalDate.parse("2024-05-03"), savedTime1);
         reservationRepository.insertReservation(reservation1);
         reservationRepository.insertReservation(reservation2);
         reservationRepository.insertReservation(reservation3);

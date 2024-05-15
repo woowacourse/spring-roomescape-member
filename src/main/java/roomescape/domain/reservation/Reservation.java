@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import roomescape.domain.member.Member;
 
@@ -9,10 +10,10 @@ public class Reservation {
     private final Long id;
     private final Member member;
     private final Theme theme;
-    private final ReservationDate date;
+    private final LocalDate date;
     private final ReservationTime time;
 
-    public Reservation(Long id, Member member, Theme theme, ReservationDate date,
+    public Reservation(Long id, Member member, Theme theme, LocalDate date,
                        ReservationTime time) {
         this.id = id;
         this.member = member;
@@ -27,8 +28,12 @@ public class Reservation {
         this(id,
                 new Member(memberId, email, password, memberName, role),
                 new Theme(themeId, themeName, description, thumbnail),
-                new ReservationDate(date),
+                LocalDate.parse(date),
                 new ReservationTime(timeId, time));
+    }
+
+    public static boolean isPreviousDate(LocalDate date, ReservationTime time) {
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(LocalDateTime.now());
     }
 
     public Long getId() {
@@ -56,7 +61,7 @@ public class Reservation {
     }
 
     public LocalDate getDate() {
-        return date.getDate();
+        return date;
     }
 
     public ReservationTime getReservationTime() {

@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
@@ -32,12 +31,10 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationCreate reservationInfo) {
         Reservation reservation = reservationInfo.toReservation();
-        if (!reservationTimeRepository.isTimeExistsByTimeId(reservation.getTimeId())) {
-            throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");
-        }
+        ReservationTime time = reservationTimeRepository.findReservationTimeById(reservation.getTimeId())
+                .orElseThrow(() -> new IllegalArgumentException("예약하려는 시간을 찾을 수 없습니다."));
 
-        ReservationTime time = reservationTimeRepository.findReservationTimeById(reservation.getTimeId());
-        if (LocalDateTime.of(reservation.getDate(), time.getStartAt()).isBefore(LocalDateTime.now())) {
+        if (Reservation.isPreviousDate(reservation.getDate(), time)) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
         }
 

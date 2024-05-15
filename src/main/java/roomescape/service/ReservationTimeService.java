@@ -44,14 +44,12 @@ public class ReservationTimeService {
         if (reservationTimeRepository.isTimeExistsByStartTime(reservationTime.getStartAt().toString())) {
             throw new IllegalArgumentException("중복된 시간을 입력할 수 없습니다.");
         }
-        ReservationTime savedTime = reservationTimeRepository.insertReservationTime(reservationTime);
+        ReservationTime savedTime = reservationTimeRepository.insertReservationTime(reservationTime)
+                .orElseThrow(() -> new IllegalArgumentException("시간을 불러올 수 없습니다."));
         return new ReservationTimeResponse(savedTime);
     }
 
     public void deleteReservationTime(long id) {
-        if (!reservationTimeRepository.isTimeExistsByTimeId(id)) {
-            throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
-        }
         if (reservationRepository.isReservationExistsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간에 예약이 있어 삭제할 수 없습니다.");
         }
