@@ -5,6 +5,9 @@ import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
+import roomescape.dto.request.AdminReservationRequest;
+import roomescape.dto.request.MemberRequest;
+import roomescape.dto.request.UserReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.repository.MemberDao;
@@ -35,8 +38,30 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public ReservationResponse save(LocalDate date, long timeId, long themeId, long memberId) {
-        Reservation reservation = makeReservationBy(date, timeId, themeId, findMemberById(memberId));
+    public ReservationResponse saveUserReservation(
+            UserReservationRequest reservationRequest,
+            MemberRequest memberRequest
+    ) {
+        Reservation reservation = makeReservationBy(
+                reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId(),
+                memberRequest.toEntity()
+        );
+        return saveReservation(reservation);
+    }
+
+    public ReservationResponse saveAdminReservation(AdminReservationRequest request) {
+        Reservation reservation = makeReservationBy(
+                request.date(),
+                request.timeId(),
+                request.themeId(),
+                findMemberById(request.memberId())
+        );
+        return saveReservation(reservation);
+    }
+
+    private ReservationResponse saveReservation(Reservation reservation) {
         validateCreatedReservation(reservation);
         return new ReservationResponse(reservationDao.save(reservation));
     }

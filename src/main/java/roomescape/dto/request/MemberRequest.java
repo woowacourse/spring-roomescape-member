@@ -14,4 +14,8 @@ public record MemberRequest(
     public MemberRequest(Member member) {
         this(member.getId(), member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
+
+    public Member toEntity() {
+        return new Member(id, name, email, password, role);
+    }
 }

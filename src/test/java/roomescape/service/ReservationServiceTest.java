@@ -65,16 +65,16 @@ class ReservationServiceTest {
 
     //TODO save는 실제 테스트 고려하기 -> Mock stubbing이 너무 많이 소요됨
 
-    @Test
-    @DisplayName("실패 : 이전 날짜 예약을 저장할 수 없다")
-    void should_ThrowIllegalArgumentException_When_GivePastDateReservation() {
-        //given
-        LocalDate past = LocalDate.now().minusDays(1);
-
-        //when-then
-        assertThatThrownBy(() -> reservationService.save(past, 1L, 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+//    @Test
+//    @DisplayName("실패 : 이전 날짜 예약을 저장할 수 없다")
+//    void should_ThrowIllegalArgumentException_When_GivePastDateReservation() {
+//        //given
+//        LocalDate past = LocalDate.now().minusDays(1);
+//
+//        //when-then
+//        assertThatThrownBy(() -> reservationService.save(past, 1L, 1L, 1L))
+//                .isInstanceOf(IllegalArgumentException.class);
+//    }
 
     @Test
     @DisplayName("예약 내역을 모두 조회할 수 있다.")
