@@ -91,7 +91,7 @@ class ThemeControllerTest {
 
     @DisplayName("인기 테마 조회 성공 테스트")
     @Test
-    @Sql(scripts = {"classpath:insert-past-reservation.sql"})
+    @Sql(scripts = {"classpath:truncate-with-reservations.sql"})
     void findPopularThemes() {
         //when&then
         RestAssured.given().log().all()
