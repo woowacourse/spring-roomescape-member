@@ -31,7 +31,7 @@ public class TokenManager {
 
         return new Token(
                 Jwts.builder()
-                        .setHeaderParam("typ", "jwt")
+                        .setHeaderParam("type", "jwt")
                         .setSubject(member.getId().toString())
                         .setIssuedAt(now)
                         .setExpiration(expiration)
