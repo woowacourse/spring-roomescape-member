@@ -5,7 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.domain.member.domain.Role.ADMIN;
 import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.BEFORE_ONE_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.BEFORE_THREE_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.TODAY;
 import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
+import static roomescape.fixture.MemberFixture.MEMBER_MEMBER;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -139,5 +143,23 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.removeReservation(1L))
                 .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("해당 id를 가진 예약이 존재하지 않습니다.");
+    }
+
+    @DisplayName("필터링된 예약 목록을 불러올 수 있습니다.")
+    @Test
+    void should_get_filtered_reservation_list() {
+        fakeThemeRepository.insert(DUMMY_THEME);
+        fakeMemberRepository.insert(MEMBER_MEMBER);
+        fakeReservationRepository.insert(
+                new Reservation(null, BEFORE_ONE_DAYS_DATE, TEN_RESERVATION_TIME, DUMMY_THEME, MEMBER_MEMBER)
+        );
+        fakeReservationRepository.insert(
+                new Reservation(null, BEFORE_THREE_DAYS_DATE, TEN_RESERVATION_TIME, DUMMY_THEME, MEMBER_MEMBER)
+        );
+
+        List<Reservation> filteredReservationList = reservationService
+                .findFilteredReservationList(1L, 1L, BEFORE_ONE_DAYS_DATE, TODAY);
+
+        assertThat(filteredReservationList).hasSize(1);
     }
 }
