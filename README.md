@@ -76,10 +76,10 @@ Transfer-Encoding: chunked
     }
     ```
     - 관리자
-    - [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 한다.
-    - [ ] `admin/reservation-new.html` 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경한다.
-        - [ ] AS-IS: `/js/reservation-new.js`
-        - [ ] TO-BE: `/js/reservation-with-member.js`
+    - [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 한다.
+    - [x] `admin/reservation-new.html` 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경한다.
+        - [x] AS-IS: `/js/reservation-new.js`
+        - [x] TO-BE: `/js/reservation-with-member.js`
     - **요청 Body 값을 이용한 예약 생성 Request**
     ``` yaml
     POST /admin/reservations HTTP/1.1
