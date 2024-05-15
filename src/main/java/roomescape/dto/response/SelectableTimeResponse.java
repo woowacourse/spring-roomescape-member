@@ -1,13 +1,13 @@
 package roomescape.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 
 import java.time.LocalTime;
 import java.util.List;
 
 public record SelectableTimeResponse(
-        long timeId,
+        long id,
 
         @JsonFormat(pattern = "kk:mm")
         LocalTime startAt,
@@ -20,11 +20,5 @@ public record SelectableTimeResponse(
                 time.getStartAt(),
                 usedTimeIds.contains(time.getId())
         );
-    }
-
-    public static List<SelectableTimeResponse> listOf(List<ReservationTime> reservationTimes, List<Long> usedTimeIds) {
-        return reservationTimes.stream()
-                .map(time -> SelectableTimeResponse.from(time, usedTimeIds))
-                .toList();
     }
 }

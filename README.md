@@ -39,6 +39,26 @@
 - [x] 인기 테마를 조회할 수 있다
     - [x]  최근 일주일을 기준으로 방문 예약이 많은 상위 10개의 테마를 확인한다.
 
+### 4단계 기능 요구사항
+
+- [x] 로그인 기능을 구현한다.
+    - [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회한다
+- [x] 로그아웃 기능을 구현한다.
+
+### 5단계 기능 요구사항
+
+- [x] 예약 생성 기능 변경
+    - [x] 사용자 예약 생성 기능
+        - [x] 로그인한 사용자 정보를 활용하여 예약을 생성한다
+    - [x] 관리자 예약 생성 시
+
+### 6단계 기능 요구사항
+
+- [x] 어드민인 사람만 /admin 으로 시작하는 페이지에 접근한다.
+    - [x] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답을 반환한다
+- [x] 예약이 많아질 경우 관리가 용이하도록 예약 검색 기능을 추가합니다.
+    -[x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가하세요.
+
 ---
 
 ## API 명세
@@ -109,6 +129,96 @@ response
 
 ```json
 HTTP/1.1 204
+```
+
+### 로그인
+
+request
+
+```json
+DELETE /themes/1 HTTP/1.1
+```
+
+request
+
+```json
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost: 8080
+
+{
+"password": "password",
+"email": "admin@email.com"
+}
+```
+
+response
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+### 인증 정보 조회
+
+request
+
+```json
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost: 8080
+```
+
+response
+
+```json
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19: 16: 56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+"name": "어드민"
+}
+```
+
+### 예약 생성 - 사용자
+
+request
+
+```json
+POST /reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost: 8080
+
+{
+"date": "2024-03-01",
+"themeId": 1,
+"timeId": 1
+}
+```
+
+### 예약 생성 - 관리자
+
+request
+
+```json
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost: 8080
+
+{
+"date": "2024-03-01",
+"themeId": 1,
+"timeId": 1,
+"memberId": 1
+}
 ```
 
 ---

@@ -1,15 +1,15 @@
 package roomescape.dto.response;
 
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Theme;
 
 public record ThemeResponse(
-        long themeId,
+        long id,
         String name,
         String description,
         String thumbnail
 ) {
-    public static ThemeResponse from(final Theme theme) {
-        return new ThemeResponse(
+    public ThemeResponse(final Theme theme) {
+        this(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
