@@ -31,6 +31,10 @@ public class Member {
         this.role = role;
     }
 
+    public boolean isUser() {
+        return role.isUser();
+    }
+
     public Long getId() {
         return id;
     }

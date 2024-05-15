@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.CookieProvider;
 import roomescape.domain.Member;
-import roomescape.domain.Role;
 import roomescape.service.AuthService;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
@@ -20,13 +19,9 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         final String token = CookieProvider.extractTokenFrom(request);
         final Member member = authService.findMemberByToken(token);
 
-        if (member == null || isUser(member.getRole())) {
+        if (member == null || member.isUser()) {
             throw new IllegalArgumentException("관리자 페이지는 관리자만 들어올 수 있습니다.");
         }
         return true;
-    }
-
-    private boolean isUser(final Role role) {
-        return role.isUser();
     }
 }
