@@ -14,7 +14,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.service.dto.ReservationTimeCreateRequest;
-import roomescape.service.dto.ReservationTimeReadRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeControllerTest {
@@ -84,15 +83,17 @@ class ReservationTimeControllerTest {
     }
 
     @DisplayName("등록된 시간 내역을 조회한다.")
+    @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     void findAllReservationTime() {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all().statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
     }
 
     @DisplayName("시간 정보를 id로 삭제한다.")
+    @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     void deleteReservationTimeById() {
         RestAssured.given().log().all()
@@ -106,7 +107,7 @@ class ReservationTimeControllerTest {
     }
 
     @DisplayName("시간 삭제 실패 테스트 - 이미 예약이 존재하는 시간 삭제 시도 오류")
-    @Sql(scripts = "/popular_themes_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     void cannotDeleteReservationTime() {
         RestAssured.given().log().all()
@@ -116,19 +117,19 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
-                .assertThat().body("size()", is(1));
+                .assertThat().body("size()", is(2));
     }
 
     @DisplayName("예약 가능한 시간 조회 테스트")
-    @Sql(scripts = "/popular_themes_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     void findAvailableTime() {
-        ReservationTimeReadRequest reservationTimeReadRequest = new ReservationTimeReadRequest("2222-05-04", 1);
         RestAssured.given().contentType(ContentType.JSON)
-                .body(reservationTimeReadRequest)
-                .when().get("/times/available?date=" + "2222-05-04" + "&themeId=" + 1)
+                .param("date", "2222-05-04")
+                .param("themeId", 1)
+                .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
     }
 }
