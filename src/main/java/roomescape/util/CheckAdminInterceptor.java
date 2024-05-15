@@ -35,7 +35,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
         String token = extractToken(request);
         LoginMember loginMember = memberService.findLoginMemberByToken(token);
-        if (!loginMember.role().equals(Role.ADMIN)) {
+        if (!loginMember.role().isAdmin()) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
