@@ -13,6 +13,8 @@ import java.util.NoSuchElementException;
 
 @Service
 public class ThemeService {
+    private static final int THEME_RANKING_COUNT = 10;
+
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
 
@@ -37,7 +39,7 @@ public class ThemeService {
         List<Long> themeRankingIds = reservationDao.findRanking(
                 LocalDate.now().minusWeeks(1),
                 LocalDate.now(),
-                10
+                THEME_RANKING_COUNT
         );
         return themeRankingIds.stream()
                 .map(id -> new ThemeResponse(themeDao.findById(id).get()))
