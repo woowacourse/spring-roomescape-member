@@ -10,12 +10,14 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:application-secret.properties")
 public class JwtTokenExtractor {
+    public static final String COOKIE_NAME = "token";
+
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
 
     public String extractByCookies(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
+            if (cookie.getName().equals(COOKIE_NAME)) {
                 return cookie.getValue();
             }
         }
