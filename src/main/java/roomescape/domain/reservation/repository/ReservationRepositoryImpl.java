@@ -85,7 +85,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String condition = findWhereStatement(themeId, memberId, dateFrom, dateTo);
         String sql = RESERVATION_SQL + condition;
-        System.out.println(sql);
         return jdbcTemplate.query(sql, rowMapper);
     }
 

@@ -15,14 +15,9 @@ import roomescape.domain.member.domain.Member;
 
 class MemberRepositoryImplTest extends RepositoryTest {
 
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private MemberRepository memberRepository;
-
-    MemberRepositoryImplTest() {
-
-    }
 
     @BeforeEach
     void setUp() {
