@@ -6,7 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,15 +13,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.member.dto.LoginRequest;
-import roomescape.reservation.dto.ReservationTimeRequest;
-import roomescape.reservation.dto.ReservationTimeResponse;
-import roomescape.reservation.dto.ThemeRequest;
-import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.service.ReservationTimeService;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
+import roomescape.util.LoginFixture;
 
 @DisplayName("관리자 페이지 테스트")
 class AdminControllerTest extends ControllerTest {
@@ -31,24 +26,12 @@ class AdminControllerTest extends ControllerTest {
     ReservationTimeService reservationTimeService;
     @Autowired
     ThemeService themeService;
-    String adminToken;
-    @BeforeEach
-    void setData() {
-        adminToken = RestAssured
-                .given().log().all()
-                .body(new LoginRequest("admin@email.com", "password"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all().extract()
-                .cookie("token");
-    }
 
     @DisplayName("관리자 메인 페이지 조회에 성공한다.")
     @Test
     void adminMainPage() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200)
@@ -59,7 +42,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void adminReservationPage() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200)
@@ -79,7 +62,7 @@ class AdminControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -100,7 +83,7 @@ class AdminControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
@@ -111,7 +94,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void adminTimePage() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200)
@@ -122,7 +105,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void adminThemePage() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200)
@@ -152,7 +135,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void readReservationByAllFilter() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservations?themeId=1&memberId=2&dateFrom=2024-05-05&dateTo=2024-05-13")
                 .then().log().all()
                 .statusCode(200);
@@ -162,7 +145,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void readReservationByThemeFilter() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservations?themeId=1")
                 .then().log().all()
                 .statusCode(200);
@@ -172,7 +155,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void readReservationByMemberFilter() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservations?memberId=2")
                 .then().log().all()
                 .statusCode(200);
@@ -182,7 +165,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void readReservationByDayFromFilter() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservations?dateFrom=2024-05-05")
                 .then().log().all()
                 .statusCode(200);
@@ -192,7 +175,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void readReservationByDayToFilter() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservations?dateTo=2024-05-05")
                 .then().log().all()
                 .statusCode(200);
@@ -202,7 +185,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void readReservationByNoneFilter() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200);
@@ -212,7 +195,7 @@ class AdminControllerTest extends ControllerTest {
     @Test
     void readReservationByFilterException() {
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("token", LoginFixture.takeAdminToken())
                 .when().get("/admin/reservations?themeId=1&memberId=2&dateFrom=2024-05-20&dateTo=2024-05-13")
                 .then().log().all()
                 .statusCode(400);

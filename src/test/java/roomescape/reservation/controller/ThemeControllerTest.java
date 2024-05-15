@@ -18,23 +18,10 @@ import roomescape.member.dto.LoginRequest;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
+import roomescape.util.LoginFixture;
 
 @DisplayName("테마 API 통합 테스트")
 class ThemeControllerTest extends ControllerTest {
-    private String adminToken;
-
-    @BeforeEach
-    void setDate() {
-        adminToken = RestAssured
-                .given().log().all()
-                .body(new LoginRequest("admin@email.com", "password"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all().extract()
-                .cookie("token");
-    }
-
     @DisplayName("테마 생성 시, 201을 반환한다.")
     @Test
     void create() {
@@ -47,7 +34,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -67,7 +54,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -87,7 +74,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -107,7 +94,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -130,7 +117,7 @@ class ThemeControllerTest extends ControllerTest {
     void delete() {
         //given & when & then
         RestAssured.given().log().all()
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .when().delete("/themes/4")
                 .then().log().all()
                 .statusCode(204);

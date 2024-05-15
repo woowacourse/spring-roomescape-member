@@ -18,23 +18,10 @@ import roomescape.member.dto.LoginRequest;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.service.ReservationTimeService;
 import roomescape.util.ControllerTest;
+import roomescape.util.LoginFixture;
 
 @DisplayName("예약 시간 API 통합 테스트")
 class ReservationTimeControllerTest extends ControllerTest {
-    private String adminToken;
-
-    @BeforeEach
-    void setDate() {
-        adminToken = RestAssured
-                .given().log().all()
-                .body(new LoginRequest("admin@email.com", "password"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all().extract()
-                .cookie("token");
-    }
-
     @DisplayName("시간 생성 시, 201을 반환한다.")
     @Test
     void create() {
@@ -45,7 +32,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -63,7 +50,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -86,7 +73,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     void delete() {
         //given & when & then
         RestAssured.given().log().all()
-                .cookie(TOKEN, adminToken)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .when().delete("/times/4")
                 .then().log().all()
                 .statusCode(200);
