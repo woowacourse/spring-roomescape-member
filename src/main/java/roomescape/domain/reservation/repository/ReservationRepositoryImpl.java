@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -82,6 +85,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public List<Reservation> findAllBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
         String condition = findWhereStatement(themeId, memberId, dateFrom, dateTo);
         String sql = RESERVATION_SQL + condition;
+        System.out.println(sql);
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -90,8 +94,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         String memberCondition = memberId != null ? "r.member_id = " + memberId : null;
         String dateFromCondition = dateFrom != null ? "r.date >= '" + dateFrom + "'" : null;
         String dateToCondition = dateTo != null ? "r.date <= '" + dateTo + "'" : null;
-        String condition = String.join(" AND ", themeCondition, memberCondition, dateFromCondition, dateToCondition);
-        if (condition.equals("null")) {
+        String condition = Stream.of(themeCondition, memberCondition, dateFromCondition, dateToCondition)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" AND "));
+        if (condition.isEmpty()) {
             return "";
         }
         return "WHERE " + condition;
