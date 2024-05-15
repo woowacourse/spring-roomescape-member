@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class CookieAuthorizationExtractor implements AuthorizationExtractor<String> {
+    
     private static final String COOKIE_NAME = "token";
 
     @Override

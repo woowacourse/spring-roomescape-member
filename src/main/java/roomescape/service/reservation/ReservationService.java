@@ -1,11 +1,18 @@
 package roomescape.service.reservation;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.login.LoginMember;
 import roomescape.controller.reservation.CreateReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.reservation.SearchReservationRequest;
-import roomescape.domain.*;
+import roomescape.domain.Member;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
+import roomescape.domain.Theme;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -16,10 +23,6 @@ import roomescape.service.auth.exception.MemberNotFoundException;
 import roomescape.service.reservation.exception.PreviousTimeException;
 import roomescape.service.reservation.exception.ReservationDuplicatedException;
 import roomescape.service.reservation.exception.ReservationNotFoundException;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ReservationService {
@@ -60,9 +63,9 @@ public class ReservationService {
 
     public ReservationResponse addReservation(CreateReservationRequest createReservationRequest) {
         Reservation reservation = createReservationRequest.toDomain()
-                .assignTime(findTimeOrElseThrow(createReservationRequest.timeId()))
-                .assignTheme(findThemeOrElseThrow(createReservationRequest.themeId()))
-                .assignMember(findMemberOrElseThrow(createReservationRequest.memberId()));
+                .assignTime(findTime(createReservationRequest.timeId()))
+                .assignTheme(findTheme(createReservationRequest.themeId()))
+                .assignMember(findMember(createReservationRequest.memberId()));
 
         validateReservationDuplicated(
                 reservation.getDate(),
@@ -75,17 +78,17 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private ReservationTime findTimeOrElseThrow(Long timeId) {
+    private ReservationTime findTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new TimeNotFoundException("존재 하지 않는 시간 입니다."));
     }
 
-    private Theme findThemeOrElseThrow(Long themeId) {
+    private Theme findTheme(Long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeNotFoundException("존재 하지 않는 테마 입니다."));
     }
 
-    private Member findMemberOrElseThrow(Long memberId) {
+    private Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 멤버 입니다."));
     }

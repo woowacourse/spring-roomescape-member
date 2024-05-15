@@ -1,5 +1,13 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,15 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
-import roomescape.domain.*;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import roomescape.domain.Member;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
+import roomescape.domain.Theme;
 
 @Import({H2ReservationRepository.class,
         H2ReservationTimeRepository.class,
@@ -141,6 +145,34 @@ class ReservationRepositoryTest {
 
         // then
         assertThat(actual).isEmpty();
+    }
+
+    @Test
+    @DisplayName("테마와 멤버와 날짜 범위로 예약을 조회한다.")
+    void findAllByThemeIdAndMemberIdAndDateRange() {
+        // given
+        sampleReservations.forEach(reservationRepository::save);
+        long themeId = 1L;
+        long memberId = 1L;
+        LocalDate dateFrom = sampleReservations.get(0).getDate();
+        LocalDate dateTo = sampleReservations.get(sampleReservations.size() - 1).getDate();
+
+        // when
+        List<Reservation> actual = reservationRepository.findAllByThemeIdAndMemberIdAndDateRange(
+                themeId, memberId, dateFrom.toString(), dateTo.toString());
+        List<Reservation> expected = sampleReservations.stream()
+                .filter(r -> r.getTheme().getId() == themeId)
+                .filter(r -> r.getMember().getId() == memberId)
+                .filter(r -> r.getDate().isAfter(dateFrom) || r.getDate().isEqual(dateFrom))
+                .filter(r -> r.getDate().isBefore(dateTo) || r.getDate().isEqual(dateTo))
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < expected.size(); i++) {
+            expected.set(i, expected.get(i).assignId(actual.get(i).getId()));
+        }
+
+        // then
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

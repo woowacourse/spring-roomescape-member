@@ -3,6 +3,8 @@ package roomescape.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,9 +17,11 @@ import roomescape.controller.RequestParams;
 public class QueryStringArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final ObjectMapper objectMapper;
+    private final Logger logger;
 
     public QueryStringArgumentResolver(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        this.logger = LoggerFactory.getLogger(getClass());
     }
 
     @Override
@@ -39,6 +43,7 @@ public class QueryStringArgumentResolver implements HandlerMethodArgumentResolve
             String json = convertQueryToJson(request.getQueryString());
             return objectMapper.readValue(json, parameter.getParameterType());
         } catch (Exception e) {
+            logger.error("", e);
             return null;
         }
     }
