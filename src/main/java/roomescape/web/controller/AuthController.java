@@ -13,19 +13,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
 import roomescape.service.AuthService;
 import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.LoginRequest;
 import roomescape.web.dto.response.member.MemberResponse;
 
 @RestController
-@RequiredArgsConstructor
 public class AuthController {
     private static final String TOKEN_COOKIE_KEY_NAME = "token";
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
+
+    public AuthController(AuthService authService, JwtProvider jwtProvider) {
+        this.authService = authService;
+        this.jwtProvider = jwtProvider;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {

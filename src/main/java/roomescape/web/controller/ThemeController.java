@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
 import roomescape.domain.policy.WeeklyRankingPolicy;
 import roomescape.service.ThemeService;
 import roomescape.web.dto.request.theme.ThemeRequest;
@@ -22,9 +21,12 @@ import roomescape.web.dto.response.theme.ThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
-@RequiredArgsConstructor
 public class ThemeController {
     private final ThemeService themeService;
+
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAllTheme() {

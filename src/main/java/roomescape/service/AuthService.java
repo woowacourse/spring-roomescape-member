@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
 import roomescape.domain.repository.MemberRepository;
@@ -13,10 +12,14 @@ import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.LoginRequest;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
+
+    public AuthService(JwtProvider jwtProvider, MemberRepository memberRepository) {
+        this.jwtProvider = jwtProvider;
+        this.memberRepository = memberRepository;
+    }
 
     public boolean verifyPermission(String token, Set<Role> permission) {
         Role requestRole = jwtProvider.extractRole(token);

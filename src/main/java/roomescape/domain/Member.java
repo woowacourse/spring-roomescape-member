@@ -2,9 +2,6 @@ package roomescape.domain;
 
 import java.util.Objects;
 
-import lombok.Getter;
-
-@Getter
 public class Member {
     private final Long id;
     private final String name;
@@ -34,6 +31,26 @@ public class Member {
 
     public String getRoleAsString() {
         return role.getValue();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     @Override

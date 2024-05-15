@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import roomescape.domain.Theme;
 import roomescape.domain.policy.RankingPolicy;
 import roomescape.domain.repository.ThemeRepository;
@@ -16,9 +15,12 @@ import roomescape.web.dto.request.theme.ThemeRequest;
 import roomescape.web.dto.response.theme.ThemeResponse;
 
 @Service
-@RequiredArgsConstructor
 public class ThemeService {
     private final ThemeRepository themeRepository;
+
+    public ThemeService(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
+    }
 
     public List<ThemeResponse> findAllTheme() {
         List<Theme> themes = themeRepository.findAll();

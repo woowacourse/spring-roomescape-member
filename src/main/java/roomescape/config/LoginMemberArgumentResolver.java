@@ -11,14 +11,16 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import lombok.RequiredArgsConstructor;
 import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.service.security.JwtProvider;
 import roomescape.web.dto.request.member.MemberInfo;
 
-@RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtProvider jwtProvider;
+
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
+    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

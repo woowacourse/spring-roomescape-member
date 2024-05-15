@@ -7,15 +7,18 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import lombok.RequiredArgsConstructor;
 import roomescape.service.AuthService;
 import roomescape.service.security.JwtProvider;
 
 @Configuration
-@RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final AuthService authService;
     private final JwtProvider jwtProvider;
+
+    public WebMvcConfiguration(AuthService authService, JwtProvider jwtProvider) {
+        this.authService = authService;
+        this.jwtProvider = jwtProvider;
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

@@ -9,14 +9,16 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import lombok.RequiredArgsConstructor;
 import roomescape.domain.Role;
 import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.service.AuthService;
 
-@RequiredArgsConstructor
 public class AdminHandlerInterceptor implements HandlerInterceptor {
     private final AuthService authService;
+
+    public AdminHandlerInterceptor(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
