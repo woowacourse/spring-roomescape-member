@@ -18,7 +18,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.ReservationAdminRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -34,7 +34,7 @@ class ReservationServiceTest {
 
     private final ReservationTime time = new ReservationTime(1L, "15:30");
     private final LocalDate validDate = LocalDate.now().plusDays(10);
-    private final ReservationRequest requestDto = new ReservationRequest("재즈", 1L, validDate.toString(), 1L);
+    private final ReservationAdminRequest requestDto = new ReservationAdminRequest(validDate.toString(), 1L, 1L, 1L);
 
     @DisplayName("예약 리스트를 조회할 땐 findAllReservations이 호출되어야 한다")
     @Test
@@ -73,7 +73,7 @@ class ReservationServiceTest {
                 1L, "15:30");
         given(reservationRepository.insertReservation(requestDto.toReservation())).willReturn(reservation);
 
-        reservationService.createReservation(requestDto);
+        reservationService.createAdminReservation(requestDto);
         verify(reservationRepository, times(1)).insertReservation(requestDto.toReservation());
     }
 
@@ -82,7 +82,7 @@ class ReservationServiceTest {
     void throw_exception_when_not_exist_time_id_create() {
         given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(false);
 
-        assertThatThrownBy(() -> reservationService.createReservation(requestDto))
+        assertThatThrownBy(() -> reservationService.createAdminReservation(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 하려는 시간이 저장되어 있지 않습니다.");
 
@@ -93,11 +93,11 @@ class ReservationServiceTest {
     @Test
     void throw_exception_when_past_datetime_create() {
         LocalDate pastDate = LocalDate.now().minusDays(10);
-        ReservationRequest invalidDateRequest = new ReservationRequest("재즈", 1L, pastDate.toString(), 1L);
+        ReservationAdminRequest invalidDateRequest = new ReservationAdminRequest(pastDate.toString(), 1L, 1L, 1L);
         given(reservationTimeRepository.isExistTimeOf(invalidDateRequest.getTimeId())).willReturn(true);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
 
-        assertThatThrownBy(() -> reservationService.createReservation(invalidDateRequest))
+        assertThatThrownBy(() -> reservationService.createAdminReservation(invalidDateRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
 
@@ -111,7 +111,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
         given(reservationRepository.hasSameReservationForThemeAtDateTime(requestDto.toReservation())).willReturn(true);
 
-        assertThatThrownBy(() -> reservationService.createReservation(requestDto))
+        assertThatThrownBy(() -> reservationService.createAdminReservation(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 테마는 같은 시간에 이미 예약이 존재합니다.");
 

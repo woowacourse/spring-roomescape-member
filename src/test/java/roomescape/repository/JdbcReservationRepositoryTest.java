@@ -139,7 +139,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("예약 테이블에 테마, 시간, 날짜가 동일한 예약이 존재하는지 판단한다.")
     void is_exist_reservation_for_theme_at_date_time() {
         Reservation allSameReservation = new Reservation(
-                3L, new Member("atto"), theme1, new ReservationDate("2023-09-08"), time1);
+                3L, member2, theme1, new ReservationDate("2023-09-08"), time1);
 
         reservationRepository.insertReservation(reservation1);
 

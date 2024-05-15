@@ -10,7 +10,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.dto.ReservationAdminRequest;
 import roomescape.service.dto.ReservationCookieRequest;
-import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSpecificRequest;
 
@@ -31,11 +30,6 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponse::new)
                 .toList();
-    }
-
-    public ReservationResponse createReservation(ReservationRequest request) {
-        Reservation reservation = request.toReservation();
-        return createReservation(reservation);
     }
 
     public ReservationResponse createCookieReservation(ReservationCookieRequest request, Member member) {
