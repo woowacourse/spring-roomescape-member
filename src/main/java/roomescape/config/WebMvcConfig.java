@@ -6,7 +6,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.interceptor.CheckAdminInterceptor;
-import roomescape.resolver.FilteredReservationArgumentResolver;
 import roomescape.resolver.MemberArgumentResolver;
 import roomescape.service.AuthService;
 
@@ -27,6 +26,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new MemberArgumentResolver(authService));
-        resolvers.add(new FilteredReservationArgumentResolver());
     }
 }
