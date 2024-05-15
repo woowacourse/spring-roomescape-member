@@ -1,7 +1,6 @@
 package roomescape.domain.reservation.repository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,24 +85,16 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    private static String findWhereStatement(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
-        List<String> condition = new ArrayList<>();
-        if (themeId != null) {
-            condition.add("r.theme_id = " + themeId);
-        }
-        if (memberId != null) {
-            condition.add("r.member_id = " + memberId);
-        }
-        if (dateFrom != null) {
-            condition.add("r.date >= '" + dateFrom + "'");
-        }
-        if (dateTo != null) {
-            condition.add("r.date <= '" + dateTo + "'");
-        }
-        if (condition.isEmpty()) {
+    private String findWhereStatement(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String themeCondition = themeId != null ? "r.theme_id = " + themeId : null;
+        String memberCondition = memberId != null ? "r.member_id = " + memberId : null;
+        String dateFromCondition = dateFrom != null ? "r.date >= '" + dateFrom + "'" : null;
+        String dateToCondition = dateTo != null ? "r.date <= '" + dateTo + "'" : null;
+        String condition = String.join(" AND ", themeCondition, memberCondition, dateFromCondition, dateToCondition);
+        if (condition.equals("null")) {
             return "";
         }
-        return "WHERE " + String.join(" AND ", condition);
+        return "WHERE " + condition;
     }
 
     @Override
