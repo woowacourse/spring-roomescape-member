@@ -32,7 +32,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         boolean isAdmin = member.getRole().isAdmin();
 
         if (!(isAdmin)) {
-            throw new ForbiddenAccessException("관리자만 접근 가능합니다.");
+            throw new ForbiddenAccessException();
         }
         return true;
     }
