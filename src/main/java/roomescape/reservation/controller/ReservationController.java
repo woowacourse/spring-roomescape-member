@@ -14,6 +14,7 @@ import roomescape.member.dto.LoginMember;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.util.AdminRequired;
 
 @Controller
 public class ReservationController {

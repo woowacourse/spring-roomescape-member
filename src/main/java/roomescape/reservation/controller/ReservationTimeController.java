@@ -17,6 +17,7 @@ import roomescape.reservation.dto.AvailableTimeResponse;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
 import roomescape.reservation.service.ReservationTimeService;
+import roomescape.util.AdminRequired;
 
 @Controller
 @RequestMapping("/times")
@@ -28,6 +29,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
+    @AdminRequired
     public ResponseEntity<ReservationTimeResponse> create(
             @RequestBody @Valid ReservationTimeRequest reservationTimeRequest) {
         ReservationTimeResponse response = reservationTimeService.create(reservationTimeRequest);
@@ -40,6 +42,7 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
+    @AdminRequired
     public ResponseEntity<?> delete(@PathVariable("id") long timeId) {
         reservationTimeService.delete(timeId);
         return ResponseEntity.ok().build();

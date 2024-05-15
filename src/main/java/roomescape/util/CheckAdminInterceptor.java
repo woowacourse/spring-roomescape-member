@@ -3,10 +3,12 @@ package roomescape.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.domain.Role;
 import roomescape.member.dto.LoginMember;
@@ -23,6 +25,14 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (!(handler instanceof HandlerMethod)) {
+            return true;
+        }
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        Method method = handlerMethod.getMethod();
+        if (!method.isAnnotationPresent(AdminRequired.class)) {
+            return true;
+        }
         String token = extractToken(request);
         LoginMember loginMember = memberService.findLoginMemberByToken(token);
         if (!loginMember.role().equals(Role.ADMIN)) {
