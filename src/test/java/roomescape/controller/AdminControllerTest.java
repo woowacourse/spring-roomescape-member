@@ -81,4 +81,18 @@ public class AdminControllerTest {
                 .then().log().all()
                 .statusCode(201);
     }
+
+    @DisplayName("Admin reservations search Page 접근 성공 테스트")
+    @Test
+    void responseAdminSearchPage() {
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .param("themeId", 1)
+                .param("memberId", 1)
+                .param("dateFrom", "2024-06-01")
+                .param("dateTo", "2024-06-10")
+                .when().get("/admin/reservations/search")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
