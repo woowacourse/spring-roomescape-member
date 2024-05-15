@@ -67,11 +67,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(long id) {
         String query = """
-                SELECT * FROM reservation AS r
+                SELECT r.id, r.member_id AS member_id, m.name AS member_name, m.email, m.password, r.reservation_date,
+                r.time_id AS time_id, t.start_at, r.theme_id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                FROM reservation AS r
                 JOIN reservation_time AS t
                 ON r.time_id = t.id
-                JOIN theme AS th
-                On r.theme_id = th.id
+                LEFT JOIN theme AS th
+                ON r.theme_id = th.id
+                LEFT JOIN member AS m
+                ON r.member_id = m.id
                 WHERE r.id = ?
                 """;
         try {
@@ -84,11 +88,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findByTimeId(long timeId) {
         String query = """
-                SELECT * FROM reservation AS r
+                SELECT r.id, r.member_id AS member_id, m.name AS member_name, m.email, m.password, r.reservation_date,
+                r.time_id AS time_id, t.start_at, r.theme_id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                FROM reservation AS r
                 JOIN reservation_time AS t
-                ON r.time_id = t.time_id
-                JOIN theme AS th
-                On r.theme_id = th.theme_id
+                ON r.time_id = t.id
+                LEFT JOIN theme AS th
+                ON r.theme_id = th.id
+                LEFT JOIN member AS m
+                ON r.member_id = m.id
                 WHERE r.time_id = ?
                 """;
         try {
