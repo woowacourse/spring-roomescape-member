@@ -35,7 +35,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             return new MemberRequest(loginService.check(request.getCookies()));
         } catch (Exception exception) {
             HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             throw new IllegalStateException("[ERROR] 접근권한이 인증과정에서 문제가 생겼습니다.", exception);
         }
     }
