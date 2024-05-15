@@ -12,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.AdminReservationRequest;
+import roomescape.service.dto.LoginMemberRequest;
 import roomescape.service.dto.ReservationReadRequest;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
@@ -41,10 +42,12 @@ public class ReservationService {
         return new ReservationResponse(newReservation);
     }
 
-    public ReservationResponse create(final ReservationRequest reservationRequest, LoginMember loginMember) {
+    public ReservationResponse create(final ReservationRequest reservationRequest,
+                                      LoginMemberRequest loginMemberRequest) {
         Theme theme = findThemeById(reservationRequest.themeId());
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
-        Reservation reservation = reservationRequest.toReservation(theme, reservationTime, loginMember);
+        Reservation reservation = reservationRequest.toReservation(theme, reservationTime,
+                loginMemberRequest.toLoginMember(loginMemberRequest));
         Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
     }
