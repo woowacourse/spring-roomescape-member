@@ -5,9 +5,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.handler.exception.CustomBadRequest;
-import roomescape.reservation.handler.exception.CustomException;
-import roomescape.reservation.handler.exception.CustomInternalServerError;
+import roomescape.handler.exception.CustomBadRequest;
+import roomescape.handler.exception.CustomException;
+import roomescape.handler.exception.CustomInternalServerError;
 
 @Service
 public class ReservationTimeService {

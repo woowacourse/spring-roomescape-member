@@ -1,4 +1,4 @@
-package roomescape.reservation.handler.exception;
+package roomescape.handler.exception;
 
 import org.springframework.http.HttpStatus;
 
@@ -11,6 +11,8 @@ public enum CustomBadRequest implements CustomExceptionCode {
     PAST_TIME_SLOT_RESERVATION("이미 지나간 시점을 예약할 수 없습니다."),
     DUPLICATE_RESERVATION("동일한 시간에 중복 예약을 할 수 없습니다."),
     NOT_FOUND_THEME("테마를 찾을 수 없습니다."),
+    INVALID_EMAIL("유효하지 않은 이메일 형식입니다."),
+    NOT_MEMBER("존재하지 않는 회원입니다."),
     ;
 
     private static final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;

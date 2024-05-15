@@ -1,12 +1,5 @@
 package roomescape.reservation.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,16 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.fixture.MemberFixture.memberFixture;
+import static roomescape.fixture.ReservationTimeFixture.reservationTimeFixture;
+import static roomescape.fixture.ThemeFixture.themeFixture;
 
 @JdbcTest
 class JdbcReservationDaoTest {
 
     private final JdbcTemplate jdbcTemplate;
     private final JdbcReservationDao jdbcReservationDao;
-
-    private Reservation savedReservation;
+    private final LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
 
     @Autowired
     private JdbcReservationDaoTest(JdbcTemplate jdbcTemplate) {
@@ -33,15 +31,17 @@ class JdbcReservationDaoTest {
     }
 
     @BeforeEach
-    void saveReservation() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+    void insert() {
+        insertReservationTime();
+        insertTheme();
+    }
 
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
-        Theme theme = new Theme(1L, "happy", "hi", "abcd.html");
-        LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
-        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime, theme, createdAt);
-        savedReservation = jdbcReservationDao.save(reservation);
+    private void insertTheme() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", themeFixture.getName(), themeFixture.getDescription(), themeFixture.getThumbnail());
+    }
+
+    private void insertReservationTime() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", reservationTimeFixture.getStartAt());
     }
 
     @AfterEach
@@ -54,12 +54,20 @@ class JdbcReservationDaoTest {
     @DisplayName("DB 예약 추가 테스트")
     @Test
     void save() {
-        Assertions.assertThat(savedReservation.getName()).isEqualTo("parang");
+        Reservation reservation = new Reservation(null, memberFixture, LocalDate.of(2999, 8, 5), reservationTimeFixture, themeFixture, createdAt);
+        jdbcReservationDao.save(reservation);
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
+        assertThat(count).isEqualTo(1);
     }
 
     @DisplayName("DB 모든 예약 조회 테스트")
     @Test
     void findAllReservations() {
+        String sql = """
+                INSERT INTO reservation (member_id, date, time_id, theme_id, created_at)\s
+                VALUES (?, ?, ?, ?, ?)
+                """;
+        jdbcTemplate.update(sql, 1, "2999-12-12", 1, 1, "2024-05-08 12:30");
         List<Reservation> reservations = jdbcReservationDao.findAllReservations();
         assertThat(reservations).hasSize(1);
     }
@@ -67,8 +75,13 @@ class JdbcReservationDaoTest {
     @DisplayName("DB 예약 삭제 테스트")
     @Test
     void delete() {
-        jdbcReservationDao.delete(savedReservation.getId());
-        List<Reservation> reservations = jdbcReservationDao.findAllReservations();
-        assertThat(reservations).isEmpty();
+        String sql = """
+                INSERT INTO reservation (member_id, date, time_id, theme_id, created_at)\s
+                VALUES (?, ?, ?, ?, ?)
+                """;
+        jdbcTemplate.update(sql, 1, "2999-12-12", 1, 1, "2024-05-08 12:30");
+        jdbcReservationDao.delete(1L);
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
+        assertThat(count).isEqualTo(0);
     }
 }
