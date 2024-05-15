@@ -63,11 +63,6 @@ public class H2MemberRepository implements MemberRepository {
     }
 
     @Override
-    public void fetchById(long id) {
-        findById(id).orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 멤버 입니다."));
-    }
-
-    @Override
     public Member save(Member member) {
         BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(member);
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();

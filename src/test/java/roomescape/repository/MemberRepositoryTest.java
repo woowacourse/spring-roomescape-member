@@ -73,11 +73,4 @@ class MemberRepositoryTest {
         // then
         assertThat(actual).hasValue(expected);
     }
-
-    @Test
-    @DisplayName("멤버가 존재하지 않으면 예외가 발생한다.")
-    void exceptionOnFetchByIdIfNotExist() {
-        assertThatThrownBy(() -> memberRepository.fetchById(1L))
-                .isInstanceOf(MemberNotFoundException.class);
-    }
 }
