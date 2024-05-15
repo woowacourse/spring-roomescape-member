@@ -8,6 +8,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
 import roomescape.service.LoginService;
 
+import java.util.NoSuchElementException;
+
 import static roomescape.domain.member.Role.ADMIN;
 
 @Component
@@ -24,12 +26,14 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        Member foundMember = loginService.check(request.getCookies());
-        if (foundMember.isRole(ADMIN)) {
-            return true;
+        try {
+            Member foundMember = loginService.check(request.getCookies());
+            if (foundMember.isRole(ADMIN)) {
+                return true;
+            }
+        } catch (IllegalArgumentException | NoSuchElementException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
         }
-
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return false;
     }
 }
