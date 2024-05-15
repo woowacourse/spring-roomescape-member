@@ -44,14 +44,14 @@ public class ReservationApiController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation2(
+    public ResponseEntity<ReservationResponse> createUserReservation(
             @RequestBody ReservationCookieRequest request, Member member) {
         ReservationResponse reservation = reservationService.createCookieReservation(request, member);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> createReservation3(@RequestBody ReservationAdminRequest request) {
+    public ResponseEntity<ReservationResponse> createAdminReservation(@RequestBody ReservationAdminRequest request) {
         ReservationResponse reservation = reservationService.createAdminReservation(request);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
