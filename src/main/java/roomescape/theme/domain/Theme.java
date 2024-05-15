@@ -1,24 +1,34 @@
 package roomescape.theme.domain;
 
+import roomescape.name.domain.Name;
+
 public class Theme {
     private long id;
-    private final String name;
+    private final Name name;
     private final String description;
     private final String thumbnail;
 
-    public Theme(long id, String name, String description, String thumbnail) {
+    private Theme(long id, Name name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public Theme(String name, String description, String thumbnail) {
-        this(0, name, description, thumbnail);
+    private Theme(String name, String description, String thumbnail) {
+        this(0, new Name(name), description, thumbnail);
     }
 
-    public Theme(long id) {
-        this(id, null, null, null);
+    public static Theme themeOf(long id, String name, String description, String thumbnail) {
+        return new Theme(id, new Name(name), description, thumbnail);
+    }
+
+    public static Theme saveThemeOf(String name, String description, String thumbnail) {
+        return new Theme(name, description, thumbnail);
+    }
+
+    public static Theme saveThemeFrom(long id) {
+        return new Theme(id, null, null, null);
     }
 
     public long getId() {
@@ -26,7 +36,7 @@ public class Theme {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getDescription() {

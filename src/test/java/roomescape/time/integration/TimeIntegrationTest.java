@@ -5,25 +5,12 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.model.IntegrationTest;
 import roomescape.time.dto.TimeRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class TimeIntegrationTest {
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void init() {
-        RestAssured.port = port;
-    }
+public class TimeIntegrationTest extends IntegrationTest {
 
     @Test
     @DisplayName("시간을 잘 등록하고 삭제하고 확인이 가능하다.")

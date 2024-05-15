@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.exception.model.RoomEscapeException;
+import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;

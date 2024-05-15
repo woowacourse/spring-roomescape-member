@@ -2,7 +2,7 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.model.RoomEscapeException;
+import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.time.exception.TimeExceptionCode;
 
 public class Time {
@@ -46,6 +46,10 @@ public class Time {
         if (startAt.isBefore(OPEN_TIME) || startAt.isAfter(CLOSE_TIME)) {
             throw new RoomEscapeException(TimeExceptionCode.TIME_IS_OUT_OF_OPERATING_TIME);
         }
+    }
+
+    public boolean isBeforeTime(LocalTime time) {
+        return startAt.isBefore(time);
     }
 
     @Override

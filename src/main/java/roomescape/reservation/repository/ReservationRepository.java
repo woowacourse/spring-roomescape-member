@@ -3,7 +3,8 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import roomescape.exception.model.RoomEscapeException;
+import roomescape.admin.domain.FilterInfo;
+import roomescape.global.exception.model.RoomEscapeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dao.ThemeDao;
@@ -29,13 +30,12 @@ public class ReservationRepository {
     public Reservation save(Reservation reservation) {
         Time time = timeDao.findById(reservation.getReservationTime().getId())
                 .orElseThrow(() -> new RoomEscapeException(TimeExceptionCode.FOUND_TIME_IS_NULL_EXCEPTION));
-        Theme theme = themeDao.findById(reservation.getThemeId())
+        Theme theme = themeDao.findById(reservation.getTheme().getId())
                 .orElseThrow(() -> new RoomEscapeException(ThemeExceptionCode.FOUND_THEME_IS_NULL_EXCEPTION));
 
-        reservation.setTimeOnSave(time);
-        reservation.setThemeOnSave(theme);
-
-        return reservationDao.save(reservation);
+        Reservation saveReservation = Reservation.saveReservationOf(reservation.getDate(), time,
+                theme, reservation.getMember());
+        return reservationDao.save(saveReservation);
     }
 
     public List<Reservation> findAllReservationOrderByDateAndTimeStartAt() {
@@ -60,5 +60,10 @@ public class ReservationRepository {
 
     public void deleteById(long reservationId) {
         reservationDao.deleteById(reservationId);
+    }
+
+    public List<Reservation> findAllByUserIdAndThemeIdBetweenDate(FilterInfo filterInfo) {
+        return reservationDao.findAllByUserIdAndThemeIdBetweenDate(filterInfo.getMemberId(), filterInfo.getThemeId(),
+                filterInfo.getFromDate(), filterInfo.getToDate());
     }
 }

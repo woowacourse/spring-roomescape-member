@@ -25,7 +25,7 @@ public class ThemeDaoTest {
     @Test
     @DisplayName("테마 정보가 DB에 정상적으로 저장되는지 확인한다.")
     void saveTheme() {
-        Theme theme = new Theme("포레스트", "공포 테마", "thumbnail");
+        Theme theme = Theme.saveThemeOf("포레스트", "공포 테마", "thumbnail");
         themeJdbcDao.save(theme);
 
         Assertions.assertThat(theme.getId()).isEqualTo(4);

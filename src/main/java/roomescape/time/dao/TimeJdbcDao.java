@@ -50,7 +50,7 @@ public class TimeJdbcDao implements TimeDao {
 
         try {
             Time time = jdbcTemplate.queryForObject(findReservationTimeSql, TIME_ROW_MAPPER, reservationTimeId);
-            return Optional.of(time);
+            return Optional.ofNullable(time);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -62,7 +62,7 @@ public class TimeJdbcDao implements TimeDao {
 
         try {
             Time time = jdbcTemplate.queryForObject(findByStartAtSql, TIME_ROW_MAPPER, startAt);
-            return Optional.of(time);
+            return Optional.ofNullable(time);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

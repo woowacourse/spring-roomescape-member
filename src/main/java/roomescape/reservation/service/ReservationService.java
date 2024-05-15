@@ -3,6 +3,9 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.admin.domain.FilterInfo;
+import roomescape.admin.dto.AdminReservationRequest;
+import roomescape.admin.dto.ReservationFilterRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -22,10 +25,16 @@ public class ReservationService {
         this.timeRepository = timeRepository;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationRequest.fromRequest();
+    public ReservationResponse addReservation(ReservationRequest reservationRequest, long memberId) {
+        Reservation reservation = reservationRequest.fromRequest(memberId);
         return ReservationResponse.fromReservation(reservationRepository.save(reservation));
     }
+
+    public void addAdminReservation(AdminReservationRequest adminReservationRequest) {
+        Reservation reservation = adminReservationRequest.fromRequest();
+        ReservationResponse.fromReservation(reservationRepository.save(reservation));
+    }
+
 
     public List<ReservationResponse> findReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservationOrderByDateAndTimeStartAt();
@@ -58,4 +67,13 @@ public class ReservationService {
     public void removeReservations(long reservationId) {
         reservationRepository.deleteById(reservationId);
     }
+
+    public List<ReservationResponse> findFilteredReservations(ReservationFilterRequest reservationFilterRequest) {
+        FilterInfo filterInfo = reservationFilterRequest.toFilterInfo();
+
+        return reservationRepository.findAllByUserIdAndThemeIdBetweenDate(filterInfo).stream()
+                .map(ReservationResponse::fromReservation)
+                .toList();
+    }
+
 }

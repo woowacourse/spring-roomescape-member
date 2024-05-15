@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.model.ControllerTest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRankResponse;
 import roomescape.theme.dto.ThemeRequest;
@@ -25,10 +27,10 @@ import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
-public class ThemeControllerTest {
+public class ThemeControllerTest extends ControllerTest {
 
     public static final LocalDate TODAY = LocalDate.now();
-    private final Theme theme = new Theme(1L, "포레스트", "공포 테마",
+    private final Theme theme = Theme.themeOf(1L, "포레스트", "공포 테마",
             "https://zerogangnam.com/storage/AVISPw8N2JfMThKvnk3VJzeY9qywIaYd8pTy46Xx.jpg");
 
     @Autowired
@@ -52,7 +54,11 @@ public class ThemeControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(theme.getId()))
+                .andExpect(jsonPath("$.name").value(theme.getName()))
+                .andExpect(jsonPath("$.thumbnail").value(theme.getThumbnail()))
+                .andExpect(jsonPath("$.description").value(theme.getDescription()));
     }
 
     @Test
@@ -63,7 +69,11 @@ public class ThemeControllerTest {
 
         mockMvc.perform(get("/themes"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(theme.getId()))
+                .andExpect(jsonPath("$[0].name").value(theme.getName()))
+                .andExpect(jsonPath("$[0].thumbnail").value(theme.getThumbnail()))
+                .andExpect(jsonPath("$[0].description").value(theme.getDescription()));
     }
 
     @Test
@@ -74,7 +84,10 @@ public class ThemeControllerTest {
 
         mockMvc.perform(get("/themes/rank?date=" + TODAY))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].thumbnail").value(theme.getThumbnail()))
+                .andExpect(jsonPath("$[0].name").value(theme.getName()))
+                .andExpect(jsonPath("$[0].description").value(theme.getDescription()));
     }
 
     @Test

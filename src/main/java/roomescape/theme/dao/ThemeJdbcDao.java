@@ -15,7 +15,7 @@ import roomescape.theme.domain.Theme;
 @Component
 public class ThemeJdbcDao implements ThemeDao {
 
-    public static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) -> new Theme(
+    public static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) -> Theme.themeOf(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
@@ -50,7 +50,7 @@ public class ThemeJdbcDao implements ThemeDao {
         try {
             Theme theme = jdbcTemplate.queryForObject(findThemeSql, THEME_ROW_MAPPER, themeId);
 
-            return Optional.of(theme);
+            return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
