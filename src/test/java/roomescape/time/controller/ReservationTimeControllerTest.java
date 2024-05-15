@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.auth.service.AuthService;
 import roomescape.time.dto.ReservationTimeRequestDto;
 import roomescape.time.service.ReservationTimeService;
 
@@ -35,24 +36,25 @@ class ReservationTimeControllerTest {
 
     @MockBean
     private ReservationTimeService reservationTimeService;
+    @MockBean
+    private AuthService authService;
 
     @DisplayName("invalid한 save 요청이 들어오면 예외가 발생한다.")
     @ParameterizedTest
     @NullAndEmptySource
     void invalidSave(String startAt) throws Exception {
         ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto(startAt);
-        String message = "field : startAt" + System.lineSeparator() + "message : 예약 시간을 입력해야 합니다.";
         mockMvc.perform(post("/times")
-                       .content(objectMapper.writeValueAsString(requestDto))
-                       .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @DisplayName("invalid한 delete 요청이 들어오면 예외가 발생한다.")
     @Test
     void invalidDelete() throws Exception {
         mockMvc.perform(delete("/times/0"))
-               .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest());
     }
 
     @DisplayName("invalid한 가능 시간 조회 요청이 들어오면 예외가 발생한다.")
@@ -60,9 +62,9 @@ class ReservationTimeControllerTest {
     @MethodSource("provideInvalidRequestDto")
     void invalidFindAvailableTime(String date, String themeId, String message) throws Exception {
         mockMvc.perform(get("/times/available")
-                       .param("date", date)
-                       .param("themeId", themeId))
-               .andExpect(status().isBadRequest());
+                        .param("date", date)
+                        .param("themeId", themeId))
+                .andExpect(status().isBadRequest());
     }
 
     private static Stream<Arguments> provideInvalidRequestDto() {

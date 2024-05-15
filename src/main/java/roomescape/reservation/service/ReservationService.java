@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
+import roomescape.member.domain.Member;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -34,15 +34,14 @@ public class ReservationService {
         return reservationDao.findAll();
     }
 
-    public Reservation save(final ReservationRequestDto requestDto) {
+    public Reservation save(final Member member, final ReservationRequestDto requestDto) {
         final ReservationTime reservationTime = reservationTimeDao.getById(requestDto.timeId());
         final Theme theme = themeDao.getById(requestDto.themeId());
-        final Reservation reservation = requestDto.toReservation(reservationTime, theme);
+        final Reservation reservation = requestDto.toReservation(member, reservationTime, theme);
 
         validateReservationAvailable(reservation);
 
-        final long reservationId = reservationDao.save(reservation);
-        return new Reservation(reservationId, reservation);
+        return reservationDao.save(reservation);
     }
 
     private void validateReservationAvailable(final Reservation reservation) {
@@ -50,15 +49,21 @@ public class ReservationService {
         final ReservationTime time = reservation.getTime();
         final Theme theme = reservation.getTheme();
         if (date.isBeforeToday()) {
-            throw new RoomEscapeException(ExceptionMessage.PAST_DATE_RESERVATION);
+            throw new RoomEscapeException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
         }
         if (date.isToday() && time.checkPastTime()) {
-            throw new RoomEscapeException(ExceptionMessage.PAST_TIME_RESERVATION);
+            throw new RoomEscapeException("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.");
         }
         boolean isExist = reservationDao.checkExistByReservation(date.getDate(), time.getId(), theme.getId());
         if (isExist) {
-            throw new RoomEscapeException(ExceptionMessage.DUPLICATE_DATE_TIME);
+            throw new RoomEscapeException("이미 해당 날짜, 시간에 예약이 존재합니다.");
         }
+    }
+
+    public List<Reservation> search(final long themeId, final long memberId, final String dateFrom, final String dateTo) {
+        ReservationDate startDate = new ReservationDate(dateFrom);
+        ReservationDate endDate = new ReservationDate(dateTo);
+        return reservationDao.search(themeId, memberId, startDate.getDate(), endDate.getDate());
     }
 
     public void deleteById(final long id) {

@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -46,16 +45,17 @@ public class ThemeDao {
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (final EmptyResultDataAccessException exception) {
-            throw new RoomEscapeException(ExceptionMessage.NOT_FOUND_THEME);
+            throw new RoomEscapeException("해당 themeId와 일치하는 테마가 존재하지 않습니다.");
         }
     }
 
-    public long save(final Theme theme) {
+    public Theme save(final Theme theme) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new Theme(id, theme);
     }
 
     public int deleteById(final long id) {

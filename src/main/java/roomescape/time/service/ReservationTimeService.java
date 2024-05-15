@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.time.dao.ReservationTimeDao;
@@ -31,15 +30,14 @@ public class ReservationTimeService {
     public ReservationTime save(final ReservationTimeRequestDto requestDto) {
         final ReservationTime reservationTime = new ReservationTime(requestDto.startAt());
         if (reservationTimeDao.checkExistTime(reservationTime)) {
-            throw new RoomEscapeException(ExceptionMessage.DUPLICATE_TIME);
+            throw new RoomEscapeException("이미 해당 시간이 존재합니다.");
         }
-        final long id = reservationTimeDao.save(requestDto.toReservationTime());
-        return new ReservationTime(id, reservationTime);
+        return reservationTimeDao.save(requestDto.toReservationTime());
     }
 
     public void deleteById(final long id) {
         if (reservationDao.checkExistReservationByTime(id)) {
-            throw new RoomEscapeException(ExceptionMessage.EXIST_REFER_TIME);
+            throw new RoomEscapeException("해당 시간을 예약한 예약내역이 존재하여 삭제가 불가합니다.");
         }
         reservationTimeDao.deleteById(id);
     }
@@ -48,11 +46,11 @@ public class ReservationTimeService {
         final ReservationDate reservationDate = new ReservationDate(date);
         if (reservationDate.isBeforeToday()) {
             return reservationTimeDao.findAll().stream()
-                                     .map(reservationTime -> new ReservationUserTime(
-                                             reservationTime.getId(),
-                                             reservationTime.getStartAt().toString(),
-                                             true))
-                                     .toList();
+                    .map(reservationTime -> new ReservationUserTime(
+                            reservationTime.getId(),
+                            reservationTime.getStartAt().toString(),
+                            true))
+                    .toList();
         }
         return reservationTimeDao.findAvailableTime(date, themeId);
     }

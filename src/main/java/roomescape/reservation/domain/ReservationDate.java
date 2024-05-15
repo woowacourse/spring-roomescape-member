@@ -6,7 +6,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 
 public class ReservationDate {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -16,11 +15,11 @@ public class ReservationDate {
         this.date = parseDate(date);
     }
 
-    private static LocalDate parseDate(final String date) {
+    private LocalDate parseDate(final String date) {
         try {
             return LocalDate.parse(date, DATE_FORMAT);
         } catch (NullPointerException | DateTimeParseException e) {
-            throw new RoomEscapeException(ExceptionMessage.FAIL_PARSE_DATE);
+            throw new RoomEscapeException("형식에 맞지 않은 날짜입니다.");
         }
     }
 

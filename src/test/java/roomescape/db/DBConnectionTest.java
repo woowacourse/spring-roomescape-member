@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = {"/schema.sql"})
 public class DBConnectionTest {
 
     @Autowired
@@ -23,12 +25,12 @@ public class DBConnectionTest {
     @DisplayName("데이터베이스 연결 확인")
     void db_connection() {
         try (Connection connection = jdbcTemplate.getDataSource()
-                                                 .getConnection()) {
+                .getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
             assertThat(connection.getMetaData()
-                                 .getTables(null, null, "RESERVATION", null)
-                                 .next()).isTrue();
+                    .getTables(null, null, "RESERVATION", null)
+                    .next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

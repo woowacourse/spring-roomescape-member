@@ -6,7 +6,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 
 public class ReservationTime {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
@@ -31,7 +30,7 @@ public class ReservationTime {
         try {
             return LocalTime.parse(time, TIME_FORMAT);
         } catch (NullPointerException | DateTimeParseException e) {
-            throw new RoomEscapeException(ExceptionMessage.FAIL_PARSE_TIME);
+            throw new RoomEscapeException("형식에 맞지 않은 시간입니다.");
         }
     }
 

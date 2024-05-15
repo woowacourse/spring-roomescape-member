@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import roomescape.auth.service.AuthService;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.reservation.service.ReservationService;
 
@@ -32,23 +33,24 @@ class ReservationControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private ReservationService reservationService;
+    @MockBean
+    private AuthService authService;
 
     @DisplayName("invalid한 save 요청이 들어오면 예외가 발생한다.")
     @ParameterizedTest
     @MethodSource("provideInvalidRequestDto")
     void invalidSave(ReservationRequestDto reservationRequestDto) throws Exception {
         mockMvc.perform(post("/reservations")
-                       .content(objectMapper.writeValueAsString(reservationRequestDto))
-                       .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(reservationRequestDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     private static Stream<Arguments> provideInvalidRequestDto() {
         return Stream.of(
-                Arguments.of(new ReservationRequestDto(null, "2024-04-01", 1, 1)),
-                Arguments.of(new ReservationRequestDto("hotea", null, 1, 1)),
-                Arguments.of(new ReservationRequestDto("hotea", "2024-04-01", 0, 1)),
-                Arguments.of(new ReservationRequestDto("hotea", "2024-04-01", 1, 0))
+                Arguments.of(new ReservationRequestDto(null, 1, 1)),
+                Arguments.of(new ReservationRequestDto("2024-04-01", 0, 1)),
+                Arguments.of(new ReservationRequestDto("2024-04-01", 1, 0))
         );
     }
 
@@ -56,6 +58,6 @@ class ReservationControllerTest {
     @Test
     void invalidDelete() throws Exception {
         mockMvc.perform(delete("/reservations/0"))
-               .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest());
     }
 }

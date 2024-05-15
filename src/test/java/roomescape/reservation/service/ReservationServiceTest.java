@@ -16,7 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dao.ThemeDao;
@@ -41,6 +42,7 @@ class ReservationServiceTest {
     @Test
     void save() {
         Long id = 1L;
+        Member member = new Member(1L, "hotea", "hotea@hotea.com", Role.USER);
         ReservationTime reservationTime = new ReservationTime(id, "00:00");
         Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         when(reservationTimeDao.getById(id)).thenReturn(reservationTime);
@@ -48,17 +50,17 @@ class ReservationServiceTest {
         when(reservationDao.checkExistByReservation(any(LocalDate.class), anyLong(), anyLong())).thenReturn(true);
         assertAll(
                 () -> assertThatThrownBy(() -> reservationService.save(
-                        new ReservationRequestDto("hotea", LocalDate.MAX.toString(), id, id)))
+                        member, new ReservationRequestDto(LocalDate.MAX.toString(), id, id)))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.DUPLICATE_DATE_TIME.getMessage()),
+                        .hasMessage("이미 해당 날짜, 시간에 예약이 존재합니다."),
                 () -> assertThatThrownBy(() -> reservationService.save(
-                        new ReservationRequestDto("hotea", LocalDate.now().minusDays(1).toString(), id, id)))
+                        member, new ReservationRequestDto(LocalDate.now().minusDays(1).toString(), id, id)))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.PAST_DATE_RESERVATION.getMessage()),
+                        .hasMessage("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다."),
                 () -> assertThatThrownBy(() -> reservationService.save(
-                        new ReservationRequestDto("hotea", LocalDate.now().toString(), id, id)))
+                        member, new ReservationRequestDto(LocalDate.now().toString(), id, id)))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.PAST_TIME_RESERVATION.getMessage())
+                        .hasMessage("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.")
         );
     }
 }

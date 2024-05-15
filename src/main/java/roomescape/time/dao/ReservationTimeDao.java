@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
 
@@ -38,10 +37,11 @@ public class ReservationTimeDao {
             resultSet.getString("start_at"),
             resultSet.getBoolean("already_booked")));
 
-    public long save(final ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt().toString());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return new ReservationTime(id, reservationTime);
     }
 
     public ReservationTime getById(final long id) {
@@ -49,7 +49,7 @@ public class ReservationTimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
         } catch (final EmptyResultDataAccessException exception) {
-            throw new RoomEscapeException(ExceptionMessage.NOT_FOUND_TIME);
+            throw new RoomEscapeException("해당 timeId와 일치하는 시간이 존재하지 않습니다.");
         }
     }
 

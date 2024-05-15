@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
 
 class ReservationTimeTest {
 
@@ -17,13 +16,13 @@ class ReservationTimeTest {
         assertAll(
                 () -> assertThatThrownBy(() -> new ReservationTime(1L, (String) null))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.FAIL_PARSE_TIME.getMessage()),
+                        .hasMessage("형식에 맞지 않은 시간입니다."),
                 () -> assertThatThrownBy(() -> new ReservationTime(1L, "25:00"))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.FAIL_PARSE_TIME.getMessage()),
+                        .hasMessage("형식에 맞지 않은 시간입니다."),
                 () -> assertThatThrownBy(() -> new ReservationTime(1L, "15:68"))
                         .isInstanceOf(RoomEscapeException.class)
-                        .hasMessage(ExceptionMessage.FAIL_PARSE_TIME.getMessage())
+                        .hasMessage("형식에 맞지 않은 시간입니다.")
         );
     }
 }

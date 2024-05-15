@@ -2,48 +2,40 @@ package roomescape.reservation.domain;
 
 import java.util.Objects;
 
-import roomescape.exception.RoomEscapeException;
-import roomescape.exception.message.ExceptionMessage;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final ReservationDate date, final ReservationTime time, final Theme theme) {
-        validateInvalidName(name);
+    public Reservation(final Long id, final Member member, final ReservationDate date, final ReservationTime time, final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
     public Reservation(final Long id, final Reservation reservation) {
-        this(id, reservation.name, reservation.date, reservation.time, reservation.theme);
+        this(id, reservation.member, reservation.date, reservation.time, reservation.theme);
     }
 
-    public Reservation(final String name, final ReservationDate date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
-    }
-
-    private void validateInvalidName(final String name) {
-        if (Objects.isNull(name) || name.isBlank()) {
-            throw new RoomEscapeException(ExceptionMessage.INVALID_USER_NAME);
-        }
+    public Reservation(final Member member, final ReservationDate date, final ReservationTime time, final Theme theme) {
+        this(null, member, date, time, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public ReservationDate getReservationDate() {
@@ -63,11 +55,11 @@ public class Reservation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(time, that.time);
+        return Objects.equals(id, that.id) && Objects.equals(member, that.member) && Objects.equals(date, that.date) && Objects.equals(time, that.time) && Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, time);
+        return Objects.hash(id, member, date, time, theme);
     }
 }

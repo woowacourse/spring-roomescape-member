@@ -17,11 +17,18 @@ VALUES ('정글 모험', '열대 정글의 심연을 탐험하세요.', 'https:/
        ('미스터리 저택', '저택 안에 숨겨진 미스터리를 풀어보세요.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('해적의 만', '바다를 항해하며 묻힌 금을 찾아보세요.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('John Doe', '2024-04-23', 1, 1),
-       ('Jane Smith', '2024-04-24', 2, 2),
-       ('Alice Johnson', '2024-04-25', 3, 1),
-       ('Bob Brown', '2024-04-26', 4, 3),
-       ('Charlie Davis', '2024-04-27', 5, 1),
-       ('Diana Adams', '2024-04-28', 6, 2),
-       ('Evan Wright', '2024-04-29', 7, 2);
+INSERT INTO member (name, email, password, role)
+VALUES ('hotea', 'hotea@hotea.com', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', 'ADMIN'),
+       ('zoysun', 'zoysun@zoysun.com', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', 'USER'),
+       ('kyum', 'kyum@kyum.com', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', 'USER'),
+       ('zeus', 'zeus@zeus.com', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', 'USER');
+
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (1, '2024-04-23', 1, 1),
+       (2, '2024-04-24', 2, 2),
+       (3, '2024-04-25', 3, 1),
+       (1, '2024-04-26', 4, 3),
+       (4, '2024-04-27', 5, 1),
+       (4, '2024-04-28', 6, 2),
+       (2, '2024-04-29', 7, 2);
+

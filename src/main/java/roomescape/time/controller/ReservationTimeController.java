@@ -43,8 +43,8 @@ public class ReservationTimeController {
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
         final List<ReservationTimeResponseDto> responseDtos = reservationTimeService.findAll().stream()
-                                                                                    .map(ReservationTimeResponseDto::new)
-                                                                                    .toList();
+                .map(ReservationTimeResponseDto::new)
+                .toList();
         return ResponseEntity.ok(responseDtos);
     }
 
