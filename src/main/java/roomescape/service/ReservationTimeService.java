@@ -3,13 +3,12 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.exception.NotFoundException;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.dto.reservation.AvailableReservationTimeResponse;
+import roomescape.dto.reservation.AvailableReservationTimeSearch;
+import roomescape.dto.reservation.ReservationTimeResponse;
 import roomescape.dao.ReservationTimeDao;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,13 +43,13 @@ public class ReservationTimeService {
     @Transactional(readOnly = true)
     public ReservationTimeResponse findById(final Long id) {
         final ReservationTime reservationTime = reservationTimeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 없습니다."));
         return ReservationTimeResponse.from(reservationTime);
     }
 
     public void delete(final Long id) {
         final ReservationTime reservationTime = reservationTimeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 없습니다."));
         validateHasReservation(reservationTime);
         reservationTimeDao.deleteById(reservationTime.getId());
     }
@@ -62,8 +61,10 @@ public class ReservationTimeService {
         }
     }
 
-    public List<AvailableReservationTimeResponse> findAvailableReservationTimes(final LocalDate date, final Long themeId) {
-        final List<Long> reservations = reservationDao.findAllTimeIdsByDateAndThemeId(date, themeId);
+    public List<AvailableReservationTimeResponse> findAvailableReservationTimes(
+            final AvailableReservationTimeSearch availableReservationTimeSearch
+    ) {
+        final List<Long> reservations = reservationDao.findTimeIds(availableReservationTimeSearch);
         final Set<Long> reservedTimeIds = new HashSet<>(reservations);
         final List<ReservationTime> times = reservationTimeDao.findAll();
 

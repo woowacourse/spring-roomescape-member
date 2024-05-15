@@ -1,144 +1,88 @@
 package roomescape.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.exception.ErrorResponse;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-import static roomescape.TestFixture.MIA_RESERVATION_TIME;
+import static roomescape.TestFixture.*;
 
-class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.dto.reservation.ReservationTimeResponse;
+import roomescape.dto.reservation.ReservationTimeSaveRequest;
+
+class ReservationTimeAcceptanceTest extends AcceptanceTest {
 
     @Test
-    @DisplayName("[Step7] 예약 시간을 추가한다.")
-    void createReservationTime() {
-        // given & when
-        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
+    @DisplayName("예약 시간을 성공적으로 생성하면 201을 응답한다.")
+    void respondCreatedWhenCreateReservationTime() {
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(START_AT_SIX);
 
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/times")
-                .then().log().all()
-                .extract();
-        final ReservationTimeResponse reservationTimeResponse = response.as(ReservationTimeResponse.class);
+        final ReservationTimeResponse response = assertPostResponse(request, "/times", 201)
+                .extract().as(ReservationTimeResponse.class);
 
-        // then
-        assertAll(() -> {
-            checkHttpStatusCreated(response);
-            assertThat(reservationTimeResponse.id()).isNotNull();
-            assertThat(reservationTimeResponse.startAt()).isEqualTo(MIA_RESERVATION_TIME);
-        });
+        assertThat(response.startAt()).isEqualTo(START_AT_SIX);
     }
 
-    @Test
-    @DisplayName("[Step7] 잘못된 형식의 예약 시간을 추가한다.")
-    void createReservationTime2() {
-        // given & when
-        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "13-00"})
+    @DisplayName("잘못된 형식으로 예약 시간 생성 시 400을 응답한다.")
+    void respondBadRequestWhenCreateInvalidReservationTime(final String invalidTime) {
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(invalidTime);
 
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/times")
-                .then().log().all()
-                .extract();
-        final ErrorResponse errorResponse = response.as(ErrorResponse.class);
-
-        // then
-        assertAll(() -> {
-            checkHttpStatusBadRequest(response);
-            assertThat(errorResponse.message()).isNotNull();
-        });
+        assertPostResponse(request, "/times", 400);
     }
 
     @Test
-    @DisplayName("[Step7] 예약 시간 목록을 조회한다.")
-    void findReservationTimes() {
-        // given & when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .extract();
-        final List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(
-                response.as(ReservationTimeResponse[].class))
-                .toList();
+    @DisplayName("예약 시간 목록을 성공적으로 조회하면 200을 응답한다.")
+    void respondOkWhenFindReservationTimes() {
+        saveReservationTime();
 
-        // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(reservationTimeResponse).hasSize(0);
-        });
-    }
+        final JsonPath jsonPath = assertGetResponse("/times", 200)
+                .extract().response().jsonPath();
 
-    @TestFactory
-    @DisplayName("[Step7] 예약 시간을 추가하고 삭제한다.")
-    Stream<DynamicTest> createThenDeleteReservationTime() {
-        return Stream.of(
-                dynamicTest("예약 시간을 하나 생성한다.", this::createReservationTime),
-                dynamicTest("예약 시간이 하나 생성된 예약 목록을 조회한다.", this::findReservationTimesWithSizeOne),
-                dynamicTest("예약 시간을 하나 삭제한다.", this::deleteOneReservationTime),
-                dynamicTest("예약 시간 목록을 조회한다.", this::findReservationTimes)
-        );
+        assertThat(jsonPath.getString("startAt[0]")).isEqualTo(START_AT_SIX);
     }
 
     @Test
-    @DisplayName("[Step7] 존재하지 않는 예약 시간을 삭제한다.")
-    void deleteNotExistingReservationTime() {
-        // given & when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete("/times/10000")
-                .then().log().all()
-                .extract();
-        final ErrorResponse errorResponse = response.as(ErrorResponse.class);
+    @DisplayName("예약 시간을 성공적으로 삭제하면 204를 응답한다.")
+    void respondNoContentWhenDeleteReservationTime() {
+        final Long reservationTimeId = saveReservationTime();
 
-        // then
-        assertAll(() -> {
-            checkHttpStatusNotFound(response);
-            assertThat(errorResponse.message()).isNotNull();
-        });
+        assertDeleteResponse("/times/", reservationTimeId, 204);
     }
 
-    void findReservationTimesWithSizeOne() {
-        // given & when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .extract();
-        final List<ReservationTimeResponse> reservationTimeResponses = Arrays.stream(response.as(ReservationTimeResponse[].class))
-                .toList();
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 삭제하면 400을 응답한다.")
+    void respondBadRequestWhenDeleteNotExistingReservationTime() {
+        saveReservationTime();
+        final Long notExistingReservationTimeId = 2L;
 
-        // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(reservationTimeResponses).hasSize(1)
-                    .extracting(ReservationTimeResponse::id)
-                    .isNotNull();
-        });
+        assertDeleteResponse("/times/", notExistingReservationTimeId, 400);
     }
 
-    void deleteOneReservationTime() {
-        // given & when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete("/times/1")
-                .then().log().all()
-                .extract();
+    @Test
+    @DisplayName("예약 가능한 시간 목록을 성공적으로 조회하면 200을 응답한다.")
+    void respondOkWhenFindAvailableReservationTimes() {
+        final String date = DATE_MAY_EIGHTH;
+        final Long themeId = saveTheme();
+        saveReservationTime();
 
-        // then
-        checkHttpStatusNoContent(response);
+        final JsonPath jsonPath = RestAssured.given().log().all()
+                .queryParam("date", date)
+                .queryParam("themeId", themeId)
+                .when().get("/times/available")
+                .then().log().all()
+                .statusCode(200)
+                .extract().response().jsonPath();
+
+        assertAll(() -> {
+            assertThat(jsonPath.getString("startAt[0]")).isEqualTo(START_AT_SIX);
+            assertThat(jsonPath.getBoolean("isReserved[0]")).isEqualTo(false);
+        });
     }
 }

@@ -1,114 +1,77 @@
 package roomescape.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.ThemeSaveRequest;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.*;
 
-class ThemeAcceptanceTest extends ApiAcceptanceTest {
+import io.restassured.path.json.JsonPath;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.ThemeSaveRequest;
+
+class ThemeAcceptanceTest extends AcceptanceTest {
 
     @Test
-    @DisplayName("[2 - Step2] 테마를 추가한다.")
-    void createTheme() {
-        // given & when
-        final ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+    @DisplayName("테마를 성공적으로 생성하면 201을 응답한다.")
+    void respondCreatedWhenCreateTheme() {
+        final ThemeSaveRequest request
+                = new ThemeSaveRequest(THEME_HORROR_NAME, THEME_HORROR_DESCRIPTION, THEME_HORROR_THUMBNAIL);
 
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/themes")
-                .then().log().all()
-                .extract();
-        final ThemeResponse themeResponse = response.as(ThemeResponse.class);
+        final ThemeResponse response = assertPostResponse(request, "/themes", 201)
+                .extract().as(ThemeResponse.class);
 
-        // then
         assertAll(() -> {
-            checkHttpStatusCreated(response);
-            assertThat(themeResponse.id()).isNotNull();
-            assertThat(themeResponse.name()).isEqualTo(WOOTECO_THEME_NAME);
+            assertThat(response.name()).isEqualTo(THEME_HORROR_NAME);
+            assertThat(response.description()).isEqualTo(THEME_HORROR_DESCRIPTION);
+            assertThat(response.thumbnail()).isEqualTo(THEME_HORROR_THUMBNAIL);
         });
-    }
-
-    @TestFactory
-    @DisplayName("[2 - Step2] 테마를 추가하고 삭제한다.")
-    Stream<DynamicTest> createThenDeleteTheme() {
-        return Stream.of(
-                dynamicTest("테마를 하나 생성한다.", this::createTheme),
-                dynamicTest("테마가 하나 생성된 테마 목록을 조회한다.", () -> findAllThemesWithSize(1)),
-                dynamicTest("테마를 하나 삭제한다.", this::deleteOneTheme),
-                dynamicTest("테마 목록을 조회한다.", () -> findAllThemesWithSize(0))
-        );
-    }
-
-    void findAllThemesWithSize(int size) {
-        // given & when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .extract();
-        final List<ThemeResponse> themeResponses = Arrays.stream(
-                        response.as(ThemeResponse[].class))
-                .toList();
-        // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(themeResponses).hasSize(size);
-        });
-    }
-
-    void deleteOneTheme() {
-        // given & when
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete("/themes/1")
-                .then().log().all()
-                .extract();
-
-        // then
-        checkHttpStatusNoContent(response);
     }
 
     @Test
-    @DisplayName("[2 - Step3] 인기 테마 목록을 조회한다.")
-    void findAllPopularThemes() {
-        // given & when
-        final Long threeOClockId = saveReservationTime("15:00");
-        final Long fourOClockId = saveReservationTime("16:00");
-        final Long secondRankThemeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
-        final Long firstRankThemeId = saveTheme(HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION);
+    @DisplayName("테마 목록을 성공적으로 조회하면 200을 응답한다.")
+    void respondOkWhenFindThemes() {
+        saveTheme();
 
-        saveReservation(threeOClockId, secondRankThemeId);
-        saveReservation(threeOClockId, firstRankThemeId);
-        saveReservation(fourOClockId, firstRankThemeId);
+        final JsonPath jsonPath = assertGetResponse("/themes", 200)
+                .extract().response().jsonPath();
 
-        final ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/themes/popular")
-                .then().log().all()
-                .extract();
-        final List<ThemeResponse> themeResponses = Arrays.stream(
-                        response.as(ThemeResponse[].class))
-                .toList();
-
-        // then
         assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(themeResponses).hasSize(2)
-                    .extracting(ThemeResponse::id)
-                    .containsExactly(firstRankThemeId, secondRankThemeId);
+            assertThat(jsonPath.getString("name[0]")).isEqualTo(THEME_HORROR_NAME);
+            assertThat(jsonPath.getString("description[0]")).isEqualTo(THEME_HORROR_DESCRIPTION);
+            assertThat(jsonPath.getString("thumbnail[0]")).isEqualTo(THEME_HORROR_THUMBNAIL);
         });
+    }
+
+    @Test
+    @DisplayName("인기 테마를 성공적으로 조회하면 200을 응답한다.")
+    void respondOkWhenFindPopularThemes() {
+        saveTheme();
+
+        final JsonPath jsonPath = assertGetResponse("/themes/popular", 200)
+                .extract().response().jsonPath();
+
+        assertAll(() -> {
+            assertThat(jsonPath.getString("name[0]")).isEqualTo(THEME_HORROR_NAME);
+            assertThat(jsonPath.getString("description[0]")).isEqualTo(THEME_HORROR_DESCRIPTION);
+            assertThat(jsonPath.getString("thumbnail[0]")).isEqualTo(THEME_HORROR_THUMBNAIL);
+        });
+    }
+
+    @Test
+    @DisplayName("테마를 성공적으로 삭제하면 204를 응답한다.")
+    void respondNoContentWhenDeleteThemes() {
+        final Long themeId = saveTheme();
+
+        assertDeleteResponse("/themes/", themeId, 204);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 삭제하면 400을 응답한다.")
+    void respondBadRequestWhenDeleteNotExistingTheme() {
+        saveTheme();
+        final Long notExistingThemeId = 2L;
+
+        assertDeleteResponse("/themes/", notExistingThemeId, 400);
     }
 }

@@ -1,6 +1,6 @@
 package roomescape.dao;
 
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 
 import java.util.List;
 import java.util.Optional;
