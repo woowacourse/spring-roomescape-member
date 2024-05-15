@@ -1,5 +1,7 @@
 package roomescape.service.auth;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.controller.login.TokenRequest;
 import roomescape.controller.login.TokenResponse;
@@ -8,9 +10,6 @@ import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
 import roomescape.service.auth.exception.InvalidTokenException;
 import roomescape.service.auth.exception.MemberNotFoundException;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -29,7 +28,7 @@ public class AuthService {
                 .toList();
     }
 
-    public Member getMemberByEmail(String email) {
+    private Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 로그인 정보 입니다."));
     }
