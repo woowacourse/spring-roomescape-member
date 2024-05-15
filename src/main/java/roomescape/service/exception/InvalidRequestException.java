@@ -1,8 +1,12 @@
 package roomescape.service.exception;
 
-public class InvalidRequestException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import roomescape.exception.RoomescapeException;
+
+public class InvalidRequestException extends RoomescapeException {
 
     public InvalidRequestException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }
+

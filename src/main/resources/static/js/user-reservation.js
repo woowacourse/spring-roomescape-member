@@ -110,7 +110,8 @@ function renderAvailableTimes(date, times) {
   times.forEach(time => {
     const startAt = time.startAt;
     const timeId = time.timeId;
-    const alreadyBooked = isBeforeNow(date, startAt) ? true : time.alreadyBooked;
+    const isBeforeNow = time.isBeforeNow;
+    const alreadyBooked = isBeforeNow ? true : time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
@@ -141,19 +142,12 @@ function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
   const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-  const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
-
-    /*
-    TODO: [5단계] 예약 생성 기능 변경 - 사용자
-          request 명세에 맞게 설정
-    */
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
-      timeId: selectedTimeId,
-      name: name
+      timeId: selectedTimeId
     };
 
     fetch('/reservations', {
@@ -186,9 +180,4 @@ function requestRead(endpoint) {
       if (response.status === 200) return response.json();
       throw new Error('Read failed');
     });
-}
-
-function isBeforeNow(date, time) {
-  const selectedDateTime = new Date(`${date}T${time}`);
-  return selectedDateTime < new Date();
 }

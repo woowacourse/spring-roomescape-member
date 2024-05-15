@@ -47,6 +47,7 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
+        validateNull(id);
         validateNotExistTheme(id);
         validateExistReservationByThemeId(id);
         themeDao.delete(id);
@@ -55,6 +56,12 @@ public class ThemeService {
     private Theme findTheme(Long themeId) {
         return themeDao.readById(themeId)
                 .orElseThrow(() -> new InvalidRequestException("존재하지 않는 테마입니다."));
+    }
+
+    private void validateNull(Long id) {
+        if (id == null) {
+            throw new InvalidRequestException("테마 아이디가 없습니다.");
+        }
     }
 
     private void validateNotExistTheme(Long id) {

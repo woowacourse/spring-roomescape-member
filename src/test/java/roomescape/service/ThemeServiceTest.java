@@ -3,155 +3,156 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dao.JdbcThemeDao;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.exception.InvalidValueException;
-import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.fixture.ThemeFixtures;
 import roomescape.service.exception.InvalidRequestException;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ThemeServiceTest {
+class ThemeServiceTest extends BaseServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private JdbcThemeDao themeDao;
+
     @Autowired
     private ThemeService themeService;
 
+    @MockBean
+    private Clock clock;
+
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        given(clock.instant()).willReturn(Instant.parse("2024-05-10T00:00:00Z"));
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
     }
 
-    @Test
-    @DisplayName("모든 테마 정보를 조회한다.")
-    void findAll() {
-        //given
-        Theme theme1 = ThemeFixtures.createTheme("방탈출1", "방탈출 1번", "섬네일1");
-        Theme theme2 = ThemeFixtures.createTheme("방탈출2", "방탈출 2번", "섬네일2");
-        themeDao.create(theme1);
-        themeDao.create(theme2);
+    @Nested
+    @DisplayName("테마 조회 테스트")
+    class FindTheme {
 
-        //when
-        List<ThemeResponse> results = themeService.findAll();
-        ThemeResponse firstResponse = results.get(0);
+        @Test
+        @DisplayName("모든 테마 정보를 조회한다.")
+        void findAll() {
+            jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출1', '방탈출 1번', '썸네일1')");
+            jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('방탈출2', '방탈출 2번', '썸네일2')");
 
-        //then
-        assertAll(
-                () -> assertThat(results).hasSize(2),
-                () -> assertThat(firstResponse.name()).isEqualTo("방탈출1"),
-                () -> assertThat(firstResponse.description()).isEqualTo("방탈출 1번"),
-                () -> assertThat(firstResponse.thumbnail()).isEqualTo("섬네일1")
-        );
+            List<ThemeResponse> results = themeService.findAll();
+
+            assertThat(results).hasSize(2);
+        }
+
+        @Test
+        @Sql(value = "classpath:test_data.sql")
+        @DisplayName("전달한 날짜 기준 이전 일주일 간 예약이 많이된 상위 10개의 테마를 조회한다.")
+        void findPopulars() {
+            List<ThemeResponse> results = themeService.findPopulars();
+
+            assertAll(
+                    () -> assertThat(results).hasSize(10),
+                    () -> assertThat(results.get(0).id()).isSameAs(1L),
+                    () -> assertThat(results.get(1).id()).isSameAs(2L),
+                    () -> assertThat(results.get(2).id()).isSameAs(3L),
+                    () -> assertThat(results.get(3).id()).isSameAs(4L),
+                    () -> assertThat(results.get(4).id()).isSameAs(5L)
+            );
+        }
     }
 
-    @Test
-    @DisplayName("테마를 추가한다.")
-    void add() {
-        //given
-        String givenName = "방탈출2";
-        String givenDescription = "2번 방탈출";
-        String givenThumbnail = "썸네일2";
-        ThemeCreateRequest request =
-                ThemeFixtures.createThemeCreateRequest(givenName, givenDescription, givenThumbnail);
+    @Nested
+    @DisplayName("테마 생성 테스트")
+    class CreateNewTheme {
 
-        //when
-        ThemeResponse result = themeService.add(request);
+        @Test
+        @DisplayName("테마를 추가한다.")
+        void add() {
+            ThemeCreateRequest request = ThemeCreateRequest.of("방탈출1", "1번 방탈출", "썸네일1");
 
-        //then
-        assertAll(
-                () -> assertThat(result.id()).isSameAs(1L),
-                () -> assertThat(result.name()).isEqualTo(givenName),
-                () -> assertThat(result.description()).isEqualTo(givenDescription),
-                () -> assertThat(result.thumbnail()).isEqualTo(givenThumbnail)
-        );
+            ThemeResponse result = themeService.add(request);
+
+            assertAll(
+                    () -> assertThat(themeService.findAll()).hasSize(1),
+                    () -> assertThat(result.name()).isEqualTo("방탈출1"),
+                    () -> assertThat(result.description()).isEqualTo("1번 방탈출"),
+                    () -> assertThat(result.thumbnail()).isEqualTo("썸네일1")
+            );
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "   "})
+        @DisplayName("테마명이 공백이면 예외가 발생한다.")
+        void addThemeByNullOrEmptyName(String name) {
+            ThemeCreateRequest request = ThemeCreateRequest.of(name, "방탈출 설명", "방탈출 썸네일");
+
+            assertThatThrownBy(() -> themeService.add(request))
+                    .isInstanceOf(InvalidValueException.class);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "   "})
+        @DisplayName("테마 설명이 공백이면 예외가 발생한다.")
+        void addThemeByNullOrEmptyDescription(String description) {
+            ThemeCreateRequest request = ThemeCreateRequest.of("방탈출 이름", description, "방탈출 썸네일");
+
+            assertThatThrownBy(() -> themeService.add(request))
+                    .isInstanceOf(InvalidValueException.class);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "   "})
+        @DisplayName("테마 썸네일이 공백이면 예외가 발생한다.")
+        void addThemeByNullOrEmptyThumbnail(String thumbnail) {
+            ThemeCreateRequest request = ThemeCreateRequest.of("방탈출 이름", "방탈출 설명", thumbnail);
+
+            assertThatThrownBy(() -> themeService.add(request))
+                    .isInstanceOf(InvalidValueException.class);
+        }
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   ",})
-    @DisplayName("테마명이 공백이면 예외가 발생한다.")
-    void createThemeByNullOrEmptyName(String given) {
-        //given
-        ThemeCreateRequest request = ThemeFixtures.createThemeCreateRequest(given, "방탈출 설명", "방탈출 썸네일");
+    @Nested
+    @DisplayName("테마 삭제 테스트")
+    class DeleteTheme {
 
-        //when //then
-        assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(InvalidValueException.class);
-    }
+        @Test
+        @DisplayName("테마를 삭제한다.")
+        void delete() {
+            themeService.add(ThemeCreateRequest.of("방탈출1", "1번 방탈출", "방탈출 설명"));
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   ",})
-    @DisplayName("테마 설명이 공백이면 예외가 발생한다.")
-    void createThemeByNullOrEmptyDescription(String given) {
-        //given
-        ThemeCreateRequest request = ThemeFixtures.createThemeCreateRequest("방탈출명", given, "방탈출 썸네일");
+            themeService.delete(1L);
 
-        //when //then
-        assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(InvalidValueException.class);
-    }
+            assertThat(themeService.findAll()).isEmpty();
+        }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   ",})
-    @DisplayName("테마 썸네일이 공백이면 예외가 발생한다.")
-    void createThemeByNullOrEmptyThumbnail(String given) {
-        //given
-        ThemeCreateRequest request = ThemeFixtures.createThemeCreateRequest("방탈출명", "방탈출 설명", given);
+        @Test
+        @DisplayName("테마 삭제시 아이디가 null이면 예외가 발생한다.")
+        void deleteByNullOrEmptyId() {
+            assertThatThrownBy(() -> themeService.delete(null))
+                    .isInstanceOf(InvalidRequestException.class);
+        }
 
-        //when //then
-        assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(InvalidValueException.class);
-    }
-
-    @Test
-    @DisplayName("테마를 삭제한다.")
-    void delete() {
-        //given
-        Theme theme = ThemeFixtures.createDefaultTheme();
-        themeDao.create(theme);
-        long givenId = 1L;
-
-        //when
-        themeService.delete(givenId);
-        List<ThemeResponse> results = themeService.findAll();
-
-        //then
-        assertThat(results).isEmpty();
-    }
-
-    @Test
-    @DisplayName("테마 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
-    void deleteNotExistId() {
-        //given
-        Theme theme = ThemeFixtures.createDefaultTheme();
-        themeDao.create(theme);
-        long givenId = 100L;
-
-        //when //then
-        assertThatThrownBy(() -> themeService.delete(givenId))
-                .isInstanceOf(InvalidRequestException.class);
+        @Test
+        @DisplayName("테마 삭제시 아이디가 존재하지 않으면 예외가 발생한다.")
+        void deleteByNotExistId() {
+            assertThatThrownBy(() -> themeService.delete(-1L))
+                    .isInstanceOf(InvalidRequestException.class);
+        }
     }
 }

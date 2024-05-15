@@ -2,25 +2,22 @@ package roomescape.controller.exception;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.domain.exception.InvalidValueException;
-import roomescape.service.exception.InvalidRequestException;
+import roomescape.exception.ApiExceptionResponse;
+import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidValueException.class)
-    public ResponseEntity<String> handleInvalidValueException(InvalidValueException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<String> handleInvalidRequestException(InvalidRequestException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ApiExceptionResponse> handleRoomescapeException(RoomescapeException e) {
+        return ResponseEntity.status(e.getHttpStatus())
+                .body(new ApiExceptionResponse(e.getHttpStatus(), e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -36,7 +33,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleUnknownException(Exception e) {
-        return ResponseEntity.internalServerError().body("예측 불가능한 예외가 발생했습니다.");
+    public ResponseEntity<ApiExceptionResponse> handleUnknownException(Exception e) {
+        return ResponseEntity.internalServerError()
+                .body(new ApiExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, "예측하지 못한 예외가 발생했습니다."));
     }
 }
