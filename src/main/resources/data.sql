@@ -1,7 +1,7 @@
 INSERT INTO member
-values (1000, 'admin', 'email', 'password', 'admin'),
-       (2000, '아토', 'atto', 'attoword', 'user'),
-       (3000, '안돌', 'andole', 'andoleword', 'user');
+values (1000, 'admin', 'e@mail.com', 'password', 'admin'),
+       (2000, '아토', 'atto@mail.com', 'attoword', 'user'),
+       (3000, '안돌', 'andole@mail.com', 'andoleword', 'user');
 
 INSERT INTO reservation_time
 values (1000, '12:00'),
