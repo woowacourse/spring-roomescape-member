@@ -27,22 +27,26 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        String token = getToken(webRequest);
+        if (extractCookies(webRequest) == null) {
+            return null;
+        }
+
+        String token = extractToken(webRequest);
         String subject = jwtTokenProvider.getSubject(token);
         long id = Long.parseLong(subject);
 
-        return memberService.getUserById(id);
+        return memberService.getMemberById(id);
     }
 
-    private String getToken(NativeWebRequest webRequest) {
-        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        Cookie[] cookies = httpServletRequest.getCookies();
+    private String extractToken(NativeWebRequest webRequest) {
+        Cookie[] cookies = extractCookies(webRequest);
 
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
+        return CookieParser.extractTokenFromCookie(cookies);
+    }
+
+    private Cookie[] extractCookies(NativeWebRequest webRequest) {
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+
+        return httpServletRequest.getCookies();
     }
 }

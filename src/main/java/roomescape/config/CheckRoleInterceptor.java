@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
-import roomescape.domain.Role;
 import roomescape.service.MemberService;
 
 public class CheckRoleInterceptor implements HandlerInterceptor {
@@ -20,25 +19,22 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Cookie[] cookies = request.getCookies();
-        boolean isAdmin = false;
-        boolean tokenAdmin = false;
+        String token = extractToken(request);
+        String subject = jwtTokenProvider.getSubject(token);
+        long memberId = Long.parseLong(subject);
 
-        boolean isAdmin = false;
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                String subject = jwtTokenProvider.getSubject(cookie.getValue());
-                long id = Long.parseLong(subject);
-                Member member = memberService.getUserById(id);
-                isAdmin = member.getRole().equals(Role.ADMIN);
-                String role = jwtTokenProvider.getClaim(cookie.getValue(), "role", String.class);
-                tokenAdmin = Role.findByName(role).equals(Role.ADMIN);
-            }
-        }
+        Member member = memberService.getMemberById(memberId);
+        boolean isAdmin = member.getRole().isAdmin();
 
-        if (!(isAdmin && tokenAdmin)) {
+        if (!(isAdmin)) {
             throw new ForbiddenAccessException("관리자만 접근 가능합니다.");
         }
         return true;
+    }
+
+    private static String extractToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        return CookieParser.extractTokenFromCookie(cookies);
     }
 }

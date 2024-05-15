@@ -42,13 +42,7 @@ public class JwtTokenProvider {
         return claim.getSubject();
     }
 
-    public <T> T getClaim(String token, String claimKey, Class<T> clazz) {
-        Claims claim = parseClaims(token);
-
-        return claim.get(claimKey, clazz);
-    }
-
-    public boolean validateToken(String token) { //todo: 적절한 예외 추가
+    public boolean validateToken(String token) { //todo: 적절한 예외 추가 - 401 403
         try {
             Claims claims = parseClaims(token);
 
