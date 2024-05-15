@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.domain.Role;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.service.MemberService;
 
@@ -45,7 +44,6 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     private String extractToken(HttpServletRequest request) {
         return Arrays.stream(Optional.ofNullable(request.getCookies())
                 .orElseThrow(() -> new IllegalArgumentException("쿠키가 존재하지 않습니다.")))
-                .sequential()
                 .filter(cookie -> cookie.getName().equals(JwtTokenProvider.TOKEN))
                 .findFirst()
                 .map(Cookie::getValue)
