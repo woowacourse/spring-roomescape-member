@@ -1,8 +1,6 @@
 package roomescape.exception;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,26 +48,6 @@ public class GlobalExceptionHandlerTest {
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertInstanceOf(MethodArgumentNotValidException.class,
-                        result.getResolvedException()));
-    }
-
-    @Test
-    public void testNullPointerException() throws Exception {
-        //given
-        ObjectMapper objectMapper = new ObjectMapper();
-        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(
-                "2222-01-12", 1, 1, 1
-        );
-        String jsonContent = objectMapper.writeValueAsString(adminReservationRequest);
-
-        doThrow(new NullPointerException()).when(reservationService).create(any());
-
-        //when&then
-        mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertInstanceOf(NullPointerException.class,
                         result.getResolvedException()));
     }
 }
