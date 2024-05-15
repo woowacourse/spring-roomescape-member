@@ -146,7 +146,11 @@ public class ReservationDao {
     }
 
     public List<Long> findRanking(final LocalDate from, final LocalDate to, final int count) {
-        String sql = "SELECT theme_id, count(*) AS count FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY count DESC LIMIT ?";
+        String sql = "SELECT theme_id, count(*) AS count " +
+                "FROM reservation " +
+                "WHERE date BETWEEN ? AND ? " +
+                "GROUP BY theme_id " +
+                "ORDER BY count DESC LIMIT ?";
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> resultSet.getLong("theme_id"),

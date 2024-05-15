@@ -13,7 +13,6 @@ import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 
 import javax.sql.DataSource;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +34,6 @@ class ReservationTimeDaoTest extends RepositoryTest {
     void setUp() {
         rowMapper = new ReservationTimeRowMapper();
         timeDao = new ReservationTimeDao(jdbcTemplate, dataSource, rowMapper);
-        jdbcTemplate.update("insert into reservation_time(start_at) values ('09:00')");
     }
 
     @AfterEach
@@ -47,16 +45,16 @@ class ReservationTimeDaoTest extends RepositoryTest {
     @DisplayName("예약 시간을 저장할 수 있다")
     void should_SaveReservationTime() {
         //given
-        int expectedSize = 2;
+        int expectedSize = 3;
         ReservationTime time = new ReservationTime(null, LocalTime.from(LocalTime.MIDNIGHT));
 
         //when
         ReservationTime savedTime = timeDao.save(time);
 
         //then
-        String sql = "SELECT * FROM reservation_time";
-        List<ReservationTime> times = jdbcTemplate.query(sql, rowMapper);
-        assertThat(times).hasSize(expectedSize);
+        String sql = "SELECT count(*) FROM reservation_time";
+        int reservationTimeSize = jdbcTemplate.queryForObject(sql, Integer.class);
+        assertThat(reservationTimeSize).isEqualTo(expectedSize);
         assertThat(savedTime.getId()).isNotNull();
     }
 
@@ -76,7 +74,7 @@ class ReservationTimeDaoTest extends RepositoryTest {
     @DisplayName("예약 시간을 모두 조회할 수 있다")
     void should_getAllReservationTimes() {
         //given
-        int expectedSize = 1;
+        int expectedSize = 2;
 
         //when-then
         assertThat(timeDao.getAll()).hasSize(expectedSize);
@@ -107,8 +105,8 @@ class ReservationTimeDaoTest extends RepositoryTest {
         timeDao.delete(targetId);
 
         //then
-        String sql = "SELECT * FROM reservation_time";
-        List<ReservationTime> times = jdbcTemplate.query(sql, rowMapper);
-        assertThat(times.size()).isZero();
+        String sql = "SELECT count(*) FROM reservation_time";
+        int reservationSize = jdbcTemplate.queryForObject(sql, Integer.class);
+        assertThat(reservationSize).isOne();
     }
 }

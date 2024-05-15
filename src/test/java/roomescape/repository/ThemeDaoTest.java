@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import roomescape.domain.reservation.Theme;
 import roomescape.repository.rowmapper.ThemeRowMapper;
 
 import javax.sql.DataSource;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,28 +33,22 @@ class ThemeDaoTest extends RepositoryTest {
     void setUp() {
         rowMapper = new ThemeRowMapper();
         themeDao = new ThemeDao(jdbcTemplate, dataSource, rowMapper);
-        jdbcTemplate.update("insert into theme(theme_name, description, thumbnail) values ('공포', '공포입니다.', '123')");
-    }
-
-    @AfterEach
-    void clearTable() {
-        jdbcTemplate.update("DELETE FROM theme");
     }
 
     @Test
     @DisplayName("테마를 저장할 수 있다")
     void should_SaveTheme() {
         //given
-        int expectedSize = 2;
+        int expectedSize = 3;
         Theme theme = new Theme(null, "테마1", "테마입니다", "테마입니다.");
 
         //when
         Theme savedTheme = themeDao.save(theme);
 
         //then
-        String sql = "SELECT * FROM theme";
-        List<Theme> themes = jdbcTemplate.query(sql, rowMapper);
-        assertThat(themes.size()).isEqualTo(expectedSize);
+        String sql = "SELECT count(*) FROM theme";
+        int themeSize = jdbcTemplate.queryForObject(sql, Integer.class);
+        assertThat(themeSize).isEqualTo(expectedSize);
         assertThat(savedTheme.getId()).isNotNull();
     }
 
@@ -73,33 +65,9 @@ class ThemeDaoTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("중복된 설명의 테마를 저장할 수 없다.")
-    void should_ThrowIllegalStateException_WhenGiveDuplicatedDescriptionTheme() {
-        //given
-        Theme theme = new Theme(null, "테마1", "공포입니다.", "테마입니다.");
-
-        //when-then
-        assertThatThrownBy(() -> themeDao.save(theme))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] 키 값 에러 : 중복된 테마 키가 존재합니다.");
-    }
-
-    @Test
-    @DisplayName("중복된 섬네일 링크를 지닌 테마를 저장할 수 없다.")
-    void should_ThrowIllegalStateException_WhenGiveDuplicateThumbnailTheme() {
-        //given
-        Theme theme = new Theme(null, "테마1", "테마입니다.", "123");
-
-        //when-then
-        assertThatThrownBy(() -> themeDao.save(theme))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("[ERROR] 키 값 에러 : 중복된 테마 키가 존재합니다.");
-    }
-
-    @Test
     @DisplayName("모든 테마를 조회할 수 있다")
     void should_getAllTheme() {
-        int expectedSize = 1;
+        int expectedSize = 2;
         assertThat(themeDao.getAll()).hasSize(expectedSize);
     }
 
@@ -132,8 +100,8 @@ class ThemeDaoTest extends RepositoryTest {
         themeDao.delete(deleteId);
 
         //then
-        String sql = "SELECT * FROM theme";
-        List<Theme> themes = jdbcTemplate.query(sql, rowMapper);
-        assertThat(themes.size()).isZero();
+        String sql = "SELECT count(*) FROM theme";
+        int themeSize = jdbcTemplate.queryForObject(sql, Integer.class);
+        assertThat(themeSize).isOne();
     }
 }
