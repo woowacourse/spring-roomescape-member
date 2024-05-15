@@ -25,6 +25,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("요청된 HTTP 메서드를 지원하지 않습니다.", HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    @ExceptionHandler(value = AuthenticationException.class)
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<String> handleException() {
         return new ResponseEntity<>("서버에서 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);

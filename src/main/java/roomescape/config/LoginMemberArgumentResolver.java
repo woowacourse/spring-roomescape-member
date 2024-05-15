@@ -8,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.CookieProvider;
+import roomescape.handle.AuthenticationException;
 import roomescape.service.AuthService;
 
 @Component
@@ -29,6 +30,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String token = CookieProvider.extractTokenFrom(request);
 
+        if (token == null) {
+            throw new AuthenticationException("일치하는 사용자를 찾을 수 없습니다.");
+        }
         return authService.findMemberByToken(token);
     }
 }
