@@ -7,7 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthorizationException;
 import roomescape.service.AuthService;
 import roomescape.service.LoginMemberService;
-import roomescape.service.dto.LoginMemberResponse;
+import roomescape.service.dto.MemberResponse;
 import roomescape.service.dto.TokenResponse;
 
 @Component
@@ -26,8 +26,8 @@ public class RoleInterceptor implements HandlerInterceptor {
         TokenResponse tokenResponse = authService.extractTokenByCookies(request);
         authService.isTokenValid(tokenResponse);
         String memberId = authService.extractMemberIdByToken(tokenResponse);
-        LoginMemberResponse loginMemberResponse = loginMemberService.findById(Long.parseLong(memberId));
-        if (!loginMemberResponse.role().equals("ADMIN")) {
+        MemberResponse memberResponse = loginMemberService.findById(Long.parseLong(memberId));
+        if (!memberResponse.role().equals("ADMIN")) {
             throw new AuthorizationException("관리자가 아닙니다.");
         }
         return true;

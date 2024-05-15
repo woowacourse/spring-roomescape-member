@@ -1,13 +1,13 @@
 package roomescape.domain;
 
-public class LoginMember {
+public class Member {
     private final long id;
     private final MemberName name;
     private final String email;
     private final String password;
     private final Role role;
 
-    public LoginMember(long id, MemberName name, String email, String password, Role role) {
+    public Member(long id, MemberName name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -15,11 +15,11 @@ public class LoginMember {
         this.role = role;
     }
 
-    public LoginMember(long id, String name, String email, String password, String role) {
+    public Member(long id, String name, String email, String password, String role) {
         this(id, new MemberName(name), email, password, new Role(role));
     }
 
-    public LoginMember(long id, String name, String email) {
+    public Member(long id, String name, String email) {
         this(id, new MemberName(name), email, "", new Role(""));
     }
 

@@ -3,8 +3,8 @@ package roomescape.service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
-import roomescape.dao.LoginMemberRepository;
-import roomescape.domain.LoginMember;
+import roomescape.dao.MemberRepository;
+import roomescape.domain.Member;
 import roomescape.infrastructure.JwtTokenExtractor;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.infrastructure.JwtTokenValidator;
@@ -16,22 +16,22 @@ public class AuthService {
     public static final String COOKIE_NAME = "token";
     private static final int COOKIE_MAX_AGE = 3600;
 
-    private final LoginMemberRepository loginMemberRepository;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenExtractor jwtTokenExtractor;
     private final JwtTokenValidator jwtTokenValidator;
 
-    public AuthService(LoginMemberRepository loginMemberRepository, JwtTokenProvider jwtTokenProvider,
+    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider,
                        JwtTokenExtractor jwtTokenExtractor, JwtTokenValidator jwtTokenValidator) {
-        this.loginMemberRepository = loginMemberRepository;
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.jwtTokenExtractor = jwtTokenExtractor;
         this.jwtTokenValidator = jwtTokenValidator;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        LoginMember loginMember = loginMemberRepository.findByEmail(tokenRequest.email()).get();
-        String accessToken = jwtTokenProvider.createToken(loginMember);
+        Member member = memberRepository.findByEmail(tokenRequest.email()).get();
+        String accessToken = jwtTokenProvider.createToken(member);
         return new TokenResponse(accessToken);
     }
 

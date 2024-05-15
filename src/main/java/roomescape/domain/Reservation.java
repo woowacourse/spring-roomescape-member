@@ -5,29 +5,29 @@ public class Reservation {
     private final MemberName name;
     private final Schedule schedule;
     private final Theme theme;
-    private final LoginMember loginMember;
+    private final Member member;
 
-    public Reservation(long id, MemberName name, Schedule schedule, Theme theme, LoginMember loginMember) {
+    public Reservation(long id, MemberName name, Schedule schedule, Theme theme, Member member) {
         this.id = id;
         this.name = name;
         this.schedule = schedule;
         this.theme = theme;
-        this.loginMember = loginMember;
+        this.member = member;
     }
 
     public Reservation(final long id, final Reservation reservation) {
-        this(id, reservation.name, reservation.schedule, reservation.theme, reservation.loginMember);
+        this(id, reservation.name, reservation.schedule, reservation.theme, reservation.member);
     }
 
     public Reservation(final long id, final String name, final String date, final ReservationTime reservationTime,
-                       final Theme theme, final LoginMember loginMember) {
-        this(id, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme, loginMember);
+                       final Theme theme, final Member member) {
+        this(id, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme, member);
     }
 
     public Reservation(final String date, final Theme theme, final ReservationTime reservationTime,
-                       final LoginMember loginMember) {
-        this(loginMember.getId(), new MemberName(loginMember.getName()),
-                new Schedule(new ReservationDate(date), reservationTime), theme, loginMember);
+                       final Member member) {
+        this(member.getId(), new MemberName(member.getName()),
+                new Schedule(new ReservationDate(date), reservationTime), theme, member);
     }
 
     public long getId() {
@@ -58,7 +58,7 @@ public class Reservation {
         return theme;
     }
 
-    public LoginMember getLoginMember() {
-        return loginMember;
+    public Member getLoginMember() {
+        return member;
     }
 }

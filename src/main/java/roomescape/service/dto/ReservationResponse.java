@@ -8,12 +8,12 @@ public record ReservationResponse(
         String date,
         ThemeResponse theme,
         ReservationTimeResponse time,
-        LoginMemberResponse member
+        MemberResponse member
 ) {
     public ReservationResponse(final Reservation reservation) {
         this(reservation.getId(), reservation.getName(), reservation.getDate(),
                 new ThemeResponse(reservation.getTheme()),
                 new ReservationTimeResponse(reservation.getReservationTime()),
-                new LoginMemberResponse(reservation.getLoginMember()));
+                new MemberResponse(reservation.getLoginMember()));
     }
 }

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.AuthService;
 import roomescape.service.LoginMemberService;
-import roomescape.service.dto.LoginMemberNameResponse;
-import roomescape.service.dto.LoginMemberResponse;
+import roomescape.service.dto.MemberNameResponse;
+import roomescape.service.dto.MemberResponse;
 import roomescape.service.dto.TokenRequest;
 import roomescape.service.dto.TokenResponse;
 
@@ -36,10 +36,10 @@ public class TokenLoginController {
     }
 
     @GetMapping("/check")
-    public LoginMemberNameResponse findUser(HttpServletRequest request) {
+    public MemberNameResponse findUser(HttpServletRequest request) {
         TokenResponse tokenResponse = authService.extractTokenByCookies(request);
         String memberId = authService.extractMemberIdByToken(tokenResponse);
-        LoginMemberResponse loginMemberResponse = loginMemberService.findById(Long.parseLong(memberId));
-        return new LoginMemberNameResponse(loginMemberResponse.name());
+        MemberResponse memberResponse = loginMemberService.findById(Long.parseLong(memberId));
+        return new MemberNameResponse(memberResponse.name());
     }
 }

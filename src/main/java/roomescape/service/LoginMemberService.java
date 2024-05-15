@@ -2,43 +2,43 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.LoginMemberRepository;
-import roomescape.domain.LoginMember;
+import roomescape.dao.MemberRepository;
+import roomescape.domain.Member;
 import roomescape.exception.AuthorizationException;
-import roomescape.service.dto.LoginMemberResponse;
+import roomescape.service.dto.MemberResponse;
 import roomescape.service.dto.TokenRequest;
 
 @Service
 public class LoginMemberService {
-    private final LoginMemberRepository loginMemberRepository;
+    private final MemberRepository memberRepository;
 
-    public LoginMemberService(LoginMemberRepository loginMemberRepository) {
-        this.loginMemberRepository = loginMemberRepository;
+    public LoginMemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    public List<LoginMemberResponse> findAll() {
-        return loginMemberRepository.findAll().stream()
-                .map(LoginMemberResponse::new)
+    public List<MemberResponse> findAll() {
+        return memberRepository.findAll().stream()
+                .map(MemberResponse::new)
                 .toList();
     }
 
-    public LoginMemberResponse findById(long id) {
-        return new LoginMemberResponse(loginMemberRepository.findById(id)
+    public MemberResponse findById(long id) {
+        return new MemberResponse(memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다.")));
     }
 
     public void validateLogin(TokenRequest tokenRequest) {
-        LoginMember loginMember = findByEmail(tokenRequest);
-        validatePassword(tokenRequest, loginMember);
+        Member member = findByEmail(tokenRequest);
+        validatePassword(tokenRequest, member);
     }
 
-    private LoginMember findByEmail(TokenRequest tokenRequest) {
-        return loginMemberRepository.findByEmail(tokenRequest.email())
+    private Member findByEmail(TokenRequest tokenRequest) {
+        return memberRepository.findByEmail(tokenRequest.email())
                 .orElseThrow(() -> new AuthorizationException("잘못된 이메일입니다."));
     }
 
-    private void validatePassword(TokenRequest tokenRequest, LoginMember loginMember) {
-        if (!loginMember.getPassword().equals(tokenRequest.password())) {
+    private void validatePassword(TokenRequest tokenRequest, Member member) {
+        if (!member.getPassword().equals(tokenRequest.password())) {
             throw new AuthorizationException("잘못된 비밀번호입니다.");
         }
     }

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -22,7 +22,7 @@ public class ReservationJDBCRepository implements ReservationRepository {
                 resultSet.getString("start_at"));
         Theme theme = new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                 resultSet.getString("description"), resultSet.getString("thumbnail"));
-        LoginMember loginMember = new LoginMember(resultSet.getLong("member_id"),
+        Member member = new Member(resultSet.getLong("member_id"),
                 resultSet.getString("member_name"), resultSet.getString("email"));
         return new Reservation(
                 resultSet.getLong("reservation_id"),
@@ -30,7 +30,7 @@ public class ReservationJDBCRepository implements ReservationRepository {
                 resultSet.getString("date"),
                 reservationTime,
                 theme,
-                loginMember);
+                member);
     };
 
     public ReservationJDBCRepository(final JdbcTemplate jdbcTemplate) {

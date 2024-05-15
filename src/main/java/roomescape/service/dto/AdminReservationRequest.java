@@ -2,7 +2,7 @@ package roomescape.service.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -13,7 +13,7 @@ public record AdminReservationRequest(
         @NotNull long timeId,
         @NotNull long memberId) {
 
-    public Reservation toReservation(Theme theme, ReservationTime reservationTime, LoginMember loginMember) {
-        return new Reservation(date, theme, reservationTime, loginMember);
+    public Reservation toReservation(Theme theme, ReservationTime reservationTime, Member member) {
+        return new Reservation(date, theme, reservationTime, member);
     }
 }

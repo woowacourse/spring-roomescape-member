@@ -2,17 +2,17 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.LoginMemberRepository;
+import roomescape.dao.MemberRepository;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.dao.ThemeRepository;
-import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.AdminReservationRequest;
-import roomescape.service.dto.LoginMemberRequest;
+import roomescape.service.dto.MemberRequest;
 import roomescape.service.dto.ReservationReadRequest;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
@@ -22,32 +22,32 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-    private final LoginMemberRepository loginMemberRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
-                              LoginMemberRepository loginMemberRepository) {
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-        this.loginMemberRepository = loginMemberRepository;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponse create(final AdminReservationRequest adminReservationRequest) {
         Theme theme = findThemeById(adminReservationRequest.themeId());
         ReservationTime reservationTime = findTimeById(adminReservationRequest.timeId());
-        LoginMember loginMember = findLoginMemberById(adminReservationRequest.memberId());
-        Reservation reservation = adminReservationRequest.toReservation(theme, reservationTime, loginMember);
+        Member member = findLoginMemberById(adminReservationRequest.memberId());
+        Reservation reservation = adminReservationRequest.toReservation(theme, reservationTime, member);
         Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest,
-                                      LoginMemberRequest loginMemberRequest) {
+                                      MemberRequest memberRequest) {
         Theme theme = findThemeById(reservationRequest.themeId());
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Reservation reservation = reservationRequest.toReservation(theme, reservationTime,
-                loginMemberRequest.toLoginMember(loginMemberRequest));
+                memberRequest.toLoginMember(memberRequest));
         Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
     }
@@ -62,8 +62,8 @@ public class ReservationService {
                 .orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 테마입니다."));
     }
 
-    private LoginMember findLoginMemberById(long memberId) {
-        return loginMemberRepository.findById(memberId)
+    private Member findLoginMemberById(long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 사용자입니다."));
     }
 

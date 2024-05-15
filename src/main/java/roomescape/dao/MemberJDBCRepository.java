@@ -6,17 +6,17 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 
 @Repository
-public class LoginMemberJDBCRepository implements LoginMemberRepository {
+public class MemberJDBCRepository implements MemberRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public LoginMemberJDBCRepository(JdbcTemplate jdbcTemplate) {
+    public MemberJDBCRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<LoginMember> rowMapper = (resultSet, rowNum) -> new LoginMember(
+    private final RowMapper<Member> rowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
@@ -25,7 +25,7 @@ public class LoginMemberJDBCRepository implements LoginMemberRepository {
     );
 
     @Override
-    public Optional<LoginMember> findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         String sql = "SELECT id, name, email, password, role FROM login_member WHERE email = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email));
@@ -34,7 +34,7 @@ public class LoginMemberJDBCRepository implements LoginMemberRepository {
         }
     }
 
-    public Optional<LoginMember> findById(long id) {
+    public Optional<Member> findById(long id) {
         String sql = "SELECT id, name, email, password, role FROM login_member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
@@ -44,7 +44,7 @@ public class LoginMemberJDBCRepository implements LoginMemberRepository {
     }
 
     @Override
-    public List<LoginMember> findAll() {
+    public List<Member> findAll() {
         String sql = "SELECT id, name, email, password, role FROM login_member";
         return jdbcTemplate.query(sql, rowMapper);
     }

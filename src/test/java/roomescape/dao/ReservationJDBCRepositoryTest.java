@@ -23,7 +23,7 @@ class ReservationJDBCRepositoryTest {
     private JdbcTemplate jdbcTemplate;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
-    private LoginMemberRepository loginMemberRepository;
+    private MemberRepository memberRepository;
     private String date;
 
     @BeforeEach
@@ -31,7 +31,7 @@ class ReservationJDBCRepositoryTest {
         reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
         reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
         themeRepository = new ThemeJDBCRepository(jdbcTemplate);
-        loginMemberRepository = new LoginMemberJDBCRepository(jdbcTemplate);
+        memberRepository = new MemberJDBCRepository(jdbcTemplate);
 
         date = LocalDate.now().plusDays(1).toString();
     }
@@ -42,7 +42,7 @@ class ReservationJDBCRepositoryTest {
         //given
         Reservation reservation = new Reservation(
                 date, themeRepository.findById(1).get(), reservationTimeRepository.findById(1).get(),
-                loginMemberRepository.findById(1).get());
+                memberRepository.findById(1).get());
 
         //when
         Reservation result = reservationRepository.save(reservation);
