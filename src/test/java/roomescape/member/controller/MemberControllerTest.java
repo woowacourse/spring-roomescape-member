@@ -12,9 +12,11 @@ import org.springframework.http.MediaType;
 import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.util.ControllerTest;
+import roomescape.util.LoginFixture;
 
 @DisplayName("사용자 API 테스트")
 class MemberControllerTest extends ControllerTest {
+    LoginRequest loginRequest = new LoginRequest("admin@email.com", "password");
     @DisplayName("로그인 폼 페이지 조회에 성공한다.")
     @Test
     void popularPage() {
@@ -29,7 +31,7 @@ class MemberControllerTest extends ControllerTest {
     @Test
     void login() {
         RestAssured.given().log().all()
-                .body(new LoginRequest("admin@email.com", "password"))
+                .body(loginRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
@@ -79,18 +81,8 @@ class MemberControllerTest extends ControllerTest {
     @DisplayName("인증 정보를 조회할 수 있다.")
     @Test
     void loginCheck() {
-        String accessToken = RestAssured
-                .given().log().all()
-                .body(new LoginRequest("admin@email.com", "password"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/login")
-                .then().log().all().extract()
-                .cookie("token");
-
-        RestAssured
-                .given().log().all()
-                .cookie("token", accessToken)
+        RestAssured.given().log().all()
+                .cookie("token", LoginFixture.takeAdminToken())
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/login/check")
                 .then().log().all()
