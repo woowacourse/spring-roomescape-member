@@ -1,4 +1,5 @@
-SET referential_integrity false;
+SET
+referential_integrity false;
 
 TRUNCATE TABLE reservation;
 TRUNCATE TABLE reservation_time;
@@ -14,4 +15,5 @@ ALTER TABLE theme
 ALTER TABLE member
     ALTER COLUMN id RESTART WITH 1;
 
-SET referential_integrity true;
+SET
+referential_integrity true;

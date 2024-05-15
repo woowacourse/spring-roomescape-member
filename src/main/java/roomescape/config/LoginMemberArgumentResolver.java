@@ -30,7 +30,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Optional<String> token = extractToken(webRequest);
-        if(token.isEmpty()) {
+        if (token.isEmpty()) {
             return null;
         }
 
@@ -44,6 +44,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = httpServletRequest.getCookies();
 
-        return CookieParser.extractTokenFromCookie(cookies);
+        return CookieUtil.extractTokenFromCookie(cookies);
     }
 }

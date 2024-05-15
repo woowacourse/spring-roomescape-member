@@ -5,8 +5,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import roomescape.acceptance.BaseAcceptanceTest;
@@ -81,5 +83,16 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().as(MemberPreviewResponse.class);
+    }
+
+    @DisplayName("고객이 로그아웃한다.")
+    @Test
+    void logout_success() {
+        RestAssured.given().log().all()
+                .cookie("token", tokenFixture.customerToken)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .cookie("token", Matchers.emptyString());
     }
 }

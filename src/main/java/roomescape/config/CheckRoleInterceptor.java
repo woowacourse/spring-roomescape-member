@@ -22,7 +22,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Optional<String> token = extractToken(request);
-        if(token.isEmpty()) {
+        if (token.isEmpty()) {
             throw new TokenValidationFailureException("토큰이 존재하지 않습니다.");
         }
 
@@ -40,6 +40,6 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     private static Optional<String> extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 
-        return CookieParser.extractTokenFromCookie(cookies);
+        return CookieUtil.extractTokenFromCookie(cookies);
     }
 }
