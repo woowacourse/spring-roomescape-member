@@ -20,9 +20,8 @@ public class LoginService {
                 request.getEmail(),
                 request.getPassword());
 
-        // TODO: 다른 사이트에서는 어떤 메시지를 내려주는지 확인
         if (member.isEmpty()) {
-            throw new IllegalArgumentException("해당 아이디와 비밀번호의 회원이 존재하지 않습니다.");
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
 
         return member.get();
