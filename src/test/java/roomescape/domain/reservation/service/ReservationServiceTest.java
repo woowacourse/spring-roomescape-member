@@ -39,9 +39,6 @@ class ReservationServiceTest {
     private FakeThemeRepository fakeThemeRepository;
     private FakeMemberRepository fakeMemberRepository;
 
-    ReservationServiceTest() {
-    }
-
     @BeforeEach
     void setUp() {
         fakeReservationRepository = new FakeReservationRepository();
