@@ -7,12 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import jakarta.servlet.http.Cookie;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -30,6 +34,9 @@ class JwtManagerTest {
     private JwtManager jwtManager;
 
     private final Member member1 = new Member(1L, "t1@t1.com", "123", "러너덕", "MEMBER");
+
+    @Value("${security.jwt.secret-key}")
+    private String tokenSecretKey;
 
     @BeforeEach
     void setUp() {
@@ -97,6 +104,22 @@ class JwtManagerTest {
         assertThatThrownBy(() -> jwtManager.verifyToken(testToken))
                 .isInstanceOf(JwtException.class)
                 .hasMessage("JWT 토큰 구성이 올바르지 않습니다.");
+    }
+
+    @DisplayName("기한이 만료된 토큰을 사용하면 예외를 발생시킨다.")
+    @Test
+    void throw_expired_jwt_exception_when_using_expired_token() {
+        String expiredToken = Jwts.builder()
+                .subject(member1.getId().toString())
+                .claim("name", member1.getName())
+                .claim("role", member1.getRole().name())
+                .signWith(Keys.hmacShaKeyFor(tokenSecretKey.getBytes()))
+                .expiration(new Date(System.currentTimeMillis() - 6000))
+                .compact();
+
+        assertThatThrownBy(() -> jwtManager.verifyToken(expiredToken))
+                .isInstanceOf(JwtException.class)
+                .hasMessage("기한이 만료된 JWT 토큰입니다.");
     }
 
     @DisplayName("토큰 검증에 성공하면 payload 가 일치한다.")
