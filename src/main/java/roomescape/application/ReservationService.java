@@ -29,7 +29,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public Reservation reserve(ReservationInfo request) {
+    public Reservation addReservation(ReservationInfo request) {
         ReservationTime time = reservationTimeService.getReservationTime(request.timeId());
         if (reservationRepository.existsByReservationDateTimeAndTheme(request.date(), time.getId(),
                 request.themeId())) {
