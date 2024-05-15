@@ -25,7 +25,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        // [질문] 일반적으로 ArgumentResolver 나 Interceptor 를 new 키워드로 생성하는지 빈으로 등록해서 사용하는지
         resolvers.add(new LoginMemberArgumentResolver(authService));
         resolvers.add(queryStringArgumentResolver);
     }

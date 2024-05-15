@@ -102,10 +102,6 @@ public class ReservationService {
         }
     }
 
-    // [질문] 어드민은 그냥 지울 수 있고 일반 유저는 자신의 것만 지울 수 있게 해뒀습니다.
-    // 일반 유저가 다른 유저의 것을 지우려 할 때 예약은 존재하지만 오류 메세지로는 "존재하지 않는 예약 입니다" 라고 받게 됩니다.
-    // findReservation 하고 유저 아이디가 다를 경우 타인의 것을 삭제 못함 추가 가능
-    // 아니면 삭제 되든 안되든 클라이언트는 그냥 204 받게 가능
     public int deleteReservation(Long reservationsId, LoginMember member) {
         if (Role.ADMIN.name().equals(member.role())) {
             int deletedCount = reservationRepository.delete(reservationsId);
