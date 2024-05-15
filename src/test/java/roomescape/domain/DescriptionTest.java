@@ -12,7 +12,7 @@ class DescriptionTest {
     @ParameterizedTest
     @ValueSource(strings = {"",
             "linirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirinilinirini"})
-    void invalidNameLength(String description) {
+    void invalidDescriptionLength(String description) {
         assertThatThrownBy(() -> new Description(description))
                 .isInstanceOf(InvalidReservationException.class);
     }
