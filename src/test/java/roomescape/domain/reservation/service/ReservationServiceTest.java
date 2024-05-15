@@ -32,6 +32,7 @@ class ReservationServiceTest {
     private static final Member ADMIN_MEMBER = new Member(1L, "어드민", "admin@gmail.com", "123456", ADMIN);
     private static final ReservationTime TEN_RESERVATION_TIME = new ReservationTime(1L, TEN_HOUR);
     private static final Theme DUMMY_THEME = new Theme(1L, "dummy", "dummy", "dummy");
+    private static final ReservationTime DUMMY_TIME = new ReservationTime(1L, TEN_HOUR);
 
     private ReservationService reservationService;
     private FakeReservationRepository fakeReservationRepository;
@@ -143,6 +144,19 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.removeReservation(1L))
                 .isInstanceOf(EscapeApplicationException.class)
                 .hasMessage("해당 id를 가진 예약이 존재하지 않습니다.");
+    }
+
+    @DisplayName("date가 현재 보다 이전이면 ReservationAddRequest생성 시 예외가 발생한다")
+    @Test
+    void should_throw_exception_when_dateTime_is_past() {
+        fakeReservationTimeRepository.insert(DUMMY_TIME);
+        fakeThemeRepository.insert(DUMMY_THEME);
+        fakeMemberRepository.insert(MEMBER_MEMBER);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(BEFORE_ONE_DAYS_DATE, 1L, 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
+                .isInstanceOf(EscapeApplicationException.class)
+                .hasMessage(BEFORE_ONE_DAYS_DATE.atTime(DUMMY_TIME.getStartAt()) + ": 예약은 현재 보다 이전일 수 없습니다");
     }
 
     @DisplayName("필터링된 예약 목록을 불러올 수 있습니다.")
