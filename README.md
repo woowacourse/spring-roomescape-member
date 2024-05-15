@@ -55,13 +55,13 @@ Transfer-Encoding: chunked
 
 ## 5단계 요구사항
 
-- [ ] 사용자의 정보를 조회하는 로직을 리팩터링 한다.
-    - [ ] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리한다.
-    - [ ] HandlerMethodArgumentResolver 을 활용하면 회원정보 객체를 컨트롤러 메서드에 주입할 수 있다.
-- [ ] 예약 생성 API 및 기능을 리팩터링 한다.
+- [x] 사용자의 정보를 조회하는 로직을 리팩터링 한다.
+    - [x] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리한다.
+    - [x] HandlerMethodArgumentResolver 을 활용하면 회원정보 객체를 컨트롤러 메서드에 주입할 수 있다.
+- [x] 예약 생성 API 및 기능을 리팩터링 한다.
     - 사용자
-    - [ ] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 리팩터링한다.
-    - [ ] `reservation.html`, `user-reservation.js` 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경한다.
+    - [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 리팩터링한다.
+    - [x] `reservation.html`, `user-reservation.js` 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경한다.
     - **쿠키를 이용한 예약 생성 Request**
     ``` yaml
     POST /reservations HTTP/1.1
