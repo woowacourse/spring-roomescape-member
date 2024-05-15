@@ -47,19 +47,6 @@ class MemberServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("토큰을 통해 유저 찾기에 성공한다.")
-    @Test
-    void findMemberByToken() {
-        // given
-        String token = memberService.checkLogin(new LoginRequest(member.getEmail(), member.getPassword()));
-
-        // when
-        LoginCheckResponse loginCheckResponse = memberService.findMemberNameByToken(token);
-
-        //then
-        assertThat(loginCheckResponse.name()).isEqualTo(member.getName());
-    }
-
     @DisplayName("모든 멤버를 조회할 수 있다.")
     @Test
     void findAllMember() {

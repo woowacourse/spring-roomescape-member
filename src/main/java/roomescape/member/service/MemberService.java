@@ -32,13 +32,6 @@ public class MemberService {
         return !memberRepository.existBy(email, password);
     }
 
-    public LoginCheckResponse findMemberNameByToken(String token) {
-        long memberId = Long.parseLong(tokenProvider.getPayload(token));
-        Member member = memberRepository.findById(memberId);
-        validateExistMember(member);
-        return new LoginCheckResponse(member.getName());
-    }
-
     public LoginMember findLoginMemberByToken(String token) {
         long memberId = Long.parseLong(tokenProvider.getPayload(token));
         Member member = memberRepository.findById(memberId);
