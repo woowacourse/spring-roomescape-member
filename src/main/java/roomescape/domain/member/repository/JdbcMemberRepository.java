@@ -1,5 +1,6 @@
 package roomescape.domain.member.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,13 +34,13 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Member save(Member member) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", member.getMemberName().getValue())
+                .addValue("name", member.getName().getValue())
                 .addValue("email", member.getEmail())
                 .addValue("password", member.getPassword());
 
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, member.getMemberName(), member.getEmail(), member.getPassword());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
     }
 
     @Override
@@ -83,5 +84,13 @@ public class JdbcMemberRepository implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String query = """
+                SELECT * FROM member
+                """;
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 }
