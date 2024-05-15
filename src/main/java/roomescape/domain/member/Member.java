@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public class Member {
     private final Long id;
-    private final MemberName memberName;
+    private final MemberName name;
     @NotBlank(message = "이메일을 입력해 주세요.")
     @Pattern(regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$", message = "이메일 형식에 맞게 입력해 주세요.")
     private final String email;
@@ -14,22 +14,22 @@ public class Member {
     @Size(min = 4, max = 20, message = "비밀번호는 최소 4글자, 최대 20글자로 작성해주세요.")
     private final String password;
 
-    public Member(MemberName memberName, String email, String password) {
+    public Member(MemberName name, String email, String password) {
         this.id = null;
-        this.memberName = memberName;
+        this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public Member(long id, MemberName memberName, String email, String password) {
+    public Member(long id, MemberName name, String email, String password) {
         this.id = id;
-        this.memberName = memberName;
+        this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public MemberName getMemberName() {
-        return memberName;
+    public MemberName getName() {
+        return name;
     }
 
     public String getEmail() {

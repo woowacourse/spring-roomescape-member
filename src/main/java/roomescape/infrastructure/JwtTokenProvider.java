@@ -21,7 +21,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .claim("id", member.getId())
-                .claim("name", member.getMemberName().getValue())
+                .claim("name", member.getName().getValue())
                 .claim("email", member.getEmail())
                 .setIssuedAt(now)
                 .setExpiration(validity)
