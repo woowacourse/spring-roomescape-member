@@ -1,5 +1,7 @@
 package roomescape.member.controller;
 
+import static roomescape.util.JwtTokenProvider.TOKEN;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -14,7 +16,6 @@ import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
-import roomescape.util.JwtTokenProvider;
 
 @Controller
 public class MemberController {
@@ -33,12 +34,12 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest,
                                       HttpServletResponse httpServletResponse) {
         String token = memberService.checkLogin(loginRequest);
-        httpServletResponse.addCookie(new Cookie(JwtTokenProvider.TOKEN, token));
+        httpServletResponse.addCookie(new Cookie(TOKEN, token));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(JwtTokenProvider.TOKEN) String token) {
+    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue String token) {
         LoginCheckResponse loginCheckResponse = memberService.findMemberNameByToken(token);
         return ResponseEntity.ok(loginCheckResponse);
     }

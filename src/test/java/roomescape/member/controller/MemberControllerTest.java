@@ -3,15 +3,12 @@ package roomescape.member.controller;
 import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.util.ControllerTest;
@@ -91,7 +88,7 @@ class MemberControllerTest extends ControllerTest {
                 .then().log().all().extract()
                 .cookie("token");
 
-        LoginCheckResponse loginCheckResponse = RestAssured
+        RestAssured
                 .given().log().all()
                 .cookie("token", accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
