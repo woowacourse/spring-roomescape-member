@@ -40,8 +40,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
-    public List<ReservationTimeResponse> findAvailableReservationTimes(@RequestParam(value = "date") String date,
-                                                                       @RequestParam(value = "themeId") long themeId) {
+    public List<ReservationTimeResponse> findAvailableReservationTimes(@RequestParam("date") String date,
+                                                                       @RequestParam("themeId") long themeId) {
         @Valid ReservationTimeReadRequest reservationTimeReadRequest = new ReservationTimeReadRequest(date, themeId);
         return reservationTimeService.findAvailableTimes(reservationTimeReadRequest);
     }

@@ -33,10 +33,10 @@ public class AdminReservationController {
     }
 
     @GetMapping("/search")
-    public List<ReservationResponse> findReservation(@RequestParam(value = "themeId") long themeId,
-                                                     @RequestParam(value = "memberId") long memberId,
-                                                     @RequestParam(value = "dateFrom") String dateFrom,
-                                                     @RequestParam(value = "dateTo") String dateTo) {
+    public List<ReservationResponse> findReservation(@RequestParam("themeId") long themeId,
+                                                     @RequestParam("memberId") long memberId,
+                                                     @RequestParam("dateFrom") String dateFrom,
+                                                     @RequestParam("dateTo") String dateTo) {
         @Valid ReservationReadRequest reservationReadRequest =
                 new ReservationReadRequest(themeId, memberId, dateFrom, dateTo);
         return reservationService.findByThemeAndMemberAndDate(reservationReadRequest);
