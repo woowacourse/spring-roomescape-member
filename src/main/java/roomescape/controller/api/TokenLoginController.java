@@ -14,7 +14,7 @@ import roomescape.application.AuthService;
 import roomescape.domain.member.Member;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
-import roomescape.dto.member.MemberResponse;
+import roomescape.dto.member.MemberNameResponse;
 
 @RestController
 public class TokenLoginController {
@@ -40,13 +40,13 @@ public class TokenLoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> findMyInfo(HttpServletRequest request) {
+    public ResponseEntity<MemberNameResponse> findMyInfo(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String tokenValue = extractTokenFromCookie(List.of(cookies));
 
         Member member = authService.findMemberByToken(tokenValue);
 
-        return ResponseEntity.ok(new MemberResponse(member.getMemberName().getValue()));
+        return ResponseEntity.ok(new MemberNameResponse(member.getName().getValue()));
     }
 
     private String extractTokenFromCookie(List<Cookie> cookies) {
