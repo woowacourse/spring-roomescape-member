@@ -1,45 +1,45 @@
 package roomescape.web.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.support.IntegrationTestSupport;
 
 class AdminPageControllerTest extends IntegrationTestSupport {
 
-    @Test
-    @DisplayName("\"/admin\"으로 GET 요청을 보낼 수 있다.")
-    void adminPage() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "/admin",
+            "/admin/reservation",
+            "/admin/time",
+            "/admin/theme"
+    })
+    @DisplayName("페이지 조회가 가능하다.")
+    void accessPage(String source) {
         RestAssured.given().log().all()
-                .when().get("/admin")
+                .cookie("token", getAdminToken())
+                .when().get(source)
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @Test
-    @DisplayName("\"/admin/reservation\"으로 GET 요청을 보낼 수 있다.")
-    void adminReservationPage() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "/admin",
+            "/admin/reservation",
+            "/admin/time",
+            "/admin/theme"
+    })
+    @DisplayName("어드민만 접근 가능하다.")
+    void onlyAdmin(String source) {
         RestAssured.given().log().all()
-                .when().get("/admin/reservation")
+                .cookie("token", getMemberToken())
+                .when().get(source)
                 .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("\"/admin/time\"으로 GET 요청을 보낼 수 있다.")
-    void adminTimePage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("\"/admin/theme\"으로 GET 요청을 보낼 수 있다.")
-    void adminThemePage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
-                .then().log().all()
-                .statusCode(200);
+                .statusCode(401)
+                .body("message", is("유효한 인가 정보를 입력해주세요."));
     }
 }

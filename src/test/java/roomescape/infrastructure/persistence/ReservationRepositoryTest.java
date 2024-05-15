@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,18 +7,13 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.domain.Name;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.infrastructure.persistence.dynamic.ReservationQueryConditions;
 import roomescape.support.IntegrationTestSupport;
 
-/*
- * 테스트 데이터베이스 예약 초기 데이터
- * {ID=1, NAME=브라운, DATE=2023-05-04, TIME={ID=1, START_AT="10:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
- * {ID=2, NAME=엘라, DATE=2023-05-04, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
- * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
- */
 class ReservationRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
@@ -26,8 +21,8 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("모든 예약 데이터를 가져온다.")
-    void findAll() {
-        List<Reservation> reservations = target.findAll();
+    void findAllBy() {
+        List<Reservation> reservations = target.findAllBy(ReservationQueryConditions.noneConditions());
 
         assertThat(reservations).hasSize(3);
     }
@@ -37,7 +32,7 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     void empty() {
         cleanUp("reservation");
 
-        List<Reservation> reservations = target.findAll();
+        List<Reservation> reservations = target.findAllBy(ReservationQueryConditions.noneConditions());
 
         assertThat(reservations).isEmpty();
     }
@@ -45,7 +40,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 테마 id를 사용하고 있는 예약 데이터가 존재하는지 검증한다.")
     void hasByThemeId() {
-        boolean result = target.hasByThemeId(1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .themeId(테마_1번_ID)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isTrue();
     }
@@ -53,7 +52,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 테마 id를 사용하고 있는 예약 데이터가 존재하지 않는지 검증한다.")
     void noHasByThemeId() {
-        boolean result = target.hasByThemeId(2L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .themeId(테마_2번_ID)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isFalse();
     }
@@ -61,7 +64,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 시간 id를 사용하고 있는 예약 데이터가 존재하는지 검증한다.")
     void hasByTimeId() {
-        boolean result = target.hasByTimeId(1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .timeId(예약_시간_1번_ID)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isTrue();
     }
@@ -69,7 +76,11 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 시간 id를 사용하고 있는 예약 데이터가 존재하지 않는지 검증한다.")
     void noHasByTimeId() {
-        boolean result = target.hasByTimeId(3L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .timeId(0L)
+                .build();
+
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isFalse();
     }
@@ -77,7 +88,12 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("새로운 예약 데이터를 저장한다.")
     void create() {
-        Reservation reservation = createReservation("브라운", "2023-08-05", 1L, 1L);
+        Reservation reservation = createReservation(
+                "2023-08-05",
+                멤버_1번_어드민_ID,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         target.save(reservation);
 
@@ -88,18 +104,23 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 id를 가진 예약을 삭제한다.")
     void remove() {
-        target.removeById(2L);
+        target.removeById(예약_2번_ID);
 
         int countRow = countRow("reservation");
+
         assertThat(countRow).isEqualTo(2);
     }
 
     @Test
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 있는지 확인한다.")
     void hasDuplicateDateTimeThemeReservation() {
-        Reservation reservation = createReservation("아톰", "2023-05-04", 1L, 1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .date("2023-05-04")
+                .timeId(예약_시간_1번_ID)
+                .themeId(테마_1번_ID)
+                .build();
 
-        boolean result = target.hasDuplicateReservation(reservation);
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isTrue();
     }
@@ -107,19 +128,24 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 없는지 확인한다.")
     void noHasDuplicateDateTimeThemeReservation() {
-        Reservation reservation = createReservation("아톰", "2023-06-04", 2L, 1L);
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .date("2023-06-04")
+                .memberId(멤버_1번_어드민_ID)
+                .timeId(예약_시간_2번_ID)
+                .themeId(테마_1번_ID)
+                .build();
 
-        boolean result = target.hasDuplicateReservation(reservation);
+        boolean result = target.hasBy(conditions);
 
         assertThat(result).isFalse();
     }
 
-    private Reservation createReservation(String nameValue, String dateValue, Long timeId, Long themeId) {
-        Name name = new Name(nameValue);
+    private Reservation createReservation(String dateValue, Long memberId, Long timeId, Long themeId) {
         LocalDate date = LocalDate.parse(dateValue);
+        Member member = new Member(memberId, null, null, null, null);
         ReservationTime reservationTime = new ReservationTime(timeId, null);
         Theme theme = new Theme(themeId, null, null, null);
 
-        return new Reservation(name, date, reservationTime, theme);
+        return new Reservation(date, member, reservationTime, theme);
     }
 }

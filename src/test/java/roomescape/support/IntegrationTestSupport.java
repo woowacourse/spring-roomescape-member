@@ -16,16 +16,42 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import roomescape.service.auth.AuthService;
+import roomescape.service.auth.AuthenticationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/reset_test_data.sql")
 public abstract class IntegrationTestSupport {
+
+    protected static final Long 예약_1번_ID = 1L;
+
+    protected static final Long 예약_2번_ID = 2L;
+
+    protected static final Long 예약_3번_ID = 3L;
+
+
+    protected static final Long 테마_1번_ID = 1L;
+
+    protected static final Long 테마_2번_ID = 2L;
+
+    protected static final Long 멤버_1번_어드민_ID = 1L;
+
+    protected static final Long 멤버_2번_일반_사용자_ID = 2L;
+
+    protected static final Long 예약_시간_1번_ID = 1L;
+
+    protected static final Long 예약_시간_2번_ID = 2L;
+
+    protected static final Long 예약_시간_3번_ID = 3L;
 
     @LocalServerPort
     private int port;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private AuthService authService;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +80,14 @@ public abstract class IntegrationTestSupport {
 
     protected LocalTime previousTime() {
         return LocalTime.parse("00:00");
+    }
+
+    protected String getAdminToken() {
+        return authService.authenticate(new AuthenticationRequest("admin@test.com", "password"));
+    }
+
+    protected String getMemberToken() {
+        return authService.authenticate(new AuthenticationRequest("member@test.com", "password"));
     }
 
     @Configuration

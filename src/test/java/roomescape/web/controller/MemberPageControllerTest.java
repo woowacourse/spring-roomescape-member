@@ -2,25 +2,21 @@ package roomescape.web.controller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.support.IntegrationTestSupport;
 
 class MemberPageControllerTest extends IntegrationTestSupport {
 
-    @Test
-    @DisplayName("\"/\"으로 GET 요청을 보낼 수 있다.(Welcome Page)")
-    void welcomePage() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "/",
+            "/reservation"
+    })
+    @DisplayName("페이지 조회가 가능하다.")
+    void accessPage(String source) {
         RestAssured.given().log().all()
-                .when().get("/")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("\"/reservation\"으로 GET 요청을 보낼 수 있다.")
-    void reservationPage() {
-        RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get(source)
                 .then().log().all()
                 .statusCode(200);
     }

@@ -7,3 +7,6 @@ spring:
   web:
     locale: ko_KR
     locale-resolver: fixed
+security:
+  secret-key: "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E="
+  token-expiration-second: 604800 # 1주일

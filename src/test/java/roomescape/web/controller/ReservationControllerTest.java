@@ -9,15 +9,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.service.request.ReservationRequest;
 import roomescape.support.IntegrationTestSupport;
+import roomescape.web.controller.request.ReservationWebRequest;
 
-/*
- * 테스트 데이터베이스 예약 초기 데이터
- * {ID=1, NAME=브라운, DATE=2023-05-04, TIME={ID=1, START_AT="10:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
- * {ID=2, NAME=엘라, DATE=2023-05-04, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
- * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
- */
 class ReservationControllerTest extends IntegrationTestSupport {
 
     @Test
@@ -31,32 +25,56 @@ class ReservationControllerTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("예약을 생성한다.")
+    @DisplayName("특정 사용자가 예약한 주어진 기간 동안의 예약 목록을 조회한다.")
+    void getAllByMemberId() {
+        RestAssured.given().log().all()
+                .when().get("/reservations?memberId=" + 멤버_1번_어드민_ID + "&fromDate=2023-05-01&endDate=2023-05-04")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @Test
+    @DisplayName("특정 기간의 예약 목록을 조회한다.")
+    void getAllByPeriod() {
+        RestAssured.given().log().all()
+                .when().get("/reservations?fromDate=2023-05-01&endDate=2023-05-04")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @Test
+    @DisplayName("검색 대상 예약의 날짜는 올바른 형식이어야한다.")
+    void getAllByInvalidThemeId() {
+        String invalidQueryParameters = "fromDate=2022-222-22&endDate=2022-22-12";
+        RestAssured.given().log().all()
+                .when().get("/reservations?" + invalidQueryParameters)
+                .then().log().all()
+                .statusCode(400)
+                .body("details.message", hasItem("올바른 날짜 형태가 아닙니다."));
+    }
+
+    @Test
+    @DisplayName("사용자가 예약을 생성한다.")
     void create() {
         LocalDate date = nextDate();
-        ReservationRequest request = new ReservationRequest("브라운", date.toString(), 1L, 1L);
+        ReservationWebRequest request = new ReservationWebRequest(
+                date.toString(),
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", startsWith("/reservations/"))
-                .body("name", is("브라운"))
+                .body("member.name", is("일반 사용자"))
                 .body("date", is(date.toString()));
-    }
-
-    @Test
-    @DisplayName("예약자 이름은 필수이다.")
-    void validateName() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body("{}")
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("details.message", hasItem("예약자 이름은 필수입니다."));
     }
 
     @Test
@@ -64,6 +82,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void validateDate() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body("{}")
                 .when().post("/reservations")
                 .then().log().all()
@@ -75,10 +94,15 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("예약 날짜는 올바른 형식이어야 한다.")
     void validateDateFormat() {
         String invalidDate = "date";
-        ReservationRequest invalidRequest = new ReservationRequest("name", invalidDate, 1L, 1L);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                invalidDate,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -91,6 +115,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void validateTimeId() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body("{}")
                 .when().post("/reservations")
                 .then().log().all()
@@ -103,10 +128,15 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonPositiveTimeId() {
         Long invalidTimeId = 0L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest("name", date, invalidTimeId, 1L);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                invalidTimeId,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -114,21 +144,20 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 .body("details.message", hasItem("0보다 커야 합니다"));
     }
 
-    /*
-     * 테스트 데이터베이스 시간 초기 데이터
-     * {ID=1, START_AT=10:00}
-     * {ID=2, START_AT=11:00}
-     * {ID=3, START_AT=13:00}
-     */
     @Test
     @DisplayName("존재하지 않는 시간 ID에 대한 예약을 할 수 없다.")
     void nonExistTimeId() {
-        Long nonExistTimeId = 4L;
+        Long nonExistTimeId = 99L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest("name", date, nonExistTimeId, 1L);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                nonExistTimeId,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -141,6 +170,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void validateThemeId() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body("{}")
                 .when().post("/reservations")
                 .then().log().all()
@@ -153,10 +183,15 @@ class ReservationControllerTest extends IntegrationTestSupport {
     void nonPositiveThemeId() {
         Long invalidThemeId = 0L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest("name", date, 1L, invalidThemeId);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                예약_시간_1번_ID,
+                invalidThemeId
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -164,20 +199,20 @@ class ReservationControllerTest extends IntegrationTestSupport {
                 .body("details.message", hasItem("0보다 커야 합니다"));
     }
 
-    /*
-     * 테스트 데이터베이스 테마 초기 데이터
-     * {ID=1, NAME="레벨1 탈출"}
-     * {ID=2, NAME="레벨2 탈출"}
-     */
     @Test
     @DisplayName("존재하지 않는 테마 ID에 대한 예약을 할 수 없다.")
     void nonExistThemeId() {
-        Long nonExistThemeId = 3L;
+        Long nonExistThemeId = 99L;
         String date = nextDate().toString();
-        ReservationRequest invalidRequest = new ReservationRequest("name", date, 1L, nonExistThemeId);
+        ReservationWebRequest invalidRequest = new ReservationWebRequest(
+                date,
+                예약_시간_1번_ID,
+                nonExistThemeId
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(invalidRequest)
                 .when().post("/reservations")
                 .then().log().all()
@@ -189,10 +224,15 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("중복 예약을 생성할 수 없다.")
     void duplicated() {
         String date = nextDate().toString();
-        ReservationRequest request = new ReservationRequest("브라운", date, 1L, 1L);
+        ReservationWebRequest request = new ReservationWebRequest(
+                date,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -200,6 +240,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
@@ -211,10 +252,15 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @DisplayName("지나간 시간에 대한 예약을 할 수 없다.")
     void previousDateTime() {
         String previousDate = previousDate().toString();
-        ReservationRequest request = new ReservationRequest("브라운", previousDate, 1L, 1L);
+        ReservationWebRequest request = new ReservationWebRequest(
+                previousDate,
+                예약_시간_1번_ID,
+                테마_1번_ID
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", getMemberToken())
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()

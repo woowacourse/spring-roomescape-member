@@ -4,8 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.persistence.ReservationRepository;
-import roomescape.persistence.ThemeRepository;
+import roomescape.infrastructure.persistence.ReservationRepository;
+import roomescape.infrastructure.persistence.ThemeRepository;
+import roomescape.infrastructure.persistence.dynamic.ReservationQueryConditions;
 import roomescape.service.request.ThemeRequest;
 import roomescape.service.response.ThemeResponse;
 
@@ -32,7 +33,11 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        if (reservationRepository.hasByThemeId(id)) {
+        ReservationQueryConditions conditions = ReservationQueryConditions.builder()
+                .themeId(id)
+                .build();
+
+        if (reservationRepository.hasBy(conditions)) {
             throw new IllegalStateException("해당 테마를 사용하는 예약이 존재합니다.");
         }
 

@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,14 +9,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Description;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
+import roomescape.domain.Thumbnail;
 import roomescape.support.IntegrationTestSupport;
 
-/*
- * 테스트 데이터베이스 테마 초기 데이터
- * {ID=1, NAME="레벨1 탈출"}
- * {ID=2, NAME="레벨2 탈출"}
- */
 class ThemeRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
@@ -44,10 +42,11 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 테마 id의 데이터를 조회한다.")
     void findById() {
-        Optional<Theme> findReservationTime = target.findById(2L);
+        Optional<Theme> findTheme = target.findById(테마_2번_ID);
 
-        assertThat(findReservationTime)
+        assertThat(findTheme)
                 .map(Theme::getName)
+                .map(ThemeName::value)
                 .isNotEmpty()
                 .get()
                 .isEqualTo("레벨2 탈출");
@@ -56,7 +55,7 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 테마 id의 데이터를 조회한다.")
     void notFound() {
-        Optional<Theme> findReservationTime = target.findById(5L);
+        Optional<Theme> findReservationTime = target.findById(0L);
 
         assertThat(findReservationTime).isEmpty();
     }
@@ -64,7 +63,11 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("새로운 테마 데이터를 생성한다.")
     void create() {
-        Theme theme = new Theme("레벨4 탈출", "우테코 레벨4를 탈출하는 내용입니다.", "woowahan.com");
+        Theme theme = new Theme(
+                new ThemeName("레벨 1 방탈출"),
+                new Description("description"),
+                new Thumbnail("thumbnail")
+        );
 
         target.save(theme);
 
@@ -75,7 +78,7 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 id를 가진 테마를 삭제한다.")
     void delete() {
-        target.removeById(2L);
+        target.removeById(테마_2번_ID);
 
         int countRow = countRow("theme");
         assertThat(countRow).isEqualTo(1);

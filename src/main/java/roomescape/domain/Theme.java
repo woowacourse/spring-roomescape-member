@@ -3,15 +3,15 @@ package roomescape.domain;
 public class Theme {
 
     private final Long id;
-    private final String name;
-    private final String description;
-    private final String thumbnail;
+    private final ThemeName name;
+    private final Description description;
+    private final Thumbnail thumbnail;
 
-    public Theme(String name, String description, String thumbnail) {
+    public Theme(ThemeName name, Description description, Thumbnail thumbnail) {
         this(null, name, description, thumbnail);
     }
 
-    public Theme(Long id, String name, String description, String thumbnail) {
+    public Theme(Long id, ThemeName name, Description description, Thumbnail thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -22,15 +22,15 @@ public class Theme {
         return id;
     }
 
-    public String getName() {
+    public ThemeName getName() {
         return name;
     }
 
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 
-    public String getThumbnail() {
+    public Thumbnail getThumbnail() {
         return thumbnail;
     }
 }

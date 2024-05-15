@@ -13,7 +13,7 @@ public class ReservationFactory {
         this.clock = clock;
     }
 
-    public Reservation create(String name, String date, ReservationTime time, Theme theme) {
+    public Reservation create(String date, Member member, ReservationTime time, Theme theme) {
         LocalDate reservationDate = LocalDate.parse(date);
         LocalTime reservationStartAt = time.getStartAt();
         LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, reservationStartAt);
@@ -23,6 +23,6 @@ public class ReservationFactory {
             throw new IllegalStateException("이미 지나간 시간에 대한 예약을 할 수 없습니다.");
         }
 
-        return new Reservation(new Name(name), LocalDate.parse(date), time, theme);
+        return new Reservation(LocalDate.parse(date), member, time, theme);
     }
 }

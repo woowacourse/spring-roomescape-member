@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,12 +13,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.service.response.AvailableReservationTimeResponse;
 import roomescape.support.IntegrationTestSupport;
 
-/*
- * 테스트 데이터베이스 시간 초기 데이터
- * {ID=1, START_AT=10:00}
- * {ID=2, START_AT=11:00}
- * {ID=3, START_AT=13:00}
- */
 class ReservationTimeRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
@@ -46,7 +40,7 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 예약 시간 id의 데이터를 조회한다.")
     void findById() {
-        Optional<ReservationTime> findReservationTime = target.findById(2L);
+        Optional<ReservationTime> findReservationTime = target.findById(예약_시간_2번_ID);
 
         assertThat(findReservationTime)
                 .map(ReservationTime::getStartAt)
@@ -58,7 +52,7 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 예약 시간 id의 데이터를 조회한다.")
     void notFound() {
-        Optional<ReservationTime> findReservationTime = target.findById(5L);
+        Optional<ReservationTime> findReservationTime = target.findById(0L);
 
         assertThat(findReservationTime).isEmpty();
     }
@@ -78,7 +72,7 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @Test
     @DisplayName("특정 id를 가진 예약 시간을 삭제한다.")
     void delete() {
-        target.removeById(3L);
+        target.removeById(예약_시간_3번_ID);
 
         int countRow = countRow("reservation_time");
         assertThat(countRow).isEqualTo(2);
@@ -106,22 +100,15 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
         assertThat(result).isFalse();
     }
 
-    /*
-     * 테스트 데이터베이스 예약 초기 데이터
-     * {ID=1, NAME=브라운, DATE=2023-05-04, TIME={ID=1, START_AT="10:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     * {ID=2, NAME=엘라, DATE=2023-05-04, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
-     */
     @Test
     @DisplayName("주어진 날짜와 테마에 대한 사용 가능 시간을 조회할 수 있다.")
     void findAvailableTimes() {
         LocalDate date = LocalDate.parse("2023-05-04");
-        Long themeId = 1L;
 
-        List<AvailableReservationTimeResponse> result = target.findAvailableReservationTimes(date, themeId);
+        List<AvailableReservationTimeResponse> result = target.findAvailableReservationTimes(date, 테마_1번_ID);
 
         AvailableReservationTimeResponse expectedAvailableTime =
-                new AvailableReservationTimeResponse(3L, "13:00", false);
+                new AvailableReservationTimeResponse(예약_시간_3번_ID, "13:00", false);
         assertThat(result)
                 .contains(expectedAvailableTime)
                 .extracting(AvailableReservationTimeResponse::alreadyBooked)

@@ -15,9 +15,13 @@ class TimeValidator implements ConstraintValidator<TimeValid, String> {
     }
 
     @Override
-    public boolean isValid(String strDate, ConstraintValidatorContext context) {
+    public boolean isValid(String strTime, ConstraintValidatorContext context) {
+        if (strTime == null) {
+            return true;
+        }
+
         try {
-            LocalTime.parse(strDate, formatter);
+            LocalTime.parse(strTime, formatter);
             return true;
         } catch (Exception e) {
             return false;

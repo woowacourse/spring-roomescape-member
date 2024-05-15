@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.infrastructure.persistence;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +9,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Description;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
+import roomescape.domain.Thumbnail;
 
 @Repository
 public class ThemeRepository {
@@ -58,7 +61,7 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ? LIMIT 1";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id));
         } catch (Exception exception) {
@@ -69,8 +72,8 @@ public class ThemeRepository {
     private RowMapper<Theme> getThemeRowMapper() {
         return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail"));
+                new ThemeName(resultSet.getString("name")),
+                new Description(resultSet.getString("description")),
+                new Thumbnail(resultSet.getString("thumbnail")));
     }
 }

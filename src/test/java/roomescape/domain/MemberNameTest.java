@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class NameTest {
+class MemberNameTest {
 
     @Test
     @DisplayName("생성 테스트")
     void create() {
-        assertThatCode(() -> new Name("아톰"))
+        assertThatCode(() -> new MemberName("아톰"))
                 .doesNotThrowAnyException();
     }
 
@@ -21,8 +21,18 @@ class NameTest {
     @ValueSource(strings = {" ", "", "\n", "\r"})
     @DisplayName("이름은 공백을 제외한 1글자 이상이어야 한다.")
     void cantCreate(String source) {
-        assertThatThrownBy(() -> new Name(source))
+        assertThatThrownBy(() -> new MemberName(source))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 공백을 제외한 1글자 이상이어야 합니다.");
+    }
+
+    @Test
+    @DisplayName("이름은 20글자를 넘길 수 없다.")
+    void maxLength() {
+        String longName = "*".repeat(21);
+
+        assertThatThrownBy(() -> new MemberName(longName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이름은 20글자를 넘을 수 없습니다.");
     }
 }
