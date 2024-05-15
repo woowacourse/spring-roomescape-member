@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class MemberJDBCRepositoryTest {
         memberRepository = new MemberJDBCRepository(jdbcTemplate);
     }
 
-    @DisplayName("이메일로 회원을 조회한다.")
+    @DisplayName("이메일로 회원을 조회한다. - 성공")
     @Test
     void findMemberByEmailTest() {
         //when
@@ -35,7 +36,13 @@ class MemberJDBCRepositoryTest {
         assertThat(member.getId()).isEqualTo(1);
     }
 
-    @DisplayName("id로 회원을 조회한다.")
+    @DisplayName("이메일로 회원을 조회한다. - 실패")
+    @Test
+    void NotfoundMemberByEmailTest() {
+        assertThat(memberRepository.findByEmail("lily12@email.com")).isEqualTo(Optional.empty());
+    }
+
+    @DisplayName("id로 회원을 조회한다. - 성공")
     @Test
     void findMemberByIdTest() {
         //when
@@ -43,5 +50,11 @@ class MemberJDBCRepositoryTest {
 
         //then
         assertThat(member.getId()).isEqualTo(1);
+    }
+
+    @DisplayName("id로 회원을 조회한다. - 실패")
+    @Test
+    void NotfoundMemberByIdTest() {
+        assertThat(memberRepository.findById(5)).isEqualTo(Optional.empty());
     }
 }
