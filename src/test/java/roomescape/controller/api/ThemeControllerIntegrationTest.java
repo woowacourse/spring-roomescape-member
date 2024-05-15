@@ -2,8 +2,6 @@ package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,35 +12,23 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.Fixture.DAY_BEFORE_YESTERDAY;
+import static roomescape.Fixture.YESTERDAY;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("/truncate.sql")
+@Sql("/testdata.sql")
 class ThemeControllerIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("insert into theme(theme_name, description, thumbnail) values ('공포', '공포입니다.', '123')");
-        jdbcTemplate.update("insert into theme(theme_name, description, thumbnail) values ('해피', '해피입니다.', '456')");
-    }
-
-    @AfterEach
-    void clearTable() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM member");
-    }
 
     @Test
     @DisplayName("새로운 테마 저장을 요청할 수 있다")
@@ -89,16 +75,10 @@ class ThemeControllerIntegrationTest {
     @Test
     void findThemeRanking() {
         //given 테마1 - 2회  / 테마2 - 1회
-        jdbcTemplate.update("insert into reservation_time(start_at) values ('09:00')");
-        jdbcTemplate.update("insert into member(member_name, email, password, role) " +
-                "values ('coli1', 'kkwoo001021@naver.com', 'rlarjsdn1021!', 'USER'), " +
-                "('coli2', 'kkwoo1021@hanmail.net', 'rlarjsdn1021!', 'ADMIN')");
-        LocalDate dayBeforeYesterDay = LocalDate.now().minusDays(2L);
-        LocalDate yesterday = LocalDate.now().minusDays(1L);
         String sql = "insert into reservation(date, time_id, theme_id, member_id) values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, dayBeforeYesterDay, 1, 1, 1);
-        jdbcTemplate.update(sql, yesterday, 1, 1, 1);
-        jdbcTemplate.update(sql, yesterday, 1, 2, 1);
+        jdbcTemplate.update(sql, DAY_BEFORE_YESTERDAY, 1, 1, 1);
+        jdbcTemplate.update(sql, YESTERDAY, 1, 1, 1);
+        jdbcTemplate.update(sql, YESTERDAY, 1, 2, 1);
 
         //when
         List<ThemeResponse> responses = RestAssured.given().log().all()

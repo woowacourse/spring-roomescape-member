@@ -2,7 +2,6 @@ package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,10 +24,13 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.Fixture.DAY_BEFORE_YESTERDAY;
+import static roomescape.Fixture.YESTERDAY;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
 @Sql("/truncate.sql")
+@Sql("/testdata.sql")
 class ReservationControllerIntegrationTest {
 
     @Autowired
@@ -39,31 +41,10 @@ class ReservationControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("insert into theme(theme_name, description, thumbnail) values ('공포', '공포입니다.', '123')");
-        jdbcTemplate.update("insert into theme(theme_name, description, thumbnail) values ('해피', '해피입니다.', '456')");
-
-        jdbcTemplate.update("insert into reservation_time(start_at) values ('09:00')");
-        jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
-
-        jdbcTemplate.update("insert into member(member_name, email, password, role) " +
-                "values ('coli1', 'a@a.com', 'userpassword', 'USER'), " +
-                "('coli2', 'b@b.com', 'adminpassword', 'ADMIN')");
-
-        LocalDate dayBeforeYesterDay = LocalDate.now().minusDays(2L);
-        LocalDate yesterday = LocalDate.now().minusDays(1L);
-
         String sql = "insert into reservation(date, time_id, theme_id, member_id) values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, dayBeforeYesterDay, 1, 1, 1);
-        jdbcTemplate.update(sql, yesterday, 1, 1, 1);
-        jdbcTemplate.update(sql, yesterday, 1, 2, 1);
-    }
-
-    @AfterEach
-    void clearTable() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM member");
+        jdbcTemplate.update(sql, DAY_BEFORE_YESTERDAY, 1, 1, 1);
+        jdbcTemplate.update(sql, YESTERDAY, 1, 1, 1);
+        jdbcTemplate.update(sql, YESTERDAY, 1, 2, 1);
     }
 
     @Test
@@ -73,7 +54,7 @@ class ReservationControllerIntegrationTest {
         Member member = new Member(1L, "coli1", "a@a.com", "userpassword", "USER");
         Token token = tokenManager.generate(member);
 
-        UserReservationRequest reservationRequest = new UserReservationRequest(LocalDate.now(), 1L, 1L);
+        UserReservationRequest reservationRequest = new UserReservationRequest(LocalDate.now().plusDays(1), 1L, 1L);
         Map<String, Object> request = new HashMap<>();
         request.put("date", reservationRequest.date().toString());
         request.put("themeId", reservationRequest.themeId());

@@ -2,8 +2,6 @@ package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,22 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("/truncate.sql")
+@Sql("/testdata.sql")
 class ReservationTimeControllerIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        String insertSql = "INSERT INTO reservation_time(start_at) VALUES (?)";
-        jdbcTemplate.update(insertSql, LocalTime.of(9, 0, 0));
-        jdbcTemplate.update(insertSql, LocalTime.of(10, 0, 0));
-    }
-
-    @AfterEach
-    void clearTable() {
-        jdbcTemplate.update("DELETE FROM reservation_time");
-    }
 
     @Test
     @DisplayName("새로운 예약시간을 저장을 요청할 수 있다")
