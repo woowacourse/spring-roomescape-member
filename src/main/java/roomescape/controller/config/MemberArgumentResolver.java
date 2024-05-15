@@ -9,14 +9,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.request.MemberRequest;
+import roomescape.infrastructure.CookieManager;
+import roomescape.infrastructure.auth.Token;
 import roomescape.service.LoginService;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final LoginService loginService;
+    private final CookieManager cookieManager;
 
-    public MemberArgumentResolver(final LoginService loginService) {
+    public MemberArgumentResolver(LoginService loginService, CookieManager cookieManager) {
         this.loginService = loginService;
+        this.cookieManager = cookieManager;
     }
 
     @Override
@@ -32,7 +36,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory) {
         try {
             HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-            return new MemberRequest(loginService.check(request.getCookies()));
+            Token token = cookieManager.getToken(request.getCookies());
+            return new MemberRequest(loginService.check(token));
         } catch (Exception exception) {
             HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

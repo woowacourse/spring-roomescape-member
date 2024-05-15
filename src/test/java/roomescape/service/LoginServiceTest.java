@@ -44,14 +44,12 @@ class LoginServiceTest {
                 .thenReturn(dummy);
         Mockito.when(tokenManager.generate(any(Member.class)))
                 .thenReturn(token);
-        Mockito.when(cookieManager.generate(token))
-                .thenReturn(cookie);
 
         //when
-        Cookie madeCookie = loginService.login(loginRequest);
+        Token actualToken = loginService.login(loginRequest);
 
         //then
-        assertThat(madeCookie.getName()).isEqualTo(cookie.getName());
+        assertThat(actualToken.getToken()).isEqualTo(token.getToken());
     }
 
     @Test
@@ -72,31 +70,16 @@ class LoginServiceTest {
     void check() {
         Cookie[] cookies = new Cookie[1];
         Member dummy = new Member(1L, "콜리", "email@email.com", "password", "USER");
-        Mockito.when(cookieManager.getToken(cookies))
-                .thenReturn(new Token("token"));
+        Token token = new Token("token");
         Mockito.when(tokenManager.getMemberId(any(Token.class)))
                 .thenReturn(1L);
         Mockito.when(memberService.findMemberById(eq(1L)))
                 .thenReturn(dummy);
 
         //when
-        Member member = loginService.check(cookies);
+        Member member = loginService.check(token);
 
         //then
         assertThat(member.getId()).isEqualTo(dummy.getId());
-    }
-
-    @Test
-    void logOut() {
-        Cookie[] cookies = new Cookie[1];
-        cookies[0] = new Cookie("token", "token");
-        Mockito.when(cookieManager.makeResetCookie(cookies))
-                .thenCallRealMethod();
-
-        //when
-        Cookie cookie = loginService.logOut(cookies);
-
-        //then
-        assertThat(cookie.getMaxAge()).isZero();
     }
 }

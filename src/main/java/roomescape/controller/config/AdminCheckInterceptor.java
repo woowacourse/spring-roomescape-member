@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
+import roomescape.infrastructure.CookieManager;
+import roomescape.infrastructure.auth.Token;
 import roomescape.service.LoginService;
 
 import java.util.NoSuchElementException;
@@ -15,9 +17,11 @@ import static roomescape.domain.member.Role.ADMIN;
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
     private final LoginService loginService;
+    private final CookieManager cookieManager;
 
-    public AdminCheckInterceptor(final LoginService loginService) {
+    public AdminCheckInterceptor(LoginService loginService, CookieManager cookieManager) {
         this.loginService = loginService;
+        this.cookieManager = cookieManager;
     }
 
     @Override
@@ -27,7 +31,8 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             Object handler
     ) {
         try {
-            Member foundMember = loginService.check(request.getCookies());
+            Token token = cookieManager.getToken(request.getCookies());
+            Member foundMember = loginService.check(token);
             if (foundMember.isRole(ADMIN)) {
                 return true;
             }
