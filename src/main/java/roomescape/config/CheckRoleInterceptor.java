@@ -7,6 +7,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
+import java.util.Optional;
+
 public class CheckRoleInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
@@ -19,10 +21,13 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = extractToken(request);
-        String subject = jwtTokenProvider.getSubject(token);
-        long memberId = Long.parseLong(subject);
+        Optional<String> token = extractToken(request);
+        if(token.isEmpty()) {
+            throw new TokenValidationFailureException("토큰이 존재하지 않습니다.");
+        }
 
+        String subject = jwtTokenProvider.getSubject(token.get());
+        long memberId = Long.parseLong(subject);
         Member member = memberService.getMemberById(memberId);
         boolean isAdmin = member.getRole().isAdmin();
 
@@ -32,7 +37,7 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private static String extractToken(HttpServletRequest request) {
+    private static Optional<String> extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 
         return CookieParser.extractTokenFromCookie(cookies);

@@ -10,6 +10,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
+import java.util.Optional;
+
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
@@ -27,26 +29,21 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        if (extractCookies(webRequest) == null) {
+        Optional<String> token = extractToken(webRequest);
+        if(token.isEmpty()) {
             return null;
         }
 
-        String token = extractToken(webRequest);
-        String subject = jwtTokenProvider.getSubject(token);
+        String subject = jwtTokenProvider.getSubject(token.get());
         long id = Long.parseLong(subject);
 
         return memberService.getMemberById(id);
     }
 
-    private String extractToken(NativeWebRequest webRequest) {
-        Cookie[] cookies = extractCookies(webRequest);
+    private Optional<String> extractToken(NativeWebRequest webRequest) {
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+        Cookie[] cookies = httpServletRequest.getCookies();
 
         return CookieParser.extractTokenFromCookie(cookies);
-    }
-
-    private Cookie[] extractCookies(NativeWebRequest webRequest) {
-        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-
-        return httpServletRequest.getCookies();
     }
 }

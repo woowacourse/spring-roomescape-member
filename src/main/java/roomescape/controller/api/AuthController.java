@@ -29,6 +29,11 @@ public class AuthController {
 
     @GetMapping("/check")
     public ResponseEntity<MemberPreviewResponse> loginCheck(Member member) {
+        if(member == null) {
+            return ResponseEntity.ok()
+                    .build();
+        }
+
         MemberPreviewResponse name = MemberPreviewResponse.from(member);
 
         return ResponseEntity.ok()

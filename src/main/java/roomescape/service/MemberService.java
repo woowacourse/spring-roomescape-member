@@ -34,11 +34,11 @@ public class MemberService {
                 .orElseThrow(() -> new ResourceNotFoundException("일치하는 이메일과 비밀번호가 없습니다."));
     }
 
-    public Member getUserById(Long id) {
-        return findValidatedSiteUserById(id);
+    public Member getMemberById(Long id) {
+        return findValidatedMemberById(id);
     }
 
-    private Member findValidatedSiteUserById(Long memberId) {
+    private Member findValidatedMemberById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(
                 () -> new ResourceNotFoundException("아이디에 해당하는 사용자가 없습니다."));
     }
