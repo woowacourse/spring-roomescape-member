@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.Role;
 import roomescape.service.LoginService;
 
 import static roomescape.domain.member.Role.ADMIN;
@@ -26,7 +25,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
             Object handler
     ) {
         Member foundMember = loginService.check(request.getCookies());
-        if (Role.mapTo(foundMember.getRole()) == ADMIN) {
+        if (foundMember.isRole(ADMIN)) {
             return true;
         }
 

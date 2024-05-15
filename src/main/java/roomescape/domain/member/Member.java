@@ -38,6 +38,10 @@ public class Member {
         );
     }
 
+    public boolean isRole(Role role) {
+        return this.role == role;
+    }
+
     public String getName() {
         return name.getValue();
     }
