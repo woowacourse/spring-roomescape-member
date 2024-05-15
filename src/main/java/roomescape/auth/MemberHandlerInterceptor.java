@@ -27,7 +27,7 @@ public class MemberHandlerInterceptor implements HandlerInterceptor {
         String token = CookieUtils.extractTokenFromCookie(request.getCookies());
         long memberId = tokenProvider.extractMemberId(token);
         Member member = memberService.findById(memberId);
-        if (member.isGuest()|| member.isAdmin()) {
+        if (member.isGuest() || member.isAdmin()) {
             return true;
         }
         throw new ForbiddenException("권한이 없는 접근입니다.");

@@ -43,7 +43,7 @@ class ReservationTimeControllerTest {
     @TestFactory
     Stream<DynamicTest> createDuplicateTime() {
         return Stream.of(
-                DynamicTest.dynamicTest("시간을 추가한다",() -> {
+                DynamicTest.dynamicTest("시간을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .body(new ReservationTimeCreateRequest("10:00"))
@@ -78,7 +78,7 @@ class ReservationTimeControllerTest {
     @TestFactory
     Stream<DynamicTest> findAllReservationTime() {
         return Stream.of(
-                DynamicTest.dynamicTest("시간을 추가한다",() -> {
+                DynamicTest.dynamicTest("시간을 추가한다", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .body(new ReservationTimeCreateRequest("10:00"))
@@ -96,12 +96,13 @@ class ReservationTimeControllerTest {
     @TestFactory
     Stream<DynamicTest> deleteReservationTimeById() {
         return Stream.of(
-                DynamicTest.dynamicTest("시간을 추가한다",() -> {
+                DynamicTest.dynamicTest("시간을 추가한다", () -> {
                     timeId = (int) RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .body(new ReservationTimeCreateRequest("10:00"))
                             .when().post("/times")
-                            .then().log().all().extract().response().jsonPath().get("id");;
+                            .then().log().all().extract().response().jsonPath().get("id");
+                    ;
                 }),
                 DynamicTest.dynamicTest("시간을 삭제한다.", () -> {
                     RestAssured.given().log().all()
