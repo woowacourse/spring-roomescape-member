@@ -25,10 +25,10 @@ class JwtTokenProviderTest {
 
     @Test
     @DisplayName("토큰을 분석할 수 있다.")
-    void getPayload() {
+    void getEmail() {
         final String token = jwtTokenProvider.createToken("email@email.com");
 
-        final String result = jwtTokenProvider.getPayload(token);
+        final String result = jwtTokenProvider.getEmail(token);
 
         assertThat(result).isEqualTo("email@email.com");
     }
