@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.controller;
 
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;

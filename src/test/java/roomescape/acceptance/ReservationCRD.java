@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ReservationCRD {
-    public static Long postReservation(String date, Long timeId, Long themeId, int expectedHttpCode) {
-        Map<?, ?> requestBody = Map.of("name", "포비", "date", date, "timeId", timeId, "themeId", themeId);
+    public static Long postUserReservation(String token, String date, Long timeId, Long themeId, int expectedHttpCode) {
+        Map<?, ?> requestBody = Map.of("date", date, "timeId", timeId, "themeId", themeId);
 
         Response response = RestAssured.given().log().all()
+                .cookies("token", token)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when().post("/reservations")
@@ -27,7 +28,26 @@ public class ReservationCRD {
         return null;
     }
 
-    public static void getReservationTimes(int expectedHttpCode, int expectedReservationsSize) {
+    public static Long postAdminReservation(String token, String date, Long memberId, Long timeId, Long themeId, int expectedHttpCode) {
+        Map<?, ?> requestBody = Map.of("date", date, "memberId", memberId, "timeId", timeId, "themeId", themeId);
+
+        Response response = RestAssured.given().log().all()
+                .cookies("token", token)
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(expectedHttpCode)
+                .extract().response();
+
+        if (expectedHttpCode == 201) {
+            return response.jsonPath().getLong("id");
+        }
+
+        return null;
+    }
+
+    public static void getReservations(int expectedHttpCode, int expectedReservationsSize) {
         Response response = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -39,7 +59,7 @@ public class ReservationCRD {
         assertThat(reservationTimeResponses).hasSize(expectedReservationsSize);
     }
 
-    public static void deleteReservationTime(Long reservationId, int expectedHttpCode) {
+    public static void deleteReservation(Long reservationId, int expectedHttpCode) {
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + reservationId)
                 .then().log().all()

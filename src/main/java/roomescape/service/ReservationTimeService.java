@@ -1,13 +1,13 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.request.ReservationTimeRequest;
-import roomescape.controller.response.AvailableReservationTimeResponse;
-import roomescape.controller.response.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -60,11 +60,7 @@ public class ReservationTimeService {
     }
 
     private void rejectDuplicateReservationTime(ReservationTime reservationTime) {
-        List<ReservationTime> savedReservationTimes = reservationTimeRepository.findAll();
-        boolean isDuplicateReservationTimePresent = savedReservationTimes.stream()
-                .anyMatch(reservationTime::hasSameStartAt);
-
-        if (isDuplicateReservationTimePresent) {
+        if (reservationTimeRepository.existsByStartAt(reservationTime)) {
             throw new IllegalArgumentException("중복된 예약 시간이 존재합니다. 입력한 시간: " + reservationTime.getStartAt());
         }
     }

@@ -11,6 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
 
 @Sql("/setReservation.sql")
 class H2ReservationRepositoryTest extends BasicAcceptanceTest {
@@ -76,5 +77,16 @@ class H2ReservationRepositoryTest extends BasicAcceptanceTest {
         );
 
         assertThat(byPeriod).isEqualTo(expectedReservations);
+    }
+
+    @DisplayName("멤버id, 테마id, 시작 날짜, 끝 날짜의 조건을 만족하는 예약 목록을 반환한다")
+    @Test
+    void searchReservations() {
+        LocalDate today = LocalDate.now();
+        List<Reservation> reservations = reservationRepository.searchReservations(
+                2L, 1L, today.plusDays(5), today.plusDays(7)
+        );
+
+        assertThat(reservations).isEqualTo(List.of(TestFixtures.RESERVATION_2));
     }
 }

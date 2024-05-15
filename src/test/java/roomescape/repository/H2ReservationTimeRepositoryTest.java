@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 
 @Sql(value = "/setReservationTime.sql")
 class H2ReservationTimeRepositoryTest extends BasicAcceptanceTest {

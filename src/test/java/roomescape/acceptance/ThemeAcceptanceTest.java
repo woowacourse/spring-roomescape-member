@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
-import roomescape.controller.response.ThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 
 class ThemeAcceptanceTest extends BasicAcceptanceTest {
 
@@ -42,10 +42,7 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
         AtomicLong themeId = new AtomicLong();
 
         return Stream.of(
-                dynamicTest("테마를 추가한다 (10:00)", () -> {
-                    Long id = postTheme(201);
-                    themeId.set(id);
-                }),
+                dynamicTest("테마를 추가한다 (10:00)", () -> themeId.set(postTheme(201))),
                 dynamicTest("테마를 삭제한다 (10:00)", () -> deleteTheme(themeId.longValue(), 204)),
                 dynamicTest("테마를 추가한다 (10:00)", () -> postTheme(201)),
                 dynamicTest("모든 테마를 조회한다 (총 1개)", () -> getThemes(200, 1))
@@ -59,10 +56,10 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
         LocalDate today = LocalDate.now();
         return Stream.of(
                 dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_1)),
-                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(5).toString(), "1", "10")),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(5).toString(), "1", "1", "10")),
                 dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_2)),
-                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(4).toString(), "1", "11")),
-                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(4).toString(), "2", "11")),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(4).toString(), "1", "1", "11")),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(4).toString(), "1", "2", "11")),
                 dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_3))
         );
     }
@@ -116,9 +113,9 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
         assertThat(themeResponses).isEqualTo(expectedThemeResponses);
     }
 
-    private void postPastReservation(String date, String timeId, String themeId) {
+    private void postPastReservation(String date, String member_id, String timeId, String themeId) {
         jdbcTemplate.update(
-                "insert into reservation (name, date, time_id, theme_id) values ('사람', ?, ?, ?)",
-                date, timeId, themeId);
+                "insert into reservation (date, member_id, time_id, theme_id) values (?, ?, ?, ?)",
+                date, member_id, timeId, themeId);
     }
 }

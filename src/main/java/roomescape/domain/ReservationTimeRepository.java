@@ -1,6 +1,4 @@
-package roomescape.repository;
-
-import roomescape.domain.ReservationTime;
+package roomescape.domain;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,4 +11,6 @@ public interface ReservationTimeRepository {
     void deleteById(Long id);
 
     Optional<ReservationTime> findById(Long id);
+
+    boolean existsByStartAt(ReservationTime reservationTime);
 }

@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.BasicAcceptanceTest;
 import roomescape.TestFixtures;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 
 @Sql("/setTheme.sql")
 class H2ThemeRepositoryTest extends BasicAcceptanceTest {

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -12,9 +13,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import roomescape.domain.ReservationTimeRepository;
 
 @Repository
 public class H2ReservationTimeRepository implements ReservationTimeRepository {
+    private static final String ID = "id";
+    private static final String START_AT = "start_at";
+
     private final ReservationTimeRowMapper rowMapper;
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -24,17 +29,18 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns(ID);
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
         Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "start_at", reservationTime.getStartAt()))
-                .longValue();
+                        START_AT, reservationTime.getStartAt()
+        )).longValue();
 
         return new ReservationTime(
                 reservationTimeId,
-                reservationTime.getStartAt());
+                reservationTime.getStartAt()
+        );
     }
 
     public List<ReservationTime> findAll() {
@@ -45,9 +51,12 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "select * from reservation_time where id = ?";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, rowMapper, id);
-
-        return reservationTimes.stream().findFirst();
+        try {
+            ReservationTime savedReservationTime = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(savedReservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void deleteById(Long id) {
@@ -55,12 +64,19 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public boolean existsByStartAt(ReservationTime reservationTime) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, reservationTime.getStartAt()));
+    }
+
     private static class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
         @Override
         public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new ReservationTime(
-                    rs.getLong("id"),
-                    rs.getTime("start_at").toLocalTime());
+                    rs.getLong(ID),
+                    rs.getTime(START_AT).toLocalTime()
+            );
         }
     }
 }
