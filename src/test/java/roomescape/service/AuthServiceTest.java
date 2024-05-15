@@ -45,7 +45,7 @@ class AuthServiceTest {
     void generateCookie() {
         // given
         createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
-        Member foundMember = memberDao.find(MEMBER_FIXTURE);
+        Member foundMember = memberDao.find(MEMBER_FIXTURE).get();
         // when
         Cookie cookie = authService.generateCookie(foundMember);
         // then
@@ -60,7 +60,7 @@ class AuthServiceTest {
     void findMemberIdByCookie() {
         // given
         createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
-        Member foundMember = memberDao.find(MEMBER_FIXTURE);
+        Member foundMember = memberDao.find(MEMBER_FIXTURE).get();
         Cookie cookie = authService.generateCookie(foundMember);
         Cookie[] cookies = new Cookie[]{cookie};
         // when
@@ -74,7 +74,7 @@ class AuthServiceTest {
     void findMemberRoleByCookie() {
         // given
         createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
-        Member foundMember = memberDao.find(MEMBER_FIXTURE);
+        Member foundMember = memberDao.find(MEMBER_FIXTURE).get();
         Cookie cookie = authService.generateCookie(foundMember);
         Cookie[] cookies = new Cookie[]{cookie};
         // when

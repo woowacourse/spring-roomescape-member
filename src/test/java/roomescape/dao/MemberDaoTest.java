@@ -44,7 +44,7 @@ class MemberDaoTest {
         simpleJdbcInsert.withTableName("member")
                 .execute(MEMBER_PARAMETER_SOURCE);
         // when
-        Member foundMember = memberDao.find(MEMBER_FIXTURE);
+        Member foundMember = memberDao.find(MEMBER_FIXTURE).get();
         // then
         assertAll(
                 () -> assertThat(foundMember.getNameValue()).isEqualTo(MEMBER_NAME_FIXTURE),
@@ -57,9 +57,9 @@ class MemberDaoTest {
     void findById() {
         simpleJdbcInsert.withTableName("member")
                 .execute(MEMBER_PARAMETER_SOURCE);
-        Long id = memberDao.find(MEMBER_FIXTURE).getId();
+        Long id = memberDao.find(MEMBER_FIXTURE).get().getId();
         // when
-        Member foundMember = memberDao.findById(id);
+        Member foundMember = memberDao.findById(id).get();
         // then
         assertAll(
                 () -> assertThat(foundMember.getNameValue()).isEqualTo(MEMBER_NAME_FIXTURE),

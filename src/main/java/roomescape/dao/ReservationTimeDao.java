@@ -3,6 +3,8 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -52,9 +54,13 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, mapper, bookedDate, bookedThemeId);
     }
 
-    public ReservationTime findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM reservation_time WHERE id = ?", MAPPER, id);
+    public Optional<ReservationTime> findById(Long id) {
+        String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public boolean existByStartAt(LocalTime startAt) {

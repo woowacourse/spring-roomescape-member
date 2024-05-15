@@ -1,19 +1,18 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
 
@@ -61,14 +60,13 @@ class ReservationTimeDaoTest {
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         Long id = reservationTime.getId();
         // then
-        assertThat(reservationTimeDao.findById(id).getStartAt()).isEqualTo(TIME_FIXTURE);
+        assertThat(reservationTimeDao.findById(id).get().getStartAt()).isEqualTo(TIME_FIXTURE);
     }
 
-    @DisplayName("해당 id의 예약 시간이 없는 경우, 예외가 발생한다.")
+    @DisplayName("해당 id의 예약 시간이 없는 경우, Optional.empty()를 반환한다.")
     @Test
     void findByNotExistingId() {
-        assertThatThrownBy(() -> reservationTimeDao.findById(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(reservationTimeDao.findById(1L)).isEqualTo(Optional.empty());
     }
 
     @DisplayName("중복된 예약 시간이 존재하는 지 여부를 반환한다.")

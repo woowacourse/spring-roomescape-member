@@ -78,10 +78,10 @@ public class ReservationService {
     private Reservation getValidatedReservation(LocalDate date, Long timeId,
                                                 Long themeId, Long memberId) {
         validateDuplicatedReservation(date, timeId, themeId);
-        ReservationTime reservationTime = reservationTimeDao.findById(timeId);
+        ReservationTime reservationTime = getTimeById(timeId);
         validateOutdatedDateTime(date, reservationTime.getStartAt());
-        RoomTheme roomTheme = roomThemeDao.findById(themeId);
-        Member member = memberDao.findById(memberId);
+        RoomTheme roomTheme = getThemeById(themeId);
+        Member member = getMemberById(memberId);
         return new Reservation(date, member, reservationTime, roomTheme);
     }
 
@@ -95,6 +95,21 @@ public class ReservationService {
         if (!deleted) {
             throw new TargetNotExistException("삭제할 예약이 존재하지 않습니다.");
         }
+    }
+
+    private ReservationTime getTimeById(Long timeId) {
+        return reservationTimeDao.findById(timeId)
+                .orElseThrow(() -> new InvalidInputException("해당 예약 시간이 존재하지 않습니다."));
+    }
+
+    private RoomTheme getThemeById(Long themeId) {
+        return roomThemeDao.findById(themeId)
+                .orElseThrow(() -> new InvalidInputException("해당 테마가 존재하지 않습니다."));
+    }
+
+    private Member getMemberById(Long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new InvalidInputException("해당 계정이 존재하지 않습니다."));
     }
 
     private void validateOutdatedDateTime(LocalDate date, LocalTime time) {

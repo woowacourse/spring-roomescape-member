@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
@@ -12,13 +11,13 @@ import static roomescape.TestFixture.createTheme;
 import io.restassured.RestAssured;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -84,7 +83,7 @@ class RoomThemeDaoTest {
         // given
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         // when
-        RoomTheme foundRoomTheme = roomThemeDao.findById(savedRoomTheme.getId());
+        RoomTheme foundRoomTheme = roomThemeDao.findById(savedRoomTheme.getId()).get();
         // then
         assertAll(
                 () -> assertThat(foundRoomTheme.getId()).isEqualTo(savedRoomTheme.getId()),
@@ -96,11 +95,10 @@ class RoomThemeDaoTest {
         );
     }
 
-    @DisplayName("해당 id의 테마가 없는 경우, 예외가 발생한다.")
+    @DisplayName("해당 id의 테마가 없는 경우, Optional.empty()를 반환한다.")
     @Test
     void findByNotExistingId() {
-        assertThatThrownBy(() -> roomThemeDao.findById(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(roomThemeDao.findById(1L)).isEqualTo(Optional.empty());
     }
 
     @DisplayName("테마를 저장한다.")
