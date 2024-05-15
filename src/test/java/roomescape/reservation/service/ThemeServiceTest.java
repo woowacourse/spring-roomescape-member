@@ -22,6 +22,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.DateRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
@@ -120,7 +121,7 @@ class ThemeServiceTest {
         reservationTimeRepository.save(new ReservationTime(LocalTime.NOON));
 
         Member member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1L, theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest("2099-04-18"), 1L, theme.getId());
         reservationService.create(reservationRequest,
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 

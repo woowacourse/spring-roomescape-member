@@ -25,6 +25,7 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.AvailableTimeResponse;
+import roomescape.reservation.dto.DateRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
@@ -137,7 +138,7 @@ class ReservationTimeServiceTest {
 
         Member member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
         themeRepository.save(new Theme("test", "test", "test"));
-        ReservationRequest reservationRequest = new ReservationRequest(date.toString(), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest(date.toString()), 1L, 1L);
         reservationService.create(reservationRequest,
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 

@@ -25,6 +25,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.DateRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
@@ -64,7 +65,7 @@ class ReservationServiceTest {
         //given
         LocalDate date = LocalDate.now().plusYears(1);
 
-        reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
+        reservationService.create(new ReservationRequest(new DateRequest(date.toString()), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
@@ -85,7 +86,7 @@ class ReservationServiceTest {
         //given
         LocalDate date = LocalDate.now().plusYears(1);
 
-        reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
+        reservationService.create(new ReservationRequest(new DateRequest(date.toString()), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
         ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(theme.getId(), member.getId(),
                 LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
@@ -108,7 +109,7 @@ class ReservationServiceTest {
         //given
         LocalDate date = LocalDate.now().plusYears(1);
 
-        reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
+        reservationService.create(new ReservationRequest(new DateRequest(date.toString()), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
         ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(theme.getId(), member.getId(),
                 LocalDate.parse("2025-01-01"), LocalDate.parse("2025-12-31"));
@@ -131,7 +132,7 @@ class ReservationServiceTest {
         //given
         LocalDate date = LocalDate.now().plusYears(1);
 
-        reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
+        reservationService.create(new ReservationRequest(new DateRequest(date.toString()), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
         ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(null, null, null, null);
 
@@ -153,7 +154,7 @@ class ReservationServiceTest {
         //given
         LocalDate date = LocalDate.now().plusYears(1);
 
-        reservationService.create(new ReservationRequest(date.toString(), reservationTime.getId(), theme.getId()),
+        reservationService.create(new ReservationRequest(new DateRequest(date.toString()), reservationTime.getId(), theme.getId()),
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
         ReservationFilterRequest reservationFilterRequest = new ReservationFilterRequest(theme.getId(), member.getId(),
                 LocalDate.parse("2025-01-01"), LocalDate.parse("2024-12-31"));
@@ -167,8 +168,8 @@ class ReservationServiceTest {
     @Test
     void create() {
         //given
-        String date = "2100-04-18";
-        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId(), theme.getId());
+        String date = "2099-04-18";
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest(date), reservationTime.getId(), theme.getId());
 
         //when
         ReservationResponse reservationResponse = reservationService.create(reservationRequest,
@@ -188,7 +189,7 @@ class ReservationServiceTest {
         String date = "2099-04-18";
         reservationRepository.save(new Reservation(1L, LocalDate.parse(date), reservationTime, theme));
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId() + 1,
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest(date), reservationTime.getId() + 1,
                 theme.getId());
 
         //when & then
@@ -203,7 +204,7 @@ class ReservationServiceTest {
         //given
         String date = "2099-04-18";
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, reservationTime.getId(),
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest(date), reservationTime.getId(),
                 theme.getId() + 1);
 
         //when & then
@@ -220,7 +221,7 @@ class ReservationServiceTest {
         long timeId = reservationTime.getId();
         long themeId = theme.getId();
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest(date), timeId, themeId);
         reservationService.create(reservationRequest,
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
@@ -238,7 +239,7 @@ class ReservationServiceTest {
         long timeId = reservationTime.getId();
         long themeId = theme.getId();
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest(date), timeId, themeId);
         ReservationResponse reservation = reservationService.create(reservationRequest,
                 new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 

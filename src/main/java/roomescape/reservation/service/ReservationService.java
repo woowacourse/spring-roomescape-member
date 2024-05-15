@@ -52,7 +52,7 @@ public class ReservationService {
     public ReservationResponse create(ReservationRequest reservationRequest, LoginMember member) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
         Theme theme = themeRepository.findById(reservationRequest.themeId());
-        LocalDate date = LocalDate.parse(reservationRequest.date());
+        LocalDate date = LocalDate.parse(reservationRequest.date().getDate());
 
         validateTimeExist(reservationTime, reservationRequest.timeId());
         validateThemeExist(theme, reservationRequest.themeId());

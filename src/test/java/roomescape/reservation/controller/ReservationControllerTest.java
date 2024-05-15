@@ -24,6 +24,7 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.DateRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -48,7 +49,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void find() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest("2099-04-18"), 1L, 1L);
         ReservationResponse reservationResponse = reservationService.create(reservationRequest,
                 new LoginMember(2L, "멤버", "member@email.com", Role.MEMBER));
 
@@ -148,7 +149,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest("2099-04-18", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest("2099-04-18"), 1L, 1L);
         ReservationResponse reservationResponse = reservationService.create(reservationRequest,
                 new LoginMember(2L, "멤버", "member@email.com", Role.MEMBER));
         long id = reservationResponse.id();
