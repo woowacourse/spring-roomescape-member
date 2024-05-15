@@ -1,5 +1,6 @@
 package roomescape.resolver;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                          NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
             throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        TokenResponse tokenResponse = authService.extractTokenByCookies(request);
+        Cookie[] cookies = request.getCookies();
+        TokenResponse tokenResponse = authService.extractTokenByCookies(cookies);
         authService.isTokenValid(tokenResponse);
         String memberId = authService.extractMemberIdByToken(tokenResponse);
         MemberResponse memberResponse = loginMemberService.findById(Long.parseLong(memberId));

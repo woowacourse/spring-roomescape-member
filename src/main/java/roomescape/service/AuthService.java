@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberRepository;
 import roomescape.domain.Member;
@@ -49,8 +48,7 @@ public class AuthService {
         return cookie;
     }
 
-    public TokenResponse extractTokenByCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+    public TokenResponse extractTokenByCookies(Cookie[] cookies) {
         String token = jwtTokenExtractor.extractByCookies(cookies);
         return new TokenResponse(token);
     }

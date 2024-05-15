@@ -1,5 +1,6 @@
 package roomescape.interceptor;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,8 @@ public class RoleInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        TokenResponse tokenResponse = authService.extractTokenByCookies(request);
+        Cookie[] cookies = request.getCookies();
+        TokenResponse tokenResponse = authService.extractTokenByCookies(cookies);
         authService.isTokenValid(tokenResponse);
         String memberId = authService.extractMemberIdByToken(tokenResponse);
         MemberResponse memberResponse = loginMemberService.findById(Long.parseLong(memberId));

@@ -20,7 +20,8 @@ public class LogoutController {
 
     @PostMapping
     public void tokenLogout(HttpServletRequest request, HttpServletResponse response) {
-        TokenResponse tokenResponse = authService.extractTokenByCookies(request);
+        Cookie[] cookies = request.getCookies();
+        TokenResponse tokenResponse = authService.extractTokenByCookies(cookies);
         Cookie cookie = authService.deleteCookieByToken(tokenResponse);
         response.addCookie(cookie);
     }

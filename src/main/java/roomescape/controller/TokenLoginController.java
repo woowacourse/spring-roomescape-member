@@ -37,7 +37,8 @@ public class TokenLoginController {
 
     @GetMapping("/check")
     public MemberNameResponse findUser(HttpServletRequest request) {
-        TokenResponse tokenResponse = authService.extractTokenByCookies(request);
+        Cookie[] cookies = request.getCookies();
+        TokenResponse tokenResponse = authService.extractTokenByCookies(cookies);
         String memberId = authService.extractMemberIdByToken(tokenResponse);
         MemberResponse memberResponse = loginMemberService.findById(Long.parseLong(memberId));
         return new MemberNameResponse(memberResponse.name());
