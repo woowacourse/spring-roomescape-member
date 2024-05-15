@@ -26,7 +26,6 @@ class AuthServiceTest {
         memberRepository.save(new Member(new MemberName("레모네"), "lemone@wooteco.com", "lemone1234"));
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@wooteco.com");
 
-        System.out.println(memberRepository.findByEmail("lemone@wooteco.com"));
         assertDoesNotThrow(() -> authService.createToken(tokenRequest));
     }
 

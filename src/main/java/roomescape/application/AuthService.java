@@ -31,9 +31,7 @@ public class AuthService {
 
     public Member findMemberByToken(String token) {
         String payload = jwtTokenProvider.getPayload(token, "name");
-        System.out.println("payload: " + payload);
 
-        // todo: payload에서 이메일 분리한 뒤 찾기.
         return memberRepository.findByName(payload)
                 .orElseThrow(() -> new IllegalArgumentException("토큰에 해당하는 정보가 없습니다."));
     }
