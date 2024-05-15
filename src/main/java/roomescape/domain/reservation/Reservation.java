@@ -62,7 +62,11 @@ public class Reservation {
         return date;
     }
 
-    public LocalTime getTime() {
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public LocalTime getStartAtTime() {
         return time.getStartAt();
     }
 
