@@ -11,7 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.HandleCookieInToken;
 import roomescape.auth.Login;
 import roomescape.auth.TokenProvider;
-import roomescape.member.dto.LoginMemberInToken;
 
 @Component
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
@@ -38,10 +37,6 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         Cookie[] cookies = request.getCookies();
 
         String token = HandleCookieInToken.extractTokenFrom(cookies);
-        LoginMemberInToken loginMemberInToken = tokenProvider.getLoginMember(token);
-        if (loginMemberInToken == null) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-        }
-        return loginMemberInToken;
+        return tokenProvider.getLoginMember(token);
     }
 }
