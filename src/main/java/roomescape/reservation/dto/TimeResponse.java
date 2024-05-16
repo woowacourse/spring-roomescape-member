@@ -1,12 +1,12 @@
 package roomescape.reservation.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
+import org.springframework.format.annotation.DateTimeFormat;
 import roomescape.reservation.domain.ReservationTime;
 
 public record TimeResponse(
         Long id,
-        @JsonFormat(pattern = "HH:mm") LocalTime startAt
+        @DateTimeFormat(pattern = "HH:mm") LocalTime startAt
 ) {
 
     public static TimeResponse toResponse(ReservationTime reservationTime) {
