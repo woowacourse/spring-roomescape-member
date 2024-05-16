@@ -9,17 +9,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.service.AuthService;
-import roomescape.service.LoginMemberService;
 import roomescape.service.dto.MemberRequest;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthService authService;
-    private final LoginMemberService loginMemberService;
 
-    public LoginMemberArgumentResolver(AuthService authService, LoginMemberService loginMemberService) {
+    public LoginMemberArgumentResolver(AuthService authService) {
         this.authService = authService;
-        this.loginMemberService = loginMemberService;
     }
 
     @Override
