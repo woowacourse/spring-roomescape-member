@@ -39,7 +39,7 @@ public class ReservationService {
   public Reservation saveReservation(final Member member, final SaveReservationRequest request) {
     final ReservationTime reservationTime = checkReservationTimeExist(
         request.timeId());
-    final Theme theme = checkThemeExist(request.themeId());
+    final Theme theme = findTheme(request.themeId());
 
     validateReservationDuplication(request.date(), request.timeId(), request.themeId());
 
@@ -52,7 +52,7 @@ public class ReservationService {
         .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
   }
 
-  private Theme checkThemeExist(final Long themeId) {
+  private Theme findTheme(final Long themeId) {
     return themeRepository.findById(themeId)
         .orElseThrow(() -> new NoSuchElementException("해당 id의 테마가 존재하지 않습니다."));
   }
