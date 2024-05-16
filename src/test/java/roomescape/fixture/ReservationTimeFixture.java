@@ -14,10 +14,15 @@ public class ReservationTimeFixture {
         final Map<String, String> params = new HashMap<>();
         params.put("startAt", startAt);
 
+        final String token = TokenFixture.getToken();
+
         final Response response = RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times");
+                .when().post("/admin/times");
+
+        response.then().statusCode(201);
 
         return Long.parseLong(response.then().extract().jsonPath().getString("id"));
     }

@@ -16,10 +16,13 @@ public class ThemeFixture {
         params.put("description", "테마 설명");
         params.put("thumbnail", "image.jpg");
 
+        final String token = TokenFixture.getToken();
+
         final Response response = RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes");
+                .when().post("/admin/themes");
 
         return Long.parseLong(response.then().extract().jsonPath().getString("id"));
     }

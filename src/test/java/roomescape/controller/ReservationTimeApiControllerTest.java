@@ -43,13 +43,18 @@ class ReservationTimeApiControllerTest {
     @DisplayName("시간 생성에 성공하면, 201을 반환한다.")
     @Test
     void return_201_when_reservationTime_create_success() {
+        MemberFixture.createAndReturnId();
+
         final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then()
                 .statusCode(201);
     }
@@ -57,13 +62,18 @@ class ReservationTimeApiControllerTest {
     @DisplayName("시간 생성 시 유효하지 않은 시작 시간으로 시간 생성하면 400을 반환한다.")
     @Test
     void return_400_when_reservationTime_create_input_is_invalid() {
+        MemberFixture.createAndReturnId();
+
         final Map<String, String> params = new HashMap<>();
         params.put("startAt", "");
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then()
                 .statusCode(400);
     }
@@ -71,15 +81,19 @@ class ReservationTimeApiControllerTest {
     @DisplayName("중복된 예약 시간을 생성하려 하면 400을 반환한다.")
     @Test
     void return_400_when_duplicate_reservationTime() {
+        MemberFixture.createAndReturnId();
         ReservationTimeFixture.createAndReturnId("10:00");
 
         final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then()
                 .statusCode(400);
     }
@@ -87,11 +101,15 @@ class ReservationTimeApiControllerTest {
     @DisplayName("예약 시간 조회에 성공하면, 200을 반환한다.")
     @Test
     void return_200_when_get_reservationTimes_success() {
+        MemberFixture.createAndReturnId();
         ReservationTimeFixture.createAndReturnId("10:00");
         ReservationTimeFixture.createAndReturnId("11:00");
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
-                .when().get("/times")
+                .cookie("accessToken", token)
+                .when().get("/admin/times")
                 .then()
                 .statusCode(200);
     }
@@ -99,9 +117,9 @@ class ReservationTimeApiControllerTest {
     @DisplayName("예약 가능한 시간 조회에 성공하면 200을 반환한다.")
     @Test
     void return_200_when_get_available_reservationTimes_success() {
+        final Long memberId = MemberFixture.createAndReturnId();
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
-        final Long memberId = MemberFixture.createAndReturnId();
 
         ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 
@@ -117,10 +135,14 @@ class ReservationTimeApiControllerTest {
     @DisplayName("시간 삭제에 성공하면, 204를 반환한다.")
     @Test
     void return_204_when_reservationTime_delete_success() {
+        MemberFixture.createAndReturnId();
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
 
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
-                .delete("/times/" + timeId)
+                .cookie("accessToken", token)
+                .delete("/admin/times/" + timeId)
                 .then()
                 .statusCode(204);
     }
@@ -128,8 +150,13 @@ class ReservationTimeApiControllerTest {
     @DisplayName("특정 시간이 존재하지 않는데, 그 시간을 삭제하려 할 때 400을 반환한다.")
     @Test
     void return_404_when_not_exist_id() {
+        MemberFixture.createAndReturnId();
+
+        final String token = TokenFixture.getToken();
+
         RestAssured.given()
-                .delete("/times/-1")
+                .cookie("accessToken", token)
+                .delete("/admin/times/-1")
                 .then()
                 .statusCode(400);
     }
@@ -137,17 +164,17 @@ class ReservationTimeApiControllerTest {
     @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 400을 반환한다.")
     @Test
     void return_400_when_delete_id_that_exist_reservation() {
+        final Long memberId = MemberFixture.createAndReturnId();
         final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
         final Long themeId = ThemeFixture.createAndReturnId("테마 1");
-        final Long memberId = MemberFixture.createAndReturnId();
 
         ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 
         final String token = TokenFixture.getToken();
 
         RestAssured.given()
-                .cookie("access_token", token)
-                .delete("/times/" + timeId)
+                .cookie("accessToken", token)
+                .delete("/admin/times/" + timeId)
                 .then()
                 .statusCode(400);
     }
