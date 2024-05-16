@@ -19,11 +19,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ProblemDetail handleIllegalStateException(IllegalStateException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
-    @ExceptionHandler
     public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMostSpecificCause().getMessage());
     }
