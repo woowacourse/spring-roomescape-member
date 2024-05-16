@@ -25,10 +25,10 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
   }
 
   @Override
-  public Object resolveArgument(final MethodParameter parameter,
+  public Object resolveArgument(
+      final MethodParameter parameter,
       final ModelAndViewContainer mavContainer,
       final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
-
     final HttpServletRequest request
         = (HttpServletRequest) webRequest.getNativeRequest();
 
