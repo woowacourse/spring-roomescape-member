@@ -8,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.CookieProvider;
+import roomescape.domain.Member;
 import roomescape.handle.AuthenticationException;
 import roomescape.service.AuthService;
 
@@ -25,9 +26,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+    public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         final String token = CookieProvider.extractTokenFrom(request);
 
         if (token == null) {
