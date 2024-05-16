@@ -1,7 +1,7 @@
 package roomescape.auth.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -37,15 +37,15 @@ class AuthControllerIntegrationTest {
   void login() {
     // Given
     final LoginRequest request = new LoginRequest("kelly@example.com", "password123");
-
-    // Then
-    RestAssured.given().log().all()
+    // When
+    final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(request)
-        .post("/login")
-        .then().log().all()
-        .statusCode(200)
-        .cookie("token", notNullValue());
+        .post("/login");
+    final Cookies cookies = response.getDetailedCookies();
+    final String token = cookies.getValue("token");
+    // Then
+    assertThat(jwtTokenProvider.validateToken(token)).isTrue();
   }
 
   @DisplayName("가입하지 않은 이메일로 로그인을 시도할 시 예외를 발생한다.")
