@@ -13,6 +13,9 @@ import roomescape.member.model.Member;
 
 public class JwtTokenHelper {
 
+    public static final String TOKEN = "token";
+    public static final String CLAIM_MEMBER_ID = "memberId";
+
     private final String secretKey;
     private final long validityInMilliseconds;
 
@@ -26,7 +29,7 @@ public class JwtTokenHelper {
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .claim("memberId", member.getId())
+                .claim(CLAIM_MEMBER_ID, member.getId())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -35,7 +38,7 @@ public class JwtTokenHelper {
 
     public String extractTokenFromCookies(final Cookie[] cookies) {
         final String token = Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
+                .filter(cookie -> JwtTokenHelper.TOKEN.equals(cookie.getName()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("토큰을 찾지 못했습니다"))
                 .getValue();

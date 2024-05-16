@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     ) {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String token = jwtTokenHelper.extractTokenFromCookies(request.getCookies());
-        return jwtTokenHelper.getPayloadClaimFromToken(token, "memberId", Long.class);
+        return jwtTokenHelper.getPayloadClaimFromToken(token, JwtTokenHelper.CLAIM_MEMBER_ID, Long.class);
     }
 
     @Target(ElementType.PARAMETER)
