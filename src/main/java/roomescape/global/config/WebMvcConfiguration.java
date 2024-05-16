@@ -11,19 +11,24 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
   private final AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver;
   private final AdminAuthorizationInterceptor adminAuthorizationInterceptor;
+  private final LoginCheckInterceptor loginCheckInterceptor;
 
   public WebMvcConfiguration(
       final AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver,
-      final AdminAuthorizationInterceptor adminAuthorizationInterceptor
+      final AdminAuthorizationInterceptor adminAuthorizationInterceptor,
+      final LoginCheckInterceptor loginCheckInterceptor
   ) {
     this.authenticationPrincipalArgumentResolver = authenticationPrincipalArgumentResolver;
     this.adminAuthorizationInterceptor = adminAuthorizationInterceptor;
+    this.loginCheckInterceptor = loginCheckInterceptor;
   }
 
   @Override
   public void addInterceptors(final InterceptorRegistry registry) {
-    registry.addInterceptor(adminAuthorizationInterceptor)
-        .addPathPatterns("/admin/**");
+    registry.addInterceptor(loginCheckInterceptor)
+        .addPathPatterns("/**")
+        .excludePathPatterns("/", "/login");
+    registry.addInterceptor(adminAuthorizationInterceptor).addPathPatterns("/admin/**");
   }
 
   @Override

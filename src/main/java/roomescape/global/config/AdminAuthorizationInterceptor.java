@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.domain.Member;
 import roomescape.auth.service.AuthService;
+import roomescape.global.exception.UnauthorizedException;
 
 @Component
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
@@ -28,7 +29,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
     final Member member = authService.findMember(token);
     if (!member.isAdmin()) {
-      throw new IllegalArgumentException("어드민 권한이 없습니다.");
+      throw new UnauthorizedException("어드민 권한이 없습니다.");
     }
     return true;
   }
