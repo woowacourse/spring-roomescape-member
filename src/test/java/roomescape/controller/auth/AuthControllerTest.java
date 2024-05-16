@@ -55,7 +55,7 @@ class AuthControllerTest {
     void loginWithWrongEmailFormat() {
         login("wrongEmail", DEFAULT_PASSWORD)
                 .statusCode(400)
-                .body("message", is("형식이 올바르지 않습니다."));
+                .body("message", is("입력 형식이 올바르지 않습니다."));
     }
 
     @DisplayName("비밀번호가 틀리면 400으로 응답한다.")

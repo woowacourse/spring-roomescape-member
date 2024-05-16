@@ -21,7 +21,7 @@ public enum Role {
     public static Role of(String roleName) {
         Role role = CACHE.get(roleName);
         if (role == null) {
-            throw new IllegalArgumentException("존재하지 않는 Role 입니다.");
+            throw new IllegalArgumentException("입력된 데이터로 Role을 조회할 수 없습니다.");
         }
 
         return role;
