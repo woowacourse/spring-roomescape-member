@@ -76,9 +76,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse("존재하지 않는 자원입니다."), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        logger.error(e.getMessage());
-        return new ResponseEntity<>(new ErrorResponse("서버에 문제가 생겼습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler
+//    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+//        logger.error(e.getMessage());
+//        return new ResponseEntity<>(new ErrorResponse("서버에 문제가 생겼습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 }
