@@ -5,24 +5,37 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import jakarta.servlet.http.Cookie;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.ReservationApiController;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("/truncate.sql")
 public class MissionStepTest {
+
+    private static final String ADMIN_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbi1pZCIsIm5hbWUiOiJBZG1pbiIsInJvbGUiOiJhZG1pbiJ9.rwrMXggxF2IBybjj7M8kC4XBciVOd8LGChohMzS4T_1RJ1BagnTcf-0r0OLqbZeUBT3OdRHcCtYqDmLOzr80AA";
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    public void init() {
+        RestAssured.port = port;
+    }
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -33,17 +46,22 @@ public class MissionStepTest {
     @DisplayName("Admin HTML 호출 테스트")
     @Test
     void admin_html_test() {
+        Cookie cookie = makeCookie(ADMIN_TOKEN);
+
         RestAssured.given().log().all()
+                .cookie("token", cookie.getValue())
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
+                .cookie("token", cookie.getValue())
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
+                .cookie("token", cookie.getValue())
                 .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
@@ -106,16 +124,19 @@ public class MissionStepTest {
         initializeTimesData();
         initializeThemeData();
 
+        Cookie cookie = makeCookie(ADMIN_TOKEN);
+
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        reservation.put("memberId", "1");
         reservation.put("date", "2100-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", cookie.getValue())
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
@@ -170,5 +191,13 @@ public class MissionStepTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    private jakarta.servlet.http.Cookie makeCookie(String token) {
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        return cookie;
     }
 }

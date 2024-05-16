@@ -5,14 +5,14 @@ import roomescape.domain.Reservation;
 public class ReservationResponse {
 
     private final long id;
-    private final String name;
+    private final MemberResponse member;
     private final ThemeResponse theme;
     private final String date;
     private final ReservationTimeResponse time;
 
     public ReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
-        this.name = reservation.getName();
+        this.member = new MemberResponse(reservation.getMember());
         this.theme = new ThemeResponse(reservation.getTheme());
         this.date = reservation.getDate().toString();
         this.time = new ReservationTimeResponse(reservation.getReservationTime());
@@ -22,8 +22,8 @@ public class ReservationResponse {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public MemberResponse getMember() {
+        return member;
     }
 
     public String getDate() {

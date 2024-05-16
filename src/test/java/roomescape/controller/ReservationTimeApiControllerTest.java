@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.ReservationTime;
+import roomescape.service.LoginService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeRequest;
 import roomescape.service.dto.ReservationTimeResponse;
@@ -26,8 +27,12 @@ import roomescape.service.dto.ReservationTimeResponse;
 @WebMvcTest(ReservationTimeApiController.class)
 class ReservationTimeApiControllerTest {
 
+
     @MockBean
     private ReservationTimeService reservationTimeService;
+
+    @MockBean
+    private LoginService loginService;
 
     @Autowired
     private MockMvc mockMvc;

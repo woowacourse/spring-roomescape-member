@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Theme;
+import roomescape.service.LoginService;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeRequest;
 import roomescape.service.dto.ThemeResponse;
@@ -28,6 +29,9 @@ class ThemeApiControllerTest {
 
     @MockBean
     private ThemeService themeServiceService;
+
+    @MockBean
+    private LoginService loginService;
 
     @Autowired
     private MockMvc mockMvc;

@@ -7,22 +7,24 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final Member member;
     private final Theme theme;
     private final ReservationDate date;
     private final ReservationTime time;
 
-    public Reservation(Long id, Name name, Theme theme, ReservationDate date, ReservationTime time) {
+    public Reservation(Long id, Member member, Theme theme, ReservationDate date, ReservationTime time) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.theme = theme;
         this.date = date;
         this.time = time;
     }
 
-    public Reservation(Long id, String name, Long themeId, String themeName, String description, String thumbnail,
+    public Reservation(Long id, Long memberId, String name, String role, String email, String password,
+                       Long themeId, String themeName, String description, String thumbnail,
                        String date, Long timeId, String time) {
-        this(id, new Name(name), new Theme(themeId, themeName, description, thumbnail), new ReservationDate(date),
+        this(id, new Member(memberId, name, role, email, password),
+                new Theme(themeId, themeName, description, thumbnail), new ReservationDate(date),
                 new ReservationTime(timeId, time));
     }
 
@@ -30,8 +32,12 @@ public class Reservation {
         return id;
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public String getName() {
-        return name.getValue();
+        return member.getName().getValue();
     }
 
     public Theme getTheme() {
@@ -56,6 +62,10 @@ public class Reservation {
 
     public LocalTime getTimeStartAt() {
         return time.getStartAt();
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     @Override

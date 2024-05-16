@@ -3,49 +3,33 @@ package roomescape.service.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-public class ReservationRequest {
+public class ReservationAdminRequest {
 
-    private final String name;
-    private final Long themeId;
     private final String date;
+    private final Long themeId;
     private final Long timeId;
+    private final Long memberId;
 
-    public ReservationRequest(String name, Long themeId, String date, Long timeId) {
-        validateNameExist(name);
-        validateThemeIdExist(themeId);
-        validateIdNaturalNumber(themeId);
+    public ReservationAdminRequest(String date, Long themeId, Long timeId, Long memberId) {
         validateDateExist(date);
         validateDateFormat(date);
         validateTimeIdExist(timeId);
         validateIdNaturalNumber(timeId);
-        this.name = name;
-        this.themeId = themeId;
+        validateThemeIdExist(themeId);
+        validateIdNaturalNumber(themeId);
+        validateMemberIdExist(memberId);
+        validateIdNaturalNumber(memberId);
         this.date = date;
+        this.themeId = themeId;
         this.timeId = timeId;
-    }
-
-    private void validateNameExist(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 반드시 입력되어야 합니다.");
-        }
-    }
-
-    private void validateThemeIdExist(Long themeId) {
-        if (themeId == null) {
-            throw new IllegalArgumentException("테마 아이디는 반드시 입력되어야 합니다.");
-        }
-    }
-
-    private void validateIdNaturalNumber(Long id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("아이디는 자연수여야 합니다.");
-        }
+        this.memberId = memberId;
     }
 
     private void validateDateExist(String date) {
@@ -68,28 +52,46 @@ public class ReservationRequest {
         }
     }
 
+    private void validateIdNaturalNumber(Long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("아이디는 자연수여야 합니다.");
+        }
+    }
+
+    private void validateThemeIdExist(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException("테마 아이디는 반드시 입력되어야 합니다.");
+        }
+    }
+
+    private void validateMemberIdExist(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException("멤버 아이디는 반드시 입력되어야 합니다.");
+        }
+    }
+
     public Reservation toReservation() {
         return new Reservation(
                 null,
-                new Name(name),
+                new Member(memberId, (Name) null, null, null, null),
                 new Theme(themeId, null, null, null),
                 new ReservationDate(date),
                 new ReservationTime(timeId, (LocalTime) null));
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Long getThemeId() {
-        return themeId;
     }
 
     public String getDate() {
         return date;
     }
 
-    public long getTimeId() {
+    public Long getThemeId() {
+        return themeId;
+    }
+
+    public Long getTimeId() {
         return timeId;
+    }
+
+    public Long getMemberId() {
+        return memberId;
     }
 }

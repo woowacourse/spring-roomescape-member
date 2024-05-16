@@ -9,15 +9,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Member;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.ReservationAdminRequest;
+import roomescape.service.dto.ReservationCookieRequest;
 import roomescape.service.dto.ReservationResponse;
+import roomescape.service.dto.ReservationSpecificRequest;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationApiController {
 
     private final ReservationService reservationService;
@@ -26,19 +28,36 @@ public class ReservationApiController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
+    @GetMapping("/reservations")
     public List<ReservationResponse> findReservations() {
         return reservationService.findAllReservations();
     }
 
-    @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest requestDto) {
-        ReservationResponse reservation = reservationService.createReservation(requestDto);
+    @GetMapping("/reservations/search")
+    public List<ReservationResponse> findSpecificReservations(
+            @RequestParam Long themeId,
+            @RequestParam Long memberId,
+            @RequestParam String dateFrom,
+            @RequestParam String dateTo) {
+        ReservationSpecificRequest request = new ReservationSpecificRequest(themeId, memberId, dateFrom, dateTo);
+        return reservationService.findSpecificReservations(request);
+    }
+
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> createUserReservation(
+            @RequestBody ReservationCookieRequest request, Member member) {
+        ReservationResponse reservation = reservationService.createCookieReservation(request, member);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    }
+
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createAdminReservation(@RequestBody ReservationAdminRequest request) {
+        ReservationResponse reservation = reservationService.createAdminReservation(request);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public void deleteReservation(@PathVariable long id) {
         reservationService.deleteReservation(id);
     }
