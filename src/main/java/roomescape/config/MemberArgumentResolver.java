@@ -9,15 +9,18 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.domain.member.Member;
 import roomescape.infrastructure.TokenExtractor;
+import roomescape.service.member.MemberService;
 import roomescape.service.security.AuthService;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
+    private final MemberService memberService;
 
-    public MemberArgumentResolver(AuthService authService) {
+    public MemberArgumentResolver(AuthService authService, MemberService memberService) {
         this.authService = authService;
+        this.memberService = memberService;
     }
 
     @Override
@@ -32,6 +35,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) {
         String token = TokenExtractor.extract((HttpServletRequest) webRequest.getNativeRequest());
-        return authService.findMemberByToken(token);
+        Member member = authService.findMemberByToken(token);
+
+        return memberService.findMember(member.getId());
     }
 }
