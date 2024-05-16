@@ -21,14 +21,18 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+        try {
+            String accessToken = tokenManager.getToken(request);
 
-        String accessToken = tokenManager.getToken(request);
+            if (authService.isAdminMember(accessToken)) {
+                return true;
+            }
 
-        if (authService.isAdminMember(accessToken)) {
-            return true;
+            response.sendRedirect("/login");
+            return false;
+        } catch (Exception e) {
+            response.sendRedirect("/login");
+            return false;
         }
-
-        response.sendRedirect("/login");
-        return false;
     }
 }
