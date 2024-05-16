@@ -34,7 +34,7 @@ public class JwtTokenProvider {
   }
 
   public Map<String, String> getPayload(final String token) {
-    final HashMap<String, String> payloads = new HashMap<>();
+    final Map<String, String> payloads = new HashMap<>();
     final Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 
     payloads.put("name", (String) claims.get("name"));
