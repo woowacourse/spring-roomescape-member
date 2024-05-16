@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationTimeCreateRequest;
-import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -74,8 +73,7 @@ class ReservationTimeServiceTest {
     @Test
     void findAvailableTimes() {
         //when
-        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(
-                new ReservationTimeReadRequest("2222-10-04", 1));
+        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes("2222-10-04", 1);
 
         //then
         assertThat(result).hasSize(2);

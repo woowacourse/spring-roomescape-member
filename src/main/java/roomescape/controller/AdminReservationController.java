@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.AdminReservationRequest;
-import roomescape.service.dto.ReservationReadRequest;
 import roomescape.service.dto.ReservationResponse;
 
 @RestController
@@ -33,12 +34,14 @@ public class AdminReservationController {
     }
 
     @GetMapping("/search")
-    public List<ReservationResponse> findReservation(@RequestParam("themeId") long themeId,
-                                                     @RequestParam("memberId") long memberId,
-                                                     @RequestParam("dateFrom") String dateFrom,
-                                                     @RequestParam("dateTo") String dateTo) {
-        @Valid ReservationReadRequest reservationReadRequest =
-                new ReservationReadRequest(themeId, memberId, dateFrom, dateTo);
-        return reservationService.findByThemeAndMemberAndDate(reservationReadRequest);
+    public List<ReservationResponse> findReservation(@RequestParam("themeId") @NotNull long themeId,
+                                                     @RequestParam("memberId") @NotNull long memberId,
+                                                     @RequestParam("dateFrom")
+                                                     @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$",
+                                                             message = "올바르지 않은 날짜입니다.") String dateFrom,
+                                                     @RequestParam("dateTo")
+                                                     @Pattern(regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$",
+                                                             message = "올바르지 않은 날짜입니다.") String dateTo) {
+        return reservationService.findByThemeAndMemberAndDate(themeId, memberId, dateFrom, dateTo);
     }
 }

@@ -7,7 +7,6 @@ import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationTimeCreateRequest;
-import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
 @Service
@@ -44,9 +43,8 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeResponse> findAvailableTimes(ReservationTimeReadRequest reservationTimeReadRequest) {
-        return reservationTimeRepository.getReferenceByDateAndTheme(reservationTimeReadRequest.date(),
-                        reservationTimeReadRequest.themeId()).stream()
+    public List<ReservationTimeResponse> findAvailableTimes(String date, long themeId) {
+        return reservationTimeRepository.getReferenceByDateAndTheme(date, themeId).stream()
                 .map(ReservationTimeResponse::new)
                 .toList();
     }

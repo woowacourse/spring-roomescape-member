@@ -13,7 +13,6 @@ import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.AdminReservationRequest;
 import roomescape.service.dto.MemberRequest;
-import roomescape.service.dto.ReservationReadRequest;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
@@ -77,9 +76,9 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResponse> findByThemeAndMemberAndDate(ReservationReadRequest reservationReadRequest) {
-        return reservationRepository.findByThemeAndMemberAndDate(reservationReadRequest.themeId(),
-                        reservationReadRequest.memberId(), reservationReadRequest.dateFrom(), reservationReadRequest.dateTo())
+    public List<ReservationResponse> findByThemeAndMemberAndDate(long themeId, long memberId, String dateFrom,
+                                                                 String dateTo) {
+        return reservationRepository.findByThemeAndMemberAndDate(themeId, memberId, dateFrom, dateTo)
                 .stream()
                 .map(ReservationResponse::new)
                 .toList();
