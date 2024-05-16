@@ -7,7 +7,6 @@ import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 import roomescape.fixture.Fixture;
 import roomescape.member.model.Member;
 
@@ -17,9 +16,7 @@ class JwtTokenHelperTest {
 
     @BeforeAll
     static void beforeAll() {
-        jwtTokenHelper = new JwtTokenHelper();
-        ReflectionTestUtils.setField(jwtTokenHelper, "secretKey", "test_secret_key");
-        ReflectionTestUtils.setField(jwtTokenHelper, "validityInMilliseconds", 3600000L);
+        jwtTokenHelper = new JwtTokenHelper("test_secret_key", 3600000L);
     }
 
     @Test

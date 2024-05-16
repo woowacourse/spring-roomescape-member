@@ -6,21 +6,20 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.common.exception.AuthorizationException;
 import roomescape.member.model.Member;
 
-@Component
 public class JwtTokenHelper {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final String secretKey;
+    private final long validityInMilliseconds;
+
+    public JwtTokenHelper(final String secretKey, final long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     public String createToken(Member member) {
         Date now = new Date();
