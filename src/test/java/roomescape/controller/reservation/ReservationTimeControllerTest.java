@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
+import roomescape.controller.ControllerTest;
 import roomescape.service.reservation.dto.ReservationTimeCreateRequest;
 
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {"classpath:truncate-with-guests.sql"})
-class ReservationTimeControllerTest extends ControllerTest{
+class ReservationTimeControllerTest extends ControllerTest {
     private long timeId;
 
     @DisplayName("시간 정보를 추가한다.")

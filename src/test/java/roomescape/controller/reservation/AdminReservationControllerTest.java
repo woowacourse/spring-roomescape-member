@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
+import roomescape.controller.ControllerTest;
 import roomescape.service.auth.dto.LoginRequest;
 import roomescape.service.reservation.dto.AdminReservationRequest;
 import roomescape.service.reservation.dto.ReservationRequest;
@@ -17,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {"classpath:truncate-with-reservations.sql"})
-class AdminReservationControllerTest extends ControllerTest{
+class AdminReservationControllerTest extends ControllerTest {
     private String date;
     private long timeId;
     private long themeId;

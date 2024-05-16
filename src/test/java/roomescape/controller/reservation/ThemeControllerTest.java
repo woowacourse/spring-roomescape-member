@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.jdbc.SqlMergeMode;
+import roomescape.controller.ControllerTest;
 import roomescape.service.reservation.dto.ThemeRequest;
 
 import static org.hamcrest.Matchers.greaterThan;
@@ -14,7 +15,7 @@ import static org.hamcrest.Matchers.is;
 
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {"classpath:truncate-with-guests.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-class ThemeControllerTest extends ControllerTest{
+class ThemeControllerTest extends ControllerTest {
 
     @DisplayName("테마 추가 성공 테스트")
     @Test

@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.ControllerTest;
 import roomescape.service.auth.dto.LoginRequest;
 import roomescape.service.reservation.dto.ReservationRequest;
 
@@ -14,7 +15,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @Sql(scripts = {"classpath:truncate-with-time-and-theme.sql"})
-class ReservationControllerTest extends ControllerTest{
+class ReservationControllerTest extends ControllerTest {
     private String date;
     private long timeId;
     private long themeId;

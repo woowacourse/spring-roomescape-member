@@ -2,27 +2,23 @@ package roomescape.controller.page;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.ControllerTest;
 import roomescape.service.auth.dto.LoginRequest;
 
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"classpath:truncate-with-admin-and-guest.sql"})
-class MemberPageControllerTest {
-    @LocalServerPort
-    private int port;
+class MemberPageControllerTest extends ControllerTest {
     private String token;
-
-    @BeforeEach
-    void init() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("사용자 기본 Page 접근 성공 테스트")
     @Test

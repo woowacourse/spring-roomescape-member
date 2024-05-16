@@ -2,14 +2,13 @@ package roomescape.controller.member;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.ControllerTest;
 import roomescape.service.auth.dto.LoginRequest;
 
 import java.util.stream.Stream;
@@ -18,15 +17,8 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"classpath:truncate-with-admin-and-guest.sql"})
-class MemberControllerTest {
-    @LocalServerPort
-    private int port;
+class MemberControllerTest extends ControllerTest {
     private String adminToken;
-
-    @BeforeEach
-    void init() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("모든 사용자 조회 성공 테스트 - 사용자 총 2명")
     @TestFactory
