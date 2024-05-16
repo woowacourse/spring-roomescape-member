@@ -28,7 +28,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public MemberRequest resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                          NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
             throws Exception {
-        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         return authService.extractMemberByCookies(cookies);
     }
