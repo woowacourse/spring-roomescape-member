@@ -19,6 +19,9 @@ import roomescape.service.dto.TokenResponse;
 @RestController
 @RequestMapping("/login")
 public class TokenLoginController {
+    public static final String COOKIE_NAME = "token";
+    private static final int COOKIE_MAX_AGE = 3600;
+
     private final AuthService authService;
     private final LoginMemberService loginMemberService;
 
@@ -31,7 +34,10 @@ public class TokenLoginController {
     public void tokenLogin(@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse response) {
         loginMemberService.validateLogin(tokenRequest);
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
-        Cookie cookie = authService.createCookieByToken(tokenResponse);
+        Cookie cookie = new Cookie(COOKIE_NAME, tokenResponse.token());
+        cookie.setMaxAge(COOKIE_MAX_AGE);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 

@@ -12,6 +12,8 @@ import roomescape.service.dto.TokenResponse;
 @RestController
 @RequestMapping("/logout")
 public class LogoutController {
+    public static final String COOKIE_NAME = "token";
+
     private final AuthService authService;
 
     public LogoutController(AuthService authService) {
@@ -22,7 +24,8 @@ public class LogoutController {
     public void tokenLogout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         TokenResponse tokenResponse = authService.extractTokenByCookies(cookies);
-        Cookie cookie = authService.deleteCookieByToken(tokenResponse);
+        Cookie cookie = new Cookie(COOKIE_NAME, tokenResponse.token());
+        cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
 }

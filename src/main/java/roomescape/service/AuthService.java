@@ -14,9 +14,6 @@ import roomescape.service.dto.TokenResponse;
 
 @Service
 public class AuthService {
-    public static final String COOKIE_NAME = "token";
-    private static final int COOKIE_MAX_AGE = 3600;
-
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
     private final TokenExtractor tokenExtractor;
@@ -34,20 +31,6 @@ public class AuthService {
         Member member = memberRepository.findByEmail(tokenRequest.email()).get();
         String accessToken = tokenProvider.createToken(member);
         return new TokenResponse(accessToken);
-    }
-
-    public Cookie createCookieByToken(TokenResponse token) {
-        Cookie cookie = new Cookie(COOKIE_NAME, token.token());
-        cookie.setMaxAge(COOKIE_MAX_AGE);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
-    }
-
-    public Cookie deleteCookieByToken(TokenResponse token) {
-        Cookie cookie = new Cookie(COOKIE_NAME, token.token());
-        cookie.setMaxAge(0);
-        return cookie;
     }
 
     public boolean isMemberAdmin(Cookie[] cookies) {
