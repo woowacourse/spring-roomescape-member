@@ -10,7 +10,7 @@ public class Member {
   private final String password;
   private final Role role;
 
-  public Member(final Long id, final Name name, final String email, final String password,
+  private Member(final Long id, final Name name, final String email, final String password,
       final Role role) {
     this.id = id;
     this.name = name;

@@ -3,7 +3,6 @@ package roomescape.auth.domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.Name;
 
 class MemberTest {
 
@@ -11,15 +10,15 @@ class MemberTest {
   @Test
   void isAdmin() {
     // given
-    Member member = new Member(
+    final Member member = Member.createInstance(
         1L,
-        new Name("네오"),
+        "네오",
         "neo@example.com",
         "password123",
-        new Role("ADMIN")
+        "ADMIN"
     );
     // when
-    boolean isAdmin = member.isAdmin();
+    final boolean isAdmin = member.isAdmin();
     // then
     Assertions.assertThat(isAdmin).isTrue();
   }
@@ -28,15 +27,15 @@ class MemberTest {
   @Test
   void isNotAdmin() {
     // given
-    Member member = new Member(
+    final Member member = Member.createInstance(
         2L,
-        new Name("켈리"),
+        "켈리",
         "kelly@example.com",
         "password123",
-        new Role("USER")
+        "USER"
     );
     // when
-    boolean isAdmin = member.isAdmin();
+    final boolean isAdmin = member.isAdmin();
     // then
     Assertions.assertThat(isAdmin).isFalse();
   }
