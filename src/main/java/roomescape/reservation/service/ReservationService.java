@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.admin.dto.SaveAdminReservationRequest;
 import roomescape.auth.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.SaveReservationRequest;
@@ -73,17 +72,5 @@ public class ReservationService {
   private void checkReservationExist(final Long reservationId) {
     reservationRepository.findById(reservationId)
         .orElseThrow(() -> new NoSuchElementException("해당 id의 예약이 존재하지 않습니다."));
-  }
-
-  public Reservation saveAdminReservation(final Member member,
-      final SaveAdminReservationRequest request) {
-    final ReservationTime reservationTime = checkReservationTimeExist(
-        request.timeId());
-    final Theme theme = checkThemeExist(request.themeId());
-
-    validateReservationDuplication(request.date(), request.timeId(), request.themeId());
-
-    return reservationRepository.save(
-        request.toReservation(member, reservationTime, theme));
   }
 }
