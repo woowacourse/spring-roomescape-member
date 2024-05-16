@@ -41,7 +41,7 @@ class MemberRepositoryTest {
     void existNameOrEmail(String email, boolean exist) {
         memberRepository.save(member);
         Member hogi = new Member(new MemberName("hogi"), email, "1234");
-        boolean existEmail = memberRepository.existEmail(hogi);
+        boolean existEmail = memberRepository.existEmail(hogi.getEmail());
 
         assertThat(existEmail).isEqualTo(exist);
     }

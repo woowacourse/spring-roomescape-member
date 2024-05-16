@@ -23,7 +23,7 @@ public class MemberService {
 
     public Long save(MemberSignUpRequest memberSignUpRequest) {
         Member member = memberSignUpRequest.toMember();
-        if (memberRepository.existEmail(member)) {
+        if (memberRepository.existEmail(member.getEmail())) {
             throw new IllegalArgumentException("중복된 이메일 입니다.");
         }
 

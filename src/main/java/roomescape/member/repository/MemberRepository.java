@@ -71,10 +71,10 @@ public class MemberRepository {
         return jdbcTemplate.query(sql, createMemberRowMapper());
     }
 
-    public boolean existEmail(Member member) {
+    public boolean existEmail(String email) {
         String sql = " select exists (select 1 from member where email = ?)";
 
-        return jdbcTemplate.queryForObject(sql, Boolean.class, member.getEmail());
+        return jdbcTemplate.queryForObject(sql, Boolean.class, email);
     }
 
     private RowMapper<Member> createMemberRowMapper() {
