@@ -1,14 +1,24 @@
+CREATE TABLE member
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role     ENUM('MEMBER', 'ADMIN') NOT NULL DEFAULT 'MEMBER',
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
-    start_at TIME   NOT NULL,
+    start_at TIME   NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255) NOT NULL,
+    name        VARCHAR(255) NOT NULL UNIQUE,
     description VARCHAR(255) NOT NULL,
     thumbnail   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
@@ -16,22 +26,23 @@ CREATE TABLE theme
 
 CREATE TABLE reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
-    date     DATE         NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    date      DATE         NOT NULL,
+    member_id BIGINT       NOT NULL,
+    time_id   BIGINT       NOT NULL,
+    theme_id  BIGINT       NOT NULL,
     PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
-INSERT INTO reservation_time(start_at)
-VALUES ('09:00');
-INSERT INTO reservation_time(start_at)
-VALUES ('10:00');
-INSERT INTO reservation_time(start_at)
-VALUES ('23:00');
+INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111');
+INSERT INTO member(name, email, password, role) VALUES ('관리자켬', 'bbb@naver.com', '1111', 'ADMIN');
+
+INSERT INTO reservation_time(start_at) VALUES ('09:00');
+INSERT INTO reservation_time(start_at) VALUES ('10:00');
+INSERT INTO reservation_time(start_at) VALUES ('23:00');
 
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('제로 공포', '마지막까지 저희와 함께 해 주시겠습니까?',
@@ -46,19 +57,11 @@ INSERT INTO theme(name, description, thumbnail)
 VALUES ('우테코 살아남기', '우테코는 어떤 곳인가 과연.. 그곳에 찾아간...',
         'https://techblog.woowahan.com/wp-content/uploads/img/2019-02-08/techcourse_poster.jpeg');
 
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 5, 1, 4);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 5, 2, 4);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 4, 2, 4);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 3, 1, 2);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 3, 2, 2);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 2, 1, 3);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 2, 2, 3);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('켬미', CURRENT_DATE - 1, 1, 1);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 5, 1, 1, 4);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 4, 1, 2, 4);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 5, 1, 2, 4);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 3, 1, 1, 2);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 3, 1, 2, 2);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 2, 1, 1, 3);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 2, 1, 2, 3);
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (CURRENT_DATE - 1, 1, 1, 1);

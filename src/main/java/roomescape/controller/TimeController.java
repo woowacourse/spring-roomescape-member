@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.TimeCreateRequest;
-import roomescape.dto.TimeResponse;
+import roomescape.dto.request.TimeCreateRequest;
+import roomescape.dto.response.AvailableTimeResponse;
+import roomescape.dto.response.TimeResponse;
 import roomescape.service.TimeService;
 
 @RestController
@@ -44,16 +44,14 @@ public class TimeController {
         TimeResponse response = service.createTime(dto);
 
         URI location = URI.create("/times/" + response.id());
-        return ResponseEntity
-                .created(location)
+        return ResponseEntity.created(location)
                 .body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         service.deleteTime(id);
-        return ResponseEntity
-                .noContent()
+        return ResponseEntity.noContent()
                 .build();
     }
 }

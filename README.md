@@ -70,3 +70,49 @@
 
 - [x] `ranking.js` render 함수에서 사용할 data에는 (name, thumbnail, description)이 있어야 함
 - [x] `user-reservation.js` renderTheme 함수, fetchAvailableTimes 함수 등 수정
+
+## 4단계 기능 요구 사항
+
+- [x] GET /login 요청 시 로그인 폼이 있는 페이지 응답
+- [x] GET  /signup 요청 시 회원가입 페이지 응답
+
+- [x] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - [x] 응답 쿠키에 "token"값으로 토큰이 포함
+  - [x] member 테이블에 존재하는지 확인한다.
+    - [x] 존재할 경우, 200 반환
+    - [x] 존재하지 않을 경우, 203 반환
+
+- [x] GET /login/check 사용자의 정보(이름)를 조회할 수 있다.
+- [x] POST /logout 요청 시 쿠키에 로그인 정보를 제거한다.
+- [x] POST /members 요청 시 member를 생성해준다. (name, email, password)
+
+## 5단계 기능 요구 사항
+
+- [x] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
+  - [x] HandlerMethodArgumentResolver을 활용해 회원정보를 객체를 컨트롤러 메서드에 주입
+
+- [x] `reservation` 테이블 변경
+  - 이름(name) -> member id
+
+- [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용
+ - [x] date, themeId, timeId를 입력
+ - [x] name은 쿠키에 저장된 사용자를 식별해, 사용자 이름으로 대체하도록 수정
+   - 사용자 식별은 이름이 아닌, id로 하도록 구현
+
+- [x] 관리자 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성
+  - [x] date, themeId, timeId, memberId를 입력받아 예약을 생성한다.
+  - [x] GET /members 요청 시 member 정보를 읽어서 반환한다.
+
+- [x] `admin/reservation-new.html` 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경
+
+## 6단계 기능 요구 사항
+
+- [x] Member의 role이 ADMIN인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있다.
+  - [x] HandlerInterceptor를 이용
+    - [x] Cookie에 role 추가
+    - [x] 반환 값에 따라 처리되는 방식을 확인
+- [x] 로그인이 되지 않은 경우, login, signUp 페이지에만 접근할 수 있다.
+
+- 예약 검색 기능
+  - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가
+  - [x] `reservation-with-member.js`의 applyFilter() 함수를 수정

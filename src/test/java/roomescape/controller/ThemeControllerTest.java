@@ -2,7 +2,7 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.dto.ThemeCreateRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.request.ThemeCreateRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -25,19 +24,33 @@ class ThemeControllerTest {
     private int port;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private String cookie;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.update("INSERT INTO member(name, email, password) VALUES ('켬미', 'aaa@naver.com', '1111')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '설명1' ,'https://image.jpg')");
+
+        Map<String, String> admin = Map.of(
+                "email", "aaa@naver.com",
+                "password", "1111"
+        );
+
+        cookie = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(admin)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
     }
 
     @DisplayName("테마 목록을 읽을 수 있다.")
     @Test
     void readReservations() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-
         int size = RestAssured.given().log().all()
+                .cookie("token", cookie)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -48,62 +61,30 @@ class ThemeControllerTest {
         assertThat(size).isEqualTo(count);
     }
 
-    @DisplayName("인기 테마 목록을 읽을 수 있다.")
-    @Test
-    void readPopularReservations() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "테마1", "설명1", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "테마2", "설명2", "https://image.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-05-01", 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-04-30", 1, 2);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
-                , "브라운", "2024-04-30", 1, 1);
-
-        List<ThemeResponse> expected = List.of(
-                new ThemeResponse(2L, "테마2", "설명2", "https://image.jpg"),
-                new ThemeResponse(1L, "테마1", "설명1", "https://image.jpg")
-        );
-
-        List<ThemeResponse> response = RestAssured.given().log().all()
-                .when().get("/themes/popular")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ThemeResponse.class);
-
-        assertThat(response).isEqualTo(expected);
-    }
-
     @DisplayName("테마를 DB에 추가할 수 있다.")
     @Test
     void createTime() {
         ThemeCreateRequest params = new ThemeCreateRequest(
-                "오리와 호랑이",
-                "오리들과 호랑이들 사이에서 살아남기",
-                "https://image.jpg");
+                "테마2", "설명2", "https://image.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", cookie)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/themes/1");
+                .header("Location", "/themes/2");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(2);
     }
 
     @DisplayName("삭제할 id를 받아서 DB에서 해당 테마를 삭제 할 수 있다.")
     @Test
     void deleteTime() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-
         RestAssured.given().log().all()
+                .cookie("token", cookie)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);

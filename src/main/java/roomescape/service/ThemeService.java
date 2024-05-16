@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreateRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.domain.exception.IllegalRequestArgumentException;
+import roomescape.dto.request.ThemeCreateRequest;
+import roomescape.dto.response.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -44,7 +45,7 @@ public class ThemeService {
 
     public ThemeResponse createTheme(ThemeCreateRequest dto) {
         if (themeDao.existsThemeByName(dto.name())) {
-            throw new IllegalArgumentException("해당 테마 이름은 이미 존재합니다.");
+            throw new IllegalRequestArgumentException("해당 테마 이름은 이미 존재합니다.");
         }
         Theme createdTheme = themeDao.createTheme(dto.createTheme());
         return ThemeResponse.from(createdTheme);
@@ -52,7 +53,7 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationDao.existsReservationByThemeId(id)) {
-            throw new IllegalArgumentException("해당 테마를 사용하는 예약이 존재합니다.");
+            throw new IllegalRequestArgumentException("해당 테마를 사용하는 예약이 존재합니다.");
         }
         themeDao.deleteTheme(id);
     }

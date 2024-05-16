@@ -1,29 +1,32 @@
 package roomescape.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.net.URI;
 
-@Controller
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import roomescape.dto.request.ReservationAdminCreateRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.service.ReservationService;
+
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
-    @GetMapping
-    public String loadAdminPage() {
-        return "/admin/index";
+    private final ReservationService service;
+
+    public AdminController(ReservationService service) {
+        this.service = service;
     }
 
-    @GetMapping("/reservation")
-    public String loadReservationPage() {
-        return "/admin/reservation-new";
-    }
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationAdminCreateRequest dto) {
+        ReservationResponse response = service.createReservation(dto);
 
-    @GetMapping("/time")
-    public String loadTimePage() {
-        return "admin/time";
-    }
-
-    @GetMapping("/theme")
-    public String loadThemePage() {
-        return "admin/theme";
+        URI location = URI.create("/admin/reservations/" + response.id());
+        return ResponseEntity.created(location)
+                .body(response);
     }
 }

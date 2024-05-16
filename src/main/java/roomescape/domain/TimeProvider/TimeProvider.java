@@ -6,5 +6,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface TimeProvider {
-    public LocalDateTime getCurrentDateTime();
+    LocalDateTime getCurrentDateTime();
 }
