@@ -15,7 +15,7 @@ class JwtTokenProviderTest {
 
     @BeforeEach
     void setUp() {
-        jwtTokenProvider = new JwtTokenProvider("secretKey", 1000L);
+        jwtTokenProvider = new JwtTokenProvider(new JwtProperties("secretKey", 1000L));
     }
 
     @DisplayName("토큰을 생성한다.")

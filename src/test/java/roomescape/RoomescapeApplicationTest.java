@@ -6,19 +6,26 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import roomescape.infrastructure.JwtProperties;
 import roomescape.infrastructure.JwtTokenProvider;
 
 class RoomescapeApplicationTest {
 
-    @EnableConfigurationProperties(JwtTokenProvider.class)
+    @EnableConfigurationProperties(JwtProperties.class)
     static class TestConfig {
+
+        @Bean
+        public JwtTokenProvider jwtTokenProvider(JwtProperties jwtProperties) {
+            return new JwtTokenProvider(jwtProperties);
+        }
     }
 
     @DisplayName("JwtTokenProvider 에 프로퍼티 값이 입력되는지 확인한다.")
     @Test
     void contextStartsWithValidProperties() {
         // given
-        JwtTokenProvider testJwtTokenProvider = new JwtTokenProvider("secretKey", 1000L);
+        JwtTokenProvider testJwtTokenProvider = new JwtTokenProvider(new JwtProperties("secretKey", 1000L));
         String payload = "payload";
 
         // when & then
