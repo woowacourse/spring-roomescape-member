@@ -27,9 +27,13 @@ public class Member {
     return new Member(null, name, null, null, null);
   }
 
-  public static Member createInstance(final long id, final String name, final String email,
+  public static Member createInstance(
+      final long id,
+      final String name,
+      final String email,
       final String password,
-      final String role) {
+      final String role
+  ) {
     return new Member(id, new Name(name), email, password, new Role(role));
   }
 
