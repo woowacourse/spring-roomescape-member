@@ -49,7 +49,7 @@ public class Member {
         return role.name();
     }
 
-    public boolean hasPassword(String password) {
+    public boolean matches(String password) {
         return this.password.isSame(password);
     }
 
