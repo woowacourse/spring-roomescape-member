@@ -4,11 +4,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
-public class CookieUtils {
+public class HandleCookieInToken {
+
 
     public static final String TOKEN_KEY = "token";
 
-    private CookieUtils() {
+    private HandleCookieInToken() {
     }
 
     public static String extractTokenFrom(Cookie[] cookies) {
