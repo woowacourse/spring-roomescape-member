@@ -25,7 +25,7 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public Member findMemberByToken(String token) {
+    public Member findMemberByValidToken(String token) {
         return jwtTokenProvider.getMember(token);
     }
 }

@@ -35,7 +35,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) {
         String token = TokenExtractor.extract((HttpServletRequest) webRequest.getNativeRequest());
-        Member member = authService.findMemberByToken(token);
+        Member member = authService.findMemberByValidToken(token);
 
         return memberService.findMember(member.getId());
     }

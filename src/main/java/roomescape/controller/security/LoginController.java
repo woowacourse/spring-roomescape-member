@@ -2,6 +2,7 @@ package roomescape.controller.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Date;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -18,8 +19,6 @@ import roomescape.infrastructure.TokenExtractor;
 import roomescape.service.dto.login.LoginRequest;
 import roomescape.service.dto.login.MemberNameResponse;
 import roomescape.service.security.AuthService;
-
-import java.util.Date;
 
 @RestController
 @RequestMapping("/login")
@@ -49,7 +48,7 @@ public class LoginController {
             return ResponseEntity.noContent().build();
         }
 
-        Member member = authService.findMemberByToken(token);
+        Member member = authService.findMemberByValidToken(token);
         return ResponseEntity.ok()
                 .header(HttpHeaders.DATE, new Date().toString())
                 .body(MemberNameResponse.of(member));

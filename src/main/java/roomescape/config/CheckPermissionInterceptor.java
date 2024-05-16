@@ -33,7 +33,7 @@ public class CheckPermissionInterceptor implements HandlerInterceptor {
         }
 
         String token = TokenExtractor.extract(request);
-        Member member = authService.findMemberByToken(token);
+        Member member = authService.findMemberByValidToken(token);
 
         if (resourceRole.isHigherAuthority(member.getRole())) {
             throw new ForbiddenException("권한이 부족합니다.");

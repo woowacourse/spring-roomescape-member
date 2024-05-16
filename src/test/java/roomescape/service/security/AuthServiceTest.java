@@ -1,5 +1,8 @@
 package roomescape.service.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +15,6 @@ import roomescape.exception.AuthorizationException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.member.MemberCredentialRepository;
 import roomescape.service.dto.login.LoginRequest;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("/truncate-data.sql")
@@ -68,7 +68,7 @@ class AuthServiceTest {
         String token = authService.createToken(request);
 
         // when
-        Member member = authService.findMemberByToken(token);
+        Member member = authService.findMemberByValidToken(token);
 
         // then
         assertThat(member)
@@ -85,7 +85,7 @@ class AuthServiceTest {
         String token = authService.createToken(request) + "fsfdf";
 
         // when & then
-        assertThatThrownBy(() -> authService.findMemberByToken(token))
+        assertThatThrownBy(() -> authService.findMemberByValidToken(token))
                 .isInstanceOf(AuthorizationException.class)
                 .hasMessage("인증 정보를 확인할 수 없습니다.");
     }
