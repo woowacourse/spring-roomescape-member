@@ -11,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ThemeRequest;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 

@@ -1,4 +1,4 @@
-package roomescape.handle;
+package roomescape.exceptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,11 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.auth.AuthException;
-import roomescape.auth.LoginFailException;
-import roomescape.domain.exception.InvalidRequestBodyFieldException;
-import roomescape.domain.exception.InvalidReservationTimeException;
-import roomescape.service.exception.DeleteException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

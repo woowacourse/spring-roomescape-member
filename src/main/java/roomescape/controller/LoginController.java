@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.auth.LoginFailException;
-import roomescape.dto.LoginRequest;
-import roomescape.dto.LoginResponse;
+import roomescape.exceptions.LoginFailException;
+import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.LoginResponse;
 import roomescape.service.LoginService;
 
 @RestController
@@ -37,7 +37,7 @@ public class LoginController {
     public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
-        LoginResponse loginResponse = loginService.tokenLogin(token);
+        LoginResponse loginResponse = loginService.checkLoginMember(token);
         return ResponseEntity.ok(loginResponse);
     }
 

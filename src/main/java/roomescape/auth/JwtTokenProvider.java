@@ -6,7 +6,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.Role;
+import roomescape.exceptions.AuthException;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Component
@@ -17,21 +20,19 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+    public String createToken(Long id, Role role) {
+        Claims claims = Jwts.claims().setSubject(id.toString());
+
+        Instant issuedAt = Instant.now();
+        Instant expiration = issuedAt.plusSeconds(validityInMilliseconds);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
+                .claim("role", role.getName())
+                .setIssuedAt(Date.from(issuedAt))
+                .setExpiration(Date.from(expiration))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-    }
-
-    public String findMemberEmailByToken(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     public String findTokenByCookie(Cookie[] cookies) {
@@ -43,10 +44,20 @@ public class JwtTokenProvider {
         throw new AuthException("token을 찾을 수 없습니다.");
     }
 
-    public String getPayload(String token) {
+    public String findRole(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey.getBytes())
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token)
-                .getBody().getSubject();
+                .getBody()
+                .get("role")
+                .toString();
+    }
+
+    public String findMemberIdByToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 }

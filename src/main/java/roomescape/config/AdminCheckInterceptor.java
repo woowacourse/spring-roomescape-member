@@ -4,8 +4,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.Member;
-import roomescape.domain.Role;
 import roomescape.service.LoginService;
 
 public class AdminCheckInterceptor implements HandlerInterceptor {
@@ -19,13 +17,10 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
-        Member member = loginService.findLoginMember(cookies);
-
-        if (member == null || !member.getRole().equals(Role.ADMIN)) {
-            response.setStatus(401);
-            return false;
+        if (loginService.isAdminMember(cookies)) {
+            return true;
         }
-
-        return true;
+        response.setStatus(401);
+        return false;
     }
 }

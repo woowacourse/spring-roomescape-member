@@ -1,4 +1,4 @@
-package roomescape.domain.exception;
+package roomescape.exceptions;
 
 public class InvalidReservationTimeException extends RuntimeException {
 

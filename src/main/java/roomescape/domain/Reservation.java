@@ -1,7 +1,7 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidRequestBodyFieldException;
-import roomescape.domain.exception.InvalidReservationTimeException;
+import roomescape.exceptions.InvalidRequestBodyFieldException;
+import roomescape.exceptions.InvalidReservationTimeException;
 
 import java.time.LocalDate;
 

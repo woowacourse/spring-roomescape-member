@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dao.ReservationTimeDAO;
-import roomescape.dao.ThemeDAO;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.domain.*;
-import roomescape.domain.exception.InvalidReservationTimeException;
-import roomescape.dto.ReservationRequest;
+import roomescape.exceptions.InvalidReservationTimeException;
+import roomescape.dto.request.ReservationRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,17 +28,17 @@ class ReservationServiceTest {
     ReservationService reservationService;
 
     @Autowired
-    ReservationTimeDAO reservationTimeDAO;
+    ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    ThemeDAO themeDAO;
+    ThemeRepository themeRepository;
 
     private Member member;
 
     @BeforeEach
     void setUp() {
-        reservationTimeDAO.insert(new ReservationTime(LocalTime.now().plusHours(1)));
-        themeDAO.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        reservationTimeRepository.insert(new ReservationTime(LocalTime.now().plusHours(1)));
+        themeRepository.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
         member = new Member("잉크", "asdf@a.com", "1234", Role.ADMIN);
     }
 

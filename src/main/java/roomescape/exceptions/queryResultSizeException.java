@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.exceptions;
 
 public class queryResultSizeException extends RuntimeException {
 

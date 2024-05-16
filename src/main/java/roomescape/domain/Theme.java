@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidRequestBodyFieldException;
+import roomescape.exceptions.InvalidRequestBodyFieldException;
 
 public class Theme {
 

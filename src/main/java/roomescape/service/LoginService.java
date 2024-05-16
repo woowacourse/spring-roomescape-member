@@ -3,48 +3,56 @@ package roomescape.service;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.auth.LoginFailException;
-import roomescape.dao.MemberDao;
+import roomescape.exceptions.LoginFailException;
+import roomescape.repository.MemberRepository;
 import roomescape.domain.Member;
-import roomescape.dto.LoginRequest;
-import roomescape.dto.LoginResponse;
+import roomescape.domain.Role;
+import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.LoginResponse;
 
 @Service
 public class LoginService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public LoginService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String login(LoginRequest loginRequest) {
         if (isExistMember(loginRequest)) {
-            return jwtTokenProvider.createToken(loginRequest.getEmail());
+            Member member = memberRepository.findMemberByEmail(loginRequest.getEmail());
+            return jwtTokenProvider.createToken(member.getId(), member.getRole());
         }
         throw new LoginFailException("회원가입 된 멤버가 아닙니다.");
     }
 
     private boolean isExistMember(LoginRequest loginRequest) {
-        return memberDao.isExist(loginRequest.getEmail());
+        return memberRepository.isExist(loginRequest.getEmail());
     }
 
-    public LoginResponse tokenLogin(String token) {
-        String memberEmail = jwtTokenProvider.findMemberEmailByToken(token);
-        Member member = findMemberByEmail(memberEmail);
+    public LoginResponse checkLoginMember(String token) {
+        String memberId = jwtTokenProvider.findMemberIdByToken(token);
+        Member member = findMemberById(memberId);
         return new LoginResponse(member.getName());
     }
 
-    public Member findMemberByEmail(String memberEmail) {
-        return memberDao.findMemberByEmail(memberEmail);
+    public Member findMemberById(String memberId) {
+        return memberRepository.findMemberById(Long.parseLong(memberId));
     }
 
     public Member findLoginMember(Cookie[] cookies) {
         String token = jwtTokenProvider.findTokenByCookie(cookies);
 
-        String memberEmail = jwtTokenProvider.findMemberEmailByToken(token);
-        return memberDao.findMemberByEmail(memberEmail);
+        String memberId = jwtTokenProvider.findMemberIdByToken(token);
+        return memberRepository.findMemberById(Long.parseLong(memberId));
+    }
+
+    public boolean isAdminMember(Cookie[] cookies) {
+        String token = jwtTokenProvider.findTokenByCookie(cookies);
+        String roleName = jwtTokenProvider.findRole(token);
+        return Role.findRole(roleName).equals(Role.ADMIN);
     }
 }

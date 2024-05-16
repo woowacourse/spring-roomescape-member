@@ -9,11 +9,11 @@ import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.domain.exception.InvalidReservationTimeException;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ThemeRequest;
-import roomescape.service.exception.DeleteException;
+import roomescape.exceptions.InvalidReservationTimeException;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.exceptions.DeleteException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

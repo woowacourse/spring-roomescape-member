@@ -1,4 +1,4 @@
-package roomescape.service.exception;
+package roomescape.exceptions;
 
 public class DeleteException extends RuntimeException {
 

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.config.AuthenticationPrincipal;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.request.ReservationRequest;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
