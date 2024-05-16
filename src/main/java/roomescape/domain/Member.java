@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.util.Objects;
+
 public class Member {
 
     private final Long id;
@@ -38,5 +40,35 @@ public class Member {
 
     public Role getRole() {
         return role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Member member = (Member) o;
+        return Objects.equals(id, member.id) && Objects.equals(name, member.name)
+                && Objects.equals(email, member.email) && Objects.equals(password, member.password)
+                && role == member.role;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email, password, role);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name=" + name +
+                ", email=" + email +
+                ", password=" + password +
+                ", role=" + role +
+                '}';
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import java.util.Objects;
 import roomescape.exception.exceptions.InvalidInputException;
 
 public class UserName {
@@ -27,5 +28,29 @@ public class UserName {
 
     public String getValue() {
         return userName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserName userName1 = (UserName) o;
+        return Objects.equals(userName, userName1.userName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userName);
+    }
+
+    @Override
+    public String toString() {
+        return "UserName{" +
+                "userName='" + userName + '\'' +
+                '}';
     }
 }

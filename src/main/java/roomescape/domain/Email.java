@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import java.util.Objects;
 import roomescape.exception.exceptions.InvalidInputException;
 
 public class Email {
@@ -24,5 +25,29 @@ public class Email {
 
     public String getValue() {
         return email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Email email1 = (Email) o;
+        return Objects.equals(email, email1.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
+
+    @Override
+    public String toString() {
+        return "Email{" +
+                "email='" + email + '\'' +
+                '}';
     }
 }

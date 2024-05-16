@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import roomescape.exception.exceptions.InvalidInputException;
 
 public class Reservation {
@@ -48,5 +49,35 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Reservation that = (Reservation) o;
+        return Objects.equals(id, that.id) && Objects.equals(date, that.date)
+                && Objects.equals(time, that.time) && Objects.equals(theme, that.theme)
+                && Objects.equals(member, that.member);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, date, time, theme, member);
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                ", member=" + member +
+                '}';
     }
 }
