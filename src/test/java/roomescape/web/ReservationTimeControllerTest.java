@@ -3,21 +3,31 @@ package roomescape.web;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.web.api.resolver.AdminAuthValidateInterceptor;
+import roomescape.web.api.resolver.MemberAuthValidateInterceptor;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ReservationTimeControllerTest extends ControllerTest {
+class ReservationTimeControllerTest extends ExcludeInterceptorTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private MemberAuthValidateInterceptor memberAuthValidateInterceptor;
+    @MockBean
+    private AdminAuthValidateInterceptor adminAuthValidateInterceptor;
 
     @DisplayName("예약 시간을 추가한다")
     @Test

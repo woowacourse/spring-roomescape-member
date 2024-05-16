@@ -4,16 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.member.Role;
 import roomescape.web.api.dto.ReservationMemberRequest;
-import roomescape.web.api.resolver.AdminAuthValidateInterceptor;
 import roomescape.web.api.resolver.MemberArgumentResolver;
-import roomescape.web.api.resolver.MemberAuthValidateInterceptor;
 import roomescape.web.api.resolver.Principal;
 
 import java.time.LocalDate;
@@ -27,17 +24,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ReservationControllerTest extends ControllerTest {
+class ReservationControllerTest extends ExcludeInterceptorTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockBean
-    MemberAuthValidateInterceptor memberAuthValidateInterceptor;
-    @MockBean
-    AdminAuthValidateInterceptor adminAuthValidateInterceptor;
 
     @SpyBean
     MemberArgumentResolver memberArgumentResolver;
@@ -50,8 +42,6 @@ class ReservationControllerTest extends ControllerTest {
         Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
 
         // setting
-        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
@@ -73,8 +63,6 @@ class ReservationControllerTest extends ControllerTest {
         Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
 
         // setting
-        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
@@ -96,8 +84,6 @@ class ReservationControllerTest extends ControllerTest {
         Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
 
         // setting
-        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // given
@@ -124,8 +110,6 @@ class ReservationControllerTest extends ControllerTest {
         Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
 
         // setting
-        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // when, then
@@ -142,8 +126,6 @@ class ReservationControllerTest extends ControllerTest {
         Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
 
         // setting
-        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // when, then
@@ -160,8 +142,6 @@ class ReservationControllerTest extends ControllerTest {
         Principal principal = new Principal(1L, "pkpkpkpk@woowa.net", Role.ADMIN);
 
         // setting
-        doReturn(true).when(memberAuthValidateInterceptor).preHandle(any(), any(), any());
-        doReturn(true).when(adminAuthValidateInterceptor).preHandle(any(), any(), any());
         doReturn(principal).when(memberArgumentResolver).resolveArgument(any(), any(), any(), any());
 
         // when, then

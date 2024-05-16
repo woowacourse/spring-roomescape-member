@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ThemeControllerTest extends ControllerTest {
+class ThemeControllerTest extends ExcludeInterceptorTest {
 
     @Autowired
     private MockMvc mockMvc;
