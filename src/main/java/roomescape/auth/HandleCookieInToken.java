@@ -13,6 +13,9 @@ public class HandleCookieInToken {
     }
 
     public static String extractTokenFrom(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new IllegalArgumentException("쿠키에 정보가 없습니다.");
+        }
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(TOKEN_KEY))
                 .findAny()
