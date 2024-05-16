@@ -5,16 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.domain.Member;
-import roomescape.auth.service.AuthService;
+import roomescape.global.exception.UnauthorizedException;
+import roomescape.global.infra.JwtTokenProvider;
 
 @Component
-public class AdminAuthorizationInterceptor implements HandlerInterceptor {
+public class LoginCheckInterceptor implements HandlerInterceptor {
 
-  private final AuthService authService;
+  private final JwtTokenProvider jwtTokenProvider;
 
-  public AdminAuthorizationInterceptor(final AuthService authService) {
-    this.authService = authService;
+  public LoginCheckInterceptor(final JwtTokenProvider jwtTokenProvider) {
+    this.jwtTokenProvider = jwtTokenProvider;
   }
 
   @Override
@@ -23,19 +23,21 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
       final HttpServletResponse response,
       final Object handler
   ) {
+    if (request.getCookies() == null) {
+      throw new IllegalArgumentException("쿠키가 존재하지 않습니다.");
+    }
     final Cookie[] cookies = request.getCookies();
     final String token = extractTokenFromCookie(cookies);
 
-    final Member member = authService.findMember(token);
-    if (!member.isAdmin()) {
-      throw new IllegalArgumentException("어드민 권한이 없습니다.");
+    if (!jwtTokenProvider.validateToken(token)) {
+      throw new UnauthorizedException("접근 권한이 없습니다.");
     }
     return true;
   }
 
   private String extractTokenFromCookie(final Cookie[] cookies) {
     for (final Cookie cookie : cookies) {
-      if (cookie.getName().equals("token")) {
+      if (cookie.getName() != null && cookie.getName().equals("token")) {
         return cookie.getValue();
       }
     }
