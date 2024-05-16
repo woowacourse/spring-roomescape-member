@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:application-secret.properties")
 public class JwtTokenValidator implements TokenValidator {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private final String secretKey;
+
+    public JwtTokenValidator(@Value("${security.jwt.token.secret-key}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     public void isTokenValid(String token) {
         Claims claims = Jwts.parser()

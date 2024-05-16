@@ -11,10 +11,15 @@ import roomescape.domain.Member;
 @Component
 @PropertySource("classpath:application-secret.properties")
 public class JwtTokenProvider implements TokenProvider {
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long expireLength;
+    private final String secretKey;
+
+    private final long expireLength;
+
+    public JwtTokenProvider(@Value("${security.jwt.token.secret-key}") String secretKey,
+                            @Value("${security.jwt.token.expire-length}") long expireLength) {
+        this.secretKey = secretKey;
+        this.expireLength = expireLength;
+    }
 
     public String createToken(Member member) {
         Date now = new Date();

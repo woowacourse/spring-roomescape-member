@@ -13,8 +13,11 @@ import org.springframework.stereotype.Component;
 public class JwtTokenExtractor implements TokenExtractor {
     public static final String COOKIE_NAME = "token";
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    private final String secretKey;
+
+    public JwtTokenExtractor(@Value("${security.jwt.token.secret-key}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     public String extractByCookies(Cookie[] cookies) {
         return Arrays.stream(cookies)
