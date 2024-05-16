@@ -1,7 +1,5 @@
 package roomescape.domain.reservation;
 
-import roomescape.exception.InvalidReservationException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -16,10 +14,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    default Theme getById(Long id) {
-        return findById(id)
-                .orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 테마입니다."));
-    }
+    Theme getById(Long id);
 
     List<Theme> findByReservationTermAndCount(String startDate, String endDate, long count);
 }

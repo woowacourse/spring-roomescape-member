@@ -1,7 +1,5 @@
 package roomescape.domain.reservation;
 
-import roomescape.exception.UnauthorizedException;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,9 +21,7 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(long id);
 
-    default Reservation getById(long id) {
-        return findById(id).orElseThrow(() -> new UnauthorizedException("더이상 존재하지 않는 예약입니다."));
-    }
+    Reservation getById(long id);
 
     List<Reservation> findBy(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 }

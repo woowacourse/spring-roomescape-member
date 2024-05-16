@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
+import roomescape.exception.InvalidReservationException;
 
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,12 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public ReservationTime getById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 시간입니다."));
     }
 
     @Override

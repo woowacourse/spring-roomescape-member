@@ -10,6 +10,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.Theme;
+import roomescape.exception.UnauthorizedException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -114,6 +115,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Reservation getById(long id) {
+        return findById(id).orElseThrow(() -> new UnauthorizedException("더이상 존재하지 않는 예약입니다."));
     }
 
     @Override
