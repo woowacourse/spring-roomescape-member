@@ -12,7 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.exception.AuthorizationException;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.JwtTokenHandler;
 import roomescape.repository.member.MemberCredentialRepository;
 import roomescape.service.dto.login.LoginRequest;
 
@@ -28,7 +28,7 @@ class AuthServiceTest {
         this.jdbcTemplate = jdbcTemplate;
         authService = new AuthService(
                 new MemberCredentialRepository(jdbcTemplate),
-                new JwtTokenProvider("secret", 360_000L)
+                new JwtTokenHandler("secret", 360_000L)
         );
     }
 

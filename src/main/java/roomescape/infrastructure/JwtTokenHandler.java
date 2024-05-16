@@ -5,20 +5,19 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.exception.AuthorizationException;
 
-import java.util.Date;
-
 @Component
-public class JwtTokenProvider {
+public class JwtTokenHandler {
     private final String secretKey;
     private final long validityInMilliseconds;
 
-    public JwtTokenProvider(
+    public JwtTokenHandler(
             @Value("${security.jwt.token.secret-key}") String secretKey,
             @Value("${security.jwt.token.expire-length}") long validityInMilliseconds) {
         this.secretKey = secretKey;
