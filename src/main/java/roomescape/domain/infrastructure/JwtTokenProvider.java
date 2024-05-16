@@ -1,5 +1,7 @@
 package roomescape.domain.infrastructure;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,12 +14,19 @@ import roomescape.dto.MemberModel;
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
+    @Value("${security.jwt.token.expire-length}")
+    private long validityInMilliseconds;
 
     public String createToken(MemberModel member) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+
         return Jwts.builder()
                 .setSubject(member.id().toString())
                 .claim("name", member.name())
                 .claim("role", member.role())
+                .setIssuedAt(now)
+                .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
