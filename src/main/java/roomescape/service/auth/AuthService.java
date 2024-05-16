@@ -45,7 +45,7 @@ public class AuthService {
     }
 
     public Boolean isAdminMember(String token) {
-        if (tokenProvider.isValidToken(token)) {
+        if (isAllowedMember(token)) {
             String payload = tokenProvider.getPayload(token);
             MemberInfo member = findMember(payload);
             return member.getRole().isAdmin();

@@ -2,11 +2,16 @@ package roomescape.service.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import io.restassured.RestAssured;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -92,5 +97,43 @@ class AuthServiceTest {
         // then
         assertThat(foundMember).isNotNull();
         assertThat(foundMember.getName()).isEqualTo(member.getName());
+    }
+
+    @DisplayName("토큰을 입력받아 해당 멤버가 존재하는지 확인한다.")
+    @Test
+    void isAllowedMember() {
+        // given
+        Member member = new Member(null, "user", "user@email.com", "user_password", Role.USER);
+        memberDao.insert(member);
+
+        // when
+        String token = authService.createToken(new LoginRequest(member.getEmail(), member.getPassword()))
+                .accessToken();
+
+        // then
+        assertThat(authService.isAllowedMember(token)).isTrue();
+    }
+
+    @DisplayName("토큰을 입력받아 해당 멤버가 관리자인지 확인한다.")
+    @ParameterizedTest(name = "{index}: role={0}, expected={1}")
+    @MethodSource("provideRoleAndExpectedResult")
+    void isAdminMember(Role role, boolean expected) {
+        // given
+        Member member = new Member(null, "name", "email@email.com", "password", role);
+        memberDao.insert(member);
+
+        // when
+        String token = authService.createToken(new LoginRequest(member.getEmail(), member.getPassword()))
+                .accessToken();
+
+        // then
+        assertThat(authService.isAdminMember(token)).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> provideRoleAndExpectedResult() {
+        return Stream.of(
+                arguments(Role.USER, false),
+                arguments(Role.ADMIN, true)
+        );
     }
 }
