@@ -11,13 +11,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class TokenCookieManagerTest {
+class CookieTokenManagerTest {
 
+    TokenManager tokenManager;
     HttpServletRequest request;
     HttpServletResponse response;
 
     @BeforeEach
     void setUp() {
+        tokenManager = new CookieTokenManager();
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
     }
@@ -27,7 +29,7 @@ class TokenCookieManagerTest {
     void getToken() {
         when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("token", "1234")});
 
-        String token = TokenCookieManager.getToken(request);
+        String token = tokenManager.getToken(request);
 
         assertThat(token).isEqualTo("1234");
     }
@@ -37,7 +39,7 @@ class TokenCookieManagerTest {
     void getTokenWithNoCookies() {
         when(request.getCookies()).thenReturn(null);
 
-        String token = TokenCookieManager.getToken(request);
+        String token = tokenManager.getToken(request);
 
         assertThat(token).isNull();
     }
@@ -47,7 +49,7 @@ class TokenCookieManagerTest {
     void getTokenWithNoTokenCookie() {
         when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("token1", "1234")});
 
-        String token = TokenCookieManager.getToken(request);
+        String token = tokenManager.getToken(request);
 
         assertThat(token).isNull();
     }

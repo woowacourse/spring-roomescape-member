@@ -5,11 +5,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
-public class TokenCookieManager {
+public class CookieTokenManager implements TokenManager {
 
     private static final String TOKEN_NAME = "token";
 
-    public static String getToken(HttpServletRequest request) {
+    @Override
+    public String getToken(HttpServletRequest request) {
         if (request.getCookies() == null) {
             return null;
         }
@@ -20,18 +21,22 @@ public class TokenCookieManager {
                 .orElse(null);
     }
 
-    public static void setTokenCookie(String token, HttpServletResponse response) {
+    @Override
+    public void setToken(String token, HttpServletResponse response) {
         Cookie cookie = new Cookie(TOKEN_NAME, token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        addCookieToResponse(response, cookie);
     }
 
-    public static void expireToken(HttpServletResponse response) {
+    @Override
+    public void expireToken(HttpServletResponse response) {
         Cookie cookie = new Cookie(TOKEN_NAME, null);
+        cookie.setMaxAge(0);
+        addCookieToResponse(response, cookie);
+    }
+
+    private void addCookieToResponse(HttpServletResponse response, Cookie cookie) {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
 }
