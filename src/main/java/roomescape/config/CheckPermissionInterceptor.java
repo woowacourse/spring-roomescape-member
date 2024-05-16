@@ -1,9 +1,10 @@
-package roomescape.controller.security;
+package roomescape.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.controller.security.Permission;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.exception.ForbiddenException;

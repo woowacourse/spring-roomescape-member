@@ -1,4 +1,4 @@
-package roomescape.controller.security;
+package roomescape.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
