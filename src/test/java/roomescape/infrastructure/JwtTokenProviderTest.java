@@ -44,7 +44,21 @@ class JwtTokenProviderTest {
     @ValueSource(strings = {"", " "})
     void getPayloadWithEmptyToken(String token) {
         assertThatThrownBy(() -> jwtTokenProvider.getPayload(token))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidTokenException.class);
+    }
+
+    @DisplayName("만료된 토큰이 입력되면 예외가 발생된다.")
+    @Test
+    void expiredTokenInsert() throws InterruptedException {
+        // given
+        String token = jwtTokenProvider.createToken("payload");
+
+        // when
+        Thread.sleep(1000L);
+
+        // then
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(token))
+                .isInstanceOf(InvalidTokenException.class);
     }
 
     @DisplayName("만료된 토큰에 대해 검증한다.")

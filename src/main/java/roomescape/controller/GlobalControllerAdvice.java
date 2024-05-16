@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.exception.ErrorResponse;
+import roomescape.infrastructure.InvalidTokenException;
 
 @RestControllerAdvice
 public class GlobalControllerAdvice {
@@ -45,6 +46,16 @@ public class GlobalControllerAdvice {
             message = "테마가 입력되지 않았습니다.";
         }
         return createErrorResponse(request, message);
+    }
+
+
+    /*
+     *  토큰 예외에 대한 처리
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleTokenException(HttpServletRequest request, InvalidTokenException e) {
+        return createErrorResponse(request, e.getMessage());
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})

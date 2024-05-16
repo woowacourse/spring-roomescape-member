@@ -31,11 +31,8 @@ public class JwtTokenProvider implements TokenProvider {
 
     @Override
     public String getPayload(String token) {
-        if (token == null || token.isBlank()) {
-            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
-        }
-        if (!isValidToken(token)) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        if (token == null || token.isBlank() || !isValidToken(token)) {
+            throw new InvalidTokenException("로그인이 필요합니다.");
         }
         return Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token).getBody().getSubject();
     }
