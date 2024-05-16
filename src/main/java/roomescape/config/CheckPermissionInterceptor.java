@@ -2,6 +2,7 @@ package roomescape.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.controller.security.Permission;
@@ -11,6 +12,7 @@ import roomescape.exception.ForbiddenException;
 import roomescape.infrastructure.TokenExtractor;
 import roomescape.service.security.AuthService;
 
+@Component
 public class CheckPermissionInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
