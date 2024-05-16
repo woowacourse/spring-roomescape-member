@@ -33,7 +33,7 @@ public class ReservationApiController {
         return reservationService.findAllReservations();
     }
 
-    @GetMapping("/reservations/specific")
+    @GetMapping("/reservations/search")
     public List<ReservationResponse> findSpecificReservations(
             @RequestParam Long themeId,
             @RequestParam Long memberId,

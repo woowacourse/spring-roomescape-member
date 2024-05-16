@@ -21,7 +21,7 @@
     - [x] 해당 테마에 같은 날짜와 시간의 예약이 존재하면 예외를 발생시키고 상태코드 400을 반환한다.
 - [X] `/reservations/{id}` `DELETE` 요청 시 예약을 삭제하고 API 명세에 맞게 응답을 반환한다.
     - [x] 존재하지 않는 아이디를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
-- [x] `/reservations/specific?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}` `GET` 요청 시 검색 조건에 맞는 응답을 반환한다.
+- [x] `/reservations/search?themeId=${themeId}&memberId=${memberId}&dateFrom=${dateFrom}&dateTo=${dateTo}` `GET` 요청 시 검색 조건에 맞는 응답을 반환한다.
 
 ## Time
 
@@ -91,7 +91,7 @@ GET /reservations HTTP/1.1
 ### GET
 
 ```http
-GET /reservations/specific?themeId=1&memberId=1&dateFrom="2023-01-01"&dateTo="2024-12-31" HTTP/1.1
+GET /reservations/search?themeId=1&memberId=1&dateFrom="2023-01-01"&dateTo="2024-12-31" HTTP/1.1
 ```
 
 ```http
