@@ -4,9 +4,9 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberRepository;
 import roomescape.domain.Member;
-import roomescape.infrastructure.JwtTokenExtractor;
-import roomescape.infrastructure.JwtTokenProvider;
-import roomescape.infrastructure.JwtTokenValidator;
+import roomescape.infrastructure.TokenExtractor;
+import roomescape.infrastructure.TokenProvider;
+import roomescape.infrastructure.TokenValidator;
 import roomescape.service.dto.TokenRequest;
 import roomescape.service.dto.TokenResponse;
 
@@ -16,21 +16,21 @@ public class AuthService {
     private static final int COOKIE_MAX_AGE = 3600;
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final JwtTokenExtractor jwtTokenExtractor;
-    private final JwtTokenValidator jwtTokenValidator;
+    private final TokenProvider tokenProvider;
+    private final TokenExtractor tokenExtractor;
+    private final TokenValidator tokenValidator;
 
-    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider,
-                       JwtTokenExtractor jwtTokenExtractor, JwtTokenValidator jwtTokenValidator) {
+    public AuthService(MemberRepository memberRepository, TokenProvider tokenProvider, TokenExtractor tokenExtractor,
+                       TokenValidator tokenValidator) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.jwtTokenExtractor = jwtTokenExtractor;
-        this.jwtTokenValidator = jwtTokenValidator;
+        this.tokenProvider = tokenProvider;
+        this.tokenExtractor = tokenExtractor;
+        this.tokenValidator = tokenValidator;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         Member member = memberRepository.findByEmail(tokenRequest.email()).get();
-        String accessToken = jwtTokenProvider.createToken(member);
+        String accessToken = tokenProvider.createToken(member);
         return new TokenResponse(accessToken);
     }
 
@@ -49,15 +49,15 @@ public class AuthService {
     }
 
     public TokenResponse extractTokenByCookies(Cookie[] cookies) {
-        String token = jwtTokenExtractor.extractByCookies(cookies);
+        String token = tokenExtractor.extractByCookies(cookies);
         return new TokenResponse(token);
     }
 
     public String extractMemberIdByToken(TokenResponse tokenResponse) {
-        return jwtTokenExtractor.extractMemberIdByToken(tokenResponse.token());
+        return tokenExtractor.extractMemberIdByToken(tokenResponse.token());
     }
 
     public void isTokenValid(TokenResponse tokenResponse) {
-        jwtTokenValidator.isTokenValid(tokenResponse.token());
+        tokenValidator.isTokenValid(tokenResponse.token());
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource("classpath:application-secret.properties")
-public class JwtTokenExtractor {
+public class JwtTokenExtractor implements TokenExtractor {
     public static final String COOKIE_NAME = "token";
 
     @Value("${security.jwt.token.secret-key}")

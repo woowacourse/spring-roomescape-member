@@ -10,7 +10,7 @@ import roomescape.domain.Member;
 
 @Component
 @PropertySource("classpath:application-secret.properties")
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
