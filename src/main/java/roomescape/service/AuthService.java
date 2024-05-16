@@ -68,6 +68,6 @@ public class AuthService {
     }
 
     private void isTokenValid(TokenResponse tokenResponse) {
-        tokenValidator.isTokenValid(tokenResponse.token());
+        tokenValidator.validateToken(tokenResponse.token());
     }
 }

@@ -17,7 +17,7 @@ public class JwtTokenValidator implements TokenValidator {
         this.secretKey = secretKey;
     }
 
-    public void isTokenValid(String token) {
+    public void validateToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

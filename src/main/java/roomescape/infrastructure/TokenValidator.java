@@ -1,5 +1,5 @@
 package roomescape.infrastructure;
 
 public interface TokenValidator {
-    void isTokenValid(String token);
+    void validateToken(String token);
 }
