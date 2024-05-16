@@ -73,7 +73,6 @@ public class H2ReservationRepository implements ReservationRepository {
 
     final String sql = sqlBuilder.toString();
 
-    // 쿼리 실행 및 결과 반환
     return template.query(sql, param, itemRowMapper());
   }
 
