@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.member.MemberInfo;
 import roomescape.infrastructure.TokenManager;
 import roomescape.service.auth.AuthService;
 
@@ -24,13 +23,16 @@ public class CheckLoginInterceptor implements HandlerInterceptor {
             throws Exception {
         try {
             String accessToken = tokenManager.getToken(request);
-            MemberInfo memberInfo = authService.findMemberByToken(accessToken);
 
+            if (authService.isAllowedMember(accessToken)) {
+                return true;
+            }
+
+            response.sendRedirect("/login");
+            return false;
         } catch (Exception e) {
             response.sendRedirect("/login");
             return false;
         }
-
-        return true;
     }
 }

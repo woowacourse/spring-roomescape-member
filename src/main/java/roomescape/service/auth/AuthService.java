@@ -35,4 +35,21 @@ public class AuthService {
         return memberDao.findByEmail(principal)
                 .orElseThrow(() -> new IllegalArgumentException("멤버가 존재하지 않습니다."));
     }
+
+    public Boolean isAllowedMember(String token) {
+        if (tokenProvider.isValidToken(token)) {
+            String payload = tokenProvider.getPayload(token);
+            return memberDao.isEmailExist(payload);
+        }
+        return false;
+    }
+
+    public Boolean isAdminMember(String token) {
+        if (tokenProvider.isValidToken(token)) {
+            String payload = tokenProvider.getPayload(token);
+            MemberInfo member = findMember(payload);
+            return member.getRole().isAdmin();
+        }
+        return false;
+    }
 }

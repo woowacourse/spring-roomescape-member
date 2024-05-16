@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.member.MemberInfo;
 import roomescape.infrastructure.TokenManager;
 import roomescape.service.auth.AuthService;
 
@@ -24,9 +23,8 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             throws Exception {
 
         String accessToken = tokenManager.getToken(request);
-        MemberInfo member = authService.findMemberByToken(accessToken);
 
-        if (member.getRole().isAdmin()) {
+        if (authService.isAdminMember(accessToken)) {
             return true;
         }
 
