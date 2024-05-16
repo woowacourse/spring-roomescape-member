@@ -39,7 +39,7 @@ public class AuthService {
     return findMemberByEmail(payload.get("email"));
   }
 
-  public Member findMemberByEmail(final String email) {
+  private Member findMemberByEmail(final String email) {
     return memberRepository.findByEmail(email).orElseThrow(
         () -> new NoSuchElementException("주어진 이메일로 가입한 멤버가 없습니다. (email : " + email + ")"));
   }

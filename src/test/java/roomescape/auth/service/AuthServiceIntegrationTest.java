@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.auth.domain.Member;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.globar.infra.JwtTokenProvider;
 
@@ -34,25 +33,15 @@ class AuthServiceIntegrationTest {
     assertThat(email).isEqualTo(jwtTokenProvider.getPayload(token).get("email"));
   }
 
-  @DisplayName("이메일로 가입한 회원정보를 조회한다.")
-  @Test
-  void findMemberByEmail() {
-    // given
-    final String email = "kelly@example.com";
-    // when
-    final Member member = authService.findMemberByEmail(email);
-    //then
-    assertThat(member.getEmail()).isEqualTo(email);
-  }
-
   @DisplayName("주어진 이메일로 가입한 멤버가 없으면 예외를 발생한다.")
   @Test
   void findMemberByInvalidEmail() {
-    // given
-    final String email = "kellyyy@example.com";
+    // Given
+    final String email = "kelly11@example.com";
+    final LoginRequest loginRequest = new LoginRequest(email, "password123");
     // when & than
     assertThatThrownBy(
-        () -> authService.findMemberByEmail(email))
+        () -> authService.login(loginRequest))
         .isInstanceOf(NoSuchElementException.class)
         .hasMessage("주어진 이메일로 가입한 멤버가 없습니다. (email : " + email + ")");
   }
