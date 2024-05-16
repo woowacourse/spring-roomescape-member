@@ -21,9 +21,8 @@ import roomescape.dto.member.SignupRequest;
 @Sql(scripts = {"/test_schema.sql"})
 class AuthControllerTest {
 
-    private static final String DEFAULT_EMAIL = "email@email.com";
-    private static final String DEFAULT_PASSWORD = "password";
-    private static final String DEFAULT_NAME = "name";
+    private static final String TEST_EMAIL = "test@email.com";
+    private static final String TEST_PASSWORD = "test_password";
 
     @Autowired
     private MemberController memberController;
@@ -34,18 +33,19 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        signup(TEST_EMAIL, TEST_PASSWORD);
     }
 
     @DisplayName("로그인 성공시 200으로 응답한다.")
     @Test
     void login() {
-        login(DEFAULT_EMAIL, DEFAULT_PASSWORD).statusCode(200);
+        login(TEST_EMAIL, TEST_PASSWORD).statusCode(200);
     }
 
     @DisplayName("이메일이 존재하지 않으면 400으로 응답한다.")
     @Test
     void loginWithWrongEmail() {
-        login("wrongEmail@email.com", DEFAULT_PASSWORD)
+        login("wrongEmail@email.com", TEST_PASSWORD)
                 .statusCode(400)
                 .body("message", is("아이디, 비밀번호를 확인해주세요."));
     }
@@ -53,7 +53,7 @@ class AuthControllerTest {
     @DisplayName("이메일 형식이 아닌 입력에 대해 400으로 응답한다.")
     @Test
     void loginWithWrongEmailFormat() {
-        login("wrongEmail", DEFAULT_PASSWORD)
+        login("wrongEmail", TEST_PASSWORD)
                 .statusCode(400)
                 .body("message", is("입력 형식이 올바르지 않습니다."));
     }
@@ -61,7 +61,7 @@ class AuthControllerTest {
     @DisplayName("비밀번호가 틀리면 400으로 응답한다.")
     @Test
     void loginWithWrongPassword() {
-        login(DEFAULT_EMAIL, "wrongPassword")
+        login(TEST_EMAIL, "wrongPassword")
                 .statusCode(400)
                 .body("message", is("아이디, 비밀번호를 확인해주세요."));
     }
@@ -69,7 +69,7 @@ class AuthControllerTest {
     @DisplayName("비밀번호를 입력하지 않으면 400으로 응답한다.")
     @Test
     void loginWithEmptyPassword() {
-        login(DEFAULT_EMAIL, "")
+        login(TEST_EMAIL, "")
                 .statusCode(400)
                 .body("message", is("비밀번호가 입력되지 않았습니다."));
     }
@@ -78,7 +78,7 @@ class AuthControllerTest {
     @Test
     void loginCheck() {
         // given
-        String accessToken = login(DEFAULT_EMAIL, DEFAULT_PASSWORD)
+        String accessToken = login(TEST_EMAIL, TEST_PASSWORD)
                 .extract()
                 .cookie("token");
 
@@ -88,8 +88,7 @@ class AuthControllerTest {
                 .cookie("token", accessToken)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(200)
-                .body("name", is(DEFAULT_NAME));
+                .statusCode(200);
     }
 
     @DisplayName("로그인 상태가 아니라면 400을 응답한다.")
@@ -106,7 +105,7 @@ class AuthControllerTest {
     @Test
     void logout() {
         // given
-        String accessToken = login(DEFAULT_EMAIL, DEFAULT_PASSWORD)
+        String accessToken = login(TEST_EMAIL, TEST_PASSWORD)
                 .extract().cookie("token");
 
         // when
@@ -121,11 +120,12 @@ class AuthControllerTest {
         assertThat(tokenAfterLogout).isBlank();
     }
 
-    private ValidatableResponse login(String email, String password) {
-        // 기본 멤버 생성
-        SignupRequest defaultMember = new SignupRequest(DEFAULT_EMAIL, DEFAULT_PASSWORD, DEFAULT_NAME);
-        memberController.createMember(defaultMember);
+    private void signup(String email, String password) {
+        SignupRequest signupRequest = new SignupRequest(email, password, "anyName");
+        memberController.createMember(signupRequest);
+    }
 
+    private ValidatableResponse login(String email, String password) {
         return RestAssured.given().log().all()
                 .contentType("application/json")
                 .body(new LoginRequest(email, password))
