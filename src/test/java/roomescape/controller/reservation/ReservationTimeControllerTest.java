@@ -2,9 +2,10 @@ package roomescape.controller.reservation;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import roomescape.service.reservation.dto.ReservationTimeCreateRequest;
@@ -16,18 +17,10 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {"classpath:truncate-with-guests.sql"})
-class ReservationTimeControllerTest {
-    @LocalServerPort
-    private int port;
+class ReservationTimeControllerTest extends ControllerTest{
     private long timeId;
-
-    @BeforeEach
-    void initPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("시간 정보를 추가한다.")
     @Test

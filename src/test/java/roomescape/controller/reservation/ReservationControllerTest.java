@@ -3,8 +3,6 @@ package roomescape.controller.reservation;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.auth.dto.LoginRequest;
 import roomescape.service.reservation.dto.ReservationRequest;
@@ -15,11 +13,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"classpath:truncate-with-time-and-theme.sql"})
-class ReservationControllerTest {
-    @LocalServerPort
-    private int port;
+class ReservationControllerTest extends ControllerTest{
     private String date;
     private long timeId;
     private long themeId;
@@ -30,8 +25,6 @@ class ReservationControllerTest {
 
     @BeforeEach
     void init() {
-        RestAssured.port = port;
-
         date = LocalDate.now().plusDays(1).toString();
         timeId = 1;
         themeId = 1;

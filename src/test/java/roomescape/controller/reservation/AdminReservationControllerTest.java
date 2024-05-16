@@ -3,8 +3,6 @@ package roomescape.controller.reservation;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import roomescape.service.auth.dto.LoginRequest;
@@ -17,12 +15,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {"classpath:truncate-with-reservations.sql"})
-class AdminReservationControllerTest {
-    @LocalServerPort
-    private int port;
+class AdminReservationControllerTest extends ControllerTest{
     private String date;
     private long timeId;
     private long themeId;
@@ -33,8 +28,6 @@ class AdminReservationControllerTest {
 
     @BeforeEach
     void init() {
-        RestAssured.port = port;
-
         date = LocalDate.now().plusDays(1).toString();
         timeId = 1;
         themeId = 1;
@@ -51,7 +44,6 @@ class AdminReservationControllerTest {
                 .body(new LoginRequest("guest123", "guest@email.com"))
                 .when().post("/login")
                 .then().log().all().extract().cookie("token");
-
     }
 
     @DisplayName("예약 추가 성공 테스트")
