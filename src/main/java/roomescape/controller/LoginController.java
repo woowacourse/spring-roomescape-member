@@ -22,11 +22,8 @@ public class LoginController {
 
     private final AuthService authService;
 
-    private final AuthorizationExtractor authorizationExtractor;
-
-    public LoginController(AuthService authService, AuthorizationExtractor authorizationExtractor) {
+    public LoginController(AuthService authService) {
         this.authService = authService;
-        this.authorizationExtractor = authorizationExtractor;
     }
 
     @PostMapping
