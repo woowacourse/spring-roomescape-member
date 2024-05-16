@@ -30,6 +30,6 @@ public class MemberHandlerInterceptor implements HandlerInterceptor {
         if (member.isGuest() || member.isAdmin()) {
             return true;
         }
-        throw new ForbiddenException("권한이 없는 접근입니다.");
+        throw new ForbiddenException();
     }
 }

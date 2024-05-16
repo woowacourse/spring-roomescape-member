@@ -30,6 +30,6 @@ public class AdminRoleHandlerInterceptor implements HandlerInterceptor {
         if (member.isAdmin()) {
             return true;
         }
-        throw new ForbiddenException("권한이 없는 접근입니다.");
+        throw new ForbiddenException();
     }
 }

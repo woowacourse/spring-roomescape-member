@@ -10,13 +10,13 @@ public class CookieUtils {
 
     public static String extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null) {
-            throw new UnauthorizedException("권한이 없는 접근입니다.");
+            throw new UnauthorizedException();
         }
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(KEY))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new UnauthorizedException("권한이 없는 접근입니다."));
+                .orElseThrow(() -> new UnauthorizedException());
     }
 
     public static Cookie createCookie(String token) {
