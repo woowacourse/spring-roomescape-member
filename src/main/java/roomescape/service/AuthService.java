@@ -28,9 +28,14 @@ public class AuthService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = memberRepository.findByEmail(tokenRequest.email()).get();
+        Member member = findMemberByEmail(tokenRequest.email());
         String accessToken = tokenProvider.createToken(member);
         return new TokenResponse(accessToken);
+    }
+
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
     }
 
     public boolean isMemberAdmin(Cookie[] cookies) {
