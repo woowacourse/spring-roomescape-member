@@ -18,8 +18,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ExceptionTemplate> handleAuthorizationException(AuthorizationException exception) {
+    public ResponseEntity<ExceptionTemplate> handleAuthenticationException(AuthenticationException exception) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ExceptionTemplate(exception.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionTemplate> handleAuthorizationException(AuthorizationException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionTemplate(exception.getMessage()));
     }
 
     @ExceptionHandler
