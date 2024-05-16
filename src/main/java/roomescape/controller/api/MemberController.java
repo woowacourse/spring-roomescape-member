@@ -2,14 +2,12 @@ package roomescape.controller.api;
 
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.api.dto.request.MemberCreateRequest;
 import roomescape.controller.api.dto.response.MemberResponse;
-import roomescape.controller.api.dto.response.MembersResponse;
 import roomescape.service.MemberService;
 
 @RestController
@@ -27,11 +25,5 @@ public class MemberController {
         final var output = memberService.createMember(request.toInput());
         return ResponseEntity.created(URI.create("/members/" + output.id()))
                 .body(MemberResponse.from(output));
-    }
-
-    @GetMapping
-    public ResponseEntity<MembersResponse> getAllMembers() {
-        final var outputs = memberService.getAllMembers();
-        return ResponseEntity.ok(MembersResponse.from(outputs));
     }
 }

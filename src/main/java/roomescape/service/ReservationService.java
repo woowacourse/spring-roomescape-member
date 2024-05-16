@@ -44,11 +44,6 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationOutput> getAllReservations() {
-        final var reservations = reservationDao.getAll();
-        return ReservationOutput.list(reservations);
-    }
-
     public List<ReservationOutput> filterReservations(final Long themeId,
                                                       final Long memberId,
                                                       final String dateFrom,

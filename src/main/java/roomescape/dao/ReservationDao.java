@@ -69,10 +69,6 @@ public class ReservationDao {
         }
     }
 
-    public List<Reservation> getAll() {
-        return jdbcTemplate.query(BASE_SQL, rowMapper);
-    }
-
     public List<Reservation> filter(final Long themeId,
                                     final Long memberId,
                                     final String dateFromValue,

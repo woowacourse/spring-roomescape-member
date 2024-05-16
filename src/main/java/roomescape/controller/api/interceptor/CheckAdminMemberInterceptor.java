@@ -25,7 +25,7 @@ public class CheckAdminMemberInterceptor implements HandlerInterceptor {
                 throw new CustomForbidden("관리자가 아닙니다.");
             }
             return true;
-        } catch (final CustomException e) {
+        } catch (final Exception e) {
             response.setStatus(403);
             return false;
         }

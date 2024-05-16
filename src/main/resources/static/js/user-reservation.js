@@ -82,10 +82,6 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-    /*
-    TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
-          요청 포맷에 맞게 설정
-    */
     fetch(`/times/available?date=${date}&themeId=${themeId}`, { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
@@ -98,7 +94,7 @@ function fetchAvailableTimes(date, themeId) {
         .catch(error => console.error("Error fetching available times:", error));
 }
 
-function renderAvailableTimes(times) {
+function renderAvailableTimes(data) {
     const timeSection = document.getElementById("time-section");
     if (timeSection.classList.contains("disabled")) {
         timeSection.classList.remove("disabled");
@@ -106,16 +102,11 @@ function renderAvailableTimes(times) {
 
     const timeSlots = document.getElementById('time-slots');
     timeSlots.innerHTML = '';
-    if (times.length === 0) {
+    if (data.length === 0) {
         timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
         return;
     }
-    times.times.forEach(time => {
-        /*
-        TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
-              response 명세에 맞춰 createSlot 함수 호출 시 값 설정
-        */
-        
+    data.times.forEach(time => {
         const startAt = time.startAt;
         const timeId = time.timeId;
         const alreadyBooked = time.alreadyBooked;
@@ -152,12 +143,6 @@ function onReservationButtonClick() {
     // const name = document.getElementById('user-name').value;
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
-
-        /*
-        TODO: [3단계] 사용자 예약 - 예약 요청 API 호출
-              [5단계] 예약 생성 기능 변경 - 사용자
-              request 명세에 맞게 설정
-        */
         const reservationData = {
             date: selectedDate,
             themeId: selectedThemeId,
