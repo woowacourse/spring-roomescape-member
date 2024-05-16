@@ -21,7 +21,9 @@ public class ReservationTimeDAO {
 
     public ReservationTimeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("reservation_time").usingGeneratedKeyColumns("id");
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     public ReservationTime insert(final ReservationTime reservationTime) {

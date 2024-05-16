@@ -4,39 +4,35 @@ import java.time.LocalDate;
 
 public class Reservation {
     private Long id;
-    private String name;
     private LocalDate date;
+    private Member member;
     private ReservationTime time;
     private Theme theme;
 
     public Reservation() {
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(final LocalDate date, final Member member, final ReservationTime time, final Theme theme) {
+        this(null, date, member, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        validateReservation(name, date, time);
+    public Reservation(final Long id, final LocalDate date, final Member member, final ReservationTime time, final Theme theme) {
+        validateReservation(date, time);
         this.id = id;
-        this.name = name;
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validateReservation(final String name, final LocalDate date, final ReservationTime time) {
-        if (name == null || name.isBlank() || date == null || time == null) {
+    private void validateReservation(final LocalDate date, final ReservationTime time) {
+        if (date == null || time == null) {
             throw new IllegalArgumentException("비어있는 입력이 존재할 수 없습니다.");
         }
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {
@@ -49,5 +45,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

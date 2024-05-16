@@ -11,8 +11,8 @@ import java.util.List;
 
 @Service
 public class ThemeService {
-    private static final int NUMBER_TO_MAKE_WEEK_AGO = 7;
-    private static final int NUMBER_TO_MAKE_DAY_AGO = 1;
+    private static final int NUMBER_TO_MAKE_WEEK = 7;
+    private static final int NUMBER_TO_MAKE_DAY = 1;
     private static final int TOP_RANKING_LIMIT = 10;
 
     private final ReservationDAO reservationDAO;
@@ -41,8 +41,8 @@ public class ThemeService {
 
     public List<Theme> findTopRanking() {
         final LocalDate currentDate = LocalDate.now();
-        final LocalDate startDate = currentDate.minusDays(NUMBER_TO_MAKE_WEEK_AGO);
-        final LocalDate endDate = currentDate.minusDays(NUMBER_TO_MAKE_DAY_AGO);
+        final LocalDate startDate = currentDate.minusDays(NUMBER_TO_MAKE_WEEK);
+        final LocalDate endDate = currentDate.minusDays(NUMBER_TO_MAKE_DAY);
 
         return themeDAO.findTopRankingThemes(startDate, endDate, TOP_RANKING_LIMIT);
     }

@@ -31,3 +31,26 @@
     - 예약 수가 같다면 테마 아이디를 기준으로 정렬하여 보여준다.
 - [x] / 요청 시 인기 테마 페이지를 응답한다.
     - 페이지는 templates/index.html
+
+- [x] `GET - /signup` 요청 시 회원가입 폼이 있는 페이지를 응답한다.
+  - templates/signup.html
+- [x] `GET - /login` 요청 시 로그인 폼이 있는 페이지를 응답한다.
+  - templates/login.html
+- [x] `POST - /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.
+  - [x] 응답 Cookie에 "token"값으로 토큰이 포함한다.
+- [x] `GET - /login/check` 요청 시 인증 정보를 조회하는 API를 만든다.
+  - [x] Cookie에서 토큰 정보를 추출하여 멤버를 찾아 멤버 정보를 응답한다.
+
+- [x] admin/reservation-new.html 파일에서 안내된 주석에 따라, 로딩하는 js 파일을 변경한다.
+  - AS-IS: /js/reservation-new.js
+  - TO-BE: /js/reservation-with-member.js
+- [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성한다.
+- [x] 예약 생성은 로그인 사용자와 관리자 모두 사용할 수 있다.
+  - [x] 관리자는 memberId 인자로 전달한 정보로 예약을 생성한다.
+  - [x] 로그인 사용자는 자신의 로그인 정보로 예약을 생성한다.
+
+- [x] 어드민 페이지 진입은 admin권한이 있는 사람만 할 수 있도록 제한한다.
+  - [x] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근한다.
+
+- [x] 예약이 많아질 경우 관리가 용이하도록 예약 검색 기능을 추가한다.
+  - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가한다.
