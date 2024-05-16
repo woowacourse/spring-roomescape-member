@@ -14,13 +14,13 @@ public class MemberController {
 
   private final MemberService memberService;
 
-  public MemberController(MemberService memberService) {
+  public MemberController(final MemberService memberService) {
     this.memberService = memberService;
   }
 
   @GetMapping
   public ResponseEntity<List<MemberResponse>> getMembers() {
-    List<MemberResponse> members = memberService.getMembers().stream()
+    final List<MemberResponse> members = memberService.getMembers().stream()
         .map(MemberResponse::from)
         .toList();
     return ResponseEntity.ok(members);

@@ -31,10 +31,10 @@ public class ReservationController {
 
   @GetMapping
   public List<ReservationResponse> getReservations(
-      @RequestParam(required = false) LocalDate dateFrom,
-      @RequestParam(required = false) LocalDate dateTo,
-      @RequestParam(required = false) Long themeId,
-      @RequestParam(required = false) Long memberId
+      @RequestParam(required = false) final LocalDate dateFrom,
+      @RequestParam(required = false) final LocalDate dateTo,
+      @RequestParam(required = false) final Long themeId,
+      @RequestParam(required = false) final Long memberId
   ) {
     return reservationService.getReservations(dateFrom, dateTo, themeId, memberId)
         .stream()
@@ -44,7 +44,7 @@ public class ReservationController {
 
   @PostMapping
   public ResponseEntity<ReservationResponse> saveReservation(
-      @AuthenticationPrincipal Member member,
+      @AuthenticationPrincipal final Member member,
       @RequestBody final SaveReservationRequest request
   ) {
     final Reservation savedReservation = reservationService.saveReservation(member, request);

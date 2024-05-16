@@ -25,12 +25,12 @@ public class Name {
 
   @Override
   public boolean equals(final Object o) {
-      if (this == o) {
-          return true;
-      }
-      if (!(o instanceof final Name that)) {
-          return false;
-      }
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof final Name that)) {
+      return false;
+    }
     return Objects.equals(value, that.value);
   }
 

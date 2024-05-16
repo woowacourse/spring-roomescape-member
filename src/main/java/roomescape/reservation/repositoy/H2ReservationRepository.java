@@ -25,9 +25,10 @@ public class H2ReservationRepository implements ReservationRepository {
   }
 
   @Override
-  public List<Reservation> findAll(LocalDate dateFrom, LocalDate dateTo, Long themeId,
-      Long memberId) {
-    StringBuilder sqlBuilder = new StringBuilder("""
+  public List<Reservation> findAll(final LocalDate dateFrom, final LocalDate dateTo,
+      final Long themeId,
+      final Long memberId) {
+    final StringBuilder sqlBuilder = new StringBuilder("""
         SELECT 
         r.id as reservation_id, r.date as reservation_date,
         m.id as member_id, m.name as member_name, m.email as member_email, m.password as member_password, 
@@ -70,7 +71,7 @@ public class H2ReservationRepository implements ReservationRepository {
       param.addValue("memberId", memberId);
     }
 
-    String sql = sqlBuilder.toString();
+    final String sql = sqlBuilder.toString();
 
     // 쿼리 실행 및 결과 반환
     return template.query(sql, param, itemRowMapper());

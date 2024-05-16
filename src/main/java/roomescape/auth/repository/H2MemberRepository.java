@@ -29,7 +29,7 @@ public class H2MemberRepository implements MemberRepository {
   }
 
   @Override
-  public Optional<Member> findByEmail(String email) {
+  public Optional<Member> findByEmail(final String email) {
     final String sql = """
         SELECT m.id, m.name, m.email, m.password, r.name as role_name
         FROM member as m 

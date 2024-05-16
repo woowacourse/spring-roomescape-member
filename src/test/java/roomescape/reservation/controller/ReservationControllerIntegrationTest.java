@@ -54,7 +54,7 @@ class ReservationControllerIntegrationTest {
     params.put("date", LocalDate.now().plusDays(1).toString());
     params.put("timeId", "1");
     params.put("themeId", "1");
-    String token = jwtTokenProvider.createToken("kelly@example.com", "켈리");
+    final String token = jwtTokenProvider.createToken("kelly@example.com", "켈리");
 
     RestAssured.given().log().all()
         .cookie("token", token)
@@ -89,7 +89,7 @@ class ReservationControllerIntegrationTest {
     final Map<String, String> params = new HashMap<>();
     params.put("date", "2023-08-05");
     params.put("timeId", "20");
-    String token = jwtTokenProvider.createToken("kelly@example.com", "켈리");
+    final String token = jwtTokenProvider.createToken("kelly@example.com", "켈리");
 
     RestAssured.given().log().all()
         .contentType(ContentType.JSON)
@@ -108,7 +108,7 @@ class ReservationControllerIntegrationTest {
     params.put("date", LocalDate.now().minusDays(1).toString());
     params.put("timeId", "1");
     params.put("themeId", "1");
-    String token = jwtTokenProvider.createToken("kelly@example.com", "켈리");
+    final String token = jwtTokenProvider.createToken("kelly@example.com", "켈리");
 
     RestAssured.given().log().all()
         .contentType(ContentType.JSON)

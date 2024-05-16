@@ -20,21 +20,22 @@ public class AuthController {
 
   private final AuthService authService;
 
-  public AuthController(AuthService authService) {
+  public AuthController(final AuthService authService) {
     this.authService = authService;
   }
 
   @PostMapping
-  public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-    String token = authService.login(request);
+  public ResponseEntity<Void> login(@RequestBody final LoginRequest request) {
+    final String token = authService.login(request);
     return ResponseEntity.ok()
         .header(SET_COOKIE, "token=" + token)
         .build();
   }
 
   @GetMapping("/check")
-  public ResponseEntity<CheckLoginResponse> checkLogin(@AuthenticationPrincipal Member member) {
-    CheckLoginResponse response = CheckLoginResponse.from(member.getName().getValue());
+  public ResponseEntity<CheckLoginResponse> checkLogin(
+      @AuthenticationPrincipal final Member member) {
+    final CheckLoginResponse response = CheckLoginResponse.from(member.getName().getValue());
     return ResponseEntity.ok(response);
   }
 }

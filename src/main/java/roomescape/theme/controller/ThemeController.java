@@ -18,39 +18,40 @@ import roomescape.theme.service.ThemeService;
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
-    private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
-    }
+  private final ThemeService themeService;
 
-    @GetMapping
-    public List<ThemeResponse> getThemes() {
-        return themeService.getThemes()
-                .stream()
-                .map(ThemeResponse::from)
-                .toList();
-    }
+  public ThemeController(final ThemeService themeService) {
+    this.themeService = themeService;
+  }
 
-    @PostMapping
-    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody final SaveThemeRequest request) {
-        final Theme savedTheme = themeService.saveTheme(request);
+  @GetMapping
+  public List<ThemeResponse> getThemes() {
+    return themeService.getThemes()
+        .stream()
+        .map(ThemeResponse::from)
+        .toList();
+  }
 
-        return ResponseEntity.created(URI.create("/themes/" + savedTheme.getId()))
-                .body(ThemeResponse.from(savedTheme));
-    }
+  @PostMapping
+  public ResponseEntity<ThemeResponse> saveTheme(@RequestBody final SaveThemeRequest request) {
+    final Theme savedTheme = themeService.saveTheme(request);
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable final Long id) {
-        themeService.deleteTheme(id);
-        return ResponseEntity.noContent().build();
-    }
+    return ResponseEntity.created(URI.create("/themes/" + savedTheme.getId()))
+        .body(ThemeResponse.from(savedTheme));
+  }
 
-    @GetMapping("/popular-themes")
-    public List<ThemeResponse> getPopularThemes() {
-        return themeService.getPopularThemes()
-                .stream()
-                .map(ThemeResponse::from)
-                .toList();
-    }
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteTheme(@PathVariable final Long id) {
+    themeService.deleteTheme(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/popular-themes")
+  public List<ThemeResponse> getPopularThemes() {
+    return themeService.getPopularThemes()
+        .stream()
+        .map(ThemeResponse::from)
+        .toList();
+  }
 }

@@ -13,25 +13,26 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
   private final AuthService authService;
 
-  public AdminAuthorizationInterceptor(AuthService authService) {
+  public AdminAuthorizationInterceptor(final AuthService authService) {
     this.authService = authService;
   }
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+  public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
+      final Object handler)
       throws Exception {
-    Cookie[] cookies = request.getCookies();
-    String token = extractTokenFromCookie(cookies);
+    final Cookie[] cookies = request.getCookies();
+    final String token = extractTokenFromCookie(cookies);
 
-    Member member = authService.findMember(token);
+    final Member member = authService.findMember(token);
     if (!member.isAdmin()) {
       throw new IllegalArgumentException("어드민 권한이 없습니다.");
     }
     return true;
   }
 
-  private String extractTokenFromCookie(Cookie[] cookies) {
-    for (Cookie cookie : cookies) {
+  private String extractTokenFromCookie(final Cookie[] cookies) {
+    for (final Cookie cookie : cookies) {
       if (cookie.getName().equals("token")) {
         return cookie.getValue();
       }

@@ -27,13 +27,13 @@ class AdminWebControllerIntegrationTest {
   @DisplayName("/admin으로 요청하면 200응답이 넘어온다.")
   @Test
   void requestAdminPageTest() {
-    LoginRequest request = new LoginRequest("neo@example.com", "password123");
-    Response response = RestAssured.given().log().all()
+    final LoginRequest request = new LoginRequest("neo@example.com", "password123");
+    final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(request)
         .post("/login");
-    Cookies cookies = response.getDetailedCookies();
-    String token = cookies.getValue("token");
+    final Cookies cookies = response.getDetailedCookies();
+    final String token = cookies.getValue("token");
 
     // Then
     RestAssured.given().log().all()
@@ -46,13 +46,13 @@ class AdminWebControllerIntegrationTest {
   @DisplayName("관리자가 아닌 유저가 /admin으로 요청하면 400응답이 넘어온다.")
   @Test
   void requestAdminPageByNotAdminMemberTest() {
-    LoginRequest request = new LoginRequest("kelly@example.com", "password123");
-    Response response = RestAssured.given().log().all()
+    final LoginRequest request = new LoginRequest("kelly@example.com", "password123");
+    final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(request)
         .post("/login");
-    Cookies cookies = response.getDetailedCookies();
-    String token = cookies.getValue("token");
+    final Cookies cookies = response.getDetailedCookies();
+    final String token = cookies.getValue("token");
 
     // Then
     RestAssured.given().log().all()
@@ -66,13 +66,13 @@ class AdminWebControllerIntegrationTest {
   @Test
   void requestReservationPageTest() {
     // given
-    LoginRequest request = new LoginRequest("neo@example.com", "password123");
-    Response response = RestAssured.given().log().all()
+    final LoginRequest request = new LoginRequest("neo@example.com", "password123");
+    final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(request)
         .post("/login");
-    Cookies cookies = response.getDetailedCookies();
-    String token = cookies.getValue("token");
+    final Cookies cookies = response.getDetailedCookies();
+    final String token = cookies.getValue("token");
 
     // then
     RestAssured.given().log().all()
@@ -86,13 +86,13 @@ class AdminWebControllerIntegrationTest {
   @Test
   void requestReservationPageByNotAdminMemberTest() {
     // given
-    LoginRequest request = new LoginRequest("kelly@example.com", "password123");
-    Response response = RestAssured.given().log().all()
+    final LoginRequest request = new LoginRequest("kelly@example.com", "password123");
+    final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(request)
         .post("/login");
-    Cookies cookies = response.getDetailedCookies();
-    String token = cookies.getValue("token");
+    final Cookies cookies = response.getDetailedCookies();
+    final String token = cookies.getValue("token");
 
     // then
     RestAssured.given().log().all()

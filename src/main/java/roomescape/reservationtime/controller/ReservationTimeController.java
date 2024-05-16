@@ -21,41 +21,45 @@ import roomescape.reservationtime.service.ReservationTimeService;
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
-    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
-    }
+  private final ReservationTimeService reservationTimeService;
 
-    @GetMapping
-    public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeService.getReservationTimes()
-                .stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
-    }
+  public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+    this.reservationTimeService = reservationTimeService;
+  }
 
-    @PostMapping
-    public ResponseEntity<ReservationTimeResponse> saveReservationTime(@RequestBody final SaveReservationTimeRequest request) {
-        final ReservationTime savedReservationTime = reservationTimeService.saveReservationTime(request);
+  @GetMapping
+  public List<ReservationTimeResponse> getReservationTimes() {
+    return reservationTimeService.getReservationTimes()
+        .stream()
+        .map(ReservationTimeResponse::from)
+        .toList();
+  }
 
-        return ResponseEntity.created(URI.create("/times/" + savedReservationTime.getId()))
-                .body(ReservationTimeResponse.from(savedReservationTime));
-    }
+  @PostMapping
+  public ResponseEntity<ReservationTimeResponse> saveReservationTime(
+      @RequestBody final SaveReservationTimeRequest request) {
+    final ReservationTime savedReservationTime = reservationTimeService.saveReservationTime(
+        request);
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable final Long id) {
-        reservationTimeService.deleteReservationTime(id);
-        return ResponseEntity.noContent().build();
-    }
+    return ResponseEntity.created(URI.create("/times/" + savedReservationTime.getId()))
+        .body(ReservationTimeResponse.from(savedReservationTime));
+  }
 
-    @GetMapping("/available-reservation-times")
-    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(@RequestParam("date") final LocalDate date, @RequestParam("theme-id") final Long themeId) {
-        return reservationTimeService.getAvailableReservationTimes(date, themeId)
-                .getValues()
-                .entrySet()
-                .stream()
-                .map(entry -> AvailableReservationTimeResponse.of(entry.getKey(), entry.getValue()))
-                .toList();
-    }
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteReservationTime(@PathVariable final Long id) {
+    reservationTimeService.deleteReservationTime(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/available-reservation-times")
+  public List<AvailableReservationTimeResponse> getAvailableReservationTimes(
+      @RequestParam("date") final LocalDate date, @RequestParam("theme-id") final Long themeId) {
+    return reservationTimeService.getAvailableReservationTimes(date, themeId)
+        .getValues()
+        .entrySet()
+        .stream()
+        .map(entry -> AvailableReservationTimeResponse.of(entry.getKey(), entry.getValue()))
+        .toList();
+  }
 }

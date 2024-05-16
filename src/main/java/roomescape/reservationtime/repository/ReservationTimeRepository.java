@@ -7,15 +7,15 @@ import roomescape.reservationtime.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
 
-    List<ReservationTime> findAll();
+  List<ReservationTime> findAll();
 
-    Optional<ReservationTime> findById(Long reservationTimeId);
+  Optional<ReservationTime> findById(Long reservationTimeId);
 
-    ReservationTime save(ReservationTime reservationTime);
+  ReservationTime save(ReservationTime reservationTime);
 
-    void deleteById(Long reservationTimeId);
+  void deleteById(Long reservationTimeId);
 
-    boolean existById(Long reservationTimeId);
+  boolean existById(Long reservationTimeId);
 
-    boolean existByStartAt(LocalTime startAt);
+  boolean existByStartAt(LocalTime startAt);
 }

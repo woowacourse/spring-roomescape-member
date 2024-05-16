@@ -18,59 +18,60 @@ import roomescape.theme.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
-    @InjectMocks
-    private ThemeService themeService;
-    @Mock
-    private ThemeRepository themeRepository;
 
-    @DisplayName("전체 테마 정보를 조회한다.")
-    @Test
-    void getThemesTest() {
-        // Given
-        final List<Theme> themes = List.of(
-                Theme.of(1L, "켈리의 하루", "켈켈켈", "켈리 사진"),
-                Theme.of(2L, "테바의 하루", "테테테", "테바 사진")
-        );
+  @InjectMocks
+  private ThemeService themeService;
+  @Mock
+  private ThemeRepository themeRepository;
 
-        given(themeRepository.findAll()).willReturn(themes);
+  @DisplayName("전체 테마 정보를 조회한다.")
+  @Test
+  void getThemesTest() {
+    // Given
+    final List<Theme> themes = List.of(
+        Theme.of(1L, "켈리의 하루", "켈켈켈", "켈리 사진"),
+        Theme.of(2L, "테바의 하루", "테테테", "테바 사진")
+    );
 
-        // When
-        final List<Theme> findThemes = themeService.getThemes();
+    given(themeRepository.findAll()).willReturn(themes);
 
-        // Then
-        assertThat(findThemes).hasSize(2);
-    }
+    // When
+    final List<Theme> findThemes = themeService.getThemes();
 
-    @DisplayName("예약 시간 정보를 저장한다.")
-    @Test
-    void saveThemeTest() {
-        // Given
-        final String name = "켈리의 하루";
-        final String description = "켈켈켈";
-        final String thumbnail = "켈리 사진";
-        final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
-        final Theme savedTheme = Theme.of(1L, name, description, thumbnail);
+    // Then
+    assertThat(findThemes).hasSize(2);
+  }
 
-        given(themeRepository.save(saveThemeRequest.toTheme())).willReturn(savedTheme);
+  @DisplayName("예약 시간 정보를 저장한다.")
+  @Test
+  void saveThemeTest() {
+    // Given
+    final String name = "켈리의 하루";
+    final String description = "켈켈켈";
+    final String thumbnail = "켈리 사진";
+    final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
+    final Theme savedTheme = Theme.of(1L, name, description, thumbnail);
 
-        // When
-        final Theme theme = themeService.saveTheme(saveThemeRequest);
+    given(themeRepository.save(saveThemeRequest.toTheme())).willReturn(savedTheme);
 
-        // Then
-        assertThat(theme.getId()).isEqualTo(1L);
-    }
+    // When
+    final Theme theme = themeService.saveTheme(saveThemeRequest);
 
-    @DisplayName("테마 정보를 삭제한다.")
-    @Test
-    void deleteThemeTest() {
-        // Given
-        final Long themeId = 1L;
+    // Then
+    assertThat(theme.getId()).isEqualTo(1L);
+  }
 
-        given(themeRepository.existById(themeId)).willReturn(true);
-        willDoNothing().given(themeRepository).deleteById(themeId);
+  @DisplayName("테마 정보를 삭제한다.")
+  @Test
+  void deleteThemeTest() {
+    // Given
+    final Long themeId = 1L;
 
-        // When & Then
-        assertThatCode(() -> themeService.deleteTheme(themeId))
-                .doesNotThrowAnyException();
-    }
+    given(themeRepository.existById(themeId)).willReturn(true);
+    willDoNothing().given(themeRepository).deleteById(themeId);
+
+    // When & Then
+    assertThatCode(() -> themeService.deleteTheme(themeId))
+        .doesNotThrowAnyException();
+  }
 }

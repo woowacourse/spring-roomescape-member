@@ -19,11 +19,11 @@ public class JwtTokenProvider {
   @Value("${security.jwt.expire-length}")
   private long validityInMilliseconds;
 
-  public String createToken(String email, String name) {
-    Claims claims = Jwts.claims().setSubject(email);
+  public String createToken(final String email, final String name) {
+    final Claims claims = Jwts.claims().setSubject(email);
     claims.put("name", name);
-    Date now = new Date();
-    Date validity = new Date(now.getTime() + validityInMilliseconds);
+    final Date now = new Date();
+    final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
     return Jwts.builder()
         .setClaims(claims)
@@ -33,21 +33,21 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  public Map<String, String> getPayload(String token) {
-    HashMap<String, String> payloads = new HashMap<>();
-    Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+  public Map<String, String> getPayload(final String token) {
+    final HashMap<String, String> payloads = new HashMap<>();
+    final Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 
     payloads.put("name", (String) claims.get("name"));
     payloads.put("email", claims.getSubject());
     return payloads;
   }
 
-  public boolean validateToken(String token) {
+  public boolean validateToken(final String token) {
     try {
-      Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+      final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
       return !claims.getBody().getExpiration().before(new Date());
-    } catch (JwtException | IllegalArgumentException e) {
+    } catch (final JwtException | IllegalArgumentException e) {
       return false;
     }
   }

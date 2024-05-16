@@ -19,50 +19,50 @@ import roomescape.theme.dto.SaveThemeRequest;
 @Sql(value = {"/schema.sql", "/data.sql"}, executionPhase = BEFORE_TEST_METHOD)
 class ThemeServiceIntegrationTest {
 
-    @Autowired
-    private ThemeService themeService;
+  @Autowired
+  private ThemeService themeService;
 
-    @DisplayName("전체 테마 정보를 조회한다.")
-    @Test
-    void getThemesTest() {
-        // When
-        final List<Theme> themes = themeService.getThemes();
+  @DisplayName("전체 테마 정보를 조회한다.")
+  @Test
+  void getThemesTest() {
+    // When
+    final List<Theme> themes = themeService.getThemes();
 
-        // Then
-        assertThat(themes).hasSize(15);
-    }
+    // Then
+    assertThat(themes).hasSize(15);
+  }
 
-    @DisplayName("테마 정보를 저장한다.")
-    @Test
-    void saveThemeTest() {
-        // Given
-        final String name = "켈리의 두근두근";
-        final String description = "켈리와의 두근두근 데이트";
-        final String thumbnail = "켈리 사진";
-        final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
+  @DisplayName("테마 정보를 저장한다.")
+  @Test
+  void saveThemeTest() {
+    // Given
+    final String name = "켈리의 두근두근";
+    final String description = "켈리와의 두근두근 데이트";
+    final String thumbnail = "켈리 사진";
+    final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
 
-        // When
-        final Theme theme = themeService.saveTheme(saveThemeRequest);
+    // When
+    final Theme theme = themeService.saveTheme(saveThemeRequest);
 
-        // Then
-        final List<Theme> themes = themeService.getThemes();
-        Assertions.assertAll(
-                () -> assertThat(themes).hasSize(16),
-                () -> assertThat(theme.getId()).isEqualTo(16L),
-                () -> assertThat(theme.getName().getValue()).isEqualTo(name),
-                () -> assertThat(theme.getDescription().getValue()).isEqualTo(description),
-                () -> assertThat(theme.getThumbnail()).isEqualTo(thumbnail)
-        );
-    }
+    // Then
+    final List<Theme> themes = themeService.getThemes();
+    Assertions.assertAll(
+        () -> assertThat(themes).hasSize(16),
+        () -> assertThat(theme.getId()).isEqualTo(16L),
+        () -> assertThat(theme.getName().getValue()).isEqualTo(name),
+        () -> assertThat(theme.getDescription().getValue()).isEqualTo(description),
+        () -> assertThat(theme.getThumbnail()).isEqualTo(thumbnail)
+    );
+  }
 
-    @DisplayName("테마 정보를 삭제한다.")
-    @Test
-    void deleteThemeTest() {
-        // When
-        themeService.deleteTheme(7L);
+  @DisplayName("테마 정보를 삭제한다.")
+  @Test
+  void deleteThemeTest() {
+    // When
+    themeService.deleteTheme(7L);
 
-        // Then
-        final List<Theme> themes = themeService.getThemes();
-        assertThat(themes).hasSize(14);
-    }
+    // Then
+    final List<Theme> themes = themeService.getThemes();
+    assertThat(themes).hasSize(14);
+  }
 }

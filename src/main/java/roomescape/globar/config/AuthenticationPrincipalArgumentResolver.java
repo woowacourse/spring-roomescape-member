@@ -15,30 +15,31 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
 
   private final AuthService authService;
 
-  public AuthenticationPrincipalArgumentResolver(AuthService authService) {
+  public AuthenticationPrincipalArgumentResolver(final AuthService authService) {
     this.authService = authService;
   }
 
   @Override
-  public boolean supportsParameter(MethodParameter parameter) {
+  public boolean supportsParameter(final MethodParameter parameter) {
     return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
   }
 
   @Override
-  public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-      NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+  public Object resolveArgument(final MethodParameter parameter,
+      final ModelAndViewContainer mavContainer,
+      final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
 
-    HttpServletRequest request
+    final HttpServletRequest request
         = (HttpServletRequest) webRequest.getNativeRequest();
 
-    Cookie[] cookies = request.getCookies();
-    String token = extractTokenFromCookie(cookies);
+    final Cookie[] cookies = request.getCookies();
+    final String token = extractTokenFromCookie(cookies);
 
     return authService.findMember(token);
   }
 
-  private String extractTokenFromCookie(Cookie[] cookies) {
-    for (Cookie cookie : cookies) {
+  private String extractTokenFromCookie(final Cookie[] cookies) {
+    for (final Cookie cookie : cookies) {
       if (cookie.getName().equals("token")) {
         return cookie.getValue();
       }

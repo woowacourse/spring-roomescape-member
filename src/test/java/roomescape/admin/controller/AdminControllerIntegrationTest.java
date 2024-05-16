@@ -32,15 +32,15 @@ class AdminControllerIntegrationTest {
   @Test
   void saveAdminReservation() {
     // given
-    SaveAdminReservationRequest saveAdminReservationRequest = new SaveAdminReservationRequest(
+    final SaveAdminReservationRequest saveAdminReservationRequest = new SaveAdminReservationRequest(
         LocalDate.now().plusDays(1), 1L, 1L, 1L);
-    LoginRequest loginRequest = new LoginRequest("neo@example.com", "password123");
-    Response response = RestAssured.given().log().all()
+    final LoginRequest loginRequest = new LoginRequest("neo@example.com", "password123");
+    final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(loginRequest)
         .post("/login");
-    Cookies cookies = response.getDetailedCookies();
-    String token = cookies.getValue("token");
+    final Cookies cookies = response.getDetailedCookies();
+    final String token = cookies.getValue("token");
 
     //then
     RestAssured.given().log().all()

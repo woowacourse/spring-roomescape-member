@@ -19,13 +19,13 @@ public class AdminController {
 
   private final ReservationService reservationService;
 
-  public AdminController(ReservationService reservationService) {
+  public AdminController(final ReservationService reservationService) {
     this.reservationService = reservationService;
   }
 
   @PostMapping("/reservations")
   public ResponseEntity<ReservationResponse> saveAdminReservation(
-      @AuthenticationPrincipal Member member,
+      @AuthenticationPrincipal final Member member,
       @RequestBody final SaveAdminReservationRequest request
   ) {
     final Reservation savedReservation = reservationService.saveAdminReservation(member, request);

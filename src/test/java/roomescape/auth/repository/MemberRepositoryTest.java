@@ -23,9 +23,9 @@ class MemberRepositoryTest {
   @Test
   void findByEmail() {
     // Given
-    String email = "kelly@example.com";
+    final String email = "kelly@example.com";
     // When
-    Optional<Member> member = memberRepository.findByEmail(email);
+    final Optional<Member> member = memberRepository.findByEmail(email);
     // Then
     assertThat(member.isPresent()).isTrue();
   }
@@ -35,7 +35,7 @@ class MemberRepositoryTest {
   void findAll() {
     // given
     // when
-    List<Member> members = memberRepository.findAll();
+    final List<Member> members = memberRepository.findAll();
     //then
     assertThat(members).hasSize(16);
   }

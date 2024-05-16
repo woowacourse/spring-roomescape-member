@@ -26,10 +26,10 @@ class AuthServiceIntegrationTest {
   @Test
   void createUser() {
     // Given
-    String email = "kelly@example.com";
-    LoginRequest loginRequest = new LoginRequest(email, "password123");
+    final String email = "kelly@example.com";
+    final LoginRequest loginRequest = new LoginRequest(email, "password123");
     // When
-    String token = authService.login(loginRequest);
+    final String token = authService.login(loginRequest);
     // Then
     assertThat(email).isEqualTo(jwtTokenProvider.getPayload(token).get("email"));
   }
@@ -38,9 +38,9 @@ class AuthServiceIntegrationTest {
   @Test
   void findMemberByEmail() {
     // given
-    String email = "kelly@example.com";
+    final String email = "kelly@example.com";
     // when
-    Member member = authService.findMemberByEmail(email);
+    final Member member = authService.findMemberByEmail(email);
     //then
     assertThat(member.getEmail()).isEqualTo(email);
   }
@@ -49,7 +49,7 @@ class AuthServiceIntegrationTest {
   @Test
   void findMemberByInvalidEmail() {
     // given
-    String email = "kellyyy@example.com";
+    final String email = "kellyyy@example.com";
     // when & than
     assertThatThrownBy(
         () -> authService.findMemberByEmail(email))

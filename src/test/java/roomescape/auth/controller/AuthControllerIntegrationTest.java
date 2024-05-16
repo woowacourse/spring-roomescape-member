@@ -36,7 +36,7 @@ class AuthControllerIntegrationTest {
   @Test
   void login() {
     // Given
-    LoginRequest request = new LoginRequest("kelly@example.com", "password123");
+    final LoginRequest request = new LoginRequest("kelly@example.com", "password123");
 
     // Then
     RestAssured.given().log().all()
@@ -52,7 +52,7 @@ class AuthControllerIntegrationTest {
   @Test
   void loginWithInvalidEmail() {
     // Given
-    LoginRequest request = new LoginRequest("user@mail.com", "1234");
+    final LoginRequest request = new LoginRequest("user@mail.com", "1234");
 
     // Then
     RestAssured.given().log().all()
@@ -67,7 +67,7 @@ class AuthControllerIntegrationTest {
   @Test
   void loginWithInvalidPassword() {
     // Given
-    LoginRequest request = new LoginRequest("kelly@example.com", "1234");
+    final LoginRequest request = new LoginRequest("kelly@example.com", "1234");
 
     // Then
     RestAssured.given().log().all()
@@ -82,14 +82,14 @@ class AuthControllerIntegrationTest {
   @Test
   void checkLogin() {
     // Given
-    String name = "켈리";
-    LoginRequest request = new LoginRequest("kelly@example.com", "password123");
-    Response response = RestAssured.given().log().all()
+    final String name = "켈리";
+    final LoginRequest request = new LoginRequest("kelly@example.com", "password123");
+    final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
         .body(request)
         .post("/login");
-    Cookies cookies = response.getDetailedCookies();
-    String token = cookies.getValue("token");
+    final Cookies cookies = response.getDetailedCookies();
+    final String token = cookies.getValue("token");
 
     // Then
     RestAssured.given().log().all()

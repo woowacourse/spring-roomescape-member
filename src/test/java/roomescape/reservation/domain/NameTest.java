@@ -13,7 +13,7 @@ class NameTest {
   @ParameterizedTest
   @NullAndEmptySource
   @ValueSource(strings = {"kellykelly"})
-  void playerNameLengthTest(String invalidName) {
+  void playerNameLengthTest(final String invalidName) {
     // When & Then
     assertThatThrownBy(() -> new Name(invalidName))
         .isInstanceOf(IllegalArgumentException.class)

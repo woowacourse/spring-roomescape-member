@@ -10,9 +10,9 @@ class RoleTest {
   @Test
   void isAdmin() {
     // given
-    Role role = new Role("ADMIN");
+    final Role role = new Role("ADMIN");
     // when
-    boolean isAdmin = role.isAdmin();
+    final boolean isAdmin = role.isAdmin();
     //then
     Assertions.assertThat(isAdmin).isTrue();
   }
@@ -21,9 +21,9 @@ class RoleTest {
   @Test
   void isNotAdmin() {
     // given
-    Role role = new Role("USER");
+    final Role role = new Role("USER");
     // when
-    boolean isAdmin = role.isAdmin();
+    final boolean isAdmin = role.isAdmin();
     //then
     Assertions.assertThat(isAdmin).isFalse();
   }

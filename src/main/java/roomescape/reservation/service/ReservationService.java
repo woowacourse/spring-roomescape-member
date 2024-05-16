@@ -31,12 +31,13 @@ public class ReservationService {
     this.themeRepository = themeRepository;
   }
 
-  public List<Reservation> getReservations(LocalDate dateFrom, LocalDate dateTo, Long themeId,
-      Long memberId) {
+  public List<Reservation> getReservations(final LocalDate dateFrom, final LocalDate dateTo,
+      final Long themeId,
+      final Long memberId) {
     return reservationRepository.findAll(dateFrom, dateTo, themeId, memberId);
   }
 
-  public Reservation saveReservation(Member member, final SaveReservationRequest request) {
+  public Reservation saveReservation(final Member member, final SaveReservationRequest request) {
     final ReservationTime reservationTime = checkReservationTimeExist(
         request.timeId());
     final Theme theme = checkThemeExist(request.themeId());
@@ -47,17 +48,18 @@ public class ReservationService {
         request.toReservation(member, reservationTime, theme));
   }
 
-  private ReservationTime checkReservationTimeExist(Long reservationTimeId) {
+  private ReservationTime checkReservationTimeExist(final Long reservationTimeId) {
     return reservationTimeRepository.findById(reservationTimeId)
         .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
   }
 
-  private Theme checkThemeExist(Long themeId) {
+  private Theme checkThemeExist(final Long themeId) {
     return themeRepository.findById(themeId)
         .orElseThrow(() -> new NoSuchElementException("해당 id의 테마가 존재하지 않습니다."));
   }
 
-  private void validateReservationDuplication(LocalDate date, Long timeId, Long themeId) {
+  private void validateReservationDuplication(final LocalDate date, final Long timeId,
+      final Long themeId) {
     if (reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
       throw new IllegalArgumentException("이미 해당 날짜/시간의 테마 예약이 있습니다.");
     }
@@ -73,7 +75,8 @@ public class ReservationService {
         .orElseThrow(() -> new NoSuchElementException("해당 id의 예약이 존재하지 않습니다."));
   }
 
-  public Reservation saveAdminReservation(Member member, SaveAdminReservationRequest request) {
+  public Reservation saveAdminReservation(final Member member,
+      final SaveAdminReservationRequest request) {
     final ReservationTime reservationTime = checkReservationTimeExist(
         request.timeId());
     final Theme theme = checkThemeExist(request.themeId());
