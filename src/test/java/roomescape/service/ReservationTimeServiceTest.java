@@ -9,13 +9,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
-import roomescape.domain.Reservation;
+import roomescape.domain.reservation.Reservation;
 import roomescape.exception.IllegalTimeException;
 import roomescape.exception.ReferencedReservationExistException;
-import roomescape.service.dto.reservationtime.ReservationTimeCreateRequest;
-import roomescape.service.dto.reservationtime.ReservationTimeResponse;
-import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.reservationtime.ReservationTimeRepository;
+import roomescape.service.reservationtime.ReservationTimeService;
+import roomescape.service.reservationtime.dto.ReservationTimeCreateRequest;
+import roomescape.service.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -102,7 +103,7 @@ class ReservationTimeServiceTest {
         LocalDate date = Fixtures.DATE_AFTER_6_MONTH_LATER;
         Long themeId = 1L;
         Mockito.when(reservationRepository.findByDateAndThemeId(date, themeId))
-                .thenReturn(List.of(new Reservation("클로버", date, Fixtures.reservationTimeFixture, Fixtures.themeFixture)));
+                .thenReturn(List.of(new Reservation(Fixtures.memberFixture, date, Fixtures.reservationTimeFixture, Fixtures.themeFixture)));
         Mockito.when(reservationTimeRepository.findAll())
                 .thenReturn(List.of(Fixtures.reservationTimeFixture));
 
