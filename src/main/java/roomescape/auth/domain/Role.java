@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Role {
 
   public static final String ADMIN_ROLE_NAME = "ADMIN";
+
   private final String name;
 
   public Role(final String name) {
