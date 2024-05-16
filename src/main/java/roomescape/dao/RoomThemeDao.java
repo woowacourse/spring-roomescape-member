@@ -1,6 +1,8 @@
 package roomescape.dao;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -8,18 +10,17 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.RoomTheme;
-import roomescape.exception.InvalidInputException;
 
 @Repository
 public class RoomThemeDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<RoomTheme> rowMapper = (rs, rowNum) -> new RoomTheme(
+    private static final RowMapper<RoomTheme> MAPPER = (rs, rowNum) -> new RoomTheme(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("description"),
             rs.getString("thumbnail")
     );
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public RoomThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -29,7 +30,7 @@ public class RoomThemeDao {
     }
 
     public List<RoomTheme> findAll() {
-        return jdbcTemplate.query("SELECT * FROM theme", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM theme", MAPPER);
     }
 
     public List<RoomTheme> findAllRanking() {
@@ -41,16 +42,16 @@ public class RoomThemeDao {
                 order by count(t.id) desc
                 limit 10
                 """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, MAPPER);
     }
 
-    public RoomTheme findById(Long id) {
-        List<RoomTheme> roomThemes = jdbcTemplate.query(
-                "SELECT * FROM theme WHERE id = ?", rowMapper, id);
-        if (roomThemes.isEmpty()) {
-            throw new InvalidInputException("해당 테마가 존재하지 않습니다.");
+    public Optional<RoomTheme> findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
-        return roomThemes.get(0);
     }
 
     public RoomTheme save(RoomTheme roomTheme) {

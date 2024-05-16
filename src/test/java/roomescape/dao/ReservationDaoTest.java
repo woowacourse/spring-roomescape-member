@@ -3,20 +3,32 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.EMAIL_FIXTURE;
+import static roomescape.TestFixture.MEMBER_NAME_FIXTURE;
+import static roomescape.TestFixture.MEMBER_PARAMETER_SOURCE;
+import static roomescape.TestFixture.PASSWORD_FIXTURE;
+import static roomescape.TestFixture.THEME_DESCRIPTION_FIXTURE;
+import static roomescape.TestFixture.THEME_NAME_FIXTURE;
+import static roomescape.TestFixture.THEME_THUMBNAIL_FIXTURE;
+import static roomescape.TestFixture.TIME_FIXTURE;
+import static roomescape.TestFixture.createMember;
+import static roomescape.TestFixture.createReservationTime;
+import static roomescape.TestFixture.createTheme;
 
 import io.restassured.RestAssured;
-import java.util.List;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.RoomTheme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,25 +39,15 @@ class ReservationDaoTest {
     @Autowired
     private ReservationDao reservationDao;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
-    @Autowired
-    private RoomThemeDao roomThemeDao;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
-        for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
-        }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
-        }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
-        for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
-        }
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
     }
 
     @DisplayName("존재하는 모든 예약을 보여준다.")
@@ -58,15 +60,13 @@ class ReservationDaoTest {
     @Test
     void duplicatedReservationTest() {
         // given
-        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        Reservation reservation = createReservation(DATE_FIXTURE);
         boolean existsFalse = reservationDao.exists(
-                DATE_FIXTURE, savedReservationTime.getId(), savedRoomTheme.getId());
-        reservationDao.save(new Reservation(new Name("asd"), DATE_FIXTURE,
-                savedReservationTime, savedRoomTheme));
+                DATE_FIXTURE, reservation.getTime().getId(), reservation.getTheme().getId());
+        reservationDao.save(reservation);
         // when
         boolean existsTrue = reservationDao.exists(
-                DATE_FIXTURE, savedReservationTime.getId(), savedRoomTheme.getId());
+                DATE_FIXTURE, reservation.getTime().getId(), reservation.getTheme().getId());
         // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
@@ -78,16 +78,14 @@ class ReservationDaoTest {
     @Test
     void save() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        Reservation reservation
-                = new Reservation(new Name("brown"), DATE_FIXTURE, reservationTime, roomTheme);
+        Reservation reservation = createReservation(DATE_FIXTURE);
         // when
         Reservation savedReservation = reservationDao.save(reservation);
         // then
         assertAll(
                 () -> assertThat(reservationDao.findAll()).hasSize(1),
-                () -> assertThat(savedReservation.getName()).isEqualTo(reservation.getName()),
+                () -> assertThat(savedReservation.getMember().getId()).isEqualTo(
+                        reservation.getMember().getId()),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(reservation.getDate()),
                 () -> assertThat(savedReservation.getTime().getId())
                         .isEqualTo(reservation.getTime().getId()),
@@ -100,10 +98,8 @@ class ReservationDaoTest {
     @Test
     void deleteById() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        Reservation savedReservation = reservationDao.save(
-                new Reservation(new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
+        Reservation reservation = createReservation(DATE_FIXTURE);
+        Reservation savedReservation = reservationDao.save(reservation);
         // when
         reservationDao.deleteById(savedReservation.getId());
         // then
@@ -114,10 +110,8 @@ class ReservationDaoTest {
     @Test
     void returnTrueWhenDeleted() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        Reservation savedReservation = reservationDao.save(
-                new Reservation(new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
+        Reservation reservation = createReservation(DATE_FIXTURE);
+        Reservation savedReservation = reservationDao.save(reservation);
         // when
         boolean deleted = reservationDao.deleteById(savedReservation.getId());
         // then
@@ -131,5 +125,17 @@ class ReservationDaoTest {
         boolean deleted = reservationDao.deleteById(1L);
         // then
         assertThat(deleted).isFalse();
+    }
+
+    private Reservation createReservation(LocalDate date) {
+        Long memberId = createMember(jdbcTemplate, MEMBER_PARAMETER_SOURCE);
+        Long timeId = createReservationTime(jdbcTemplate);
+        Long themeId = createTheme(jdbcTemplate);
+        Member member = new Member(memberId, new Name(MEMBER_NAME_FIXTURE), Role.NORMAL,
+                EMAIL_FIXTURE, PASSWORD_FIXTURE);
+        ReservationTime reservationTime = new ReservationTime(timeId, TIME_FIXTURE);
+        RoomTheme roomTheme = new RoomTheme(themeId, THEME_NAME_FIXTURE,
+                THEME_DESCRIPTION_FIXTURE, THEME_THUMBNAIL_FIXTURE);
+        return new Reservation(date, member, reservationTime, roomTheme);
     }
 }

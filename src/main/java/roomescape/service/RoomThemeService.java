@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
-import roomescape.dto.request.RoomThemeCreateRequest;
+import roomescape.dto.request.RoomThemeRequest;
 import roomescape.dto.response.RoomThemeResponse;
 import roomescape.exception.TargetNotExistException;
 
@@ -30,8 +30,8 @@ public class RoomThemeService {
                 .toList();
     }
 
-    public RoomThemeResponse save(RoomThemeCreateRequest roomThemeCreateRequest) {
-        RoomTheme roomTheme = roomThemeCreateRequest.toRoomTheme();
+    public RoomThemeResponse save(RoomThemeRequest roomThemeRequest) {
+        RoomTheme roomTheme = roomThemeRequest.toRoomTheme();
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         return RoomThemeResponse.fromRoomTheme(savedRoomTheme);
     }

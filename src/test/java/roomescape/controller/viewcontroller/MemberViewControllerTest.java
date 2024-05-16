@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.viewcontroller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserControllerTest {
+class MemberViewControllerTest {
     @LocalServerPort
     private int port;
 
@@ -31,6 +31,14 @@ class UserControllerTest {
     void responseMainPage() {
         RestAssured.given().log().all()
                 .when().get("")
+                .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("로그인 페이지 접근 성공 테스트")
+    @Test
+    void responseLoginPage() {
+        RestAssured.given().log().all()
+                .when().get("/login")
                 .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
     }
 }

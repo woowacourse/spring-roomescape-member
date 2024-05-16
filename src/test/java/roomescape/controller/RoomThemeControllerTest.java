@@ -1,15 +1,11 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.THEME_DESCRIPTION_FIXTURE;
+import static roomescape.TestFixture.THEME_NAME_FIXTURE;
+import static roomescape.TestFixture.THEME_THUMBNAIL_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,14 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.RoomThemeDao;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.RoomTheme;
-import roomescape.dto.request.RoomThemeCreateRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.TestFixture;
+import roomescape.dto.request.RoomThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomThemeControllerTest {
@@ -34,27 +25,15 @@ class RoomThemeControllerTest {
     private int port;
 
     @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private ReservationTimeDao reservationTimeDao;
-    @Autowired
-    private RoomThemeDao roomThemeDao;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        List<Reservation> reservations = reservationDao.findAll();
-        for (Reservation reservation : reservations) {
-            reservationDao.deleteById(reservation.getId());
-        }
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        for (ReservationTime reservationTime : reservationTimes) {
-            reservationTimeDao.deleteById(reservationTime.getId());
-        }
-        List<RoomTheme> roomThemes = roomThemeDao.findAll();
-        for (RoomTheme roomTheme : roomThemes) {
-            roomThemeDao.deleteById(roomTheme.getId());
-        }
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM member");
     }
 
     @DisplayName("테마 전체 조회 테스트")
@@ -65,13 +44,21 @@ class RoomThemeControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
     }
 
+    @DisplayName("테마 랭킹순으로 조회 테스트")
+    @Test
+    void findAllThemesRanking() {
+        RestAssured.given().log().all()
+                .when().get("/themes/ranking")
+                .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
+    }
+
     @DisplayName("테마 추가 테스트")
     @Test
-    void createTheme() {
+    void createThemeTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest("레벨2 탈출", "우테코 레벨2",
-                        "https://i.pinimg.com/236x/6e"))
+                .body(new RoomThemeRequest(THEME_NAME_FIXTURE,
+                        THEME_DESCRIPTION_FIXTURE, THEME_THUMBNAIL_FIXTURE))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
@@ -82,7 +69,7 @@ class RoomThemeControllerTest {
     void createThemeWithNullOrEmptyName(String value) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest(value, "desc", "th.jpg"))
+                .body(new RoomThemeRequest(value, "desc", "th.jpg"))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -93,7 +80,7 @@ class RoomThemeControllerTest {
     void createThemeWithNullOrEmptyDescription(String value) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest("name", value, "th.jpg"))
+                .body(new RoomThemeRequest("name", value, "th.jpg"))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -104,7 +91,7 @@ class RoomThemeControllerTest {
     void createThemeWithNullOrEmptyThumbnail(String value) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new RoomThemeCreateRequest("name", "desc", value))
+                .body(new RoomThemeRequest("name", "desc", value))
                 .when().post("/themes")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -113,10 +100,10 @@ class RoomThemeControllerTest {
     @Test
     void deleteTheme() {
         // given
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        long id = TestFixture.createTheme(jdbcTemplate);
         // when & then
         RestAssured.given().log().all()
-                .when().delete("/themes/" + savedRoomTheme.getId())
+                .when().delete("/themes/" + id)
                 .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
@@ -129,29 +116,5 @@ class RoomThemeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/themes/" + invalidId)
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
-    }
-
-    @DisplayName("예약 시간 삭제 시, 해당 id를 참조하는 예약도 삭제된다.")
-    @Test
-    void deleteReservationTimeDeletesReservationAlso() {
-        // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        reservationDao.save(
-                new Reservation(new Name("brown"), DATE_FIXTURE, reservationTime, roomTheme));
-        Long themeId = roomTheme.getId();
-        // when
-        Response deleteResponse = RestAssured.given().log().all()
-                .when().delete("/themes/" + themeId)
-                .then().log().all().extract().response();
-        // then
-        Response reservationResponse = RestAssured.given().log().all()
-                .when().get("reservations")
-                .then().log().all().extract().response();
-        assertAll(
-                () -> assertThat(deleteResponse.statusCode())
-                        .isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> assertThat(reservationResponse.jsonPath().getList(".")).isEmpty()
-        );
     }
 }

@@ -8,25 +8,52 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.RoomTheme;
 
 @Repository
 public class ReservationDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
+    private static final String SELECT_SQL = """
+            SELECT
+                r.id AS reservation_id,
+                r.date AS reservation_date,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.role AS member_role,
+                m.email AS member_email,
+                t.id AS time_id,
+                t.start_at AS time_value,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail
+            FROM reservation AS r
+            INNER JOIN member AS m
+            ON m.id = r.member_id
+            INNER JOIN reservation_time AS t
+            ON r.time_id = t.id
+            INNER JOIN theme AS th
+            ON r.theme_id = th.id
+            """;
+    private static final RowMapper<Reservation> MAPPER = (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
-            new Name(rs.getString("reservation_name")),
             rs.getDate("reservation_date").toLocalDate(),
+            new Member(rs.getLong("member_id"),
+                    new Name(rs.getString("member_name")),
+                    Role.valueOf(rs.getString("member_role")),
+                    rs.getString("member_email")),
             new ReservationTime(rs.getLong("time_id"),
                     rs.getTime("time_value").toLocalTime()),
             new RoomTheme(rs.getLong("theme_id"),
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
                     rs.getString("theme_thumbnail")));
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,24 +63,15 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(SELECT_SQL, MAPPER);
+    }
+
+    public List<Reservation> findAllMatching(Long themeId, Long memberId,
+                                             LocalDate dateFrom, LocalDate dateTo) {
+        return jdbcTemplate.query(SELECT_SQL + """
+                WHERE theme_id = ? AND member_id = ?
+                AND date BETWEEN ? AND ?
+                """, MAPPER, themeId, memberId, dateFrom, dateTo);
     }
 
     public boolean exists(LocalDate date, Long timeId, Long themeId) {
@@ -67,8 +85,8 @@ public class ReservationDao {
 
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();

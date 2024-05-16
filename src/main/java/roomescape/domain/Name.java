@@ -3,11 +3,11 @@ package roomescape.domain;
 import roomescape.exception.InvalidInputException;
 
 public class Name {
-    private final String name;
+    private final String value;
 
-    public Name(String name) {
-        validateBlank(name);
-        this.name = name;
+    public Name(String value) {
+        validateBlank(value);
+        this.value = value;
     }
 
     public void validateBlank(String name) {
@@ -16,7 +16,7 @@ public class Name {
         }
     }
 
-    public String getName() {
-        return name;
+    public String getValue() {
+        return value;
     }
 }
