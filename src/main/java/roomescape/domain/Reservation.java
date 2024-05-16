@@ -1,31 +1,33 @@
 package roomescape.domain;
 
 public class Reservation {
-    private static final long NO_ID = 0;
-
     private final long id;
     private final MemberName name;
     private final Schedule schedule;
     private final Theme theme;
+    private final Member member;
 
-    public Reservation(final long id, final MemberName name, final Schedule schedule, final Theme theme) {
+    public Reservation(long id, MemberName name, Schedule schedule, Theme theme, Member member) {
         this.id = id;
         this.name = name;
         this.schedule = schedule;
         this.theme = theme;
+        this.member = member;
     }
 
     public Reservation(final long id, final Reservation reservation) {
-        this(id, reservation.name, reservation.schedule, reservation.theme);
+        this(id, reservation.name, reservation.schedule, reservation.theme, reservation.member);
     }
 
     public Reservation(final long id, final String name, final String date, final ReservationTime reservationTime,
-                       final Theme theme) {
-        this(id, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme);
+                       final Theme theme, final Member member) {
+        this(id, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme, member);
     }
 
-    public Reservation(final String name, final String date, final ReservationTime reservationTime, final Theme theme) {
-        this(NO_ID, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme);
+    public Reservation(final String date, final Theme theme, final ReservationTime reservationTime,
+                       final Member member) {
+        this(member.getId(), new MemberName(member.getName()),
+                new Schedule(new ReservationDate(date), reservationTime), theme, member);
     }
 
     public long getId() {
@@ -48,7 +50,15 @@ public class Reservation {
         return schedule.getReservationTime();
     }
 
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getLoginMember() {
+        return member;
     }
 }

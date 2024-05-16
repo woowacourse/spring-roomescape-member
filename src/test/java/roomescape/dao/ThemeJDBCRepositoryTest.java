@@ -78,7 +78,7 @@ class ThemeJDBCRepositoryTest {
         String name1 = "레벨1 탈출";
 
         //when
-        List<Theme> themes = themeRepository.findByReservationTermAndCount("2024-04-30", "2024-05-04", 10);
+        List<Theme> themes = themeRepository.findByReservationTermAndCount("2024-05-10", "2024-06-04", 10);
 
         //then
         assertThat(themes.stream().map(Theme::getName).toList()).containsExactly(name1);

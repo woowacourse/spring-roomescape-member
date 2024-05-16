@@ -8,9 +8,13 @@ public class ReservationTerm {
     private final LocalDate startDate;
     private final LocalDate endDate;
 
-    public ReservationTerm(LocalDate startDate, LocalDate endDate) {
+    private ReservationTerm(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public static ReservationTerm of(int term) {
+        return new ReservationTerm(LocalDate.now().minusDays(term), LocalDate.now().minusDays(1));
     }
 
     public String getStartDate() {

@@ -1,12 +1,23 @@
 package roomescape.controller;
 
-import org.springframework.stereotype.Controller;
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.LoginMemberService;
+import roomescape.service.dto.MemberResponse;
 
-@Controller
+@RestController
+@RequestMapping("/members")
 public class MemberController {
-    @GetMapping("/reservation")
-    public String findReservationPage() {
-        return "reservation";
+    private final LoginMemberService loginMemberService;
+
+    public MemberController(LoginMemberService loginMemberService) {
+        this.loginMemberService = loginMemberService;
+    }
+
+    @GetMapping
+    public List<MemberResponse> findAllMembers() {
+        return loginMemberService.findAll();
     }
 }

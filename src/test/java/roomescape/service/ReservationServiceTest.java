@@ -13,7 +13,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.exception.InvalidReservationException;
-import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.AdminReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -28,10 +28,10 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, 1, 1);
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, 1, 1, 1);
 
         //when
-        ReservationResponse result = reservationService.create(reservationRequest);
+        ReservationResponse result = reservationService.create(adminReservationRequest);
 
         //then
         assertThat(result.id()).isNotZero();
@@ -61,12 +61,11 @@ class ReservationServiceTest {
     @Test
     void duplicatedReservation() {
         //given
-        String name = "lini";
-        String date = "2222-05-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, 1, 1);
+        String date = "2024-06-04";
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, 1, 1, 1);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(adminReservationRequest))
                 .isInstanceOf(DuplicateKeyException.class);
     }
 
@@ -76,10 +75,10 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, 0, 1);
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, 1, 0, 1);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(adminReservationRequest))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("더이상 존재하지 않는 시간입니다.");
     }
@@ -90,10 +89,10 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, 1, 0);
+        AdminReservationRequest adminReservationRequest = new AdminReservationRequest(date, 0, 1, 1);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.create(adminReservationRequest))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("더이상 존재하지 않는 테마입니다.");
     }
