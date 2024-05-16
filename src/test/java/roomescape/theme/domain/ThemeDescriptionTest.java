@@ -13,7 +13,7 @@ class ThemeDescriptionTest {
 
   @DisplayName("유효한 테마 설명을 입력하면 객체가 생성된다.")
   @Test
-  void createThemeName() {
+  void createThemeNameTest() {
     // Given
     final String value = "테바의 비밀친구는 누구인가?";
 

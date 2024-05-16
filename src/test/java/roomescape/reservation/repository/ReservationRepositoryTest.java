@@ -48,7 +48,7 @@ class ReservationRepositoryTest {
 
   @DisplayName("특정 기간 이후 예약을 검색한다.")
   @Test
-  void findAllWithDateFrom() {
+  void findAllWithDateFromTest() {
     // When
     final List<Reservation> reservations = reservationRepository.findAll(LocalDate.now(),
         null, null, null);
@@ -59,7 +59,7 @@ class ReservationRepositoryTest {
 
   @DisplayName("특정 기간 이전 예약을 검색한다.")
   @Test
-  void findAllWithDateTo() {
+  void findAllWithDateToTest() {
     // When
     final List<Reservation> reservations = reservationRepository.findAll(null,
         LocalDate.now(), null, null);
@@ -70,7 +70,7 @@ class ReservationRepositoryTest {
 
   @DisplayName("주어진 기간으로 예약을 검색한다.")
   @Test
-  void findAllWithDateFromAndDateTo() {
+  void findAllWithDateFromAndDateToTest() {
     // When
     final List<Reservation> reservations = reservationRepository.findAll(LocalDate.now(),
         LocalDate.now().plusDays(3), null, null);
@@ -81,7 +81,7 @@ class ReservationRepositoryTest {
 
   @DisplayName("주어진 기간과 멤버ID로 예약을 검색한다.")
   @Test
-  void findAllWithDateFromAndDateToAndMemberId() {
+  void findAllWithDateFromAndDateToAndMemberIdTest() {
     // When
     final List<Reservation> reservations = reservationRepository.findAll(LocalDate.now(),
         LocalDate.now().plusDays(3), null, 13L);
@@ -92,7 +92,7 @@ class ReservationRepositoryTest {
 
   @DisplayName("주어진 기간과 멤버ID로 예약을 검색한다.")
   @Test
-  void findAllWithDateFromAndDateToAndThemeId() {
+  void findAllWithDateFromAndDateToAndThemeIdTest() {
     // When
     final List<Reservation> reservations = reservationRepository.findAll(
         LocalDate.now().minusDays(4),
@@ -104,7 +104,7 @@ class ReservationRepositoryTest {
 
   @DisplayName("주어진 테마ID로 예약을 검색한다.")
   @Test
-  void findAllWithThemeId() {
+  void findAllWithThemeIdTest() {
     // When
     final List<Reservation> reservations = reservationRepository.findAll(
         null, null, 1L, null);

@@ -35,7 +35,7 @@ class ThemeRepositoryTest {
 
   @DisplayName("모든 테마 정보를 조회한다.")
   @Test
-  void find() {
+  void findTest() {
     // When
     final List<Theme> themes = themeRepository.findAll();
 
@@ -91,7 +91,7 @@ class ThemeRepositoryTest {
 
   @DisplayName("특정 기간 중 가장 예약 개수가 많은 상위 10개의 테마 정보를 인기순으로 조회한다.")
   @Test
-  void findPopularThemes() {
+  void findPopularThemesTest() {
     // When
     final ReservationDate startAt = new ReservationDate(LocalDate.now().minusDays(7));
     final ReservationDate endAt = new ReservationDate(LocalDate.now().minusDays(1));

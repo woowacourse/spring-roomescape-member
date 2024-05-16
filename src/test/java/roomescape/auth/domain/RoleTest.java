@@ -9,7 +9,7 @@ class RoleTest {
 
   @DisplayName("관리자 멤버의 관리자 여부로 참을 반환한다.")
   @Test
-  void isAdmin() {
+  void isAdminTest() {
     // given
     final Role role = new Role("ADMIN");
     // when
@@ -20,7 +20,7 @@ class RoleTest {
 
   @DisplayName("일반 멤버의 관리자 여부로 거짓을 반환한다.")
   @Test
-  void isNotAdmin() {
+  void isNotAdminTest() {
     // given
     final Role role = new Role("USER");
     // when

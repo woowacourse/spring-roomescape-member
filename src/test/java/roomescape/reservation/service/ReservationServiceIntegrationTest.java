@@ -112,7 +112,7 @@ class ReservationServiceIntegrationTest {
 
   @DisplayName("이미 존재하는 예약 날짜/시간/테마가 입력되면 예외가 발생한다.")
   @Test
-  void throwExceptionWhenInputDuplicateReservationDate() {
+  void throwExceptionWhenInputDuplicateReservationDateTest() {
     // Given
     final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
         LocalDate.now().plusDays(2),

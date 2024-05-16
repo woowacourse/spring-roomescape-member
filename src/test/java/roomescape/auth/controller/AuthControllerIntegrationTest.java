@@ -34,7 +34,7 @@ class AuthControllerIntegrationTest {
 
   @DisplayName("로그인 시도시 토큰을 발급하여 쿠키에 저장한다.")
   @Test
-  void login() {
+  void loginTest() {
     // Given
     final LoginRequest request = new LoginRequest("kelly@example.com", "password123");
     // When
@@ -50,7 +50,7 @@ class AuthControllerIntegrationTest {
 
   @DisplayName("가입하지 않은 이메일로 로그인을 시도할 시 예외를 발생한다.")
   @Test
-  void loginWithInvalidEmail() {
+  void loginWithInvalidEmailTest() {
     // Given
     final LoginRequest request = new LoginRequest("user@mail.com", "1234");
 
@@ -65,7 +65,7 @@ class AuthControllerIntegrationTest {
 
   @DisplayName("올바르지 않은 패스워드로 로그인을 시도할 시 예외를 발생한다.")
   @Test
-  void loginWithInvalidPassword() {
+  void loginWithInvalidPasswordTest() {
     // Given
     final LoginRequest request = new LoginRequest("kelly@example.com", "1234");
 
@@ -80,7 +80,7 @@ class AuthControllerIntegrationTest {
 
   @DisplayName("로그인 상태를 반환한다.")
   @Test
-  void checkLogin() {
+  void checkLoginTest() {
     // Given
     final String name = "켈리";
     final LoginRequest request = new LoginRequest("kelly@example.com", "password123");

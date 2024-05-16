@@ -23,7 +23,7 @@ class AuthServiceIntegrationTest {
 
   @DisplayName("유저 이메일로 토큰을 생성한다.")
   @Test
-  void createUser() {
+  void createUserTest() {
     // Given
     final String email = "kelly@example.com";
     final LoginRequest loginRequest = new LoginRequest(email, "password123");
@@ -35,7 +35,7 @@ class AuthServiceIntegrationTest {
 
   @DisplayName("주어진 이메일로 가입한 멤버가 없으면 예외를 발생한다.")
   @Test
-  void findMemberByInvalidEmail() {
+  void findMemberByInvalidEmailTest() {
     // Given
     final String email = "kelly11@example.com";
     final LoginRequest loginRequest = new LoginRequest(email, "password123");

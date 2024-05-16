@@ -9,7 +9,7 @@ class ReservationDateTest {
 
   @DisplayName("예약 날짜에 Null을 입력하면 예외를 발생한다.")
   @Test
-  void throwExceptionWhenReservationDateNull() {
+  void throwExceptionWhenReservationDateNullTest() {
     // When & Then
     assertThatThrownBy(() -> new ReservationDate(null))
         .isInstanceOf(IllegalArgumentException.class)

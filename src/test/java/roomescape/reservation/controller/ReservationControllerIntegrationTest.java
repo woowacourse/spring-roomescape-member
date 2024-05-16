@@ -85,7 +85,7 @@ class ReservationControllerIntegrationTest {
 
   @DisplayName("존재하지 않는 예약 시간을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
   @Test
-  void saveReservationWithNoExistReservationTime() {
+  void saveReservationWithNoExistReservationTimeTest() {
     final Map<String, String> params = new HashMap<>();
     params.put("date", "2023-08-05");
     params.put("timeId", "20");
@@ -103,7 +103,7 @@ class ReservationControllerIntegrationTest {
 
   @DisplayName("현재 날짜보다 이전 날짜의 예약을 저장하려고 요청하면 400코드가 응답된다.")
   @Test
-  void saveReservationWithReservationDateAndTimeBeforeNow() {
+  void saveReservationWithReservationDateAndTimeBeforeNowTest() {
     final Map<String, String> params = new HashMap<>();
     params.put("date", LocalDate.now().minusDays(1).toString());
     params.put("timeId", "1");

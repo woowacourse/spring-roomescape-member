@@ -114,7 +114,7 @@ class ReservationTimeServiceTest {
 
   @DisplayName("해당 시간을 참조하고 있는 예약이 하나라도 있으면 삭제시 예외가 발생한다.")
   @Test
-  void throwExceptionWhenDeleteReservationTimeHasRelation() {
+  void throwExceptionWhenDeleteReservationTimeHasRelationTest() {
     // Given
     final Long reservationTimeId = 1L;
 

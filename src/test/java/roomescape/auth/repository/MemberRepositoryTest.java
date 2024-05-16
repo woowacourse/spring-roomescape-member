@@ -21,7 +21,7 @@ class MemberRepositoryTest {
 
   @DisplayName("주어진 이메일로 가입한 유저를 찾는다.")
   @Test
-  void findByEmail() {
+  void findByEmailTest() {
     // Given
     final String email = "kelly@example.com";
     // When
@@ -32,7 +32,7 @@ class MemberRepositoryTest {
 
   @DisplayName("가입한 모든 멤버를 조회한다.")
   @Test
-  void findAll() {
+  void findAllTest() {
     // given
     // when
     final List<Member> members = memberRepository.findAll();

@@ -9,7 +9,7 @@ class MemberTest {
 
   @DisplayName("어드민 권한 여부를 반환한다 - 참.")
   @Test
-  void isAdmin() {
+  void isAdminTest() {
     // given
     final Member member = Member.createInstance(
         1L,
@@ -26,7 +26,7 @@ class MemberTest {
 
   @DisplayName("어드민 권한 여부를 반환한다 - 거짓.")
   @Test
-  void isNotAdmin() {
+  void isNotAdminTest() {
     // given
     final Member member = Member.createInstance(
         2L,

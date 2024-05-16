@@ -15,7 +15,7 @@ class ReservationTest {
 
   @DisplayName("인덱스를 입력하면 해당 아이디를 가진 Reservation 객체를 생성해서 반환한다.")
   @Test
-  void initializeIndex() {
+  void initializeIndexTest() {
     // Given
     final String clientName = "켈리";
     final LocalDate reservationDate = LocalDate.now().plusDays(1);
@@ -38,7 +38,7 @@ class ReservationTest {
 
   @DisplayName("현재 날짜/시간보다 이전의 예약 정보를 입력하면 예외가 발생한다.")
   @Test
-  void throwExceptionWithReservationDateTimeBeforeNow() {
+  void throwExceptionWithReservationDateTimeBeforeNowTest() {
     // Given
     final ReservationTime reservationTime = new ReservationTime(LocalTime.now());
     final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
