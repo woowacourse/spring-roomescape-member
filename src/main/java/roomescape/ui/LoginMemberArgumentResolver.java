@@ -33,7 +33,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             WebDataBinderFactory binderFactory
     ) {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return jwtTokenHelper.getPayloadClaimFromRequest(request, "memberId", Long.class);
+        final String token = jwtTokenHelper.extractTokenFromCookies(request.getCookies());
+        return jwtTokenHelper.getPayloadClaimFromToken(token, "memberId", Long.class);
     }
 
     @Target(ElementType.PARAMETER)

@@ -29,7 +29,8 @@ public class AdminPermissionInterceptor implements HandlerInterceptor {
 
     private boolean hasPermission(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         try {
-            final Long memberId = jwtTokenHelper.getPayloadClaimFromRequest(request, "memberId", Long.class);
+            final String token = jwtTokenHelper.extractTokenFromCookies(request.getCookies());
+            final Long memberId = jwtTokenHelper.getPayloadClaimFromToken(token, "memberId", Long.class);
             final Role role = memberService.getMemberRoleById(memberId);
 
             return role == Role.ADMIN;

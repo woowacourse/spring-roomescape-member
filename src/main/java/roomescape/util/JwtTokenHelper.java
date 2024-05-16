@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,25 +34,19 @@ public class JwtTokenHelper {
                 .compact();
     }
 
-    public <T> T getPayloadClaimFromRequest(final HttpServletRequest request, String claimName, Class<T> returnType) {
-        final String token = extractTokenFromRequest(request);
+    public String extractTokenFromCookies(final Cookie[] cookies) {
+        final String token = Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("토큰을 찾지 못했습니다"))
+                .getValue();
+
         validateToken(token);
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(claimName, returnType);
+        return token;
     }
 
-    private String extractTokenFromRequest(final HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if(cookies == null) {
-            throw new IllegalArgumentException("토큰을 찾지 못했습니다");
-        }
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        throw new IllegalArgumentException("토큰을 찾지 못했습니다");
+    public <T> T getPayloadClaimFromToken(final String token, String claimName, Class<T> returnType) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(claimName, returnType);
     }
 
     private void validateToken(String token) {
