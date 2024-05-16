@@ -43,7 +43,7 @@ class TokenLoginControllerTest {
                 .body(new TokenRequest("password", "11@email.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
-                .then().log().all().statusCode(400);
+                .then().log().all().statusCode(401);
     }
 
     @DisplayName("Login 실패 테스트 - 잘못된 password")
@@ -53,7 +53,7 @@ class TokenLoginControllerTest {
                 .body(new TokenRequest("1", "admin@email.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
-                .then().log().all().statusCode(400);
+                .then().log().all().statusCode(401);
     }
 
     @DisplayName("Login check 테스트")
