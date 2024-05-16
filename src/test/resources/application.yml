@@ -9,4 +9,4 @@ spring:
       data-locations: classpath:/data.sql
 
 jwt:
-  secret: Idontcareifthekeyisstolen
+  secret-key: Idontcareifthekeyisstolen

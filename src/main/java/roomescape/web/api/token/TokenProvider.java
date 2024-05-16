@@ -2,7 +2,7 @@ package roomescape.web.api.token;
 
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
 
@@ -11,19 +11,23 @@ import java.util.Optional;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 
 @Component
+@EnableConfigurationProperties(JwtProperties.class)
 public class TokenProvider {
     private static final String EMAIL_FIELD = "email";
     private static final String ROLE_FIELD = "role";
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final JwtProperties jwtProperties;
+
+    public TokenProvider(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(String.valueOf(member.getId()))
                 .claim(EMAIL_FIELD, member.getEmail())
                 .claim(ROLE_FIELD, member.getRole())
-                .signWith(HS256, secretKey.getBytes())
+                .signWith(HS256, jwtProperties.secretKey().getBytes())
                 .compact();
     }
 

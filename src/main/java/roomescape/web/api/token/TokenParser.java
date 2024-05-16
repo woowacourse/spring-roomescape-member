@@ -1,35 +1,39 @@
 package roomescape.web.api.token;
 
 import io.jsonwebtoken.Jwts;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Role;
 import roomescape.web.api.resolver.Principal;
 
 @Component
+@EnableConfigurationProperties(JwtProperties.class)
 public class TokenParser {
     private static final String EMAIL_FIELD = "email";
     private static final String ROLE_FIELD = "role";
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final JwtProperties jwtProperties;
+
+    public TokenParser(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 
     public Long getId(String token) {
-        return Long.parseLong(Jwts.parser().setSigningKey(secretKey.getBytes())
+        return Long.parseLong(Jwts.parser().setSigningKey(jwtProperties.secretKey().getBytes())
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject());
     }
 
     public String getEmail(String token) {
-        return Jwts.parser().setSigningKey(secretKey.getBytes())
+        return Jwts.parser().setSigningKey(jwtProperties.secretKey().getBytes())
                 .parseClaimsJws(token)
                 .getBody()
                 .get(EMAIL_FIELD, String.class);
     }
 
     public Role getRole(String token) {
-        String role = Jwts.parser().setSigningKey(secretKey.getBytes())
+        String role = Jwts.parser().setSigningKey(jwtProperties.secretKey().getBytes())
                 .parseClaimsJws(token)
                 .getBody()
                 .get(ROLE_FIELD, String.class);
