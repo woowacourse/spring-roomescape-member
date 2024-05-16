@@ -17,10 +17,6 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    Member createMember(Member member) {
-        return memberRepository.save(member); // TODO: 패스워드 암호화
-    }
-
     public List<FindMemberResponse> getMembers() {
         return memberRepository.findAll().stream()
                 .map(FindMemberResponse::of)
