@@ -13,8 +13,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Themes;
 
 @Repository
-public class JdbcTemplateThemeRepository implements ThemeRepository {
-    private final JdbcTemplate jdbcTemplate;
+public class JdbcThemeRepository implements ThemeRepository {
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
             new Theme(
                     rs.getLong("id"),
@@ -22,8 +21,9 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
                     rs.getString("description"),
                     rs.getString("thumbnail")
             );
+    private final JdbcTemplate jdbcTemplate;
 
-    public JdbcTemplateThemeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

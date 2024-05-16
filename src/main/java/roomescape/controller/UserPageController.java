@@ -10,7 +10,7 @@ public class UserPageController {
         return "reservation";
     }
 
-    @GetMapping("/")
+    @GetMapping
     public String bestThemePage() {
         return "index";
     }

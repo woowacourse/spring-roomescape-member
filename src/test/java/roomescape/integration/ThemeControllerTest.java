@@ -1,16 +1,13 @@
 package roomescape.integration;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.mapper.ObjectMapperType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -24,10 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.Fixture;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -42,19 +42,98 @@ public class ThemeControllerTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
-
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     private ReservationTime defaultReservationTime = new ReservationTime(LocalTime.of(11, 30));
+    private Member defaultMember = Fixture.defaultMember;
 
     @BeforeEach
     void initData() {
         RestAssured.port = port;
         defaultReservationTime = reservationTimeRepository.save(defaultReservationTime);
+        defaultMember = memberRepository.save(defaultMember);
+    }
+
+    @DisplayName("테마를 인기순으로 조회할 수 있다.")
+    @Test
+    void findPopularThemesTest() {
+        //when
+        Theme firstTheme = new Theme("first", "description", "thumbnail");
+        Theme secondTheme = new Theme("second", "description", "thumbnail");
+        Theme thirdTheme = new Theme("third", "description", "thumbnail");
+        Theme fourthTheme = new Theme("fourth", "description", "thumbnail");
+
+        firstTheme = themeRepository.save(firstTheme);
+        secondTheme = themeRepository.save(secondTheme);
+        thirdTheme = themeRepository.save(thirdTheme);
+        fourthTheme = themeRepository.save(fourthTheme);
+
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(1), defaultReservationTime, firstTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(2), defaultReservationTime, firstTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(3), defaultReservationTime, firstTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(4), defaultReservationTime, firstTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(5), defaultReservationTime, firstTheme,
+                        defaultMember.getLoginMember()));
+
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(1), defaultReservationTime, secondTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(2), defaultReservationTime, secondTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(3), defaultReservationTime, secondTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(4), defaultReservationTime, secondTheme,
+                        defaultMember.getLoginMember()));
+
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(1), defaultReservationTime, thirdTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(2), defaultReservationTime, thirdTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(3), defaultReservationTime, thirdTheme,
+                        defaultMember.getLoginMember()));
+
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(1), defaultReservationTime, fourthTheme,
+                        defaultMember.getLoginMember()));
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(2), defaultReservationTime, fourthTheme,
+                        defaultMember.getLoginMember()));
+
+        //then
+        List<ThemeResponse> themeResponses = RestAssured.given().log().all()
+                .when()
+                .params("count", 10)
+                .get("/themes/ranking")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList("$", ThemeResponse.class);
+
+        Assertions.assertThat(themeResponses).contains(
+                ThemeResponse.from(firstTheme),
+                ThemeResponse.from(secondTheme),
+                ThemeResponse.from(thirdTheme),
+                ThemeResponse.from(fourthTheme)
+        );
     }
 
     @DisplayName("테마가 3개 존재할 때")
@@ -134,7 +213,7 @@ public class ThemeControllerTest {
         @Test
         void deleteUsedThemeTest() {
             reservationRepository.save(
-                    new Reservation("name", LocalDate.now(), defaultReservationTime, usedTheme)
+                    new Reservation(LocalDate.now(), defaultReservationTime, usedTheme, defaultMember.getLoginMember())
             );
 
             RestAssured.given().log().all()
@@ -146,70 +225,5 @@ public class ThemeControllerTest {
             RestAssured.given().when().get("/themes")
                     .then().body("size()", is(3));
         }
-    }
-
-    @DisplayName("테마를 인기순으로 조회할 수 있다.")
-    @Test
-    void findPopularThemesTest() {
-        //when
-        Theme firstTheme = new Theme("first", "description", "thumbnail");
-        Theme secondTheme = new Theme("second", "description", "thumbnail");
-        Theme thirdTheme = new Theme("third", "description", "thumbnail");
-        Theme fourthTheme = new Theme("fourth", "description", "thumbnail");
-
-        firstTheme = themeRepository.save(firstTheme);
-        secondTheme = themeRepository.save(secondTheme);
-        thirdTheme = themeRepository.save(thirdTheme);
-        fourthTheme = themeRepository.save(fourthTheme);
-
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(1), defaultReservationTime, firstTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(2), defaultReservationTime, firstTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(3), defaultReservationTime, firstTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(4), defaultReservationTime, firstTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(5), defaultReservationTime, firstTheme));
-
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(1), defaultReservationTime, secondTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(2), defaultReservationTime, secondTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(3), defaultReservationTime, secondTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(4), defaultReservationTime, secondTheme));
-
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(1), defaultReservationTime, thirdTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(2), defaultReservationTime, thirdTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(3), defaultReservationTime, thirdTheme));
-
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(1), defaultReservationTime, fourthTheme));
-        reservationRepository.save(
-                new Reservation("name", LocalDate.now().minusDays(2), defaultReservationTime, fourthTheme));
-
-        //then
-        List<ThemeResponse> themeResponses = RestAssured.given().log().all()
-                .when()
-                .params("start", LocalDate.now().minusDays(7).toString(),
-                        "end", LocalDate.now().minusDays(1).toString(),
-                        "count", 10)
-                .get("/themes/ranking")
-                .then().log().all()
-                .statusCode(200)
-                .extract().jsonPath().getList("$", ThemeResponse.class);
-
-        Assertions.assertThat(themeResponses).contains(
-                ThemeResponse.from(firstTheme),
-                ThemeResponse.from(secondTheme),
-                ThemeResponse.from(thirdTheme),
-                ThemeResponse.from(fourthTheme)
-        );
     }
 }

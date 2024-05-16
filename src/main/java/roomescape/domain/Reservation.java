@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
-import static roomescape.exception.ExceptionType.EMPTY_NAME;
+import static roomescape.exception.ExceptionType.EMPTY_MEMBER;
 import static roomescape.exception.ExceptionType.EMPTY_THEME;
 import static roomescape.exception.ExceptionType.EMPTY_TIME;
 
@@ -13,30 +13,33 @@ import roomescape.exception.RoomescapeException;
 
 public class Reservation implements Comparable<Reservation> {
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final LoginMember member;
 
     public Reservation(long id, Reservation reservationBeforeSave) {
-        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time,
-                reservationBeforeSave.theme);
+        this(id,
+                reservationBeforeSave.date,
+                reservationBeforeSave.time,
+                reservationBeforeSave.theme,
+                reservationBeforeSave.member);
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(LocalDate date, ReservationTime time, Theme theme, LoginMember member) {
+        this(null, date, time, theme, member);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme, LoginMember member) {
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
+        validateMember(member);
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
     private void validateTheme(Theme theme) {
@@ -57,14 +60,18 @@ public class Reservation implements Comparable<Reservation> {
         }
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new RoomescapeException(EMPTY_NAME);
+    private void validateMember(LoginMember member) {
+        if (member == null) {
+            throw new RoomescapeException(EMPTY_MEMBER);
         }
     }
 
     public boolean isBefore(LocalDateTime base) {
         return this.getLocalDateTime().isBefore(base);
+    }
+
+    public boolean isBetween(Duration duration) {
+        return duration.contains(date);
     }
 
     public boolean hasSameId(long id) {
@@ -103,8 +110,8 @@ public class Reservation implements Comparable<Reservation> {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public LoginMember getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -130,7 +137,7 @@ public class Reservation implements Comparable<Reservation> {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (member != null ? member.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
         return result;
@@ -154,9 +161,10 @@ public class Reservation implements Comparable<Reservation> {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", date=" + date +
                 ", time=" + time +
+                ", theme=" + theme +
+                ", member=" + member +
                 '}';
     }
 }

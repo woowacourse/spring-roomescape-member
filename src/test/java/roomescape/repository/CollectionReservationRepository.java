@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import roomescape.domain.Duration;
 import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
@@ -47,10 +48,20 @@ public class CollectionReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
+    public Reservations searchBy(Long themeId, Long memberId, LocalDate dateFrom,
+                                 LocalDate dateTo) {
+        List<Reservation> findReservations = reservations.stream()
+                .filter(reservation -> themeId != null && reservation.isThemeOf(themeId))
+                .filter(reservation -> memberId != null && reservation.getMember().getId() == memberId)
+                .filter(reservation -> reservation.isBetween(new Duration(dateFrom, dateTo)))
+                .toList();
+        return new Reservations(findReservations);
+    }
+
+    @Override
+    public Themes findAndOrderByPopularity(Duration duration, int count) {
         Map<Theme, Long> collect = reservations.stream()
-                .filter(reservation -> reservation.getDate().isAfter(start) || reservation.getDate().isEqual(start))
-                .filter(reservation -> reservation.getDate().isBefore(end))
+                .filter(reservation -> reservation.isBetween(duration))
                 .map(Reservation::getTheme)
                 .collect(Collectors.groupingBy(theme -> theme, Collectors.counting()));
         List<Theme> themes = collect.entrySet().stream()

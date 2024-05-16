@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.Fixture.defaultLoginuser;
 import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -27,6 +29,7 @@ import roomescape.repository.ThemeRepository;
 
 class ThemeServiceTest {
 
+    private static final LoginMember DEFAULT_LOGIN_MEMBER = defaultLoginuser;
     private ThemeRepository themeRepository;
     private CollectionReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
@@ -73,24 +76,34 @@ class ThemeServiceTest {
             ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 30));
             reservationTime = reservationTimeRepository.save(reservationTime);
 
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(1), reservationTime, theme1));
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(2), reservationTime, theme1));
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme1));
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(4), reservationTime, theme1));
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(5), reservationTime, theme1));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(1), reservationTime, theme1, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(2), reservationTime, theme1, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(3), reservationTime, theme1, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(4), reservationTime, theme1, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(5), reservationTime, theme1, DEFAULT_LOGIN_MEMBER));
 
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(1), reservationTime, theme3));
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(2), reservationTime, theme3));
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme3));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(1), reservationTime, theme3, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(2), reservationTime, theme3, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(3), reservationTime, theme3, DEFAULT_LOGIN_MEMBER));
 
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(1), reservationTime, theme2));
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme2));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(1), reservationTime, theme2, DEFAULT_LOGIN_MEMBER));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(3), reservationTime, theme2, DEFAULT_LOGIN_MEMBER));
 
-            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme4));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().minusDays(3), reservationTime, theme4, DEFAULT_LOGIN_MEMBER));
 
             //when
-            List<ThemeResponse> popularThemes = themeService.findAndOrderByPopularity(
-                    LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), 5);
+            List<ThemeResponse> popularThemes = themeService.findAndOrderByPopularity(5);
 
             assertThat(popularThemes).contains(
                     ThemeResponse.from(theme1),
@@ -143,8 +156,8 @@ class ThemeServiceTest {
         @Test
         void removeFailTest() {
             //given
-            reservationRepository.save(new Reservation(
-                    "name", LocalDate.now().plusDays(1), defaultTime, defaultTheme));
+            reservationRepository.save(
+                    new Reservation(LocalDate.now().plusDays(1), defaultTime, defaultTheme, defaultLoginuser));
 
             //when & then
             assertThatThrownBy(() -> themeService.delete(1L))

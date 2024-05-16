@@ -26,6 +26,8 @@ public class AdminIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private String adminToken;
+
     @BeforeEach
     void init() {
         jdbcTemplate.update("delete from reservation");
@@ -36,49 +38,37 @@ public class AdminIntegrationTest {
         jdbcTemplate.update("delete from THEME");
         jdbcTemplate.update("ALTER TABLE THEME alter column id restart with 1");
         jdbcTemplate.update("insert into THEME values ( 1,'a','a','a')");
+        jdbcTemplate.update("delete from MEMBER");
+        jdbcTemplate.update("ALTER TABLE MEMBER alter column id restart with 1");
+        jdbcTemplate.update(
+                "INSERT INTO MEMBER (NAME, ROLE, EMAIL, PASSWORD) VALUES ( 'name', 'ADMIN', 'email@email.com', 'password' )");
         RestAssured.port = port;
-    }
 
-    @Test
-    @DisplayName("관리자 메인 페이지가 잘 접속된다.")
-    void adminMainPageLoad() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
+        adminToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "email", "email@email.com",
+                        "password", "password"
+                ))
+                .post("/login")
                 .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    @DisplayName("관리자 예약 페이지가 잘 접속된다.")
-    void adminReservationPageLoad() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
+                .extract().cookie("token");
     }
 
     @Test
     @DisplayName("관리자 예약 페이지가 잘 동작한다.")
     void adminReservationPageWork() {
-        Integer integer = jdbcTemplate.queryForObject("select id from reservation_time",
-                Integer.class);
-        System.out.println(integer);
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
@@ -105,15 +95,16 @@ public class AdminIntegrationTest {
     @DisplayName("관리자 예약 페이지가 DB와 함께 잘 동작한다.")
     void adminReservationPageWorkWithDB() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
         params.put("themeId", 1);
+        params.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/admin/reservations")
                 .then().log().all()
                 .statusCode(201);
 
