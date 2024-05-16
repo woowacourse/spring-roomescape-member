@@ -47,7 +47,7 @@ public class MemberService {
             throw new IllegalRequestArgumentException(("해당 이메일을 사용하는 사용자가 존재합니다."));
         }
         Member member = request.createMember();
-        member = memberDao.createMember(member, request.password());
+        member = memberDao.createMember(member);
 
         return MemberResponse.from(member);
     }

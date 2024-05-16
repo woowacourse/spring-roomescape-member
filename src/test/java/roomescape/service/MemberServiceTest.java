@@ -24,7 +24,7 @@ import roomescape.dto.response.MemberResponse;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
-    private final Member member = new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER);
+    private final Member member = new Member(1L, "켬미", "aaa@naver.com", "1111", Role.MEMBER);
     @Mock
     MemberDao memberDao;
     @InjectMocks
@@ -54,7 +54,7 @@ class MemberServiceTest {
     @DisplayName("멤버를 추가할 수 있다.")
     @Test
     void createMember() {
-        when(memberDao.createMember(any(Member.class), any(String.class)))
+        when(memberDao.createMember(any(Member.class)))
                 .thenReturn(member);
 
         MemberCreateRequest request = new MemberCreateRequest("켬미", "aaa@naver.com", "1111");

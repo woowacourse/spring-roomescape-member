@@ -40,7 +40,7 @@ class ReservationServiceTest {
     private final LocalDate date = LocalDate.of(2023, 8, 5);
     private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
     private final Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
-    private final Member member = new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER);
+    private final Member member = new Member(1L, "켬미", "aaa@naver.com", "1111", Role.MEMBER);
     @Mock
     MemberDao memberDao;
     @Mock

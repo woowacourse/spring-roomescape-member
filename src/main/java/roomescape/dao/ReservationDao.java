@@ -34,6 +34,7 @@ public class ReservationDao {
                         resultSet.getLong("member_id"),
                         resultSet.getString("member_name"),
                         resultSet.getString("email"),
+                        resultSet.getString("password"),
                         Role.valueOf(resultSet.getString("role"))),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -49,7 +50,7 @@ public class ReservationDao {
     public List<Reservation> readReservations() {
         String sql = """
                 SELECT reservation.id, reservation.date,
-                        reservation.member_id, member.name AS member_name, member.email, member.role,
+                        reservation.member_id, member.name AS member_name, member.email, member.password, member.role,
                         reservation.time_id, reservation_time.start_at,
                         reservation.theme_id, theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
@@ -63,7 +64,7 @@ public class ReservationDao {
     public List<Reservation> readReservationsByDetails(ReservationDetailRequest request) {
         String sql = """
                 SELECT reservation.id, reservation.date,
-                        reservation.member_id, member.name AS member_name, member.email, member.role,
+                        reservation.member_id, member.name AS member_name, member.email, member.password, member.role,
                         reservation.time_id, reservation_time.start_at,
                         reservation.theme_id, theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
@@ -78,7 +79,7 @@ public class ReservationDao {
     private Optional<Reservation> readReservationById(Long id) {
         String sql = """
                 SELECT reservation.id, reservation.date,
-                        reservation.member_id, member.name AS member_name, member.email, member.role,
+                        reservation.member_id, member.name AS member_name, member.email, member.password, member.role,
                         reservation.time_id, reservation_time.start_at,
                         reservation.theme_id, theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation

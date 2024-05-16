@@ -51,7 +51,7 @@ class ReservationDaoTest {
         List<Reservation> expected = List.of(new Reservation(
                 1L,
                 LocalDate.of(2023, 8, 5),
-                new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER),
+                new Member(1L, "켬미", "aaa@naver.com", "1111", Role.MEMBER),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "테마1", "설명1", "https://image.jpg")
         ));
@@ -89,7 +89,7 @@ class ReservationDaoTest {
         Reservation reservation = new Reservation(
                 1L,
                 LocalDate.of(2023, 8, 5),
-                new Member(1L, "켬미", "aaa@naver.com", Role.MEMBER),
+                new Member(1L, "켬미", "aaa@naver.com", "1111", Role.MEMBER),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "테마1", "설명1", "https://image.jpg")
         );

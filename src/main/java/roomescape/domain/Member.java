@@ -10,23 +10,25 @@ public class Member {
     private final String name;
     private final String email;
     private final Role role;
+    private final String password;
 
-    public Member(String name, String email, Role role) {
-        this(null, name, email, role);
+    public Member(String name, String email, String password, Role role) {
+        this(null, name, email, password, role);
     }
 
-    public Member(Long id, String name, String email, Role role) {
+    public Member(Long id, String name, String email, String password, Role role) {
         Validator.notEmpty(name);
         Validator.overSize(MAX_STRING_LENGTH, name);
 
         this.id = id;
         this.name = name;
         this.email = email;
+        this.password = password;
         this.role = role;
     }
 
     public Member createWithId(Long id) {
-        return new Member(id, name, email, role);
+        return new Member(id, name, email, password, role);
     }
 
     public Long getId() {
@@ -43,6 +45,10 @@ public class Member {
 
     public Role getRole() {
         return role;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     @Override
