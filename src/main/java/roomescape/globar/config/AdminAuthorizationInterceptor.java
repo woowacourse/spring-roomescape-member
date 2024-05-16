@@ -18,9 +18,11 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
   }
 
   @Override
-  public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
-      final Object handler)
-      throws Exception {
+  public boolean preHandle(
+      final HttpServletRequest request,
+      final HttpServletResponse response,
+      final Object handler
+  ) {
     final Cookie[] cookies = request.getCookies();
     final String token = extractTokenFromCookie(cookies);
 
