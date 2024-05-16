@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.util.JwtTokenProvider.TOKEN;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,20 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import roomescape.member.dto.LoginRequest;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
+import roomescape.util.LoginFixture;
 
 @DisplayName("테마 API 통합 테스트")
 class ThemeControllerTest extends ControllerTest {
-    @Autowired
-    ThemeService themeService;
-
-    @BeforeEach
-    void setData() {
-        themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-    }
-
     @DisplayName("테마 생성 시, 201을 반환한다.")
     @Test
     void create() {
@@ -38,6 +34,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -57,6 +54,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -76,6 +74,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -95,6 +94,7 @@ class ThemeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
@@ -109,7 +109,7 @@ class ThemeControllerTest extends ControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(4));
     }
 
     @DisplayName("테마 삭제 시, 204를 반환한다.")
@@ -117,7 +117,8 @@ class ThemeControllerTest extends ControllerTest {
     void delete() {
         //given & when & then
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
+                .when().delete("/themes/4")
                 .then().log().all()
                 .statusCode(204);
     }

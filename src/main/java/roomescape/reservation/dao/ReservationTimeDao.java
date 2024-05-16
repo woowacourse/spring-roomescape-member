@@ -72,9 +72,9 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     public Set<ReservationTime> findReservedTime(LocalDate date, long themeId) {
         String sql = """
                 SELECT * FROM reservation_time
-                INNER JOIN reservation as re
+                INNER JOIN reservation AS re
                 ON re.time_id = reservation_time.id
-                INNER JOIN reservation_list as rl
+                INNER JOIN reservation_list AS rl
                 ON re.id = rl.reservation_id
                 WHERE re.date = ? AND re.theme_id = ?
                 """;

@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.util.JwtTokenProvider.TOKEN;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,20 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import roomescape.member.dto.LoginRequest;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.service.ReservationTimeService;
 import roomescape.util.ControllerTest;
+import roomescape.util.LoginFixture;
 
 @DisplayName("예약 시간 API 통합 테스트")
 class ReservationTimeControllerTest extends ControllerTest {
-    @Autowired
-    ReservationTimeService reservationTimeService;
-
-    @BeforeEach
-    void setData() {
-        reservationTimeService.create(new ReservationTimeRequest("12:00"));
-    }
-
     @DisplayName("시간 생성 시, 201을 반환한다.")
     @Test
     void create() {
@@ -36,6 +32,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -53,6 +50,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         //when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
@@ -67,7 +65,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(4));
     }
 
     @DisplayName("시간 삭제 시, 200을 반환한다.")
@@ -75,7 +73,8 @@ class ReservationTimeControllerTest extends ControllerTest {
     void delete() {
         //given & when & then
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .cookie(TOKEN, LoginFixture.takeAdminToken())
+                .when().delete("/times/4")
                 .then().log().all()
                 .statusCode(200);
     }

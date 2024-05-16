@@ -21,9 +21,12 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
-        reservationTimes.put((long) reservationTimes.size() + 1, reservationTime);
-        return new ReservationTime((long) reservationTimes.size(), reservationTime.getStartAt());
+        long newId = reservationTimes.size() + 1;
+        ReservationTime savedReservationTime = new ReservationTime(newId, reservationTime.getStartAt());
+        reservationTimes.put(newId, savedReservationTime);
+        return savedReservationTime;
     }
+
 
     @Override
     public List<ReservationTime> findAll() {
@@ -59,8 +62,8 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
         Set<ReservationTime> reservedTimes = new HashSet<>();
 
         reservationRepository.findAll().stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId() == themeId)
-                .forEach(reservation -> reservedTimes.add(reservationTimes.get(reservation.getTime().getId())));
+                .filter(reservation -> reservation.date().equals(date) && reservation.theme().getId() == themeId)
+                .forEach(reservation -> reservedTimes.add(reservationTimes.get(reservation.time().getId())));
 
         return reservedTimes;
     }

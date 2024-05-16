@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
+import roomescape.util.AdminRequired;
 
 @Controller
 @RequestMapping("/themes")
@@ -30,12 +31,14 @@ public class ThemeController {
     }
 
     @PostMapping
+    @AdminRequired
     public ResponseEntity<ThemeResponse> create(@RequestBody @Valid ThemeRequest themeRequest) {
         ThemeResponse response = themeService.create(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")
+    @AdminRequired
     public ResponseEntity<Void> delete(@PathVariable("id") long themeId) {
         themeService.delete(themeId);
         return ResponseEntity.noContent().build();

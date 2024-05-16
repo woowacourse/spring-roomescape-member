@@ -5,17 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record ReservationRequest(
-        @NotBlank
-        String name,
+        DateRequest date,
 
-        @NotBlank
-        @Pattern(regexp = "^(?:(?:19|20)\\d{2})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1])$")
-        String date,
+        @NotNull(message = "시간을 입력해 주세요.")
+        Long timeId,
 
-        @NotNull
-        long timeId,
-
-        @NotNull
-        long themeId
+        @NotNull(message = "테마를 입력해 주세요.")
+        Long themeId
 ) {
 }

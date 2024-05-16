@@ -4,21 +4,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.LoginMember;
+import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.DateRequest;
+import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
 
@@ -27,36 +32,43 @@ class ThemeServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
+    MemberRepository memberRepository;
     ThemeService themeService;
+    ReservationService reservationService;
+
+    Theme theme;
 
     @BeforeEach
     void setData() {
-        reservationRepository = new FakeReservationDao(reservationTimeRepository, themeRepository);
+        memberRepository = new FakeMemberDao();
+        reservationRepository = new FakeReservationDao(memberRepository);
         reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
         themeRepository = new FakeThemeDao(reservationRepository);
 
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                memberRepository);
         themeService = new ThemeService(themeRepository);
+
+        long id = 1;
+        String name = "name";
+        String description = "description";
+        String thumbnail = "thumbnail";
+        Theme savedtheme = new Theme(id, name, description, thumbnail);
+        theme = themeRepository.save(savedtheme);
     }
 
     @DisplayName("테마 조회에 성공한다.")
     @Test
     void findAll() {
-        //given
-        long id = 1;
-        String name = "name";
-        String description = "description";
-        String thumbnail = "thumbnail";
-        Theme theme = new Theme(id, name, description, thumbnail);
-        themeRepository.save(theme);
-        //when
+        //give & when
         List<ThemeResponse> themes = themeService.findAllThemes();
 
         //then
         assertAll(
                 () -> assertThat(themes).hasSize(1),
-                () -> assertThat(themes.get(0).name()).isEqualTo(name),
-                () -> assertThat(themes.get(0).description()).isEqualTo(description),
-                () -> assertThat(themes.get(0).thumbnail()).isEqualTo(thumbnail)
+                () -> assertThat(themes.get(0).name()).isEqualTo(theme.getName()),
+                () -> assertThat(themes.get(0).description()).isEqualTo(theme.getDescription()),
+                () -> assertThat(themes.get(0).thumbnail()).isEqualTo(theme.getThumbnail())
         );
     }
 
@@ -83,16 +95,8 @@ class ThemeServiceTest {
     @DisplayName("테마 삭제에 성공한다.")
     @Test
     void delete() {
-        //given
-        long id = 1;
-        String name = "name";
-        String description = "description";
-        String thumbnail = "thumbnail";
-        Theme theme = new Theme(id, name, description, thumbnail);
-        themeRepository.save(theme);
-
-        //when
-        themeService.delete(id);
+        //given & when
+        themeService.delete(theme.getId());
 
         //then
         assertThat(themeRepository.findAll()).hasSize(0);
@@ -102,7 +106,7 @@ class ThemeServiceTest {
     @Test
     void deleteNotExistTheme() {
         // given & when & then
-        assertThatThrownBy(() -> themeService.delete(1L))
+        assertThatThrownBy(() -> themeService.delete(2L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -110,19 +114,16 @@ class ThemeServiceTest {
     @Test
     void findPopularThemes() {
         //given
-        String name1 = "name1";
-        String description1 = "description1";
-        String thumbnail1 = "thumbnail1";
-        themeService.create(new ThemeRequest(name1, description1, thumbnail1));
-
         String name2 = "name2";
         String description2 = "description2";
         String thumbnail2 = "thumbnail2";
         themeService.create(new ThemeRequest(name2, description2, thumbnail2));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.NOON));
 
-        reservationRepository.save(new Reservation(1L, "siso", LocalDate.of(2100, 5, 5),
-                new ReservationTime(1L, LocalTime.now()),
-                new Theme(1L, name1, description1, thumbnail1)));
+        Member member = memberRepository.save(new Member("name", "email@email.com", "Password", Role.MEMBER));
+        ReservationRequest reservationRequest = new ReservationRequest(new DateRequest("2099-04-18"), 1L, theme.getId());
+        reservationService.create(reservationRequest,
+                new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole()));
 
         //when
         List<ThemeResponse> themeResponses = themeService.findPopularThemes();
@@ -131,7 +132,7 @@ class ThemeServiceTest {
         assertAll(
                 () -> assertThat(themeResponses.size()).isEqualTo(1),
                 () -> assertThat(themeResponses.get(0)).isEqualTo(
-                        new ThemeResponse(1L, name1, description1, thumbnail1))
+                        new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail()))
         );
     }
 }

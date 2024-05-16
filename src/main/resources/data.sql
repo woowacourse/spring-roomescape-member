@@ -15,19 +15,21 @@ VALUES ('17:12');
 INSERT INTO reservation_time(start_at)
 VALUES ('11:11');
 
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('예약1', DATEADD('DAY', 1, CURRENT_DATE()), 1, 1);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('예약2', DATEADD('YEAR', 1, CURRENT_DATE()), 2, 2);
-INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('예약3', DATEADD('DAY', 4, CURRENT_DATE()), 3, 2);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('DAY', 1, CURRENT_DATE()), 1, 1);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('YEAR', 1, CURRENT_DATE()), 2, 2);
+INSERT INTO reservation(date, time_id, theme_id)
+VALUES (DATEADD('DAY', 4, CURRENT_DATE()), 3, 2);
 
-INSERT INTO member(name)
-VALUES ('choco');
+INSERT INTO member(name, email, password, role)
+VALUES ('관리자', 'admin@email.com', 'password', 'ADMIN');
+INSERT INTO member(name, email, password, role)
+VALUES ('멤버', 'member@email.com', 'password', 'MEMBER');
 
 INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (1, 1);
+VALUES (2, 1);
 INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (1, 3);
+VALUES (2, 3);
 INSERT INTO reservation_list(member_id, reservation_id)
-VALUES (1, 2);
+VALUES (2, 2);

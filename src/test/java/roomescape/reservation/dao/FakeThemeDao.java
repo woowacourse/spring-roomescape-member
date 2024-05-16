@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import roomescape.reservation.domain.Reservation;
+import roomescape.member.dto.CompletedReservation;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
@@ -50,12 +50,12 @@ public class FakeThemeDao implements ThemeRepository {
     public List<Theme> findPopularThemes(int datePeriod, int themeCount) {
         LocalDate startDate = LocalDate.now().minusDays(datePeriod);
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<CompletedReservation> reservations = reservationRepository.findAll();
 
         Map<Long, Long> themeReservationCounts = reservations.stream()
-                .filter(reservation -> reservation.getDate().isAfter(startDate))
+                .filter(reservation -> reservation.date().isAfter(startDate))
                 .collect(Collectors.groupingBy(
-                        reservation -> reservation.getTheme().getId(),
+                        reservation -> reservation.theme().getId(),
                         Collectors.counting()
                 ));
 

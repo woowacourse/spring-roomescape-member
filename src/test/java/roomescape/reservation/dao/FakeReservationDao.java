@@ -4,40 +4,63 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.member.dto.CompletedReservation;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservation.domain.repository.ReservationTimeRepository;
-import roomescape.reservation.domain.repository.ThemeRepository;
 
 public class FakeReservationDao implements ReservationRepository {
     private final Map<Long, Reservation> reservations = new HashMap<>();
     private final Map<Long, Long> reservationList = new HashMap<>();
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
-    public FakeReservationDao(ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+    public FakeReservationDao(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
+
 
     @Override
     public Reservation save(final Reservation reservation) {
-        reservations.put((long) reservations.size() + 1, reservation);
-        return new Reservation(
-                (long) reservations.size(),
-                reservation.getName(),
+        long newId = reservations.size() + 1;
+        Reservation savedReservation = new Reservation(
+                newId,
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
         );
+        reservations.put(newId, savedReservation);
+        return savedReservation;
     }
 
     @Override
-    public List<Reservation> findAll() {
-        return reservations.values()
-                .stream()
+    public List<CompletedReservation> findAll() {
+        List<Reservation> reservationValues = reservations.values().stream().toList();
+        return reservationValues.stream()
+                .map(reservation -> new CompletedReservation(reservation.getId(), reservation.getDate(),
+                        reservation.getTime(), reservation.getTheme(),
+                        memberRepository.findById(reservationList.get(reservation.getId()))))
                 .toList();
     }
+
+    @Override
+    public List<CompletedReservation> findBy(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservations.values().stream()
+                .map(reservation -> new CompletedReservation(
+                        reservation.getId(),
+                        reservation.getDate(),
+                        reservation.getTime(),
+                        reservation.getTheme(),
+                        memberRepository.findById(reservationList.get(reservation.getId()))
+                ))
+                .filter(reservation ->
+                        (themeId == null || reservation.theme().getId() == themeId) &&
+                                (memberId == null || reservation.member().getId() == memberId) &&
+                                (dateFrom == null || reservation.date().isAfter(dateFrom)) &&
+                                (dateTo == null || reservation.date().isBefore(dateTo))
+                )
+                .toList();
+    }
+
 
     @Override
     public boolean deleteById(final long reservationId) {
@@ -65,7 +88,12 @@ public class FakeReservationDao implements ReservationRepository {
 
 
     @Override
-    public void saveReservationList(final long memberId, final long reservationId) {
-        reservationList.put(memberId, reservationId);
+    public void saveReservationList(long reservationId, long memberId) {
+        reservationList.put(reservationId, memberId);
+    }
+
+    @Override
+    public long findMemberIdByReservationId(long reservationId) {
+        return reservationList.get(reservationId);
     }
 }
