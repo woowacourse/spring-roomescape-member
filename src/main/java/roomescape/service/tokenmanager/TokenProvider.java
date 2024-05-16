@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.service.tokenmanager;
 
 import roomescape.domain.Member;
 

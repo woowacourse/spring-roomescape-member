@@ -7,6 +7,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import roomescape.service.tokenmanager.TokenValidator;
 
 @Component
 @PropertySource("classpath:application-secret.properties")

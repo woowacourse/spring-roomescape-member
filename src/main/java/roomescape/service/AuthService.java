@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.MemberRepository;
 import roomescape.domain.Member;
 import roomescape.exception.AuthorizationException;
-import roomescape.infrastructure.TokenExtractor;
-import roomescape.infrastructure.TokenProvider;
-import roomescape.infrastructure.TokenValidator;
 import roomescape.service.dto.MemberRequest;
 import roomescape.service.dto.TokenRequest;
 import roomescape.service.dto.TokenResponse;
+import roomescape.service.tokenmanager.TokenExtractor;
+import roomescape.service.tokenmanager.TokenProvider;
+import roomescape.service.tokenmanager.TokenValidator;
 
 @Service
 public class AuthService {
