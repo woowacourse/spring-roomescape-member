@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.CookieUtils;
+import roomescape.auth.HandleCookieInToken;
 import roomescape.auth.TokenProvider;
 import roomescape.exception.InValidRoleException;
 import roomescape.member.dto.LoginMemberInToken;
@@ -22,7 +22,7 @@ public class RoleCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
-        String token = CookieUtils.extractTokenFrom(cookies);
+        String token = HandleCookieInToken.extractTokenFrom(cookies);
 
         LoginMemberInToken loginMemberInToken = tokenProvider.getLoginMember(token);
         if (!loginMemberInToken.role().isAdmin()) {

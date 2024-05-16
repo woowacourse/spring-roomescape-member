@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.CookieUtils;
+import roomescape.auth.HandleCookieInToken;
 
 @Component
 public class LoginCheckInterceptor implements HandlerInterceptor {
@@ -15,6 +15,6 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             throws Exception {
         Cookie[] cookies = request.getCookies();
 
-        return cookies != null && (CookieUtils.extractTokenFrom(cookies) != null);
+        return cookies != null && (HandleCookieInToken.extractTokenFrom(cookies) != null);
     }
 }
