@@ -33,7 +33,7 @@ public class AuthService {
 
     private MemberInfo findMember(String principal) {
         return memberDao.findByEmail(principal)
-                .orElseThrow(() -> new IllegalArgumentException("멤버가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("현재 로그인된 사용자 정보를 불러올 수 없습니다."));
     }
 
     public Boolean isAllowedMember(String token) {
@@ -46,8 +46,7 @@ public class AuthService {
 
     public Boolean isAdminMember(String token) {
         if (isAllowedMember(token)) {
-            String payload = tokenProvider.getPayload(token);
-            MemberInfo member = findMember(payload);
+            MemberInfo member = findMemberByToken(token);
             return member.getRole().isAdmin();
         }
         return false;
