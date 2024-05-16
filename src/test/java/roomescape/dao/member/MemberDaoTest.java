@@ -121,13 +121,12 @@ class MemberDaoTest {
         String password = "password1";
         String wrongPassword = "wrongpassword";
 
-        MemberInfo inserted = memberDao.insert(
-                new Member(null, "name1", email, password, Role.USER));
+        memberDao.insert(new Member(null, "name1", email, password, Role.USER));
 
         // when & then
-        assertThat(memberDao.isMemberExist(email, password)).isTrue();
-        assertThat(memberDao.isMemberExist(email, wrongPassword)).isFalse();
-        assertThat(memberDao.isMemberExist(wrongEmail, password)).isFalse();
+        assertThat(memberDao.isMemberNotExist(email, password)).isFalse();
+        assertThat(memberDao.isMemberNotExist(email, wrongPassword)).isTrue();
+        assertThat(memberDao.isMemberNotExist(wrongEmail, password)).isTrue();
     }
 
     @DisplayName("이메일이 존재하는지 확인한다.")

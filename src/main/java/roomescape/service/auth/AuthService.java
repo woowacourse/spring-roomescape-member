@@ -19,7 +19,7 @@ public class AuthService {
     }
 
     public TokenResponse createToken(LoginRequest loginRequest) {
-        if (!memberDao.isMemberExist(loginRequest.email(), loginRequest.password())) {
+        if (memberDao.isMemberNotExist(loginRequest.email(), loginRequest.password())) {
             throw new IllegalArgumentException("아이디, 비밀번호를 확인해주세요.");
         }
         String accessToken = tokenProvider.createToken(loginRequest.email());
