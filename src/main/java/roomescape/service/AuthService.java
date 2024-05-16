@@ -4,9 +4,11 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberRepository;
 import roomescape.domain.Member;
+import roomescape.exception.AuthorizationException;
 import roomescape.infrastructure.TokenExtractor;
 import roomescape.infrastructure.TokenProvider;
 import roomescape.infrastructure.TokenValidator;
+import roomescape.service.dto.MemberRequest;
 import roomescape.service.dto.TokenRequest;
 import roomescape.service.dto.TokenResponse;
 
@@ -48,6 +50,26 @@ public class AuthService {
         return cookie;
     }
 
+    public boolean isMemberAdmin(Cookie[] cookies) {
+        MemberRequest memberRequest = extractMemberByCookies(cookies);
+        if (!memberRequest.role().equals("ADMIN")) {
+            throw new AuthorizationException("관리자가 아닙니다.");
+        }
+        return true;
+    }
+
+    public MemberRequest extractMemberByCookies(Cookie[] cookies) {
+        TokenResponse tokenResponse = extractTokenByCookies(cookies);
+        isTokenValid(tokenResponse);
+        String memberId = extractMemberIdByToken(tokenResponse);
+        return findMemberById(memberId);
+    }
+
+    private MemberRequest findMemberById(String memberId) {
+        return new MemberRequest(memberRepository.findById(Long.parseLong(memberId))
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다.")));
+    }
+
     public TokenResponse extractTokenByCookies(Cookie[] cookies) {
         String token = tokenExtractor.extractByCookies(cookies);
         return new TokenResponse(token);
@@ -57,7 +79,7 @@ public class AuthService {
         return tokenExtractor.extractMemberIdByToken(tokenResponse.token());
     }
 
-    public void isTokenValid(TokenResponse tokenResponse) {
+    private void isTokenValid(TokenResponse tokenResponse) {
         tokenValidator.isTokenValid(tokenResponse.token());
     }
 }
