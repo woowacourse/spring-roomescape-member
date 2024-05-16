@@ -9,11 +9,14 @@ import roomescape.theme.domain.Theme;
 public record SaveAdminReservationRequest(
     LocalDate date,
     Long themeId,
-    Long timeId,
-    Long memberId
+    Long timeId
 ) {
 
-  public Reservation toReservation(Member member, ReservationTime reservationTime, Theme theme) {
+  public Reservation toReservation(
+      final Member member,
+      final ReservationTime reservationTime,
+      final Theme theme
+  ) {
     return Reservation.createInstanceWithoutId(
         member,
         date,

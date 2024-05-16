@@ -33,7 +33,7 @@ class AdminControllerIntegrationTest {
   void saveAdminReservation() {
     // given
     final SaveAdminReservationRequest saveAdminReservationRequest = new SaveAdminReservationRequest(
-        LocalDate.now().plusDays(1), 1L, 1L, 1L);
+        LocalDate.now().plusDays(1), 1L, 1L);
     final LoginRequest loginRequest = new LoginRequest("neo@example.com", "password123");
     final Response response = RestAssured.given().log().all()
         .contentType(ContentType.JSON)
