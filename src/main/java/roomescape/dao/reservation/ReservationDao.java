@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.MemberInfo;
 import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Purpose;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTheme;
 import roomescape.domain.reservation.ReservationTime;
@@ -90,7 +91,7 @@ public class ReservationDao {
         Long id = insertActor.executeAndReturnKey(parameters).longValue();
 
         return new Reservation(id, reservation.getDate(), reservation.getTime(),
-                reservation.getTheme(), reservation.getMember());
+                reservation.getTheme(), reservation.getMember(), Purpose.CREATE);
     }
 
     public void deleteById(Long id) {
@@ -131,7 +132,8 @@ public class ReservationDao {
                         resultSet.getLong("member_id"),
                         resultSet.getString("member_name"),
                         Role.of(resultSet.getString("member_role"))
-                )
+                ),
+                Purpose.SEARCH
         );
     }
 }

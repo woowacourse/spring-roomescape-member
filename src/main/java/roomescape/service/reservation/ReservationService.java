@@ -9,8 +9,8 @@ import roomescape.dao.reservation.ReservationDao;
 import roomescape.dao.reservation.ReservationThemeDao;
 import roomescape.dao.reservation.ReservationTimeDao;
 import roomescape.domain.member.MemberInfo;
+import roomescape.domain.reservation.Purpose;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationFactory;
 import roomescape.domain.reservation.ReservationTheme;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.dto.reservation.AdminReservationRequest;
@@ -25,16 +25,13 @@ public class ReservationService {
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationThemeDao reservationThemeDao;
     private final MemberDao memberDao;
-    private final ReservationFactory reservationFactory;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                              ReservationThemeDao reservationThemeDao, MemberDao memberDao,
-                              ReservationFactory reservationFactory) {
+                              ReservationThemeDao reservationThemeDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.reservationThemeDao = reservationThemeDao;
         this.memberDao = memberDao;
-        this.reservationFactory = reservationFactory;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -57,20 +54,20 @@ public class ReservationService {
     }
 
     private ReservationResponse getResponseAfterInsert(LocalDate date, Long timeId, Long themeId, MemberInfo member) {
-        Reservation reservation = getReservation(date, timeId, themeId, member);
+        Reservation reservation = getReservationForInsert(date, timeId, themeId, member);
         Reservation inserted = reservationDao.insert(reservation);
 
         return new ReservationResponse(inserted);
     }
 
-    private Reservation getReservation(LocalDate date, Long timeId, Long themeId, MemberInfo member) {
+    private Reservation getReservationForInsert(LocalDate date, Long timeId, Long themeId, MemberInfo member) {
         validateDuplicate(date.toString(), timeId, themeId);
         ReservationTime time = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         ReservationTheme theme = reservationThemeDao.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        return reservationFactory.createForAdd(date, time, theme, member);
+        return new Reservation(date, time, theme, member, Purpose.CREATE);
     }
 
     private void validateDuplicate(String date, Long timeId, Long themeId) {

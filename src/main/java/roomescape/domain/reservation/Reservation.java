@@ -1,6 +1,8 @@
 package roomescape.domain.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import roomescape.domain.member.MemberInfo;
 
 public class Reservation {
@@ -12,12 +14,27 @@ public class Reservation {
     private final MemberInfo member;
 
     public Reservation(Long id, LocalDate date, ReservationTime time, ReservationTheme theme,
-                       MemberInfo member) {
+                       MemberInfo member, Purpose purpose) {
+        if (purpose.isCreate()) {
+            validateIsPastDate(date, time.getStartAt());
+        }
         this.id = id;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
+    }
+
+    public Reservation(LocalDate date, ReservationTime time, ReservationTheme theme, MemberInfo member, Purpose purpose) {
+        this(null, date, time, theme, member, purpose);
+    }
+
+    private void validateIsPastDate(LocalDate date, LocalTime time) {
+        LocalDateTime input = LocalDateTime.of(date, time);
+
+        if (input.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("지난 시간으로는 예약할 수 없습니다.");
+        }
     }
 
     public Long getId() {

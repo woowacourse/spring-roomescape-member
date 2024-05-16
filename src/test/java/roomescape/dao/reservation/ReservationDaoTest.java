@@ -19,14 +19,13 @@ import roomescape.dao.reservation.ReservationTimeDao;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberInfo;
 import roomescape.domain.member.Role;
+import roomescape.domain.reservation.Purpose;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationFactory;
 import roomescape.domain.reservation.ReservationTheme;
 import roomescape.domain.reservation.ReservationTime;
 
 @JdbcTest
-@Import({ReservationDao.class, ReservationTimeDao.class, ReservationThemeDao.class, ReservationFactory.class,
-        MemberDao.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ReservationThemeDao.class, MemberDao.class})
 @Sql(scripts = {"/test_schema.sql"})
 public class ReservationDaoTest {
 
@@ -42,9 +41,6 @@ public class ReservationDaoTest {
     @Autowired
     private MemberDao memberDao;
 
-    @Autowired
-    private ReservationFactory reservationFactory;
-
     @BeforeEach
     void setUp() {
         memberDao.insert(new Member(null, "name", "email@email.com", "password", Role.USER));
@@ -56,11 +52,12 @@ public class ReservationDaoTest {
     @Test
     void insert() {
         // given
-        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
+        Reservation inserted = reservationDao.insert(new Reservation(
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new ReservationTheme(1L, "theme_name", "desc", "thumb"),
-                new MemberInfo(1L, "name", Role.USER)
+                new MemberInfo(1L, "name", Role.USER),
+                Purpose.CREATE
         ));
 
         // when
@@ -74,11 +71,12 @@ public class ReservationDaoTest {
     @Test
     void findAll() {
         // given
-        reservationDao.insert(reservationFactory.createForAdd(
+        reservationDao.insert(new Reservation(
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new ReservationTheme(1L, "theme_name", "desc", "thumb"),
-                new MemberInfo(1L, "name", Role.USER)
+                new MemberInfo(1L,"name", Role.USER),
+                Purpose.CREATE
         ));
 
         // when
@@ -92,11 +90,12 @@ public class ReservationDaoTest {
     @Test
     void deleteById() {
         // given
-        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
+        Reservation inserted = reservationDao.insert(new Reservation(
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new ReservationTheme(1L, "theme_name", "desc", "thumb"),
-                new MemberInfo(1L, "name", Role.USER)
+                new MemberInfo(1L, "name", Role.USER),
+                Purpose.CREATE
         ));
 
         // when
@@ -113,11 +112,12 @@ public class ReservationDaoTest {
     @Test
     void hasReservationForTimeId() {
         // given
-        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
+        Reservation inserted = reservationDao.insert(new Reservation(
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new ReservationTheme(1L, "theme_name", "desc", "thumb"),
-                new MemberInfo(1L, "name", Role.USER)
+                new MemberInfo(1L, "name", Role.USER),
+                Purpose.CREATE
         ));
 
         // when
@@ -131,11 +131,12 @@ public class ReservationDaoTest {
     @Test
     void hasReservationForThemeId() {
         // given
-        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
+        Reservation inserted = reservationDao.insert(new Reservation(
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new ReservationTheme(1L, "theme_name", "desc", "thumb"),
-                new MemberInfo(1L, "name", Role.USER)
+                new MemberInfo(1L, "name", Role.USER),
+                Purpose.CREATE
         ));
 
         // when
@@ -149,11 +150,12 @@ public class ReservationDaoTest {
     @Test
     void hasSameReservation() {
         // given
-        Reservation inserted = reservationDao.insert(reservationFactory.createForAdd(
+        Reservation inserted = reservationDao.insert(new Reservation(
                 LocalDate.parse("2025-01-01"),
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new ReservationTheme(1L, "theme_name", "desc", "thumb"),
-                new MemberInfo(1L, "name", Role.USER)
+                new MemberInfo(1L, "name", Role.USER),
+                Purpose.CREATE
         ));
 
         // when

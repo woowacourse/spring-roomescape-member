@@ -1,4 +1,4 @@
-package roomescape.reservation.domain;
+package roomescape.domain.reservation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -8,13 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.member.MemberInfo;
 import roomescape.domain.member.Role;
-import roomescape.domain.reservation.ReservationFactory;
-import roomescape.domain.reservation.ReservationTheme;
-import roomescape.domain.reservation.ReservationTime;
 
-class ReservationFactoryTest {
-
-    ReservationFactory reservationFactory = new ReservationFactory();
+class ReservationTest {
 
     @DisplayName("지난 날짜로는 생성할 수 없다.")
     @Test
@@ -29,7 +24,7 @@ class ReservationFactoryTest {
         LocalDate date = LocalDate.now().minusDays(1);
 
         // then
-        assertThatThrownBy(() -> reservationFactory.createForAdd(date, time, theme, member))
+        assertThatThrownBy(() -> new Reservation(date, time, theme, member, Purpose.CREATE))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -46,7 +41,7 @@ class ReservationFactoryTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.now().minusMinutes(1));
 
         // then
-        assertThatThrownBy(() -> reservationFactory.createForAdd(date, time, theme, member))
+        assertThatThrownBy(() -> new Reservation(date, time, theme, member, Purpose.CREATE))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
