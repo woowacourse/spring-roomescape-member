@@ -1,9 +1,6 @@
 package roomescape.controller;
 
-import static roomescape.config.WebMvcConfiguration.SECRET_KEY;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -17,6 +14,7 @@ import roomescape.service.LoginService;
 public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final LoginService loginService;
+    private final TokenUtils tokenUtils = new TokenUtils();
 
     public LoginArgumentResolver(LoginService loginService) {
         this.loginService = loginService;
@@ -37,12 +35,8 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
             return null;
         }
         String token = extractTokenFromCookie(cookies);
-
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
+        Claims claims = tokenUtils.parseToken(token);
+        Long memberId = Long.valueOf(claims.getSubject());
 
         return loginService.findMemberById(memberId);
     }

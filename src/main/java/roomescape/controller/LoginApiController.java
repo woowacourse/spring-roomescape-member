@@ -1,9 +1,5 @@
 package roomescape.controller;
 
-import static roomescape.config.WebMvcConfiguration.SECRET_KEY;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -21,6 +17,7 @@ import roomescape.service.dto.MemberResponse;
 public class LoginApiController {
 
     private final LoginService loginService;
+    private final TokenUtils tokenUtils = new TokenUtils();
 
     public LoginApiController(LoginService loginService) {
         this.loginService = loginService;
@@ -29,14 +26,7 @@ public class LoginApiController {
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request, HttpServletResponse response) {
         Member member = loginService.findMemberByEmailAndPassword(request);
-
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .compact();
-
+        String accessToken = tokenUtils.createToken(member);
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
