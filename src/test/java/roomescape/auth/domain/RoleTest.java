@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class RoleTest {
 
-  @DisplayName("어드민 권한 여부를 반환한다.")
+  @DisplayName("관리자 멤버의 관리자 여부로 참을 반환한다.")
   @Test
   void isAdmin() {
     // given
@@ -18,7 +18,7 @@ class RoleTest {
     assertThat(isAdmin).isTrue();
   }
 
-  @DisplayName("어드민 권한 여부를 반환한다.")
+  @DisplayName("일반 멤버의 관리자 여부로 거짓을 반환한다.")
   @Test
   void isNotAdmin() {
     // given
