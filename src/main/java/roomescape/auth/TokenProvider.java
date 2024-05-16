@@ -30,7 +30,6 @@ public class TokenProvider {
         Date now = new Date();
 
         return Jwts.builder()
-                .claim(JwtClaimKey.MEMBER_ID.getKey(), member.getId().toString())
                 .claim(JwtClaimKey.MEMBER_NAME.getKey(), member.getName())
                 .claim(JwtClaimKey.MEMBER_EMAIL.getKey(), member.getEmail())
                 .claim(JwtClaimKey.ROLE.getKey(), member.getRole())
@@ -45,7 +44,6 @@ public class TokenProvider {
         validateExpiredToken(claims);
 
         return new LoginMemberInToken(
-                Long.valueOf(claims.get(JwtClaimKey.MEMBER_ID.getKey()).toString()),
                 Role.from(claims.get(JwtClaimKey.ROLE.getKey()).toString()),
                 claims.get(JwtClaimKey.MEMBER_NAME.getKey()).toString(),
                 claims.get(JwtClaimKey.MEMBER_EMAIL.getKey()).toString()

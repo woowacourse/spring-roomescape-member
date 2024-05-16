@@ -44,7 +44,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("/admin 을 요청하면 index.html 를 반환한다.")
     void requestAdmin() throws Exception {
-        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(1L, Role.ADMIN, "어드민", "hogi@naver.com");
+        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(Role.ADMIN, "어드민", "hogi@naver.com");
         doReturn(loginMemberInToken).when(tokenProvider)
                 .getLoginMember(anyString());
 
@@ -57,7 +57,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("/admin/reservation 를 요청하면 admin/reservation-new.html 를 반환한다.")
     void requestAdminReservation() throws Exception {
-        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(1L, Role.ADMIN, "어드민", "hogi@naver.com");
+        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(Role.ADMIN, "어드민", "hogi@naver.com");
         doReturn(loginMemberInToken).when(tokenProvider)
                 .getLoginMember(anyString());
 
@@ -70,7 +70,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("/admin/time을 요청하면 time.html 를 반환한다.")
     void requestTime() throws Exception {
-        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(1L, Role.ADMIN, "어드민", "hogi@naver.com");
+        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(Role.ADMIN, "어드민", "hogi@naver.com");
         doReturn(loginMemberInToken).when(tokenProvider)
                 .getLoginMember(anyString());
 
@@ -83,7 +83,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("/theme 을 요청하면 admin/theme.html 를 반환한다.")
     void requestTheme() throws Exception {
-        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(1L, Role.ADMIN, "어드민", "hogi@naver.com");
+        LoginMemberInToken loginMemberInToken = new LoginMemberInToken(Role.ADMIN, "어드민", "hogi@naver.com");
         doReturn(loginMemberInToken).when(tokenProvider)
                 .getLoginMember(anyString());
 

@@ -57,7 +57,7 @@ public class ReservationService {
 
     private Member getValidatedMemberByRole(ReservationCreateRequest reservationCreateRequest,
                                             LoginMemberInToken loginMemberInToken) {
-        return memberRepository.findById(loginMemberInToken.id())
+        return memberRepository.findByEmail(loginMemberInToken.email())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 

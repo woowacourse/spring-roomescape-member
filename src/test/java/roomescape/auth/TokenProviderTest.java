@@ -39,6 +39,6 @@ class TokenProviderTest {
         String token = tokenProvider.createToken(member);
         LoginMemberInToken loginMemberInToken = tokenProvider.getLoginMember(token);
 
-        assertThat(member.getId()).isEqualTo(loginMemberInToken.id());
+        assertThat(member.getEmail()).isEqualTo(loginMemberInToken.email());
     }
 }

@@ -56,6 +56,15 @@ public class MemberRepository {
         }
     }
 
+    public Optional<Member> findByEmail(String email) {
+        String sql = "select * from member where email = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, createMemberRowMapper(), email));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public List<Member> findAll() {
         String sql = "select * from member";
 

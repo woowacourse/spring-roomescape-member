@@ -48,7 +48,7 @@ public class MemberService {
     }
 
     public MemberResponse findMemberNameByLoginMember(LoginMemberInToken loginMemberInToken) {
-        Member member = memberRepository.findById(loginMemberInToken.id())
+        Member member = memberRepository.findByEmail(loginMemberInToken.email())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         return MemberResponse.toResponse(member);
