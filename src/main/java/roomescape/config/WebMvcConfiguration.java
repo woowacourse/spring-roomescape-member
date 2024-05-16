@@ -38,7 +38,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminPermissionInterceptor())
-                .addPathPatterns("/admin/**");
+                .addPathPatterns("/admin/**", "/members");
     }
 
     @Bean
