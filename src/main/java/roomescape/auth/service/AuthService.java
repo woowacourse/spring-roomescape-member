@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.domain.Member;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.repository.MemberRepository;
-import roomescape.globar.infra.JwtTokenProvider;
+import roomescape.global.infra.JwtTokenProvider;
 
 @Service
 public class AuthService {

@@ -1,4 +1,4 @@
-package roomescape.globar.config;
+package roomescape.global.config;
 
 import java.util.List;
 import org.springframework.context.annotation.Configuration;

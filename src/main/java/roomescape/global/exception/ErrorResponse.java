@@ -1,4 +1,4 @@
-package roomescape.globar.exception;
+package roomescape.global.exception;
 
 public record ErrorResponse(String message) {
 

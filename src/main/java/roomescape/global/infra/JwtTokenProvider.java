@@ -1,4 +1,4 @@
-package roomescape.globar.infra;
+package roomescape.global.infra;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

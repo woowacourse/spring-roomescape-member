@@ -1,4 +1,4 @@
-package roomescape.globar.config;
+package roomescape.global.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
