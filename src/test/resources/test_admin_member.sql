@@ -1,1 +1,0 @@
-INSERT INTO member(name, email, password, role) VALUES ('admin_member', 'admin@email.com', 'admin_password', 'ADMIN');

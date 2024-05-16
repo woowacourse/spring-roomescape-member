@@ -3,7 +3,6 @@ package roomescape.controller.reservation;
 import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,9 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.TestUtil;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"/test_schema.sql", "/test_admin_member.sql"})
+@Sql(scripts = {"/test_schema.sql", "/test_member.sql"})
 public class AdminPageControllerTest {
 
     @LocalServerPort
@@ -29,7 +29,10 @@ public class AdminPageControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/time", "/admin/theme"})
     void pageWithNotAdminMember(String url) {
+        String accessToken = TestUtil.getMemberToken();
+
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .when().get(url)
                 .then().log().all()
                 .statusCode(200)
@@ -40,18 +43,7 @@ public class AdminPageControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/time", "/admin/theme"})
     void pageWithAdminMember(String url) {
-        Map<String, Object> param = Map.of(
-                "email", "admin@email.com",
-                "password", "admin_password"
-        );
-
-        String accessToken = RestAssured.given().log().all()
-                .contentType("application/json")
-                .body(param)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract().cookie("token");
+        String accessToken = TestUtil.getAdminUserToken();
 
         RestAssured.given().log().all()
                 .cookie("token", accessToken)

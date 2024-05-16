@@ -16,14 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.TestUtil;
-import roomescape.controller.member.MemberController;
-import roomescape.dto.member.SignupRequest;
 import roomescape.dto.reservation.AdminReservationRequest;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.time.TimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"/test_schema.sql", "/test_admin_member.sql"})
+@Sql(scripts = {"/test_schema.sql", "/test_member.sql"})
 public class ReservationThemeControllerTest {
 
     @Autowired
@@ -34,9 +32,6 @@ public class ReservationThemeControllerTest {
 
     @Autowired
     private ReservationThemeController themeController;
-
-    @Autowired
-    private MemberController memberController;
 
     @LocalServerPort
     int port;
@@ -99,7 +94,6 @@ public class ReservationThemeControllerTest {
     @Test
     void invalidDeleteTime() {
         // given
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
         timeController.createTime(new TimeRequest(LocalTime.parse("10:00")));
         themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
         reservationController.createAdminReservation(

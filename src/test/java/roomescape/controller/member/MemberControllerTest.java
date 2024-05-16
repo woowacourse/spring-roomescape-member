@@ -7,18 +7,14 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.member.SignupRequest;
+import roomescape.TestUtil;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"/test_schema.sql"})
+@Sql(scripts = {"/test_schema.sql", "/test_member.sql"})
 class MemberControllerTest {
-
-    @Autowired
-    private MemberController memberController;
 
     @LocalServerPort
     int port;
@@ -31,10 +27,8 @@ class MemberControllerTest {
     @DisplayName("모든 회원을 조회한다.")
     @Test
     void findAll() {
-        memberController.createMember(new SignupRequest("email1@email.com", "password1", "name1"));
-        memberController.createMember(new SignupRequest("email2@email.com", "password2", "name2"));
-
         RestAssured.given().log().all()
+                .cookie("token", TestUtil.getMemberToken())
                 .when().get("/members")
                 .then().log().all()
                 .statusCode(200)
@@ -55,7 +49,6 @@ class MemberControllerTest {
                 .body(param)
                 .when().post("/members")
                 .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+                .statusCode(201);
     }
 }

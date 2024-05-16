@@ -16,16 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.TestUtil;
-import roomescape.controller.member.MemberController;
-import roomescape.dto.auth.LoginRequest;
-import roomescape.dto.member.SignupRequest;
 import roomescape.dto.reservation.AdminReservationRequest;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.time.TimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"/test_schema.sql", "/test_admin_member.sql"})
+@Sql(scripts = {"/test_schema.sql", "/test_member.sql"})
 public class ReservationControllerTest {
 
     @Autowired
@@ -36,9 +33,6 @@ public class ReservationControllerTest {
 
     @Autowired
     private ReservationThemeController themeController;
-
-    @Autowired
-    private MemberController memberController;
 
     @LocalServerPort
     int port;
@@ -52,17 +46,14 @@ public class ReservationControllerTest {
     @Test
     void reservations() {
         // given
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
         timeController.createTime(new TimeRequest(LocalTime.parse("10:00")));
         themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
         reservationController.createAdminReservation(
                 new AdminReservationRequest(LocalDate.parse("2025-01-01"), 1L, 1L, 1L));
 
-        String accessToken = getAccessToken("email@email.com", "password");
-
         // when & then
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie("token", TestUtil.getMemberToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -74,17 +65,14 @@ public class ReservationControllerTest {
     @Test
     void insertByUser() {
         // given
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
         timeController.createTime(new TimeRequest(LocalTime.parse("10:00")));
         themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
-
-        String accessToken = getAccessToken("email@email.com", "password");
 
         // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new ReservationRequest(LocalDate.now().plusDays(1), 1L, 1L))
-                .cookie("token", accessToken)
+                .cookie("token", TestUtil.getMemberToken())
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -94,7 +82,6 @@ public class ReservationControllerTest {
     @Test
     void insertByAdmin() {
         // given
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
         timeController.createTime(new TimeRequest(LocalTime.parse("10:00")));
         themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
 
@@ -111,8 +98,6 @@ public class ReservationControllerTest {
     @DisplayName("관리자 예약시 유저 정보가 입력되지 않으면 400으로 응답한다.")
     @Test
     void notExistUserInfo() {
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
-
         Map<String, Object> params = new HashMap<>();
         params.put("date", "2024-04-30");
         params.put("timeId", 1);
@@ -132,10 +117,8 @@ public class ReservationControllerTest {
     @DisplayName("예약 삭제 요청 시 204로 응답한다.")
     @Test
     void deleteById() {
-        String accessToken = getAccessToken("admin@email.com", "admin_password");
-
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie("token", TestUtil.getAdminUserToken())
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
@@ -144,16 +127,13 @@ public class ReservationControllerTest {
     @DisplayName("날짜가 입력되지 않으면 400으로 응답한다.")
     @Test
     void invalidDate() {
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
-        String accessToken = getAccessToken("email@email.com", "password");
-
         Map<String, Object> params = new HashMap<>();
         params.put("date", "");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-                .cookie("token", accessToken)
+                .cookie("token", TestUtil.getMemberToken())
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -165,9 +145,6 @@ public class ReservationControllerTest {
     @DisplayName("시간이 입력되지 않으면 400으로 응답한다.")
     @Test
     void invalidTimeId() {
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
-        String accessToken = getAccessToken("email@email.com", "password");
-
         Map<String, Object> params = new HashMap<>();
         params.put("date", "2024-04-30");
         params.put("timeId", "시간 선택");
@@ -176,7 +153,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .cookie("token", accessToken)
+                .cookie("token", TestUtil.getMemberToken())
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
@@ -186,9 +163,6 @@ public class ReservationControllerTest {
     @DisplayName("테마가 입력되지 않으면 400으로 응답한다.")
     @Test
     void invalidThemeId() {
-        memberController.createMember(new SignupRequest("email@email.com", "password", "username"));
-        String accessToken = getAccessToken("email@email.com", "password");
-
         Map<String, Object> params = new HashMap<>();
         params.put("date", "2024-04-30");
         params.put("timeId", 1);
@@ -197,7 +171,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .cookie("token", accessToken)
+                .cookie("token", TestUtil.getMemberToken())
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
@@ -206,10 +180,11 @@ public class ReservationControllerTest {
 
     @DisplayName("특정 조건에 대한 예약을 조회한다.")
     @Test
-    @Sql(scripts = {"/test_schema.sql", "/test_reservation_search.sql"})
+    @Sql(scripts = {"/test_schema.sql", "/test_reservation_search.sql", "/test_member.sql"})
     void findByCondition() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", TestUtil.getAdminUserToken())
                 .param("themeId", 1L)
                 .param("memberId", 1L)
                 .param("dateFrom", LocalDate.now().minusDays(7).toString())
@@ -218,14 +193,5 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(7));
-    }
-
-    private String getAccessToken(String mail, String password) {
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new LoginRequest(mail, password))
-                .when().post("/login")
-                .then().log().all()
-                .extract().cookie("token");
     }
 }
