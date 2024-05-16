@@ -84,9 +84,6 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> searchReservation(ReservationSearchRequest request) {
-        if (request.dateTo().isBefore(request.dateFrom())) {
-            throw new IllegalArgumentException("종료 날짜는 시작 날짜 이전일 수 없습니다.");
-        }
         return reservationDao.searchReservation(request.themeId(), request.memberId(), request.dateFrom(),
                         request.dateTo()).stream()
                 .map(ReservationResponse::new)
