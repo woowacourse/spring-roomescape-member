@@ -53,7 +53,6 @@ public class ReservationController {
         return ResponseEntity.ok(reservationResponses);
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable Long id) {
         ReservationResponse reservationResponse = reservationService.getReservation(id);

@@ -32,8 +32,3 @@ test {
 compileJava {
     options.compilerArgs << '-parameters'
 }
-
-
-/*
-[ERROR] 예상치 못한 예외가 발생했습니다. : io.jsonwebtoken.lang.UnknownClassException: Unable to load class named [io.jsonwebtoken.impl.DefaultJwtParserBuilder] from the thread context, current, or system/application ClassLoaders.  All heuristics have been exhausted.  Class could not be found.  Have you remembered to include the jjwt-impl.jar in your runtime classpath?
- */

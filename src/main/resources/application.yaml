@@ -8,13 +8,10 @@ spring:
   datasource:
     url: jdbc:h2:mem:database;
 
-
   # data.sql
-  jpa:
-    defer-datasource-initialization: true
-
   sql:
     init:
       mode: always
 
-SECRET_KEY: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E
+secret:
+  key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E

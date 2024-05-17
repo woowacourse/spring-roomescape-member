@@ -49,11 +49,6 @@ public class AuthenticationController {
         return ResponseEntity.created(URI.create("/members/" + id)).body(MemberResponse.from(member));
     }
 
-    @GetMapping("/signup")
-    public String postSignUp() {
-        return "/signup";
-    }
-
     @PostMapping("/logout")
     public ResponseEntity<LoginCheckResponse> logout(HttpServletResponse response) {
         response.addCookie(getExpiredCookie(response));

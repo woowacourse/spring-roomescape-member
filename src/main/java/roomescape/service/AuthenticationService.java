@@ -11,11 +11,10 @@ import roomescape.repository.JdbcMemberRepository;
 @Service
 public class AuthenticationService {
 
-    @Value("${SECRET_KEY}")
+    @Value("${secret.key}")
     private String SECRET_KEY;
 
     private final JdbcMemberRepository jdbcMemberRepository;
-
 
     public AuthenticationService(JdbcMemberRepository jdbcMemberRepository) {
         this.jdbcMemberRepository = jdbcMemberRepository;

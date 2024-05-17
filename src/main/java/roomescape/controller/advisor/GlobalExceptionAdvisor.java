@@ -15,6 +15,6 @@ public class GlobalExceptionAdvisor {
 
     @ExceptionHandler(value = Exception.class)
     private ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.internalServerError().body(PREFIX + "예상치 못한 예외가 발생했습니다. + e");
+        return ResponseEntity.internalServerError().body(PREFIX + "예상치 못한 예외가 발생했습니다." + e);
     }
 }
