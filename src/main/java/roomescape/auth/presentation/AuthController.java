@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthenticationPrincipal;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.service.AuthService;
+import roomescape.auth.application.AuthService;
 
 @RestController
 @RequestMapping("/login")

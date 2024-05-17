@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.dto.LoginMember;
-import roomescape.auth.service.AuthService;
+import roomescape.auth.application.AuthService;
 import roomescape.global.exception.exceptions.AuthorizationException;
 import roomescape.member.domain.Role;
-import roomescape.member.service.MemberService;
+import roomescape.member.application.MemberService;
 
 @Component
 public class CheckMemberRoleInterceptor implements HandlerInterceptor {

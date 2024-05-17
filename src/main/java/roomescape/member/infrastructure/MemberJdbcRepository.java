@@ -1,4 +1,4 @@
-package roomescape.member.repository;
+package roomescape.member.infrastructure;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.ReservationAdminCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationResponses;
-import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.application.ReservationService;
 
 @RestController
 @RequestMapping("/admin")

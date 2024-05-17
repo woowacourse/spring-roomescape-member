@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.dto.MemberResponses;
-import roomescape.member.service.MemberService;
+import roomescape.member.application.MemberService;
 
 @RestController
 @RequestMapping("/members")

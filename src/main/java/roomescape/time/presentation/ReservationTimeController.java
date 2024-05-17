@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.time.dto.ReservationTimeCreateRequest;
 import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.dto.ReservationTimeResponses;
-import roomescape.time.service.ReservationTimeService;
+import roomescape.time.application.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")

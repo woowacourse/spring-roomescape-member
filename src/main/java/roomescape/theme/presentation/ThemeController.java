@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.dto.ThemeResponses;
-import roomescape.theme.service.ThemeService;
+import roomescape.theme.application.ThemeService;
 
 @RestController
 @RequestMapping("/themes")

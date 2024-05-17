@@ -14,7 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.time.dto.ReservationTimeCreateRequest;
 import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.global.exception.exceptions.NotExistingEntryException;
-import roomescape.time.service.ReservationTimeService;
+import roomescape.time.application.ReservationTimeService;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

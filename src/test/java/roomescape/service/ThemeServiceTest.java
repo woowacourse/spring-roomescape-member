@@ -13,7 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.global.exception.exceptions.NotExistingEntryException;
-import roomescape.theme.service.ThemeService;
+import roomescape.theme.application.ThemeService;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

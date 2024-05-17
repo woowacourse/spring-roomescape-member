@@ -27,7 +27,7 @@ import roomescape.member.domain.MemberRepository;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.time.domain.ReservationTimeRepository;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.application.ReservationService;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
