@@ -13,35 +13,17 @@ public class Conditions {
     private List<Integer> argTypes = new ArrayList<>();
 
     public Conditions(ReservationQueryRequest reservationRequest) {
-        if (reservationRequest.themeId() != null) {
-            conditions.add(new EqualsTo("theme_id"));
-            args.add(reservationRequest.themeId());
-            argTypes.add(Types.BIGINT);
-        }
-        if (reservationRequest.memberId() != null) {
-            conditions.add(new EqualsTo("member_id"));
-            args.add(reservationRequest.memberId());
-            argTypes.add(Types.BIGINT);
-        }
-        if (reservationRequest.dateFrom() != null) {
-            conditions.add(new BiggerInclusiveThan("date"));
-            args.add(reservationRequest.dateFrom());
-            argTypes.add(Types.DATE);
-        }
-        if (reservationRequest.dateTo() != null) {
-            conditions.add(new SmallerInclusiveThan("date"));
-            args.add(reservationRequest.dateTo());
-            argTypes.add(Types.DATE);
-        }
+        checkThemeIdCondition(reservationRequest);
+        checkMemberIdCondition(reservationRequest);
+        checkDateFromCondition(reservationRequest);
+        checkDateToCondition(reservationRequest);
     }
 
     public String createQuery(String baseSql) {
         if (conditions.isEmpty()) {
             return baseSql;
         }
-        String dynamicQuery = createDynamicQuery(baseSql);
-
-        return dynamicQuery;
+        return createDynamicQuery(baseSql);
     }
 
     private String createDynamicQuery(String baseSql) {
@@ -53,6 +35,38 @@ public class Conditions {
                 .append("WHERE ")
                 .append(conditionPhrases)
                 .toString();
+    }
+
+    private void checkThemeIdCondition(ReservationQueryRequest reservationRequest) {
+        if (reservationRequest.themeId() != null) {
+            conditions.add(new EqualsTo("theme_id"));
+            args.add(reservationRequest.themeId());
+            argTypes.add(Types.BIGINT);
+        }
+    }
+
+    private void checkMemberIdCondition(ReservationQueryRequest reservationRequest) {
+        if (reservationRequest.memberId() != null) {
+            conditions.add(new EqualsTo("member_id"));
+            args.add(reservationRequest.memberId());
+            argTypes.add(Types.BIGINT);
+        }
+    }
+
+    private void checkDateFromCondition(ReservationQueryRequest reservationRequest) {
+        if (reservationRequest.dateFrom() != null) {
+            conditions.add(new BiggerInclusiveThan("date"));
+            args.add(reservationRequest.dateFrom());
+            argTypes.add(Types.DATE);
+        }
+    }
+
+    private void checkDateToCondition(ReservationQueryRequest reservationRequest) {
+        if (reservationRequest.dateTo() != null) {
+            conditions.add(new SmallerInclusiveThan("date"));
+            args.add(reservationRequest.dateTo());
+            argTypes.add(Types.DATE);
+        }
     }
 
     public Object[] getArgs() {
