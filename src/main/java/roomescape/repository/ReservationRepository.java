@@ -1,5 +1,8 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,12 +13,7 @@ import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-
-import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import roomescape.repository.condition.Conditions;
 
 @Repository
 public class ReservationRepository {
@@ -96,34 +94,20 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
-    public List<Reservation> findByFilterConditions(Map<String, String> filterConditions) {
-        String sql = """
+    public List<Reservation> findByFilterConditions(Conditions conditions) {
+        String baseSql = """
                 SELECT * FROM reservation r 
                 JOIN reservation_time rt ON r.time_id = rt.id
                 JOIN theme t ON r.theme_id = t.id
                 JOIN member m ON r.member_id = m.id 
                 """;
 
-        if (filterConditions.isEmpty()) {
-            return jdbcTemplate.query(sql, ROW_MAPPER);
-        }
-
-        List<String> conditions = filterConditions.entrySet()
-                .stream()
-                .map(entry -> {
-                    if ("dateFrom".equals(entry.getKey())) {
-                        return "date >= '" + entry.getValue() + "'";
-                    }
-                    if ("dateTo".equals(entry.getKey())) {
-                        return "date <= '" + entry.getValue() + "'";
-                    }
-                    return entry.getKey() + " = '" + entry.getValue() + "'";
-                }).collect(Collectors.toList());
-
-        StringBuilder whereClause = new StringBuilder(" WHERE ");
-        whereClause.append(String.join(" AND ", conditions));
-
-        return jdbcTemplate.query(sql + whereClause, ROW_MAPPER);
+        return jdbcTemplate.query(
+                conditions.createQuery(baseSql),
+                conditions.getArgs(),
+                conditions.getArgTypes(),
+                ROW_MAPPER
+        );
     }
 
     public Reservation save(Reservation requestReservation) {

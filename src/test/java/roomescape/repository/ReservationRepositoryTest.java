@@ -1,5 +1,11 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,14 +19,8 @@ import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-
-import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import roomescape.dto.reservation.request.ReservationQueryRequest;
+import roomescape.repository.condition.Conditions;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -61,7 +61,8 @@ public class ReservationRepositoryTest {
         ));
 
         // when
-        List<Reservation> reservations = reservationRepository.findByFilterConditions(Map.of());
+        List<Reservation> reservations = reservationRepository.findByFilterConditions(
+                new Conditions(new ReservationQueryRequest(null, null, null, null)));
         int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
 
         // then

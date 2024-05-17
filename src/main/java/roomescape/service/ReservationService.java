@@ -1,10 +1,17 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
+import roomescape.dto.reservation.request.ReservationQueryRequest;
 import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.response.ReservationResponse;
@@ -14,14 +21,7 @@ import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import roomescape.repository.condition.Conditions;
 
 @Service
 public class ReservationService {
@@ -40,8 +40,8 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> findReservationsByCondition(Map<String, String> filterConditions) {
-        return reservationRepository.findByFilterConditions(filterConditions)
+    public List<ReservationResponse> findReservationsByCondition(ReservationQueryRequest reservationRequest) {
+        return reservationRepository.findByFilterConditions(new Conditions(reservationRequest))
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -73,7 +73,8 @@ public class ReservationService {
         validateDateAndTime(requestDate, today, time);
         validateReservationDuplicate(reservationRequest, theme);
 
-        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time, theme, member));
+        Reservation savedReservation = reservationRepository.save(
+                reservationRequest.toReservation(time, theme, member));
 
         return ReservationResponse.from(savedReservation);
     }

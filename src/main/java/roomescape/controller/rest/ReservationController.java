@@ -4,11 +4,11 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.rest.auth.AuthInfo;
 import roomescape.dto.auth.LoginInfo;
+import roomescape.dto.reservation.request.ReservationQueryRequest;
 import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.response.ReservationResponse;
@@ -34,8 +35,9 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations(
-            @RequestParam Map<String, String> filterConditions) {
-        return ResponseEntity.ok(reservationService.findReservationsByCondition(filterConditions));
+            @ModelAttribute @Valid ReservationQueryRequest reservationRequest
+    ) {
+        return ResponseEntity.ok(reservationService.findReservationsByCondition(reservationRequest));
     }
 
     @GetMapping("/themes/{themeId}")
