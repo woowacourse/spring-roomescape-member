@@ -1,6 +1,7 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -8,18 +9,19 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exceptions.queryResultSizeException;
 
 import javax.sql.DataSource;
 import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class ReservationTimeDAO {
+public class ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ReservationTimeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationTimeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
@@ -38,7 +40,13 @@ public class ReservationTimeDAO {
 
     public ReservationTime findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
+        ReservationTime reservationTime;
+        try {
+            reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new queryResultSizeException("db 쿼리 조회 에러");
+        }
+
         if (reservationTime == null) {
             throw new EmptyResultDataAccessException("id에 맞는 예약시간이 존재하지 않습니다.", 1);
         }

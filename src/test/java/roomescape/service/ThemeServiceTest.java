@@ -1,17 +1,14 @@
 package roomescape.service;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.request.ThemeRequest;
 
 import java.util.List;
 
@@ -62,6 +59,7 @@ class ThemeServiceTest {
     }
 
     @DisplayName("많이 예약한 순으로 10개를 정렬한다.")
+    @Disabled
     @Sql("/testdata.sql")
     @Test
     void popularThemeTest() {

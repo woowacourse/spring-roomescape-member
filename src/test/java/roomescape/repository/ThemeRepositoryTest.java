@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,15 +13,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ThemeDAOTest {
+public class ThemeRepositoryTest {
 
     @Autowired
-    private ThemeDAO themeDAO;
+    private ThemeRepository themeRepository;
 
     @Test
     @DisplayName("테마를 추가한다.")
     void insert() {
-        Theme theme = themeDAO.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Theme theme = themeRepository.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         assertThat(theme).isNotNull();
     }
@@ -29,9 +29,9 @@ public class ThemeDAOTest {
     @Test
     @DisplayName("전체 테마 시간을 조회한다.")
     void selectAll() {
-        themeDAO.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        List<Theme> themes = themeDAO.selectAll();
+        List<Theme> themes = themeRepository.selectAll();
 
         assertThat(themes).hasSize(1);
     }
@@ -39,10 +39,10 @@ public class ThemeDAOTest {
     @Test
     @DisplayName("테마를 삭제한다.")
     void deleteById() {
-        themeDAO.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeRepository.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        themeDAO.deleteById(1L);
-        List<Theme> themes = themeDAO.selectAll();
+        themeRepository.deleteById(1L);
+        List<Theme> themes = themeRepository.selectAll();
 
         assertThat(themes).hasSize(0);
     }

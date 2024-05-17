@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dao.ThemeDAO;
+import roomescape.repository.ThemeRepository;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.request.ThemeRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,29 +14,29 @@ public class ThemeService {
     private static final int START_DAY = 7;
     private static final int END_DAY = 1;
 
-    private final ThemeDAO themeDAO;
+    private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeDAO themeDAO) {
-        this.themeDAO = themeDAO;
+    public ThemeService(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     public Theme save(ThemeRequest themeRequest) {
         Theme theme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
-        return themeDAO.insert(theme);
+        return themeRepository.insert(theme);
     }
 
     public List<Theme> findAll() {
-        return themeDAO.selectAll();
+        return themeRepository.selectAll();
     }
 
     public void delete(Long id) {
-        themeDAO.deleteById(id);
+        themeRepository.deleteById(id);
     }
 
     public List<Theme> findTopRanking() {
         LocalDate currentDate = LocalDate.now();
         LocalDate firstDayOfPeriod = currentDate.minusDays(START_DAY);
         LocalDate lastDayOfPeriod = currentDate.minusDays(END_DAY);
-        return themeDAO.findTopRanking(firstDayOfPeriod, lastDayOfPeriod);
+        return themeRepository.findTopRanking(firstDayOfPeriod, lastDayOfPeriod);
     }
 }

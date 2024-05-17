@@ -1,6 +1,7 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -8,18 +9,19 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.exceptions.queryResultSizeException;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class ThemeDAO {
+public class ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ThemeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
@@ -42,7 +44,12 @@ public class ThemeDAO {
 
     public Theme findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
+        Theme theme;
+        try {
+            theme = jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new queryResultSizeException("db 쿼리 조회 에러");
+        }
         if (theme == null) {
             throw new EmptyResultDataAccessException("id에 맞는 테마가 존재하지 않습니다.", 1);
         }

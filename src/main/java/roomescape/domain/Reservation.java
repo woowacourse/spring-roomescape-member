@@ -1,14 +1,14 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidRequestBodyFieldException;
-import roomescape.domain.exception.InvalidReservationTimeException;
+import roomescape.exceptions.InvalidRequestBodyFieldException;
+import roomescape.exceptions.InvalidReservationTimeException;
 
 import java.time.LocalDate;
 
 public class Reservation {
 
     private Long id;
-    private String name;
+    private Member member;
     private LocalDate date;
     private ReservationTime time;
     private Theme theme;
@@ -16,21 +16,21 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateNotNull(name, date, time, theme);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validateNotNull(member, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validateNotNull(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || name.isBlank() || date == null || time == null) {
+    private void validateNotNull(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        if (member == null || date == null || time == null) {
             throw new InvalidRequestBodyFieldException("예약 필드값이 null 입니다.");
         }
     }
@@ -45,8 +45,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

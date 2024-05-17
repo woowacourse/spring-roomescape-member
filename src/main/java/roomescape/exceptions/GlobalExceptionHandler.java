@@ -1,14 +1,12 @@
-package roomescape.handle;
+package roomescape.exceptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.domain.exception.InvalidRequestBodyFieldException;
-import roomescape.domain.exception.InvalidReservationTimeException;
-import roomescape.service.exception.DeleteException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,6 +32,27 @@ public class GlobalExceptionHandler {
         logger.debug(invalidReservationTimeException);
         invalidReservationTimeException.printStackTrace();
         return new ResponseEntity<>(invalidReservationTimeException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = LoginFailException.class)
+    public ResponseEntity<String> handleLoginFailException(LoginFailException loginFailException) {
+        logger.debug(loginFailException);
+        loginFailException.printStackTrace();
+        return new ResponseEntity<>(loginFailException.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = IncorrectResultSizeDataAccessException.class)
+    public ResponseEntity<String> handleIncorrectResultSizeDataAccessException(IncorrectResultSizeDataAccessException incorrectResultSizeDataAccessException) {
+        logger.debug(incorrectResultSizeDataAccessException);
+        incorrectResultSizeDataAccessException.printStackTrace();
+        return new ResponseEntity<>(incorrectResultSizeDataAccessException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = AuthException.class)
+    public ResponseEntity<String> handleTokenException(AuthException authException) {
+        logger.debug(authException);
+        authException.printStackTrace();
+        return new ResponseEntity<>(authException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = Exception.class)
