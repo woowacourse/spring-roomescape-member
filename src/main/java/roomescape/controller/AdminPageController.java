@@ -8,12 +8,6 @@ import roomescape.service.ReservationService;
 @Controller
 @RequestMapping("/admin")
 public class AdminPageController {
-    private final ReservationService reservationService;
-
-    public AdminPageController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
-
     @GetMapping
     public String home() {
         return "admin/index";
