@@ -2,7 +2,11 @@ package roomescape.global.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import java.util.Map;
+import roomescape.global.exception.ApplicationException;
+import roomescape.global.exception.ExceptionType;
 
 public class TokenManager {
 
@@ -15,6 +19,18 @@ public class TokenManager {
                 .claims(claims)
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
+    }
+
+    public static String extractTokenFrom(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new ApplicationException(ExceptionType.NO_COOKIE_EXIST);
+        }
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(TokenManager.TOKEN_NAME))
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException(ExceptionType.NO_TOKEN_EXIST))
+                .getValue();
     }
 
     public static String extractSubject(String token) {
