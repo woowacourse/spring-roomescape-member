@@ -13,11 +13,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.member.domain.Member;
 import roomescape.member.security.crypto.JwtTokenProvider;
 import roomescape.reservation.dto.ReservationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrationTest {
 
     @Value("${security.jwt.token.secret-key}")
@@ -62,7 +68,7 @@ class ReservationIntegrationTest {
                 .get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
 
         RestAssured.given()
                 .cookie("token", token)
@@ -77,7 +83,7 @@ class ReservationIntegrationTest {
                 .get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(2));
     }
 
     @Test
