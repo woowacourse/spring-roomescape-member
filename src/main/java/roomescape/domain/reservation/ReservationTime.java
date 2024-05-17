@@ -23,7 +23,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (isNull(startAt)) {
-            throw new InvalidDomainObjectException("startAt must not be null");
+            throw new InvalidDomainObjectException("시작 시간은 null이 될 수 없습니다.");
         }
     }
 

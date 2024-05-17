@@ -1,3 +1,9 @@
+insert into member (id, name, email, password, role)
+values (1, '피케이', 'pkpkpkpk@woowa.net', 'anything', 'ADMIN'),
+       (2, '망쵸', 'mangcho@woowa.net', 'nothing', 'MEMBER'),
+       (3, '비토', 'bito@woowa.net', 'something', 'MEMBER'),
+       (4, '호돌', 'hodol@woowa.net', 'everything', 'MEMBER');
+
 insert into theme (name, description, thumbnail)
 values ('세렌디피티: 뜻밖의 행운',
         '방탈출 게임은 주어진 시간 내에 팀이 퍼즐을 해결하고 탈출하는 것이 목표입니다. 퍼즐은 다양한 형태로 주어질 수 있으며, 팀원들은 상호 협력하여 각종 단서를 찾고 연결하여 문제를 해결해야 합니다. 성공적으로 퍼즐을 풀고 모든 단서를 이용해 탈출하면 게임을 클리어할 수 있습니다.',
@@ -26,8 +32,8 @@ values ('10:00'),
        ('20:00'),
        ('21:00');
 
-insert into reservation (name, date, time_id, theme_id)
-values ('피케이', '2024-04-29', 1, 1),
-       ('망쵸', '2024-04-30', 2, 1),
-       ('비토', '2024-04-28', 4, 2),
-       ('호돌', '2024-04-29', 1, 1);
+insert into reservation (member_id, date, time_id, theme_id)
+values (1, '2024-04-29', 1, 1),
+       (2, '2024-04-30', 2, 1),
+       (3, '2024-04-28', 4, 2),
+       (4, '2024-04-29', 1, 1);

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.request.ThemeRequest;
 import roomescape.service.dto.response.ThemeResponse;
-import roomescape.web.dto.ThemeListResponse;
+import roomescape.web.api.dto.ThemeListResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -25,8 +25,8 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> save(@RequestBody @Valid ThemeRequest themeRequest) {
-        ThemeResponse themeResponse = themeService.save(themeRequest);
+    public ResponseEntity<ThemeResponse> save(@RequestBody @Valid ThemeRequest request) {
+        ThemeResponse themeResponse = themeService.save(request);
 
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.id()))
                 .body(themeResponse);
@@ -40,10 +40,10 @@ public class ThemeController {
     }
 
     @GetMapping("/themes/tops")
-    public ResponseEntity<List<ThemeResponse>> findTops() {
+    public ResponseEntity<ThemeListResponse> findTops() {
         List<ThemeResponse> themeResponses = themeService.findTopThemes();
 
-        return ResponseEntity.ok(themeResponses);
+        return ResponseEntity.ok(new ThemeListResponse(themeResponses));
     }
 
     @DeleteMapping("/themes/{id}")

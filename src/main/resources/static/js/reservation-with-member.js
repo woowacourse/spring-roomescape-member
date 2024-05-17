@@ -24,18 +24,14 @@ function render(data) {
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = '';
 
-  data.forEach(item => {
+  data.reservations.forEach(item => {
     const row = tableBody.insertRow();
 
-    /*
-    TODO: [5단계] 예약 생성 기능 변경 - 관리자
-          예약 목록 조회 API 응답에 맞게 적용
-    */
-    row.insertCell(0).textContent = item.id;              // 예약 id
-    row.insertCell(1).textContent = item.member.name;     // 사용자 name
-    row.insertCell(2).textContent = item.theme.name;      // 테마 name
-    row.insertCell(3).textContent = item.date;            // date
-    row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
+    row.insertCell(0).textContent = item.id;
+    row.insertCell(1).textContent = item.member.name;
+    row.insertCell(2).textContent = item.theme.name;
+    row.insertCell(3).textContent = item.date;
+    row.insertCell(4).textContent = item.time.startAt;
 
     const actionCell = row.insertCell(row.cells.length);
     actionCell.appendChild(createActionButton('삭제', 'btn-danger', deleteRow));
@@ -45,7 +41,7 @@ function render(data) {
 function fetchTimes() {
   requestRead(TIME_API_ENDPOINT)
       .then(data => {
-        timesOptions.push(...data);
+        timesOptions.push(...data.reservationTimes);
       })
       .catch(error => console.error('Error fetching time:', error));
 }
@@ -53,7 +49,7 @@ function fetchTimes() {
 function fetchThemes() {
   requestRead(THEME_API_ENDPOINT)
       .then(data => {
-        themesOptions.push(...data);
+        themesOptions.push(...data.themes);
         populateSelect('theme', themesOptions, 'name');
       })
       .catch(error => console.error('Error fetching theme:', error));
@@ -62,7 +58,7 @@ function fetchThemes() {
 function fetchMembers() {
   requestRead(MEMBER_API_ENDPOINT)
       .then(data => {
-        membersOptions.push(...data);
+        membersOptions.push(...data.members);
         populateSelect('member', membersOptions, 'name');
       })
       .catch(error => console.error('Error fetching member:', error));
@@ -200,7 +196,17 @@ function applyFilter(event) {
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+
+  const queryParams = new URLSearchParams({
+    themeId: themeId,
+    memberId: memberId,
+    dateFrom: dateFrom,
+    dateTo: dateTo
+  });
+
+  const url = `/admin/reservations?${queryParams}`
+
+  fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

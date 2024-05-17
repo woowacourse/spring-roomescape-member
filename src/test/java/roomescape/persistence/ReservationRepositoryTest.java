@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.reservation.Name;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationRepository;
@@ -20,23 +21,26 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class ReservationRepositoryTest {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new H2ReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         reservationTimeRepository = new H2ReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         themeRepository = new H2ThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        memberRepository = new H2MemberRepository(jdbcTemplate, jdbcTemplate.getDataSource());
     }
 
     @DisplayName("예약을 저장한다")
@@ -45,15 +49,16 @@ class ReservationRepositoryTest {
         // given
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
+        Member savedMember = memberRepository.save(Fixture.member);
 
         // when
-        Reservation reservation = new Reservation("피케이", Fixture.tomorrow, savedReservationTime, savedTheme);
+        Reservation reservation = new Reservation(savedMember, Fixture.tomorrow, savedReservationTime, savedTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // then
         assertAll(
                 () -> assertThat(savedReservation.getId()).isNotNull(),
-                () -> assertThat(savedReservation.getName()).isEqualTo(new Name("피케이")),
+                () -> assertThat(savedReservation.getMember()).isEqualTo(savedMember),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(new ReservationDate(Fixture.tomorrow)),
                 () -> assertThat(savedReservation.getTime()).isEqualTo(savedReservationTime),
                 () -> assertThat(savedReservation.getTheme()).isEqualTo(savedTheme)
@@ -65,7 +70,7 @@ class ReservationRepositoryTest {
     void when_saveReservationWithNonExistentThemeAndTime_then_throwException() {
         // when, then
         assertThatThrownBy(() -> {
-            Reservation reservation = new Reservation("피케이", Fixture.tomorrow, Fixture.unkownReservationTime,
+            Reservation reservation = new Reservation(Fixture.member, Fixture.tomorrow, Fixture.unkownReservationTime,
                     Fixture.unkownTheme);
             reservationRepository.save(reservation);
         }).isInstanceOf(IllegalArgumentException.class)
@@ -78,8 +83,9 @@ class ReservationRepositoryTest {
         // given
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
+        Member savedMember = memberRepository.save(Fixture.member);
         for (int i = 0; i < 3; i++) {
-            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime,
+            Reservation reservation = new Reservation(savedMember, LocalDate.now().plusDays(i), savedReservationTime,
                     savedTheme);
             reservationRepository.save(reservation);
         }
@@ -95,9 +101,11 @@ class ReservationRepositoryTest {
         // given
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
+        Member savedMember = memberRepository.save(Fixture.member);
+
         for (int i = 1; i < 4; i++) {
-            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime,
-                    savedTheme);
+            LocalDate date = LocalDate.now().plusDays(i);
+            Reservation reservation = new Reservation(savedMember, date, savedReservationTime, savedTheme);
             reservationRepository.save(reservation);
         }
 
@@ -117,8 +125,9 @@ class ReservationRepositoryTest {
         // given
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
+        Member savedMember = memberRepository.save(Fixture.member);
         for (int i = 1; i < 5; i++) {
-            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime,
+            Reservation reservation = new Reservation(savedMember, LocalDate.now().plusDays(i), savedReservationTime,
                     savedTheme);
             reservationRepository.save(reservation);
         }
@@ -139,7 +148,8 @@ class ReservationRepositoryTest {
         // given
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
-        Reservation reservation = new Reservation("피케이", Fixture.tomorrow, savedReservationTime, savedTheme);
+        Member savedMember = memberRepository.save(Fixture.member);
+        Reservation reservation = new Reservation(savedMember, Fixture.tomorrow, savedReservationTime, savedTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // when
@@ -151,11 +161,12 @@ class ReservationRepositoryTest {
     }
 
     private static class Fixture {
-        public static final Theme theme = new Theme("테마", "테마 설명", "https://1.jpg");
-        public static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        public static final LocalDate tomorrow = LocalDate.now().plusDays(1);
+        static final LocalDate tomorrow = LocalDate.now().plusDays(1);
+        static final Theme theme = new Theme("테마", "테마 설명", "https://1.jpg");
+        static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        static final Member member = new Member(1L, "피케이", "pkpkpkpk@woowa.net", "password", "ADMIN");
 
-        public static final Theme unkownTheme = new Theme(100L, "테마", "테마 설명", "https://1.jpg");
-        public static final ReservationTime unkownReservationTime = new ReservationTime(100L, LocalTime.of(10, 0));
+        static final Theme unkownTheme = new Theme(100L, "테마", "테마 설명", "https://1.jpg");
+        static final ReservationTime unkownReservationTime = new ReservationTime(100L, LocalTime.of(10, 0));
     }
 }

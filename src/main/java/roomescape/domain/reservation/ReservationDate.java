@@ -15,10 +15,9 @@ public class ReservationDate {
 
     private static void validate(LocalDate startDate) {
         if (isNull(startDate)) {
-            throw new IllegalArgumentException("start date must not be null");
+            throw new IllegalArgumentException("시작 날짜는 null이 될 수 없습니다.");
         }
     }
-
 
     public LocalDate getStartAt() {
         return startDate;

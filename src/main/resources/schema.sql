@@ -1,27 +1,38 @@
-CREATE TABLE reservation_time
+create table member
 (
-    id   BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
+    id       bigint       not null auto_increment,
+    name     varchar(255) not null,
+    email    varchar(255) not null,
+    password varchar(255) not null,
+    role     varchar(255) default 'MEMBER',
+    primary key (id)
 );
 
-CREATE TABLE theme
+create table reservation_time
 (
-    id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    thumbnail VARCHAR(255),
-    PRIMARY KEY (id)
+    id       bigint       not null auto_increment,
+    start_at varchar(255) not null,
+    primary key (id)
 );
 
-CREATE TABLE reservation
+create table theme
 (
-    id   BIGINT       NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    date VARCHAR(255) NOT NULL,
-    time_id BIGINT NOT NULL,
-    theme_id BIGINT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    id          bigint       not null auto_increment,
+    name        varchar(255) not null,
+    description varchar(255) not null,
+    thumbnail   varchar(255),
+    primary key (id)
+);
+
+create table reservation
+(
+    id        bigint       not null auto_increment,
+    member_id bigint       not null,
+    time_id   bigint       not null,
+    theme_id  bigint       not null,
+    date      varchar(255) not null,
+    primary key (id),
+    foreign key (time_id) references reservation_time (id),
+    foreign key (theme_id) references theme (id),
+    foreign key (member_id) references member (id)
 );

@@ -11,9 +11,9 @@ import java.util.List;
 
 @Service
 public class ThemeService {
-    public static final int START_DATE_DIFF = 8;
-    public static final int END_DATE_DIFF = 1;
-    public static final int TOP_LIMIT_COUNT = 10;
+    private static final int START_DATE_DIFF = 8;
+    private static final int END_DATE_DIFF = 1;
+    private static final int TOP_LIMIT_COUNT = 10;
 
     private final ThemeRepository themeRepository;
 
@@ -38,8 +38,10 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findTopThemes() {
-        List<Theme> pastReservations = themeRepository.findPastReservations(LocalDate.now().minusDays(START_DATE_DIFF),
-                LocalDate.now().minusDays(END_DATE_DIFF), TOP_LIMIT_COUNT);
+        List<Theme> pastReservations = themeRepository.findPastReservations(
+                LocalDate.now().minusDays(START_DATE_DIFF),
+                LocalDate.now().minusDays(END_DATE_DIFF),
+                TOP_LIMIT_COUNT);
 
         return pastReservations.stream()
                 .map(ThemeResponse::from)

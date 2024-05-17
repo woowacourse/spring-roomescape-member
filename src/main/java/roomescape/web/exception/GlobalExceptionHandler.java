@@ -1,5 +1,6 @@
 package roomescape.web.exception;
 
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.domain.exception.InvalidDomainObjectException;
 
 import java.util.List;
@@ -52,6 +54,26 @@ public class GlobalExceptionHandler {
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
 
         return new ResponseEntity<>(new ErrorResponse(fieldErrors), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(AuthorizationException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleSignatureException(SignatureException e) {
+        return new ResponseEntity<>(new ErrorResponse("유효하지 않은 토큰입니다."), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException e) {
+        return new ResponseEntity<>(new ErrorResponse("존재하지 않는 자원입니다."), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler

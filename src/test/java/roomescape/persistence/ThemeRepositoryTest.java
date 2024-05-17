@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.theme.Theme;
 import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 
 import java.time.LocalDate;
@@ -23,18 +25,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 class ThemeRepositoryTest {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     private ThemeRepository themeRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         themeRepository = new H2ThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         reservationTimeRepository = new H2ReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         reservationRepository = new H2ReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        memberRepository = new H2MemberRepository(jdbcTemplate, jdbcTemplate.getDataSource());
     }
 
     @DisplayName("모든 테마를 조회한다")
@@ -96,7 +101,9 @@ class ThemeRepositoryTest {
         // given
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
-        reservationRepository.save(new Reservation("피케이", LocalDate.now(), savedReservationTime, savedTheme));
+        Member savedMember = memberRepository.save(Fixture.member);
+
+        reservationRepository.save(new Reservation(savedMember, LocalDate.now(), savedReservationTime, savedTheme));
 
         // when, then
         assertThatThrownBy(() -> themeRepository.deleteById(savedTheme.getId()))
@@ -124,5 +131,6 @@ class ThemeRepositoryTest {
         private static final Theme theme2 = new Theme("테마1", "테마1 설명", "https://1.jpg");
         private static final Theme theme3 = new Theme("테마1", "테마1 설명", "https://1.jpg");
         private static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        private static final Member member = new Member(1L, "피케이", "pkpkpkpk@woowa.net", "password", "ADMIN");
     }
 }

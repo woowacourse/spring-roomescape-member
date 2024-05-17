@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import roomescape.service.dto.validation.DateFormat;
 
 public record ReservationRequest(
-        @NotBlank String name,
+        @NotBlank Long memberId,
         @NotBlank @DateFormat String date,
         @NotNull @Positive Long timeId,
         @NotNull @Positive Long themeId

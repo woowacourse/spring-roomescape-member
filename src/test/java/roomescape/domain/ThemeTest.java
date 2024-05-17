@@ -8,7 +8,8 @@ import roomescape.domain.theme.Theme;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ThemeTest {
+class ThemeTest {
+
     @DisplayName("테마를 생성한다")
     @Test
     void when_createTheme_then_created() {
