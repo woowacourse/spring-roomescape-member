@@ -12,6 +12,7 @@ import roomescape.dto.AdminReservationRequest;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.JdbcMemberRepository;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -21,13 +22,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
     private final ThemeRepository themeRepository;
-    private final JdbcMemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository timeRepository,
             ThemeRepository themeRepository,
-            JdbcMemberRepository memberRepository
+            MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;

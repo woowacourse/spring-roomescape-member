@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
 
 @Repository
-public class JdbcMemberRepository {
+public class JdbcMemberRepository implements MemberRepository{
 
     private static final RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) ->
             new Member(

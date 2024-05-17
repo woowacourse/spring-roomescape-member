@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.dto.LoginRequest;
 import roomescape.repository.JdbcMemberRepository;
+import roomescape.repository.MemberRepository;
 
 @Service
 public class AuthenticationService {
@@ -14,9 +15,9 @@ public class AuthenticationService {
     @Value("${secret.key}")
     private String SECRET_KEY;
 
-    private final JdbcMemberRepository jdbcMemberRepository;
+    private final MemberRepository jdbcMemberRepository;
 
-    public AuthenticationService(JdbcMemberRepository jdbcMemberRepository) {
+    public AuthenticationService(MemberRepository jdbcMemberRepository) {
         this.jdbcMemberRepository = jdbcMemberRepository;
     }
 
