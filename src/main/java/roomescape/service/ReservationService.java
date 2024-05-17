@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationQuery;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.dto.reservation.request.ReservationQueryRequest;
 import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.response.ReservationResponse;
@@ -40,7 +40,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> findReservationsByCondition(ReservationQueryRequest reservationRequest) {
+    public List<ReservationResponse> findReservationsByCondition(ReservationQuery reservationRequest) {
         return reservationRepository.findByFilterConditions(new Conditions(reservationRequest))
                 .stream()
                 .map(ReservationResponse::from)

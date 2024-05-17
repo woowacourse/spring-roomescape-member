@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.rest.auth.AuthInfo;
+import roomescape.domain.reservation.ReservationQuery;
 import roomescape.dto.auth.LoginInfo;
-import roomescape.dto.reservation.request.ReservationQueryRequest;
 import roomescape.dto.reservation.request.UserReservationRequest;
 import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.response.ReservationResponse;
@@ -35,7 +35,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations(
-            @ModelAttribute @Valid ReservationQueryRequest reservationRequest
+            @ModelAttribute @Valid ReservationQuery reservationRequest
     ) {
         return ResponseEntity.ok(reservationService.findReservationsByCondition(reservationRequest));
     }

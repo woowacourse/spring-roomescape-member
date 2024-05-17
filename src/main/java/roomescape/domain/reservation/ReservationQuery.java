@@ -1,13 +1,13 @@
-package roomescape.dto.reservation.request;
+package roomescape.domain.reservation;
 
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
-public record ReservationQueryRequest(
+public record ReservationQuery(
         @Positive Long themeId,
         @Positive Long memberId,
-        String dateFrom,
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFrom,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo
 ) {
 }

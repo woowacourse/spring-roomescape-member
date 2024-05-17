@@ -17,9 +17,9 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationQuery;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.dto.reservation.request.ReservationQueryRequest;
 import roomescape.repository.condition.Conditions;
 
 @JdbcTest
@@ -62,7 +62,7 @@ public class ReservationRepositoryTest {
 
         // when
         List<Reservation> reservations = reservationRepository.findByFilterConditions(
-                new Conditions(new ReservationQueryRequest(null, null, null, null)));
+                new Conditions(new ReservationQuery(null, null, null, null)));
         int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
 
         // then

@@ -4,7 +4,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import roomescape.dto.reservation.request.ReservationQueryRequest;
+import roomescape.domain.reservation.ReservationQuery;
 
 public class Conditions {
 
@@ -12,7 +12,7 @@ public class Conditions {
     private List<Object> args = new ArrayList<>();
     private List<Integer> argTypes = new ArrayList<>();
 
-    public Conditions(ReservationQueryRequest reservationRequest) {
+    public Conditions(ReservationQuery reservationRequest) {
         checkThemeIdCondition(reservationRequest);
         checkMemberIdCondition(reservationRequest);
         checkDateFromCondition(reservationRequest);
@@ -37,7 +37,7 @@ public class Conditions {
                 .toString();
     }
 
-    private void checkThemeIdCondition(ReservationQueryRequest reservationRequest) {
+    private void checkThemeIdCondition(ReservationQuery reservationRequest) {
         if (reservationRequest.themeId() != null) {
             conditions.add(new EqualsTo("theme_id"));
             args.add(reservationRequest.themeId());
@@ -45,7 +45,7 @@ public class Conditions {
         }
     }
 
-    private void checkMemberIdCondition(ReservationQueryRequest reservationRequest) {
+    private void checkMemberIdCondition(ReservationQuery reservationRequest) {
         if (reservationRequest.memberId() != null) {
             conditions.add(new EqualsTo("member_id"));
             args.add(reservationRequest.memberId());
@@ -53,7 +53,7 @@ public class Conditions {
         }
     }
 
-    private void checkDateFromCondition(ReservationQueryRequest reservationRequest) {
+    private void checkDateFromCondition(ReservationQuery reservationRequest) {
         if (reservationRequest.dateFrom() != null) {
             conditions.add(new BiggerInclusiveThan("date"));
             args.add(reservationRequest.dateFrom());
@@ -61,7 +61,7 @@ public class Conditions {
         }
     }
 
-    private void checkDateToCondition(ReservationQueryRequest reservationRequest) {
+    private void checkDateToCondition(ReservationQuery reservationRequest) {
         if (reservationRequest.dateTo() != null) {
             conditions.add(new SmallerInclusiveThan("date"));
             args.add(reservationRequest.dateTo());
