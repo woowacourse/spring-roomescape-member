@@ -43,7 +43,7 @@ public class AuthInfoArgumentResolver implements HandlerMethodArgumentResolver {
         }
 
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
+                .filter(cookie -> cookie.getName().equals(TokenManager.TOKEN_NAME))
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException(ExceptionType.NO_TOKEN_EXIST))
                 .getValue();

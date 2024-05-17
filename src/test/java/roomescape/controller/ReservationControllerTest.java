@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.global.util.TokenManager;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/truncate.sql", "/memberData.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -68,7 +69,7 @@ public class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .body(reservationParams)
                 .when().post("/reservations")
@@ -97,7 +98,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
-                .cookie("token", token)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
@@ -120,7 +121,7 @@ public class ReservationControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .body(reservationParams)
                 .when().post("/reservations")
@@ -163,6 +164,6 @@ public class ReservationControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().cookie("token");
+                .extract().cookie(TokenManager.TOKEN_NAME);
     }
 }

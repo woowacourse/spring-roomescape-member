@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.auth.LoginInfo;
 import roomescape.dto.auth.LoginMemberName;
 import roomescape.dto.auth.LoginRequest;
+import roomescape.global.util.TokenManager;
 import roomescape.service.AuthService;
 
 @RestController
@@ -28,7 +29,7 @@ public class AuthController {
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest) {
         String accessToken = authService.login(loginRequest);
 
-        ResponseCookie cookie = ResponseCookie.from("token", accessToken)
+        ResponseCookie cookie = ResponseCookie.from(TokenManager.TOKEN_NAME, accessToken)
                 .httpOnly(true)
                 .path("/")
                 .build();

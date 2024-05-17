@@ -3,12 +3,11 @@ package roomescape.controller.rest.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.global.exception.ApplicationException;
 import roomescape.global.exception.ExceptionType;
 import roomescape.global.util.TokenManager;
-
-import java.util.Arrays;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
 
@@ -21,7 +20,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
 
         String token = Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
+                .filter(cookie -> TokenManager.TOKEN_NAME.equals(cookie.getName()))
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException(ExceptionType.NO_TOKEN_EXIST))
                 .getValue();

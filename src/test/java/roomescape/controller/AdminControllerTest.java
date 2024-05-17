@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.global.util.TokenManager;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/truncate.sql", "/memberData.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
@@ -44,7 +45,7 @@ public class AdminControllerTest {
         String token = loginWith(adminParams);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .when().get("/admin")
                 .then().log().all()
@@ -57,7 +58,7 @@ public class AdminControllerTest {
         String token = loginWith(memberParams);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .when().get("/admin")
                 .then().log().all()
@@ -70,7 +71,7 @@ public class AdminControllerTest {
         String token = loginWith(adminParams);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .when().get("/admin/reservation")
                 .then().log().all()
@@ -83,7 +84,7 @@ public class AdminControllerTest {
         String token = loginWith(memberParams);
 
         RestAssured.given().log().all()
-                .cookie("token", token)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .when().get("/admin/reservation")
                 .then().log().all()
@@ -98,6 +99,6 @@ public class AdminControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract().cookie("token");
+                .extract().cookie(TokenManager.TOKEN_NAME);
     }
 }
