@@ -13,7 +13,6 @@ import roomescape.auth.AuthenticationPrincipal;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.service.AuthService;
-import roomescape.member.dto.MemberResponse;
 
 @RestController
 @RequestMapping("/login")
@@ -38,9 +37,9 @@ public class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> findMemberInformation(@AuthenticationPrincipal LoginMember loginMember) {
+    public ResponseEntity<LoginMember> findMemberInformation(@AuthenticationPrincipal LoginMember loginMember) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(MemberResponse.from(loginMember));
+                .body(loginMember);
     }
 }

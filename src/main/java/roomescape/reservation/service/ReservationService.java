@@ -88,7 +88,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
-        Member member = memberRepository.findByMemberId(loginMember.id());
+        Member member = memberRepository.findByMemberName(loginMember.name());
         Reservation reservation = new Reservation(
                 reservationCreateRequest.date(),
                 reservationTime,

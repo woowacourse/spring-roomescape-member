@@ -17,7 +17,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
-import roomescape.member.domain.Role;
 import roomescape.theme.domain.Theme;
 import roomescape.reservation.dto.AvailableTimeResponse;
 import roomescape.auth.dto.LoginMember;
@@ -94,7 +93,7 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        LoginMember loginMember = new LoginMember(1L, "어드민", Role.ADMIN);
+        LoginMember loginMember = new LoginMember("어드민");
 
         //when
         ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, loginMember);
@@ -117,7 +116,7 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        LoginMember loginMember = new LoginMember(1L, "어드민", Role.ADMIN);
+        LoginMember loginMember = new LoginMember("어드민");
         ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, loginMember);
 
         //when & then
@@ -133,7 +132,7 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        LoginMember loginMember = new LoginMember(1L, "어드민", Role.ADMIN);
+        LoginMember loginMember = new LoginMember("어드민");
         reservationService.create(reservationCreateRequest, loginMember);
 
         //when & then

@@ -27,6 +27,4 @@ public class AuthService {
         Member member = memberRepository.findByEmail(payload);
         return LoginMember.from(member);
     }
-
-
 }

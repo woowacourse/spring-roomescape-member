@@ -38,6 +38,11 @@ public class MemberJdbcRepository implements MemberRepository {
         return jdbcTemplate.queryForObject(sql, memberRowMapper, id);
     }
 
+    public Member findByMemberName(String name) {
+        String sql = "SELECT id, name, email, password, role FROM member WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, memberRowMapper, name);
+    }
+
     public Member findByEmail(String email) {
         String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
         return jdbcTemplate.queryForObject(sql, memberRowMapper, email);

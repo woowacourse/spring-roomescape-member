@@ -8,5 +8,7 @@ public interface MemberRepository {
 
     Member findByMemberId(Long id);
 
+    Member findByMemberName(String name);
+
     Member findByEmail(String email);
 }

@@ -2,6 +2,7 @@ package roomescape.member.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.dto.MemberResponses;
@@ -21,5 +22,10 @@ public class MemberService {
                 .map(MemberResponse::from)
                 .toList();
         return new MemberResponses(memberResponses);
+    }
+
+    public MemberResponse findByMemberName(String name) {
+        Member member = memberRepository.findByMemberName(name);
+        return MemberResponse.from(member);
     }
 }

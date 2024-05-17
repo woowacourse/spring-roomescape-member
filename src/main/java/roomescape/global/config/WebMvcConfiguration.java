@@ -6,29 +6,28 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AuthenticationPrincipalArgumentResolver;
-import roomescape.auth.AuthorizationExtractor;
 import roomescape.auth.CheckMemberRoleInterceptor;
-import roomescape.auth.service.AuthService;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final AuthService authService;
-    private final AuthorizationExtractor authorizationExtractor;
+    private final AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver;
+    private final CheckMemberRoleInterceptor checkMemberRoleInterceptor;
 
-    public WebMvcConfiguration(AuthService authService, AuthorizationExtractor authorizationExtractor) {
-        this.authService = authService;
-        this.authorizationExtractor = authorizationExtractor;
+    public WebMvcConfiguration(AuthenticationPrincipalArgumentResolver authenticationPrincipalArgumentResolver,
+                               CheckMemberRoleInterceptor checkMemberRoleInterceptor) {
+        this.authenticationPrincipalArgumentResolver = authenticationPrincipalArgumentResolver;
+        this.checkMemberRoleInterceptor = checkMemberRoleInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthenticationPrincipalArgumentResolver(authService, authorizationExtractor));
+        resolvers.add(authenticationPrincipalArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckMemberRoleInterceptor(authService, authorizationExtractor))
+        registry.addInterceptor(checkMemberRoleInterceptor)
                 .addPathPatterns("/admin/**")
                 .addPathPatterns("/members/**");
     }
