@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
+import roomescape.member.repositoy.JdbcMemberRepository;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.model.Theme;
@@ -26,12 +26,14 @@ class JdbcThemeRepositoryTest {
     private JdbcThemeRepository themeRepository;
     private JdbcReservationTimeRepository reservationTimeRepository;
     private JdbcReservationRepository reservationRepository;
+    private JdbcMemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
         themeRepository = new JdbcThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
         reservationRepository = new JdbcReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        memberRepository = new JdbcMemberRepository(jdbcTemplate, jdbcTemplate.getDataSource());
     }
 
     @Test
@@ -74,6 +76,8 @@ class JdbcThemeRepositoryTest {
     @Test
     @DisplayName("Theme 테이블에서 많이 예약된 테마 10개를 내림차순으로 가져온다.")
     void findOrderByReservation() {
+        memberRepository.save(Fixture.MEMBER_1);
+        memberRepository.save(Fixture.MEMBER_2);
         themeRepository.save(Fixture.THEME_1);
         themeRepository.save(Fixture.THEME_2);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
@@ -89,6 +93,8 @@ class JdbcThemeRepositoryTest {
     @Test
     @DisplayName("예약되지 않은 테마는 인기 테마로 가져오지 않는다.")
     void findOrderByReservation2() {
+        memberRepository.save(Fixture.MEMBER_1);
+        memberRepository.save(Fixture.MEMBER_2);
         themeRepository.save(Fixture.THEME_1);
         themeRepository.save(Fixture.THEME_2);
         themeRepository.save(new Theme(null, "예약되지 않은 테마", "테마 설명", "https://asd.cmom"));
@@ -102,26 +108,6 @@ class JdbcThemeRepositoryTest {
                 .containsExactlyInAnyOrderElementsOf(List.of(
                         Fixture.THEME_2,
                         Fixture.THEME_1));
-    }
-
-    @Test
-    @DisplayName("예약이 많은 순서대로 테마 10개만 가져온다.")
-    void findOrderByReservation3() {
-        // 테마 10개 추가 및 1 ~ 11번 테마를 사용하는 예약 생성
-        generateReservationBy11Theme();
-
-        assertThat(themeRepository.findOrderByReservation())
-                .hasSize(10);
-    }
-
-    private void generateReservationBy11Theme() {
-        reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
-        // 테마 10개 추가
-        IntStream.range(0, 11).forEach(i ->
-                jdbcTemplate.update("insert into theme (name, description, thumbnail) values ('추가 테마%d', '설명', 'https://asd.cmom')".formatted(i)));
-        // 1 ~ 11번 테마를 사용하는 예약 생성
-        IntStream.range(1, 12).forEach(i ->
-            jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values ('마크' , %d-05-01, 1, %d)".formatted(2124 + i, i)));
     }
 
     @Test

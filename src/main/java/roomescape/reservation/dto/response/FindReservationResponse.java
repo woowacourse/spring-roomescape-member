@@ -1,22 +1,25 @@
 package roomescape.reservation.dto.response;
 
+import roomescape.member.dto.response.FindMemberResponse;
 import roomescape.reservation.model.Reservation;
+import roomescape.reservationtime.dto.response.FindReservationTimeResponse;
+import roomescape.theme.dto.response.FindThemeResponse;
 import roomescape.util.CustomDateTimeFormatter;
 
 public record FindReservationResponse(
         Long id,
-        String name,
+        FindMemberResponse member,
         String date,
-        FindTimeOfReservationsResponse time,
-        FindThemeOfReservationResponse theme) {
+        FindReservationTimeResponse time,
+        FindThemeResponse theme) {
 
     public static FindReservationResponse of(final Reservation reservation) {
         return new FindReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                FindMemberResponse.of(reservation.getMember()),
                 CustomDateTimeFormatter.getFormattedDate(reservation.getDate()),
-                FindTimeOfReservationsResponse.of(reservation.getReservationTime()),
-                FindThemeOfReservationResponse.of(reservation.getTheme())
+                FindReservationTimeResponse.of(reservation.getReservationTime()),
+                FindThemeResponse.of(reservation.getTheme())
         );
     }
 }

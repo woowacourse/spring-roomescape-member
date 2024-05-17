@@ -2,23 +2,27 @@ package roomescape.reservation.model;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.member.model.Member;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
 
 public class Reservation {
+
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(final Long id,
-                       final String name,
-                       final LocalDate date,
-                       final ReservationTime reservationTime,
-                       final Theme theme) {
+    public Reservation(
+            final Long id,
+            final Member member,
+            final LocalDate date,
+            final ReservationTime reservationTime,
+            final Theme theme
+    ) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
@@ -32,8 +36,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

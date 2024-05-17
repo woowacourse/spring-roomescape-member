@@ -14,7 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
-import roomescape.reservation.dto.request.CreateReservationRequest;
+import roomescape.member.repositoy.JdbcMemberRepository;
+import roomescape.reservation.dto.request.CreateReservationUserRequest;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
 import roomescape.reservation.dto.response.FindReservationResponse;
 import roomescape.reservation.model.Reservation;
@@ -32,22 +33,25 @@ class ReservationServiceTest {
     private JdbcThemeRepository themeRepository;
     @Autowired
     private JdbcReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private JdbcMemberRepository memberRepository;
 
     @Test
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         // given
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         themeRepository.save(Fixture.THEME_1);
         var request = RequestFixture.REQUEST_1;
 
         // when
-        var response = reservationService.createReservation(request);
+        var response = reservationService.createReservation(1L, request.date(), request.themeId(), request.timeId());
 
         // then
         Assertions.assertAll(
                 () -> assertThat(response.id()).isEqualTo(1L),
-                () -> assertThat(response.name()).isEqualTo(RequestFixture.REQUEST_1.name()),
+                () -> assertThat(response.member()).isEqualTo(Fixture.MEMBER_1),
                 () -> assertThat(response.date()).isEqualTo(RequestFixture.REQUEST_1.date().toString()),
                 () -> assertThat(response.time().id()).isEqualTo(RequestFixture.REQUEST_1.timeId()),
                 () -> assertThat(response.theme().id()).isEqualTo(RequestFixture.REQUEST_1.themeId())
@@ -59,11 +63,13 @@ class ReservationServiceTest {
     void createReservation_ifReservationTimeNotExist_throwException() {
         // given
         themeRepository.save(Fixture.THEME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         var request = RequestFixture.REQUEST_1;
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(
-                NoSuchElementException.class).hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(1L, request.date(), request.themeId(), request.timeId()))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
     }
 
     @Test
@@ -71,11 +77,14 @@ class ReservationServiceTest {
     void createReservation_ifThemeNotExist_throwException() {
         // given
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         var request = RequestFixture.REQUEST_1;
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(
-                NoSuchElementException.class).hasMessage("해당하는 테마가 존재하지 않습니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(
+                1L, request.date(), request.themeId(), request.timeId()))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("해당하는 테마가 존재하지 않습니다.");
     }
 
     @Test
@@ -84,12 +93,15 @@ class ReservationServiceTest {
         // given
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         var request = RequestFixture.REQUEST_1;
-        reservationService.createReservation(request);
+        reservationService.createReservation(1L, request.date(), request.themeId(), request.timeId());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(
-                IllegalStateException.class).hasMessage("동일한 시간의 예약이 존재합니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(
+                1L, request.date(), request.themeId(), request.timeId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("동일한 시간의 예약이 존재합니다.");
     }
 
     @Test
@@ -98,15 +110,16 @@ class ReservationServiceTest {
         // given
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
-        var request = new CreateReservationRequest(
-                Fixture.RESERVATION_1.getName(),
+        memberRepository.save(Fixture.MEMBER_1);
+        var request = new CreateReservationUserRequest(
                 LocalDate.of(2021, 1, 1),
                 1L, 1L
         );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(
-                IllegalArgumentException.class).hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(1L, request.date(), request.themeId(), request.timeId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }
 
     @Test
@@ -115,14 +128,16 @@ class ReservationServiceTest {
         // given
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         var request1 = RequestFixture.REQUEST_1;
-        var request2 = new CreateReservationRequest(
-                Fixture.RESERVATION_2.getName(),
+        var request2 = new CreateReservationUserRequest(
                 Fixture.RESERVATION_2.getDate(),
                 1L, 1L
         );
-        reservationService.createReservation(request1);
-        reservationService.createReservation(request2);
+        reservationService.createReservation(1L, request1.date(), request1.themeId(), request1.timeId());
+        reservationService.createReservation(
+                1L, request2.date(), request2.themeId(), request2.timeId()
+        );
 
         // when
         List<FindReservationResponse> reservations = reservationService.getReservations();
@@ -132,7 +147,9 @@ class ReservationServiceTest {
                 .containsExactly(
                         FindReservationResponse.of(Fixture.RESERVATION_1),
                         FindReservationResponse.of(new Reservation(
-                                2L, Fixture.RESERVATION_2.getName(), Fixture.RESERVATION_2.getDate(),
+                                2L,
+                                Fixture.MEMBER_1,
+                                Fixture.RESERVATION_2.getDate(),
                                 Fixture.RESERVATION_TIME_1, Fixture.THEME_1)));
     }
 
@@ -141,8 +158,9 @@ class ReservationServiceTest {
     void getReservation() {
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         var request1 = RequestFixture.REQUEST_1;
-        reservationService.createReservation(request1);
+        reservationService.createReservation(1L, request1.date(), request1.themeId(), request1.timeId());
 
         // when & then
         assertThat(reservationService.getReservation(1L)).isEqualTo(FindReservationResponse.of(Fixture.RESERVATION_1));
@@ -164,8 +182,9 @@ class ReservationServiceTest {
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_2);
         themeRepository.save(Fixture.THEME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         var request1 = RequestFixture.REQUEST_1;
-        reservationService.createReservation(request1);
+        reservationService.createReservation(1L, request1.date(), request1.themeId(), request1.timeId());
         LocalDate date = Fixture.RESERVATION_1.getDate();
 
         // when & then
@@ -180,8 +199,9 @@ class ReservationServiceTest {
         // given
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
+        memberRepository.save(Fixture.MEMBER_1);
         var request = RequestFixture.REQUEST_1;
-        reservationService.createReservation(request);
+        reservationService.createReservation(1L, request.date(), request.themeId(), request.timeId());
 
         // when
         reservationService.deleteReservation(1L);
@@ -193,9 +213,7 @@ class ReservationServiceTest {
 
     static class RequestFixture {
 
-        static CreateReservationRequest REQUEST_1 = new CreateReservationRequest(
-                Fixture.RESERVATION_1.getName(),
-                Fixture.RESERVATION_1.getDate(),
-                1L, 1L);
+        static CreateReservationUserRequest REQUEST_1 = new CreateReservationUserRequest(
+                Fixture.RESERVATION_1.getDate(), 1L, 1L);
     }
 }

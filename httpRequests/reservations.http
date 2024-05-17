@@ -1,22 +1,29 @@
-###
+### 쿠키를 이용한 예약 생성
 POST http://localhost:8080/reservations
-Content-Type: application/json
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6MSwiaWF0IjoxNzE1NDk3NDI1LCJleHAiOjE3MTU1MDEwMjV9.xXSuZv6P_NMi81ebtizlzHqqWMQtTkkw7IkrtZNGM_o
+host:
 
 {
-  "date": "2024-08-05",
-  "name": "브라운",
-  "timeId": 1,
-  "themeId": 1
+  "date": "2030-01-01",
+  "themeId": 1,
+  "timeId": 1
 }
 
-###
+### 모든 예약 조회
 GET http://localhost:8080/reservations
 
-###
+### 예약 조건부 조회 1
+GET http://localhost:8080/reservations?memberId=1&themeId=1&dateFrom=2020-01-01&dateTo=2100-01-01
+
+### 예약 조건부 조회 2
+GET http://localhost:8080/reservations?dateFrom=2020-01-01&dateTo=2100-01-01
+
+### 예약 id 조회
 GET http://localhost:8080/reservations/1
 
-###
+### 예약 가능 시간 조회
 GET http://localhost:8080/reservations/times
 
-###
+### 예약 id 삭제
 DELETE http://localhost:8080/reservations/2

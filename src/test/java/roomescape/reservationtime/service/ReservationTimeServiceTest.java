@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
+import roomescape.member.repositoy.JdbcMemberRepository;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
@@ -31,6 +32,8 @@ class ReservationTimeServiceTest {
     private JdbcThemeRepository themeRepository;
     @Autowired
     private JdbcReservationRepository reservationRepository;
+    @Autowired
+    private JdbcMemberRepository memberRepository;
 
     @Test
     @DisplayName("예약 시간 생성한다.")
@@ -89,6 +92,7 @@ class ReservationTimeServiceTest {
     @DisplayName("삭제할 시간을 사용 중인 예약이 존재할 경우 예외가 발생한다.")
     void deleteById_ifAlreadyUsed_throwException() {
         // given
+        memberRepository.save(Fixture.MEMBER_1);
         reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         themeRepository.save(Fixture.THEME_1);
         reservationRepository.save(Fixture.RESERVATION_1);
