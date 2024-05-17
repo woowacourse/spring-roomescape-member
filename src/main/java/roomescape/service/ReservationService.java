@@ -49,7 +49,8 @@ public class ReservationService {
 
     public List<ReservationAvailableTimeResponse> findReservationByDateAndThemeId(LocalDate date, Long themeId) {
         List<Time> allTimes = timeRepository.findAll();
-        Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
+        Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
+                .stream()
                 .map(Reservation::getTime)
                 .map(Time::getId)
                 .collect(Collectors.toSet());
