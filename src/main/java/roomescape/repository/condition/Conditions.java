@@ -40,7 +40,6 @@ public class Conditions {
             return baseSql;
         }
         String dynamicQuery = createDynamicQuery(baseSql);
-        System.out.println(dynamicQuery);
 
         return dynamicQuery;
     }
