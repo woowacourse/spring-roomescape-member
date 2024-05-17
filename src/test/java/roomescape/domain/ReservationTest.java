@@ -5,7 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.exceptions.InvalidInputException;
+import roomescape.global.exception.exceptions.InvalidInputException;
+import roomescape.member.domain.Email;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Password;
+import roomescape.member.domain.Role;
+import roomescape.member.domain.UserName;
+import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
 

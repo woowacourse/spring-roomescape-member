@@ -9,12 +9,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.exception.exceptions.ExistingEntryException;
-import roomescape.exception.exceptions.ReferencedRowExistsException;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.global.exception.exceptions.ExistingEntryException;
+import roomescape.global.exception.exceptions.ReferencedRowExistsException;
+import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.time.domain.ReservationTimeRepository;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

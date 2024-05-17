@@ -14,20 +14,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
-import roomescape.domain.Theme;
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.LoginMember;
-import roomescape.dto.ReservationCreateRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.exception.exceptions.NotExistingEntryException;
-import roomescape.repository.MemberRepository;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.ReservationTime;
+import roomescape.member.domain.Role;
+import roomescape.theme.domain.Theme;
+import roomescape.reservation.dto.AvailableTimeResponse;
+import roomescape.auth.dto.LoginMember;
+import roomescape.reservation.dto.ReservationCreateRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.global.exception.exceptions.NotExistingEntryException;
+import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.time.domain.ReservationTimeRepository;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.reservation.service.ReservationService;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
