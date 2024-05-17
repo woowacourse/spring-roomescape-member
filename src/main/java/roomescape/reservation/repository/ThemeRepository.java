@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Theme;
 
 @Repository
@@ -48,19 +47,28 @@ public class ThemeRepository {
         }
     }
 
+    public Optional<Theme> findByName(String name) {
+        String sql = "select * from theme where name = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, createThemeRowMapper(), name));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public List<Theme> findAll() {
         String sql = "select * from theme";
 
         return jdbcTemplate.query(sql, createThemeRowMapper());
     }
 
-    public List<Theme> findPopularThemeLimitTen() {
+    public List<Theme> findPopularThemesLimitTen() {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(*) as cnt
                 from theme t
                 join reservation r
                 on r.theme_id = t.id
-                where r.date between timestampadd(week, -1, current_timestamp()) and current_timestamp() 
+                where r.date between timestampadd(week, -1, current_timestamp()) and current_timestamp()
                 group by t.id
                 order by cnt desc
                 limit 10;
@@ -75,13 +83,11 @@ public class ThemeRepository {
     }
 
     private RowMapper<Theme> createThemeRowMapper() {
-        return (rs, rowNum) -> {
-            return new Theme(
-                    rs.getLong("id"),
-                    new Name(rs.getString("name")),
-                    rs.getString("description"),
-                    rs.getString("thumbnail")
-            );
-        };
+        return (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+        );
     }
 }

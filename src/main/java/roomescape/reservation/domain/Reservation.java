@@ -1,35 +1,35 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import roomescape.member.domain.Member;
 
 public class Reservation {
 
     private Long id;
-    private final Name name;
+    private final Member member;
     private final LocalDate date;
     private final Theme theme;
     private final ReservationTime reservationTime;
 
-    public Reservation(Name name, LocalDate date, Theme theme, ReservationTime reservationTime) {
-        validateDate(date);
-        this.name = name;
+    public Reservation(Member member, LocalDate date, Theme theme, ReservationTime reservationTime) {
+        validateLastDate(date);
+        this.member = member;
         this.date = date;
         this.theme = theme;
         this.reservationTime = reservationTime;
     }
 
-    public Reservation(Long id, Name name, LocalDate date, Theme theme, ReservationTime reservationTime) {
-        validateDate(date);
+    public Reservation(Long id, Member member, LocalDate date, Theme theme, ReservationTime reservationTime) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.theme = theme;
         this.reservationTime = reservationTime;
     }
 
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("날짜 값이 입력되지 않았습니다.");
+    private void validateLastDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
     }
 
@@ -37,8 +37,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name.getName();
+    public Member getMember() {
+        return member;
     }
 
     public Theme getTheme() {

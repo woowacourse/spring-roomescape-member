@@ -1,55 +1,68 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.domain.Name;
+import roomescape.member.domain.Member;
+import roomescape.member.dto.LoginMemberInToken;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.dto.ThemeResponse;
-import roomescape.reservation.dto.TimeResponse;
+import roomescape.reservation.dto.ReservationSearchRequest;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.reservation.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeService reservationTimeService;
-    private final ThemeService themeService;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            ReservationTimeService reservationTimeService,
-            ThemeService themeService
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public Long save(ReservationCreateRequest reservationCreateRequest) {
-        TimeResponse timeResponse = reservationTimeService.findById(reservationCreateRequest.timeId());
-        ThemeResponse themeResponse = themeService.findById(reservationCreateRequest.themeId());
-        getValidatedReservation(reservationCreateRequest);
-
-        Theme theme = new Theme(themeResponse.id(), new Name(themeResponse.name()), themeResponse.description(),
-                themeResponse.thumbnail());
-        ReservationTime reservationTime = new ReservationTime(timeResponse.id(), timeResponse.startAt());
-        Reservation reservation = reservationCreateRequest.toReservation(theme, reservationTime);
+    public Long save(ReservationCreateRequest reservationCreateRequest, LoginMemberInToken loginMemberInToken) {
+        Reservation reservation = getValidatedReservation(reservationCreateRequest, loginMemberInToken);
+        validateDuplicateReservation(reservation);
 
         return reservationRepository.save(reservation);
     }
 
-    private void getValidatedReservation(ReservationCreateRequest reservationCreateRequest) {
-        if (LocalDate.now().isAfter(reservationCreateRequest.date())) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
-        }
+    private Reservation getValidatedReservation(ReservationCreateRequest reservationCreateRequest,
+                                                LoginMemberInToken loginMemberInToken) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationCreateRequest.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
-        if (reservationTimeService.isExist(reservationCreateRequest.timeId())) {
+        Theme theme = themeRepository.findById(reservationCreateRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
+        Member member = getValidatedMemberByRole(reservationCreateRequest, loginMemberInToken);
+
+        return reservationCreateRequest.toReservation(member, theme, reservationTime);
+    }
+
+    private Member getValidatedMemberByRole(ReservationCreateRequest reservationCreateRequest,
+                                            LoginMemberInToken loginMemberInToken) {
+        return memberRepository.findByEmail(loginMemberInToken.email())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    private void validateDuplicateReservation(Reservation reservation) {
+        if (reservationRepository.existReservation(reservation)) {
             throw new IllegalArgumentException("중복된 예약이 있습니다.");
         }
     }
@@ -64,7 +77,14 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(ReservationResponse::toResponse)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    public List<ReservationResponse> findAllBySearch(ReservationSearchRequest reservationSearchRequest) {
+        return reservationRepository.findAllByThemeIdAndMemberIdBetweenStartAndEnd(
+                        reservationSearchRequest).stream()
+                .map(ReservationResponse::toResponse)
+                .toList();
     }
 
     public void delete(Long id) {

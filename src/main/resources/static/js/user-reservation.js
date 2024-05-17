@@ -83,7 +83,11 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-    fetch(`/times/available?date=${date}&themeId=${themeId}`, {
+    const queryParams = new URLSearchParams({
+        'date': date,
+        'theme-id': themeId
+    });
+    fetch(`/times/available?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -110,7 +114,7 @@ function renderAvailableTimes(times) {
     times.forEach(time => {
         const startAt = time.startAt;
         const timeId = time.id;
-        const alreadyBooked = time.alreadyBooked;
+        const alreadyBooked = time.booked;
 
         const div = createSlot('time', startAt, timeId, alreadyBooked);
         timeSlots.appendChild(div);
@@ -141,19 +145,13 @@ function onReservationButtonClick() {
     const selectedDate = document.getElementById("datepicker").value;
     const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
     const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
-    const name = document.getElementById('user-name').value;
 
     if (selectedDate && selectedThemeId && selectedTimeId) {
 
-        /*
-        TODO: [5단계] 예약 생성 기능 변경 - 사용자
-              request 명세에 맞게 설정
-        */
         const reservationData = {
             date: selectedDate,
             themeId: selectedThemeId,
             timeId: selectedTimeId,
-            name: name
         };
 
         fetch('/reservations', {
@@ -165,22 +163,22 @@ function onReservationButtonClick() {
         })
             .then(response => {
                 if (!response.ok) {
-                    return response.json().then(errData => {
-                        throw new Error(errData.message);
-                    });
+                    return response.json().then(errorResponse => {
+                        throw new Error(JSON.stringify(errorResponse));
+                    })
                 }
                 return response.json();
             })
             .then(data => {
-                alert("Reservation successful!");
+                const message = `${data.date} 날짜로 ${data.theme.name} 테마가 ${data.time.startAt}에 예약되었습니다.`;
+                alert(message);
                 location.reload();
             })
             .catch(error => {
                 alert(error.message);
-                console.error(error);
             });
     } else {
-        alert("Please select a date, theme, and time before making a reservation.");
+        alert("예약날짜, 테마, 예약시간을 모두 선택해주세요.");
     }
 }
 

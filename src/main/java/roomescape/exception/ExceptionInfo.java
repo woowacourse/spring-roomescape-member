@@ -1,4 +1,13 @@
 package roomescape.exception;
 
-public record ExceptionInfo(String message) {
+public class ExceptionInfo {
+    private final String message;
+
+    public ExceptionInfo(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

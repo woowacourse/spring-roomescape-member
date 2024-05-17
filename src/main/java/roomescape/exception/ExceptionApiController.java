@@ -1,35 +1,32 @@
 package roomescape.exception;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class ExceptionApiController {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ExceptionInfo> IllegalArgumentExceptionHandler(IllegalArgumentException exception) {
-        return ResponseEntity.badRequest().body(new ExceptionInfo(exception.getMessage()));
+    public ResponseEntity<ExceptionInfo> IllegalArgExHandler(IllegalArgumentException exception) {
+        ExceptionInfo exceptionInfo = new ExceptionInfo(exception.getMessage());
+
+        return ResponseEntity.badRequest().body(exceptionInfo);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> methodArgumentNotValidExceptionHandler(
-            MethodArgumentNotValidException exception) {
-        Map<String, String> errors = new HashMap<>();
-        exception.getBindingResult().getAllErrors()
-                .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
-        return ResponseEntity.badRequest().body(errors);
-    }
+    public ResponseEntity<Map<String, String>> methodArgumentExHandler(MethodArgumentNotValidException exception) {
+        Map<String, String> errors = new LinkedHashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(error -> {
+            String fieldName = error.getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ExceptionInfo> methodArgumentTypeMismatchExceptionHandler(
-            MethodArgumentTypeMismatchException exception) {
-        return ResponseEntity.badRequest().body(new ExceptionInfo(exception.getMessage()));
+        return ResponseEntity.badRequest().body(errors);
     }
 }

@@ -2,17 +2,17 @@ package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.AvailableTimeRequest;
-import roomescape.reservation.dto.AvailableTimeResponse;
+import roomescape.reservation.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.dto.TimeCreateRequest;
 import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.service.ReservationTimeService;
@@ -34,19 +34,18 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping("/times/available")
-    public ResponseEntity<List<AvailableTimeResponse>> findAvailableTimes(
-            @ModelAttribute AvailableTimeRequest request
+    public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableTimes(
+            @RequestParam("date") LocalDate date,
+            @RequestParam("theme-id") Long themeId
     ) {
-        List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findAvailableTime(request.date(),
-                request.themeId());
+        List<AvailableReservationTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(date,
+                themeId);
 
-        return ResponseEntity.ok(availableTimeResponses);
+        return ResponseEntity.ok(availableTimes);
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeResponse> save(
-            @Valid @RequestBody TimeCreateRequest timeCreateRequest
-    ) {
+    public ResponseEntity<TimeResponse> save(@Valid @RequestBody TimeCreateRequest timeCreateRequest) {
         Long saveId = reservationTimeService.save(timeCreateRequest);
         TimeResponse timeResponse = reservationTimeService.findById(saveId);
 
@@ -54,7 +53,7 @@ public class ReservationTimeApiController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         reservationTimeService.delete(id);
 
         return ResponseEntity.noContent().build();

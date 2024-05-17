@@ -2,26 +2,31 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.dto.AvailableTimeResponse;
+import roomescape.reservation.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.dto.TimeCreateRequest;
 import roomescape.reservation.dto.TimeResponse;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(
+            final ReservationRepository reservationRepository,
+            final ReservationTimeRepository reservationTimeRepository
+    ) {
+        this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public Long save(TimeCreateRequest timeCreateRequest) {
         ReservationTime reservationTime = timeCreateRequest.toReservationTime();
+
         return reservationTimeRepository.save(reservationTime);
     }
 
@@ -32,28 +37,28 @@ public class ReservationTimeService {
         return TimeResponse.toResponse(reservationTime);
     }
 
-    public boolean isExist(Long id) {
-        Optional<ReservationTime> time = reservationTimeRepository.findById(id);
-        if (time.isEmpty()) {
-            return false;
-        }
-        return true;
+    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
+        List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndThemeId(date, themeId);
+
+        return reservationTimeRepository.findAll().stream()
+                .map(reservationTime -> AvailableReservationTimeResponse.toResponse(
+                                reservationTime,
+                                bookedTimeIds.contains(reservationTime.getId())
+                        )
+                ).toList();
     }
 
     public List<TimeResponse> findAll() {
         return reservationTimeRepository.findAll().stream()
                 .map(TimeResponse::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void delete(Long id) {
-        if (reservationTimeRepository.findReservationInSameId(id).isPresent()) {
-            throw new IllegalArgumentException("이미 해당 시간에 예약이 있습니다.");
-        }
+        reservationTimeRepository.findReservationInSameId(id)
+                .ifPresent(empty -> {
+                    throw new IllegalArgumentException("해당 시간으로 예약된 내역이 있습니다.");
+                });
         reservationTimeRepository.delete(id);
-    }
-
-    public List<AvailableTimeResponse> findAvailableTime(LocalDate date, Long themeId) {
-        return reservationTimeRepository.findAvailableTime(date, themeId);
     }
 }

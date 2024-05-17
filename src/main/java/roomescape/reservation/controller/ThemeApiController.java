@@ -25,8 +25,8 @@ public class ThemeApiController {
     }
 
     @GetMapping("/themes/popular")
-    public ResponseEntity<List<PopularThemeResponse>> findPopularThemeLimitTen() {
-        List<PopularThemeResponse> popularThemeResponses = themeService.findPopularThemeLimitTen();
+    public ResponseEntity<List<PopularThemeResponse>> findTopTenThemesOfLastWeek() {
+        List<PopularThemeResponse> popularThemeResponses = themeService.findThemesLimitTen();
 
         return ResponseEntity.ok(popularThemeResponses);
     }
@@ -39,9 +39,7 @@ public class ThemeApiController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> save(
-            @Valid @RequestBody ThemeCreateRequest themeCreateRequest
-    ) {
+    public ResponseEntity<ThemeResponse> save(@Valid @RequestBody ThemeCreateRequest themeCreateRequest) {
         Long saveId = themeService.save(themeCreateRequest);
         ThemeResponse themeResponse = themeService.findById(saveId);
 
@@ -49,7 +47,7 @@ public class ThemeApiController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         themeService.delete(id);
 
         return ResponseEntity.noContent().build();

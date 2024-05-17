@@ -109,8 +109,15 @@ function requestCreate(data) {
 
   return fetch(API_ENDPOINT, requestOptions)
       .then(response => {
-        if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+        if (response.status !== 201) {
+          return response.json().then(errorResponse => {
+            throw new Error(JSON.stringify(errorResponse));
+          })
+        }
+        return response.json();
+      })
+      .catch(error => {
+        alert(error.message);
       });
 }
 
