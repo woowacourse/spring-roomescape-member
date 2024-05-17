@@ -11,7 +11,7 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
       .then(response => {
         if(response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
-          window.location.reload();
+          window.location.href = '/login';
         } else {
           // 로그아웃 실패 처리
           console.error('Logout failed');
@@ -25,9 +25,9 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
 function updateUIBasedOnLogin() {
   fetch('/login/check') // 로그인 상태 확인 API 호출
       .then(response => {
-        if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경우
-          throw new Error('Not logged in or other error');
-        }
+        if (!response.ok)  return response.json().then(data => {
+            throw new Error(data.message || 'Not logged in or other error');
+        }); // 요청이 실패하거나 로그인 상태가 아닌 경우
         return response.json(); // 응답 본문을 JSON으로 파싱
       })
       .then(data => {
@@ -74,16 +74,16 @@ function login() {
     })
   })
       .then(response => {
-        if (200 === !response.status) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
-          throw new Error('Login failed');
-        }
+        if (200 === !response.status) return response.json().then(data => {
+            throw new Error(data.message || 'login failed');
+        });
       })
       .then(() => {
         updateUIBasedOnLogin(); // UI 업데이트
         window.location.href = '/';
       })
       .catch(error => {
+          alert(error.message);
         console.error('Error during login:', error);
       });
 }
@@ -113,7 +113,7 @@ function register(event) {
   };
 
   // AJAX 요청 생성 및 전송
-  fetch('/members', {
+  fetch('/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -121,20 +121,19 @@ function register(event) {
     body: JSON.stringify(formData)
   })
       .then(response => {
-        if (!response.ok) {
-          alert('Signup request failed');
-          throw new Error('Signup request failed');
-        }
+        if (!response.ok) return response.json().then(data => {
+            throw new Error(data.message || 'Signup request failed');
+        });
         return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
         // 성공적인 응답 처리
-        console.log('Signup successful:', data);
-        window.location.href = '/login';
+          console.log('Signup successful:', data);
+          window.location.href = '/login';
       })
       .catch(error => {
-        // 에러 처리
-        console.error('Error during signup:', error);
+          alert(error.message);
+          console.error('Error during signup:', error);
       });
 
   // 폼 제출에 의한 페이지 리로드 방지

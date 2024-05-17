@@ -1,5 +1,6 @@
 let isEditing = false;
 const RESERVATION_API_ENDPOINT = '/reservations';
+const ADMIN_RESERVATION_API_ENDPOINT = '/admin/reservations';
 const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
 const MEMBER_API_ENDPOINT = '/members';
@@ -32,7 +33,7 @@ function render(data) {
           예약 목록 조회 API 응답에 맞게 적용
     */
     row.insertCell(0).textContent = item.id;              // 예약 id
-    row.insertCell(1).textContent = item.member.name;     // 사용자 name
+    row.insertCell(1).textContent = item.name;            // 사용자 name
     row.insertCell(2).textContent = item.theme.name;      // 테마 name
     row.insertCell(3).textContent = item.date;            // date
     row.insertCell(4).textContent = item.time.startAt;    // 예약 시간 startAt
@@ -174,8 +175,10 @@ function saveRow(event) {
       .then(() => {
         location.reload();
       })
-      .catch(error => console.error('Error:', error));
-
+      .catch(error => {
+        alert(error.message);
+        console.error("Error fetching available times:", error)
+      });
   isEditing = false;  // isEditing 값을 false로 설정
 }
 
@@ -185,8 +188,10 @@ function deleteRow(event) {
 
   requestDelete(reservationId)
       .then(() => row.remove())
-      .catch(error => console.error('Error:', error));
-}
+      .catch(error => {
+        alert(error.message);
+        console.error("Error fetching available times:", error)
+      });}
 
 function applyFilter(event) {
   event.preventDefault();
@@ -196,20 +201,31 @@ function applyFilter(event) {
   const dateFrom = document.getElementById('date-from').value;
   const dateTo = document.getElementById('date-to').value;
 
+  let uri = `${ADMIN_RESERVATION_API_ENDPOINT}/search?`;
+  if (themeId) uri += `themeId=${themeId}&`;
+  if (memberId) uri += `memberId=${memberId}&`;
+  if (dateFrom) uri += `dateFrom=${dateFrom}&`;
+  if (dateTo) uri += `dateTo=${dateTo}`;
+
   /*
   TODO: [6단계] 예약 검색 - 조건에 따른 예약 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 검색 API 호출
+  fetch(uri, { // 예약 검색 API 호출
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
   }).then(response => {
     if (response.status === 200) return response.json();
-    throw new Error('Read failed');
+      return response.json().then(data => {
+      throw new Error(data.message || 'Read failed');
+    });
   }).then(render)
-      .catch(error => console.error("Error fetching available times:", error));
+      .catch(error => {
+          alert(error.message);
+          console.error("Error fetching available times:", error)
+      });
 }
 
 function requestCreate(reservation) {
@@ -219,10 +235,10 @@ function requestCreate(reservation) {
     body: JSON.stringify(reservation)
   };
 
-  return fetch('/admin/reservations', requestOptions)
+  return fetch(ADMIN_RESERVATION_API_ENDPOINT, requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+        throw new Error(data.message || 'Delete failed');
       });
 }
 
@@ -231,9 +247,11 @@ function requestDelete(id) {
     method: 'DELETE',
   };
 
-  return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
+  return fetch(`${ADMIN_RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
       .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
+        if (response.status !== 204) return response.json().then(data => {
+          throw new Error(data.message || 'Delete failed');
+        });
       });
 }
 

@@ -16,4 +16,6 @@ INSERT INTO reservation_time(start_at) VALUES ('10:00');
 INSERT INTO reservation_time(start_at) VALUES ('11:00');
 INSERT INTO reservation_time(start_at) VALUES ('12:00');
 
-INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('리니', DATEADD('DAY', 1, CURRENT_DATE), 1, 1);
+INSERT INTO member(name, email, password, role) VALUES('리니', 'lini@email.com', 'lini123', 'GUEST');
+
+INSERT INTO reservation(date, member_id, time_id, theme_id) VALUES (DATEADD('DAY', 1, CURRENT_DATE), 1, 1, 1);

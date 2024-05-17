@@ -5,8 +5,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
-import roomescape.domain.repostiory.ThemeRepository;
+import roomescape.domain.reservation.Theme;
+import roomescape.domain.reservation.ThemeRepository;
+import roomescape.exception.InvalidReservationException;
 
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,12 @@ public class ThemeJdbcRepository implements ThemeRepository {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Theme getById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 테마입니다."));
     }
 
     @Override
