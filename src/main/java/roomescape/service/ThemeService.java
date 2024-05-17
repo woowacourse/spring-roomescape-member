@@ -2,12 +2,12 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Theme;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcThemeRepository;
-import roomescape.service.dto.PopularThemeRequestDto;
-import roomescape.service.dto.ThemeRequestDto;
-import roomescape.service.dto.ThemeResponseDto;
+import roomescape.service.dto.theme.PopularThemeRequest;
+import roomescape.service.dto.theme.ThemeRequest;
+import roomescape.service.dto.theme.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -20,25 +20,25 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ThemeResponseDto> findAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         return themeRepository.findAllThemes()
                 .stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
-    public List<ThemeResponseDto> findTopBookedThemes(PopularThemeRequestDto requestDto) {
+    public List<ThemeResponse> findTopBookedThemes(PopularThemeRequest request) {
         List<Theme> topBookedThemes = themeRepository.findTopThemesDescendingByReservationCount(
-                requestDto.getStartDate(), requestDto.getEndDate(), requestDto.getCount());
+                request.getStartDate(), request.getEndDate(), request.getCount());
 
         return topBookedThemes.stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
-    public ThemeResponseDto createTheme(ThemeRequestDto requestDto) {
-        Theme theme = themeRepository.insertTheme(requestDto.toTheme());
-        return new ThemeResponseDto(theme);
+    public ThemeResponse createTheme(ThemeRequest request) {
+        Theme theme = themeRepository.insertTheme(request.toTheme());
+        return new ThemeResponse(theme);
     }
 
     public void deleteTheme(long id) {

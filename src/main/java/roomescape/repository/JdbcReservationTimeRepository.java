@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -8,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 
 @Repository
 public class JdbcReservationTimeRepository {
@@ -30,7 +31,7 @@ public class JdbcReservationTimeRepository {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public ReservationTime insertReservationTime(ReservationTime reservationTime) {
+    public Optional<ReservationTime> insertReservationTime(ReservationTime reservationTime) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
         long savedId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
@@ -60,7 +61,7 @@ public class JdbcReservationTimeRepository {
         return !result.isEmpty();
     }
 
-    public ReservationTime findReservationTimeById(long savedId) {
+    public Optional<ReservationTime> findReservationTimeById(long savedId) {
         String sql = """
                 SELECT 
                 t.id, 
@@ -69,7 +70,8 @@ public class JdbcReservationTimeRepository {
                 WHERE t.id = :savedId;
                 """;
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("savedId", savedId);
-        return jdbcTemplate.query(sql, paramMap, rowMapper).get(0);
+        List<ReservationTime> times = jdbcTemplate.query(sql, paramMap, rowMapper);
+        return Optional.ofNullable(times.isEmpty() ? null : times.get(0));
     }
 
     public List<ReservationTime> findReservedTimeByThemeAndDate(String date, long themeId) {

@@ -1,12 +1,15 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.domain.ReservationStatus.AVAILABLE;
-import static roomescape.domain.ReservationStatus.BOOKED;
+import static roomescape.domain.reservation.ReservationStatus.AVAILABLE;
+import static roomescape.domain.reservation.ReservationStatus.BOOKED;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.ReservationTimeStatus;
+import roomescape.domain.reservation.ReservationTimeStatuses;
 
 class ReservationTimeStatusesTest {
 

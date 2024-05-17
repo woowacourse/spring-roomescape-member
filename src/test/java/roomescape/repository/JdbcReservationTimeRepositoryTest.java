@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,14 +11,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationName;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
+import roomescape.repository.rowmapper.MemberRowMapper;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 import roomescape.repository.rowmapper.ThemeRowMapper;
@@ -34,6 +34,7 @@ class JdbcReservationTimeRepositoryTest {
     private JdbcReservationTimeRepository reservationTimeRepository;
     private JdbcThemeRepository themeRepository;
     private JdbcReservationRepository reservationRepository;
+    private JdbcMemberRepository memberRepository;
 
     private final String startAt1 = "13:00";
     private final String startAt2 = "15:00";
@@ -46,20 +47,24 @@ class JdbcReservationTimeRepositoryTest {
     private final Theme theme1 = new Theme(null, "공포", "난이도 1", "hi.jpg");
     private final Theme theme2 = new Theme(null, "우테코", "난이도 2", "hi.jpg");
 
+    private final Member member1 = new Member(null, "t1@t1.com", "123", "러너덕", "MEMBER");
+    private final Member member2 = new Member(null, "t2@t2.com", "124", "재즈", "MEMBER");
+    private final Member member3 = new Member(null, "t3@t3.com", "125", "재즈덕", "MEMBER");
+
     @BeforeEach
     void setUp() {
-        RowMapper<ReservationTime> rowMapper = new ReservationTimeRowMapper();
         reservationTimeRepository = new JdbcReservationTimeRepository(dataSource, new ReservationTimeRowMapper());
         themeRepository = new JdbcThemeRepository(dataSource, new ThemeRowMapper());
         reservationRepository = new JdbcReservationRepository(dataSource, new ReservationRowMapper());
+        memberRepository = new JdbcMemberRepository(dataSource, new MemberRowMapper());
     }
 
     @DisplayName("저장된 모든 예약 시간 정보를 가져온다.")
     @Test
     void find_all_reservation_times() {
-        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1);
-        ReservationTime savedTime2 = reservationTimeRepository.insertReservationTime(time2);
-        ReservationTime savedTime3 = reservationTimeRepository.insertReservationTime(time3);
+        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1).get();
+        ReservationTime savedTime2 = reservationTimeRepository.insertReservationTime(time2).get();
+        ReservationTime savedTime3 = reservationTimeRepository.insertReservationTime(time3).get();
 
         List<ReservationTime> allReservationTimes = reservationTimeRepository.findAllReservationTimes();
 
@@ -74,7 +79,7 @@ class JdbcReservationTimeRepositoryTest {
     @DisplayName("예약 시간을 저장한다.")
     @Test
     void save_reservation_time() {
-        ReservationTime savedTime = reservationTimeRepository.insertReservationTime(time1);
+        ReservationTime savedTime = reservationTimeRepository.insertReservationTime(time1).get();
 
         assertAll(
                 () -> assertThat(savedTime.getId()).isEqualTo(1),
@@ -100,7 +105,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @DisplayName("시간 존재 여부를 시작 시간으로 판단한다.")
     void is_time_exists_by_start_time() {
-        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1);
+        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1).get();
 
         boolean existTime = reservationTimeRepository.isTimeExistsByStartTime(savedTime1.getStartAt().toString());
         boolean notExistTime = reservationTimeRepository.isTimeExistsByStartTime("15:00");
@@ -114,7 +119,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @DisplayName("시간 존재 여부를 id로 판단한다.")
     void is_time_exists_by_time_id() {
-        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1);
+        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1).get();
 
         boolean existId = reservationTimeRepository.isTimeExistsByTimeId(savedTime1.getId());
         boolean notExistId = reservationTimeRepository.isTimeExistsByTimeId(2L);
@@ -128,9 +133,9 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @DisplayName("id로 시간을 조회한다.")
     void find_reservation_time_by_id() {
-        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1);
+        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1).get();
 
-        ReservationTime findTime1 = reservationTimeRepository.findReservationTimeById(savedTime1.getId());
+        ReservationTime findTime1 = reservationTimeRepository.findReservationTimeById(savedTime1.getId()).get();
 
         assertAll(
                 () -> assertThat(findTime1.getId()).isEqualTo(savedTime1.getId()),
@@ -141,18 +146,21 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @DisplayName("날짜와 테마를 입력받아 해당 날짜, 테마에 예약된 시간을 모두 조회한다.")
     void find_reservation_time_by_theme_and_date() {
-        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1);
-        ReservationTime savedTime2 = reservationTimeRepository.insertReservationTime(time2);
-        ReservationTime savedTime3 = reservationTimeRepository.insertReservationTime(time3);
+        ReservationTime savedTime1 = reservationTimeRepository.insertReservationTime(time1).get();
+        ReservationTime savedTime2 = reservationTimeRepository.insertReservationTime(time2).get();
+        ReservationTime savedTime3 = reservationTimeRepository.insertReservationTime(time3).get();
         Theme savedTheme1 = themeRepository.insertTheme(theme1);
         Theme savedTheme2 = themeRepository.insertTheme(theme2);
+        Member savedMember1 = memberRepository.insertMember(member1);
+        Member savedMember2 = memberRepository.insertMember(member2);
+        Member savedMember3 = memberRepository.insertMember(member3);
 
         Reservation reservation1 = new Reservation(
-                null, new ReservationName("재즈"), savedTheme1, new ReservationDate("2024-05-01"), savedTime1);
+                null, savedMember1, savedTheme1, LocalDate.parse("2024-05-01"), savedTime1);
         Reservation reservation2 = new Reservation(
-                null, new ReservationName("러너덕"), savedTheme1, new ReservationDate("2024-05-01"), savedTime2);
+                null, savedMember2, savedTheme1, LocalDate.parse("2024-05-01"), savedTime2);
         Reservation reservation3 = new Reservation(
-                null, new ReservationName("재즈덕"), savedTheme2, new ReservationDate("2024-05-02"), savedTime3);
+                null, savedMember3, savedTheme2, LocalDate.parse("2024-05-02"), savedTime3);
         reservationRepository.insertReservation(reservation1);
         reservationRepository.insertReservation(reservation2);
         reservationRepository.insertReservation(reservation3);
