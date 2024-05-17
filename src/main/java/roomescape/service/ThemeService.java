@@ -10,7 +10,6 @@ import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
-
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 

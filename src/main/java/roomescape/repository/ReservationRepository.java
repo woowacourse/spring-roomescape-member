@@ -24,4 +24,6 @@ public interface ReservationRepository {
     Boolean existsByThemeId(Long id);
 
     Boolean existsByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId);
+
+    List<Reservation> findByConditions(Long themeId, Long timeId, LocalDate dateFrom, LocalDate dateTo);
 }

@@ -1,0 +1,17 @@
+# h2-console
+spring:
+  h2:
+    console:
+      enabled: true
+
+  # DB URL
+  datasource:
+    url: jdbc:h2:mem:database;
+
+  # data.sql
+  sql:
+    init:
+      mode: always
+
+secret:
+  key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E

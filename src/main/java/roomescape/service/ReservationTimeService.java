@@ -13,7 +13,6 @@ import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
