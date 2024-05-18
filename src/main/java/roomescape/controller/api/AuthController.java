@@ -36,7 +36,6 @@ public class AuthController {
             return ResponseEntity.ok()
                     .build();
         }
-
         MemberPreviewResponse name = MemberPreviewResponse.from(member);
 
         return ResponseEntity.ok()

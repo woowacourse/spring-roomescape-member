@@ -37,19 +37,7 @@ public class JwtTokenProvider {
     }
 
     public String getSubject(String token) {
-        Claims claim = parseClaims(token);
-
-        return claim.getSubject();
-    }
-
-    public boolean validateToken(String token) { //todo: 적절한 예외 추가 - 401 403
-        try {
-            Claims claims = parseClaims(token);
-
-            return !claims.getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
+        return parseClaims(token).getSubject();
     }
 
     private Claims parseClaims(String token) {

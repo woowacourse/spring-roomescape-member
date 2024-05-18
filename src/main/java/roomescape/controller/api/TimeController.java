@@ -31,11 +31,9 @@ public class TimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse response = reservationTimeService.addReservationTime(
-                request);
-        URI location = URI.create("/times/" + response.id());
+        ReservationTimeResponse response = reservationTimeService.addReservationTime(request);
 
-        return ResponseEntity.created(location)
+        return ResponseEntity.created(URI.create("/times/" + response.id()))
                 .body(response);
     }
 
@@ -47,7 +45,7 @@ public class TimeController {
                 .build();
     }
 
-    @GetMapping("/available") // todo: rest 한 api 이름으로 바꾸기
+    @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimeBookedStatus(
             @RequestParam LocalDate date,
             @RequestParam Long themeId) {

@@ -35,4 +35,12 @@ public class Member {
     public Role getRole() {
         return role;
     }
+
+    public boolean isAdmin() {
+        return this.role.isAdmin();
+    }
+
+    public boolean isNotAdmin() {
+        return !this.isAdmin();
+    }
 }

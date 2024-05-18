@@ -21,25 +21,18 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Optional<String> token = extractToken(request);
-        if (token.isEmpty()) {
-            throw new TokenValidationFailureException("토큰이 존재하지 않습니다.");
-        }
-
-        String subject = jwtTokenProvider.getSubject(token.get());
-        long memberId = Long.parseLong(subject);
+        String token = extractToken(request)
+                .orElseThrow(() -> new TokenValidationFailureException("토큰이 존재하지 않습니다."));
+        long memberId = Long.parseLong(jwtTokenProvider.getSubject(token));
         Member member = memberService.getMemberById(memberId);
-        boolean isAdmin = member.getRole().isAdmin();
 
-        if (!(isAdmin)) {
+        if (member.isNotAdmin()) {
             throw new ForbiddenAccessException();
         }
         return true;
     }
 
     private static Optional<String> extractToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        return CookieUtil.extractTokenFromCookie(cookies);
+        return CookieUtil.extractTokenFromCookie(request.getCookies());
     }
 }

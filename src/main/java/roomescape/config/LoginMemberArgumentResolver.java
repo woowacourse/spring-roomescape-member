@@ -33,17 +33,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         if (token.isEmpty()) {
             return null;
         }
+        long memberId = Long.parseLong(jwtTokenProvider.getSubject(token.get()));
 
-        String subject = jwtTokenProvider.getSubject(token.get());
-        long id = Long.parseLong(subject);
-
-        return memberService.getMemberById(id);
+        return memberService.getMemberById(memberId);
     }
 
     private Optional<String> extractToken(NativeWebRequest webRequest) {
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        Cookie[] cookies = httpServletRequest.getCookies();
 
-        return CookieUtil.extractTokenFromCookie(cookies);
+        return CookieUtil.extractTokenFromCookie(httpServletRequest.getCookies());
     }
 }

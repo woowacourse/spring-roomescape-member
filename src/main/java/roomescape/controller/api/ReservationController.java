@@ -34,9 +34,8 @@ public class ReservationController {
             @RequestBody MemberReservationRequest request,
             Member member) {
         ReservationResponse response = reservationService.addMemberReservation(request, member);
-        URI location = URI.create("/reservations/" + response.id());
 
-        return ResponseEntity.created(location)
+        return ResponseEntity.created(URI.create("/reservations/" + response.id()))
                 .body(response);
     }
 
