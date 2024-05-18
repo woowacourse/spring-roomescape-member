@@ -1,7 +1,12 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
+
+import roomescape.domain.policy.CurrentDueTimePolicy;
+import roomescape.domain.policy.ReservationDueTimePolicy;
+import roomescape.exception.reservation.InvalidDateTimeReservationException;
 
 
 public class Reservation {
@@ -21,6 +26,19 @@ public class Reservation {
 
     public Reservation(LocalDate date, ReservationTime time, Theme theme, Member member) {
         this(null, date, time, theme, member);
+        validateDateTimeReservation(date.atTime(time.getStartAt()), new CurrentDueTimePolicy());
+    }
+
+    public Reservation(LocalDate date, ReservationTime time, Theme theme, Member member,
+                       ReservationDueTimePolicy dueTimePolicy) {
+        this(null, date, time, theme, member);
+        validateDateTimeReservation(date.atTime(time.getStartAt()), dueTimePolicy);
+    }
+
+    private void validateDateTimeReservation(LocalDateTime dateTime, ReservationDueTimePolicy timePolicy) {
+        if (dateTime.isBefore(timePolicy.getDueTime())) {
+            throw new InvalidDateTimeReservationException();
+        }
     }
 
     public Long getId() {

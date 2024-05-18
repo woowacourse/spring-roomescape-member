@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.member.AuthenticationFailureException;
 import roomescape.exception.reservation.DuplicatedReservationException;
-import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
@@ -59,7 +57,6 @@ public class ReservationService {
         ReservationTime time = findReservationTimeById(request.timeId());
         Theme theme = findThemeById(request.themeId());
 
-        validateDateTimeReservation(request, time);
         validateDuplicateReservation(request);
 
         Member member = memberRepository.findById(request.memberId())
@@ -74,13 +71,6 @@ public class ReservationService {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
                 request.date(), request.timeId(), request.themeId())) {
             throw new DuplicatedReservationException();
-        }
-    }
-
-    private void validateDateTimeReservation(ReservationRequest request, ReservationTime time) {
-        LocalDateTime localDateTime = request.date().atTime(time.getStartAt());
-        if (localDateTime.isBefore(LocalDateTime.now())) {
-            throw new InvalidDateTimeReservationException();
         }
     }
 
